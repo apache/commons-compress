@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+<project>
+
+    <pomVersion>3</pomVersion>
+
+    <id>${pom.groupId}-${pom.name}</id>
+    <name>compress</name>
+    <groupId>jakarta-commons</groupId>
+
+    <currentVersion>SNAPSHOT</currentVersion>
+
+    <organization>
+        <name>Apache Software Foundation</name>
+        <url>http://www.apache.org</url>
+        <logo>http://jakarta.apache.org/commons/images/jakarta-logo-blue.gif</logo>
+    </organization>
+
+    <inceptionYear>2002</inceptionYear>
+    <package>org.apache.commons.io</package>
+    <logo>/images/logo.jpg</logo>
+
+    <!-- Gump integration -->
+    <gumpRepositoryId>jakarta-compress</gumpRepositoryId>
+
+    <description>
+        Commons.Compress is a sleeping component that contains Tar, Zip and 
+        possibly at some point BZip2 packages. They were loitering in Commons-IO
+        and this is their new home.
+    </description>
+
+    <shortDescription>Java Common Compress Components</shortDescription>
+
+    <url>http://jakarta.apache.org/commons/compress/</url>
+
+    <issueTrackingUrl>
+        http://nagoya.apache.org:8080/scarab/servlet/scarab/
+    </issueTrackingUrl>
+
+    <siteAddress>jakarta.apache.org</siteAddress>
+    <siteDirectory>/www/jakarta.apache.org/commons/sandbox/compress/</siteDirectory>
+
+    <distributionDirectory>
+        /www/jakarta.apache.org/builds/jakarta-commons-sandbox/compress/
+    </distributionDirectory>
+
+    <repository>
+        <connection>
+            scm:cvs:pserver:anoncvs@cvs.apache.org:/home/cvspublic:jakarta-commons-sandbox/io
+        </connection>
+
+        <url>http://cvs.apache.org/viewcvs/jakarta-commons-sandbox/compress/</url>
+    </repository>
+
+    <mailingLists>
+        <mailingList>
+            <name>Commons User List</name>
+
+            <subscribe>
+                commons-user-subscribe@jakarta.apache.org
+            </subscribe>
+
+            <unsubscribe>
+                commons-user-unsubscribe@jakarta.apache.org
+            </unsubscribe>
+
+            <archive>
+                http://nagoya.apache.org:8080/eyebrowse/SummarizeList?listName=commons-user@jakarta.apache.org
+            </archive>
+        </mailingList>
+
+        <mailingList>
+            <name>Commons Developer List</name>
+            <subscribe>commons-dev-subscribe@jakarta.apache.org</subscribe>
+            <unsubscribe>commons-dev-unsubscribe@jakarta.apache.org</unsubscribe>
+            <archive>
+                http://nagoya.apache.org:8080/eyebrowse/SummarizeList?listName=commons-dev@jakarta.apache.org
+            </archive>
+        </mailingList>
+    </mailingLists>
+
+    <developers>
+
+        <developer>
+            <!-- In that I moved them to their new location -->
+            <name>Henri Yandell</name>
+            <id>bayard</id>
+            <email>bayard@apache.org</email>
+            <organization></organization>
+            <roles>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+
+    </developers>
+    
+    <!-- Need to mark these as compile-time/run-time -->
+    <dependencies>
+        <dependency>
+            <id>junit</id>
+            <version>3.8.1</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <nagEmailAddress>commons-dev@jakarta.apache.org</nagEmailAddress>
+        <sourceDirectory>src/java</sourceDirectory>
+        <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
+        <integrationUnitTestSourceDirectory/>
+        <aspectSourceDirectory/>
+
+        <!-- Unit test classes -->
+        <!-- TODO Organize test inclusions and exclusions -->
+        <unitTest>
+            <includes>
+                <include>**/*Test*</include>
+            </includes>
+        </unitTest>
+
+        <!-- J A R  R E S O U R C E S -->
+        <!-- Resources that are packaged up inside the JAR file -->
+        <resources>
+            <resource>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+
+    <reports>
+        <report>maven-javadoc-plugin</report>
+        <report>maven-junit-report-plugin</report>
+        <report>maven-jxr-plugin</report>
+
+        <report>maven-checkstyle-plugin</report>
+        <report>maven-clover-plugin</report>
+        <report>maven-linkcheck-plugin</report>
+        <report>maven-pmd-plugin</report>
+
+        <report>maven-changes-plugin</report>
+        <report>maven-changelog-plugin</report>
+        <report>maven-developer-activity-plugin</report>
+        <report>maven-file-activity-plugin</report>
+        <report>maven-statcvs-plugin</report>
+    </reports>
+
+</project>
