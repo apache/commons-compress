@@ -21,7 +21,7 @@ import junit.framework.TestCase;
  *
  * @todo Find V7 tar and do tests against it
  * @author <a href="mailto:peter@apache.org">Peter Donald</a>
- * @version $Revision: 1.1 $ $Date: 2003/11/23 20:07:47 $
+ * @version $Revision: 1.2 $ $Date: 2003/12/02 20:35:05 $
  */
 public final class TarTestCase
     extends TestCase
@@ -67,7 +67,7 @@ public final class TarTestCase
         final int size = name.length();
         final String filename =
             name.substring( 0, size - 11 ).replace( '.', SP );
-        return "target" + SP + "tests" + SP +
+        return "src" + SP + "test" + SP +
                 SP + filename + SP;
     }
 
