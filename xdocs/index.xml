@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<document>
+
+ <properties>
+  <title>Overview</title>
+  <author email="commons-dev@jakarta.apache.org">Commons Documentation Team</author>
+ </properties>
+
+ <body>
+
+<section name="The Compress Component">
+
+<p>Commons Compress defines an API for working with tar, zip and bzip2 files.</p>
+
+<p>The code in this component came from Avalon's Excalibur, but originally from Ant,
+as far as life in Apache goes. The tar package is originally Tim Endres' public
+domain package. The bzip2 package is based on the work done by Keiron Liddle.
+</p>
+<p>the migration has been:</p>
+<p>Ant -> Avalon-Excalibur -> Commons-IO -> Commons-Compress.</p>
+
+<br/><br/>
+</section>
+
+<section name="Releases">
+    <p>
+       See the <a href="downloads.html">downloads</a> page for information on obtaining releases.
+    </p>
+<br/><br/>
+</section>
+
+<section name="Documentation">
+  <p>
+     The <a href="apidocs/index.html">JavaDoc API documents</a> are available online.
+  </p>
+  <p>There are also 2 example for the bzip2 API:</p>
+  <ul>
+    <li><a href="xref-test/org/apache/commons/compress/bzip2/example/Bzip2Compress.html">Bzip2Compress</a></li>
+    <li><a href="xref-test/org/apache/commons/compress/bzip2/example/Bzip2Uncompress.html">Bzip2UnCompress</a></li>
+  </ul>
+</section>
+
+</body>
+</document>
