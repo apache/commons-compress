@@ -32,7 +32,7 @@ import org.apache.commons.compress.bzip2.CBZip2OutputStream;
  * that it behaves correctly.
  *
  * @author <a href="mailto:peter@apache.org">Peter Donald</a>
- * @version $Revision: 1.2 $ $Date: 2004/02/27 03:41:37 $
+ * @version $Revision$ $Date$
  */
 public class BzipTestCase
     extends TestCase

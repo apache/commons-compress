@@ -23,7 +23,7 @@ import java.util.zip.ZipException;
  * ZipExtraField related methods
  *
  * @author <a href="stefan.bodewig@epost.de">Stefan Bodewig</a>
- * @version $Revision: 1.2 $
+ * @version $Revision$
  */
 public class ExtraFieldUtils
 {

@@ -26,7 +26,7 @@ import java.util.zip.ZipException;
  * will only use the local file data in both places.</p>
  *
  * @author <a href="stefan.bodewig@epost.de">Stefan Bodewig</a>
- * @version $Revision: 1.2 $
+ * @version $Revision$
  */
 public interface ZipExtraField
 {

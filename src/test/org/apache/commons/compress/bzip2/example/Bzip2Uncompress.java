@@ -29,7 +29,7 @@ import org.apache.commons.compress.bzip2.CBZip2InputStream;
  *
  * @author <a href="mailto:peter@apache.org">Peter Donald</a>
  * @author <a href="mailto:nicolaken@apache.org">Nicola Ken Barozzi</a>
- * @version $Revision: 1.2 $ $Date: 2004/02/27 03:41:37 $
+ * @version $Revision$ $Date$
  */
 public class Bzip2Uncompress
 {

@@ -25,7 +25,7 @@ import java.util.zip.ZipException;
  * the internal and external file attributes.
  *
  * @author <a href="stefan.bodewig@epost.de">Stefan Bodewig</a>
- * @version $Revision: 1.2 $
+ * @version $Revision$
  */
 public class ZipEntry
     extends java.util.zip.ZipEntry

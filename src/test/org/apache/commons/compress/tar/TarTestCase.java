@@ -30,7 +30,7 @@ import junit.framework.TestCase;
  *
  * @todo Find V7 tar and do tests against it
  * @author <a href="mailto:peter@apache.org">Peter Donald</a>
- * @version $Revision: 1.4 $ $Date: 2004/02/27 03:41:37 $
+ * @version $Revision$ $Date$
  */
 public final class TarTestCase
     extends TestCase

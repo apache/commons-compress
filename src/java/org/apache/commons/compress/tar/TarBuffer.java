@@ -31,7 +31,7 @@ import java.io.OutputStream;
  *
  * @author <a href="mailto:time@ice.com">Timothy Gerard Endres</a>
  * @author <a href="mailto:peter@apache.org">Peter Donald</a>
- * @version $Revision: 1.2 $ $Date: 2004/02/27 03:41:36 $
+ * @version $Revision$ $Date$
  */
 class TarBuffer
 {
