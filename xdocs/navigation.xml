@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE org.apache.commons.menus SYSTEM '../../../jakarta-commons/xdocs/stylesheets/menus/org-apache-commons-menus.dtd'>
+<project name="Commons Compress">
+    <title>Commons Compress</title>
+    <body>
+        &top-menus;
+        <menu name="Commons&#xA0;Compress">
+            <item name="Overview"                      href="/index.html" />
+<!--            <item name="Configuration"                 href="/configuration.html" /> -->
+            <item name="API&#xA0;Documentation"        href="/apidocs/index.html"/>
+<!--
+            <item name="Developers&#xA0;Guide"         href="/guide/index.html" collapse="true">
+                <item name="Class&#xA0;Diagrams"       href="/guide/classdiagrams.html"/>
+                <item name="Sequence&#xA0;Diagrams"    href="/guide/sequencediagrams.html"/>
+            </item>
+-->
+            <item name="Downloads"                     href="/downloads.html"/>
+        </menu>
+        &bottom-menus;
+    </body>
+</project>
