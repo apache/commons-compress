@@ -39,7 +39,6 @@
     </developer>
   </developers>
     
-  <!-- Need to mark these as compile-time/run-time -->
   <dependencies>
     <dependency>
       <id>junit</id>
