@@ -20,7 +20,7 @@ package org.apache.commons.compress.tar;
  *
  * @author <a href="mailto:time@ice.com">Timothy Gerard Endres</a>
  * @author <a href="mailto:stefano@apache.org">Stefano Mazzocchi</a>
- * @version $Revision: 1.2 $ $Date: 2004/02/27 03:41:36 $
+ * @version $Revision$ $Date$
  */
 class TarUtils
 {

@@ -28,7 +28,7 @@ import java.io.OutputStream;
  * @author <a href="mailto:time@ice.com">Timothy Gerard Endres</a>
  * @author <a href="mailto:stefano@apache.org">Stefano Mazzocchi</a>
  * @author <a href="mailto:peter@apache.org">Peter Donald</a>
- * @version $Revision: 1.3 $ $Date: 2004/03/11 05:30:37 $
+ * @version $Revision$ $Date$
  * @see TarInputStream
  * @see TarEntry
  */

@@ -40,7 +40,7 @@ import java.util.zip.ZipException;
  * #putNextEntry putNextEntry} will be called.</p>
  *
  * @author <a href="stefan.bodewig@epost.de">Stefan Bodewig</a>
- * @version $Revision: 1.2 $
+ * @version $Revision$
  */
 public class ZipOutputStream
     extends DeflaterOutputStream

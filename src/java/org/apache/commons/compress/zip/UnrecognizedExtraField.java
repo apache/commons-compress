@@ -22,7 +22,7 @@ package org.apache.commons.compress.zip;
  * told the opposite.</p>
  *
  * @author <a href="stefan.bodewig@epost.de">Stefan Bodewig</a>
- * @version $Revision: 1.2 $
+ * @version $Revision$
  */
 public class UnrecognizedExtraField
     implements ZipExtraField

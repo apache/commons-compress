@@ -20,7 +20,7 @@ package org.apache.commons.compress.zip;
  * the big endian byte order of ZIP files.
  *
  * @author <a href="mailto:stefan.bodewig@epost.de">Stefan Bodewig</a>
- * @version $Revision: 1.2 $
+ * @version $Revision$
  */
 public final class ZipShort
     implements Cloneable

@@ -41,7 +41,7 @@ import java.util.zip.ZipException;
  * device numbers are currently not supported.</p>
  *
  * @author <a href="stefan.bodewig@epost.de">Stefan Bodewig</a>
- * @version $Revision: 1.2 $
+ * @version $Revision$
  */
 public class AsiExtraField
     implements ZipExtraField, UnixStat, Cloneable
