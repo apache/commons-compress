@@ -18,7 +18,7 @@
   <extend>../sandbox-build/project.xml</extend>
   <name>Commons Compress</name>
   <id>commons-compress</id>
-  <logo>/images/compress-logo-blue.jpg</logo>
+  <logo>/images/compress-logo-white.png</logo>
   <inceptionYear>2002</inceptionYear>
   <shortDescription>Commons Compress</shortDescription>
   <description>

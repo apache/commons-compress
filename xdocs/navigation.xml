@@ -14,32 +14,17 @@
    See the License for the specific language governing permissions and
    limitations under the License.
   -->
-
-<!DOCTYPE project [
-<!ENTITY commons-nav SYSTEM "../../sandbox-build/incl_nav.xml">
-]>
-
-<project name="Convert">
-
-  <title>Compress</title>
-  <organizationLogo href="/images/jakarta-logo-blue.gif">
-   Jakarta
-  </organizationLogo>
-
+<!DOCTYPE org.apache.commons.menus SYSTEM '../../../jakarta-commons/commons-build/menus/menus.dtd'>
+<project name="Commons&#xA0;Compress">
+  <title>Commons&#xA0;Compress</title>
   <body>
-    <links>
-      <item name="Jakarta Commons" href="http://jakarta.apache.org/commons/"/>
-    </links>
-
-    <menu name="Commons Compress">
+    <menu name="Commons&#xA0;Compress">
       <item name="Overview" href="/index.html"/>
       <item name="Javadoc" href="apidocs/index.html"/>
       <item name="Mailing lists" href="/mail-lists.html"/>
       <item name="Team" href="/team-list.html"/>
       <item name="CVS" href="http://cvs.apache.org/viewcvs/jakarta-commons-sandbox/compress/"/>
     </menu>
-    
-    &commons-nav;
-
+    &common-menus;
   </body>
 </project>
