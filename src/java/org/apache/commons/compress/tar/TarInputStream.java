@@ -28,7 +28,7 @@ import java.io.OutputStream;
  * @author <a href="mailto:time@ice.com">Timothy Gerard Endres</a>
  * @author <a href="mailto:stefano@apache.org">Stefano Mazzocchi</a>
  * @author <a href="mailto:peter@apache.org">Peter Donald</a>
- * @version $Revision: 1.2 $ $Date: 2004/02/27 03:41:36 $
+ * @version $Revision: 1.3 $ $Date: 2004/03/11 05:30:37 $
  * @see TarInputStream
  * @see TarEntry
  */
@@ -197,6 +197,13 @@ public class TarInputStream
                 longName.append( str );
             }
             getNextEntry();
+
+            // remove trailing null terminator
+            if (longName.length() > 0
+                && longName.charAt(longName.length() - 1) == 0) {
+                longName.deleteCharAt(longName.length() - 1);
+            }
+            
             m_currEntry.setName( longName.toString() );
         }
 
