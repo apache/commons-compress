@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
   -->
-<!DOCTYPE org.apache.commons.menus SYSTEM '../../../jakarta-commons/commons-build/menus/menus.dtd'>
+<!DOCTYPE org.apache.commons.menus SYSTEM '../../commons-build/menus/menus.dtd'>
 <project name="Commons&#xA0;Compress">
   <title>Commons&#xA0;Compress</title>
   <body>
