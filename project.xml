@@ -15,7 +15,7 @@
    limitations under the License.
 -->
 <project>
-  <extend>../sandbox-build/project.xml</extend>
+  <extend>../commons-build/sandbox-project.xml</extend>
   <name>Commons Compress</name>
   <id>commons-compress</id>
   <logo>/images/compress-logo-white.png</logo>
