@@ -4,7 +4,7 @@
   <name>Commons Compress</name>
   <id>commons-compress</id>
   <logo>/images/compress-logo-blue.jpg</logo>
-  <url>http://jakarta.apache.org/commons/compress/</url>
+  <url>http://jakarta.apache.org/commons/sandbox/compress/</url>
   <inceptionYear>2002</inceptionYear>
   <shortDescription>Commons Compress</shortDescription>
   <description>
