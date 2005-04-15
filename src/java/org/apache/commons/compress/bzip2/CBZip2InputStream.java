@@ -964,4 +964,9 @@ public class CBZip2InputStream
             }
         }
     }
+    
+    public void close() throws IOException 
+    {
+        m_input.close();
+    }
 }
