@@ -25,6 +25,8 @@
     Commons Compress is a component that contains Tar, Zip and BZip2 packages.
   </description>
   <currentVersion>0.1-dev</currentVersion>
+  <issueTrackingUrl>http://issues.apache.org/bugzilla/</issueTrackingUrl>
+  <siteAddress>cvs.apache.org</siteAddress>
   <logo></logo>
   
   <versions>
