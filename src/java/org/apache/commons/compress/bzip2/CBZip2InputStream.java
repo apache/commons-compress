@@ -624,6 +624,16 @@ public class CBZip2InputStream
 
     private void bsFinishedWithStream()
     {
+        if (m_input != null)
+        {
+            try
+            {
+                m_input.close();
+            }
+            catch ( IOException e )
+            {
+            }
+        }
         m_input = null;
     }
 
@@ -967,6 +977,6 @@ public class CBZip2InputStream
     
     public void close() throws IOException 
     {
-        m_input.close();
+	bsFinishedWithStream();
     }
 }

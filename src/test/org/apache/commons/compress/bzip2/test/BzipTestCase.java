@@ -83,6 +83,30 @@ public class BzipTestCase
         forceDelete( outputFile );
     }
 
+    public void testCBZip2InputStreamClose()
+        throws Exception
+    {
+        final InputStream input = getInputStream( "asf-logo-huge.tar.bz2" );
+        final File outputFile = getOutputFile( ".tar.bz2" );
+        final OutputStream output = new FileOutputStream( outputFile );
+        copy( input, output );
+        shutdownStream( input );
+        shutdownStream( output );
+        assertTrue( "Check output file exists." , outputFile.exists() );
+        final InputStream input2 = new FileInputStream( outputFile );
+        final InputStream packedInput = getPackedInput( input2 );
+        shutdownStream( packedInput );
+        try
+        {
+            input2.read();
+            assertTrue("Source input stream is still opened.", false);
+        } catch ( Exception e )
+        {
+            // Read closed stream.
+        }
+        forceDelete( outputFile );
+    }
+
     /**
      * Copy bytes from an <code>InputStream</code> to an <code>OutputStream</code>.
      */
