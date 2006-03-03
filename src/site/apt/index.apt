@@ -1,0 +1,36 @@
+ -----
+ Jakarta Commons Compress
+ -----
+ Commons Documentation Team
+ -----
+ -----
+ 
+Commons Compress
+
+  Commons Compress defines an API for working with tar, zip and bzip2 files.
+
+  The code in this component came from Avalon's Excalibur, but originally from Ant,
+  as far as life in Apache goes. The tar package is originally Tim Endres' public
+  domain package. The bzip2 package is based on the work done by Keiron Liddle.
+  It has migrated via:
+  Ant -> Avalon-Excalibur -> Commons-IO -> Commons-Compress.
+
+* Status
+  * This code is in the commons <sandbox>
+  * The code is unreleased
+  * Methods and classes can and will appear and disappear without warning
+  * If you like the code and want to push it towards a release, join the mailing list!
+  []
+
+Documentation
+  * The {{{apidocs/index.html}Javadoc}} of the latest SVN
+  * The {{{http://svn.apache.org/viewcvs/jakarta/commons/sandbox/compress/}SVN repository}} can be browsed.
+  []
+  There are also 2 example for the bzip2 API:
+  * {{{xref-test/org/apache/commons/compress/bzip2/example/Bzip2Compress.html}Bzip2Compress}}
+  * {{{xref-test/org/apache/commons/compress/bzip2/example/Bzip2Uncompress.html}Bzip2UnCompress}}
+  []
+
+Releases
+
+  None. This is a <sandbox> component.
