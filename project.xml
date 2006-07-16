@@ -26,7 +26,7 @@
   </description>
   <currentVersion>0.1-dev</currentVersion>
   <issueTrackingUrl>http://issues.apache.org/bugzilla/</issueTrackingUrl>
-  <siteAddress>cvs.apache.org</siteAddress>
+  <siteAddress>people.apache.org</siteAddress>
   <logo></logo>
   
   <versions>
