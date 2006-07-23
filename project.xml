@@ -15,24 +15,60 @@
    limitations under the License.
 -->
 <project>
-  <extend>../commons-build/sandbox-project.xml</extend>
+  <pomVersion>3</pomVersion>
   <name>Commons Compress</name>
-  <id>commons-compress</id>
+  <groupId>org.apache.commons</groupId>
+  <artifactId>commons-compress</artifactId>
   <logo>/images/compress-logo-white.png</logo>
+  <currentVersion>1.0-SNAPSHOT</currentVersion>
   <inceptionYear>2002</inceptionYear>
   <shortDescription>Commons Compress</shortDescription>
   <description>
     Commons Compress is a component that contains Tar, Zip and BZip2 packages.
   </description>
-  <currentVersion>0.1-dev</currentVersion>
-  <issueTrackingUrl>http://issues.apache.org/bugzilla/</issueTrackingUrl>
+
+  <url>http://jakarta.apache.org/commons/${pom.artifactId.substring(8)}/</url>
+  <package>org.apache.commons.${pom.artifactId.substring(8)}</package>
+
+  <organization>
+    <name>The Apache Software Foundation</name>
+    <url>http://jakarta.apache.org</url>
+    <logo>http://jakarta.apache.org/images/original-jakarta-logo.gif</logo>
+  </organization>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>/LICENSE.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <gumpRepositoryId>jakarta</gumpRepositoryId>
+  <issueTrackingUrl>http://issues.apache.org/jira/</issueTrackingUrl>
   <siteAddress>people.apache.org</siteAddress>
-  <logo></logo>
+  <siteDirectory>/www/jakarta.apache.org/commons/${pom.artifactId.substring(8)}/</siteDirectory>
+  <distributionDirectory>/www/jakarta.apache.org/builds/jakarta-commons/${pom.artifactId.substring(8)}/</distributionDirectory>
   
-  <versions>
-  </versions>
-  <branches>
-  </branches>
+  <repository>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/jakarta/commons/proper/${pom.artifactId.substring(8)}/trunk</connection>
+    <url>http://svn.apache.org/viewcvs.cgi</url>
+  </repository>
+
+  <mailingLists>
+    <mailingList>
+      <name>Commons Dev List</name>
+      <subscribe>commons-dev-subscribe@jakarta.apache.org</subscribe>
+      <unsubscribe>commons-dev-unsubscribe@jakarta.apache.org</unsubscribe>
+      <archive>http://mail-archives.apache.org/mod_mbox/jakarta-commons-dev/</archive>
+    </mailingList>
+    <mailingList>
+      <name>Commons User List</name>
+      <subscribe>commons-user-subscribe@jakarta.apache.org</subscribe>
+      <unsubscribe>commons-user-unsubscribe@jakarta.apache.org</unsubscribe>
+      <archive>http://mail-archives.apache.org/mod_mbox/jakarta-commons-user/</archive>
+    </mailingList>
+  </mailingLists>
 
   <developers>
     <developer>
@@ -57,17 +93,65 @@
   </developers>
     
   <dependencies>
+
     <dependency>
-      <id>junit</id>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
       <version>3.8.1</version>
+      <url>http://www.junit.org/</url>
+      <properties>
+          <scope>test</scope>
+          <comment>
+              &lt;strong&gt;Test&lt;/strong&gt; - Only required
+              for running the unit tests.
+          </comment>
+      </properties>
     </dependency>
+
+    <dependency>
+      <groupId>maven</groupId>
+      <artifactId>maven-xdoc-plugin</artifactId>
+      <version>1.9.2</version>
+      <url>http://maven.apache.org/reference/plugins/xdoc/</url>
+      <type>plugin</type>
+      <properties>
+          <comment>
+              &lt;strong&gt;Site&lt;/strong&gt; - Only
+              required for building the website/documentation.
+          </comment>
+      </properties>
+    </dependency>
+
   </dependencies>
 
   <build>
+    <sourceDirectory>src/java</sourceDirectory>
+    <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
     <unitTest>
       <includes>
         <include>**/*Test*</include>
       </includes>
     </unitTest>
+    <resources>
+      <resource>
+        <directory>${basedir}</directory>
+        <targetPath>META-INF</targetPath>
+        <includes>
+          <include>NOTICE.txt</include>
+        </includes>
+      </resource>
+    </resources>
   </build>
+
+
+  <reports>
+    <!-- report>maven-checkstyle-plugin</report -->
+    <report>maven-changelog-plugin</report>
+    <report>maven-javadoc-plugin</report>
+    <report>maven-junit-report-plugin</report>
+    <report>maven-jxr-plugin</report>
+    <report>maven-junit-report-plugin</report>
+    <report>maven-license-plugin</report>
+  </reports>
+
 </project>
