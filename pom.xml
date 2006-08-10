@@ -54,7 +54,7 @@
     <site>
       <id>website</id>
       <name>Apache Website</name>
-      <url>scp://minotaur.apache.org/www/jakarta.apache.org/commons/sandbox/compress/</url>
+      <url>scp://people.apache.org/www/jakarta.apache.org/commons/sandbox/compress/</url>
     </site>
   </distributionManagement>
 
