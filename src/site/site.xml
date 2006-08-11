@@ -1,30 +1,22 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
- <!--
-   Copyright 2003-2004 The Apache Software Foundation
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-  -->
-<!DOCTYPE org.apache.commons.menus SYSTEM '../../commons-build/menus/menus.dtd'>
-<project name="Commons&#xA0;Compress">
-  <title>Commons&#xA0;Compress</title>
+<project name="Commons Compress">
   <body>
-    <menu name="Commons&#xA0;Compress">
-      <item name="Overview" href="/index.html"/>
-      <item name="Javadoc" href="apidocs/index.html"/>
-      <item name="Mailing lists" href="/mail-lists.html"/>
-      <item name="Team" href="/team-list.html"/>
-      <item name="SVN" href="http://svn.apache.org/viewcvs/jakarta/commons/sandbox/compress/"/>
+
+    <menu name="Compress">
+      <item name="Overview"    href="/index.html"/>
+      <item name="Download"    href="/downloads.html"/>
+      <item name="Wiki"        href="http://wiki.apache.org/jakarta-commons/Compress"/>
     </menu>
-    &common-menus;
+    
+    <menu name="Development">
+      <item name="History"                 href="/changes-report.html"/>
+      <item name="Mailing Lists"           href="/mail-lists.html"/>
+      <item name="Issue Tracking"          href="/issue-tracking.html"/>
+      <item name="Team"                    href="/team-list.html"/>
+      <item name="Source Repository"       href="/cvs-usage.html"/>
+      <item name="Javadoc (latest)"        href="apidocs/"/>
+    </menu>
+
+    ${reports}
   </body>
 </project>
