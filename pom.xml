@@ -61,6 +61,30 @@
   <build>
       <sourceDirectory>src/java</sourceDirectory>
       <testSourceDirectory>src/test</testSourceDirectory> 
+
+    <!-- turn off cobertura until we figure out why it's hanging -->
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <configuration>
+          <instrumentation>
+            <excludes>
+            <exclude>org/apache/commons/compress/bzip2/**/*.class</exclude>
+            <exclude>org/apache/commons/compress/compressors/bzip2/**/*.class</exclude>
+            </excludes>
+          </instrumentation>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+      
   </build>
 
 </project>
