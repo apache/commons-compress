@@ -45,8 +45,7 @@
         <!-- Checks that are different from the sun coding conventions ones -->
         <!-- ************************************************************** -->
         <module name="Header">
-            <property name="headerFile" value="${basedir}/LICENSE.txt"/>
-            <property name="ignoreLines" value="2,3,4,10"/>
+            <property name="headerFile" value="license-header.txt"/>
         </module>
         <property name="tabWidth" value="4"/>
         <module name="LeftCurly">
