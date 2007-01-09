@@ -21,9 +21,6 @@ package org.apache.commons.compress.examples;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 import org.apache.commons.compress.CompressUtils;
 import org.apache.commons.compress.compressors.bzip2.BZip2OutputStream;
@@ -59,15 +56,15 @@ public class Bzip2Compress
     /**
      * Copy bytes from an <code>InputStream</code> to an <code>OutputStream</code>.
      */
-    private static void copy( final InputStream input,
-                              final OutputStream output )
-        throws IOException
-    {
-        final byte[] buffer = new byte[ 8024 ];
-        int n = 0;
-        while( -1 != ( n = input.read( buffer ) ) )
-        {
-            output.write( buffer, 0, n );
-        }
-    }
+//    private static void copy( final InputStream input,
+//                              final OutputStream output )
+//        throws IOException
+//    {
+//        final byte[] buffer = new byte[ 8024 ];
+//        int n = 0;
+//        while( -1 != ( n = input.read( buffer ) ) )
+//        {
+//            output.write( buffer, 0, n );
+//        }
+//    }
 }

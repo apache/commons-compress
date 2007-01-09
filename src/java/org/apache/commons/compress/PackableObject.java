@@ -90,7 +90,7 @@ public abstract class PackableObject {
 		
 		try {
 			/* Archive result */
-			PackableObject packable = null; 
+			//PackableObject packable = null; 
 			
 	//		 identify archive by header
 			fis = new FileInputStream(file);

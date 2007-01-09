@@ -115,17 +115,17 @@ public class BzipTestCase
     /**
      * Copy bytes from an <code>InputStream</code> to an <code>OutputStream</code>.
      */
-    private void copy( final InputStream input,
-                       final OutputStream output )
-        throws IOException
-    {
-        final byte[] buffer = new byte[ 8024 ];
-        int n = 0;
-        while( -1 != ( n = input.read( buffer ) ) )
-        {
-            output.write( buffer, 0, n );
-        }
-    }
+//    private void copy( final InputStream input,
+//                       final OutputStream output )
+//        throws IOException
+//    {
+//        final byte[] buffer = new byte[ 8024 ];
+//        int n = 0;
+//        while( -1 != ( n = input.read( buffer ) ) )
+//        {
+//            output.write( buffer, 0, n );
+//        }
+//    }
 
     private void compareContents( final String initial, final File generated )
         throws Exception

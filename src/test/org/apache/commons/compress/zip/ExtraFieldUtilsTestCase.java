@@ -46,7 +46,7 @@ public class ExtraFieldUtilsTestCase
         m_field.setMode( 0755 );
         m_field.setDirectory( true );
         m_dummy = new UnrecognizedExtraField();
-        m_dummy.setHeaderId( new ZipShort( 1 ) );
+        m_dummy.setHeaderID( new ZipShort( 1 ) );
         m_dummy.setLocalFileDataData( new byte[ 0 ] );
         m_dummy.setCentralDirectoryData( new byte[]{0} );
 
