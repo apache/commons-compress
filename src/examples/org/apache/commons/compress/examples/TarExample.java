@@ -25,25 +25,16 @@ import org.apache.commons.compress.Archive;
 import org.apache.commons.compress.ArchiveException;
 import org.apache.commons.compress.ArchiverFactory;
 
-/**
- * @author christian.grobmeier
- */
 public class TarExample {
-	/**
-	 * 
-	 */
-	public TarExample() {
-		super();
-	}
-	
+
 	/**
 	 * Example for Tar-packing
 	 */
 	public void pack() {
 		try {
 			Archive archiver = ArchiverFactory.getInstance("tar");
-			archiver.add( new File("C:\\Temp\\allclasses-frame.html"));
-			archiver.add( new File("C:\\Temp\\allclasses-frame.html.bz2"));
+			archiver.add(new File("C:\\Temp\\allclasses-frame.html"));
+			archiver.add(new File("C:\\Temp\\allclasses-frame.html.bz2"));
 			archiver.save(new File("C:\\Temp\\myTar.tar"));
 		} catch (ArchiveException e) {
 			e.printStackTrace();

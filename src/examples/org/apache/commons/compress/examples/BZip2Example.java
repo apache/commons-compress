@@ -31,10 +31,6 @@ import org.apache.commons.compress.CompressorFactory;
 
 public class BZip2Example {
 
-	public BZip2Example() {
-		super();
-	}
-	
 	/**
 	 * Compression
 	 */
@@ -98,7 +94,6 @@ public class BZip2Example {
 	public void decompress() {
 		Compressor decompressor;
 		try {
-//			decompressor = DecompressorFactory.BZIP2.getInstance();
 			decompressor = CompressorFactory.getInstance("bz2");
 			
 			decompressor.decompressTo( 
@@ -114,9 +109,3 @@ public class BZip2Example {
 		new BZip2Example().decompress();
 	}
 }
-
-
-
-
-
-
