@@ -25,6 +25,8 @@ import java.util.List;
 
 import org.apache.commons.compress.archivers.tar.TarArchive;
 import org.apache.commons.compress.archivers.zip.ZipArchive;
+
+
 /**
  * Provides implementations for all ArchiverFactory methods.
  */
@@ -43,10 +45,6 @@ public class ArchiverFactory {
 		}
 	}
 	
-	/**
-	 * Constructor.
-	 * @param name name of the implementation
-	 */
 	private ArchiverFactory() { 
 	}
 

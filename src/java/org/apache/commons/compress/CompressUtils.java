@@ -26,6 +26,7 @@ import java.io.OutputStream;
  * Utils for Compress.
  */
 public class CompressUtils {
+
 	/*
 	 * This class should not be constructed
 	 */
@@ -36,8 +37,7 @@ public class CompressUtils {
 	/**
      * Copy bytes from an <code>InputStream</code> to an <code>OutputStream</code>.
      */
-    public static void copy( final InputStream input,
-                              final OutputStream output )
+    public static void copy( final InputStream input, final OutputStream output )
         throws IOException {
         final byte[] buffer = new byte[ 8024 ];
         int n = 0;
