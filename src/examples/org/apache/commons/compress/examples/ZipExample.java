@@ -25,19 +25,18 @@ import org.apache.commons.compress.Archive;
 import org.apache.commons.compress.ArchiveException;
 import org.apache.commons.compress.ArchiverFactory;
 
-/**
- * Example for how to use the TarArchive 
- */
+
 public class ZipExample {
+
 	/**
 	 * Example for an pack operation 
 	 */
 	public void pack() {
 		try {
 			Archive archiver = ArchiverFactory.getInstance("zip");
-			archiver.add(	new File("C:\\Temp\\1.html"));
-			archiver.add(	new File("C:\\Temp\\1.html.bz2"));
-			archiver.save(	new File("C:\\Temp\\ZIPTEST.zip"));
+			archiver.add(new File("C:\\Temp\\1.html"));
+			archiver.add(new File("C:\\Temp\\1.html.bz2"));
+			archiver.save(new File("C:\\Temp\\ZIPTEST.zip"));
 		} catch (ArchiveException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
@@ -50,9 +49,8 @@ public class ZipExample {
 	 */
 	public void unpack() {
 		try {
-			Archive archiver = ArchiverFactory.getInstance(
-					new File("C:\\Temp\\ZIPTEST.zip"));
-			archiver.unpack( new File("C:\\Temp\\unpacked\\"));
+			Archive archiver = ArchiverFactory.getInstance(new File("C:\\Temp\\ZIPTEST.zip"));
+			archiver.unpack(new File("C:\\Temp\\unpacked\\"));
 		} catch (ArchiveException e) {
 			e.printStackTrace();
 		}
