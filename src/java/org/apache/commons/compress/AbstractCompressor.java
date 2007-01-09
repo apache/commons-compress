@@ -31,9 +31,7 @@ import java.io.InputStream;
 public abstract class AbstractCompressor 
 	extends PackableObject 
 	implements Compressor {
-	/**
-	 * Constructor
-	 */
+
 	public AbstractCompressor() {
 		super();
 	}

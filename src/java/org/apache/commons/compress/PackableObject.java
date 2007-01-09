@@ -24,10 +24,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+
 /**
  * Abstract super object for Compressor and Archiver classes.
  */
 public abstract class PackableObject {
+
 	/* Type for archive choosing: String */
 	protected static final int CHOOSE_EXTENSION = 1;
 	/* Type for archive choosing: Long */
