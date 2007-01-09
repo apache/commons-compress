@@ -93,8 +93,8 @@ public class BZip2Compressor extends AbstractCompressor {
 	private BZip2InputStream getPackedInput( final InputStream input )
 		throws IOException {
 		// skips the 'BZ' header bytes required by the BZip2InputStream class
-		final int b1 = input.read();
-		final int b2 = input.read();
+		input.read();
+		input.read();
 		return new BZip2InputStream( input );
 	}
 	

@@ -125,10 +125,10 @@ public class TarArchive extends AbstractArchive {
 	 */
 	public void doSave(FileOutputStream output) throws ArchiveException {
 		// Stream initializing
-		BufferedInputStream origin = null;
+		//BufferedInputStream origin = null;
 		
 		//out.setMethod(ZipOutputStream.DEFLATED);
-		byte data[] = new byte[BUFFER];
+		//byte data[] = new byte[BUFFER];
 		
 		// get a list of files from current directory
 		// less than one file leads to an exception

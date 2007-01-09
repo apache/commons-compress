@@ -28,13 +28,9 @@ import java.io.InputStream;
 import org.apache.commons.compress.CompressException;
 import org.apache.commons.compress.Compressor;
 import org.apache.commons.compress.CompressorFactory;
-/**
- * BZIP2 .Example
- */
+
 public class BZip2Example {
-	/**
-	 * 
-	 */
+
 	public BZip2Example() {
 		super();
 	}

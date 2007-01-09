@@ -54,7 +54,7 @@ public class AsiExtraFieldTestCase
     {
         final AsiExtraField field = new AsiExtraField();
         field.setMode( 0123 );
-        field.setUserId( 5 );
+        field.setUserID( 5 );
         field.setGroupId( 6 );
         return field;
     }
@@ -113,7 +113,7 @@ public class AsiExtraFieldTestCase
         assertTrue( "plain file, no link", !field.isLink() );
         assertTrue( "plain file, no dir", !field.isDirectory() );
         assertEquals( "mode plain file", FILE_FLAG | 0123, field.getMode() );
-        assertEquals( "uid plain file", 5, field.getUserId() );
+        assertEquals( "uid plain file", 5, field.getUserID() );
         assertEquals( "gid plain file", 6, field.getGroupID() );
     }
 
@@ -132,7 +132,7 @@ public class AsiExtraFieldTestCase
         assertTrue( "link, is link", field.isLink() );
         assertTrue( "link, no dir", !field.isDirectory() );
         assertEquals( "mode link", LINK_FLAG | 0123, field.getMode() );
-        assertEquals( "uid link", 5, field.getUserId() );
+        assertEquals( "uid link", 5, field.getUserID() );
         assertEquals( "gid link", 6, field.getGroupID() );
         assertEquals( "test", field.getLinkedFile() );
     }
@@ -151,7 +151,7 @@ public class AsiExtraFieldTestCase
         assertTrue( "dir, no link", !field.isLink() );
         assertTrue( "dir, is dir", field.isDirectory() );
         assertEquals( "mode dir", DIR_FLAG | 0123, field.getMode() );
-        assertEquals( "uid dir", 5, field.getUserId() );
+        assertEquals( "uid dir", 5, field.getUserID() );
         assertEquals( "gid dir", 6, field.getGroupID() );
     }
 

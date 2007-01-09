@@ -52,7 +52,7 @@ public class ZipEntryTestCase
         assertSame( extraField, result[ 1 ] );
 
         UnrecognizedExtraField u2 = new UnrecognizedExtraField();
-        u2.setHeaderId( new ZipShort( 1 ) );
+        u2.setHeaderID( new ZipShort( 1 ) );
         u2.setLocalFileDataData( new byte[]{1} );
 
         entry.addExtraField( u2 );
@@ -64,7 +64,7 @@ public class ZipEntryTestCase
         assertEquals( "length second pass", data1.length + 1, data2.length );
 
         UnrecognizedExtraField u3 = new UnrecognizedExtraField();
-        u3.setHeaderId( new ZipShort( 2 ) );
+        u3.setHeaderID( new ZipShort( 2 ) );
         u3.setLocalFileDataData( new byte[]{1} );
         entry.addExtraField( u3 );
         result = entry.getExtraFields();
@@ -91,7 +91,7 @@ public class ZipEntryTestCase
     private UnrecognizedExtraField createExtraField()
     {
         UnrecognizedExtraField extraField = new UnrecognizedExtraField();
-        extraField.setHeaderId( new ZipShort( 1 ) );
+        extraField.setHeaderID( new ZipShort( 1 ) );
         extraField.setLocalFileDataData( new byte[ 0 ] );
         return extraField;
     }

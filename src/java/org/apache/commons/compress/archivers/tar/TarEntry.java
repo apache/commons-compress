@@ -126,7 +126,7 @@ public class TarEntry
      * LF_ constants represent the "link flag" of an entry, or more commonly,
      * the "entry type". This is the "old way" of indicating a normal file.
      */
-    private final static byte LF_OLDNORM = 0;
+    //private final static byte LF_OLDNORM = 0;
 
     /**
      * Normal file type.
@@ -136,22 +136,22 @@ public class TarEntry
     /**
      * Link file type.
      */
-    private final static byte LF_LINK = (byte)'1';
+    //private final static byte LF_LINK = (byte)'1';
 
     /**
      * Symbolic link file type.
      */
-    private final static byte LF_SYMLINK = (byte)'2';
+    //private final static byte LF_SYMLINK = (byte)'2';
 
     /**
      * Character device file type.
      */
-    private final static byte LF_CHR = (byte)'3';
+    //private final static byte LF_CHR = (byte)'3';
 
     /**
      * Block device file type.
      */
-    private final static byte LF_BLK = (byte)'4';
+    //private final static byte LF_BLK = (byte)'4';
 
     /**
      * Directory file type.
@@ -161,12 +161,12 @@ public class TarEntry
     /**
      * FIFO (pipe) file type.
      */
-    private final static byte LF_FIFO = (byte)'6';
+    //private final static byte LF_FIFO = (byte)'6';
 
     /**
      * Contiguous file type.
      */
-    private final static byte LF_CONTIG = (byte)'7';
+    //private final static byte LF_CONTIG = (byte)'7';
 
     /**
      * The magic tag representing a POSIX tar archive.
@@ -176,7 +176,7 @@ public class TarEntry
     /**
      * The magic tag representing a GNU tar archive.
      */
-    private final static String GNU_TMAGIC = "ustar  ";
+    //private final static String GNU_TMAGIC = "ustar  ";
 
     /**
      * The name of the GNU tar entry which contains a long name.
@@ -187,11 +187,6 @@ public class TarEntry
      * Identifies the *next* file on the tape as having a long name.
      */
     static byte LF_GNUTYPE_LONGNAME = (byte)'L';
-    
-    
-    
-    
-    
     
     
     
