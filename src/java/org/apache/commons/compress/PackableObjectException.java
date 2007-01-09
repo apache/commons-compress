@@ -17,6 +17,7 @@
  * under the License.
  */
 package org.apache.commons.compress;
+
 /**
  * Exception for the archiver. 
  */
