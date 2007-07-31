@@ -10,7 +10,7 @@
   <artifactId>commons-compress</artifactId>
   <version>1.0-SNAPSHOT</version>
   <name>Commons Compress</name>
-  <url>http://jakarta.apache.org/commons/sandbox/compress/</url>
+  <url>http://commons.apache.org/sandbox/compress/</url>
   <description>Commons Compress is a component that contains Tar, Zip and BZip2 packages</description>
   
   <dependencies>
@@ -45,16 +45,16 @@
   </developers>
     
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/jakarta/commons/sandbox/compress/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/jakarta/commons/sandbox/compress/trunk</developerConnection>
-    <url>http://svn.apache.org/repos/asf/jakarta/commons/sandbox/compress/trunk</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/sandbox/compress/trunk</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/sandbox/compress/trunk</developerConnection>
+    <url>http://svn.apache.org/repos/asf/commons/sandbox/compress/trunk</url>
   </scm>
 
   <distributionManagement>
     <site>
       <id>website</id>
       <name>Apache Website</name>
-      <url>scp://people.apache.org/www/jakarta.apache.org/commons/sandbox/compress/</url>
+      <url>scp://people.apache.org/www/commons.apache.org/sandbox/compress/</url>
     </site>
   </distributionManagement>
 
