@@ -9,7 +9,7 @@
 
   <artifactId>commons-compress</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <name>Commons Compress</name>
+  <name>Compress</name>
   <url>http://commons.apache.org/sandbox/compress/</url>
   <description>Commons Compress is a component that contains Tar, Zip and BZip2 packages</description>
   
