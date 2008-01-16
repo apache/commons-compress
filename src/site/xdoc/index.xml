@@ -34,7 +34,7 @@ Ant -> Avalon-Excalibur -> Commons-IO -> Commons-Compress.
 <section name="Documentation">
 <ul>
   <li>The <a href="apidocs/index.html">Javadoc</a> of the latest SVN</li>
-  <li>The <a href="http://svn.apache.org/viewcvs/jakarta/commons/sandbox/compress/">SVN repository</a> can be browsed.</li>
+  <li>The <a href="http://svn.apache.org/viewvc/commons/sandbox/compress/">SVN repository</a> can be browsed.</li>
 </ul>
 <p>
 There are also 2 example for the bzip2 API:
