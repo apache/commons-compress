@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project name="Commons Compress">
+
+  <bannerRight>
+    <name>Commons Compress</name>
+    <src>/images/compress-logo-white.png</src>
+    <href>/index.html</href>
+  </bannerRight>
+
   <body>
 
     <menu name="Compress">
