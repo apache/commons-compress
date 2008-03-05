@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-sandbox-parent</artifactId>
-    <version>3</version>
+    <version>4</version>
   </parent>
 
   <artifactId>commons-compress</artifactId>
@@ -57,6 +57,11 @@
       <url>scp://people.apache.org/www/commons.apache.org/sandbox/compress/</url>
     </site>
   </distributionManagement>
+
+  <properties>
+    <commons.componentid>compress</commons.componentid>
+    <commons.jira.componentid>12311183</commons.jira.componentid>
+  </properties> 
 
   <build>
       <sourceDirectory>src/java</sourceDirectory>
