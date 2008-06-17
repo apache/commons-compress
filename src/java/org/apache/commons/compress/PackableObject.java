@@ -20,7 +20,6 @@ package org.apache.commons.compress;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -54,10 +53,8 @@ public abstract class PackableObject {
 	/**
 	 * String Chooser.
 	 * @param value
-	 * @param methodName
+	 * @param choose
 	 * @return
-	 * @throws ArchiveException
-	 * @throws FileNotFoundException 
 	 */
 	protected boolean isPackableWith(Object value, int choose) {
 		if(value == null) {
@@ -83,10 +80,9 @@ public abstract class PackableObject {
 	 * @param file the file to identify
 	 * @param packables a list of packables
 	 * @return a matching packable object, or null
-	 * @throws ArchiveException
+	 * @throws IOException
 	 */
-	public static PackableObject identifyByHeader(File file, List packables) 
-		throws PackableObjectException {
+	public static PackableObject identifyByHeader(File file, List packables) throws IOException {
 		/* FileInputStream for the archive */
 		FileInputStream fis = null;
 		
@@ -129,16 +125,9 @@ public abstract class PackableObject {
 			
 			// No implementation found
 			return null;
-		} catch (FileNotFoundException e) {
-			throw new PackableObjectException("File not found", e);
-		} catch (IOException e) {
-			throw new PackableObjectException("Internal factory exception", e);
+
 		} finally {
-			try {
-				fis.close();
-			} catch (IOException e1) {
-				throw new PackableObjectException("Error while closing InputStream to file", e1);
-			}
+	        fis.close();
 		}
 	}
 }

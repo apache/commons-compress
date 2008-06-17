@@ -18,10 +18,12 @@
  */
 package org.apache.commons.compress;
 
+import java.io.IOException;
+
 /**
  * Exception for the archiver. 
  */
-public class PackableObjectException extends Exception {
+public class PackableObjectException extends IOException {
 	/**
 	 * Comment for <code>serialVersionUID</code>
 	 */

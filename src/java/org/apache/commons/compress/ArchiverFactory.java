@@ -67,7 +67,7 @@ public class ArchiverFactory {
 	 * The archiver must implement the archiver interface and must
 	 * be an concrete implementation
 	 * 
-	 * @param className full qualified archiver implementation
+	 * @param clazz full qualified archiver implementation
 	 * @throws ArchiveException if the new archiver does not implement the archiver interface
 	 */
 	public static void registerArchiver(Class clazz) 
@@ -119,7 +119,7 @@ public class ArchiverFactory {
 	 * Returns an archiver, filled with an existing archive.
 	 * Uses the byte header to identify the archiver. If no corresponding
 	 * archiver could be found, a filename extension check will be done.
-	 * @param archivedFile an existing archive
+	 * @param file an existing archive
 	 * @return an archiver, filled with the archive
 	 */
 	public static Archive getInstance(File file) 
@@ -145,12 +145,8 @@ public class ArchiverFactory {
 			throw new ArchiveException("A security violation occured while reading the field ARCHIVER_NAME", e);
 		} catch (IllegalArgumentException e) {
 			throw new ArchiveException("Internal factory exception", e);
-		} catch (InstantiationException e) {
+		} catch (Exception e) {
 			throw new ArchiveException("ArchiverFactory could not create instance", e);
-		} catch (IllegalAccessException e) {
-			throw new ArchiveException("ArchiverFactory could not create instance", e);
-		} catch (PackableObjectException e) {
-			throw new ArchiveException("ArchiverFactory could not create instance", e);
-		} 
+		}
 	}
 }
