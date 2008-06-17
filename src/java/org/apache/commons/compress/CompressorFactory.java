@@ -63,7 +63,7 @@ public abstract class CompressorFactory {
 	 * The archiver must implement the archiver interface and must
 	 * be an concrete implementation
 	 * 
-	 * @param className full qualified archiver implementation
+	 * @param clazz full qualified archiver implementation
 	 * @throws ArchiveException if the new archiver does not implement the archiver interface
 	 */
 	public static void registerCompressor(Class clazz) 
@@ -84,7 +84,7 @@ public abstract class CompressorFactory {
 
 	/**
 	 * Constructor. Takes the name of the implementation.
-	 * @param _name - name of the implementation
+	 * @param name - name of the implementation
 	 */
 	private CompressorFactory(String name) { 
 		this.name = name; 
@@ -103,7 +103,7 @@ public abstract class CompressorFactory {
 	 * the first matching implementation will be instanciated.
 	 * 
 	 * @return the compressor, or null, if no matching compressor could be found
-	 * @throws CompressorException if the compressor could not be created
+	 * @throws CompressException if the compressor could not be created
 	 */
 	public static Compressor getInstance(String compressorName) 
 		throws CompressException {
@@ -130,7 +130,7 @@ public abstract class CompressorFactory {
 	 * Returns an archiver, filled with an existing archive.
 	 * Uses the byte header to identify the archiver. If no corresponding
 	 * archiver could be found, a filename extension check will be done.
-	 * @param archivedFile an existing archive
+	 * @param file an existing archive
 	 * @return an archiver, filled with the archive
 	 */
 	public static Compressor getInstance(File file) 
@@ -155,13 +155,9 @@ public abstract class CompressorFactory {
 			throw new CompressException("A security violation occured while reading the field ARCHIVER_NAME", e);
 		} catch (IllegalArgumentException e) {
 			throw new CompressException("Internal factory exception", e);
-		} catch (InstantiationException e) {
+		} catch (Exception e) {
 			throw new CompressException("CompressorFactory could not create instance", e);
-		} catch (IllegalAccessException e) {
-			throw new CompressException("CompressorFactory could not create instance", e);
-		} catch (PackableObjectException e) {
-			throw new CompressException("CompressorFactory could not create instance", e);
-		} 
+		}
 	}
 	/**
 	 * <code>BZIP2</code> Compressor Factory
