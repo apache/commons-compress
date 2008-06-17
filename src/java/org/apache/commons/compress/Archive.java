@@ -67,7 +67,7 @@ public interface Archive {
 	/**
 	 * Sets an Archive for manipulating. An archive is set if someone
 	 * saves an Archive or calls getInstance(...) with an archive.
-	 * @param archive file to manipulate
+	 * @param file the file to manipulate
 	 */
 	void setArchive(File file);
 	
@@ -81,7 +81,7 @@ public interface Archive {
 
 	/**
 	 * Unpacks to the specified directory 
-	 * @param dir to unpack
+	 * @param destinationDir to unpack
 	 * @throws UnpackException if an unpack error occurs
 	 */
 	public void unpack(File destinationDir) throws UnpackException;

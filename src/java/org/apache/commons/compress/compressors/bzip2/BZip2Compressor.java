@@ -100,7 +100,7 @@ public class BZip2Compressor extends AbstractCompressor {
 	 * BZip2OutputStream object ready for use, as required by the
 	 * BZip2OutputStream class.
 	 * 
-	 * @param output {@link Output} stream to add a header to
+	 * @param output {@link OutputStream} to add a header to
 	 * @return {@link BZip2OutputStream} ready to write to
 	 * @throws IOException if an IO error occurs
 	 */
