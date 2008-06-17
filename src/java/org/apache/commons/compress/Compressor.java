@@ -19,9 +19,9 @@
 package org.apache.commons.compress;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
+
 /**
  * The Compressor Interface defines all operations for 
  * the compress/decompress actions.
@@ -32,11 +32,10 @@ public interface Compressor {
 	 * InputStream to the compressed File
 	 * 
 	 * @param input File to compress
-	 * @return FileInputStream of the compressed file
+	 * @return InputStream of the compressed file
 	 * @throws CompressException if the Compressor reports an error
 	 */
-	public InputStream compress(File input) 
-		throws CompressException;
+	public InputStream compress(File input) throws CompressException;
 	
 	/**
 	 * Compresses this InputStream and returns an 
@@ -46,8 +45,7 @@ public interface Compressor {
 	 * @return Stream to the compressed file
 	 * @throws CompressException if the Compressor reports an error
 	 */
-	public InputStream compress(FileInputStream input) 
-		throws CompressException;
+	public InputStream compress(InputStream input) throws CompressException;
 
 	/**
 	 * Compresses the file input and creates a file in the same
@@ -56,8 +54,7 @@ public interface Compressor {
 	 * @param input the file to compress
 	 * @throws CompressException if the Compressor reports an error
 	 */
-	public void compressToHere(File input) 
-		throws CompressException;
+	public void compressToHere(File input) throws CompressException;
 
 	/**
 	 * Creates the file "output" with the compressed
@@ -67,8 +64,7 @@ public interface Compressor {
 	 * @param output the file to create
 	 * @throws CompressException if the Compressor reports an error
 	 */
-	public void compressTo(File input, File output) 
-		throws CompressException;
+	public void compressTo(File input, File output) throws CompressException;
 	
 	/**
 	 * Compresses the input stream and writes the compressed
@@ -79,24 +75,21 @@ public interface Compressor {
 	 * @param output OutputStream to which the byte shall be written
 	 * @throws CompressException if the Compressor reports an error
 	 */
-	public void compressTo(FileInputStream input, FileOutputStream output) 
-		throws CompressException;
+	public void compressTo(InputStream input, OutputStream output) throws CompressException;
 	
 	/**
 	 * Decompresses a file and returns an InputStream
 	 * @param input file to decompress
 	 * @return the decompressed file as an inputstream
 	 */
-	public InputStream decompress(File input) 
-		throws CompressException;
+	public InputStream decompress(File input) throws CompressException;
 	
 	/**
 	 * Decompresses a file and returns an InputStream
 	 * @param input inputstream to decompress
 	 * @return the decompressed InputStream
 	 */
-	public InputStream decompress(FileInputStream inputStream) 
-		throws CompressException;;
+	public InputStream decompress(InputStream inputStream) throws CompressException;;
 	
 	/**
 	 * Decompresses this file and writes the decompressed byte to the output file
@@ -104,8 +97,7 @@ public interface Compressor {
 	 * @param output File to write the decompressed bytes to
 	 * @throws DecompressException if the Compressor reports an error
 	 */
-	public void decompressTo(File input, File output) 
-		throws CompressException;
+	public void decompressTo(File input, File output) throws CompressException;
 	
 	/**
 	 * Decompresses this file and writes the decompressed file to the output-stream
@@ -113,6 +105,5 @@ public interface Compressor {
 	 * @param output Stream to write the decompressed bytes to
 	 * @throws DecompressException if the Compressor reports an error
 	 */
-	public void decompressTo(FileInputStream input, FileOutputStream output) 
-		throws CompressException;
+	public void decompressTo(InputStream input, OutputStream output) throws CompressException;
 }

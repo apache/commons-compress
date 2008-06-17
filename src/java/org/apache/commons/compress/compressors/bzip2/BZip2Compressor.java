@@ -18,9 +18,7 @@
  */
 package org.apache.commons.compress.compressors.bzip2;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -49,13 +47,13 @@ public class BZip2Compressor extends AbstractCompressor {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.apache.commons.compress.Compressor#compress(java.io.FileInputStream, java.io.FileOutputStream)
+	 * @see org.apache.commons.compress.Compressor#compress(java.io.InputStream, java.io.OutputStream)
 	 */
-	public void compressTo(FileInputStream inputStream, FileOutputStream outputStream) throws CompressException {
+	public void compressTo(InputStream in, OutputStream out) throws CompressException {
 		BZip2OutputStream outputBZStream = null;
 		try {
-			outputBZStream = getPackedOutput( outputStream );
-			CompressUtils.copy( inputStream, outputBZStream );
+			outputBZStream = getPackedOutput( out );
+			CompressUtils.copy( in, outputBZStream );
 		} catch (FileNotFoundException e) {
 			throw new CompressException("File could not be found", e);
 		} catch (IOException e) {
@@ -71,14 +69,13 @@ public class BZip2Compressor extends AbstractCompressor {
 	
 	/* 
 	 * This decompress method uses a special InputStream Class for BZ2
-	 * @see org.apache.commons.compress.Compressor#decompress(java.io.FileInputStream, java.io.FileOutputStream)
+	 * @see org.apache.commons.compress.Compressor#decompress(java.io.InputStream, java.io.OutputStream)
 	 */
-	public void decompressTo(FileInputStream input, FileOutputStream outputStream) 
-		throws CompressException {
+	public void decompressTo(InputStream in, OutputStream out) throws CompressException {
 		BZip2InputStream inputStream = null;
 		try {
-			inputStream = getPackedInput( input );
-			CompressUtils.copy( inputStream, outputStream );
+			inputStream = getPackedInput( in );
+			CompressUtils.copy( inputStream, out );
 		} catch (IOException e) {
 			throw new CompressException("An I/O Exception has occured", e);
 		}
