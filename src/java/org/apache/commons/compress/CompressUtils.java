@@ -45,12 +45,12 @@ public class CompressUtils {
             output.write( buffer, 0, n );
         }
     }
-    
+
     /**
      * Compares one byte array to another
-	 * @param source- the array to compare to 
-	 * @param headerBytes - the bytearray match
-	 */
+     * @param source the array to compare to
+     * @param match  the bytearray match
+     */
 	public static boolean compareByteArrays(byte[] source, byte[] match) {
 		int i = 0;
 		while(source.length < i || i < match.length ) {

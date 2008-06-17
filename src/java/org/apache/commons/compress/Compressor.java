@@ -89,13 +89,13 @@ public interface Compressor {
 	 * @param input inputstream to decompress
 	 * @return the decompressed InputStream
 	 */
-	public InputStream decompress(InputStream inputStream) throws CompressException;;
+	public InputStream decompress(InputStream input) throws CompressException;;
 	
 	/**
 	 * Decompresses this file and writes the decompressed byte to the output file
 	 * @param input File to decompress
 	 * @param output File to write the decompressed bytes to
-	 * @throws DecompressException if the Compressor reports an error
+	 * @throws CompressException if the Compressor reports an error
 	 */
 	public void decompressTo(File input, File output) throws CompressException;
 	
@@ -103,7 +103,7 @@ public interface Compressor {
 	 * Decompresses this file and writes the decompressed file to the output-stream
 	 * @param input Stream to decompress
 	 * @param output Stream to write the decompressed bytes to
-	 * @throws DecompressException if the Compressor reports an error
+	 * @throws CompressException if the Compressor reports an error
 	 */
 	public void decompressTo(InputStream input, OutputStream output) throws CompressException;
 }
