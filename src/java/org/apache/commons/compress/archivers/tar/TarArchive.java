@@ -26,6 +26,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Iterator;
 
 import org.apache.commons.compress.AbstractArchive;
@@ -123,7 +124,7 @@ public class TarArchive extends AbstractArchive {
 	/* (non-Javadoc)
 	 * @see org.apache.commons.compress.AbstractArchive#doSave(java.io.FileOutputStream)
 	 */
-	public void doSave(FileOutputStream output) throws ArchiveException {
+	public void doSave(OutputStream output) throws ArchiveException {
 		// Stream initializing
 		//BufferedInputStream origin = null;
 		

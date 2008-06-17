@@ -49,7 +49,7 @@ public abstract class AbstractCompressor
 	/* (non-Javadoc)
 	 * @see org.apache.commons.compress.Compressor#compressStream(java.io.FileInputStream)
 	 */
-	public InputStream compress(FileInputStream input) throws CompressException {
+	public InputStream compress(InputStream input) throws CompressException {
 		FileOutputStream outputStream = null;
 		FileOutputStream tempFileOutputStream = null;
 		try {
@@ -124,7 +124,7 @@ public abstract class AbstractCompressor
 	/* (non-Javadoc)
 	 * @see org.apache.commons.compress.Decompressor#decompress(java.io.FileInputStream)
 	 */
-	public InputStream decompress(FileInputStream input) 
+	public InputStream decompress(InputStream input) 
 		throws CompressException {
 		File temp;
 		InputStream result;

@@ -26,6 +26,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.zip.ZipInputStream;
 
@@ -110,7 +111,7 @@ public class ZipArchive extends AbstractArchive {
 	/* (non-Javadoc)
 	 * @see org.apache.commons.compress.Archive#pack()
 	 */
-	protected void doSave(FileOutputStream output) throws ArchiveException {
+	protected void doSave(OutputStream output) throws ArchiveException {
 		// Stream initializing
 		BufferedInputStream origin = null;
 		

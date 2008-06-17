@@ -24,9 +24,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
-
 
 /**
  * Abstract implementation of an archiver
@@ -61,7 +61,7 @@ public abstract class AbstractArchive extends PackableObject implements Archive 
 	/* (non-Javadoc)
 	 * @see org.apache.commons.compress.Archive#save(java.io.FileOutputStream)
 	 */
-	public void save(FileOutputStream output) throws ArchiveException {
+	public void save(OutputStream output) throws ArchiveException {
 		doSave(output);
 	}
 	
@@ -70,7 +70,7 @@ public abstract class AbstractArchive extends PackableObject implements Archive 
 	 * @param output - stream to archive to
 	 * @throws ArchiveException 
 	 */
-	protected abstract void doSave(FileOutputStream output) throws ArchiveException;
+	protected abstract void doSave(OutputStream output) throws ArchiveException;
 	
 	/* (non-Javadoc)
 	 * @see org.apache.commons.compress.Archive#getArchive()
