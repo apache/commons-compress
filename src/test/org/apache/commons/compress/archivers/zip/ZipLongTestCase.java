@@ -19,8 +19,6 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.archivers.zip.ZipLong;
-
 import junit.framework.TestCase;
 
 /**
@@ -28,15 +26,8 @@ import junit.framework.TestCase;
  *
  * @author <a href="mailto:stefan.bodewig@epost.de">Stefan Bodewig</a>
  */
-public class ZipLongTestCase
-    extends TestCase
+public class ZipLongTestCase extends TestCase
 {
-
-    public ZipLongTestCase( final String name )
-    {
-        super( name );
-    }
-
     /**
      * Test conversion to bytes.
      */

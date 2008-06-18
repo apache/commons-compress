@@ -21,9 +21,6 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.util.zip.ZipException;
 
-import org.apache.commons.compress.archivers.zip.AsiExtraField;
-import org.apache.commons.compress.archivers.zip.UnixStat;
-
 import junit.framework.TestCase;
 
 /**
@@ -31,15 +28,8 @@ import junit.framework.TestCase;
  *
  * @author <a href="mailto:stefan.bodewig@epost.de">Stefan Bodewig</a>
  */
-public class AsiExtraFieldTestCase
-    extends TestCase
-    implements UnixStat
+public class AsiExtraFieldTestCase extends TestCase implements UnixStat
 {
-    public AsiExtraFieldTestCase( final String name )
-    {
-        super( name );
-    }
-
     /**
      * Test file mode magic.
      */
