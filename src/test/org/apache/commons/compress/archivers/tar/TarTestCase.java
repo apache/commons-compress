@@ -29,9 +29,6 @@ import java.io.OutputStream;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.compress.archivers.tar.TarEntry;
-import org.apache.commons.compress.archivers.tar.TarInputStream;
-
 /**
  * Test case for all tar resources.
  *
@@ -39,8 +36,7 @@ import org.apache.commons.compress.archivers.tar.TarInputStream;
  * @author <a href="mailto:peter@apache.org">Peter Donald</a>
  * @version $Revision: 155439 $ $Date$
  */
-public final class TarTestCase
-    extends TestCase
+public final class TarTestCase extends TestCase
 {
     private static final char SP = File.separatorChar;
     private static final String BASE_DATA_NAME = "data.txt";
@@ -51,14 +47,11 @@ public final class TarTestCase
     private static final String BASEDIR = calcBaseDir();
 
     private static final File BASEDIR_FILE = new File( BASEDIR );
-    private static final File POSIX_TAR_FILE =
-        new File( BASEDIR_FILE, "posix.tar" );
+    private static final File POSIX_TAR_FILE = new File( BASEDIR_FILE, "posix.tar" );
     //    private static final File V7_TAR_FILE =
     //        new File( BASEDIR_FILE, "v7.tar" );
-    private static final File GNU_TAR_FILE =
-        new File( BASEDIR_FILE, "gnu.tar" );
-    private static final File DATA_FILE1 =
-        new File( BASEDIR_FILE, BASE_DATA_NAME );
+    private static final File GNU_TAR_FILE = new File( BASEDIR_FILE, "gnu.tar" );
+    private static final File DATA_FILE1 = new File( BASEDIR_FILE, BASE_DATA_NAME );
     private static final String USER_NAME = "avalon";
     private static final String GROUP_NAME = "excalibur";
     private static final long SIZE = DATA_FILE1.length();
@@ -67,40 +60,25 @@ public final class TarTestCase
     private static final int MODE = 0100000;
     private static final int MOD_TIME = 0;
 
-    public TarTestCase()
-    {
-        this( "Tar Test Case" );
-    }
-
-    public TarTestCase( String name )
-    {
-        super( name );
-    }
-
     private static String calcBaseDir()
     {
         final String name = TarTestCase.class.getName();
         final int size = name.length();
-        final String filename =
-            name.substring( 0, size - 11 ).replace( '.', SP );
-        return "src" + SP + "test" + SP +
-                SP + filename + SP;
+        final String filename = name.substring( 0, size - 11 ).replace( '.', SP );
+        return "src" + SP + "test" + SP + SP + filename + SP;
     }
 
-    public void testReadPosixTar()
-        throws Exception
+    public void testReadPosixTar() throws Exception
     {
         compareTar( BASE_DATA_NAME, POSIX_TAR_FILE );
     }
 
-    public void testReadGnuTar()
-        throws Exception
+    public void testReadGnuTar() throws Exception
     {
         compareTar( LONG_FILE_NAME, GNU_TAR_FILE );
     }
 
-    public void testWritePosixTar()
-        throws Exception
+    public void testWritePosixTar() throws Exception
     {
         //final File temp = new File( BASEDIR_FILE, "posix2.tar" );
         final File temp = File.createTempFile( "delete-me", "tar" );
@@ -122,8 +100,7 @@ public final class TarTestCase
         temp.delete();
     }
 
-    public void testWriteGnuTar()
-        throws Exception
+    public void testWriteGnuTar() throws Exception
     {
         //final File temp = new File( BASEDIR_FILE, "gnu2.tar" );
         final File temp = File.createTempFile( "delete-me", "tar" );
@@ -178,8 +155,7 @@ public final class TarTestCase
      * @param file1 the tar file comparing
      * @throws IOException if an error occurs
      */
-    private void compareTar( final String entryName,
-                             final File file1 )
+    private void compareTar( final String entryName, final File file1 )
         throws IOException
     {
         final FileInputStream fileInput = new FileInputStream( file1 );

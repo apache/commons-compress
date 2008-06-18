@@ -26,11 +26,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import junit.framework.TestCase;
 
 import org.apache.commons.compress.CompressUtils;
-import org.apache.commons.compress.compressors.bzip2.BZip2InputStream;
-import org.apache.commons.compress.compressors.bzip2.BZip2OutputStream;
+
+import junit.framework.TestCase;
 
 /**
  * A test the stress tested the BZip implementation to verify
@@ -39,15 +38,9 @@ import org.apache.commons.compress.compressors.bzip2.BZip2OutputStream;
  * @author <a href="mailto:peter@apache.org">Peter Donald</a>
  * @version $Revision: 280140 $ $Date$
  */
-public class BzipTestCase
-    extends TestCase
+public class BzipTestCase extends TestCase
 {
     private static final byte[] HEADER = new byte[]{(byte)'B', (byte)'Z'};
-
-    public BzipTestCase( final String name )
-    {
-        super( name );
-    }
 
     public void testBzipOutputStream()
         throws Exception

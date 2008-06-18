@@ -21,12 +21,6 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.util.NoSuchElementException;
 
-import org.apache.commons.compress.archivers.zip.AsiExtraField;
-import org.apache.commons.compress.archivers.zip.UnrecognizedExtraField;
-import org.apache.commons.compress.archivers.zip.ZipEntry;
-import org.apache.commons.compress.archivers.zip.ZipExtraField;
-import org.apache.commons.compress.archivers.zip.ZipShort;
-
 import junit.framework.TestCase;
 
 /**
@@ -34,14 +28,8 @@ import junit.framework.TestCase;
  *
  * @author <a href="mailto:stefan.bodewig@epost.de">Stefan Bodewig</a>
  */
-public class ZipEntryTestCase
-    extends TestCase
+public class ZipEntryTestCase extends TestCase
 {
-    public ZipEntryTestCase( final String name )
-    {
-        super( name );
-    }
-
     /**
      * test handling of extra fields
      */

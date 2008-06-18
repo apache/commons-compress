@@ -19,13 +19,6 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.archivers.zip.AsiExtraField;
-import org.apache.commons.compress.archivers.zip.ExtraFieldUtils;
-import org.apache.commons.compress.archivers.zip.UnixStat;
-import org.apache.commons.compress.archivers.zip.UnrecognizedExtraField;
-import org.apache.commons.compress.archivers.zip.ZipExtraField;
-import org.apache.commons.compress.archivers.zip.ZipShort;
-
 import junit.framework.TestCase;
 
 /**
@@ -33,19 +26,12 @@ import junit.framework.TestCase;
  *
  * @author <a href="mailto:stefan.bodewig@epost.de">Stefan Bodewig</a>
  */
-public class ExtraFieldUtilsTestCase
-    extends TestCase
-    implements UnixStat
+public class ExtraFieldUtilsTestCase extends TestCase implements UnixStat
 {
     private AsiExtraField m_field;
     private UnrecognizedExtraField m_dummy;
     private byte[] m_data;
     private byte[] m_local;
-
-    public ExtraFieldUtilsTestCase( final String name )
-    {
-        super( name );
-    }
 
     public void setUp()
     {
