@@ -62,8 +62,8 @@ public final class TarOutputStream extends FilterOutputStream
     private byte[] m_assemBuf;
     private int m_assemLen;
     private TarBuffer m_buffer;
-    private int m_currBytes;
-    private int m_currSize;
+    private long m_currBytes;
+    private long m_currSize;
 
     private byte[] m_oneBuf;
     private byte[] m_recordBuf;
@@ -262,7 +262,7 @@ public final class TarOutputStream extends FilterOutputStream
         }
         else
         {
-            m_currSize = (int)entry.getSize();
+            m_currSize = entry.getSize();
         }
     }
 
