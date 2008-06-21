@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.NullInputStream;
+import org.apache.commons.io.output.NullOutputStream;
 
 import junit.framework.TestCase;
 
@@ -124,6 +126,19 @@ public final class TarTestCase extends TestCase
         //due to entry created for second part of name
         compareTar( LONG_FILE_NAME, temp );
         temp.delete();
+    }
+
+    public void testArchive8GbFile() throws Exception
+    {
+        long size = (long) 8 * 1024 * 1024 * 1024;
+
+        TarOutputStream out = new TarOutputStream(new NullOutputStream());
+        TarEntry entry = new TarEntry("bigfile.data");
+        entry.setSize(size);
+
+        out.putNextEntry(entry);
+        out.copyEntryContents( new NullInputStream(size) );
+        out.closeEntry();
     }
 
     private void setupEntry( final TarEntry entry )
