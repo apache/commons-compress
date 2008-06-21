@@ -25,7 +25,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+
+import org.apache.commons.io.IOUtils;
 
 import junit.framework.TestCase;
 
@@ -92,9 +93,9 @@ public final class TarTestCase extends TestCase
         final FileInputStream fileInput = new FileInputStream( DATA_FILE1 );
         output.copyEntryContents( fileInput );
         output.closeEntry();
-        shutdownStream( fileInput );
-        shutdownStream( output );
-        shutdownStream( fileOutput );
+        IOUtils.closeQuietly( fileInput );
+        IOUtils.closeQuietly( output );
+        IOUtils.closeQuietly( fileOutput );
 
         assertTrue( "Tar files Equal", contentEquals( temp, POSIX_TAR_FILE ) );
         temp.delete();
@@ -115,9 +116,9 @@ public final class TarTestCase extends TestCase
         final FileInputStream fileInput = new FileInputStream( DATA_FILE1 );
         output.copyEntryContents( fileInput );
         output.closeEntry();
-        shutdownStream( fileInput );
-        shutdownStream( output );
-        shutdownStream( fileOutput );
+        IOUtils.closeQuietly( fileInput );
+        IOUtils.closeQuietly( output );
+        IOUtils.closeQuietly( fileOutput );
 
         //Have to compare it this way as the contents will differ
         //due to entry created for second part of name
@@ -169,11 +170,11 @@ public final class TarTestCase extends TestCase
         final File temp = new File( BASEDIR_FILE, entryName.length() + "data.txt" );//File.createTempFile( "delete-me", "tar" );
         final FileOutputStream output = new FileOutputStream( temp );
         input.copyEntryContents( output );
-        shutdownStream( output );
+        IOUtils.closeQuietly( output );
 
         assertNull( "Next Entry", input.getNextEntry() );
 
-        shutdownStream( input );
+        IOUtils.closeQuietly( input );
 
         assertTrue( "Data Equals", contentEquals( temp, DATA_FILE1 ) );
         temp.delete();
@@ -218,8 +219,8 @@ public final class TarTestCase extends TestCase
         }
         finally
         {
-            shutdownStream( input1 );
-            shutdownStream( input2 );
+            IOUtils.closeQuietly( input1 );
+            IOUtils.closeQuietly( input2 );
         }
     }
 
@@ -261,38 +262,6 @@ public final class TarTestCase extends TestCase
         else
         {
             return true;
-        }
-    }
-
-    private void shutdownStream( final InputStream input )
-    {
-        if( null == input )
-        {
-            return;
-        }
-
-        try
-        {
-            input.close();
-        }
-        catch( final IOException ioe )
-        {
-        }
-    }
-
-    private void shutdownStream( final OutputStream output )
-    {
-        if( null == output )
-        {
-            return;
-        }
-
-        try
-        {
-            output.close();
-        }
-        catch( final IOException ioe )
-        {
         }
     }
 }
