@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.compress.CompressUtils;
+import org.apache.commons.io.IOUtils;
 
 import junit.framework.TestCase;
 
@@ -50,9 +51,9 @@ public class BzipTestCase extends TestCase
         final OutputStream output = new FileOutputStream( outputFile );
         final BZip2OutputStream packedOutput = getPackedOutput( output );
         CompressUtils.copy( input, packedOutput );
-        shutdownStream( input );
-        shutdownStream( packedOutput );
-        shutdownStream( output );
+        IOUtils.closeQuietly( input );
+        IOUtils.closeQuietly( packedOutput );
+        IOUtils.closeQuietly( output );
         compareContents( "asf-logo-huge.tar.bz2", outputFile );
         forceDelete( outputFile );
     }
@@ -74,9 +75,9 @@ public class BzipTestCase extends TestCase
         final OutputStream output = new FileOutputStream( outputFile );
         final BZip2InputStream packedInput = getPackedInput( input );
         CompressUtils.copy( packedInput, output );
-        shutdownStream( input );
-        shutdownStream( packedInput );
-        shutdownStream( output );
+        IOUtils.closeQuietly( input );
+        IOUtils.closeQuietly( packedInput );
+        IOUtils.closeQuietly( output );
         compareContents( "asf-logo-huge.tar", outputFile );
         forceDelete( outputFile );
     }
@@ -88,12 +89,12 @@ public class BzipTestCase extends TestCase
         final File outputFile = getOutputFile( ".tar.bz2" );
         final OutputStream output = new FileOutputStream( outputFile );
         CompressUtils.copy( input, output );
-        shutdownStream( input );
-        shutdownStream( output );
+        IOUtils.closeQuietly( input );
+        IOUtils.closeQuietly( output );
         assertTrue( "Check output file exists." , outputFile.exists() );
         final InputStream input2 = new FileInputStream( outputFile );
         final InputStream packedInput = getPackedInput( input2 );
-        shutdownStream( packedInput );
+        IOUtils.closeQuietly( packedInput );
         try
         {
             input2.read();
@@ -126,8 +127,8 @@ public class BzipTestCase extends TestCase
         final InputStream input1 = getInputStream( initial );
         final InputStream input2 = new FileInputStream( generated );
         final boolean test = contentEquals( input1, input2 );
-        shutdownStream( input1 );
-        shutdownStream( input2 );
+        IOUtils.closeQuietly( input1 );
+        IOUtils.closeQuietly( input2 );
         assertTrue( "Contents of " + initial + " matches generated version " + generated, test );
     }
 
@@ -214,48 +215,6 @@ public class BzipTestCase extends TestCase
         else
         {
             return filepath.substring( 0, index );
-        }
-    }
-
-    /**
-     * Unconditionally close an <code>OutputStream</code>.
-     * Equivalent to {@link java.io.OutputStream#close()}, except any exceptions will be ignored.
-     * @param output A (possibly null) OutputStream
-     */
-    private static void shutdownStream( final OutputStream output )
-    {
-        if( null == output )
-        {
-            return;
-        }
-
-        try
-        {
-            output.close();
-        }
-        catch( final IOException ioe )
-        {
-        }
-    }
-
-    /**
-     * Unconditionally close an <code>InputStream</code>.
-     * Equivalent to {@link InputStream#close()}, except any exceptions will be ignored.
-     * @param input A (possibly null) InputStream
-     */
-    private static void shutdownStream( final InputStream input )
-    {
-        if( null == input )
-        {
-            return;
-        }
-
-        try
-        {
-            input.close();
-        }
-        catch( final IOException ioe )
-        {
         }
     }
 }
