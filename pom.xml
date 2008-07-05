@@ -127,6 +127,18 @@
           <headerFile>${basedir}/license-header.txt</headerFile>
         </configuration>
       </plugin>
+      <!-- Needs the memory settings of Maven to be increased: 
+           MAVEN_OPTS=" -Xmx1024m -Xms1024m -XX:MaxPermSize=512m"
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>1.2</version>
+        <configuration>
+          <threshold>Normal</threshold>
+          <effort>Default</effort>
+       </configuration>
+      </plugin>
+      -->
     </plugins>
   </reporting>
 
