@@ -397,7 +397,7 @@ public class BZip2OutputStream
         m_bsStream.close();
     }
 
-    public void finalize()
+    protected void finalize()
         throws Throwable
     {
         close();
