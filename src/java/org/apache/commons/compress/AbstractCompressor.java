@@ -61,8 +61,12 @@ public abstract class AbstractCompressor
 			throw new CompressException("An IO Exception has occured", e);
 		} finally {
 			try {
-				tempFileOutputStream.close();
-				outputStream.close();
+                if(tempFileOutputStream != null) {
+    				tempFileOutputStream.close();
+                }
+                if(outputStream != null) {
+    				outputStream.close();
+                }
 			} catch (IOException e) {
 				throw new CompressException("An IO Exception occured while closing the streams", e);
 			}
