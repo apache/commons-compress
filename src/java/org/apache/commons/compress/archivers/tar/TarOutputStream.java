@@ -375,7 +375,7 @@ public final class TarOutputStream extends FilterOutputStream
 
                 position += numToWrite;
                 m_assemLen += numToWrite;
-                numToWrite -= numToWrite;
+                numToWrite = 0;
             }
         }
 
