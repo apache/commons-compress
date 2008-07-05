@@ -39,9 +39,6 @@ public abstract class AbstractArchive extends PackableObject implements Archive 
 	/* the source of an unpack-operation */
 	private File archive = null;
 
-	public Archive newInstance() {
-		return this.newInstance();
-	}
 	/**
 	 * Compresses the file with the given String as a filename
 	 * @see org.apache.commons.compress.Archive#save(java.lang.String)
