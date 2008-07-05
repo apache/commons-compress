@@ -124,7 +124,7 @@ public class ArchiverFactory {
 	 */
 	public static Archive getInstance(File file) 
 		throws ArchiveException {
-		if(file == null && !file.isFile()) {
+		if(file == null || !file.isFile()) {
 			throw new ArchiveException("ArchiverFactory could not create instance for this file");
 		}
 		
