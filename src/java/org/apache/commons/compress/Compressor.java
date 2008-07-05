@@ -89,7 +89,7 @@ public interface Compressor {
 	 * @param input inputstream to decompress
 	 * @return the decompressed InputStream
 	 */
-	public InputStream decompress(InputStream input) throws CompressException;;
+	public InputStream decompress(InputStream input) throws CompressException;
 	
 	/**
 	 * Decompresses this file and writes the decompressed byte to the output file
