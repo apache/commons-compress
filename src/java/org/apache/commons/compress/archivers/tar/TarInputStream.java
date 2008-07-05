@@ -307,7 +307,7 @@ public final class TarInputStream extends FilterInputStream
         }
         else
         {
-            return (int)m_oneBuf[ 0 ];
+            return m_oneBuf[ 0 ];
         }
     }
 
