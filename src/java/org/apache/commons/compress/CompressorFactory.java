@@ -135,7 +135,7 @@ public abstract class CompressorFactory {
 	 */
 	public static Compressor getInstance(File file) 
 		throws CompressException {
-		if(file == null && !file.isFile()) {
+		if(file == null || !file.isFile()) {
 			throw new CompressException("CompressorFactory could not create instance for this file");
 		}
 		
