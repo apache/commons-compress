@@ -53,7 +53,7 @@ public abstract class AbstractCompressor
 		FileOutputStream outputStream = null;
 		FileOutputStream tempFileOutputStream = null;
 		try {
-			File temp = File.createTempFile("commons_","jkt");;
+			File temp = File.createTempFile("commons_","jkt");
 			tempFileOutputStream = new FileOutputStream(temp);
 			compressTo(input, tempFileOutputStream);
 			return new FileInputStream(temp);

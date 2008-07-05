@@ -577,7 +577,7 @@ public class BZip2OutputStream
                 break;
             }
         }
-        ;
+
 
         if( m_origPtr == -1 )
         {
@@ -793,13 +793,13 @@ public class BZip2OutputStream
                 i1 -= m_last;
                 i1--;
             }
-            ;
+
             if( i2 > m_last )
             {
                 i2 -= m_last;
                 i2--;
             }
-            ;
+
 
             k -= 4;
             m_workDone++;
@@ -849,7 +849,7 @@ public class BZip2OutputStream
                 tmp = yy[ j ];
                 yy[ j ] = tmp2;
             }
-            ;
+
             yy[ 0 ] = tmp;
 
             if( j == 0 )
@@ -876,14 +876,14 @@ public class BZip2OutputStream
                                 m_mtfFreq[ RUNB ]++;
                                 break;
                         }
-                        ;
+
                         if( zPend < 2 )
                         {
                             break;
                         }
                         zPend = ( zPend - 2 ) / 2;
                     }
-                    ;
+
                     zPend = 0;
                 }
                 m_szptr[ wr ] = (short)( j + 1 );
@@ -943,7 +943,7 @@ public class BZip2OutputStream
                     vec++;
                 }
             }
-            ;
+
             vec <<= 1;
         }
     }
@@ -1325,7 +1325,7 @@ public class BZip2OutputStream
                         unLo++;
                         continue;
                     }
-                    ;
+
                     if( n > 0 )
                     {
                         break;
@@ -1349,7 +1349,7 @@ public class BZip2OutputStream
                         unHi--;
                         continue;
                     }
-                    ;
+
                     if( n < 0 )
                     {
                         break;
@@ -1646,7 +1646,7 @@ public class BZip2OutputStream
                         bt = t;
                     }
                 }
-                ;
+
                 fave[ bt ]++;
                 m_selector[ nSelectors ] = (char)bt;
                 nSelectors++;
