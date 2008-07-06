@@ -51,7 +51,6 @@ public interface Archive {
 	 * There must be at least 1 file to be packed.
 	 * 
 	 * @throws ArchiveException if there is no destination file or files to be packed
-	 * @return true, if the operation has been ended without exceptions
 	 */
 	public void save(OutputStream output) throws ArchiveException;
 
