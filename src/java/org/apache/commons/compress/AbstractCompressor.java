@@ -50,7 +50,6 @@ public abstract class AbstractCompressor
 	 * @see org.apache.commons.compress.Compressor#compressStream(java.io.FileInputStream)
 	 */
 	public InputStream compress(InputStream input) throws CompressException {
-		FileOutputStream outputStream = null;
 		FileOutputStream tempFileOutputStream = null;
 		try {
 			File temp = File.createTempFile("commons_","jkt");
@@ -58,18 +57,15 @@ public abstract class AbstractCompressor
 			compressTo(input, tempFileOutputStream);
 			return new FileInputStream(temp);
 		} catch (IOException e) {
-			throw new CompressException("An IO Exception has occured", e);
+			throw new CompressException("An I/O Exception has occured", e);
 		} finally {
-			try {
+            try {
                 if(tempFileOutputStream != null) {
-    				tempFileOutputStream.close();
+                    tempFileOutputStream.close();
                 }
-                if(outputStream != null) {
-    				outputStream.close();
-                }
-			} catch (IOException e) {
-				throw new CompressException("An IO Exception occured while closing the streams", e);
-			}
+            } catch (IOException e) {
+                throw new CompressException("An I/O Exception occured while closing the streams", e);
+            }
 		}
 	}
 
@@ -156,12 +152,21 @@ public abstract class AbstractCompressor
 		} catch (FileNotFoundException e) {
 			throw new CompressException("File could not be found", e);
 		} finally {
-	      	try {
-				inputStream.close();
-				outputStream.close();
-			} catch (IOException e1) {
-				throw new CompressException("An I/O Exception has occured while closing a stream", e1);
-			}
+            try {
+                if(inputStream != null) {
+                    inputStream.close();
+                }
+            } catch (IOException e) {
+                throw new CompressException("An I/O Exception occured while closing the streams", e);
+            } finally {
+                try {
+                    if(outputStream != null) {
+                        outputStream.close();
+                    }
+                } catch (IOException e) {
+                    throw new CompressException("An I/O Exception occured while closing the streams", e);
+                }
+            }
 		}
 	}
 }
