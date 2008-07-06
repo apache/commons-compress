@@ -60,7 +60,9 @@ public class BZip2Compressor extends AbstractCompressor {
 			throw new CompressException("An IO Exception occured", e);
 		} finally {
 			try {
-				outputBZStream.close();
+				if (outputBZStream != null){
+				    outputBZStream.close();
+				}
 			} catch (IOException e1) {
 				throw new CompressException("An IO Exception occured while closing the streams", e1);
 			}
