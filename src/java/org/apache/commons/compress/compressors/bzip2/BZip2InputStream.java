@@ -451,10 +451,10 @@ public class BZip2InputStream
             while( m_bsLive < 1 )
             {
                 int zzi;
-                char thech = 0;
+                int thech = 0;
                 try
                 {
-                    thech = (char)m_input.read();
+                    thech = m_input.read();
                 }
                 catch( IOException e )
                 {
@@ -516,10 +516,10 @@ public class BZip2InputStream
                         while( m_bsLive < 1 )
                         {
                             int zzi;
-                            char thech = 0;
+                            int thech = 0;
                             try
                             {
-                                thech = (char)m_input.read();
+                                thech = m_input.read();
                             }
                             catch( IOException e )
                             {
@@ -673,10 +673,10 @@ public class BZip2InputStream
     {
         while( m_bsLive < n )
         {
-            char ch = 0;
+            int ch = 0;
             try
             {
-                ch = (char)m_input.read();
+                ch = m_input.read();
             }
             catch( final IOException ioe )
             {
