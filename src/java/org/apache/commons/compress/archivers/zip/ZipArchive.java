@@ -101,7 +101,9 @@ public class ZipArchive extends AbstractArchive {
 			throw new UnpackException("Exception while unpacking.", e);
 		} finally {
 			try {
-				zInputStream.close();
+				if (zInputStream != null){
+				    zInputStream.close();
+				}
 			} catch (IOException e1) {
 				throw new UnpackException("Exception while unpacking.", e1);
 			}
@@ -147,7 +149,9 @@ public class ZipArchive extends AbstractArchive {
 			throw new ArchiveException("Creation of this archive failed cause of IOExceptions.", e);
 		} finally {
 			try {
-				out.close();
+				if (out != null){
+				    out.close();
+				}
 			} catch (IOException e1) {
 				throw new ArchiveException("Creation of this archive failed cause of IOExceptions.", e1);
 			}

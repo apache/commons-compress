@@ -107,7 +107,8 @@ public class TarArchive extends AbstractArchive {
 					}
 					destination.flush();
 				} finally {
-					destination.close();
+					if (destination != null)
+					    destination.close();
 				}
 			}
 		} catch(IOException e) {
@@ -165,7 +166,9 @@ public class TarArchive extends AbstractArchive {
 			throw new ArchiveException("Creation of this archive failed cause of IOExceptions.", e);
 		} finally {
 			try {
-				out.close();
+				if (out != null) {
+				    out.close();
+				}
 			} catch (IOException e1) {
 				throw new ArchiveException("Creation of this archive failed cause of IOExceptions.", e1);
 			}
