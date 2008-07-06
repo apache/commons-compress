@@ -405,8 +405,7 @@ public class ZipEntry
         catch( final Exception e )
         {
             // impossible as extra data is in correct format
-            e.printStackTrace();
-            return null;
+            throw new Error("Should never happen");// TODO replace with AssertionError? (1.4+)
         }
 
         entry.setInternalAttributes( getInternalAttributes() );
