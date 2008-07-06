@@ -37,8 +37,8 @@ public class ArchiveEntry {
 	
 	/**
 	 * Constructs a new ArchiveEntry with name and stram
-	 * @param name the name of this entry
-	 * @param stream the inputstream of this entry
+	 * @param entryName the name of this entry
+	 * @param entryStream the inputstream of this entry
 	 */
 	public ArchiveEntry(String entryName, InputStream entryStream) {
 		super();

@@ -41,7 +41,7 @@ public abstract class AbstractArchive extends PackableObject implements Archive 
 
 	/**
 	 * Compresses the file with the given String as a filename
-	 * @see org.apache.commons.compress.Archive#save(java.lang.String)
+	 * @see org.apache.commons.compress.Archive#save(OutputStream)
 	 */
 	public void save(File output) throws ArchiveException {
 		if(output == null) {
