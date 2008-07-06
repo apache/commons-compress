@@ -245,11 +245,11 @@ public class TarEntry
      */
     private long m_modTime;
 
+    private int m_mode;
+
     /**
      * The entry's name.
      */
-    private int m_mode;
-
     private StringBuffer m_name;
 
     /**
