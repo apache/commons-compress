@@ -18,7 +18,6 @@
  */
 package org.apache.commons.compress.changes;
 
-import org.apache.commons.compress.archivers.ArchiveInputStream;
 
 interface Change {
 	// public void perform(ArchiveInputStream input);

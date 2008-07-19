@@ -27,12 +27,6 @@ import java.io.OutputStream;
  * The TarOutputStream writes a UNIX tar archive as an OutputStream. Methods are
  * provided to put entries, and then write their contents by writing to this
  * stream using write().
- *
- * @author Timothy Gerard Endres <a href="mailto:time@ice.com">time@ice.com</a>
- * @author <a href="mailto:peter@apache.org">Peter Donald</a>
- * @version $Revision$ $Date$
- * @see TarInputStream
- * @see TarArchiveEntry
  */
 public class TarOutputStream
     extends FilterOutputStream

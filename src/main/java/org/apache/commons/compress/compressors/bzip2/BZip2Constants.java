@@ -19,17 +19,9 @@
 
 package org.apache.commons.compress.compressors.bzip2;
 
-/*
- * This package is based on the work done by Keiron Liddle, Aftex Software
- * <keiron@aftexsw.com> to whom the Ant project is very grateful for his great
- * code.
- */
-
 /**
  * Base class for both the compress and decompress classes. Holds common arrays,
  * and static data.
- * 
- * @author <a href="mailto:keiron@aftexsw.com">Keiron Liddle</a>
  */
 interface BZip2Constants {
 

@@ -28,9 +28,6 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     private TarOutputStream out = null;
     
-    /**
-     * @param out
-     */
     public TarArchiveOutputStream(OutputStream out) {
         this.out = new TarOutputStream(out);
     }

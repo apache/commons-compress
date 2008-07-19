@@ -32,10 +32,6 @@ import java.util.Arrays;
  *
  * You should never have a need to access this class directly. TarBuffers are
  * created by Tar IO Streams.
- *
- * @author <a href="mailto:time@ice.com">Timothy Gerard Endres</a>
- * @author <a href="mailto:peter@apache.org">Peter Donald</a>
- * @version $Revision$ $Date$
  */
 class TarBuffer
 {

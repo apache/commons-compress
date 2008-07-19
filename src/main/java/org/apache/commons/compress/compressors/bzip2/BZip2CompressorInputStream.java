@@ -23,17 +23,9 @@ import java.io.InputStream;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
 
-/*
- * This package is based on the work done by Keiron Liddle, Aftex Software
- * <keiron@aftexsw.com> to whom the Ant project is very grateful for his great
- * code. 
- */
-
 /**
  * An input stream that decompresses from the BZip2 format (without the file
  * header chars) to be read as any other stream.
- * 
- * @author <a href="mailto:keiron@aftexsw.com">Keiron Liddle</a>
  */
 public class BZip2CompressorInputStream extends CompressorInputStream implements BZip2Constants {
 
@@ -42,6 +34,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         //throw new CCoruptionError();
     }
 
+    /*
     private static void badBGLengths() {
         cadvise();
     }
@@ -49,6 +42,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     private static void bitStreamEOF() {
         cadvise();
     }
+    */
 
     private static void compressedStreamEOF() {
         cadvise();

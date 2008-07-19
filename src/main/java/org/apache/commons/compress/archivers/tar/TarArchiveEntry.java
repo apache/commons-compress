@@ -64,13 +64,6 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * char devminor[8];
  * } header;
  * </pre>
- *
- * @author <a href="mailto:time@ice.com">Timothy Gerard Endres</a>
- * @author <a href="mailto:stefano@apache.org">Stefano Mazzocchi</a>
- * @author <a href="mailto:peter@apache.org">Peter Donald</a>
- * @version $Revision$ $Date$
- * @see TarInputStream
- * @see TarArchiveOutputStream
  */
 public class TarArchiveEntry implements ArchiveEntry {
     /**

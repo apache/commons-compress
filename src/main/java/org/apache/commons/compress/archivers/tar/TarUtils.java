@@ -20,10 +20,6 @@ package org.apache.commons.compress.archivers.tar;
 
 /**
  * This class provides static utility methods to work with byte streams.
- *
- * @author <a href="mailto:time@ice.com">Timothy Gerard Endres</a>
- * @author <a href="mailto:stefano@apache.org">Stefano Mazzocchi</a>
- * @version $Revision$ $Date$
  */
 class TarUtils
 {

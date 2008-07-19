@@ -23,9 +23,6 @@ package org.apache.commons.compress.archivers.zip;
  *
  * Assumes local file data and central directory entries are identical - unless
  * told the opposite.</p>
- *
- * @author <a href="stefan.bodewig@epost.de">Stefan Bodewig</a>
- * @version $Revision$
  */
 public class UnrecognizedExtraField
     implements ZipExtraField

@@ -20,9 +20,6 @@ package org.apache.commons.compress.archivers.zip;
 
 /**
  * Constants from stat.h on Unix systems.
- *
- * @author <a href="stefan.bodewig@epost.de">Stefan Bodewig</a>
- * @version $Revision$
  */
 public interface UnixStat
 {

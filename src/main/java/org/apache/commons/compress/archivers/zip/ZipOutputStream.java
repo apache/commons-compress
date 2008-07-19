@@ -41,9 +41,6 @@ import java.util.zip.ZipException;
  * them yourself. Unfortunately this is not possible for the STORED method, here
  * setting the CRC and uncompressed size information is required before {@link
  * #putNextEntry putNextEntry} will be called.</p>
- *
- * @author <a href="stefan.bodewig@epost.de">Stefan Bodewig</a>
- * @version $Revision$
  */
 public class ZipOutputStream
     extends DeflaterOutputStream

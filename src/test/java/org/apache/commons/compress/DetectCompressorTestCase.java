@@ -16,14 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.commons.compress.archivers;
+package org.apache.commons.compress;
 
-/**
- * Represents an entry of an archive.
- */
-public interface ArchiveEntry {
+import junit.framework.TestCase;
 
-	public String getName();
-	
-	public long getSize();
+public final class DetectCompressorTestCase extends TestCase {
+	public void testDetection() throws Exception {
+	}
 }

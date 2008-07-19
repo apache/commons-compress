@@ -42,9 +42,6 @@ import java.util.zip.ZipException;
  *
  * Short is two bytes and Long is four bytes in big endian byte and word order,
  * device numbers are currently not supported.</p>
- *
- * @author <a href="stefan.bodewig@epost.de">Stefan Bodewig</a>
- * @version $Revision$
  */
 public class AsiExtraField
     implements ZipExtraField, UnixStat, Cloneable

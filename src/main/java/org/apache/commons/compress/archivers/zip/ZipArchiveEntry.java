@@ -28,9 +28,6 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 /**
  * Extension that adds better handling of extra fields and provides access to
  * the internal and external file attributes.
- *
- * @author <a href="stefan.bodewig@epost.de">Stefan Bodewig</a>
- * @version $Revision$
  */
 public class ZipArchiveEntry
     extends java.util.zip.ZipEntry

@@ -21,9 +21,6 @@ package org.apache.commons.compress.archivers.zip;
 /**
  * Utility class that represents a two byte integer with conversion rules for
  * the big endian byte order of ZIP files.
- *
- * @author <a href="mailto:stefan.bodewig@epost.de">Stefan Bodewig</a>
- * @version $Revision$
  */
 public final class ZipShort implements Cloneable
 {

@@ -20,10 +20,6 @@ package org.apache.commons.compress.archivers.tar;
 
 /**
  * This interface contains all the definitions used in the package.
- *
- * @author <a href="mailto:time@ice.com">Timothy Gerard Endres</a>
- * @author <a href="mailto:stefano@apache.org">Stefano Mazzocchi</a>
- * @version $Revision$ $Date$
  */
 interface TarConstants
 {

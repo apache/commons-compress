@@ -28,8 +28,7 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
     private ZipOutputStream zipOut = null;
-
-    
+ 
     public ZipArchiveOutputStream(OutputStream out) {
         this.zipOut = new ZipOutputStream(out);
     }

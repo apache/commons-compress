@@ -18,17 +18,9 @@
  */
 package org.apache.commons.compress.compressors.bzip2;
 
-/*
- * This package is based on the work done by Keiron Liddle, Aftex Software
- * <keiron@aftexsw.com> to whom the Ant project is very grateful for his great
- * code.
- */
-
 /**
  * A simple class the hold and calculate the CRC for sanity checking of the
  * data.
- * 
- * @author <a href="mailto:keiron@aftexsw.com">Keiron Liddle</a>
  */
 class CRC {
 	private static int[] CRC32_TABLE = new int[] { 0x00000000, 0x04c11db7,
