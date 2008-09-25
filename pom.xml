@@ -82,9 +82,6 @@
   </properties> 
 
   <build>
-      <sourceDirectory>src/main/java</sourceDirectory>
-      <testSourceDirectory>src/test/test</testSourceDirectory> 
-
     <!-- turn off cobertura until we figure out why it's hanging -->
     <plugins>
       <plugin>
