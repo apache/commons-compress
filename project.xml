@@ -62,10 +62,6 @@
       <id>junit</id>
       <version>3.8.1</version>
     </dependency>
-    <dependency>
-      <id>commons-io</id>
-      <version>1.4</version>
-    </dependency>
   </dependencies>
 
   <build>

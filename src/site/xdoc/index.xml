@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <!--
+
    Licensed to the Apache Software Foundation (ASF) under one or more
    contributor license agreements.  See the NOTICE file distributed with
    this work for additional information regarding copyright ownership.
@@ -14,58 +15,55 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+
 -->
-
 <document>
-
- <properties>
-  <title>Overview</title>
-  <author email="dev@commons.apache.org">Commons Documentation Team</author>
- </properties>
-
- <body>
-
-<section name="Commons Compress">
-
-<p>
-Commons Compress defines an API for working with tar, zip and bzip2 files.
-</p>
-<p>
-The code in this component came from Avalon's Excalibur, but originally from Ant,
-as far as life in Apache goes. The tar package is originally Tim Endres' public
-domain package. The bzip2 package is based on the work done by Keiron Liddle.
-It has migrated via:<br />
-Ant -> Avalon-Excalibur -> Commons-IO -> Commons-Compress.
-</p>
-<subsection name="Status">
-<ul>
-  <li>This code is in the commons <i>sandbox</i></li>
-  <li>The code is unreleased</li>
-  <li>Methods and classes can and will appear and disappear without warning</li>
-  <li>If you like the code and want to push it towards a release, join the mailing list!</li>
-</ul>
-</subsection>
-</section>
-
-<section name="Documentation">
-<ul>
-  <li>The <a href="apidocs/index.html">Javadoc</a> of the latest SVN</li>
-  <li>The <a href="http://svn.apache.org/viewvc/commons/sandbox/compress/">SVN repository</a> can be browsed.</li>
-</ul>
-<p>
-There are also 2 example for the bzip2 API:
-</p>
-<ul>
-  <li><a href="xref-test/org/apache/commons/compress/bzip2/example/Bzip2Compress.html">Bzip2Compress</a></li>
-  <li><a href="xref-test/org/apache/commons/compress/bzip2/example/Bzip2Uncompress.html">Bzip2UnCompress</a></li>
-</ul>
-</section>
-
-<section name="Releases">
-<p>
-None. This is a <i>sandbox</i> component.
-</p>
-</section>
-
-</body>
+    <properties>
+        <title>Overview</title>
+        <author email="dev@commons.apache.org">Commons Documentation Team</author>
+    </properties>
+    <body>
+        <section name="Commons Compress">
+            <p>
+                Commons Compress defines an API for working with tar, zip and bzip2 files.
+            </p>
+            <p>
+                The code in this component came from Avalon's Excalibur, but originally from Ant,
+                as far as life in Apache goes. The tar package is originally Tim Endres' public
+                domain package. The bzip2 package is based on the work done by Keiron Liddle.
+                It has migrated via:<br/>
+                Ant -&gt; Avalon-Excalibur -&gt; Commons-IO -&gt; Commons-Compress.
+            </p>
+            <subsection name="Status">
+                <ul>
+                    <li>This code is in the commons <i>sandbox</i></li>
+                    <li>The code is unreleased</li>
+                    <li>Methods and classes can and will appear and disappear without warning</li>
+                    <li>If you like the code and want to push it towards a release, join the mailing list!</li>
+                </ul>
+            </subsection>
+        </section>
+        <section name="Documentation">
+            <ul>
+                <li>The <a href="apidocs/index.html">Javadoc</a> of the latest SVN</li>
+                <li>The <a href="http://svn.apache.org/viewvc/commons/sandbox/compress/">SVN repository</a> can be browsed.</li>
+            </ul>
+            <p>
+                There are also 2 example for the bzip2 API:
+            </p>
+            <ul>
+                <li>
+                    <a href="xref-test/org/apache/commons/compress/bzip2/example/Bzip2Compress.html">Bzip2Compress</a>
+                </li>
+                <li>
+                    <a href="xref-test/org/apache/commons/compress/bzip2/example/Bzip2Uncompress.html">Bzip2UnCompress</a>
+                </li>
+            </ul>
+        </section>
+        <section name="Releases">
+            <p>
+                None. This is a <i>sandbox</i> component.
+            </p>
+        </section>
+    </body>
 </document>

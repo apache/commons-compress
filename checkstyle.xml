@@ -45,7 +45,7 @@
         <!-- Checks that are different from the sun coding conventions ones -->
         <!-- ************************************************************** -->
         <module name="Header">
-            <property name="headerFile" value="${checkstyle.header.file}"/>
+            <property name="headerFile" value="license-header.txt"/>
         </module>
         <property name="tabWidth" value="4"/>
         <module name="LeftCurly">

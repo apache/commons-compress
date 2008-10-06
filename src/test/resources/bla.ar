@@ -1,0 +1,27 @@
+!<arch>
+test1.xml       1201445869  501   501   100644  610       `
+<?xml version = '1.0'?>
+<!DOCTYPE connections>
+<connections>
+<<<<<<< HEAD:testdata/test.xml
+=======
+    as
+>>>>>>> 75cb63ff7005344589b57d17338b64783f8f430c:testdata/test.xml
+   <connection>
+      <JDBC_PORT>1521</JDBC_PORT>
+      <HOSTNAME>10.248.40.111</HOSTNAME>
+      <ConnectionType>JDBC</ConnectionType>
+      <DeployPassword>false</DeployPassword>
+      <user>appsrv</user>
+      <ConnectionName>Dev-DB</ConnectionName>
+      <SID>O10gIN1</SID>
+      <JdbcDriver>oracle.jdbc.driver.OracleDriver</JdbcDriver>
+      <ORACLE_JDBC_TYPE>thin</ORACLE_JDBC_TYPE>
+   </connection>
+</connections>
+test2.xml       1201445869  501   501   100644  82        `
+<?xml version = '1.0'?>
+<!DOCTYPE connections>
+<meinxml>
+	<leer />
+</meinxml>
