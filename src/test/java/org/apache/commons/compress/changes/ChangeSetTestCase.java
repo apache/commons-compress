@@ -50,4 +50,6 @@ public final class ChangeSetTestCase extends TestCase {
 		}
 	}
 	
+	public void testChangeSet() {	    
+	}
 }
