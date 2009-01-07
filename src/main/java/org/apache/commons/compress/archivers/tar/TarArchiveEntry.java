@@ -69,7 +69,7 @@ public class TarArchiveEntry implements ArchiveEntry {
     /**
      * The length of the name field in a header buffer.
      */
-    public static final int NAMELEN = 100;
+    public static final int NAMELEN = 99;
 
     /**
      * The entry's modification time.

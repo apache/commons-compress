@@ -217,13 +217,16 @@ public class TarOutputStream
      * <B>MUST</B> be called to ensure that all buffered data is completely
      * written to the output stream.
      *
+     * The entry must be 0 terminated. Maximum filename is 99 chars, 
+     * according to V7 specification.
+     * 
      * @param entry The TarArchiveEntry to be written to the archive.
      * @exception IOException when an IO error causes operation to fail
      */
     public void putNextEntry( final TarArchiveEntry entry )
         throws IOException
     {
-        if( entry.getName().length() >= TarArchiveEntry.NAMELEN )
+        if( entry.getName().length() > TarArchiveEntry.NAMELEN )
         {
             if( m_longFileMode == LONGFILE_GNU )
             {
@@ -233,10 +236,10 @@ public class TarOutputStream
                     new TarArchiveEntry( TarConstants.GNU_LONGLINK,
                                   TarConstants.LF_GNUTYPE_LONGNAME );
 
-                longLinkEntry.setSize( entry.getName().length() );
+                longLinkEntry.setSize( entry.getName().length() + 1);
                 putNextEntry( longLinkEntry );
                 write( entry.getName().getBytes() );
-                //write( 0 );
+                write( 0 );
                 closeEntry();
             }
             else if( m_longFileMode != LONGFILE_TRUNCATE )

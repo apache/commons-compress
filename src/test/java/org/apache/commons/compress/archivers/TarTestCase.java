@@ -21,8 +21,11 @@ package org.apache.commons.compress.archivers;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import junit.framework.TestCase;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -30,15 +33,10 @@ import org.apache.commons.compress.utils.IOUtils;
 
 public final class TarTestCase extends AbstractTestCase {
     public void testTarArchiveCreation() throws Exception {
-
 		final File output = new File(dir, "bla.tar");
-
 		final File file1 = new File(getClass().getClassLoader().getResource("test1.xml").getFile());
-
     	final OutputStream out = new FileOutputStream(output);
-        
         final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("tar", out);
-        
         final TarArchiveEntry entry = new TarArchiveEntry("testdata/test1.xml");
         entry.setModTime(0);
         entry.setSize(file1.length());
@@ -47,13 +45,58 @@ public final class TarTestCase extends AbstractTestCase {
         entry.setUserName("avalon");
         entry.setGroupName("excalibur");
         entry.setMode(0100000);
-        
         os.putArchiveEntry(entry);
         IOUtils.copy(new FileInputStream(file1), os);
-
         os.closeArchiveEntry();
         os.close();
     }
+    
+    public void testTarArchiveLongNameCreation() throws Exception {
+    	String name = "testdata/12345678901234567890123456789012345678901234567890123456789012345678901234567890123456.xml";
+    	byte[] bytes = name.getBytes();
+    	assertEquals(bytes.length, 99);
+    	
+		final File output = new File(dir, "bla.tar");
+		final File file1 = new File(getClass().getClassLoader().getResource("test1.xml").getFile());
+    	final OutputStream out = new FileOutputStream(output);
+        final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("tar", out);
+        final TarArchiveEntry entry = new TarArchiveEntry(name);
+        entry.setModTime(0);
+        entry.setSize(file1.length());
+        entry.setUserID(0);
+        entry.setGroupID(0);
+        entry.setUserName("avalon");
+        entry.setGroupName("excalibur");
+        entry.setMode(0100000);
+        os.putArchiveEntry(entry);
+        IOUtils.copy(new FileInputStream(file1), os);
+        os.closeArchiveEntry();
+        os.close();
+        
+        
+        ArchiveOutputStream os2 = null;
+        try {
+        	String toLongName = "testdata/123456789012345678901234567890123456789012345678901234567890123456789012345678901234567.xml";
+        	final File output2 = new File(dir, "bla.tar");
+        	final OutputStream out2 = new FileOutputStream(output2);
+        	os2 = new ArchiveStreamFactory().createArchiveOutputStream("tar", out2);
+        	final TarArchiveEntry entry2 = new TarArchiveEntry(toLongName);
+        	entry2.setModTime(0);
+        	entry2.setSize(file1.length());
+        	entry2.setUserID(0);
+        	entry2.setGroupID(0);
+        	entry2.setUserName("avalon");
+        	entry2.setGroupName("excalibur");
+        	entry2.setMode(0100000);
+        	os.putArchiveEntry(entry);
+        	IOUtils.copy(new FileInputStream(file1), os2);
+        } catch(IOException e) {
+        	assertTrue(true);
+        } finally {
+        	os2.closeArchiveEntry();
+        }
+    }
+    
     public void testTarUnarchive() throws Exception {
 		final File input = new File(getClass().getClassLoader().getResource("bla.tar").getFile());
 		final InputStream is = new FileInputStream(input);
