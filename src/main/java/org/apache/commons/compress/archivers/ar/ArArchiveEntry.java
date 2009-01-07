@@ -69,4 +69,8 @@ public class ArArchiveEntry implements ArchiveEntry {
 	public long getLength() {
 		return length;
 	}
+
+	public boolean isDirectory() {
+		return false;
+	}
 }

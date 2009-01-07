@@ -80,5 +80,28 @@ public final class JarTestCase extends AbstractTestCase {
         
         in.close();
     }
+	
+	public void testJarUnarchiveAll() throws Exception {
+		final File input = new File(getClass().getClassLoader().getResource("bla.jar").getFile());
+        final InputStream is = new FileInputStream(input);
+        final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("jar", is);
+        
+        ArchiveEntry entry = in.getNextEntry();
+		while (entry != null) {
+			File archiveEntry = new File(dir, entry.getName());
+			archiveEntry.getParentFile().mkdirs();
+			if(entry.isDirectory()){
+				archiveEntry.mkdir();
+				entry = in.getNextEntry();
+				continue;
+			}
+			OutputStream out = new FileOutputStream(archiveEntry);
+			IOUtils.copy(in, out);
+			out.close();
+			entry = in.getNextEntry();
+		}
+		
+		in.close();
+	}
 
 }

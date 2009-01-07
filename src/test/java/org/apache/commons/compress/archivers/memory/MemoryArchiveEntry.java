@@ -37,4 +37,9 @@ public final class MemoryArchiveEntry implements ArchiveEntry {
 		return 0;
 	}
 
+	public boolean isDirectory() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }
