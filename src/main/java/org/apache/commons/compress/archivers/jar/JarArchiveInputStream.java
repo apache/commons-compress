@@ -27,7 +27,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 
 public class JarArchiveInputStream extends ZipArchiveInputStream {
 
-	public JarArchiveInputStream( final InputStream inputStream ) throws IOException {
+	public JarArchiveInputStream( final InputStream inputStream ) {
 		super(inputStream);
 	}
 	
