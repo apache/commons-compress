@@ -32,7 +32,12 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
 	}
 	
 	public ArchiveEntry getNextEntry() throws IOException {
-		return (ArchiveEntry)new JarArchiveEntry((ZipArchiveEntry)super.getNextEntry());
+		ZipArchiveEntry entry = (ZipArchiveEntry)super.getNextEntry();
+		if(entry == null){
+			return null;
+		}else{
+			return (ArchiveEntry)new JarArchiveEntry(entry);
+		}
 	}
 	
 	public static boolean matches( byte[] signature ) {
