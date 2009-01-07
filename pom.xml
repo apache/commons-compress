@@ -42,25 +42,23 @@
 
   <developers>
     <developer>
-      <!-- In that I moved them to their new location -->
-      <name>Henri Yandell</name>
-      <id>bayard</id>
-      <email>bayard@apache.org</email>
-      <organization></organization>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
+      <name>Torsten Curdt</name>
+      <id>tcurdt</id>
+      <email>tcurdt at apache.org</email>
     </developer>
     <developer>
-      <name>Dirk Verbeeck</name>
-      <id>dirkv</id>
-      <email></email>
-      <organization></organization>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
+      <name>Henri Yandell</name>
+      <id>bayard</id>
+      <email>bayard at apache.org</email>
     </developer>
   </developers>
+
+  <contributors>
+    <contributor>
+      <name>Christian Grobmeier</name>
+      <email>grobmeier at gmail.com</email>
+    </contributor>
+  </contributors>
     
   <scm>
     <connection>scm:svn:http://svn.apache.org/repos/asf/commons/sandbox/compress/trunk</connection>
