@@ -302,7 +302,7 @@ public class TarInputStream
         }
         else
         {
-            return (int)m_oneBuf[ 0 ];
+            return (int)m_oneBuf[ 0 ] & 0xFF;
         }
     }
 
