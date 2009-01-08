@@ -38,8 +38,8 @@ public final class TarTestCase extends AbstractTestCase {
         final TarArchiveEntry entry = new TarArchiveEntry("testdata/test1.xml");
         entry.setModTime(0);
         entry.setSize(file1.length());
-        entry.setUserID(0);
-        entry.setGroupID(0);
+        entry.setUserId(0);
+        entry.setGroupId(0);
         entry.setUserName("avalon");
         entry.setGroupName("excalibur");
         entry.setMode(0100000);
@@ -61,8 +61,8 @@ public final class TarTestCase extends AbstractTestCase {
         final TarArchiveEntry entry = new TarArchiveEntry(name);
         entry.setModTime(0);
         entry.setSize(file1.length());
-        entry.setUserID(0);
-        entry.setGroupID(0);
+        entry.setUserId(0);
+        entry.setGroupId(0);
         entry.setUserName("avalon");
         entry.setGroupName("excalibur");
         entry.setMode(0100000);
@@ -81,8 +81,8 @@ public final class TarTestCase extends AbstractTestCase {
         	final TarArchiveEntry entry2 = new TarArchiveEntry(toLongName);
         	entry2.setModTime(0);
         	entry2.setSize(file1.length());
-        	entry2.setUserID(0);
-        	entry2.setGroupID(0);
+        	entry2.setUserId(0);
+        	entry2.setGroupId(0);
         	entry2.setUserName("avalon");
         	entry2.setGroupName("excalibur");
         	entry2.setMode(0100000);
