@@ -160,10 +160,10 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
 
                 weight[nNodes] = ((weight[n1] & 0xffffff00)
                                   + (weight[n2] & 0xffffff00))
-                    | (1 + (((weight[n1] & 0x000000ff) >
-                             (weight[n2] & 0x000000ff)) ?
-                            (weight[n1] & 0x000000ff) :
-                            (weight[n2] & 0x000000ff)));
+                    | (1 + (((weight[n1] & 0x000000ff)
+                            > (weight[n2] & 0x000000ff))
+                            ? (weight[n1] & 0x000000ff)
+                            : (weight[n2] & 0x000000ff)));
 
                 parent[nNodes] = -1;
                 nHeap++;
@@ -428,6 +428,12 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
         combinedCRC = (combinedCRC << 1) | (combinedCRC >>> 31);
         combinedCRC ^= blockCRC;
 
+        // If the stream was empty we must skip the rest of this method.
+        // See bug#32200.
+        if (last == -1) {
+	    return;
+        }
+        
         /* sort the block and establish posn of original string */
         doReversibleTransformation();
 
@@ -497,7 +503,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
                     code[i] = vec;
                     vec++;
                 }
-            };
+            }
             vec <<= 1;
         }
     }
@@ -559,8 +565,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
 
         int v, t, i, j, gs, ge, totc, bt, bc, iter;
         int nSelectors = 0, alphaSize, minLen, maxLen, selCtr;
-        int nGroups;
-        //int nBytes;
+        int nGroups, nBytes;
 
         alphaSize = nInUse + 2;
         for (t = 0; t < N_GROUPS; t++) {
@@ -698,7 +703,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
                         bc = cost[t];
                         bt = t;
                     }
-                };
+                }
                 totc += bc;
                 fave[bt]++;
                 selector[nSelectors] = (char) bt;
@@ -791,7 +796,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
                 }
             }
 
-            //nBytes = bytesOut;
+            nBytes = bytesOut;
             for (i = 0; i < 16; i++) {
                 if (inUse16[i]) {
                     bsW(1, 1);
@@ -815,7 +820,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
         }
 
         /* Now the selectors. */
-        //nBytes = bytesOut;
+        nBytes = bytesOut;
         bsW (3, nGroups);
         bsW (15, nSelectors);
         for (i = 0; i < nSelectors; i++) {
@@ -826,7 +831,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
         }
 
         /* Now the coding tables. */
-        //nBytes = bytesOut;
+        nBytes = bytesOut;
 
         for (t = 0; t < nGroups; t++) {
             int curr = len[t][0];
@@ -845,7 +850,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
         }
 
         /* And finally, the block data proper */
-        //nBytes = bytesOut;
+        nBytes = bytesOut;
         selCtr = 0;
         gs = 0;
         while (true) {
@@ -988,13 +993,9 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
         int dd;
     }
 
-    private void qSort3(int loSt, int hiSt, int dSt) {
+    private void qSort3(int loSt, int hiSt, int dSt, StackElem[] stack) {
         int unLo, unHi, ltLo, gtHi, med, n, m;
         int sp, lo, hi, d;
-        StackElem[] stack = new StackElem[QSORT_STACK_SIZE];
-        for (int count = 0; count < QSORT_STACK_SIZE; count++) {
-            stack[count] = new StackElem();
-        }
 
         sp = 0;
 
@@ -1042,7 +1043,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
                         ltLo++;
                         unLo++;
                         continue;
-                    };
+                    }
                     if (n >  0) {
                         break;
                     }
@@ -1061,7 +1062,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
                         gtHi--;
                         unHi--;
                         continue;
-                    };
+                    }
                     if (n <  0) {
                         break;
                     }
@@ -1126,6 +1127,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
         */
 
         //   if (verbosity >= 4) fprintf ( stderr, "   sort initialise ...\n" );
+
         for (i = 0; i < NUM_OVERSHOOT_BYTES; i++) {
             block[last + i + 2] = block[(i % (last + 1)) + 1];
         }
@@ -1203,8 +1205,8 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
                         vv = runningOrder[i];
                         j = i;
                         while ((ftab[((runningOrder[j - h]) + 1) << 8]
-                                - ftab[(runningOrder[j - h]) << 8]) >
-                               (ftab[((vv) + 1) << 8] - ftab[(vv) << 8])) {
+                                - ftab[(runningOrder[j - h]) << 8])
+                                > (ftab[((vv) + 1) << 8] - ftab[(vv) << 8])) {
                             runningOrder[j] = runningOrder[j - h];
                             j = j - h;
                             if (j <= (h - 1)) {
@@ -1214,6 +1216,11 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
                         runningOrder[j] = vv;
                     }
                 } while (h != 1);
+            }
+
+            StackElem[] stack = new StackElem[QSORT_STACK_SIZE];
+            for (int count = 0; count < QSORT_STACK_SIZE; count++) {
+                stack[count] = new StackElem();
             }
 
             /*
@@ -1239,7 +1246,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
                         int lo = ftab[sb] & CLEARMASK;
                         int hi = (ftab[sb + 1] & CLEARMASK) - 1;
                         if (hi > lo) {
-                            qSort3(lo, hi, 2);
+                            qSort3(lo, hi, 2, stack);
                             numQSorted += (hi - lo + 1);
                             if (workDone > workLimit && firstAttempt) {
                                 return;
@@ -1355,7 +1362,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
                 origPtr = i;
                 break;
             }
-        };
+        }
 
         if (origPtr == -1) {
             panic();
@@ -1473,11 +1480,11 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
             if (i1 > last) {
                 i1 -= last;
                 i1--;
-            };
+            }
             if (i2 > last) {
                 i2 -= last;
                 i2--;
-            };
+            }
 
             k -= 4;
             workDone++;
@@ -1492,9 +1499,9 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
       because the number of elems to sort is
       usually small, typically <= 20.
     */
-    private int[] incs = { 1, 4, 13, 40, 121, 364, 1093, 3280,
+    private int[] incs = {1, 4, 13, 40, 121, 364, 1093, 3280,
                            9841, 29524, 88573, 265720,
-                           797161, 2391484 };
+                           797161, 2391484};
 
     private void allocateCompressStructures () {
         int n = baseBlockSize * blockSize100k;
@@ -1560,7 +1567,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
                 tmp2 = tmp;
                 tmp = yy[j];
                 yy[j] = tmp2;
-            };
+            }
             yy[0] = tmp;
 
             if (j == 0) {
@@ -1580,12 +1587,12 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
                             wr++;
                             mtfFreq[RUNB]++;
                             break;
-                        };
+                        }
                         if (zPend < 2) {
                             break;
                         }
                         zPend = (zPend - 2) / 2;
-                    };
+                    }
                     zPend = 0;
                 }
                 szptr[wr] = (short) (j + 1);
