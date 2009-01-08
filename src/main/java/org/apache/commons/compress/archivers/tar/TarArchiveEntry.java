@@ -25,28 +25,34 @@ import java.util.Locale;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 
 /**
- * This class represents an entry in a Tar archive. It consists of the entry's
- * header, as well as the entry's File. Entries can be instantiated in one of
- * three ways, depending on how they are to be used. <p>
+ * This class represents an entry in a Tar archive. It consists
+ * of the entry's header, as well as the entry's File. Entries
+ * can be instantiated in one of three ways, depending on how
+ * they are to be used.
+ * <p>
+ * TarEntries that are created from the header bytes read from
+ * an archive are instantiated with the TarEntry( byte[] )
+ * constructor. These entries will be used when extracting from
+ * or listing the contents of an archive. These entries have their
+ * header filled in using the header bytes. They also set the File
+ * to null, since they reference an archive entry not a file.
+ * <p>
+ * TarEntries that are created from Files that are to be written
+ * into an archive are instantiated with the TarEntry( File )
+ * constructor. These entries have their header filled in using
+ * the File's information. They also keep a reference to the File
+ * for convenience when writing entries.
+ * <p>
+ * Finally, TarEntries can be constructed from nothing but a name.
+ * This allows the programmer to construct the entry by hand, for
+ * instance when only an InputStream is available for writing to
+ * the archive, and the header information is constructed from
+ * other information. In this case the header fields are set to
+ * defaults and the File is set to null.
  *
- * TarEntries that are created from the header bytes read from an archive are
- * instantiated with the TarEntry( byte[] ) constructor. These entries will be
- * used when extracting from or listing the contents of an archive. These
- * entries have their header filled in using the header bytes. They also set the
- * File to null, since they reference an archive entry not a file. <p>
- *
- * TarEntries that are created from Files that are to be written into an archive
- * are instantiated with the TarEntry( File ) constructor. These entries have
- * their header filled in using the File's information. They also keep a
- * reference to the File for convenience when writing entries. <p>
- *
- * Finally, TarEntries can be constructed from nothing but a name. This allows
- * the programmer to construct the entry by hand, for instance when only an
- * InputStream is available for writing to the archive, and the header
- * information is constructed from other information. In this case the header
- * fields are set to defaults and the File is set to null. <p>
- *
- * The C structure for a Tar Entry's header is: <pre>
+ * <p>
+ * The C structure for a Tar Entry's header is:
+ * <pre>
  * struct header {
  * char name[NAMSIZ];
  * char mode[8];
@@ -64,424 +70,247 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * char devminor[8];
  * } header;
  * </pre>
+ *
  */
-public class TarArchiveEntry implements ArchiveEntry {
-    /**
-     * The length of the name field in a header buffer.
-     */
-    public static final int NAMELEN = 99;
 
-    /**
-     * The entry's modification time.
-     */
-    private int m_checkSum;
+public class TarArchiveEntry implements TarConstants, ArchiveEntry {
+    /** The entry's name. */
+    private StringBuffer name;
 
-    /**
-     * The entry's group name.
-     */
-    private int m_devMajor;
+    /** The entry's permission mode. */
+    private int mode;
 
-    /**
-     * The entry's major device number.
-     */
-    private int m_devMinor;
+    /** The entry's user id. */
+    private int userId;
 
-    /**
-     * The entry's minor device number.
-     */
-    private File m_file;
+    /** The entry's group id. */
+    private int groupId;
 
-    /**
-     * The entry's user id.
-     */
-    private int m_groupID;
+    /** The entry's size. */
+    private long size;
 
-    /**
-     * The entry's user name.
-     */
-    private StringBuffer m_groupName;
+    /** The entry's modification time. */
+    private long modTime;
 
-    /**
-     * The entry's checksum.
-     */
-    private byte m_linkFlag;
+    /** The entry's link flag. */
+    private byte linkFlag;
 
-    /**
-     * The entry's link flag.
-     */
-    private StringBuffer m_linkName;
+    /** The entry's link name. */
+    private StringBuffer linkName;
 
-    /**
-     * The entry's link name.
-     */
-    private StringBuffer m_magic;
+    /** The entry's magic tag. */
+    private StringBuffer magic;
 
-    /**
-     * The entry's size.
-     */
-    private long m_modTime;
+    /** The entry's user name. */
+    private StringBuffer userName;
 
-    /**
-     * The entry's name.
-     */
-    private int m_mode;
+    /** The entry's group name. */
+    private StringBuffer groupName;
 
-    private StringBuffer m_name;
+    /** The entry's major device number. */
+    private int devMajor;
 
-    /**
-     * The entry's group id.
-     */
-    private long m_size;
+    /** The entry's minor device number. */
+    private int devMinor;
 
-    /**
-     * The entry's permission mode.
-     */
-    private int m_userID;
+    /** The entry's file reference */
+    private File file;
 
-    /**
-     * The entry's magic tag.
-     */
-    private StringBuffer m_userName;
+    /** Maximum length of a user's name in the tar file */
+    public static final int MAX_NAMELEN = 31;
 
-    /**
-     * Construct an entry with only a name. This allows the programmer to
-     * construct the entry's header "by hand". File is set to null.
-     *
-     * @param name the name of the entry
-     */
-    public TarArchiveEntry( final String name )
-    {
-        this();
+    /** Default permissions bits for directories */
+    public static final int DEFAULT_DIR_MODE = 040755;
 
-        final boolean isDir = name.endsWith( "/" );
+    /** Default permissions bits for files */
+    public static final int DEFAULT_FILE_MODE = 0100644;
 
-        m_name = new StringBuffer( name );
-        m_mode = isDir ? 040755 : 0100644;
-        m_linkFlag = isDir ? TarConstants.LF_DIR : TarConstants.LF_NORMAL;
-        m_modTime = ( new Date() ).getTime() / 1000;
-        m_linkName = new StringBuffer( "" );
-        m_userName = new StringBuffer( "" );
-        m_groupName = new StringBuffer( "" );
-    }
-
-    /**
-     * Construct an entry with a name an a link flag.
-     *
-     * @param name Description of Parameter
-     * @param linkFlag Description of Parameter
-     */
-    public TarArchiveEntry( final String name, final byte linkFlag )
-    {
-        this( name );
-        m_linkFlag = linkFlag;
-    }
-
-    /**
-     * Construct an entry for a file. File is set to file, and the header is
-     * constructed from information from the file.
-     *
-     * @param file The file that the entry represents.
-     */
-    public TarArchiveEntry( final File file )
-    {
-        this();
-
-        m_file = file;
-
-        String name = file.getPath();
-
-        // Strip off drive letters!
-        final String osName =
-            System.getProperty( "os.name" ).toLowerCase( Locale.US );
-        if( -1 != osName.indexOf( "netware" ) )
-        {
-            if( name.length() > 2 )
-            {
-                final char ch1 = name.charAt( 0 );
-                final char ch2 = name.charAt( 1 );
-
-                if( ch2 == ':' &&
-                    ( ( ch1 >= 'a' && ch1 <= 'z' ) ||
-                    ( ch1 >= 'A' && ch1 <= 'Z' ) ) )
-                {
-                    name = name.substring( 2 );
-                }
-            }
-        }
-        else if( -1 != osName.indexOf( "netware" ) )
-        {
-            final int colon = name.indexOf( ':' );
-            if( colon != -1 )
-            {
-                name = name.substring( colon + 1 );
-            }
-        }
-
-        name = name.replace( File.separatorChar, '/' );
-
-        // No absolute pathnames
-        // Windows (and Posix?) paths can start with "\\NetworkDrive\",
-        // so we loop on starting /'s.
-        while( name.startsWith( "/" ) )
-        {
-            name = name.substring( 1 );
-        }
-
-        m_linkName = new StringBuffer( "" );
-        m_name = new StringBuffer( name );
-
-        if( file.isDirectory() )
-        {
-            m_mode = 040755;
-            m_linkFlag = TarConstants.LF_DIR;
-
-            if( m_name.charAt( m_name.length() - 1 ) != '/' )
-            {
-                m_name.append( "/" );
-            }
-        }
-        else
-        {
-            m_mode = 0100644;
-            m_linkFlag = TarConstants.LF_NORMAL;
-        }
-
-        m_size = file.length();
-        m_modTime = file.lastModified() / 1000;
-        m_checkSum = 0;
-        m_devMajor = 0;
-        m_devMinor = 0;
-    }
-
-    /**
-     * Construct an entry from an archive's header bytes. File is set to null.
-     *
-     * @param header The header bytes from a tar archive entry.
-     */
-    public TarArchiveEntry( final byte[] header )
-    {
-        this();
-        parseTarHeader( header );
-    }
+    /** Convert millis to seconds */
+    public static final int MILLIS_PER_SECOND = 1000;
 
     /**
      * Construct an empty entry and prepares the header values.
      */
-    private TarArchiveEntry()
-    {
-        m_magic = new StringBuffer( TarConstants.TMAGIC );
-        m_name = new StringBuffer();
-        m_linkName = new StringBuffer();
+    private TarArchiveEntry () {
+        this.magic = new StringBuffer(TMAGIC);
+        this.name = new StringBuffer();
+        this.linkName = new StringBuffer();
 
-        String user = System.getProperty( "user.name", "" );
-        if( user.length() > 31 )
-        {
-            user = user.substring( 0, 31 );
+        String user = System.getProperty("user.name", "");
+
+        if (user.length() > MAX_NAMELEN) {
+            user = user.substring(0, MAX_NAMELEN);
         }
 
-        m_userName = new StringBuffer( user );
-        m_groupName = new StringBuffer( "" );
+        this.userId = 0;
+        this.groupId = 0;
+        this.userName = new StringBuffer(user);
+        this.groupName = new StringBuffer("");
+        this.file = null;
     }
 
     /**
-     * Set this entry's group id.
+     * Construct an entry with only a name. This allows the programmer
+     * to construct the entry's header "by hand". File is set to null.
      *
-     * @param groupId This entry's new group id.
+     * @param name the entry name
      */
-    public void setGroupID( final int groupId )
-    {
-        m_groupID = groupId;
+    public TarArchiveEntry(String name) {
+        this();
+
+        boolean isDir = name.endsWith("/");
+
+        this.devMajor = 0;
+        this.devMinor = 0;
+        this.name = new StringBuffer(name);
+        this.mode = isDir ? DEFAULT_DIR_MODE : DEFAULT_FILE_MODE;
+        this.linkFlag = isDir ? LF_DIR : LF_NORMAL;
+        this.userId = 0;
+        this.groupId = 0;
+        this.size = 0;
+        this.modTime = (new Date()).getTime() / MILLIS_PER_SECOND;
+        this.linkName = new StringBuffer("");
+        this.userName = new StringBuffer("");
+        this.groupName = new StringBuffer("");
+        this.devMajor = 0;
+        this.devMinor = 0;
+
     }
 
     /**
-     * Set this entry's group id.
+     * Construct an entry with a name and a link flag.
      *
-     * @param groupId This entry's new group id.
-     * @deprecated Use setGroupID() instead
-     * @see #setGroupID(int)
+     * @param name the entry name
+     * @param linkFlag the entry link flag.
      */
-    public void setGroupId( final int groupId )
-    {
-        m_groupID = groupId;
+    public TarArchiveEntry(String name, byte linkFlag) {
+        this(name);
+        this.linkFlag = linkFlag;
     }
 
     /**
-     * Set this entry's group name.
+     * Construct an entry for a file. File is set to file, and the
+     * header is constructed from information from the file.
      *
-     * @param groupName This entry's new group name.
+     * @param file The file that the entry represents.
      */
-    public void setGroupName( final String groupName )
-    {
-        m_groupName = new StringBuffer( groupName );
-    }
+    public TarArchiveEntry(File file) {
+        this();
 
-    /**
-     * Set this entry's modification time. The parameter passed to this method
-     * is in "Java time".
-     *
-     * @param time This entry's new modification time.
-     */
-    public void setModTime( final long time )
-    {
-        m_modTime = time / 1000;
-    }
+        this.file = file;
 
-    /**
-     * Set this entry's modification time.
-     *
-     * @param time This entry's new modification time.
-     */
-    public void setModTime( final Date time )
-    {
-        m_modTime = time.getTime() / 1000;
-    }
+        String fileName = file.getPath();
+        String osname = System.getProperty("os.name").toLowerCase(Locale.US);
 
-    /**
-     * Set the mode for this entry
-     *
-     * @param mode The new Mode value
-     */
-    public void setMode( final int mode )
-    {
-        m_mode = mode;
-    }
+        if (osname != null) {
 
-    /**
-     * Set this entry's name.
-     *
-     * @param name This entry's new name.
-     */
-    public void setName( final String name )
-    {
-        m_name = new StringBuffer( name );
-    }
+            // Strip off drive letters!
+            // REVIEW Would a better check be "(File.separator == '\')"?
 
-    /**
-     * Set this entry's file size.
-     *
-     * @param size This entry's new file size.
-     */
-    public void setSize( final long size )
-    {
-        m_size = size;
-    }
+            if (osname.startsWith("windows")) {
+                if (fileName.length() > 2) {
+                    char ch1 = fileName.charAt(0);
+                    char ch2 = fileName.charAt(1);
 
-    /**
-     * Set this entry's user id.
-     *
-     * @param userId This entry's new user id.
-     */
-    public void setUserID( final int userId )
-    {
-        m_userID = userId;
-    }
-
-    /**
-     * Set this entry's user id.
-     *
-     * @param userId This entry's new user id.
-     * @deprecated Use setUserID() instead
-     * @see #setUserID(int)
-     */
-    public void setUserId( final int userId )
-    {
-        m_userID = userId;
-    }
-
-    /**
-     * Set this entry's user name.
-     *
-     * @param userName This entry's new user name.
-     */
-    public void setUserName( final String userName )
-    {
-        m_userName = new StringBuffer( userName );
-    }
-
-    /**
-     * If this entry represents a file, and the file is a directory, return an
-     * array of TarEntries for this entry's children.
-     *
-     * @return An array of TarEntry's for this entry's children.
-     */
-    public TarArchiveEntry[] getDirectoryEntries()
-    {
-        if( null == m_file || !m_file.isDirectory() )
-        {
-            return new TarArchiveEntry[ 0 ];
+                    if (ch2 == ':'
+                            && ((ch1 >= 'a' && ch1 <= 'z')
+                                || (ch1 >= 'A' && ch1 <= 'Z'))) {
+                        fileName = fileName.substring(2);
+                    }
+                }
+            } else if (osname.indexOf("netware") > -1) {
+                int colon = fileName.indexOf(':');
+                if (colon != -1) {
+                    fileName = fileName.substring(colon + 1);
+                }
+            }
         }
 
-        final String[] list = m_file.list();
-        final TarArchiveEntry[] result = new TarArchiveEntry[ list.length ];
+        fileName = fileName.replace(File.separatorChar, '/');
 
-        for( int i = 0; i < list.length; ++i )
-        {
-            result[ i ] = new TarArchiveEntry( new File( m_file, list[ i ] ) );
+        // No absolute pathnames
+        // Windows (and Posix?) paths can start with "\\NetworkDrive\",
+        // so we loop on starting /'s.
+        while (fileName.startsWith("/")) {
+            fileName = fileName.substring(1);
         }
 
-        return result;
+        this.linkName = new StringBuffer("");
+        this.name = new StringBuffer(fileName);
+
+        if (file.isDirectory()) {
+            this.mode = DEFAULT_DIR_MODE;
+            this.linkFlag = LF_DIR;
+
+            if (this.name.charAt(this.name.length() - 1) != '/') {
+                this.name.append("/");
+            }
+        } else {
+            this.mode = DEFAULT_FILE_MODE;
+            this.linkFlag = LF_NORMAL;
+        }
+
+        this.size = file.length();
+        this.modTime = file.lastModified() / MILLIS_PER_SECOND;
+        this.devMajor = 0;
+        this.devMinor = 0;
     }
 
     /**
-     * Get this entry's file.
+     * Construct an entry from an archive's header bytes. File is set
+     * to null.
      *
-     * @return This entry's file.
+     * @param headerBuf The header bytes from a tar archive entry.
      */
-    public File getFile()
-    {
-        return m_file;
+    public TarArchiveEntry(byte[] headerBuf) {
+        this();
+        parseTarHeader(headerBuf);
     }
 
     /**
-     * Get this entry's group id.
+     * Determine if the two entries are equal. Equality is determined
+     * by the header names being equal.
      *
-     * @return This entry's group id.
-     * @deprecated Use getGroupID() instead
-     * @see #getGroupID()
+     * @param it Entry to be checked for equality.
+     * @return True if the entries are equal.
      */
-    public int getGroupId()
-    {
-        return m_groupID;
+    public boolean equals(TarArchiveEntry it) {
+        return getName().equals(it.getName());
     }
 
     /**
-     * Get this entry's group id.
+     * Determine if the two entries are equal. Equality is determined
+     * by the header names being equal.
      *
-     * @return This entry's group id.
+     * @param it Entry to be checked for equality.
+     * @return True if the entries are equal.
      */
-    public int getGroupID()
-    {
-        return m_groupID;
+    public boolean equals(Object it) {
+        if (it == null || getClass() != it.getClass()) {
+            return false;
+        }
+        return equals((TarArchiveEntry) it);
     }
 
     /**
-     * Get this entry's group name.
+     * Hashcodes are based on entry names.
      *
-     * @return This entry's group name.
+     * @return the entry hashcode
      */
-    public String getGroupName()
-    {
-        return m_groupName.toString();
+    public int hashCode() {
+        return getName().hashCode();
     }
 
     /**
-     * Set this entry's modification time.
+     * Determine if the given entry is a descendant of this entry.
+     * Descendancy is determined by the name of the descendant
+     * starting with this entry's name.
      *
-     * @return The ModTime value
+     * @param desc Entry to be checked as a descendent of this.
+     * @return True if entry is a descendant of this.
      */
-    public Date getModTime()
-    {
-        return new Date( m_modTime * 1000 );
-    }
-
-    /**
-     * Get this entry's mode.
-     *
-     * @return This entry's mode.
-     */
-    public int getMode()
-    {
-        return m_mode;
+    public boolean isDescendent(TarArchiveEntry desc) {
+        return desc.getName().startsWith(getName());
     }
 
     /**
@@ -489,41 +318,35 @@ public class TarArchiveEntry implements ArchiveEntry {
      *
      * @return This entry's name.
      */
-    public String getName()
-    {
-        return m_name.toString();
+    public String getName() {
+        return name.toString();
     }
 
     /**
-     * Get this entry's file size.
+     * Set this entry's name.
      *
-     * @return This entry's file size.
+     * @param name This entry's new name.
      */
-    public long getSize()
-    {
-        return m_size;
+    public void setName(String name) {
+        this.name = new StringBuffer(name);
     }
 
     /**
-     * Get this entry's checksum.
+     * Set the mode for this entry
      *
-     * @return This entry's checksum.
+     * @param mode the mode for this entry
      */
-    public int getCheckSum()
-    {
-        return m_checkSum;
+    public void setMode(int mode) {
+        this.mode = mode;
     }
 
     /**
-     * Get this entry's user id.
+     * Get this entry's link name.
      *
-     * @return This entry's user id.
-     * @deprecated Use getUserID() instead
-     * @see #getUserID()
+     * @return This entry's link name.
      */
-    public int getUserId()
-    {
-        return m_userID;
+    public String getLinkName() {
+        return linkName.toString();
     }
 
     /**
@@ -531,9 +354,35 @@ public class TarArchiveEntry implements ArchiveEntry {
      *
      * @return This entry's user id.
      */
-    public int getUserID()
-    {
-        return m_userID;
+    public int getUserId() {
+        return userId;
+    }
+
+    /**
+     * Set this entry's user id.
+     *
+     * @param userId This entry's new user id.
+     */
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    /**
+     * Get this entry's group id.
+     *
+     * @return This entry's group id.
+     */
+    public int getGroupId() {
+        return groupId;
+    }
+
+    /**
+     * Set this entry's group id.
+     *
+     * @param groupId This entry's new group id.
+     */
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
     }
 
     /**
@@ -541,22 +390,132 @@ public class TarArchiveEntry implements ArchiveEntry {
      *
      * @return This entry's user name.
      */
-    public String getUserName()
-    {
-        return m_userName.toString();
+    public String getUserName() {
+        return userName.toString();
     }
 
     /**
-     * Determine if the given entry is a descendant of this entry. Descendancy
-     * is determined by the name of the descendant starting with this entry's
-     * name.
+     * Set this entry's user name.
      *
-     * @param desc Entry to be checked as a descendent of
-     * @return True if entry is a descendant of
+     * @param userName This entry's new user name.
      */
-    public boolean isDescendent( final TarArchiveEntry desc )
-    {
-        return desc.getName().startsWith( getName() );
+    public void setUserName(String userName) {
+        this.userName = new StringBuffer(userName);
+    }
+
+    /**
+     * Get this entry's group name.
+     *
+     * @return This entry's group name.
+     */
+    public String getGroupName() {
+        return groupName.toString();
+    }
+
+    /**
+     * Set this entry's group name.
+     *
+     * @param groupName This entry's new group name.
+     */
+    public void setGroupName(String groupName) {
+        this.groupName = new StringBuffer(groupName);
+    }
+
+    /**
+     * Convenience method to set this entry's group and user ids.
+     *
+     * @param userId This entry's new user id.
+     * @param groupId This entry's new group id.
+     */
+    public void setIds(int userId, int groupId) {
+        setUserId(userId);
+        setGroupId(groupId);
+    }
+
+    /**
+     * Convenience method to set this entry's group and user names.
+     *
+     * @param userName This entry's new user name.
+     * @param groupName This entry's new group name.
+     */
+    public void setNames(String userName, String groupName) {
+        setUserName(userName);
+        setGroupName(groupName);
+    }
+
+    /**
+     * Set this entry's modification time. The parameter passed
+     * to this method is in "Java time".
+     *
+     * @param time This entry's new modification time.
+     */
+    public void setModTime(long time) {
+        modTime = time / MILLIS_PER_SECOND;
+    }
+
+    /**
+     * Set this entry's modification time.
+     *
+     * @param time This entry's new modification time.
+     */
+    public void setModTime(Date time) {
+        modTime = time.getTime() / MILLIS_PER_SECOND;
+    }
+
+    /**
+     * Set this entry's modification time.
+     *
+     * @return time This entry's new modification time.
+     */
+    public Date getModTime() {
+        return new Date(modTime * MILLIS_PER_SECOND);
+    }
+
+    /**
+     * Get this entry's file.
+     *
+     * @return This entry's file.
+     */
+    public File getFile() {
+        return file;
+    }
+
+    /**
+     * Get this entry's mode.
+     *
+     * @return This entry's mode.
+     */
+    public int getMode() {
+        return mode;
+    }
+
+    /**
+     * Get this entry's file size.
+     *
+     * @return This entry's file size.
+     */
+    public long getSize() {
+        return size;
+    }
+
+    /**
+     * Set this entry's file size.
+     *
+     * @param size This entry's new file size.
+     */
+    public void setSize(long size) {
+        this.size = size;
+    }
+
+
+    /**
+     * Indicate if this entry is a GNU long name block
+     *
+     * @return true if this is a long name extension provided by GNU tar
+     */
+    public boolean isGNULongNameEntry() {
+        return linkFlag == LF_GNUTYPE_LONGNAME
+                           && name.toString().equals(GNU_LONGLINK);
     }
 
     /**
@@ -564,20 +523,16 @@ public class TarArchiveEntry implements ArchiveEntry {
      *
      * @return True if this entry is a directory.
      */
-    public boolean isDirectory()
-    {
-        if( m_file != null )
-        {
-            return m_file.isDirectory();
+    public boolean isDirectory() {
+        if (file != null) {
+            return file.isDirectory();
         }
 
-        if( m_linkFlag == TarConstants.LF_DIR )
-        {
+        if (linkFlag == LF_DIR) {
             return true;
         }
 
-        if( getName().endsWith( "/" ) )
-        {
+        if (getName().endsWith("/")) {
             return true;
         }
 
@@ -585,26 +540,62 @@ public class TarArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Indicate if this entry is a GNU long name block
+     * If this entry represents a file, and the file is a directory, return
+     * an array of TarEntries for this entry's children.
      *
-     * @return true if this is a long name extension provided by GNU tar
+     * @return An array of TarEntry's for this entry's children.
      */
-    public boolean isGNULongNameEntry()
-    {
-        return m_linkFlag == TarConstants.LF_GNUTYPE_LONGNAME &&
-            m_name.toString().equals( TarConstants.GNU_LONGLINK );
+    public TarArchiveEntry[] getDirectoryEntries() {
+        if (file == null || !file.isDirectory()) {
+            return new TarArchiveEntry[0];
+        }
+
+        String[]   list = file.list();
+        TarArchiveEntry[] result = new TarArchiveEntry[list.length];
+
+        for (int i = 0; i < list.length; ++i) {
+            result[i] = new TarArchiveEntry(new File(file, list[i]));
+        }
+
+        return result;
     }
 
     /**
-     * Determine if the two entries are equal. Equality is determined by the
-     * header names being equal.
+     * Write an entry's header information to a header buffer.
      *
-     * @param other Entry to be checked for equality.
-     * @return True if the entries are equal.
+     * @param outbuf The tar entry header buffer to fill in.
      */
-    public boolean equals( final TarArchiveEntry other )
-    {
-        return getName().equals( other.getName() );
+    public void writeEntryHeader(byte[] outbuf) {
+        int offset = 0;
+
+        offset = TarUtils.getNameBytes(name, outbuf, offset, NAMELEN);
+        offset = TarUtils.getOctalBytes(mode, outbuf, offset, MODELEN);
+        offset = TarUtils.getOctalBytes(userId, outbuf, offset, UIDLEN);
+        offset = TarUtils.getOctalBytes(groupId, outbuf, offset, GIDLEN);
+        offset = TarUtils.getLongOctalBytes(size, outbuf, offset, SIZELEN);
+        offset = TarUtils.getLongOctalBytes(modTime, outbuf, offset, MODTIMELEN);
+
+        int csOffset = offset;
+
+        for (int c = 0; c < CHKSUMLEN; ++c) {
+            outbuf[offset++] = (byte) ' ';
+        }
+
+        outbuf[offset++] = linkFlag;
+        offset = TarUtils.getNameBytes(linkName, outbuf, offset, NAMELEN);
+        offset = TarUtils.getNameBytes(magic, outbuf, offset, MAGICLEN);
+        offset = TarUtils.getNameBytes(userName, outbuf, offset, UNAMELEN);
+        offset = TarUtils.getNameBytes(groupName, outbuf, offset, GNAMELEN);
+        offset = TarUtils.getOctalBytes(devMajor, outbuf, offset, DEVLEN);
+        offset = TarUtils.getOctalBytes(devMinor, outbuf, offset, DEVLEN);
+
+        while (offset < outbuf.length) {
+            outbuf[offset++] = 0;
+        }
+
+        long chk = TarUtils.computeCheckSum(outbuf);
+
+        TarUtils.getCheckSumOctalBytes(chk, outbuf, csOffset, CHKSUMLEN);
     }
 
     /**
@@ -612,74 +603,34 @@ public class TarArchiveEntry implements ArchiveEntry {
      *
      * @param header The tar entry header buffer to get information from.
      */
-    private void parseTarHeader( final byte[] header )
-    {
+    public void parseTarHeader(byte[] header) {
         int offset = 0;
 
-        m_name = TarUtils.parseName( header, offset, NAMELEN );
+        name = TarUtils.parseName(header, offset, NAMELEN);
         offset += NAMELEN;
-        m_mode = (int)TarUtils.parseOctal( header, offset, TarConstants.MODELEN );
-        offset += TarConstants.MODELEN;
-        m_userID = (int)TarUtils.parseOctal( header, offset, TarConstants.UIDLEN );
-        offset += TarConstants.UIDLEN;
-        m_groupID = (int)TarUtils.parseOctal( header, offset, TarConstants.GIDLEN );
-        offset += TarConstants.GIDLEN;
-        m_size = TarUtils.parseOctal( header, offset, TarConstants.SIZELEN );
-        offset += TarConstants.SIZELEN;
-        m_modTime = TarUtils.parseOctal( header, offset, TarConstants.MODTIMELEN );
-        offset += TarConstants.MODTIMELEN;
-        m_checkSum = (int)TarUtils.parseOctal( header, offset, TarConstants.CHKSUMLEN );
-        offset += TarConstants.CHKSUMLEN;
-        m_linkFlag = header[ offset++ ];
-        m_linkName = TarUtils.parseName( header, offset, NAMELEN );
+        mode = (int) TarUtils.parseOctal(header, offset, MODELEN);
+        offset += MODELEN;
+        userId = (int) TarUtils.parseOctal(header, offset, UIDLEN);
+        offset += UIDLEN;
+        groupId = (int) TarUtils.parseOctal(header, offset, GIDLEN);
+        offset += GIDLEN;
+        size = TarUtils.parseOctal(header, offset, SIZELEN);
+        offset += SIZELEN;
+        modTime = TarUtils.parseOctal(header, offset, MODTIMELEN);
+        offset += MODTIMELEN;
+        offset += CHKSUMLEN;
+        linkFlag = header[offset++];
+        linkName = TarUtils.parseName(header, offset, NAMELEN);
         offset += NAMELEN;
-        m_magic = TarUtils.parseName( header, offset, TarConstants.MAGICLEN );
-        offset += TarConstants.MAGICLEN;
-        m_userName = TarUtils.parseName( header, offset, TarConstants.UNAMELEN );
-        offset += TarConstants.UNAMELEN;
-        m_groupName = TarUtils.parseName( header, offset, TarConstants.GNAMELEN );
-        offset += TarConstants.GNAMELEN;
-        m_devMajor = (int)TarUtils.parseOctal( header, offset, TarConstants.DEVLEN );
-        offset += TarConstants.DEVLEN;
-        m_devMinor = (int)TarUtils.parseOctal( header, offset, TarConstants.DEVLEN );
-    }
-
-    /**
-     * Write an entry's header information to a header buffer.
-     *
-     * @param buffer The tar entry header buffer to fill in.
-     */
-    public void writeEntryHeader( final byte[] buffer )
-    {
-        int offset = 0;
-
-        offset = TarUtils.getNameBytes( m_name, buffer, offset, NAMELEN );
-        offset = TarUtils.getOctalBytes( m_mode, buffer, offset, TarConstants.MODELEN );
-        offset = TarUtils.getOctalBytes( m_userID, buffer, offset, TarConstants.UIDLEN );
-        offset = TarUtils.getOctalBytes( m_groupID, buffer, offset, TarConstants.GIDLEN );
-        offset = TarUtils.getLongOctalBytes( m_size, buffer, offset, TarConstants.SIZELEN );
-        offset = TarUtils.getLongOctalBytes( m_modTime, buffer, offset, TarConstants.MODTIMELEN );
-
-        final int checkSumOffset = offset;
-        for( int i = 0; i < TarConstants.CHKSUMLEN; ++i )
-        {
-            buffer[ offset++ ] = (byte)' ';
-        }
-
-        buffer[ offset++ ] = m_linkFlag;
-        offset = TarUtils.getNameBytes( m_linkName, buffer, offset, NAMELEN );
-        offset = TarUtils.getNameBytes( m_magic, buffer, offset, TarConstants.MAGICLEN );
-        offset = TarUtils.getNameBytes( m_userName, buffer, offset, TarConstants.UNAMELEN );
-        offset = TarUtils.getNameBytes( m_groupName, buffer, offset, TarConstants.GNAMELEN );
-        offset = TarUtils.getOctalBytes( m_devMajor, buffer, offset, TarConstants.DEVLEN );
-        offset = TarUtils.getOctalBytes( m_devMinor, buffer, offset, TarConstants.DEVLEN );
-
-        while( offset < buffer.length )
-        {
-            buffer[ offset++ ] = 0;
-        }
-
-        final long checkSum = TarUtils.computeCheckSum( buffer );
-        TarUtils.getCheckSumOctalBytes( checkSum, buffer, checkSumOffset, TarConstants.CHKSUMLEN );
+        magic = TarUtils.parseName(header, offset, MAGICLEN);
+        offset += MAGICLEN;
+        userName = TarUtils.parseName(header, offset, UNAMELEN);
+        offset += UNAMELEN;
+        groupName = TarUtils.parseName(header, offset, GNAMELEN);
+        offset += GNAMELEN;
+        devMajor = (int) TarUtils.parseOctal(header, offset, DEVLEN);
+        offset += DEVLEN;
+        devMinor = (int) TarUtils.parseOctal(header, offset, DEVLEN);
     }
 }
+

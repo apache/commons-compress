@@ -24,120 +24,125 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * The TarOutputStream writes a UNIX tar archive as an OutputStream. Methods are
- * provided to put entries, and then write their contents by writing to this
- * stream using write().
+ * The TarOutputStream writes a UNIX tar archive as an OutputStream.
+ * Methods are provided to put entries, and then write their contents
+ * by writing to this stream using write().
+ *
  */
-public class TarOutputStream
-    extends FilterOutputStream
-{
-    /**
-     * Flag to indicate that an error should be generated if
-     * an attempt is made to write an entry that exceeds the 100 char
-     * POSIX limit.
-     */
+public class TarOutputStream extends FilterOutputStream {
+    /** Fail if a long file name is required in the archive. */
     public static final int LONGFILE_ERROR = 0;
 
-    /**
-     * Flag to indicate that entry name should be truncated if
-     * an attempt is made to write an entry that exceeds the 100 char
-     * POSIX limit.
-     */
+    /** Long paths will be truncated in the archive. */
     public static final int LONGFILE_TRUNCATE = 1;
 
-    /**
-     * Flag to indicate that entry name should be formatted
-     * according to GNU tar extension if an attempt is made
-     * to write an entry that exceeds the 100 char POSIX
-     * limit. Note that this makes the jar unreadable by
-     * non-GNU tar commands.
-     */
+    /** GNU tar extensions are used to store long file names in the archive. */
     public static final int LONGFILE_GNU = 2;
 
-    private int m_longFileMode = LONGFILE_ERROR;
-    private byte[] m_assemBuf;
-    private int m_assemLen;
-    private TarBuffer m_buffer;
-    private int m_currBytes;
-    private int m_currSize;
+    // CheckStyle:VisibilityModifier OFF - bc
+    protected boolean   debug;
+    protected long      currSize;
+    protected String    currName;
+    protected long      currBytes;
+    protected byte[]    oneBuf;
+    protected byte[]    recordBuf;
+    protected int       assemLen;
+    protected byte[]    assemBuf;
+    protected TarBuffer buffer;
+    protected int       longFileMode = LONGFILE_ERROR;
+    // CheckStyle:VisibilityModifier ON
 
-    private byte[] m_oneBuf;
-    private byte[] m_recordBuf;
+    private boolean closed = false;
 
     /**
-     * Construct a TarOutputStream using specified input
-     * stream and default block and record sizes.
-     *
-     * @param output stream to create TarOutputStream from
-     * @see TarBuffer#DEFAULT_BLOCKSIZE
-     * @see TarBuffer#DEFAULT_RECORDSIZE
+     * Constructor for TarInputStream.
+     * @param os the output stream to use
      */
-    public TarOutputStream( final OutputStream output )
-    {
-        this( output, TarBuffer.DEFAULT_BLOCKSIZE, TarBuffer.DEFAULT_RECORDSIZE );
+    public TarOutputStream(OutputStream os) {
+        this(os, TarBuffer.DEFAULT_BLKSIZE, TarBuffer.DEFAULT_RCDSIZE);
     }
 
     /**
-     * Construct a TarOutputStream using specified input
-     * stream, block size and default record sizes.
-     *
-     * @param output stream to create TarOutputStream from
-     * @param blockSize the block size
-     * @see TarBuffer#DEFAULT_RECORDSIZE
+     * Constructor for TarInputStream.
+     * @param os the output stream to use
+     * @param blockSize the block size to use
      */
-    public TarOutputStream( final OutputStream output,
-                            final int blockSize )
-    {
-        this( output, blockSize, TarBuffer.DEFAULT_RECORDSIZE );
+    public TarOutputStream(OutputStream os, int blockSize) {
+        this(os, blockSize, TarBuffer.DEFAULT_RCDSIZE);
     }
 
     /**
-     * Construct a TarOutputStream using specified input
-     * stream, block size and record sizes.
-     *
-     * @param output stream to create TarOutputStream from
-     * @param blockSize the block size
-     * @param recordSize the record size
+     * Constructor for TarInputStream.
+     * @param os the output stream to use
+     * @param blockSize the block size to use
+     * @param recordSize the record size to use
      */
-    public TarOutputStream( final OutputStream output,
-                            final int blockSize,
-                            final int recordSize )
-    {
-        super( output );
+    public TarOutputStream(OutputStream os, int blockSize, int recordSize) {
+        super(os);
 
-        m_buffer = new TarBuffer( output, blockSize, recordSize );
-        m_assemLen = 0;
-        m_assemBuf = new byte[ recordSize ];
-        m_recordBuf = new byte[ recordSize ];
-        m_oneBuf = new byte[ 1 ];
+        this.buffer = new TarBuffer(os, blockSize, recordSize);
+        this.debug = false;
+        this.assemLen = 0;
+        this.assemBuf = new byte[recordSize];
+        this.recordBuf = new byte[recordSize];
+        this.oneBuf = new byte[1];
+    }
+
+    /**
+     * Set the long file mode.
+     * This can be LONGFILE_ERROR(0), LONGFILE_TRUNCATE(1) or LONGFILE_GNU(2).
+     * This specifies the treatment of long file names (names >= TarConstants.NAMELEN).
+     * Default is LONGFILE_ERROR.
+     * @param longFileMode the mode to use
+     */
+    public void setLongFileMode(int longFileMode) {
+        this.longFileMode = longFileMode;
+    }
+
+
+    /**
+     * Sets the debugging flag.
+     *
+     * @param debugF True to turn on debugging.
+     */
+    public void setDebug(boolean debugF) {
+        this.debug = debugF;
     }
 
     /**
      * Sets the debugging flag in this stream's TarBuffer.
      *
-     * @param debug The new BufferDebug value
+     * @param debug True to turn on debugging.
      */
-    public void setBufferDebug( boolean debug )
-    {
-        m_buffer.setDebug( debug );
+    public void setBufferDebug(boolean debug) {
+        buffer.setDebug(debug);
     }
 
     /**
-     * Set the mode used to work with entrys exceeding
-     * 100 chars (and thus break the POSIX standard).
-     * Must be one of the LONGFILE_* constants.
-     *
-     * @param longFileMode the mode
+     * Ends the TAR archive without closing the underlying OutputStream.
+     * The result is that the two EOF records of nulls are written.
+     * @throws IOException on error
      */
-    public void setLongFileMode( final int longFileMode )
-    {
-        if( LONGFILE_ERROR != longFileMode &&
-            LONGFILE_GNU != longFileMode &&
-            LONGFILE_TRUNCATE != longFileMode )
-        {
-            throw new IllegalArgumentException( "longFileMode" );
+    public void finish() throws IOException {
+        // See Bugzilla 28776 for a discussion on this
+        // http://issues.apache.org/bugzilla/show_bug.cgi?id=28776
+        writeEOFRecord();
+        writeEOFRecord();
+    }
+
+    /**
+     * Ends the TAR archive and closes the underlying OutputStream.
+     * This means that finish() is called followed by calling the
+     * TarBuffer's close().
+     * @throws IOException on error
+     */
+    public void close() throws IOException {
+        if (!closed) {
+            finish();
+            buffer.close();
+            out.close();
+            closed = true;
         }
-        m_longFileMode = longFileMode;
     }
 
     /**
@@ -145,202 +150,133 @@ public class TarOutputStream
      *
      * @return The TarBuffer record size.
      */
-    public int getRecordSize()
-    {
-        return m_buffer.getRecordSize();
+    public int getRecordSize() {
+        return buffer.getRecordSize();
     }
 
     /**
-     * Ends the TAR archive and closes the underlying OutputStream. This means
-     * that finish() is called followed by calling the TarBuffer's close().
+     * Put an entry on the output stream. This writes the entry's
+     * header record and positions the output stream for writing
+     * the contents of the entry. Once this method is called, the
+     * stream is ready for calls to write() to write the entry's
+     * contents. Once the contents are written, closeEntry()
+     * <B>MUST</B> be called to ensure that all buffered data
+     * is completely written to the output stream.
      *
-     * @exception IOException when an IO error causes operation to fail
+     * @param entry The TarEntry to be written to the archive.
+     * @throws IOException on error
      */
-    public void close()
-        throws IOException
-    {
-        finish();
-        m_buffer.close();
-    }
+    public void putNextEntry(TarArchiveEntry entry) throws IOException {
+        if (entry.getName().length() >= TarConstants.NAMELEN) {
 
-    /**
-     * Close an entry. This method MUST be called for all file entries that
-     * contain data. The reason is that we must buffer data written to the
-     * stream in order to satisfy the buffer's record based writes. Thus, there
-     * may be data fragments still being assembled that must be written to the
-     * output stream before this entry is closed and the next entry written.
-     *
-     * @exception IOException when an IO error causes operation to fail
-     */
-    public void closeEntry()
-        throws IOException
-    {
-        if( m_assemLen > 0 )
-        {
-            for( int i = m_assemLen; i < m_assemBuf.length; ++i )
-            {
-                m_assemBuf[ i ] = 0;
-            }
-
-            m_buffer.writeRecord( m_assemBuf );
-
-            m_currBytes += m_assemLen;
-            m_assemLen = 0;
-        }
-
-        if( m_currBytes < m_currSize )
-        {
-            final String message = "entry closed at '" + m_currBytes +
-                "' before the '" + m_currSize +
-                "' bytes specified in the header were written";
-            throw new IOException( message );
-        }
-    }
-
-    /**
-     * Ends the TAR archive without closing the underlying OutputStream. The
-     * result is that the EOF record of nulls is written.
-     *
-     * @exception IOException when an IO error causes operation to fail
-     */
-    public void finish()
-        throws IOException
-    {
-        writeEOFRecord();
-    }
-
-    /**
-     * Put an entry on the output stream. This writes the entry's header record
-     * and positions the output stream for writing the contents of the entry.
-     * Once this method is called, the stream is ready for calls to write() to
-     * write the entry's contents. Once the contents are written, closeEntry()
-     * <B>MUST</B> be called to ensure that all buffered data is completely
-     * written to the output stream.
-     *
-     * The entry must be 0 terminated. Maximum filename is 99 chars, 
-     * according to V7 specification.
-     * 
-     * @param entry The TarArchiveEntry to be written to the archive.
-     * @exception IOException when an IO error causes operation to fail
-     */
-    public void putNextEntry( final TarArchiveEntry entry )
-        throws IOException
-    {
-        if( entry.getName().length() > TarArchiveEntry.NAMELEN )
-        {
-            if( m_longFileMode == LONGFILE_GNU )
-            {
-                // create a TarArchiveEntry for the LongLink, the contents
+            if (longFileMode == LONGFILE_GNU) {
+                // create a TarEntry for the LongLink, the contents
                 // of which are the entry's name
-                final TarArchiveEntry longLinkEntry =
-                    new TarArchiveEntry( TarConstants.GNU_LONGLINK,
-                                  TarConstants.LF_GNUTYPE_LONGNAME );
+                TarArchiveEntry longLinkEntry = new TarArchiveEntry(TarConstants.GNU_LONGLINK,
+                                                      TarConstants.LF_GNUTYPE_LONGNAME);
 
-                longLinkEntry.setSize( entry.getName().length() + 1);
-                putNextEntry( longLinkEntry );
-                write( entry.getName().getBytes() );
-                write( 0 );
+                longLinkEntry.setSize(entry.getName().length() + 1);
+                putNextEntry(longLinkEntry);
+                write(entry.getName().getBytes());
+                write(0);
                 closeEntry();
-            }
-            else if( m_longFileMode != LONGFILE_TRUNCATE )
-            {
-                final String message = "file name '" + entry.getName() +
-                    "' is too long ( > " + TarArchiveEntry.NAMELEN + " bytes)";
-                throw new IOException( message );
+            } else if (longFileMode != LONGFILE_TRUNCATE) {
+                throw new RuntimeException("file name '" + entry.getName()
+                                             + "' is too long ( > "
+                                             + TarConstants.NAMELEN + " bytes)");
             }
         }
 
-        entry.writeEntryHeader( m_recordBuf );
-        m_buffer.writeRecord( m_recordBuf );
+        entry.writeEntryHeader(recordBuf);
+        buffer.writeRecord(recordBuf);
 
-        m_currBytes = 0;
+        currBytes = 0;
 
-        if( entry.isDirectory() )
-        {
-            m_currSize = 0;
+        if (entry.isDirectory()) {
+            currSize = 0;
+        } else {
+            currSize = entry.getSize();
         }
-        else
-        {
-            m_currSize = (int)entry.getSize();
-        }
+        currName = entry.getName();
     }
 
     /**
-     * Copies the contents of the specified stream into current tar
-     * archive entry.
-     *
-     * @param input The InputStream from which to read entrys data
-     * @exception IOException when an IO error causes operation to fail
+     * Close an entry. This method MUST be called for all file
+     * entries that contain data. The reason is that we must
+     * buffer data written to the stream in order to satisfy
+     * the buffer's record based writes. Thus, there may be
+     * data fragments still being assembled that must be written
+     * to the output stream before this entry is closed and the
+     * next entry written.
+     * @throws IOException on error
      */
-    public void copyEntryContents( final InputStream input )
-        throws IOException
-    {
-        final byte[] buffer = new byte[ 32 * 1024 ];
-        while( true )
-        {
-            final int numRead = input.read( buffer, 0, buffer.length );
-            if( numRead == -1 )
-            {
-                break;
+    public void closeEntry() throws IOException {
+        if (assemLen > 0) {
+            for (int i = assemLen; i < assemBuf.length; ++i) {
+                assemBuf[i] = 0;
             }
 
-            write( buffer, 0, numRead );
+            buffer.writeRecord(assemBuf);
+
+            currBytes += assemLen;
+            assemLen = 0;
+        }
+
+        if (currBytes < currSize) {
+            throw new IOException("entry '" + currName + "' closed at '"
+                                  + currBytes
+                                  + "' before the '" + currSize
+                                  + "' bytes specified in the header were written");
         }
     }
 
     /**
-     * Writes a byte to the current tar archive entry. This method simply calls
-     * read( byte[], int, int ).
+     * Writes a byte to the current tar archive entry.
      *
-     * @param data The byte written.
-     * @exception IOException when an IO error causes operation to fail
+     * This method simply calls read( byte[], int, int ).
+     *
+     * @param b The byte written.
+     * @throws IOException on error
      */
-    public void write( final int data )
-        throws IOException
-    {
-        m_oneBuf[ 0 ] = (byte)data;
+    public void write(int b) throws IOException {
+        oneBuf[0] = (byte) b;
 
-        write( m_oneBuf, 0, 1 );
+        write(oneBuf, 0, 1);
     }
 
     /**
-     * Writes bytes to the current tar archive entry. This method simply calls
-     * write( byte[], int, int ).
+     * Writes bytes to the current tar archive entry.
      *
-     * @param buffer The buffer to write to the archive.
-     * @exception IOException when an IO error causes operation to fail
+     * This method simply calls write( byte[], int, int ).
+     *
+     * @param wBuf The buffer to write to the archive.
+     * @throws IOException on error
      */
-    public void write( final byte[] buffer )
-        throws IOException
-    {
-        write( buffer, 0, buffer.length );
+    public void write(byte[] wBuf) throws IOException {
+        write(wBuf, 0, wBuf.length);
     }
 
     /**
-     * Writes bytes to the current tar archive entry. This method is aware of
-     * the current entry and will throw an exception if you attempt to write
-     * bytes past the length specified for the current entry. The method is also
-     * (painfully) aware of the record buffering required by TarBuffer, and
-     * manages buffers that are not a multiple of recordsize in length,
-     * including assembling records from small buffers.
+     * Writes bytes to the current tar archive entry. This method
+     * is aware of the current entry and will throw an exception if
+     * you attempt to write bytes past the length specified for the
+     * current entry. The method is also (painfully) aware of the
+     * record buffering required by TarBuffer, and manages buffers
+     * that are not a multiple of recordsize in length, including
+     * assembling records from small buffers.
      *
-     * @param buffer The buffer to write to the archive.
-     * @param offset The offset in the buffer from which to get bytes.
-     * @param count The number of bytes to write.
-     * @exception IOException when an IO error causes operation to fail
+     * @param wBuf The buffer to write to the archive.
+     * @param wOffset The offset in the buffer from which to get bytes.
+     * @param numToWrite The number of bytes to write.
+     * @throws IOException on error
      */
-    public void write( final byte[] buffer,
-                       final int offset,
-                       final int count )
-        throws IOException
-    {
-        int position = offset;
-        int numToWrite = count;
-        if( ( m_currBytes + numToWrite ) > m_currSize )
-        {
-            final String message = "request to write '" + numToWrite +
-                "' bytes exceeds size in header of '" + m_currSize + "' bytes";
-            throw new IOException( message );
+    public void write(byte[] wBuf, int wOffset, int numToWrite) throws IOException {
+        if ((currBytes + numToWrite) > currSize) {
+            throw new IOException("request to write '" + numToWrite
+                                  + "' bytes exceeds size in header of '"
+                                  + currSize + "' bytes for entry '"
+                                  + currName + "'");
+
             //
             // We have to deal with assembly!!!
             // The programmer can be writing little 32 byte chunks for all
@@ -350,30 +286,26 @@ public class TarOutputStream
             //
         }
 
-        if( m_assemLen > 0 )
-        {
-            if( ( m_assemLen + numToWrite ) >= m_recordBuf.length )
-            {
-                final int length = m_recordBuf.length - m_assemLen;
+        if (assemLen > 0) {
+            if ((assemLen + numToWrite) >= recordBuf.length) {
+                int aLen = recordBuf.length - assemLen;
 
-                System.arraycopy( m_assemBuf, 0, m_recordBuf, 0,
-                                  m_assemLen );
-                System.arraycopy( buffer, position, m_recordBuf,
-                                  m_assemLen, length );
-                m_buffer.writeRecord( m_recordBuf );
+                System.arraycopy(assemBuf, 0, recordBuf, 0,
+                                 assemLen);
+                System.arraycopy(wBuf, wOffset, recordBuf,
+                                 assemLen, aLen);
+                buffer.writeRecord(recordBuf);
 
-                m_currBytes += m_recordBuf.length;
-                position += length;
-                numToWrite -= length;
-                m_assemLen = 0;
-            }
-            else
-            {
-                System.arraycopy( buffer, position, m_assemBuf, m_assemLen,
-                                  numToWrite );
+                currBytes += recordBuf.length;
+                wOffset += aLen;
+                numToWrite -= aLen;
+                assemLen = 0;
+            } else {
+                System.arraycopy(wBuf, wOffset, assemBuf, assemLen,
+                                 numToWrite);
 
-                position += numToWrite;
-                m_assemLen += numToWrite;
+                wOffset += numToWrite;
+                assemLen += numToWrite;
                 numToWrite -= numToWrite;
             }
         }
@@ -383,42 +315,35 @@ public class TarOutputStream
         // o An empty "assemble" buffer.
         // o No bytes to write (numToWrite == 0)
         //
-        while( numToWrite > 0 )
-        {
-            if( numToWrite < m_recordBuf.length )
-            {
-                System.arraycopy( buffer, position, m_assemBuf, m_assemLen,
-                                  numToWrite );
+        while (numToWrite > 0) {
+            if (numToWrite < recordBuf.length) {
+                System.arraycopy(wBuf, wOffset, assemBuf, assemLen,
+                                 numToWrite);
 
-                m_assemLen += numToWrite;
+                assemLen += numToWrite;
 
                 break;
             }
 
-            m_buffer.writeRecord( buffer, position );
+            buffer.writeRecord(wBuf, wOffset);
 
-            int num = m_recordBuf.length;
+            int num = recordBuf.length;
 
-            m_currBytes += num;
+            currBytes += num;
             numToWrite -= num;
-            position += num;
+            wOffset += num;
         }
     }
 
     /**
-     * Write an EOF (end of archive) record to the tar archive. An EOF record
-     * consists of a record of all zeros.
-     *
-     * @exception IOException when an IO error causes operation to fail
+     * Write an EOF (end of archive) record to the tar archive.
+     * An EOF record consists of a record of all zeros.
      */
-    private void writeEOFRecord()
-        throws IOException
-    {
-        for( int i = 0; i < m_recordBuf.length; ++i )
-        {
-            m_recordBuf[ i ] = 0;
+    private void writeEOFRecord() throws IOException {
+        for (int i = 0; i < recordBuf.length; ++i) {
+            recordBuf[i] = 0;
         }
 
-        m_buffer.writeRecord( m_recordBuf );
+        buffer.writeRecord(recordBuf);
     }
 }
