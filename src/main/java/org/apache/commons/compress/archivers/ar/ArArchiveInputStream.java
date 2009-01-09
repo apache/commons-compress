@@ -38,7 +38,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
 		if (offset == 0) {
 			final byte[] expected = "!<arch>\n".getBytes();			
 			final byte[] realized = new byte[expected.length]; 
-			final int read = input.read(realized);
+			final int read = read(realized);
 			if (read != expected.length) {
 				throw new IOException("failed to read header");
 			}
@@ -74,7 +74,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
 		{
 			final byte[] expected = "`\012".getBytes();			
 			final byte[] realized = new byte[expected.length]; 
-			final int read = input.read(realized);
+			final int read = read(realized);
 			if (read != expected.length) {
 				throw new IOException("failed to read entry header");
 			}
@@ -95,9 +95,17 @@ public class ArArchiveInputStream extends ArchiveInputStream {
 		offset++;
 		return ret;
 	}
+	
+	public int read(byte b[]) throws IOException {
+		final int ret = read(b, 0, b.length);
+		offset = offset + b.length;
+		return ret;
+	}
 
 	public int read(byte[] b, int off, int len) throws IOException {
-		return this.input.read(b, off, len);
+		final int ret = this.input.read(b, off, len);
+		offset = offset + off;
+		return ret;
 	}
 	
 	public static boolean matches( byte[] signature ) {
