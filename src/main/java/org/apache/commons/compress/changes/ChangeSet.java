@@ -18,32 +18,72 @@
  */
 package org.apache.commons.compress.changes;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.archivers.ArchiveOutputStream;
+import org.apache.commons.compress.utils.IOUtils;
 
 
 public final class ChangeSet {
 
 	private final Set changes = new LinkedHashSet();
 	
-	public static final int CHANGE_TYPE_DELETE = 1;
-	public static final int CHANGE_TYPE_ADD = 2;
-	
-
 	public void delete( final String pFilename ) {
-		changes.add(new DeleteChange(pFilename));
+		changes.add(new Change(pFilename));
 	}
 
-	public void move( final String pFrom, final String pTo ) {
-	}
+//	public void move( final String pFrom, final String pTo ) {
+//		changes.add(new Change(pFrom, pTo));
+//	}
 	
 	public void add( final ArchiveEntry pEntry, final InputStream pInput) {
+		changes.add(new Change(pEntry, pInput));
 	}
 	
 	public Set asSet() {
 		return changes;
 	}
+	
+	public void perform(ArchiveInputStream in, ArchiveOutputStream out) throws IOException {
+		ArchiveEntry entry = null;	
+		while((entry = in.getNextEntry()) != null) {
+			boolean copy = true;
+			
+			for (Iterator it = changes.iterator(); it.hasNext();) {
+				Change change = (Change)it.next();
+				
+				if(change.type() == Change.TYPE_ADD) {
+					copyStream(change.getInput(), out, change.getEntry());
+					it.remove();
+				}
+				
+				if( change.type() == Change.TYPE_DELETE &&
+					entry.getName() != null &&
+					entry.getName().equals(change.targetFile())) {
+					System.out.println("Delete: " + entry.getName());
+					copy = false;
+					it.remove();
+					break;
+				} 
+			}
+			
+			if(copy) {
+				copyStream(in, out, entry);
+			}
+		}
+	}
+
+	private static void copyStream(InputStream in, ArchiveOutputStream out, ArchiveEntry entry) throws IOException {
+		out.putArchiveEntry(entry);
+		IOUtils.copy(in, out);
+		out.closeArchiveEntry();
+		System.out.println("Copy: " + entry.getName());
+	}
+
 }

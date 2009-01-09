@@ -18,8 +18,65 @@
  */
 package org.apache.commons.compress.changes;
 
+import java.io.InputStream;
 
-interface Change {
-	// public void perform(ArchiveInputStream input);
-	public int type();
+import org.apache.commons.compress.archivers.ArchiveEntry;
+
+
+public class Change {
+	private String targetFile = null;
+	private ArchiveEntry entry = null;
+	private InputStream input = null;
+	private int type = 0;
+	
+	static final int TYPE_DELETE = 1;
+	static final int TYPE_ADD = 2;
+	static final int TYPE_MOVE = 3;
+	
+	/**
+	 * Constructor. Takes the filename of the file to be deleted
+	 * from the stream as argument.
+	 * @param pFilename the filename of the file to delete
+	 */
+	public Change(final String pFilename) {
+		if(pFilename == null) {
+			throw new NullPointerException();
+		}
+		targetFile = pFilename;
+		type = TYPE_DELETE;
+	}
+	
+//	public Change(final String pOldname, final ArchiveEntry pEntry) {
+//		if(pOldname == null || pEntry == null) {
+//			throw new NullPointerException();
+//		}
+//		targetFile = pOldname;
+//		entry = pEntry;
+//		type = TYPE_MOVE;
+//	}
+	
+	public Change(final ArchiveEntry pEntry, final InputStream pInput) {
+		if(pEntry == null || pInput == null) {
+			throw new NullPointerException();
+		}
+		this.entry = pEntry;
+		this.input = pInput;
+		type = TYPE_ADD;
+	}
+	
+	public ArchiveEntry getEntry() {
+		return entry;
+	}
+
+	public InputStream getInput() {
+		return input;
+	}
+
+	public String targetFile() {
+		return targetFile;
+	}
+	
+	public int type() {
+		return type;
+	}
 }
