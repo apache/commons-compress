@@ -32,8 +32,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
 	private ArArchiveEntry prevEntry;
 
 	public ArArchiveOutputStream( final OutputStream pOut ) {
-		out = pOut;
-		
+		out = pOut;	
 	}
 
 	private long writeArchiveHeader() throws IOException {		
@@ -44,7 +43,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
 
 	public void closeArchiveEntry() throws IOException {
 		if ((entryOffset % 2) != 0) {
-        	write('\n');
+        	out.write('\n');
         	archiveOffset++;
         }		
 	}
@@ -159,16 +158,4 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
 		prevEntry = null;
 	}
 
-	public String getDefaultFileExtension() {
-		return "ar";
-	}
-
-	public byte[] getHeader() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String getName() {
-		return "ar";
-	}
 }
