@@ -26,7 +26,7 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 
 public class TarArchiveOutputStream extends ArchiveOutputStream {
 
-    private TarOutputStream out = null;
+    private final TarOutputStream out;
     
     public TarArchiveOutputStream(OutputStream out) {
         this.out = new TarOutputStream(out);

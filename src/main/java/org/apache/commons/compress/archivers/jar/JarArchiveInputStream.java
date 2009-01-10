@@ -33,9 +33,9 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
 	
 	public ArchiveEntry getNextEntry() throws IOException {
 		ZipArchiveEntry entry = (ZipArchiveEntry)super.getNextEntry();
-		if(entry == null){
+		if(entry == null) {
 			return null;
-		}else{
+		} else {
 			return (ArchiveEntry)new JarArchiveEntry(entry);
 		}
 	}

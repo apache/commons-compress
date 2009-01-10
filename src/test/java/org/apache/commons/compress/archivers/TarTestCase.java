@@ -32,7 +32,7 @@ import org.apache.commons.compress.utils.IOUtils;
 public final class TarTestCase extends AbstractTestCase {
     public void testTarArchiveCreation() throws Exception {
 		final File output = new File(dir, "bla.tar");
-		final File file1 = new File(getClass().getClassLoader().getResource("test1.xml").getFile());
+		final File file1 = getFile("test1.xml");
     	final OutputStream out = new FileOutputStream(output);
         final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("tar", out);
         final TarArchiveEntry entry = new TarArchiveEntry("testdata/test1.xml");
@@ -55,7 +55,7 @@ public final class TarTestCase extends AbstractTestCase {
     	assertEquals(bytes.length, 99);
     	
 		final File output = new File(dir, "bla.tar");
-		final File file1 = new File(getClass().getClassLoader().getResource("test1.xml").getFile());
+		final File file1 = getFile("test1.xml");
     	final OutputStream out = new FileOutputStream(output);
         final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("tar", out);
         final TarArchiveEntry entry = new TarArchiveEntry(name);
@@ -96,7 +96,7 @@ public final class TarTestCase extends AbstractTestCase {
     }
     
     public void testTarUnarchive() throws Exception {
-		final File input = new File(getClass().getClassLoader().getResource("bla.tar").getFile());
+		final File input = getFile("bla.tar");
 		final InputStream is = new FileInputStream(input);
         final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("tar", is);
         final TarArchiveEntry entry = (TarArchiveEntry)in.getNextEntry();

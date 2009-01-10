@@ -25,27 +25,24 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.compress.AbstractTestCase;
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 
 public final class BZip2TestCase extends AbstractTestCase {
+
 	public void testBzipCreation()  throws Exception {
-		final File output = new File(dir, "bla.txt.bz2");
-		System.out.println(dir);
-		final File file1 = new File(getClass().getClassLoader().getResource("test.txt").getFile());
+		final File input = getFile("test.txt");
+		final File output = new File(dir, "test.txt.bz2");
 		final OutputStream out = new FileOutputStream(output);
-		CompressorOutputStream cos = new CompressorStreamFactory().createCompressorOutputStream("bzip2", out);
-		IOUtils.copy(new FileInputStream(file1), cos);
+		final CompressorOutputStream cos = new CompressorStreamFactory().createCompressorOutputStream("bzip2", out);
+		IOUtils.copy(new FileInputStream(input), cos);
 		cos.close();
 	}
 	
 	public void testBzip2Unarchive() throws Exception {
-		final File output = new File(dir, "test-entpackt.txt");
-		System.out.println(dir);
-		final File input = new File(getClass().getClassLoader().getResource("bla.txt.bz2").getFile());
+		final File input = getFile("bla.txt.bz2");
+		final File output = new File(dir, "bla.txt");
         final InputStream is = new FileInputStream(input);
-        //final CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("bzip2", is);
-        final CompressorInputStream in = new BZip2CompressorInputStream(is);
+        final CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("bzip2", is);
         IOUtils.copy(in, new FileOutputStream(output));
 		in.close();
     }

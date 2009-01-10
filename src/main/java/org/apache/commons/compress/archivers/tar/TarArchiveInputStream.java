@@ -25,7 +25,8 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 
 public class TarArchiveInputStream extends ArchiveInputStream {
-    private final TarInputStream in;
+
+	private final TarInputStream in;
     
 	public TarArchiveInputStream( InputStream inputStream ) {
 		in = new TarInputStream(inputStream);
