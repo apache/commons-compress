@@ -33,6 +33,6 @@ public class JarArchiveOutputStream extends ZipArchiveOutputStream {
 
 	public void putArchiveEntry(ArchiveEntry entry) throws IOException {
 		// TODO special jar stuff
-		 super.putArchiveEntry((ZipArchiveEntry) entry);
+		super.putArchiveEntry((ZipArchiveEntry) entry);
 	}
 }

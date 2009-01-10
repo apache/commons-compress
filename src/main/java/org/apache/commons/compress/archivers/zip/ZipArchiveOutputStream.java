@@ -37,19 +37,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         zipOut.putNextEntry((ZipArchiveEntry) entry);
     }
 
-    public String getDefaultFileExtension() {
-        return "zip";
-    }
-
-    public byte[] getHeader() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public String getName() {
-        return "zip";
-    }
-
     public void close() throws IOException {
         zipOut.close();
     }

@@ -34,8 +34,8 @@ public final class ZipTestCase extends AbstractTestCase {
 		
 		final File output = new File(dir, "bla.zip");
 		
-		final File file1 = new File(getClass().getClassLoader().getResource("test1.xml").getFile());
-		final File file2 = new File(getClass().getClassLoader().getResource("test2.xml").getFile());
+		final File file1 = getFile("test1.xml");
+		final File file2 = getFile("test2.xml");
 		
         final OutputStream out = new FileOutputStream(output);
         
@@ -53,7 +53,7 @@ public final class ZipTestCase extends AbstractTestCase {
     }
     public void testZipUnarchive() throws Exception {
 
-		final File input = new File(getClass().getClassLoader().getResource("bla.zip").getFile());
+		final File input = getFile("bla.zip");
     	
         final InputStream is = new FileInputStream(input);
         final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("zip", is);

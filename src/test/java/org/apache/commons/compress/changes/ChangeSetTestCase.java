@@ -23,8 +23,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
-import junit.framework.TestCase;
-
+import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
@@ -33,7 +32,7 @@ import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 
-public final class ChangeSetTestCase extends TestCase {
+public final class ChangeSetTestCase extends AbstractTestCase {
 
 	public void testDeleteFromZip() throws Exception {
 		ArchiveOutputStream out = null;
@@ -42,7 +41,7 @@ public final class ChangeSetTestCase extends TestCase {
 			ChangeSet changes = new ChangeSet();
 			changes.delete("test2.xml");
 			
-			final File input = new File(getClass().getClassLoader().getResource("bla.zip").getFile());
+			final File input = getFile("bla.zip");
 			final InputStream is = new FileInputStream(input);
 			ais = new ArchiveStreamFactory().createArchiveInputStream("zip", is);
 			
@@ -64,11 +63,11 @@ public final class ChangeSetTestCase extends TestCase {
 			ChangeSet changes = new ChangeSet();
 			changes.delete("test2.xml");
 			
-			final File input = new File(getClass().getClassLoader().getResource("bla.tar").getFile());
+			final File input = getFile("bla.tar");
 			final InputStream is = new FileInputStream(input);
 			ais = new ArchiveStreamFactory().createArchiveInputStream("tar", is);
 			
-			File temp = File.createTempFile("test", ".tar");
+			File temp = new File(dir, "bla.tar");
 			out = new ArchiveStreamFactory().createArchiveOutputStream("tar", new FileOutputStream(temp));
 			
 			System.out.println(temp.getAbsolutePath());
@@ -87,11 +86,11 @@ public final class ChangeSetTestCase extends TestCase {
 			changes.delete("test2.xml");
 			changes.delete("META-INF/MANIFEST.MF");
 			
-			final File input = new File(getClass().getClassLoader().getResource("bla.jar").getFile());
+			final File input = getFile("bla.jar");
 			final InputStream is = new FileInputStream(input);
 			ais = new ArchiveStreamFactory().createArchiveInputStream("jar", is);
 			
-			File temp = File.createTempFile("test", ".jar");
+			File temp = new File(dir, "bla.jar");
 			out = new ArchiveStreamFactory().createArchiveOutputStream("jar", new FileOutputStream(temp));
 			
 			System.out.println(temp.getAbsolutePath());
@@ -109,11 +108,11 @@ public final class ChangeSetTestCase extends TestCase {
 			ChangeSet changes = new ChangeSet();
 			changes.delete("test2.xml");
 			
-			final File input = new File(getClass().getClassLoader().getResource("bla.ar").getFile());
+			final File input = getFile("bla.ar");
 			final InputStream is = new FileInputStream(input);
 			ais = new ArchiveStreamFactory().createArchiveInputStream("ar", is);
 			
-			File temp = File.createTempFile("test", ".ar");
+			File temp = new File(dir, "bla.ar");
 			out = new ArchiveStreamFactory().createArchiveOutputStream("ar", new FileOutputStream(temp));
 			
 			System.out.println(temp.getAbsolutePath());
@@ -132,15 +131,15 @@ public final class ChangeSetTestCase extends TestCase {
 			changes.delete("test2.xml");
 			
 			
-			final File file1 = new File(getClass().getClassLoader().getResource("test.txt").getFile());
+			final File file1 = getFile("test.txt");
 			ZipArchiveEntry entry = new ZipArchiveEntry("testdata/test.txt");
 	        changes.add(entry, new FileInputStream(file1));
 			
-			final File input = new File(getClass().getClassLoader().getResource("bla.zip").getFile());
+			final File input = getFile("bla.zip");
 			final InputStream is = new FileInputStream(input);
 			ais = new ArchiveStreamFactory().createArchiveInputStream("zip", is);
 			
-			File temp = File.createTempFile("test", ".zip");
+			File temp = new File(dir, "bla.zip");
 			out = new ArchiveStreamFactory().createArchiveOutputStream("zip", new FileOutputStream(temp));
 			
 			System.out.println(temp.getAbsolutePath());
@@ -159,7 +158,7 @@ public final class ChangeSetTestCase extends TestCase {
 			changes.delete("test2.xml");
 			
 			
-			final File file1 = new File(getClass().getClassLoader().getResource("test.txt").getFile());
+			final File file1 = getFile("test.txt");
 			
 			final TarArchiveEntry entry = new TarArchiveEntry("testdata/test.txt");
 		    entry.setModTime(0);
@@ -172,11 +171,11 @@ public final class ChangeSetTestCase extends TestCase {
 			
 	        changes.add(entry, new FileInputStream(file1));
 			
-			final File input = new File(getClass().getClassLoader().getResource("bla.tar").getFile());
+			final File input = getFile("bla.tar");
 			final InputStream is = new FileInputStream(input);
 			ais = new ArchiveStreamFactory().createArchiveInputStream("tar", is);
 			
-			File temp = File.createTempFile("test", ".tar");
+			File temp = new File(dir, "bla.tar");
 			out = new ArchiveStreamFactory().createArchiveOutputStream("tar", new FileOutputStream(temp));
 			
 			System.out.println(temp.getAbsolutePath());
@@ -194,15 +193,15 @@ public final class ChangeSetTestCase extends TestCase {
 			ChangeSet changes = new ChangeSet();
 			changes.delete("test2.xml");
 			
-			final File file1 = new File(getClass().getClassLoader().getResource("test.txt").getFile());
+			final File file1 = getFile("test.txt");
 			JarArchiveEntry entry = new JarArchiveEntry("testdata/test.txt");
 	        changes.add(entry, new FileInputStream(file1));
 			
-			final File input = new File(getClass().getClassLoader().getResource("bla.jar").getFile());
+			final File input = getFile("bla.jar");
 			final InputStream is = new FileInputStream(input);
 			ais = new ArchiveStreamFactory().createArchiveInputStream("jar", is);
 			
-			File temp = File.createTempFile("test", ".jar");
+			File temp = new File(dir, "bla.jar");
 			out = new ArchiveStreamFactory().createArchiveOutputStream("jar", new FileOutputStream(temp));
 			
 			System.out.println(temp.getAbsolutePath());
@@ -220,17 +219,17 @@ public final class ChangeSetTestCase extends TestCase {
 			ChangeSet changes = new ChangeSet();
 			changes.delete("test2.xml");
 			
-			final File file1 = new File(getClass().getClassLoader().getResource("test.txt").getFile());
+			final File file1 = getFile("test.txt");
 			
 			final ArArchiveEntry entry = new ArArchiveEntry("test.txt", file1.length());
 		   
 	        changes.add(entry, new FileInputStream(file1));
 			
-			final File input = new File(getClass().getClassLoader().getResource("bla.ar").getFile());
+			final File input = getFile("bla.ar");
 			final InputStream is = new FileInputStream(input);
 			ais = new ArchiveStreamFactory().createArchiveInputStream("ar", is);
 			
-			File temp = File.createTempFile("test", ".ar");
+			File temp = new File(dir, "bla.ar");
 			out = new ArchiveStreamFactory().createArchiveOutputStream("ar", new FileOutputStream(temp));
 			
 			System.out.println(temp.getAbsolutePath());

@@ -33,8 +33,8 @@ public final class JarTestCase extends AbstractTestCase {
 	public void testJarArchiveCreation() throws Exception {
 		final File output = new File(dir, "bla.jar");
 
-		final File file1 = new File(getClass().getClassLoader().getResource("test1.xml").getFile());
-		final File file2 = new File(getClass().getClassLoader().getResource("test2.xml").getFile());
+		final File file1 = getFile("test1.xml");
+		final File file2 = getFile("test2.xml");
 		
         final OutputStream out = new FileOutputStream(output);
         
@@ -53,7 +53,7 @@ public final class JarTestCase extends AbstractTestCase {
 
 	
 	public void testJarUnarchive() throws Exception {
-		final File input = new File(getClass().getClassLoader().getResource("bla.jar").getFile());
+		final File input = getFile("bla.jar");
         final InputStream is = new FileInputStream(input);
         final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("jar", is);
         
@@ -82,7 +82,7 @@ public final class JarTestCase extends AbstractTestCase {
     }
 	
 	public void testJarUnarchiveAll() throws Exception {
-		final File input = new File(getClass().getClassLoader().getResource("bla.jar").getFile());
+		final File input = getFile("bla.jar");
         final InputStream is = new FileInputStream(input);
         final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("jar", is);
         

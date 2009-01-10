@@ -33,8 +33,8 @@ public final class ArTestCase extends AbstractTestCase {
 	public void testArArchiveCreation() throws Exception {
 		final File output = new File(dir, "bla.ar");
 		
-		final File file1 = new File(getClass().getClassLoader().getResource("test1.xml").getFile());
-		final File file2 = new File(getClass().getClassLoader().getResource("test2.xml").getFile());
+		final File file1 = getFile("test1.xml");
+		final File file2 = getFile("test2.xml");
 		
 		final OutputStream out = new FileOutputStream(output);
         final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("ar", out);
@@ -52,8 +52,8 @@ public final class ArTestCase extends AbstractTestCase {
 	public void testArUnarchive() throws Exception {
 		final File output = new File(dir, "bla.ar");
 		{
-			final File file1 = new File(getClass().getClassLoader().getResource("test1.xml").getFile());
-			final File file2 = new File(getClass().getClassLoader().getResource("test2.xml").getFile());
+			final File file1 = getFile("test1.xml");
+			final File file2 = getFile("test2.xml");
 			
 			final OutputStream out = new FileOutputStream(output);
 	        final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("ar", out);

@@ -14,6 +14,10 @@ public abstract class AbstractTestCase extends TestCase {
 		dir.mkdir();
 	}
 
+	protected File getFile( String path ) {
+		return new File(getClass().getClassLoader().getResource(path).getFile());		
+	}
+	
 	protected void tearDown() throws Exception {
 		dir.delete();
 		dir = null;
