@@ -371,12 +371,12 @@ public class ZipArchiveEntry
      */
     public void addExtraField( final ZipExtraField extraField )
     {
-        final ZipShort type = extraField.getHeaderID();
+        final ZipShort type = extraField.getHeaderId();
         boolean done = false;
         for( int i = 0; !done && i < m_extraFields.size(); i++ )
         {
             final ZipExtraField other = (ZipExtraField)m_extraFields.get( i );
-            if( other.getHeaderID().equals( type ) )
+            if( other.getHeaderId().equals( type ) )
             {
                 m_extraFields.set( i, extraField );
                 done = true;
@@ -426,7 +426,7 @@ public class ZipArchiveEntry
         boolean done = false;
         for( int i = 0; !done && i < m_extraFields.size(); i++ )
         {
-            if( ( (ZipExtraField)m_extraFields.get( i ) ).getHeaderID().equals( type ) )
+            if( ( (ZipExtraField)m_extraFields.get( i ) ).getHeaderId().equals( type ) )
             {
                 m_extraFields.remove( i );
                 done = true;

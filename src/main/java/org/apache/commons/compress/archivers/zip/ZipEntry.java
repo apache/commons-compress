@@ -1,124 +1,64 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ *  Licensed to the Apache Software Foundation (ASF) under one or more
+ *  contributor license agreements.  See the NOTICE file distributed with
+ *  this work for additional information regarding copyright ownership.
+ *  The ASF licenses this file to You under the Apache License, Version 2.0
+ *  (the "License"); you may not use this file except in compliance with
+ *  the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
  */
 package org.apache.commons.compress.archivers.zip;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
+import java.util.Vector;
 import java.util.zip.ZipException;
 
 /**
- * Extension that adds better handling of extra fields and provides access to
- * the internal and external file attributes.
+ * Extension that adds better handling of extra fields and provides
+ * access to the internal and external file attributes.
+ *
  */
-public class ZipEntry
-    extends java.util.zip.ZipEntry
-{
-    /**
-     * Helper for JDK 1.1
-     *
-     * @since 1.2
-     */
-    private static Method c_setCompressedSizeMethod;
+public class ZipEntry extends java.util.zip.ZipEntry implements Cloneable {
 
-    /**
-     * Helper for JDK 1.1
-     *
-     * @since 1.2
-     */
-    private static final Object c_lockReflection = new Object();
+    public static final int PLATFORM_UNIX = 3;
+    public static final int PLATFORM_FAT  = 0;
+    private static final int SHORT_MASK = 0xFFFF;
+    private static final int SHORT_SHIFT = 16;
 
-    /**
-     * Helper for JDK 1.1
-     *
-     * @since 1.2
-     */
-    private static boolean c_triedToGetMethod;
-
-    private final ArrayList m_extraFields = new ArrayList();
-
-    private int m_internalAttributes;
-    private long m_externalAttributes;
-
-    /**
-     * Helper for JDK 1.1 <-> 1.2 incompatibility.
-     *
-     * @since 1.2
-     */
-    private Long m_compressedSize;
+    private int internalAttributes = 0;
+    private int platform = PLATFORM_FAT;
+    private long externalAttributes = 0;
+    private Vector/*<ZipExtraField>*/ extraFields = null;
+    private String name = null;
 
     /**
      * Creates a new zip entry with the specified name.
-     *
-     * @param name the name of entry
+     * @param name the name of the entry
      * @since 1.1
      */
-    public ZipEntry( final String name )
-    {
-        super( name );
+    public ZipEntry(String name) {
+        super(name);
     }
 
     /**
      * Creates a new zip entry with fields taken from the specified zip entry.
-     *
-     * @param entry the JDK ZipEntry to adapt
-     * @exception ZipException if can not create entry
+     * @param entry the entry to get fields from
      * @since 1.1
+     * @throws ZipException on error
      */
-    public ZipEntry( java.util.zip.ZipEntry entry )
-        throws ZipException
-    {
-        /*
-         * REVISIT: call super(entry) instead of this stuff in Ant2,
-         * "copy constructor" has not been available in JDK 1.1
-         */
-        super( entry.getName() );
-
-        setComment( entry.getComment() );
-        setMethod( entry.getMethod() );
-        setTime( entry.getTime() );
-
-        final long size = entry.getSize();
-        if( size > 0 )
-        {
-            setSize( size );
-        }
-
-        final long cSize = entry.getCompressedSize();
-        if( cSize > 0 )
-        {
-            setComprSize( cSize );
-        }
-
-        final long crc = entry.getCrc();
-        if( crc > 0 )
-        {
-            setCrc( crc );
-        }
-
-        final byte[] extra = entry.getExtra();
-        if( extra != null )
-        {
-            setExtraFields( ExtraFieldUtils.parse( extra ) );
-        }
-        else
-        {
+    public ZipEntry(java.util.zip.ZipEntry entry) throws ZipException {
+        super(entry);
+        byte[] extra = entry.getExtra();
+        if (extra != null) {
+            setExtraFields(ExtraFieldUtils.parse(extra));
+        } else {
             // initializes extra data to an empty byte array
             setExtra();
         }
@@ -126,326 +66,307 @@ public class ZipEntry
 
     /**
      * Creates a new zip entry with fields taken from the specified zip entry.
-     *
-     * @param entry the entry to adapt
-     * @exception ZipException if can not create entry
+     * @param entry the entry to get fields from
+     * @throws ZipException on error
      * @since 1.1
      */
-    public ZipEntry( final ZipEntry entry )
-        throws ZipException
-    {
-        this( (java.util.zip.ZipEntry)entry );
-        setInternalAttributes( entry.getInternalAttributes() );
-        setExternalAttributes( entry.getExternalAttributes() );
-        setExtraFields( entry.getExtraFields() );
+    public ZipEntry(ZipEntry entry) throws ZipException {
+        this((java.util.zip.ZipEntry) entry);
+        setInternalAttributes(entry.getInternalAttributes());
+        setExternalAttributes(entry.getExternalAttributes());
+        setExtraFields(entry.getExtraFields());
     }
 
     /**
-     * Try to get a handle to the setCompressedSize method.
-     *
-     * @since 1.2
+     * @since 1.9
      */
-    private static void checkSCS()
-    {
-        if( !c_triedToGetMethod )
-        {
-            synchronized( c_lockReflection )
-            {
-                c_triedToGetMethod = true;
-                try
-                {
-                    c_setCompressedSizeMethod =
-                        java.util.zip.ZipEntry.class.getMethod( "setCompressedSize",
-                                                                new Class[]{Long.TYPE} );
-                }
-                catch( NoSuchMethodException nse )
-                {
-                }
-            }
-        }
+    protected ZipEntry() {
+        super("");
     }
 
     /**
-     * Are we running JDK 1.2 or higher?
-     *
-     * @return Description of the Returned Value
-     * @since 1.2
-     */
-    private static boolean haveSetCompressedSize()
-    {
-        checkSCS();
-        return c_setCompressedSizeMethod != null;
-    }
-
-    /**
-     * Invoke setCompressedSize via reflection.
-     *
-     * @param entry Description of Parameter
-     * @param size Description of Parameter
-     * @since 1.2
-     */
-    private static void performSetCompressedSize( final ZipEntry entry,
-                                                  final long size )
-    {
-        final Long[] s = {new Long( size )};
-        try
-        {
-            c_setCompressedSizeMethod.invoke( entry, s );
-        }
-        catch( final InvocationTargetException ite )
-        {
-            final Throwable nested = ite.getTargetException();
-            final String message = "Exception setting the compressed size " +
-                "of " + entry + ": " + nested.getMessage();
-            throw new RuntimeException( message );
-        }
-        catch( final Throwable t )
-        {
-            final String message = "Exception setting the compressed size " +
-                "of " + entry + ": " + t.getMessage();
-            throw new RuntimeException( message );
-        }
-    }
-
-    /**
-     * Make this class work in JDK 1.1 like a 1.2 class. <p>
-     *
-     * This either stores the size for later usage or invokes setCompressedSize
-     * via reflection.</p>
-     *
-     * @param size The new ComprSize value
-     * @since 1.2
-     */
-    public void setComprSize( final long size )
-    {
-        if( haveSetCompressedSize() )
-        {
-            performSetCompressedSize( this, size );
-        }
-        else
-        {
-            m_compressedSize = new Long( size );
-        }
-    }
-
-    /**
-     * Sets the external file attributes.
-     *
-     * @param externalAttributes The new ExternalAttributes value
+     * Overwrite clone.
+     * @return a cloned copy of this ZipEntry
      * @since 1.1
      */
-    public void setExternalAttributes( final long externalAttributes )
-    {
-        m_externalAttributes = externalAttributes;
-    }
+    public Object clone() {
+        ZipEntry e = (ZipEntry) super.clone();
 
-    /**
-     * Throws an Exception if extra data cannot be parsed into extra fields.
-     *
-     * @param extra The new Extra value
-     * @throws RuntimeException if fail to set extra data
-     * @since 1.1
-     */
-    public void setExtra( final byte[] extra )
-        throws RuntimeException
-    {
-        try
-        {
-            setExtraFields( ExtraFieldUtils.parse( extra ) );
-        }
-        catch( final Exception e )
-        {
-            throw new RuntimeException( e.getMessage() );
-        }
-    }
-
-    /**
-     * Replaces all currently attached extra fields with the new array.
-     *
-     * @param fields The new ExtraFields value
-     * @since 1.1
-     */
-    public void setExtraFields( final ZipExtraField[] fields )
-    {
-        m_extraFields.clear();
-        for( int i = 0; i < fields.length; i++ )
-        {
-            m_extraFields.add( fields[ i ] );
-        }
-        setExtra();
-    }
-
-    /**
-     * Sets the internal file attributes.
-     *
-     * @param value The new InternalAttributes value
-     * @since 1.1
-     */
-    public void setInternalAttributes( final int value )
-    {
-        m_internalAttributes = value;
-    }
-
-    /**
-     * Retrieves the extra data for the central directory.
-     *
-     * @return The CentralDirectoryExtra value
-     * @since 1.1
-     */
-    public byte[] getCentralDirectoryExtra()
-    {
-        return ExtraFieldUtils.mergeCentralDirectoryData( getExtraFields() );
-    }
-
-    /**
-     * Override to make this class work in JDK 1.1 like a 1.2 class.
-     *
-     * @return The CompressedSize value
-     * @since 1.2
-     */
-    public long getCompressedSize()
-    {
-        if( m_compressedSize != null )
-        {
-            // has been set explicitly and we are running in a 1.1 VM
-            return m_compressedSize.longValue();
-        }
-        return super.getCompressedSize();
-    }
-
-    /**
-     * Retrieves the external file attributes.
-     *
-     * @return The ExternalAttributes value
-     * @since 1.1
-     */
-    public long getExternalAttributes()
-    {
-        return m_externalAttributes;
-    }
-
-    /**
-     * Retrieves extra fields.
-     *
-     * @return The ExtraFields value
-     * @since 1.1
-     */
-    public ZipExtraField[] getExtraFields()
-    {
-        final ZipExtraField[] result = new ZipExtraField[ m_extraFields.size() ];
-        return (ZipExtraField[])m_extraFields.toArray( result );
+        e.extraFields = extraFields != null ? (Vector) extraFields.clone() : null;
+        e.setInternalAttributes(getInternalAttributes());
+        e.setExternalAttributes(getExternalAttributes());
+        e.setExtraFields(getExtraFields());
+        return e;
     }
 
     /**
      * Retrieves the internal file attributes.
      *
-     * @return The InternalAttributes value
+     * @return the internal file attributes
      * @since 1.1
      */
-    public int getInternalAttributes()
-    {
-        return m_internalAttributes;
+    public int getInternalAttributes() {
+        return internalAttributes;
     }
 
     /**
-     * Retrieves the extra data for the local file data.
-     *
-     * @return The LocalFileDataExtra value
+     * Sets the internal file attributes.
+     * @param value an <code>int</code> value
      * @since 1.1
      */
-    public byte[] getLocalFileDataExtra()
-    {
-        byte[] extra = getExtra();
-        return extra != null ? extra : new byte[ 0 ];
+    public void setInternalAttributes(int value) {
+        internalAttributes = value;
     }
 
     /**
-     * Adds an extra fields - replacing an already present extra field of the
-     * same type.
-     *
-     * @param extraField The feature to be added to the ExtraField attribute
+     * Retrieves the external file attributes.
+     * @return the external file attributes
      * @since 1.1
      */
-    public void addExtraField( final ZipExtraField extraField )
-    {
-        final ZipShort type = extraField.getHeaderID();
-        boolean done = false;
-        for( int i = 0; !done && i < m_extraFields.size(); i++ )
-        {
-            final ZipExtraField other = (ZipExtraField)m_extraFields.get( i );
-            if( other.getHeaderID().equals( type ) )
-            {
-                m_extraFields.set( i, extraField );
-                done = true;
-            }
-        }
-        if( !done )
-        {
-            m_extraFields.add( extraField );
+    public long getExternalAttributes() {
+        return externalAttributes;
+    }
+
+    /**
+     * Sets the external file attributes.
+     * @param value an <code>long</code> value
+     * @since 1.1
+     */
+    public void setExternalAttributes(long value) {
+        externalAttributes = value;
+    }
+
+    /**
+     * Sets Unix permissions in a way that is understood by Info-Zip's
+     * unzip command.
+     * @param mode an <code>int</code> value
+     * @since Ant 1.5.2
+     */
+    public void setUnixMode(int mode) {
+        // CheckStyle:MagicNumberCheck OFF - no point
+        setExternalAttributes((mode << SHORT_SHIFT)
+                              // MS-DOS read-only attribute
+                              | ((mode & 0200) == 0 ? 1 : 0)
+                              // MS-DOS directory flag
+                              | (isDirectory() ? 0x10 : 0));
+        // CheckStyle:MagicNumberCheck ON
+        platform = PLATFORM_UNIX;
+    }
+
+    /**
+     * Unix permission.
+     * @return the unix permissions
+     * @since Ant 1.6
+     */
+    public int getUnixMode() {
+        return platform != PLATFORM_UNIX ? 0 :
+            (int) ((getExternalAttributes() >> SHORT_SHIFT) & SHORT_MASK);
+    }
+
+    /**
+     * Platform specification to put into the &quot;version made
+     * by&quot; part of the central file header.
+     *
+     * @return PLATFORM_FAT unless {@link #setUnixMode setUnixMode}
+     * has been called, in which case PLATORM_UNIX will be returned.
+     *
+     * @since Ant 1.5.2
+     */
+    public int getPlatform() {
+        return platform;
+    }
+
+    /**
+     * Set the platform (UNIX or FAT).
+     * @param platform an <code>int</code> value - 0 is FAT, 3 is UNIX
+     * @since 1.9
+     */
+    protected void setPlatform(int platform) {
+        this.platform = platform;
+    }
+
+    /**
+     * Replaces all currently attached extra fields with the new array.
+     * @param fields an array of extra fields
+     * @since 1.1
+     */
+    public void setExtraFields(ZipExtraField[] fields) {
+        extraFields = new Vector();
+        for (int i = 0; i < fields.length; i++) {
+            extraFields.addElement(fields[i]);
         }
         setExtra();
     }
 
     /**
-     * Overwrite clone
-     *
-     * @return Description of the Returned Value
+     * Retrieves extra fields.
+     * @return an array of the extra fields
      * @since 1.1
      */
-    public Object clone()
-    {
-        ZipEntry entry = null;
-        try
-        {
-            entry = new ZipEntry( (java.util.zip.ZipEntry)super.clone() );
+    public ZipExtraField[] getExtraFields() {
+        if (extraFields == null) {
+            return new ZipExtraField[0];
         }
-        catch( final Exception e )
-        {
-            // impossible as extra data is in correct format
-            e.printStackTrace();
-            return null;
-        }
+        ZipExtraField[] result = new ZipExtraField[extraFields.size()];
+        extraFields.copyInto(result);
+        return result;
+    }
 
-        entry.setInternalAttributes( getInternalAttributes() );
-        entry.setExternalAttributes( getExternalAttributes() );
-        entry.setExtraFields( getExtraFields() );
-        return entry;
+    /**
+     * Adds an extra fields - replacing an already present extra field
+     * of the same type.
+     * @param ze an extra field
+     * @since 1.1
+     */
+    public void addExtraField(ZipExtraField ze) {
+        if (extraFields == null) {
+            extraFields = new Vector();
+        }
+        ZipShort type = ze.getHeaderId();
+        boolean done = false;
+        for (int i = 0, fieldsSize = extraFields.size(); !done && i < fieldsSize; i++) {
+            if (((ZipExtraField) extraFields.elementAt(i)).getHeaderId().equals(type)) {
+                extraFields.setElementAt(ze, i);
+                done = true;
+            }
+        }
+        if (!done) {
+            extraFields.addElement(ze);
+        }
+        setExtra();
     }
 
     /**
      * Remove an extra fields.
-     *
-     * @param type Description of Parameter
+     * @param type the type of extra field to remove
      * @since 1.1
      */
-    public void removeExtraField( final ZipShort type )
-    {
+    public void removeExtraField(ZipShort type) {
+        if (extraFields == null) {
+            extraFields = new Vector();
+        }
         boolean done = false;
-        for( int i = 0; !done && i < m_extraFields.size(); i++ )
-        {
-            if( ( (ZipExtraField)m_extraFields.get( i ) ).getHeaderID().equals( type ) )
-            {
-                m_extraFields.remove( i );
+        for (int i = 0, fieldsSize = extraFields.size(); !done && i < fieldsSize; i++) {
+            if (((ZipExtraField) extraFields.elementAt(i)).getHeaderId().equals(type)) {
+                extraFields.removeElementAt(i);
                 done = true;
             }
         }
-        if( !done )
-        {
+        if (!done) {
             throw new java.util.NoSuchElementException();
         }
         setExtra();
     }
 
     /**
+     * Throws an Exception if extra data cannot be parsed into extra fields.
+     * @param extra an array of bytes to be parsed into extra fields
+     * @throws RuntimeException if the bytes cannot be parsed
+     * @since 1.1
+     * @throws RuntimeException on error
+     */
+    public void setExtra(byte[] extra) throws RuntimeException {
+        try {
+            setExtraFields(ExtraFieldUtils.parse(extra));
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    /**
      * Unfortunately {@link java.util.zip.ZipOutputStream
-     * java.util.zip.ZipOutputStream} seems to access the extra data directly,
-     * so overriding getExtra doesn't help - we need to modify super's data
-     * directly.
+     * java.util.zip.ZipOutputStream} seems to access the extra data
+     * directly, so overriding getExtra doesn't help - we need to
+     * modify super's data directly.
      *
      * @since 1.1
      */
-    protected void setExtra()
-    {
-        super.setExtra( ExtraFieldUtils.mergeLocalFileDataData( getExtraFields() ) );
+    protected void setExtra() {
+        super.setExtra(ExtraFieldUtils.mergeLocalFileDataData(getExtraFields()));
     }
+
+    /**
+     * Retrieves the extra data for the local file data.
+     * @return the extra data for local file
+     * @since 1.1
+     */
+    public byte[] getLocalFileDataExtra() {
+        byte[] extra = getExtra();
+        return extra != null ? extra : new byte[0];
+    }
+
+    /**
+     * Retrieves the extra data for the central directory.
+     * @return the central directory extra data
+     * @since 1.1
+     */
+    public byte[] getCentralDirectoryExtra() {
+        return ExtraFieldUtils.mergeCentralDirectoryData(getExtraFields());
+    }
+
+    /**
+     * Make this class work in JDK 1.1 like a 1.2 class.
+     *
+     * <p>This either stores the size for later usage or invokes
+     * setCompressedSize via reflection.</p>
+     * @param size the size to use
+     * @deprecated since 1.7.
+     *             Use setCompressedSize directly.
+     * @since 1.2
+     */
+    public void setComprSize(long size) {
+        setCompressedSize(size);
+    }
+
+    /**
+     * Get the name of the entry.
+     * @return the entry name
+     * @since 1.9
+     */
+    public String getName() {
+        return name == null ? super.getName() : name;
+    }
+
+    /**
+     * Is this entry a directory?
+     * @return true if the entry is a directory
+     * @since 1.10
+     */
+    public boolean isDirectory() {
+        return getName().endsWith("/");
+    }
+
+    /**
+     * Set the name of the entry.
+     * @param name the name to use
+     */
+    protected void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Get the hashCode of the entry.
+     * This uses the name as the hashcode.
+     * @return a hashcode.
+     * @since Ant 1.7
+     */
+    public int hashCode() {
+        // this method has severe consequences on performance. We cannot rely
+        // on the super.hashCode() method since super.getName() always return
+        // the empty string in the current implemention (there's no setter)
+        // so it is basically draining the performance of a hashmap lookup
+        return getName().hashCode();
+    }
+
+    /**
+     * The equality method. In this case, the implementation returns 'this == o'
+     * which is basically the equals method of the Object class.
+     * @param o the object to compare to
+     * @return true if this object is the same as <code>o</code>
+     * @since Ant 1.7
+     */
+    public boolean equals(Object o) {
+        return (this == o);
+    }
+
 }
