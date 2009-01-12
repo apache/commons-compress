@@ -24,6 +24,8 @@ import java.io.OutputStream;
 
 import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
 import org.apache.commons.compress.archivers.ar.ArArchiveOutputStream;
+import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
+import org.apache.commons.compress.archivers.cpio.CpioArchiveOutputStream;
 import org.apache.commons.compress.archivers.jar.JarArchiveInputStream;
 import org.apache.commons.compress.archivers.jar.JarArchiveOutputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -53,6 +55,8 @@ public class ArchiveStreamFactory {
         	return new TarArchiveInputStream(in);
         } else if("jar".equalsIgnoreCase(archiverName)) {
         	return new JarArchiveInputStream(in);
+        } else if("cpio".equalsIgnoreCase(archiverName)) {
+        	return new CpioArchiveInputStream(in);
         }
     	return null;
     }
@@ -66,6 +70,8 @@ public class ArchiveStreamFactory {
         	return new TarArchiveOutputStream(out);
         } else if("jar".equalsIgnoreCase(archiverName)) {
         	return new JarArchiveOutputStream(out);
+        } else if("cpio".equalsIgnoreCase(archiverName)) {
+        	return new CpioArchiveOutputStream(out);
         }
     	return null;
     }
@@ -86,6 +92,8 @@ public class ArchiveStreamFactory {
 			return new TarArchiveInputStream(input);
 		} else if(ArArchiveInputStream.matches(signature)) {
 			return new ArArchiveInputStream(input);
+		} else if(CpioArchiveInputStream.matches(signature)) {
+			return new CpioArchiveInputStream(input);
 		} 
 		return null;
 	}
