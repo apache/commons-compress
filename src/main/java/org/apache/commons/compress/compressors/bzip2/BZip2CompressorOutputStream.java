@@ -375,6 +375,16 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
         if (closed) {
             return;
         }
+        finish();
+        super.close();
+        bsStream.close();
+        closed = true;    	
+    }
+    
+    protected void finish() throws IOException {
+        if (closed) {
+            return;
+        }
 
         if (runLength > 0) {
             writeRun();
@@ -382,9 +392,6 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
         currentChar = -1;
         endBlock();
         endCompression();
-        closed = true;
-        super.close();
-        bsStream.close();
     }
 
     public void flush() throws IOException {
