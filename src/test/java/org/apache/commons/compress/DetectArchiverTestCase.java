@@ -27,6 +27,7 @@ import junit.framework.TestCase;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
+import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.jar.JarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
@@ -38,22 +39,32 @@ public final class DetectArchiverTestCase extends TestCase {
 		final ArchiveInputStream ar = factory.createArchiveInputStream(
 				new BufferedInputStream(new FileInputStream(
 						new File(getClass().getClassLoader().getResource("bla.ar").getFile())))); 
+		assertNotNull(ar);
 		assertTrue(ar instanceof ArArchiveInputStream);
 
 		final ArchiveInputStream tar = factory.createArchiveInputStream(
 				new BufferedInputStream(new FileInputStream(
 						new File(getClass().getClassLoader().getResource("bla.tar").getFile()))));
+		assertNotNull(tar);
 		assertTrue(tar instanceof TarArchiveInputStream);
 
 		final ArchiveInputStream zip = factory.createArchiveInputStream(
 				new BufferedInputStream(new FileInputStream(
 						new File(getClass().getClassLoader().getResource("bla.zip").getFile()))));
+		assertNotNull(zip);
 		assertTrue(zip instanceof ZipArchiveInputStream);
 
 		final ArchiveInputStream jar = factory.createArchiveInputStream(
 				new BufferedInputStream(new FileInputStream(
 						new File(getClass().getClassLoader().getResource("bla.jar").getFile()))));
+		assertNotNull(jar);
 		assertTrue(jar instanceof JarArchiveInputStream);
+
+		final ArchiveInputStream cpio = factory.createArchiveInputStream(
+				new BufferedInputStream(new FileInputStream(
+						new File(getClass().getClassLoader().getResource("bla.cpio").getFile()))));
+		assertNotNull(cpio);
+		assertTrue(cpio instanceof CpioArchiveInputStream);
 
 //		final ArchiveInputStream tgz = factory.createArchiveInputStream(
 //				new BufferedInputStream(new FileInputStream(

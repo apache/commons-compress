@@ -565,7 +565,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
 
         int v, t, i, j, gs, ge, totc, bt, bc, iter;
         int nSelectors = 0, alphaSize, minLen, maxLen, selCtr;
-        int nGroups, nBytes;
+        int nGroups; //, nBytes;
 
         alphaSize = nInUse + 2;
         for (t = 0; t < N_GROUPS; t++) {
@@ -796,7 +796,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
                 }
             }
 
-            nBytes = bytesOut;
+            //nBytes = bytesOut;
             for (i = 0; i < 16; i++) {
                 if (inUse16[i]) {
                     bsW(1, 1);
@@ -820,7 +820,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
         }
 
         /* Now the selectors. */
-        nBytes = bytesOut;
+        //nBytes = bytesOut;
         bsW (3, nGroups);
         bsW (15, nSelectors);
         for (i = 0; i < nSelectors; i++) {
@@ -831,7 +831,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
         }
 
         /* Now the coding tables. */
-        nBytes = bytesOut;
+        //nBytes = bytesOut;
 
         for (t = 0; t < nGroups; t++) {
             int curr = len[t][0];
@@ -850,7 +850,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
         }
 
         /* And finally, the block data proper */
-        nBytes = bytesOut;
+        //nBytes = bytesOut;
         selCtr = 0;
         gs = 0;
         while (true) {
