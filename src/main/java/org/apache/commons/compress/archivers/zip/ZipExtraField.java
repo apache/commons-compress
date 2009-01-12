@@ -36,7 +36,7 @@ public interface ZipExtraField
      * @return The HeaderId value
      * @since 1.1
      */
-    ZipShort getHeaderID();
+    ZipShort getHeaderId();
 
     /**
      * Length of the extra field in the local file data - without Header-ID or

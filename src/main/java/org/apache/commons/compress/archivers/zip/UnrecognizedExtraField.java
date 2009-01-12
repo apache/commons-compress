@@ -65,7 +65,7 @@ public class UnrecognizedExtraField
      *
      * @param headerID the header ID
      */
-    public void setHeaderID( final ZipShort headerID )
+    public void setHeaderId( final ZipShort headerID )
     {
         m_headerID = headerID;
     }
@@ -113,7 +113,7 @@ public class UnrecognizedExtraField
      *
      * @return the HeaderID
      */
-    public ZipShort getHeaderID()
+    public ZipShort getHeaderId()
     {
         return m_headerID;
     }
