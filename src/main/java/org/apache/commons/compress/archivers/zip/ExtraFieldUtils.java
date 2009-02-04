@@ -114,10 +114,6 @@ public class ExtraFieldUtils {
             }
             start += (length + WORD);
         }
-        if (start != data.length) { // array not exhausted
-            throw new ZipException("data starting at " + start
-                + " is in unknown format");
-        }
 
         ZipExtraField[] result = new ZipExtraField[v.size()];
         v.copyInto(result);
