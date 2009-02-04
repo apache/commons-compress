@@ -17,7 +17,7 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import java.util.Vector;
+import java.util.LinkedHashMap;
 import java.util.zip.ZipException;
 
 /**
@@ -35,7 +35,7 @@ public class ZipEntry extends java.util.zip.ZipEntry implements Cloneable {
     private int internalAttributes = 0;
     private int platform = PLATFORM_FAT;
     private long externalAttributes = 0;
-    private Vector/*<ZipExtraField>*/ extraFields = null;
+    private LinkedHashMap/*<ZipShort, ZipExtraField>*/ extraFields = null;
     private String name = null;
 
     /**
@@ -92,7 +92,7 @@ public class ZipEntry extends java.util.zip.ZipEntry implements Cloneable {
     public Object clone() {
         ZipEntry e = (ZipEntry) super.clone();
 
-        e.extraFields = extraFields != null ? (Vector) extraFields.clone() : null;
+        e.extraFields = extraFields != null ? (LinkedHashMap) extraFields.clone() : null;
         e.setInternalAttributes(getInternalAttributes());
         e.setExternalAttributes(getExternalAttributes());
         e.setExtraFields(getExtraFields());
@@ -191,9 +191,9 @@ public class ZipEntry extends java.util.zip.ZipEntry implements Cloneable {
      * @since 1.1
      */
     public void setExtraFields(ZipExtraField[] fields) {
-        extraFields = new Vector();
+        extraFields = new LinkedHashMap();
         for (int i = 0; i < fields.length; i++) {
-            extraFields.addElement(fields[i]);
+            extraFields.put(fields[i].getHeaderId(), fields[i]);
         }
         setExtra();
     }
@@ -208,8 +208,7 @@ public class ZipEntry extends java.util.zip.ZipEntry implements Cloneable {
             return new ZipExtraField[0];
         }
         ZipExtraField[] result = new ZipExtraField[extraFields.size()];
-        extraFields.copyInto(result);
-        return result;
+        return (ZipExtraField[]) extraFields.values().toArray(result);
     }
 
     /**
@@ -220,19 +219,9 @@ public class ZipEntry extends java.util.zip.ZipEntry implements Cloneable {
      */
     public void addExtraField(ZipExtraField ze) {
         if (extraFields == null) {
-            extraFields = new Vector();
+            extraFields = new LinkedHashMap();
         }
-        ZipShort type = ze.getHeaderId();
-        boolean done = false;
-        for (int i = 0, fieldsSize = extraFields.size(); !done && i < fieldsSize; i++) {
-            if (((ZipExtraField) extraFields.elementAt(i)).getHeaderId().equals(type)) {
-                extraFields.setElementAt(ze, i);
-                done = true;
-            }
-        }
-        if (!done) {
-            extraFields.addElement(ze);
-        }
+        extraFields.put(ze.getHeaderId(), ze);
         setExtra();
     }
 
@@ -243,16 +232,9 @@ public class ZipEntry extends java.util.zip.ZipEntry implements Cloneable {
      */
     public void removeExtraField(ZipShort type) {
         if (extraFields == null) {
-            extraFields = new Vector();
+            throw new java.util.NoSuchElementException();
         }
-        boolean done = false;
-        for (int i = 0, fieldsSize = extraFields.size(); !done && i < fieldsSize; i++) {
-            if (((ZipExtraField) extraFields.elementAt(i)).getHeaderId().equals(type)) {
-                extraFields.removeElementAt(i);
-                done = true;
-            }
-        }
-        if (!done) {
+        if (extraFields.remove(type) == null) {
             throw new java.util.NoSuchElementException();
         }
         setExtra();
