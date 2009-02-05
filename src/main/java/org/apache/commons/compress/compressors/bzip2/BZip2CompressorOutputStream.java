@@ -614,7 +614,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
                 }
 
                 if (ge > gs && nPart != nGroups && nPart != 1
-                    && ((nGroups - nPart) % 2 == 1)) {
+                    && ((nGroups - nPart) % 2 != 0)) {
                     aFreq -= mtfFreq[ge];
                     ge--;
                 }
@@ -984,9 +984,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
             b = t;
         }
         if (b > c) {
-            t = b;
             b = c;
-            c = t;
         }
         if (a > b) {
             b = a;
@@ -1031,7 +1029,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
 
             med = med3(block[zptr[lo] + d + 1],
                        block[zptr[hi            ] + d  + 1],
-                       block[zptr[(lo + hi) >> 1] + d + 1]);
+                       block[zptr[(lo + hi) >>> 1] + d + 1]);
 
             unLo = ltLo = lo;
             unHi = gtHi = hi;
