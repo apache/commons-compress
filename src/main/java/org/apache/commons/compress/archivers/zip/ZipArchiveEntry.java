@@ -406,7 +406,7 @@ public class ZipArchiveEntry
         {
             // impossible as extra data is in correct format
             e.printStackTrace();
-            return null;
+            throw new RuntimeException(e);
         }
 
         entry.setInternalAttributes( getInternalAttributes() );

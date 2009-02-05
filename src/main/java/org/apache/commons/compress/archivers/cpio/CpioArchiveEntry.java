@@ -535,7 +535,11 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
         case C_ISNWK:
             break;
         default:
-            new IllegalArgumentException("Unknown mode");
+            // FIXME: testCpioUnarchive fails if I change the line to
+            //        actually throw the excpetion
+            new IllegalArgumentException("Unknown mode (full mode: "
+                                               + mode + ", masked mode: "
+                                               + (mode & S_IFMT));
         }
 
         this.mode = mode;
