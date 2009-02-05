@@ -80,8 +80,9 @@ public class ArchiveStreamFactory {
 
 		final byte[] signature = new byte[12];
 		input.mark(signature.length);
-		input.read(signature);
+		int signatureLength = input.read(signature);
 		// TODO if reset is not supported pass on the IOException or return null?
+                // TODO, what if we failed to read 12 bytes?
 		input.reset();
 
 		if(ZipArchiveInputStream.matches(signature)) {

@@ -121,7 +121,9 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements Cpio
                 throw new IllegalArgumentException("Unknown header type");
 
         }
-        this.entryFormat = format;
+        synchronized (this) {
+            this.entryFormat = format;
+        }
     }
 
     /**
@@ -135,7 +137,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements Cpio
      * @throws IOException if an I/O error has occurred or if a CPIO file error has
      *                     occurred
      */
-    public void putNextEntry(final CpioArchiveEntry e) throws IOException {
+    public synchronized void putNextEntry(final CpioArchiveEntry e) throws IOException {
         ensureOpen();
         if (this.cpioEntry != null) {
             closeEntry(); // close previous entry
@@ -233,7 +235,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements Cpio
      * @throws IOException if an I/O error has occurred or if a CPIO file error has
      *                     occurred
      */
-    public void closeEntry() throws IOException {
+    public synchronized void closeEntry() throws IOException {
         ensureOpen();
 
         if (this.cpioEntry.getSize() != this.written) {
@@ -251,9 +253,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements Cpio
                 throw new IOException("CRC Error");
             }
         }
-        if (this.cpioEntry != null) {
-            this.cpioEntry = null;
-        }
+        this.cpioEntry = null;
         this.crc = 0;
         this.written = 0;
     }
@@ -300,7 +300,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements Cpio
      * @throws IOException if an I/O exception has occurred or if a CPIO file error
      *                     has occurred
      */
-    public void finish() throws IOException {
+    public synchronized void finish() throws IOException {
         ensureOpen();
         // TODO: synchronize and finish
         if (this.finished) {
