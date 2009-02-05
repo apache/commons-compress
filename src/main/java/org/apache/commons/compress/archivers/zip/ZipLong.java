@@ -146,4 +146,13 @@ public final class ZipLong implements Cloneable {
     public int hashCode() {
         return (int) value;
     }
+
+    public Object clone() {
+        try {
+            return (ZipLong) super.clone();
+        } catch (CloneNotSupportedException cnfe) {
+            // impossible
+            throw new RuntimeException(cnfe);
+        }
+    }
 }

@@ -57,7 +57,7 @@ public class UnrecognizedExtraField
      */
     public void setCentralDirectoryData( final byte[] centralData )
     {
-        m_centralData = centralData;
+        m_centralData = copy(centralData);
     }
 
        /**
@@ -77,7 +77,7 @@ public class UnrecognizedExtraField
      */
     public void setLocalFileDataData( final byte[] localData )
     {
-        m_localData = localData;
+        m_localData = copy(localData);
     }
 
     /**
@@ -89,7 +89,7 @@ public class UnrecognizedExtraField
     {
         if( m_centralData != null )
         {
-            return m_centralData;
+            return copy(m_centralData);
         }
         return getLocalFileDataData();
     }
@@ -125,7 +125,7 @@ public class UnrecognizedExtraField
      */
     public byte[] getLocalFileDataData()
     {
-        return m_localData;
+        return copy(m_localData);
     }
 
     /**
@@ -152,5 +152,14 @@ public class UnrecognizedExtraField
         final byte[] fileData = new byte[ length ];
         System.arraycopy( buffer, offset, fileData, 0, length );
         setLocalFileDataData( fileData );
+    }
+
+    private static byte[] copy(byte[] from) {
+        if (from != null) {
+            byte[] to = new byte[from.length];
+            System.arraycopy(from, 0, to, 0, to.length);
+            return to;
+        }
+        return null;
     }
 }
