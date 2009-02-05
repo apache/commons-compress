@@ -28,7 +28,7 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
  * header chars) into another stream. TODO: Update to BZip2 1.0.1
  */
 public class BZip2CompressorOutputStream extends CompressorOutputStream implements BZip2Constants {
-	protected static final int SETMASK = (1 << 21);
+    protected static final int SETMASK = (1 << 21);
     protected static final int CLEARMASK = (~SETMASK);
     protected static final int GREATER_ICOST = 15;
     protected static final int LESSER_ICOST = 0;

@@ -27,11 +27,11 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 
 public class ZipArchiveInputStream extends ArchiveInputStream {
 
-	private final ZipInputStream input;
+    private final ZipInputStream input;
 
-	public ZipArchiveInputStream(InputStream inputStream) {
-		input = new ZipInputStream(inputStream);
-	}
+    public ZipArchiveInputStream(InputStream inputStream) {
+        input = new ZipInputStream(inputStream);
+    }
 
     public ArchiveEntry getNextEntry() throws IOException {
     	java.util.zip.ZipEntry entry = input.getNextEntry();
