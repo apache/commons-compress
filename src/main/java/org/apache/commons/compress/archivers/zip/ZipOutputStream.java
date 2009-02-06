@@ -34,6 +34,9 @@ import java.util.zip.CRC32;
 import java.util.zip.Deflater;
 import java.util.zip.ZipException;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveOutputStream;
+
 /**
  * Reimplementation of {@link java.util.zip.ZipOutputStream
  * java.util.zip.ZipOutputStream} that does handle the extended
@@ -54,7 +57,7 @@ import java.util.zip.ZipException;
  * #putNextEntry putNextEntry} can be called.</p>
  *
  */
-public class ZipOutputStream extends FilterOutputStream {
+public class ZipOutputStream extends ArchiveOutputStream {
 
     private static final int BYTE_MASK = 0xFF;
     private static final int SHORT = 2;
@@ -560,6 +563,14 @@ public class ZipOutputStream extends FilterOutputStream {
         if (out != null) {
             out.flush();
         }
+    }
+
+    public void putArchiveEntry(ArchiveEntry entry) throws IOException {
+        putNextEntry((ZipArchiveEntry) entry);
+    }
+
+    public void closeArchiveEntry() {
+        // do nothing
     }
 
     /*
