@@ -34,10 +34,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     }
 
     public ArchiveEntry getNextEntry() throws IOException {
-    	java.util.zip.ZipEntry entry = input.getNextEntry();
-    	if(entry == null) {
-    		return null;
-    	}
+        java.util.zip.ZipEntry entry = input.getNextEntry();
+        if(entry == null) {
+            return null;
+        }
         return (ArchiveEntry)new ZipArchiveEntry(entry);
     }
 
@@ -50,34 +50,34 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     }
 
     
-    public static boolean matches( byte[] signature ) {
-    	// 4b50 0403 0014 0000
+    public static boolean matches( byte[] signature, int length ) {
+        // 4b50 0403 0014 0000
 
-    	if (signature[0] != 0x50) {
-    		return false;
-    	}
-    	if (signature[1] != 0x4b) {
-    		return false;
-    	}
-    	if (signature[2] != 0x03) {
-    		return false;
-    	}
-    	if (signature[3] != 0x04) {
-    		return false;
-    	}
-    	if (signature[4] != 0x14) {
-    		return false;
-    	}
-    	if (signature[5] != 0x00) {
-    		return false;
-    	}
-    	if (signature[6] != 0x00) {
-    		return false;
-    	}
-    	if (signature[7] != 0x00) {
-    		return false;
-    	}
-    	
-    	return true;
+        if (signature[0] != 0x50) {
+            return false;
+        }
+        if (signature[1] != 0x4b) {
+            return false;
+        }
+        if (signature[2] != 0x03) {
+            return false;
+        }
+        if (signature[3] != 0x04) {
+            return false;
+        }
+        if (signature[4] != 0x14) {
+            return false;
+        }
+        if (signature[5] != 0x00) {
+            return false;
+        }
+        if (signature[6] != 0x00) {
+            return false;
+        }
+        if (signature[7] != 0x00) {
+            return false;
+        }
+        
+        return true;
     }
 }
