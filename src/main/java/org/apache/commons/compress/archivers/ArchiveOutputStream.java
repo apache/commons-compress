@@ -19,11 +19,16 @@
 package org.apache.commons.compress.archivers;
 
 import java.io.IOException;
+import java.io.FilterOutputStream;
 import java.io.OutputStream;
 
-public abstract class ArchiveOutputStream extends OutputStream {
+public abstract class ArchiveOutputStream extends FilterOutputStream {
 
-	public abstract void putArchiveEntry(ArchiveEntry entry) throws IOException;
+    protected ArchiveOutputStream(OutputStream other) {
+        super(other);
+    }
+
+    public abstract void putArchiveEntry(ArchiveEntry entry) throws IOException;
 	
     public abstract void closeArchiveEntry() throws IOException;
 }

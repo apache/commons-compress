@@ -23,9 +23,9 @@ import java.io.OutputStream;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.apache.commons.compress.archivers.zip.ZipOutputStream;
 
-public class JarArchiveOutputStream extends ZipArchiveOutputStream {
+public class JarArchiveOutputStream extends ZipOutputStream {
 
 	public JarArchiveOutputStream( final OutputStream out ) {
 		super(out);
