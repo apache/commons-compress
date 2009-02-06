@@ -279,7 +279,7 @@ public class ZipFile {
         byte[] signatureBytes = new byte[WORD];
         archive.readFully(signatureBytes);
         long sig = ZipLong.getValue(signatureBytes);
-        final long cfhSig = ZipLong.getValue(ZipOutputStream.CFH_SIG);
+        final long cfhSig = ZipLong.getValue(ZipArchiveOutputStream.CFH_SIG);
         if (sig != cfhSig && startsWithLocalFileHeader()) {
             throw new IOException("central directory is empty, can't expand"
                                   + " corrupt archive.");
@@ -404,7 +404,7 @@ public class ZipFile {
         long stopSearching = Math.max(0L, archive.length() - MAX_EOCD_SIZE);
         if (off >= 0) {
             archive.seek(off);
-            byte[] sig = ZipOutputStream.EOCD_SIG;
+            byte[] sig = ZipArchiveOutputStream.EOCD_SIG;
             int curr = archive.read();
             while (off >= stopSearching && curr != -1) {
                 if (curr == sig[POS_0]) {
@@ -546,7 +546,7 @@ public class ZipFile {
         final byte[] start = new byte[WORD];
         archive.readFully(start);
         for (int i = 0; i < start.length; i++) {
-            if (start[i] != ZipOutputStream.LFH_SIG[i]) {
+            if (start[i] != ZipArchiveOutputStream.LFH_SIG[i]) {
                 return false;
             }
         }

@@ -57,7 +57,7 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
  * #putNextEntry putNextEntry} can be called.</p>
  *
  */
-public class ZipOutputStream extends ArchiveOutputStream {
+public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
     private static final int BYTE_MASK = 0xFF;
     private static final int SHORT = 2;
@@ -251,7 +251,7 @@ public class ZipOutputStream extends ArchiveOutputStream {
      * @param out the outputstream to zip
      * @since 1.1
      */
-    public ZipOutputStream(OutputStream out) {
+    public ZipArchiveOutputStream(OutputStream out) {
         super(out);
     }
 
@@ -262,7 +262,7 @@ public class ZipOutputStream extends ArchiveOutputStream {
      * @since 1.14
      * @throws IOException on error
      */
-    public ZipOutputStream(File file) throws IOException {
+    public ZipArchiveOutputStream(File file) throws IOException {
         super(null);
 
         try {
