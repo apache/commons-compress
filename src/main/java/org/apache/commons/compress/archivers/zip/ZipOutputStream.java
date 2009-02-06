@@ -95,7 +95,7 @@ public class ZipOutputStream extends FilterOutputStream {
      *
      * @since 1.1
      */
-    private ZipEntry entry;
+    private ZipArchiveEntry entry;
 
     /**
      * The file comment.
@@ -327,7 +327,7 @@ public class ZipOutputStream extends FilterOutputStream {
         closeEntry();
         cdOffset = written;
         for (Iterator i = entries.iterator(); i.hasNext(); ) {
-            writeCentralFileHeader((ZipEntry) i.next());
+            writeCentralFileHeader((ZipArchiveEntry) i.next());
         }
         cdLength = written - cdOffset;
         writeCentralDirectoryEnd();
@@ -408,7 +408,7 @@ public class ZipOutputStream extends FilterOutputStream {
      * @since 1.1
      * @throws IOException on error
      */
-    public void putNextEntry(ZipEntry ze) throws IOException {
+    public void putNextEntry(ZipArchiveEntry ze) throws IOException {
         closeEntry();
 
         entry = ze;
@@ -610,7 +610,7 @@ public class ZipOutputStream extends FilterOutputStream {
      *
      * @since 1.1
      */
-    protected void writeLocalFileHeader(ZipEntry ze) throws IOException {
+    protected void writeLocalFileHeader(ZipArchiveEntry ze) throws IOException {
         offsets.put(ze, ZipLong.getBytes(written));
 
         writeOut(LFH_SIG);
@@ -689,7 +689,7 @@ public class ZipOutputStream extends FilterOutputStream {
      *
      * @since 1.1
      */
-    protected void writeDataDescriptor(ZipEntry ze) throws IOException {
+    protected void writeDataDescriptor(ZipArchiveEntry ze) throws IOException {
         if (ze.getMethod() != DEFLATED || raf != null) {
             return;
         }
@@ -709,7 +709,7 @@ public class ZipOutputStream extends FilterOutputStream {
      *
      * @since 1.1
      */
-    protected void writeCentralFileHeader(ZipEntry ze) throws IOException {
+    protected void writeCentralFileHeader(ZipArchiveEntry ze) throws IOException {
         writeOut(CFH_SIG);
         written += WORD;
 

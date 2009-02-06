@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 
 public class JarArchiveInputStream extends ZipArchiveInputStream {
@@ -32,7 +32,7 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
     }
         
     public ArchiveEntry getNextEntry() throws IOException {
-        ZipEntry entry = (ZipEntry)super.getNextEntry();
+        ZipArchiveEntry entry = (ZipArchiveEntry)super.getNextEntry();
         if(entry == null) {
             return null;
         } else {

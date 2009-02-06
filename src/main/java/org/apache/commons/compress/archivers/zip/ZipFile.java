@@ -39,7 +39,7 @@ import java.util.zip.ZipException;
  * (which is required to work on ZIP files created by native zip tools
  * and is able to skip a preamble like the one found in self
  * extracting archives.  Furthermore it returns instances of
- * <code>org.apache.tools.zip.ZipEntry</code> instead of
+ * <code>org.apache.tools.zip.ZipArchiveEntry</code> instead of
  * <code>java.util.zip.ZipEntry</code>.</p>
  *
  * <p>It doesn't extend <code>java.util.zip.ZipFile</code> as it would
@@ -54,7 +54,7 @@ import java.util.zip.ZipException;
  *   <li>There is no getName method.</li>
  *   <li>entries has been renamed to getEntries.</li>
  *   <li>getEntries and getEntry return
- *   <code>org.apache.tools.zip.ZipEntry</code> instances.</li>
+ *   <code>org.apache.tools.zip.ZipArchiveEntry</code> instances.</li>
  *   <li>close is allowed to throw IOException.</li>
  * </ul>
  *
@@ -71,13 +71,13 @@ public class ZipFile {
     private static final int POS_3 = 3;
 
     /**
-     * Maps ZipEntrys to Longs, recording the offsets of the local
+     * Maps ZipArchiveEntrys to Longs, recording the offsets of the local
      * file headers.
      */
     private final Map entries = new HashMap(HASH_SIZE);
 
     /**
-     * Maps String to ZipEntrys, name -> actual entry.
+     * Maps String to ZipArchiveEntrys, name -> actual entry.
      */
     private final Map nameMap = new HashMap(HASH_SIZE);
 
@@ -199,7 +199,7 @@ public class ZipFile {
 
     /**
      * Returns all entries.
-     * @return all entries as {@link ZipEntry} instances
+     * @return all entries as {@link ZipArchiveEntry} instances
      */
     public Enumeration getEntries() {
         return Collections.enumeration(entries.keySet());
@@ -209,11 +209,11 @@ public class ZipFile {
      * Returns a named entry - or <code>null</code> if no entry by
      * that name exists.
      * @param name name of the entry.
-     * @return the ZipEntry corresponding to the given name - or
+     * @return the ZipArchiveEntry corresponding to the given name - or
      * <code>null</code> if not present.
      */
-    public ZipEntry getEntry(String name) {
-        return (ZipEntry) nameMap.get(name);
+    public ZipArchiveEntry getEntry(String name) {
+        return (ZipArchiveEntry) nameMap.get(name);
     }
 
     /**
@@ -223,7 +223,7 @@ public class ZipFile {
      * @throws IOException if unable to create an input stream from the zipenty
      * @throws ZipException if the zipentry has an unsupported compression method
      */
-    public InputStream getInputStream(ZipEntry ze)
+    public InputStream getInputStream(ZipArchiveEntry ze)
         throws IOException, ZipException {
         OffsetEntry offsetEntry = (OffsetEntry) entries.get(ze);
         if (offsetEntry == null) {
@@ -233,9 +233,9 @@ public class ZipFile {
         BoundedInputStream bis =
             new BoundedInputStream(start, ze.getCompressedSize());
         switch (ze.getMethod()) {
-            case ZipEntry.STORED:
+            case ZipArchiveEntry.STORED:
                 return bis;
-            case ZipEntry.DEFLATED:
+            case ZipArchiveEntry.DEFLATED:
                 bis.addDummy();
                 return new InflaterInputStream(bis, new Inflater(true));
             default:
@@ -264,9 +264,9 @@ public class ZipFile {
 
     /**
      * Reads the central directory of the given archive and populates
-     * the internal tables with ZipEntry instances.
+     * the internal tables with ZipArchiveEntry instances.
      *
-     * <p>The ZipEntrys will know all data that can be obtained from
+     * <p>The ZipArchiveEntrys will know all data that can be obtained from
      * the central directory alone, but not the data that requires the
      * local file header or additional data to be read.</p>
      */
@@ -287,7 +287,7 @@ public class ZipFile {
         while (sig == cfhSig) {
             archive.readFully(cfh);
             int off = 0;
-            ZipEntry ze = new ZipEntry();
+            ZipArchiveEntry ze = new ZipArchiveEntry();
 
             int versionMadeBy = ZipShort.getValue(cfh, off);
             off += SHORT;
@@ -459,7 +459,7 @@ public class ZipFile {
         throws IOException {
         Enumeration e = getEntries();
         while (e.hasMoreElements()) {
-            ZipEntry ze = (ZipEntry) e.nextElement();
+            ZipArchiveEntry ze = (ZipArchiveEntry) e.nextElement();
             OffsetEntry offsetEntry = (OffsetEntry) entries.get(ze);
             long offset = offsetEntry.headerOffset;
             archive.seek(offset + LFH_OFFSET_FOR_FILENAME_LENGTH);
