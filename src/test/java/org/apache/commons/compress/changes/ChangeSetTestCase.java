@@ -30,7 +30,7 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.ar.ArArchiveEntry;
 import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipEntry;
 
 public final class ChangeSetTestCase extends AbstractTestCase {
 
@@ -132,7 +132,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 			
 			
 			final File file1 = getFile("test.txt");
-			ZipArchiveEntry entry = new ZipArchiveEntry("testdata/test.txt");
+			ZipEntry entry = new ZipEntry("testdata/test.txt");
 	        changes.add(entry, new FileInputStream(file1));
 			
 			final File input = getFile("bla.zip");

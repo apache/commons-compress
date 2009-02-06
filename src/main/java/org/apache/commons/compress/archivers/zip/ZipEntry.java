@@ -19,13 +19,15 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.util.LinkedHashMap;
 import java.util.zip.ZipException;
+import org.apache.commons.compress.archivers.ArchiveEntry;
 
 /**
  * Extension that adds better handling of extra fields and provides
  * access to the internal and external file attributes.
  *
  */
-public class ZipEntry extends java.util.zip.ZipEntry implements Cloneable {
+public class ZipEntry extends java.util.zip.ZipEntry
+    implements ArchiveEntry, Cloneable {
 
     public static final int PLATFORM_UNIX = 3;
     public static final int PLATFORM_FAT  = 0;
