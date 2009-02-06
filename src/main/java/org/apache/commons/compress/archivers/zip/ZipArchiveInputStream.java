@@ -53,6 +53,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     public static boolean matches( byte[] signature, int length ) {
         // 4b50 0403 0014 0000
 
+        if (length < 8) {
+            return false;
+        }
+
         if (signature[0] != 0x50) {
             return false;
         }

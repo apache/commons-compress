@@ -44,9 +44,13 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         return in.read();
     }
     
-    public static boolean matches( byte[] signature ) {
+    public static boolean matches(byte[] signature, int length) {
         // 6574 7473 2e31 6d78
         
+        if (length < 8) {
+            return false;
+        }
+
         if (signature[0] != 0x74) {
             return false;
         }

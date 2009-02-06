@@ -108,9 +108,12 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         return ret;
     }
         
-    public static boolean matches( byte[] signature ) {
+    public static boolean matches(byte[] signature, int length) {
         // 3c21 7261 6863 0a3e
         
+        if (length < 8) {
+            return false;
+        }
         if (signature[0] != 0x21) {
             return false;
         }
