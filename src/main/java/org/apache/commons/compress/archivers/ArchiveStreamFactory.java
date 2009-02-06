@@ -31,7 +31,7 @@ import org.apache.commons.compress.archivers.jar.JarArchiveOutputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
-import org.apache.commons.compress.archivers.zip.ZipOutputStream;
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 
 /**
  * Factory to create Archive[In|Out]putStreams from names
@@ -65,7 +65,7 @@ public class ArchiveStreamFactory {
         if ("ar".equalsIgnoreCase(archiverName)) {
             return new ArArchiveOutputStream(out);
         } else if("zip".equalsIgnoreCase(archiverName)) {
-            return new ZipOutputStream(out);
+            return new ZipArchiveOutputStream(out);
         } else if("tar".equalsIgnoreCase(archiverName)) {
             return new TarArchiveOutputStream(out);
         } else if("jar".equalsIgnoreCase(archiverName)) {
