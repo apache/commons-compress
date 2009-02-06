@@ -58,7 +58,7 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
  */
 
 public class CpioArchiveInputStream extends ArchiveInputStream implements CpioConstants {
-	
+        
     private boolean closed = false;
 
     private CpioArchiveEntry entry;
@@ -202,7 +202,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
             byte tmp[] = new byte[6];
             System.arraycopy(magic, 0, tmp, 0, magic.length);
             System.arraycopy(more_magic, 0, tmp, magic.length,
-                    more_magic.length);
+                             more_magic.length);
             String magicString = new String(tmp);
             if (magicString.equals(MAGIC_NEW)) {
                 this.entry = readNewEntry(false);
@@ -244,7 +244,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
      */
     public int read() throws IOException {
         return read(this.singleByteBuf, 0, 1) == -1 ? -1
-                : this.singleByteBuf[0] & 0xff;
+            : this.singleByteBuf[0] & 0xff;
     }
 
     /**
@@ -260,7 +260,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
      *                     occurred
      */
     public int read(final byte[] b, final int off, final int len)
-            throws IOException {
+        throws IOException {
         ensureOpen();
         if (off < 0 || len < 0 || off > b.length - len) {
             throw new IndexOutOfBoundsException();
@@ -286,7 +286,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
             return -1;
         }
         int tmplength = (int) Math.min(len, this.entry.getSize()
-                - this.entryBytesRead);
+                                       - this.entryBytesRead);
         if (tmplength < 0) {
             return -1;
         }
@@ -303,7 +303,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
     }
 
     private final int readFully(final byte[] b, final int off, final int len)
-            throws IOException {
+        throws IOException {
         if (len < 0) {
             throw new IndexOutOfBoundsException();
         }
@@ -319,14 +319,14 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
     }
 
     private long readBinaryLong(final int length, final boolean swapHalfWord)
-            throws IOException {
+        throws IOException {
         byte tmp[] = new byte[length];
         readFully(tmp, 0, tmp.length);
         return byteArray2long(tmp, swapHalfWord);
     }
 
     private long readAsciiLong(final int length, final int radix)
-            throws IOException {
+        throws IOException {
         byte tmpBuffer[] = new byte[length];
         readFully(tmpBuffer, 0, tmpBuffer.length);
         return Long.parseLong(new String(tmpBuffer), radix);
@@ -378,7 +378,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
     }
 
     private CpioArchiveEntry readOldBinaryEntry(final boolean swapHalfWord)
-            throws IOException {
+        throws IOException {
         CpioArchiveEntry ret = new CpioArchiveEntry(FORMAT_OLD_BINARY);
 
         ret.setDevice(readBinaryLong(2, swapHalfWord));
@@ -434,33 +434,33 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
         return total;
     }
 
-	public ArchiveEntry getNextEntry() throws IOException {
-		CpioArchiveEntry entry = this.getNextCPIOEntry();
-    	if(entry == null) {
-    		return null;
-    	}
-		return (ArchiveEntry)entry;
-	}
-	
-	public static boolean matches( byte[] signature ) {
-		// 3037 3037 30
-    	
-    	if (signature[0] != 0x30) {
-    		return false;
-    	}
-    	if (signature[1] != 0x37) {
-    		return false;
-    	}
-    	if (signature[2] != 0x30) {
-    		return false;
-    	}
-    	if (signature[3] != 0x37) {
-    		return false;
-    	}
-    	if (signature[4] != 0x30) {
-    		return false;
-    	}
-    	
-    	return true;
-	}
+    public ArchiveEntry getNextEntry() throws IOException {
+        CpioArchiveEntry entry = this.getNextCPIOEntry();
+        if(entry == null) {
+            return null;
+        }
+        return (ArchiveEntry)entry;
+    }
+        
+    public static boolean matches( byte[] signature ) {
+        // 3037 3037 30
+        
+        if (signature[0] != 0x30) {
+            return false;
+        }
+        if (signature[1] != 0x37) {
+            return false;
+        }
+        if (signature[2] != 0x30) {
+            return false;
+        }
+        if (signature[3] != 0x37) {
+            return false;
+        }
+        if (signature[4] != 0x30) {
+            return false;
+        }
+        
+        return true;
+    }
 }

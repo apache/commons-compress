@@ -27,47 +27,47 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 
 public class JarArchiveInputStream extends ZipArchiveInputStream {
 
-	public JarArchiveInputStream( final InputStream inputStream ) {
-		super(inputStream);
-	}
-	
-	public ArchiveEntry getNextEntry() throws IOException {
-		ZipArchiveEntry entry = (ZipArchiveEntry)super.getNextEntry();
-		if(entry == null) {
-			return null;
-		} else {
-			return (ArchiveEntry)new JarArchiveEntry(entry);
-		}
-	}
-	
-	public static boolean matches( byte[] signature ) {
-		// 4b50 0403 0014 0008
+    public JarArchiveInputStream( final InputStream inputStream ) {
+        super(inputStream);
+    }
+        
+    public ArchiveEntry getNextEntry() throws IOException {
+        ZipArchiveEntry entry = (ZipArchiveEntry)super.getNextEntry();
+        if(entry == null) {
+            return null;
+        } else {
+            return (ArchiveEntry)new JarArchiveEntry(entry);
+        }
+    }
+        
+    public static boolean matches( byte[] signature ) {
+        // 4b50 0403 0014 0008
 
-    	if (signature[0] != 0x50) {
-    		return false;
-    	}
-    	if (signature[1] != 0x4b) {
-    		return false;
-    	}
-    	if (signature[2] != 0x03) {
-    		return false;
-    	}
-    	if (signature[3] != 0x04) {
-    		return false;
-    	}
-    	if (signature[4] != 0x14) {
-    		return false;
-    	}
-    	if (signature[5] != 0x00) {
-    		return false;
-    	}
-    	if (signature[6] != 0x08) {
-    		return false;
-    	}
-    	if (signature[7] != 0x00) {
-    		return false;
-    	}
-    	
-    	return true;
-	}
+        if (signature[0] != 0x50) {
+            return false;
+        }
+        if (signature[1] != 0x4b) {
+            return false;
+        }
+        if (signature[2] != 0x03) {
+            return false;
+        }
+        if (signature[3] != 0x04) {
+            return false;
+        }
+        if (signature[4] != 0x14) {
+            return false;
+        }
+        if (signature[5] != 0x00) {
+            return false;
+        }
+        if (signature[6] != 0x08) {
+            return false;
+        }
+        if (signature[7] != 0x00) {
+            return false;
+        }
+        
+        return true;
+    }
 }
