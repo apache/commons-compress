@@ -24,7 +24,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.apache.commons.compress.archivers.zip.ZipEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.utils.IOUtils;
 
 import org.apache.commons.compress.AbstractTestCase;
@@ -41,11 +41,11 @@ public final class ZipTestCase extends AbstractTestCase {
         
         final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("zip", out);
 
-        os.putArchiveEntry(new ZipEntry("testdata/test1.xml"));
+        os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
         IOUtils.copy(new FileInputStream(file1), os);
         os.closeArchiveEntry();
         
-        os.putArchiveEntry(new ZipEntry("testdata/test2.xml"));
+        os.putArchiveEntry(new ZipArchiveEntry("testdata/test2.xml"));
         IOUtils.copy(new FileInputStream(file2), os);
         os.closeArchiveEntry();
         
@@ -58,7 +58,7 @@ public final class ZipTestCase extends AbstractTestCase {
         final InputStream is = new FileInputStream(input);
         final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("zip", is);
  
-        final ZipEntry entry = (ZipEntry)in.getNextEntry();
+        final ZipArchiveEntry entry = (ZipArchiveEntry)in.getNextEntry();
         final OutputStream out = new FileOutputStream(new File(dir, entry.getName()));
         
         IOUtils.copy(in, out);

@@ -26,7 +26,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * access to the internal and external file attributes.
  *
  */
-public class ZipEntry extends java.util.zip.ZipEntry
+public class ZipArchiveEntry extends java.util.zip.ZipEntry
     implements ArchiveEntry, Cloneable {
 
     public static final int PLATFORM_UNIX = 3;
@@ -45,7 +45,7 @@ public class ZipEntry extends java.util.zip.ZipEntry
      * @param name the name of the entry
      * @since 1.1
      */
-    public ZipEntry(String name) {
+    public ZipArchiveEntry(String name) {
         super(name);
     }
 
@@ -55,7 +55,7 @@ public class ZipEntry extends java.util.zip.ZipEntry
      * @since 1.1
      * @throws ZipException on error
      */
-    public ZipEntry(java.util.zip.ZipEntry entry) throws ZipException {
+    public ZipArchiveEntry(java.util.zip.ZipEntry entry) throws ZipException {
         super(entry);
         byte[] extra = entry.getExtra();
         if (extra != null) {
@@ -72,7 +72,7 @@ public class ZipEntry extends java.util.zip.ZipEntry
      * @throws ZipException on error
      * @since 1.1
      */
-    public ZipEntry(ZipEntry entry) throws ZipException {
+    public ZipArchiveEntry(ZipArchiveEntry entry) throws ZipException {
         this((java.util.zip.ZipEntry) entry);
         setInternalAttributes(entry.getInternalAttributes());
         setExternalAttributes(entry.getExternalAttributes());
@@ -82,17 +82,17 @@ public class ZipEntry extends java.util.zip.ZipEntry
     /**
      * @since 1.9
      */
-    protected ZipEntry() {
+    protected ZipArchiveEntry() {
         super("");
     }
 
     /**
      * Overwrite clone.
-     * @return a cloned copy of this ZipEntry
+     * @return a cloned copy of this ZipArchiveEntry
      * @since 1.1
      */
     public Object clone() {
-        ZipEntry e = (ZipEntry) super.clone();
+        ZipArchiveEntry e = (ZipArchiveEntry) super.clone();
 
         e.extraFields = extraFields != null ? (LinkedHashMap) extraFields.clone() : null;
         e.setInternalAttributes(getInternalAttributes());

@@ -24,7 +24,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.apache.commons.compress.archivers.zip.ZipEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.utils.IOUtils;
 
 import org.apache.commons.compress.AbstractTestCase;
@@ -40,11 +40,11 @@ public final class JarTestCase extends AbstractTestCase {
         
         final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("jar", out);
 
-        os.putArchiveEntry(new ZipEntry("testdata/test1.xml"));
+        os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
         IOUtils.copy(new FileInputStream(file1), os);
         os.closeArchiveEntry();
         
-        os.putArchiveEntry(new ZipEntry("testdata/test2.xml"));
+        os.putArchiveEntry(new ZipArchiveEntry("testdata/test2.xml"));
         IOUtils.copy(new FileInputStream(file2), os);
         os.closeArchiveEntry();
 
@@ -57,21 +57,21 @@ public final class JarTestCase extends AbstractTestCase {
         final InputStream is = new FileInputStream(input);
         final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("jar", is);
         
-        ZipEntry entry = (ZipEntry)in.getNextEntry();
+        ZipArchiveEntry entry = (ZipArchiveEntry)in.getNextEntry();
         File o = new File(dir, entry.getName());
         o.getParentFile().mkdirs();
         OutputStream out = new FileOutputStream(o);
         IOUtils.copy(in, out);
         out.close();
         
-        entry = (ZipEntry)in.getNextEntry();
+        entry = (ZipArchiveEntry)in.getNextEntry();
         o = new File(dir, entry.getName());
         o.getParentFile().mkdirs();
         out = new FileOutputStream(o);
         IOUtils.copy(in, out);
         out.close();
         
-        entry = (ZipEntry)in.getNextEntry();
+        entry = (ZipArchiveEntry)in.getNextEntry();
         o = new File(dir, entry.getName());
         o.getParentFile().mkdirs();
         out = new FileOutputStream(o);

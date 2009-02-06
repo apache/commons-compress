@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 
 public class JarArchiveOutputStream extends ZipArchiveOutputStream {
@@ -33,6 +33,6 @@ public class JarArchiveOutputStream extends ZipArchiveOutputStream {
 
 	public void putArchiveEntry(ArchiveEntry entry) throws IOException {
 		// TODO special jar stuff
-		super.putArchiveEntry((ZipEntry) entry);
+		super.putArchiveEntry((ZipArchiveEntry) entry);
 	}
 }
