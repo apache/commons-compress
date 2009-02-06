@@ -38,7 +38,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         if(entry == null) {
             return null;
         }
-        return (ArchiveEntry)new ZipArchiveEntry(entry);
+        return (ArchiveEntry)new ZipEntry(entry);
     }
 
     public int read(byte[] b, int off, int len) throws IOException {

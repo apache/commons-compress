@@ -34,7 +34,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
     
     public void putArchiveEntry(ArchiveEntry entry) throws IOException {
-        zipOut.putNextEntry((ZipArchiveEntry) entry);
+        zipOut.putNextEntry((ZipEntry) entry);
     }
 
     public void close() throws IOException {

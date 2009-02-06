@@ -21,18 +21,17 @@ package org.apache.commons.compress.archivers.jar;
 import java.security.cert.Certificate;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipEntry;
 
-public class JarArchiveEntry extends ZipArchiveEntry implements ArchiveEntry {
+public class JarArchiveEntry extends ZipEntry implements ArchiveEntry {
 
 	private Attributes manifestAttributes = null;
 	private Certificate[] certificates = null; 
 	
-	public JarArchiveEntry(ZipEntry entry) throws ZipException {
+	public JarArchiveEntry(java.util.zip.ZipEntry entry) throws ZipException {
 		super(entry);
 	}
 
@@ -40,7 +39,7 @@ public class JarArchiveEntry extends ZipArchiveEntry implements ArchiveEntry {
 		super(name);
 	}
 
-	public JarArchiveEntry(ZipArchiveEntry entry) throws ZipException {
+	public JarArchiveEntry(ZipEntry entry) throws ZipException {
 		super(entry);
 	}
 
