@@ -26,11 +26,11 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 
 public class TarArchiveInputStream extends ArchiveInputStream {
 
-	private final TarInputStream in;
+    private final TarInputStream in;
     
-	public TarArchiveInputStream( InputStream inputStream ) {
-		in = new TarInputStream(inputStream);
-	}
+    public TarArchiveInputStream( InputStream inputStream ) {
+        in = new TarInputStream(inputStream);
+    }
 
     public ArchiveEntry getNextEntry() throws IOException {
         return (ArchiveEntry)in.getNextEntry();
@@ -45,34 +45,34 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     }
     
     public static boolean matches( byte[] signature ) {
-    	// 6574 7473 2e31 6d78
-    	
-    	if (signature[0] != 0x74) {
-    		return false;
-    	}
-    	if (signature[1] != 0x65) {
-    		return false;
-    	}
-    	if (signature[2] != 0x73) {
-    		return false;
-    	}
-    	if (signature[3] != 0x74) {
-    		return false;
-    	}
-    	if (signature[4] != 0x31) {
-    		return false;
-    	}
-    	if (signature[5] != 0x2e) {
-    		return false;
-    	}
-    	if (signature[6] != 0x78) {
-    		return false;
-    	}
-    	if (signature[7] != 0x6d) {
-    		return false;
-    	}
-    	
-    	return true;
+        // 6574 7473 2e31 6d78
+        
+        if (signature[0] != 0x74) {
+            return false;
+        }
+        if (signature[1] != 0x65) {
+            return false;
+        }
+        if (signature[2] != 0x73) {
+            return false;
+        }
+        if (signature[3] != 0x74) {
+            return false;
+        }
+        if (signature[4] != 0x31) {
+            return false;
+        }
+        if (signature[5] != 0x2e) {
+            return false;
+        }
+        if (signature[6] != 0x78) {
+            return false;
+        }
+        if (signature[7] != 0x6d) {
+            return false;
+        }
+        
+        return true;
     }
     
 }
