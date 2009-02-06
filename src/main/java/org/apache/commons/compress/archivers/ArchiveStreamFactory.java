@@ -47,55 +47,55 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 public class ArchiveStreamFactory {
 
     public ArchiveInputStream createArchiveInputStream( final String archiverName, final InputStream in ) throws ArchiveException {
-    	if ("ar".equalsIgnoreCase(archiverName)) {
+        if ("ar".equalsIgnoreCase(archiverName)) {
             return new ArArchiveInputStream(in);
         } else if("zip".equalsIgnoreCase(archiverName)) {
-        	return new ZipArchiveInputStream(in);
+            return new ZipArchiveInputStream(in);
         } else if("tar".equalsIgnoreCase(archiverName)) {
-        	return new TarArchiveInputStream(in);
+            return new TarArchiveInputStream(in);
         } else if("jar".equalsIgnoreCase(archiverName)) {
-        	return new JarArchiveInputStream(in);
+            return new JarArchiveInputStream(in);
         } else if("cpio".equalsIgnoreCase(archiverName)) {
-        	return new CpioArchiveInputStream(in);
+            return new CpioArchiveInputStream(in);
         }
-    	return null;
+        return null;
     }
 
     public ArchiveOutputStream createArchiveOutputStream( final String archiverName, final OutputStream out ) throws ArchiveException {
-    	if ("ar".equalsIgnoreCase(archiverName)) {
+        if ("ar".equalsIgnoreCase(archiverName)) {
             return new ArArchiveOutputStream(out);
         } else if("zip".equalsIgnoreCase(archiverName)) {
-        	return new ZipArchiveOutputStream(out);
+            return new ZipArchiveOutputStream(out);
         } else if("tar".equalsIgnoreCase(archiverName)) {
-        	return new TarArchiveOutputStream(out);
+            return new TarArchiveOutputStream(out);
         } else if("jar".equalsIgnoreCase(archiverName)) {
-        	return new JarArchiveOutputStream(out);
+            return new JarArchiveOutputStream(out);
         } else if("cpio".equalsIgnoreCase(archiverName)) {
-        	return new CpioArchiveOutputStream(out);
+            return new CpioArchiveOutputStream(out);
         }
-    	return null;
+        return null;
     }
 
     public ArchiveInputStream createArchiveInputStream( final InputStream input ) throws IOException {
 
-		final byte[] signature = new byte[12];
-		input.mark(signature.length);
-		int signatureLength = input.read(signature);
-		// TODO if reset is not supported pass on the IOException or return null?
-                // TODO, what if we failed to read 12 bytes?
-		input.reset();
+        final byte[] signature = new byte[12];
+        input.mark(signature.length);
+        int signatureLength = input.read(signature);
+        // TODO if reset is not supported pass on the IOException or return null?
+        // TODO, what if we failed to read 12 bytes?
+        input.reset();
 
-		if(ZipArchiveInputStream.matches(signature)) {
-			return new ZipArchiveInputStream(input);
-		} else if(JarArchiveInputStream.matches(signature)) {
-			return new JarArchiveInputStream(input);
-		} else if(TarArchiveInputStream.matches(signature)) {
-			return new TarArchiveInputStream(input);
-		} else if(ArArchiveInputStream.matches(signature)) {
-			return new ArArchiveInputStream(input);
-		} else if(CpioArchiveInputStream.matches(signature)) {
-			return new CpioArchiveInputStream(input);
-		} 
-		return null;
-	}
+        if(ZipArchiveInputStream.matches(signature)) {
+            return new ZipArchiveInputStream(input);
+        } else if(JarArchiveInputStream.matches(signature)) {
+            return new JarArchiveInputStream(input);
+        } else if(TarArchiveInputStream.matches(signature)) {
+            return new TarArchiveInputStream(input);
+        } else if(ArArchiveInputStream.matches(signature)) {
+            return new ArArchiveInputStream(input);
+        } else if(CpioArchiveInputStream.matches(signature)) {
+            return new CpioArchiveInputStream(input);
+        } 
+        return null;
+    }
 }
