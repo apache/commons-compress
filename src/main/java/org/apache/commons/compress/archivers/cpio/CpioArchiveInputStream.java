@@ -442,9 +442,12 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
         return (ArchiveEntry)entry;
     }
         
-    public static boolean matches( byte[] signature ) {
+    public static boolean matches(byte[] signature, int length) {
         // 3037 3037 30
         
+        if (length < 5) {
+            return false;
+        }
         if (signature[0] != 0x30) {
             return false;
         }

@@ -82,18 +82,17 @@ public class ArchiveStreamFactory {
         input.mark(signature.length);
         int signatureLength = input.read(signature);
         // TODO if reset is not supported pass on the IOException or return null?
-        // TODO, what if we failed to read 12 bytes?
         input.reset();
 
-        if(ZipArchiveInputStream.matches(signature)) {
+        if(ZipArchiveInputStream.matches(signature, signatureLength)) {
             return new ZipArchiveInputStream(input);
-        } else if(JarArchiveInputStream.matches(signature)) {
+        } else if(JarArchiveInputStream.matches(signature, signatureLength)) {
             return new JarArchiveInputStream(input);
-        } else if(TarArchiveInputStream.matches(signature)) {
+        } else if(TarArchiveInputStream.matches(signature, signatureLength)) {
             return new TarArchiveInputStream(input);
-        } else if(ArArchiveInputStream.matches(signature)) {
+        } else if(ArArchiveInputStream.matches(signature, signatureLength)) {
             return new ArArchiveInputStream(input);
-        } else if(CpioArchiveInputStream.matches(signature)) {
+        } else if(CpioArchiveInputStream.matches(signature, signatureLength)) {
             return new CpioArchiveInputStream(input);
         } 
         return null;
