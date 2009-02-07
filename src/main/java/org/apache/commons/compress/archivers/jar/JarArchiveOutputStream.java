@@ -29,6 +29,7 @@ public class JarArchiveOutputStream extends ZipArchiveOutputStream {
 
 	public JarArchiveOutputStream( final OutputStream out ) {
 		super(out);
+                setEncoding("UTF8");
 	}
 
 	public void putArchiveEntry(ArchiveEntry entry) throws IOException {
