@@ -27,13 +27,13 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 
 public class JarArchiveOutputStream extends ZipArchiveOutputStream {
 
-	public JarArchiveOutputStream( final OutputStream out ) {
-		super(out);
-                setEncoding("UTF8");
-	}
+    public JarArchiveOutputStream( final OutputStream out ) {
+        super(out);
+        setEncoding("UTF8");
+    }
 
-	public void putArchiveEntry(ArchiveEntry entry) throws IOException {
-		// TODO special jar stuff
-		super.putArchiveEntry((ZipArchiveEntry) entry);
-	}
+    public void putArchiveEntry(ArchiveEntry entry) throws IOException {
+        // TODO special jar stuff
+        super.putArchiveEntry((ZipArchiveEntry) entry);
+    }
 }

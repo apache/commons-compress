@@ -25,19 +25,19 @@ import java.util.zip.GZIPOutputStream;
 import org.apache.commons.compress.compressors.CompressorOutputStream;
 
 public class GzipCompressorOutputStream extends CompressorOutputStream {
-	
-	private final GZIPOutputStream out;
-	
-	public GzipCompressorOutputStream( final OutputStream outputStream ) throws IOException {
-		out = new GZIPOutputStream(outputStream);
-	}
 
-	public void write(int b) throws IOException {
-		out.write(b);
-	}
+    private final GZIPOutputStream out;
 
-	public void close() throws IOException {
-		out.close();
-	}
+    public GzipCompressorOutputStream( final OutputStream outputStream ) throws IOException {
+        out = new GZIPOutputStream(outputStream);
+    }
+
+    public void write(int b) throws IOException {
+        out.write(b);
+    }
+
+    public void close() throws IOException {
+        out.close();
+    }
 
 }

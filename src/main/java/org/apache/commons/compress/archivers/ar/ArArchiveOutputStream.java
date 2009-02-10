@@ -26,135 +26,135 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 
 public class ArArchiveOutputStream extends ArchiveOutputStream {
 
-	private long archiveOffset = 0;
-	private long entryOffset = 0;
-	private ArArchiveEntry prevEntry;
+    private long archiveOffset = 0;
+    private long entryOffset = 0;
+    private ArArchiveEntry prevEntry;
 
-	public ArArchiveOutputStream( final OutputStream pOut ) {
-            super(pOut);
-	}
+    public ArArchiveOutputStream( final OutputStream pOut ) {
+        super(pOut);
+    }
 
-	private long writeArchiveHeader() throws IOException {		
-		final String header = "!<arch>\n";
-		out.write(header.getBytes());
-		return header.length();
-	}
+    private long writeArchiveHeader() throws IOException {
+        final String header = "!<arch>\n";
+        out.write(header.getBytes());
+        return header.length();
+    }
 
-	public void closeArchiveEntry() throws IOException {
-		if ((entryOffset % 2) != 0) {
-        	out.write('\n');
-        	archiveOffset++;
-        }		
-	}
-	
-	public void putArchiveEntry( final ArchiveEntry pEntry ) throws IOException {
-		ArArchiveEntry pArEntry = (ArArchiveEntry)pEntry;
-		if (prevEntry == null) {
-			archiveOffset += writeArchiveHeader();			
-		} else {
-			if (prevEntry.getLength() != entryOffset) {
-				throw new IOException("length does not match entry (" + prevEntry.getLength() + " != " + entryOffset);
-			}
-			
-			closeArchiveEntry();
-		}
-		
-		prevEntry = pArEntry;
-		
-		archiveOffset += writeEntryHeader(pArEntry);
+    public void closeArchiveEntry() throws IOException {
+        if ((entryOffset % 2) != 0) {
+            out.write('\n');
+            archiveOffset++;
+        }
+    }
 
-		entryOffset = 0;
-	}
+    public void putArchiveEntry( final ArchiveEntry pEntry ) throws IOException {
+        ArArchiveEntry pArEntry = (ArArchiveEntry)pEntry;
+        if (prevEntry == null) {
+            archiveOffset += writeArchiveHeader();
+        } else {
+            if (prevEntry.getLength() != entryOffset) {
+                throw new IOException("length does not match entry (" + prevEntry.getLength() + " != " + entryOffset);
+            }
 
-	private long fill( final long pOffset, final long pNewOffset, final char pFill ) throws IOException { 
-		final long diff = pNewOffset - pOffset;
-	
-		if (diff > 0) {
-			for (int i = 0; i < diff; i++) {
-				write(pFill);
-			}
-		}
+            closeArchiveEntry();
+        }
 
-		return pNewOffset;
-	}
-	
-	private long write( final String data ) throws IOException {
-		final byte[] bytes = data.getBytes("ascii");
-		write(bytes);
-		return bytes.length;
-	}
-	
-	private long writeEntryHeader( final ArArchiveEntry pEntry ) throws IOException {
-		
-		long offset = 0;
-		
-		final String n = pEntry.getName();
-		if (n.length() > 16) {
-			throw new IOException("filename too long");
-		}		
-		offset += write(n);
-		
-		offset = fill(offset, 16, ' ');
-		final String m = "" + (pEntry.getLastModified() / 1000);
-		if (m.length() > 12) {
-			throw new IOException("modified too long");
-		}		
-		offset += write(m);		
+        prevEntry = pArEntry;
 
-		offset = fill(offset, 28, ' ');
-		final String u = "" + pEntry.getUserId();
-		if (u.length() > 6) {
-			throw new IOException("userid too long");
-		}		
-		offset += write(u);
+        archiveOffset += writeEntryHeader(pArEntry);
 
-		offset = fill(offset, 34, ' ');
-		final String g = "" + pEntry.getGroupId();
-		if (g.length() > 6) {
-			throw new IOException("groupid too long");
-		}		
-		offset += write(g);
+        entryOffset = 0;
+    }
 
-		offset = fill(offset, 40, ' ');
-		final String fm = "" + Integer.toString(pEntry.getMode(), 8);
-		if (fm.length() > 8) {
-			throw new IOException("filemode too long");
-		}		
-		offset += write(fm);
+    private long fill( final long pOffset, final long pNewOffset, final char pFill ) throws IOException { 
+        final long diff = pNewOffset - pOffset;
 
-		offset = fill(offset, 48, ' ');
-		final String s = "" + pEntry.getLength();
-		if (s.length() > 10) {
-			throw new IOException("size too long");
-		}		
-		offset += write(s);
+        if (diff > 0) {
+            for (int i = 0; i < diff; i++) {
+                write(pFill);
+            }
+        }
 
-		offset = fill(offset, 58, ' ');
+        return pNewOffset;
+    }
 
-		offset += write("`\012");
-		
-		return offset;
-	}		
-	
-	public void write(int b) throws IOException {
-		out.write(b);
-		entryOffset++;
-	}
+    private long write( final String data ) throws IOException {
+        final byte[] bytes = data.getBytes("ascii");
+        write(bytes);
+        return bytes.length;
+    }
 
-	public void write(byte[] b, int off, int len) throws IOException {
-		out.write(b, off, len);
-		entryOffset += len;
-	}
+    private long writeEntryHeader( final ArArchiveEntry pEntry ) throws IOException {
 
-	public void write(byte[] b) throws IOException {
-		out.write(b);
-		entryOffset += b.length;
-	}
+        long offset = 0;
 
-	public void close() throws IOException {
-		closeArchiveEntry();
-		out.close();
-		prevEntry = null;
-	}
+        final String n = pEntry.getName();
+        if (n.length() > 16) {
+            throw new IOException("filename too long");
+        }
+        offset += write(n);
+
+        offset = fill(offset, 16, ' ');
+        final String m = "" + (pEntry.getLastModified() / 1000);
+        if (m.length() > 12) {
+            throw new IOException("modified too long");
+        }
+        offset += write(m);
+
+        offset = fill(offset, 28, ' ');
+        final String u = "" + pEntry.getUserId();
+        if (u.length() > 6) {
+            throw new IOException("userid too long");
+        }
+        offset += write(u);
+
+        offset = fill(offset, 34, ' ');
+        final String g = "" + pEntry.getGroupId();
+        if (g.length() > 6) {
+            throw new IOException("groupid too long");
+        }
+        offset += write(g);
+
+        offset = fill(offset, 40, ' ');
+        final String fm = "" + Integer.toString(pEntry.getMode(), 8);
+        if (fm.length() > 8) {
+            throw new IOException("filemode too long");
+        }
+        offset += write(fm);
+
+        offset = fill(offset, 48, ' ');
+        final String s = "" + pEntry.getLength();
+        if (s.length() > 10) {
+            throw new IOException("size too long");
+        }
+        offset += write(s);
+
+        offset = fill(offset, 58, ' ');
+
+        offset += write("`\012");
+
+        return offset;
+    }
+
+    public void write(int b) throws IOException {
+        out.write(b);
+        entryOffset++;
+    }
+
+    public void write(byte[] b, int off, int len) throws IOException {
+        out.write(b, off, len);
+        entryOffset += len;
+    }
+
+    public void write(byte[] b) throws IOException {
+        out.write(b);
+        entryOffset += b.length;
+    }
+
+    public void close() throws IOException {
+        closeArchiveEntry();
+        out.close();
+        prevEntry = null;
+    }
 
 }

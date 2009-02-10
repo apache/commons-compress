@@ -44,12 +44,12 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     public int read(byte[] b, int off, int len) throws IOException {
         return input.read(b, off, len);
     }
-    
+
     public int read() throws IOException {
         return input.read();
     }
 
-    
+
     public static boolean matches( byte[] signature, int length ) {
         // 4b50 0403 0014 0000
 
@@ -81,7 +81,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         if (signature[7] != 0x00) {
             return false;
         }
-        
+
         return true;
     }
 }

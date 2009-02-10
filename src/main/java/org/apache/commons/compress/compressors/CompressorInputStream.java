@@ -21,5 +21,5 @@ package org.apache.commons.compress.compressors;
 import java.io.InputStream;
 
 public abstract class CompressorInputStream extends InputStream {
-	// TODO 
+    // TODO 
 }

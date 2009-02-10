@@ -58,7 +58,7 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
  */
 
 public class CpioArchiveInputStream extends ArchiveInputStream implements CpioConstants {
-        
+
     private boolean closed = false;
 
     private CpioArchiveEntry entry;
@@ -72,7 +72,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
     private byte tmpbuf[] = new byte[4096];
 
     private long crc = 0;
-    
+
     private InputStream in = null;
 
     /**
@@ -441,10 +441,10 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
         }
         return (ArchiveEntry)entry;
     }
-        
+
     public static boolean matches(byte[] signature, int length) {
         // 3037 3037 30
-        
+
         if (length < 5) {
             return false;
         }
@@ -463,7 +463,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
         if (signature[4] != 0x30) {
             return false;
         }
-        
+
         return true;
     }
 }
