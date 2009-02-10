@@ -161,7 +161,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
                 weight[nNodes] = ((weight[n1] & 0xffffff00)
                                   + (weight[n2] & 0xffffff00))
                     | (1 + (((weight[n1] & 0x000000ff)
-                            > (weight[n2] & 0x000000ff))
+                             > (weight[n2] & 0x000000ff))
                             ? (weight[n1] & 0x000000ff)
                             : (weight[n2] & 0x000000ff)));
 
@@ -378,9 +378,9 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
         finish();
         super.close();
         bsStream.close();
-        closed = true;    	
+        closed = true;
     }
-    
+
     protected void finish() throws IOException {
         if (closed) {
             return;
@@ -438,9 +438,9 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
         // If the stream was empty we must skip the rest of this method.
         // See bug#32200.
         if (last == -1) {
-	    return;
+            return;
         }
-        
+
         /* sort the block and establish posn of original string */
         doReversibleTransformation();
 
@@ -1211,7 +1211,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
                         j = i;
                         while ((ftab[((runningOrder[j - h]) + 1) << 8]
                                 - ftab[(runningOrder[j - h]) << 8])
-                                > (ftab[((vv) + 1) << 8] - ftab[(vv) << 8])) {
+                               > (ftab[((vv) + 1) << 8] - ftab[(vv) << 8])) {
                             runningOrder[j] = runningOrder[j - h];
                             j = j - h;
                             if (j <= (h - 1)) {
@@ -1505,8 +1505,8 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
       usually small, typically <= 20.
     */
     private int[] incs = {1, 4, 13, 40, 121, 364, 1093, 3280,
-                           9841, 29524, 88573, 265720,
-                           797161, 2391484};
+                          9841, 29524, 88573, 265720,
+                          797161, 2391484};
 
     private void allocateCompressStructures () {
         int n = baseBlockSize * blockSize100k;

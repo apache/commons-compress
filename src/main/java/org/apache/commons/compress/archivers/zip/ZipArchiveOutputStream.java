@@ -467,7 +467,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         if (level < Deflater.DEFAULT_COMPRESSION
             || level > Deflater.BEST_COMPRESSION) {
             throw new IllegalArgumentException(
-                "Invalid compression level: " + level);
+                                               "Invalid compression level: " + level);
         }
         hasCompressionLevelChanged = (this.level != level);
         this.level = level;

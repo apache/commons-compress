@@ -28,15 +28,15 @@ public class ArArchiveInputStream extends ArchiveInputStream {
 
     private final InputStream input;
     private long offset = 0;
-        
+
     public ArArchiveInputStream( final InputStream pInput ) {
         input = pInput;
     }
-        
+
     public ArchiveEntry getNextEntry() throws IOException {
-                
+
         if (offset == 0) {
-            final byte[] expected = "!<arch>\n".getBytes();                     
+            final byte[] expected = "!<arch>\n".getBytes();
             final byte[] realized = new byte[expected.length]; 
             final int read = read(realized);
             if (read != expected.length) {
@@ -52,7 +52,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         if (input.available() == 0) {
             return null;
         }
-                                
+
         if (offset % 2 != 0) {
             read();
         }
@@ -63,7 +63,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         final byte[] groupid = new byte[6];
         final byte[] filemode = new byte[8];
         final byte[] length = new byte[10];
-                
+
         read(name);
         read(lastmodified);
         read(userid);
@@ -72,7 +72,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         read(length);
 
         {
-            final byte[] expected = "`\012".getBytes();                 
+            final byte[] expected = "`\012".getBytes();
             final byte[] realized = new byte[expected.length]; 
             final int read = read(realized);
             if (read != expected.length) {
@@ -84,18 +84,18 @@ public class ArArchiveInputStream extends ArchiveInputStream {
                 }
             }
         }
-                
+
         return new ArArchiveEntry(new String(name).trim(), Long.parseLong(new String(length).trim()));
-        
+
     }
-        
-        
+
+
     public int read() throws IOException {
         final int ret = input.read();
         offset++;
         return ret;
     }
-        
+
     public int read(byte b[]) throws IOException {
         final int ret = read(b, 0, b.length);
         offset = offset + b.length;
@@ -107,10 +107,10 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         offset = offset + off;
         return ret;
     }
-        
+
     public static boolean matches(byte[] signature, int length) {
         // 3c21 7261 6863 0a3e
-        
+
         if (length < 8) {
             return false;
         }
@@ -138,7 +138,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         if (signature[7] != 0x0a) {
             return false;
         }
-        
+
         return true;
     }
 

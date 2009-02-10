@@ -212,10 +212,10 @@ public class TarInputStream extends FilterInputStream {
 
             if (debug) {
                 System.err.println("TarInputStream: SKIP currENTRY '"
-                        + currEntry.getName() + "' SZ "
-                        + entrySize + " OFF "
-                        + entryOffset + "  skipping "
-                        + numToSkip + " bytes");
+                                   + currEntry.getName() + "' SZ "
+                                   + entrySize + " OFF "
+                                   + entryOffset + "  skipping "
+                                   + numToSkip + " bytes");
             }
 
             while (numToSkip > 0) {
@@ -251,9 +251,9 @@ public class TarInputStream extends FilterInputStream {
 
             if (debug) {
                 System.err.println("TarInputStream: SET CURRENTRY '"
-                        + currEntry.getName()
-                        + "' size = "
-                        + currEntry.getSize());
+                                   + currEntry.getName()
+                                   + "' size = "
+                                   + currEntry.getSize());
             }
 
             entryOffset = 0;
@@ -325,7 +325,7 @@ public class TarInputStream extends FilterInputStream {
 
         if (readBuf != null) {
             int sz = (numToRead > readBuf.length) ? readBuf.length
-                    : numToRead;
+                : numToRead;
 
             System.arraycopy(readBuf, 0, buf, offset, sz);
 
@@ -351,7 +351,7 @@ public class TarInputStream extends FilterInputStream {
             if (rec == null) {
                 // Unexpected EOF!
                 throw new IOException("unexpected EOF with " + numToRead
-                        + " bytes unread");
+                                      + " bytes unread");
             }
 
             int sz = numToRead;

@@ -23,11 +23,11 @@ import java.io.InputStream;
 
 public abstract class ArchiveInputStream extends InputStream {
 
-	/**
+    /**
      * Returns the next Archive Entry in this Stream.
      * @return the next entry
      * @throws IOException if the next entry could not be read
      */
     public abstract ArchiveEntry getNextEntry() throws IOException;
-    
+
 }

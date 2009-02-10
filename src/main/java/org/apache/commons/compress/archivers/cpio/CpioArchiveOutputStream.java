@@ -55,7 +55,7 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
  * based on code from the jRPM project (jrpm.sourceforge.net) 
  */
 public class CpioArchiveOutputStream extends ArchiveOutputStream implements CpioConstants {
-	
+
     private CpioArchiveEntry cpioEntry;
 
     private boolean closed = false;
@@ -69,7 +69,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements Cpio
     private long crc = 0;
 
     private long written;
-    
+
     /**
      * Check to make sure that this stream has not been closed
      *
@@ -110,13 +110,13 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements Cpio
      */
     public void setFormat(final short format) {
         switch (format) {
-            case FORMAT_NEW:
-            case FORMAT_NEW_CRC:
-            case FORMAT_OLD_ASCII:
-            case FORMAT_OLD_BINARY:
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown header type");
+        case FORMAT_NEW:
+        case FORMAT_NEW_CRC:
+        case FORMAT_OLD_ASCII:
+        case FORMAT_OLD_BINARY:
+            break;
+        default:
+            throw new IllegalArgumentException("Unknown header type");
 
         }
         synchronized (this) {
@@ -158,23 +158,23 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements Cpio
 
     private void writeHeader(final CpioArchiveEntry e) throws IOException {
         switch (e.getFormat()) {
-            case FORMAT_NEW:
-            	out.write(MAGIC_NEW.getBytes());
-                writeNewEntry(e);
-                break;
-            case FORMAT_NEW_CRC:
-            	out.write(MAGIC_NEW_CRC.getBytes());
-                writeNewEntry(e);
-                break;
-            case FORMAT_OLD_ASCII:
-            	out.write(MAGIC_OLD_ASCII.getBytes());
-                writeOldAsciiEntry(e);
-                break;
-            case FORMAT_OLD_BINARY:
-                boolean swapHalfWord = true;
-                writeBinaryLong(MAGIC_OLD_BINARY, 2, swapHalfWord);
-                writeOldBinaryEntry(e, swapHalfWord);
-                break;
+        case FORMAT_NEW:
+            out.write(MAGIC_NEW.getBytes());
+            writeNewEntry(e);
+            break;
+        case FORMAT_NEW_CRC:
+            out.write(MAGIC_NEW_CRC.getBytes());
+            writeNewEntry(e);
+            break;
+        case FORMAT_OLD_ASCII:
+            out.write(MAGIC_OLD_ASCII.getBytes());
+            writeOldAsciiEntry(e);
+            break;
+        case FORMAT_OLD_BINARY:
+            boolean swapHalfWord = true;
+            writeBinaryLong(MAGIC_OLD_BINARY, 2, swapHalfWord);
+            writeOldBinaryEntry(e, swapHalfWord);
+            break;
         }
     }
 
@@ -238,8 +238,8 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements Cpio
 
         if (this.cpioEntry.getSize() != this.written) {
             throw new IOException("invalid entry size (expected "
-                    + this.cpioEntry.getSize() + " but got " + this.written
-                    + " bytes)");
+                                  + this.cpioEntry.getSize() + " but got " + this.written
+                                  + " bytes)");
         }
         if ((this.cpioEntry.getFormat() | FORMAT_NEW_MASK) == FORMAT_NEW_MASK) {
             pad(this.cpioEntry.getSize(), 4);
@@ -267,7 +267,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements Cpio
      *                     occurred
      */
     public synchronized void write(final byte[] b, final int off, final int len)
-            throws IOException {
+        throws IOException {
         ensureOpen();
         if (off < 0 || len < 0 || off > b.length - len) {
             throw new IndexOutOfBoundsException();
@@ -367,8 +367,8 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements Cpio
     }
 
     private void writeCString(final String str) throws IOException {
-    	out.write(str.getBytes());
-    	out.write('\0');
+        out.write(str.getBytes());
+        out.write('\0');
     }
 
     /**
@@ -408,24 +408,24 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements Cpio
         return ret;
     }
 
-	/* (non-Javadoc)
-	 * @see org.apache.commons.compress.archivers.ArchiveOutputStream#closeArchiveEntry()
-	 */
-	public void closeArchiveEntry() throws IOException {
-		this.closeEntry();
-	}
+    /* (non-Javadoc)
+     * @see org.apache.commons.compress.archivers.ArchiveOutputStream#closeArchiveEntry()
+     */
+    public void closeArchiveEntry() throws IOException {
+        this.closeEntry();
+    }
 
-	/* (non-Javadoc)
-	 * @see org.apache.commons.compress.archivers.ArchiveOutputStream#putArchiveEntry(org.apache.commons.compress.archivers.ArchiveEntry)
-	 */
-	public void putArchiveEntry(ArchiveEntry entry) throws IOException {
-		this.putNextEntry((CpioArchiveEntry)entry);
-	}
+    /* (non-Javadoc)
+     * @see org.apache.commons.compress.archivers.ArchiveOutputStream#putArchiveEntry(org.apache.commons.compress.archivers.ArchiveEntry)
+     */
+    public void putArchiveEntry(ArchiveEntry entry) throws IOException {
+        this.putNextEntry((CpioArchiveEntry)entry);
+    }
 
-	/* (non-Javadoc)
-	 * @see java.io.OutputStream#write(int)
-	 */
-	public void write(int b) throws IOException {
-		out.write(b);
-	}
+    /* (non-Javadoc)
+     * @see java.io.OutputStream#write(int)
+     */
+    public void write(int b) throws IOException {
+        out.write(b);
+    }
 }

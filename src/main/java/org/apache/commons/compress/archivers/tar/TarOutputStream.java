@@ -172,7 +172,7 @@ public class TarOutputStream extends FilterOutputStream {
                 // create a TarEntry for the LongLink, the contents
                 // of which are the entry's name
                 TarArchiveEntry longLinkEntry = new TarArchiveEntry(TarConstants.GNU_LONGLINK,
-                                                      TarConstants.LF_GNUTYPE_LONGNAME);
+                                                                    TarConstants.LF_GNUTYPE_LONGNAME);
 
                 longLinkEntry.setSize(entry.getName().length() + 1);
                 putNextEntry(longLinkEntry);
@@ -181,8 +181,8 @@ public class TarOutputStream extends FilterOutputStream {
                 closeEntry();
             } else if (longFileMode != LONGFILE_TRUNCATE) {
                 throw new RuntimeException("file name '" + entry.getName()
-                                             + "' is too long ( > "
-                                             + TarConstants.NAMELEN + " bytes)");
+                                           + "' is too long ( > "
+                                           + TarConstants.NAMELEN + " bytes)");
             }
         }
 

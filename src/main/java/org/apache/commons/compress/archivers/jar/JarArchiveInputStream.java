@@ -30,7 +30,7 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
     public JarArchiveInputStream( final InputStream inputStream ) {
         super(inputStream);
     }
-        
+
     public ArchiveEntry getNextEntry() throws IOException {
         ZipArchiveEntry entry = (ZipArchiveEntry)super.getNextEntry();
         if(entry == null) {
@@ -39,7 +39,7 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
             return (ArchiveEntry)new JarArchiveEntry(entry);
         }
     }
-        
+
     public static boolean matches(byte[] signature, int length ) {
         // 4b50 0403 0014 0008
 
@@ -71,7 +71,7 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
         if (signature[7] != 0x00) {
             return false;
         }
-        
+
         return true;
     }
 }
