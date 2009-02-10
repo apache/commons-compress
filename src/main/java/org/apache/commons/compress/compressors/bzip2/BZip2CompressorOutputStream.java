@@ -272,7 +272,6 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
 
     public BZip2CompressorOutputStream(OutputStream inStream, int inBlockSize)
         throws IOException {
-        super(inStream);
         block = null;
         quadrant = null;
         zptr = null;
@@ -378,7 +377,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
         }
         finish();
         super.close();
-        out.close();
+        bsStream.close();
         closed = true;
     }
 
@@ -397,7 +396,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
 
     public void flush() throws IOException {
         super.flush();
-        out.flush();
+        bsStream.flush();
     }
 
     private int blockCRC, combinedCRC;
@@ -517,7 +516,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
     }
 
     private void bsSetStream(OutputStream f) {
-        out = f;
+        bsStream = f;
         bsLive = 0;
         bsBuff = 0;
         bytesOut = 0;
@@ -527,7 +526,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
         while (bsLive > 0) {
             int ch = (bsBuff >> 24);
             try {
-                out.write(ch); // write 8-bit
+                bsStream.write(ch); // write 8-bit
             } catch (IOException e) {
                 throw  e;
             }
@@ -541,7 +540,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
         while (bsLive >= 8) {
             int ch = (bsBuff >> 24);
             try {
-                out.write(ch); // write 8-bit
+                bsStream.write(ch); // write 8-bit
             } catch (IOException e) {
                 throw e;
             }
@@ -887,6 +886,8 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
         generateMTFValues();
         sendMTFValues();
     }
+
+    private OutputStream bsStream;
 
     private void simpleSort(int lo, int hi, int d) {
         int i, j, h, bigN, hp;

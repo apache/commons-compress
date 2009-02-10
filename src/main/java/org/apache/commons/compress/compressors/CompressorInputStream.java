@@ -18,12 +18,8 @@
  */
 package org.apache.commons.compress.compressors;
 
-import java.io.FilterInputStream;
 import java.io.InputStream;
 
-public abstract class CompressorInputStream extends FilterInputStream {
+public abstract class CompressorInputStream extends InputStream {
     // TODO 
-    protected CompressorInputStream(final InputStream i) {
-        super(i);
-    }
 }

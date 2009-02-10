@@ -26,8 +26,14 @@ import org.apache.commons.compress.compressors.CompressorInputStream;
 
 public class GzipCompressorInputStream extends CompressorInputStream {
 
+    private final GZIPInputStream in; 
+
     public GzipCompressorInputStream(InputStream inputStream) throws IOException {
-        super(new GZIPInputStream(inputStream));
+        in = new GZIPInputStream(inputStream);
+    }
+
+    public int read() throws IOException {
+        return in.read();
     }
 
 }
