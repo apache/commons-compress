@@ -246,13 +246,15 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     private RandomAccessFile raf = null;
 
+    private final OutputStream out;
+
     /**
      * Creates a new ZIP OutputStream filtering the underlying stream.
      * @param out the outputstream to zip
      * @since 1.1
      */
     public ZipArchiveOutputStream(OutputStream out) {
-        super(out);
+        this.out = out;
     }
 
     /**
@@ -263,8 +265,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @throws IOException on error
      */
     public ZipArchiveOutputStream(File file) throws IOException {
-        super(null);
-
+        OutputStream o = null;
         try {
             raf = new RandomAccessFile(file, "rw");
             raf.setLength(0);
@@ -277,8 +278,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                 }
                 raf = null;
             }
-            out = new FileOutputStream(file);
+            o = new FileOutputStream(file);
         }
+        out = o;
     }
 
     /**
@@ -571,6 +573,14 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
     public void closeArchiveEntry() {
         // do nothing
+    }
+
+    // used to be implemented via FilterOutputStream
+    /**
+     * Invokes the {@see #write(byte[],int,int) three-arg version}.
+     */
+    public void write(byte[] b) throws IOException {
+        write(b, 0, b.length);
     }
 
     /*

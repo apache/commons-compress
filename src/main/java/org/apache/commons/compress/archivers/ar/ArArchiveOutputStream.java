@@ -26,12 +26,13 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 
 public class ArArchiveOutputStream extends ArchiveOutputStream {
 
+    private final OutputStream out;
     private long archiveOffset = 0;
     private long entryOffset = 0;
     private ArArchiveEntry prevEntry;
 
     public ArArchiveOutputStream( final OutputStream pOut ) {
-        super(pOut);
+        this.out = pOut;
     }
 
     private long writeArchiveHeader() throws IOException {

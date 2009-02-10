@@ -70,6 +70,8 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements Cpio
 
     private long written;
 
+    private final OutputStream out;
+
     /**
      * Check to make sure that this stream has not been closed
      *
@@ -88,7 +90,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements Cpio
      * @param format The format of the stream
      */
     public CpioArchiveOutputStream(final OutputStream out, final short format) {
-        super(out);
+        this.out = new FilterOutputStream(out);
         setFormat(format);
     }
 

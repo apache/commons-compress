@@ -19,14 +19,9 @@
 package org.apache.commons.compress.archivers;
 
 import java.io.IOException;
-import java.io.FilterOutputStream;
 import java.io.OutputStream;
 
-public abstract class ArchiveOutputStream extends FilterOutputStream {
-
-    protected ArchiveOutputStream(OutputStream other) {
-        super(other);
-    }
+public abstract class ArchiveOutputStream extends OutputStream {
 
     public abstract void putArchiveEntry(ArchiveEntry entry) throws IOException;
 
