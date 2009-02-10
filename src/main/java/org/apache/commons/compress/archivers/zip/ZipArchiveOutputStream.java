@@ -591,25 +591,25 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      *
      * @since 1.1
      */
-    protected static final byte[] LFH_SIG = ZipLong.getBytes(0X04034B50L);
+    static final byte[] LFH_SIG = ZipLong.getBytes(0X04034B50L);
     /**
      * data descriptor signature
      *
      * @since 1.1
      */
-    protected static final byte[] DD_SIG = ZipLong.getBytes(0X08074B50L);
+    static final byte[] DD_SIG = ZipLong.getBytes(0X08074B50L);
     /**
      * central file header signature
      *
      * @since 1.1
      */
-    protected static final byte[] CFH_SIG = ZipLong.getBytes(0X02014B50L);
+    static final byte[] CFH_SIG = ZipLong.getBytes(0X02014B50L);
     /**
      * end of central dir signature
      *
      * @since 1.1
      */
-    protected static final byte[] EOCD_SIG = ZipLong.getBytes(0X06054B50L);
+    static final byte[] EOCD_SIG = ZipLong.getBytes(0X06054B50L);
 
     /**
      * Writes next block of compressed data to the output stream.
