@@ -552,19 +552,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         }
     }
 
-    /**
-     * Flushes this output stream and forces any buffered output bytes
-     * to be written out to the stream.
-     *
-     * @exception  IOException  if an I/O error occurs.
-     * @since 1.14
-     */
-    public void flush() throws IOException {
-        if (out != null) {
-            out.flush();
-        }
-    }
-
     public void putArchiveEntry(ArchiveEntry entry) throws IOException {
         putNextEntry((ZipArchiveEntry) entry);
     }
