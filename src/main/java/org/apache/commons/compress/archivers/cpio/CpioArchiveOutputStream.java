@@ -422,10 +422,4 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements Cpio
         this.putNextEntry((CpioArchiveEntry)entry);
     }
 
-    /* (non-Javadoc)
-     * @see java.io.OutputStream#write(int)
-     */
-    public void write(int b) throws IOException {
-        out.write(b);
-    }
 }

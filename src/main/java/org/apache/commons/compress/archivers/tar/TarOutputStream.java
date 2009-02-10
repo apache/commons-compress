@@ -244,18 +244,6 @@ public class TarOutputStream extends FilterOutputStream {
     }
 
     /**
-     * Writes bytes to the current tar archive entry.
-     *
-     * This method simply calls write( byte[], int, int ).
-     *
-     * @param wBuf The buffer to write to the archive.
-     * @throws IOException on error
-     */
-    public void write(byte[] wBuf) throws IOException {
-        write(wBuf, 0, wBuf.length);
-    }
-
-    /**
      * Writes bytes to the current tar archive entry. This method
      * is aware of the current entry and will throw an exception if
      * you attempt to write bytes past the length specified for the
