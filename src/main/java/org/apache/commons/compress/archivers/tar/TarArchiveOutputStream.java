@@ -26,8 +26,10 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 
 public class TarArchiveOutputStream extends ArchiveOutputStream {
 
+    private final TarOutputStream out;
+    
     public TarArchiveOutputStream(OutputStream out) {
-        super(new TarOutputStream(out));
+        this.out = new TarOutputStream(out);
     }
     
     public void close() throws IOException {
@@ -35,11 +37,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     public void closeArchiveEntry() throws IOException {
-        ((TarOutputStream) out).closeEntry();
+        this.out.closeEntry();
     }
 
     public void putArchiveEntry(ArchiveEntry entry) throws IOException {
-        ((TarOutputStream) out).putNextEntry((TarArchiveEntry)entry);
+        this.out.putNextEntry((TarArchiveEntry)entry);
     }
 
     public void write(byte[] buffer, int offset, int length) throws IOException {
