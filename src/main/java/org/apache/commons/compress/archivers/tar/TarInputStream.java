@@ -23,10 +23,11 @@
 
 package org.apache.commons.compress.archivers.tar;
 
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveInputStream;
 
 /**
  * The TarInputStream reads a UNIX tar archive as an InputStream.
@@ -35,7 +36,7 @@ import java.io.OutputStream;
  * using read().
  *
  */
-public class TarInputStream extends FilterInputStream {
+public class TarInputStream extends ArchiveInputStream {
     private static final int SMALL_BUFFER_SIZE = 256;
     private static final int BUFFER_SIZE = 8 * 1024;
     private static final int LARGE_BUFFER_SIZE = 32 * 1024;
@@ -58,6 +59,8 @@ public class TarInputStream extends FilterInputStream {
     protected byte[] oneBuf;
 
     // CheckStyle:VisibilityModifier ON
+
+    private final InputStream in;
 
     /**
      * Constructor for TarInputStream.
@@ -83,7 +86,7 @@ public class TarInputStream extends FilterInputStream {
      * @param recordSize the record size to use
      */
     public TarInputStream(InputStream is, int blockSize, int recordSize) {
-        super(is);
+        this.in = is;
 
         this.buffer = new TarBuffer(is, blockSize, recordSize);
         this.readBuf = null;
@@ -167,23 +170,6 @@ public class TarInputStream extends FilterInputStream {
     }
 
     /**
-     * Since we do not support marking just yet, we return false.
-     *
-     * @return False.
-     */
-    public boolean markSupported() {
-        return false;
-    }
-
-    /**
-     * Since we do not support marking just yet, we do nothing.
-     *
-     * @param markLimit The limit to mark.
-     */
-    public void mark(int markLimit) {
-    }
-
-    /**
      * Since we do not support marking just yet, we do nothing.
      */
     public void reset() {
@@ -202,7 +188,7 @@ public class TarInputStream extends FilterInputStream {
      * @return The next TarEntry in the archive, or null.
      * @throws IOException on error
      */
-    public TarArchiveEntry getNextEntry() throws IOException {
+    public ArchiveEntry getNextEntry() throws IOException {
         if (hasHitEOF) {
             return null;
         }
@@ -399,4 +385,47 @@ public class TarInputStream extends FilterInputStream {
             out.write(buf, 0, numRead);
         }
     }
+
+    // used to be implemented via FilterInputStream
+    public int read(byte[] b) throws IOException {
+        return read(b, 0, b.length);
+    }
+
+    // ArchiveInputStream
+
+    public static boolean matches(byte[] signature, int length) {
+        // 6574 7473 2e31 6d78
+        
+        if (length < 8) {
+            return false;
+        }
+
+        if (signature[0] != 0x74) {
+            return false;
+        }
+        if (signature[1] != 0x65) {
+            return false;
+        }
+        if (signature[2] != 0x73) {
+            return false;
+        }
+        if (signature[3] != 0x74) {
+            return false;
+        }
+        if (signature[4] != 0x31) {
+            return false;
+        }
+        if (signature[5] != 0x2e) {
+            return false;
+        }
+        if (signature[6] != 0x78) {
+            return false;
+        }
+        if (signature[7] != 0x6d) {
+            return false;
+        }
+        
+        return true;
+    }
+    
 }
