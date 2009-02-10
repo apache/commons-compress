@@ -28,8 +28,8 @@ import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveOutputStream;
 import org.apache.commons.compress.archivers.jar.JarArchiveInputStream;
 import org.apache.commons.compress.archivers.jar.JarArchiveOutputStream;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
+import org.apache.commons.compress.archivers.tar.TarInputStream;
+import org.apache.commons.compress.archivers.tar.TarOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 
@@ -52,7 +52,7 @@ public class ArchiveStreamFactory {
         } else if("zip".equalsIgnoreCase(archiverName)) {
             return new ZipArchiveInputStream(in);
         } else if("tar".equalsIgnoreCase(archiverName)) {
-            return new TarArchiveInputStream(in);
+            return new TarInputStream(in);
         } else if("jar".equalsIgnoreCase(archiverName)) {
             return new JarArchiveInputStream(in);
         } else if("cpio".equalsIgnoreCase(archiverName)) {
@@ -67,7 +67,7 @@ public class ArchiveStreamFactory {
         } else if("zip".equalsIgnoreCase(archiverName)) {
             return new ZipArchiveOutputStream(out);
         } else if("tar".equalsIgnoreCase(archiverName)) {
-            return new TarArchiveOutputStream(out);
+            return new TarOutputStream(out);
         } else if("jar".equalsIgnoreCase(archiverName)) {
             return new JarArchiveOutputStream(out);
         } else if("cpio".equalsIgnoreCase(archiverName)) {
@@ -88,8 +88,8 @@ public class ArchiveStreamFactory {
             return new ZipArchiveInputStream(input);
         } else if(JarArchiveInputStream.matches(signature, signatureLength)) {
             return new JarArchiveInputStream(input);
-        } else if(TarArchiveInputStream.matches(signature, signatureLength)) {
-            return new TarArchiveInputStream(input);
+        } else if(TarInputStream.matches(signature, signatureLength)) {
+            return new TarInputStream(input);
         } else if(ArArchiveInputStream.matches(signature, signatureLength)) {
             return new ArArchiveInputStream(input);
         } else if(CpioArchiveInputStream.matches(signature, signatureLength)) {

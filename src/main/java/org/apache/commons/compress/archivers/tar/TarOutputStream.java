@@ -18,9 +18,10 @@
  */
 package org.apache.commons.compress.archivers.tar;
 
-import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveOutputStream;
 
 /**
  * The TarOutputStream writes a UNIX tar archive as an OutputStream.
@@ -28,7 +29,7 @@ import java.io.OutputStream;
  * by writing to this stream using write().
  *
  */
-public class TarOutputStream extends FilterOutputStream {
+public class TarOutputStream extends ArchiveOutputStream {
     /** Fail if a long file name is required in the archive. */
     public static final int LONGFILE_ERROR = 0;
 
@@ -52,6 +53,8 @@ public class TarOutputStream extends FilterOutputStream {
     // CheckStyle:VisibilityModifier ON
 
     private boolean closed = false;
+
+    private final OutputStream out;
 
     /**
      * Constructor for TarInputStream.
@@ -77,7 +80,7 @@ public class TarOutputStream extends FilterOutputStream {
      * @param recordSize the record size to use
      */
     public TarOutputStream(OutputStream os, int blockSize, int recordSize) {
-        super(os);
+        out = os;
 
         this.buffer = new TarBuffer(os, blockSize, recordSize);
         this.debug = false;
@@ -345,4 +348,33 @@ public class TarOutputStream extends FilterOutputStream {
 
         buffer.writeRecord(recordBuf);
     }
+
+    // used to be implemented via FilterOutputStream
+    public void flush() throws IOException {
+        out.flush();
+    }
+        
+    // ArchiveOutputStream
+
+    public void closeArchiveEntry() throws IOException {
+        closeEntry();
+    }
+
+    public void putArchiveEntry(ArchiveEntry entry) throws IOException {
+        putNextEntry((TarArchiveEntry) entry);
+    }
+
+    public String getDefaultFileExtension() {
+        return "tar";
+    }
+
+    public byte[] getHeader() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String getName() {
+        return "tar";
+    }
+
 }
