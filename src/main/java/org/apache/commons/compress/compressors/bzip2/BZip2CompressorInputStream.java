@@ -80,8 +80,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
 
     private int nInUse;
 
-    private InputStream in;
-
     private int currentChar = -1;
 
     private static final int EOF                  = 0;
@@ -132,9 +130,8 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      *  if <tt>in == null</tt>
      */
     public BZip2CompressorInputStream(final InputStream in) throws IOException {
-        super();
+        super(in);
 
-        this.in = in;
         init();
     }
 
