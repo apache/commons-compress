@@ -26,8 +26,18 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
 
 public class GzipCompressorOutputStream extends CompressorOutputStream {
 
+    private final GZIPOutputStream out;
+
     public GzipCompressorOutputStream( final OutputStream outputStream ) throws IOException {
-        super(new GZIPOutputStream(outputStream));
+        out = new GZIPOutputStream(outputStream);
+    }
+
+    public void write(int b) throws IOException {
+        out.write(b);
+    }
+
+    public void close() throws IOException {
+        out.close();
     }
 
 }
