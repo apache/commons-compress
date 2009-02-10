@@ -29,7 +29,7 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.jar.JarArchiveInputStream;
-import org.apache.commons.compress.archivers.tar.TarInputStream;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 
 public final class DetectArchiverTestCase extends TestCase {
@@ -46,7 +46,7 @@ public final class DetectArchiverTestCase extends TestCase {
 				new BufferedInputStream(new FileInputStream(
 						new File(getClass().getClassLoader().getResource("bla.tar").getFile()))));
 		assertNotNull(tar);
-		assertTrue(tar instanceof TarInputStream);
+		assertTrue(tar instanceof TarArchiveInputStream);
 
 		final ArchiveInputStream zip = factory.createArchiveInputStream(
 				new BufferedInputStream(new FileInputStream(
