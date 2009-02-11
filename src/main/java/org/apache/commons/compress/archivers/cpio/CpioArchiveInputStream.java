@@ -435,11 +435,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
     }
 
     public ArchiveEntry getNextEntry() throws IOException {
-        CpioArchiveEntry entry = this.getNextCPIOEntry();
-        if(entry == null) {
-            return null;
-        }
-        return (ArchiveEntry)entry;
+        return getNextCPIOEntry();
     }
 
     public static boolean matches(byte[] signature, int length) {

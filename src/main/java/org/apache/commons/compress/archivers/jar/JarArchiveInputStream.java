@@ -31,13 +31,13 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
         super(inputStream);
     }
 
+    public JarArchiveEntry getNextJarEntry() throws IOException {
+        ZipArchiveEntry entry = getNextZipEntry();
+        return entry == null ? null : new JarArchiveEntry(entry);
+    }
+
     public ArchiveEntry getNextEntry() throws IOException {
-        ZipArchiveEntry entry = (ZipArchiveEntry)super.getNextEntry();
-        if(entry == null) {
-            return null;
-        } else {
-            return (ArchiveEntry)new JarArchiveEntry(entry);
-        }
+        return getNextJarEntry();
     }
 
     public static boolean matches(byte[] signature, int length ) {
