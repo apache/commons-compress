@@ -188,7 +188,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @return The next TarEntry in the archive, or null.
      * @throws IOException on error
      */
-    public ArchiveEntry getNextEntry() throws IOException {
+    public TarArchiveEntry getNextTarEntry() throws IOException {
         if (hasHitEOF) {
             return null;
         }
@@ -270,6 +270,10 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         }
 
         return currEntry;
+    }
+
+    public ArchiveEntry getNextEntry() throws IOException {
+        return getNextTarEntry();
     }
 
     /**

@@ -33,7 +33,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         input = pInput;
     }
 
-    public ArchiveEntry getNextEntry() throws IOException {
+    public ArArchiveEntry getNextArEntry() throws IOException {
 
         if (offset == 0) {
             final byte[] expected = "!<arch>\n".getBytes();
@@ -89,6 +89,10 @@ public class ArArchiveInputStream extends ArchiveInputStream {
 
     }
 
+
+    public ArchiveEntry getNextEntry() throws IOException {
+        return getNextArEntry();
+    }
 
     public int read() throws IOException {
         final int ret = input.read();

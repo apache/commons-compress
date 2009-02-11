@@ -33,12 +33,16 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         input = new ZipInputStream(inputStream);
     }
 
-    public ArchiveEntry getNextEntry() throws IOException {
+    public ZipArchiveEntry getNextZipEntry() throws IOException {
         java.util.zip.ZipEntry entry = input.getNextEntry();
         if(entry == null) {
             return null;
         }
-        return (ArchiveEntry)new ZipArchiveEntry(entry);
+        return new ZipArchiveEntry(entry);
+    }
+
+    public ArchiveEntry getNextEntry() throws IOException {
+        return getNextZipEntry();
     }
 
     public int read(byte[] b, int off, int len) throws IOException {
