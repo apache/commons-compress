@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-sandbox-parent</artifactId>
-    <version>4</version>
+    <version>7</version>
   </parent>
 
   <artifactId>commons-compress</artifactId>
@@ -80,20 +80,14 @@
   </distributionManagement>
 
   <properties>
+    <maven.compile.source>1.4</maven.compile.source>
+    <maven.compile.target>1.4</maven.compile.target>
     <commons.componentid>compress</commons.componentid>
     <commons.jira.componentid>12311183</commons.jira.componentid>
   </properties> 
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.4</source>
-          <target>1.4</target>
-        </configuration>
-      </plugin>
       <!-- turn off cobertura until we figure out why it's hanging -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
