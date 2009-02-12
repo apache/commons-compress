@@ -85,8 +85,16 @@
   </properties> 
 
   <build>
-    <!-- turn off cobertura until we figure out why it's hanging -->
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.4</source>
+          <target>1.4</target>
+        </configuration>
+      </plugin>
+      <!-- turn off cobertura until we figure out why it's hanging -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cobertura-maven-plugin</artifactId>
