@@ -218,12 +218,9 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         if (in.available() == 0) {
             throw new IOException("Empty InputStream");
         }
-        int magic2 = this.in.read();
-        if (magic2 != 'h') {
-            throw new IOException("Stream is not BZip2 formatted: expected 'h'"
-                                  + " as first byte but got '" + (char) magic2
-                                  + "'");
-        }
+        checkMagicChar('B', "first");
+        checkMagicChar('Z', "second");
+        checkMagicChar('h', "third");
 
         int blockSize = this.in.read();
         if ((blockSize < '1') || (blockSize > '9')) {
@@ -235,6 +232,17 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
 
         initBlock();
         setupBlock();
+    }
+
+    private void checkMagicChar(char expected, String position)
+        throws IOException {
+        int magic = this.in.read();
+        if (magic != expected) {
+            throw new IOException("Stream is not BZip2 formatted: expected '"
+                                  + expected + "' as " + position
+                                  + " byte but got '" + (char) magic
+                                  + "'");
+        }
     }
 
     private void initBlock() throws IOException {
