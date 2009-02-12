@@ -405,6 +405,8 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
         bytesOut = 0;
         nBlocksRandomised = 0;
 
+        bsPutUChar('B');
+        bsPutUChar('Z');
         /* Write `magic' bytes h indicating file-format == huffmanised,
            followed by a digit indicating blockSize100k.
         */
