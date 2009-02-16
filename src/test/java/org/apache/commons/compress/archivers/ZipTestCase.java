@@ -23,48 +23,81 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.utils.IOUtils;
 
-import org.apache.commons.compress.AbstractTestCase;
-
 public final class ZipTestCase extends AbstractTestCase {
+	/**
+	 * Archives 2 files and unarchives it again. If the file length of result
+	 * and source is the same, it looks like the operations have worked
+	 * @throws Exception
+	 */
 	public void testZipArchiveCreation() throws Exception {
-		
+		// Archive
 		final File output = new File(dir, "bla.zip");
-		
 		final File file1 = getFile("test1.xml");
 		final File file2 = getFile("test2.xml");
+
+		{
+			final OutputStream out = new FileOutputStream(output);
+	        final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("zip", out);
+	
+	        os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
+	        IOUtils.copy(new FileInputStream(file1), os);
+	        os.closeArchiveEntry();
+	        
+	        os.putArchiveEntry(new ZipArchiveEntry("testdata/test2.xml"));
+	        IOUtils.copy(new FileInputStream(file2), os);
+	        os.closeArchiveEntry();
+	        os.close();
+		}
 		
-        final OutputStream out = new FileOutputStream(output);
+		// Unarchive the same
+		List results = new ArrayList();
+		
+        {
+	        final InputStream is = new FileInputStream(output);
+	        final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("zip", is);
+	 
+	        File result = File.createTempFile("dir-result", "");
+	        result.delete();
+	        result.mkdir();
+			
+	        ZipArchiveEntry entry = null;
+	        while((entry = (ZipArchiveEntry)in.getNextEntry()) != null) {
+	        	File outfile = new File(result.getCanonicalPath() + "/result/" + entry.getName());
+	        	outfile.getParentFile().mkdirs();
+	        	OutputStream out = new FileOutputStream(outfile);
+		        IOUtils.copy(in, out);
+		        out.close();
+		        results.add(outfile);
+	        }
+	        in.close();
+        }
         
-        final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("zip", out);
-
-        os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
-        IOUtils.copy(new FileInputStream(file1), os);
-        os.closeArchiveEntry();
-        
-        os.putArchiveEntry(new ZipArchiveEntry("testdata/test2.xml"));
-        IOUtils.copy(new FileInputStream(file2), os);
-        os.closeArchiveEntry();
-        
-        os.close();
+        assertEquals(results.size(), 2);
+        File result = (File)results.get(0);
+        assertEquals(file1.length(), result.length());
+        result = (File)results.get(1);
+        assertEquals(file2.length(), result.length());
     }
+	
+    /**
+     * Simple unarchive test. Asserts nothing.
+     * @throws Exception
+     */
     public void testZipUnarchive() throws Exception {
-
 		final File input = getFile("bla.zip");
-    	
         final InputStream is = new FileInputStream(input);
         final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("zip", is);
- 
         final ZipArchiveEntry entry = (ZipArchiveEntry)in.getNextEntry();
         final OutputStream out = new FileOutputStream(new File(dir, entry.getName()));
-        
         IOUtils.copy(in, out);
-    
         out.close();
         in.close();
     }
-
 }
