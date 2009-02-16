@@ -39,451 +39,451 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
  * Checks several ChangeSet business logics.
  */
 public final class ChangeSetTestCase extends AbstractTestCase {
-	/**
-	 * Tries to delete the folder "bla" from a zip file.
-	 * This should result in the deletion of bla/*, which 
-	 * actually means bla/test4.xml should be removed from this zipfile.
-	 * The file something/bla (without ending, named like the folder) should
-	 * not be deleted.
-	 * 
-	 * @throws Exception
-	 */
-	public void XtestDeleteDir() throws Exception {
-		File input = this.createArchive("zip");
-		
-		ArchiveOutputStream out = null;
-		ArchiveInputStream ais = null;
-		File result = File.createTempFile("test", ".zip");
-		try {
-			
-			final InputStream is = new FileInputStream(input);
-			ais = new ArchiveStreamFactory().createArchiveInputStream("zip", is);
-			
-			out = new ArchiveStreamFactory().createArchiveOutputStream("zip", new FileOutputStream(result));
+    /**
+     * Tries to delete the folder "bla" from a zip file.
+     * This should result in the deletion of bla/*, which 
+     * actually means bla/test4.xml should be removed from this zipfile.
+     * The file something/bla (without ending, named like the folder) should
+     * not be deleted.
+     * 
+     * @throws Exception
+     */
+    public void XtestDeleteDir() throws Exception {
+        File input = this.createArchive("zip");
 
-			ChangeSet changes = new ChangeSet();
-			changes.delete("bla");
-			changes.perform(ais, out);
-			
-		} finally {
-			if(out != null) out.close();
-			if(ais != null) ais.close();
-		}
-		
-		List expected = new ArrayList();
-		expected.add("testdata/test1.xml");
-		expected.add("testdata/test2.xml");
-		expected.add("test/test3.xml");
-		expected.add("test.txt");
-		expected.add("something/bla");
-		expected.add("test with spaces.txt");
-		
-		this.checkArchiveContent(result, expected);
-	}
-	
-	/**
-	 * Tries to delete a directory with a file and adds 
-	 * a new directory with a new file and with the same name.
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        File result = File.createTempFile("test", ".zip");
+        try {
+
+            final InputStream is = new FileInputStream(input);
+            ais = new ArchiveStreamFactory().createArchiveInputStream("zip", is);
+
+            out = new ArchiveStreamFactory().createArchiveOutputStream("zip", new FileOutputStream(result));
+
+            ChangeSet changes = new ChangeSet();
+            changes.delete("bla");
+            changes.perform(ais, out);
+
+        } finally {
+            if(out != null) out.close();
+            if(ais != null) ais.close();
+        }
+
+        List expected = new ArrayList();
+        expected.add("testdata/test1.xml");
+        expected.add("testdata/test2.xml");
+        expected.add("test/test3.xml");
+        expected.add("test.txt");
+        expected.add("something/bla");
+        expected.add("test with spaces.txt");
+
+        this.checkArchiveContent(result, expected);
+    }
+
+    /**
+     * Tries to delete a directory with a file and adds 
+     * a new directory with a new file and with the same name.
      * Should delete dir1/* and add dir1/test.txt at the end
      * 
-	 * @throws Exception
-	 */
-	public void XtestDeletePlusAdd() throws Exception {
-		File input = this.createArchive("zip");
-		
-		ArchiveOutputStream out = null;
-		ArchiveInputStream ais = null;
-		File result = File.createTempFile("test", ".zip");
-		try {
-			
-			final InputStream is = new FileInputStream(input);
-			ais = new ArchiveStreamFactory().createArchiveInputStream("zip", is);
-			out = new ArchiveStreamFactory().createArchiveOutputStream("zip", new FileOutputStream(result));
+     * @throws Exception
+     */
+    public void XtestDeletePlusAdd() throws Exception {
+        File input = this.createArchive("zip");
 
-			ChangeSet changes = new ChangeSet();
-			changes.delete("bla");
-			
-			// Add a file
-			final File file1 = getFile("test.txt");
-			ArchiveEntry entry = new ZipArchiveEntry("bla/test.txt");
-			changes.add(entry, new FileInputStream(file1));
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        File result = File.createTempFile("test", ".zip");
+        try {
 
-			changes.perform(ais, out);
-			
-		} finally {
-			if(out != null) out.close();
-			if(ais != null) ais.close();
-		}
-		
-		List expected = new ArrayList();
-		expected.add("testdata/test1.xml");
-		expected.add("testdata/test2.xml");
-		expected.add("test/test3.xml");
-		expected.add("test.txt");
-		expected.add("something/bla");
-		expected.add("bla/test.txt");
-		expected.add("test with spaces.txt");
-		
-		this.checkArchiveContent(result, expected);
-	}
-	
-	/**
-	 * Adds a file to a zip archive. Deletes an other file.
-	 * @throws Exception
-	 */
-	public void testDeleteFromAndAddToZip() throws Exception {
-		File input = this.createArchive("zip");
-		
-		ArchiveOutputStream out = null;
-		ArchiveInputStream ais = null;
-		File result = File.createTempFile("test", ".zip");
-		try {
-			
-			final InputStream is = new FileInputStream(input);
-			ais = new ArchiveStreamFactory().createArchiveInputStream("zip", is);
-			out = new ArchiveStreamFactory().createArchiveOutputStream("zip", new FileOutputStream(result));
+            final InputStream is = new FileInputStream(input);
+            ais = new ArchiveStreamFactory().createArchiveInputStream("zip", is);
+            out = new ArchiveStreamFactory().createArchiveOutputStream("zip", new FileOutputStream(result));
 
-			ChangeSet changes = new ChangeSet();
-			
-			final File file1 = getFile("test.txt");
-			ArchiveEntry entry = new ZipArchiveEntry("blub/test.txt");
-			changes.add(entry, new FileInputStream(file1));
-			
-			changes.delete("testdata/test1.xml");
-			
-			changes.perform(ais, out);
-			
-		} finally {
-			if(out != null) out.close();
-			if(ais != null) ais.close();
-		}
-		
-		List expected = new ArrayList();
-		expected.add("testdata/test2.xml");
-		expected.add("test/test3.xml");
-		expected.add("blub/test.txt");
-		expected.add("test.txt");
-		expected.add("something/bla");
-		expected.add("bla/test4.xml");
-		expected.add("test with spaces.txt");
-		
-		this.checkArchiveContent(result, expected);
-	}
-	
-	/**
-	 * add blub/test.txt + delete blub
+            ChangeSet changes = new ChangeSet();
+            changes.delete("bla");
+
+            // Add a file
+            final File file1 = getFile("test.txt");
+            ArchiveEntry entry = new ZipArchiveEntry("bla/test.txt");
+            changes.add(entry, new FileInputStream(file1));
+
+            changes.perform(ais, out);
+
+        } finally {
+            if(out != null) out.close();
+            if(ais != null) ais.close();
+        }
+
+        List expected = new ArrayList();
+        expected.add("testdata/test1.xml");
+        expected.add("testdata/test2.xml");
+        expected.add("test/test3.xml");
+        expected.add("test.txt");
+        expected.add("something/bla");
+        expected.add("bla/test.txt");
+        expected.add("test with spaces.txt");
+
+        this.checkArchiveContent(result, expected);
+    }
+
+    /**
+     * Adds a file to a zip archive. Deletes an other file.
+     * @throws Exception
+     */
+    public void testDeleteFromAndAddToZip() throws Exception {
+        File input = this.createArchive("zip");
+
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        File result = File.createTempFile("test", ".zip");
+        try {
+
+            final InputStream is = new FileInputStream(input);
+            ais = new ArchiveStreamFactory().createArchiveInputStream("zip", is);
+            out = new ArchiveStreamFactory().createArchiveOutputStream("zip", new FileOutputStream(result));
+
+            ChangeSet changes = new ChangeSet();
+
+            final File file1 = getFile("test.txt");
+            ArchiveEntry entry = new ZipArchiveEntry("blub/test.txt");
+            changes.add(entry, new FileInputStream(file1));
+
+            changes.delete("testdata/test1.xml");
+
+            changes.perform(ais, out);
+
+        } finally {
+            if(out != null) out.close();
+            if(ais != null) ais.close();
+        }
+
+        List expected = new ArrayList();
+        expected.add("testdata/test2.xml");
+        expected.add("test/test3.xml");
+        expected.add("blub/test.txt");
+        expected.add("test.txt");
+        expected.add("something/bla");
+        expected.add("bla/test4.xml");
+        expected.add("test with spaces.txt");
+
+        this.checkArchiveContent(result, expected);
+    }
+
+    /**
+     * add blub/test.txt + delete blub
      * Should add dir1/test.txt and delete it afterwards. In this example,
      * the zip archive should stay untouched.
-	 * @throws Exception
-	 */
-	public void XtestAddDeleteAdd() throws Exception {
-		File input = this.createArchive("zip");
-		
-		ArchiveOutputStream out = null;
-		ArchiveInputStream ais = null;
-		File result = File.createTempFile("test", ".zip");
-		try {
-			
-			final InputStream is = new FileInputStream(input);
-			ais = new ArchiveStreamFactory().createArchiveInputStream("zip", is);
-			out = new ArchiveStreamFactory().createArchiveOutputStream("zip", new FileOutputStream(result));
+     * @throws Exception
+     */
+    public void XtestAddDeleteAdd() throws Exception {
+        File input = this.createArchive("zip");
 
-			ChangeSet changes = new ChangeSet();
-			
-			final File file1 = getFile("test.txt");
-			ArchiveEntry entry = new ZipArchiveEntry("blub/test.txt");
-			changes.add(entry, new FileInputStream(file1));
-			
-			changes.delete("blub");
-			
-			changes.perform(ais, out);
-			
-		} finally {
-			if(out != null) out.close();
-			if(ais != null) ais.close();
-		}
-		
-		List expected = new ArrayList();
-		expected.add("testdata/test1.xml");
-		expected.add("testdata/test2.xml");
-		expected.add("test/test3.xml");
-		expected.add("test.txt");
-		expected.add("something/bla");
-		expected.add("bla/test4.xml");
-		expected.add("test with spaces.txt");
-		
-		this.checkArchiveContent(result, expected);
-	}
-	
-	
-	/**
-	 * delete bla + add bla/test.txt + delete bla
-	 * Deletes dir1/* first, then surpresses the add of bla.txt cause there
-	 * is a delete operation later.
-	 * @throws Exception
-	 */
-	public void XtestDeleteAddDelete() throws Exception {
-		File input = this.createArchive("zip");
-		
-		ArchiveOutputStream out = null;
-		ArchiveInputStream ais = null;
-		File result = File.createTempFile("test", ".zip");
-		try {
-			
-			final InputStream is = new FileInputStream(input);
-			ais = new ArchiveStreamFactory().createArchiveInputStream("zip", is);
-			out = new ArchiveStreamFactory().createArchiveOutputStream("zip", new FileOutputStream(result));
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        File result = File.createTempFile("test", ".zip");
+        try {
 
-			ChangeSet changes = new ChangeSet();
-			
-			changes.delete("bla");
-			
-			final File file1 = getFile("test.txt");
-			ArchiveEntry entry = new ZipArchiveEntry("bla/test.txt");
-			changes.add(entry, new FileInputStream(file1));
-			
-			changes.delete("bla");
-			
-			changes.perform(ais, out);
-			
-		} finally {
-			if(out != null) out.close();
-			if(ais != null) ais.close();
-		}
-		
-		List expected = new ArrayList();
-		expected.add("testdata/test1.xml");
-		expected.add("testdata/test2.xml");
-		expected.add("test/test3.xml");
-		expected.add("test.txt");
-		expected.add("something/bla");
-		expected.add("test with spaces.txt");
-		
-		this.checkArchiveContent(result, expected);
-	}
-	
-	/**
-	 * Simple Delete from a zip file.
-	 * @throws Exception
-	 */
-	public void testDeleteFromZip() throws Exception {
-		ArchiveOutputStream out = null;
-		ArchiveInputStream ais = null;
-		try {
-			ChangeSet changes = new ChangeSet();
-			changes.delete("test2.xml");
-			
-			final File input = getFile("bla.zip");
-			final InputStream is = new FileInputStream(input);
-			ais = new ArchiveStreamFactory().createArchiveInputStream("zip", is);
-			
-			File temp = File.createTempFile("test", ".zip");
-			out = new ArchiveStreamFactory().createArchiveOutputStream("zip", new FileOutputStream(temp));
+            final InputStream is = new FileInputStream(input);
+            ais = new ArchiveStreamFactory().createArchiveInputStream("zip", is);
+            out = new ArchiveStreamFactory().createArchiveOutputStream("zip", new FileOutputStream(result));
 
-			changes.perform(ais, out);
-		} finally {
-			if(out != null) out.close();
-			if(ais != null) ais.close();
-		}
-		// TODO add asserts
-	}
+            ChangeSet changes = new ChangeSet();
 
-	/**
-	 * Simple delete from a tar file
-	 * @throws Exception
-	 */
-	public void testDeleteFromTar() throws Exception {
-		ArchiveOutputStream out = null;
-		ArchiveInputStream ais = null;
-		try {
-			ChangeSet changes = new ChangeSet();
-			changes.delete("test2.xml");
-			
-			final File input = getFile("bla.tar");
-			final InputStream is = new FileInputStream(input);
-			ais = new ArchiveStreamFactory().createArchiveInputStream("tar", is);
-			
-			File temp = new File(dir, "bla.tar");
-			out = new ArchiveStreamFactory().createArchiveOutputStream("tar", new FileOutputStream(temp));
+            final File file1 = getFile("test.txt");
+            ArchiveEntry entry = new ZipArchiveEntry("blub/test.txt");
+            changes.add(entry, new FileInputStream(file1));
 
-			changes.perform(ais, out);
-		} finally {
-			if(out != null) out.close();
-			if(ais != null) ais.close();
-		}
-		// TODO add asserts
-	}
+            changes.delete("blub");
 
-	/**
-	 * Simple delete from a jar file
-	 * @throws Exception
-	 */
-	public void testDeleteFromJar() throws Exception {
-		ArchiveOutputStream out = null;
-		ArchiveInputStream ais = null;
-		try {
-			ChangeSet changes = new ChangeSet();
-			changes.delete("test2.xml");
-			changes.delete("META-INF/MANIFEST.MF");
-			
-			final File input = getFile("bla.jar");
-			final InputStream is = new FileInputStream(input);
-			ais = new ArchiveStreamFactory().createArchiveInputStream("jar", is);
-			
-			File temp = new File(dir, "bla.jar");
-			out = new ArchiveStreamFactory().createArchiveOutputStream("jar", new FileOutputStream(temp));
+            changes.perform(ais, out);
 
-			changes.perform(ais, out);
-		} finally {
-			if(out != null) out.close();
-			if(ais != null) ais.close();
-		}
-		// TODO add asserts
-	}
+        } finally {
+            if(out != null) out.close();
+            if(ais != null) ais.close();
+        }
 
-	/**
-	 * Simple delete from an ar file
-	 * @throws Exception
-	 */
-	public void testDeleteFromAr() throws Exception {
-		ArchiveOutputStream out = null;
-		ArchiveInputStream ais = null;
-		try {
-			ChangeSet changes = new ChangeSet();
-			changes.delete("test2.xml");
-			
-			final File input = getFile("bla.ar");
-			final InputStream is = new FileInputStream(input);
-			ais = new ArchiveStreamFactory().createArchiveInputStream("ar", is);
-			
-			File temp = new File(dir, "bla.ar");
-			out = new ArchiveStreamFactory().createArchiveOutputStream("ar", new FileOutputStream(temp));
+        List expected = new ArrayList();
+        expected.add("testdata/test1.xml");
+        expected.add("testdata/test2.xml");
+        expected.add("test/test3.xml");
+        expected.add("test.txt");
+        expected.add("something/bla");
+        expected.add("bla/test4.xml");
+        expected.add("test with spaces.txt");
 
-			changes.perform(ais, out);
-		} finally {
-			if(out != null) out.close();
-			if(ais != null) ais.close();
-		}
-		// TODO add asserts
-	}
+        this.checkArchiveContent(result, expected);
+    }
 
-	public void testDeleteFromAndAddToTar() throws Exception {
-		ArchiveOutputStream out = null;
-		ArchiveInputStream ais = null;
-		try {
-			ChangeSet changes = new ChangeSet();
-			changes.delete("test2.xml");
-			
-			final File file1 = getFile("test.txt");
-			
-			final TarArchiveEntry entry = new TarArchiveEntry("testdata/test.txt");
-		    entry.setModTime(0);
-		    entry.setSize(file1.length());
-		    entry.setUserId(0);
-		    entry.setGroupId(0);
-		    entry.setUserName("avalon");
-		    entry.setGroupName("excalibur");
-		    entry.setMode(0100000);
-			
-	        changes.add(entry, new FileInputStream(file1));
-			
-			final File input = getFile("bla.tar");
-			final InputStream is = new FileInputStream(input);
-			ais = new ArchiveStreamFactory().createArchiveInputStream("tar", is);
-			
-			File temp = new File(dir, "bla.tar");
-			out = new ArchiveStreamFactory().createArchiveOutputStream("tar", new FileOutputStream(temp));
 
-			changes.perform(ais, out);
-		} finally {
-			if(out != null) out.close();
-			if(ais != null) ais.close();
-		}
-		// TODO add asserts
-	}
-	
-	/**
-	 * Delete from a jar file and add another file
-	 * @throws Exception
-	 */
-	public void testDeleteFromAndAddToJar() throws Exception {
-		ArchiveOutputStream out = null;
-		ArchiveInputStream ais = null;
-		try {
-			ChangeSet changes = new ChangeSet();
-			changes.delete("test2.xml");
-			
-			final File file1 = getFile("test.txt");
-			JarArchiveEntry entry = new JarArchiveEntry("testdata/test.txt");
-	        changes.add(entry, new FileInputStream(file1));
-			
-			final File input = getFile("bla.jar");
-			final InputStream is = new FileInputStream(input);
-			ais = new ArchiveStreamFactory().createArchiveInputStream("jar", is);
-			
-			File temp = new File(dir, "bla.jar");
-			out = new ArchiveStreamFactory().createArchiveOutputStream("jar", new FileOutputStream(temp));
+    /**
+     * delete bla + add bla/test.txt + delete bla
+     * Deletes dir1/* first, then surpresses the add of bla.txt cause there
+     * is a delete operation later.
+     * @throws Exception
+     */
+    public void XtestDeleteAddDelete() throws Exception {
+        File input = this.createArchive("zip");
 
-			changes.perform(ais, out);
-		} finally {
-			if(out != null) out.close();
-			if(ais != null) ais.close();
-		}
-		// TODO add asserts
-	}
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        File result = File.createTempFile("test", ".zip");
+        try {
 
-	/**
-	 * Deletes a file from an AR-archive and adds another
-	 * @throws Exception
-	 */
-	public void testDeleteFromAndAddToAr() throws Exception {
-		ArchiveOutputStream out = null;
-		ArchiveInputStream ais = null;
-		try {
-			ChangeSet changes = new ChangeSet();
-			changes.delete("test2.xml");
-			
-			final File file1 = getFile("test.txt");
-			
-			final ArArchiveEntry entry = new ArArchiveEntry("test.txt", file1.length());
-		   
-	        changes.add(entry, new FileInputStream(file1));
-			
-			final File input = getFile("bla.ar");
-			final InputStream is = new FileInputStream(input);
-			ais = new ArchiveStreamFactory().createArchiveInputStream("ar", is);
-			
-			File temp = new File(dir, "bla.ar");
-			out = new ArchiveStreamFactory().createArchiveOutputStream("ar", new FileOutputStream(temp));
+            final InputStream is = new FileInputStream(input);
+            ais = new ArchiveStreamFactory().createArchiveInputStream("zip", is);
+            out = new ArchiveStreamFactory().createArchiveOutputStream("zip", new FileOutputStream(result));
 
-			changes.perform(ais, out);
-		} finally {
-			if(out != null) out.close();
-			if(ais != null) ais.close();
-		}
-		// TODO add asserts
-	}
-	
-	/**
-	 * TODO: Move operations are not supported currently
-	 * 
-	 * mv dir1/test.text dir2/test.txt + delete dir1
-	 * Moves the file to dir2 and deletes everything in dir1
-	 * @throws Exception
-	 */
-	public void testRenameAndDelete() throws Exception {
-	}
-	
-	/**
-	 * TODO: Move operations are not supported currently
-	 * 
-	 * add dir1/bla.txt + mv dir1/test.text dir2/test.txt + delete dir1
-	 * 
-	 * Add dir1/bla.txt should be surpressed. All other dir1 files will be
-	 * deleted, except dir1/test.text will be moved
-	 * 
-	 * @throws Exception
-	 */
-	public void testAddMoveDelete() throws Exception {
-	}
+            ChangeSet changes = new ChangeSet();
+
+            changes.delete("bla");
+
+            final File file1 = getFile("test.txt");
+            ArchiveEntry entry = new ZipArchiveEntry("bla/test.txt");
+            changes.add(entry, new FileInputStream(file1));
+
+            changes.delete("bla");
+
+            changes.perform(ais, out);
+
+        } finally {
+            if(out != null) out.close();
+            if(ais != null) ais.close();
+        }
+
+        List expected = new ArrayList();
+        expected.add("testdata/test1.xml");
+        expected.add("testdata/test2.xml");
+        expected.add("test/test3.xml");
+        expected.add("test.txt");
+        expected.add("something/bla");
+        expected.add("test with spaces.txt");
+
+        this.checkArchiveContent(result, expected);
+    }
+
+    /**
+     * Simple Delete from a zip file.
+     * @throws Exception
+     */
+    public void testDeleteFromZip() throws Exception {
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        try {
+            ChangeSet changes = new ChangeSet();
+            changes.delete("test2.xml");
+
+            final File input = getFile("bla.zip");
+            final InputStream is = new FileInputStream(input);
+            ais = new ArchiveStreamFactory().createArchiveInputStream("zip", is);
+
+            File temp = File.createTempFile("test", ".zip");
+            out = new ArchiveStreamFactory().createArchiveOutputStream("zip", new FileOutputStream(temp));
+
+            changes.perform(ais, out);
+        } finally {
+            if(out != null) out.close();
+            if(ais != null) ais.close();
+        }
+        // TODO add asserts
+    }
+
+    /**
+     * Simple delete from a tar file
+     * @throws Exception
+     */
+    public void testDeleteFromTar() throws Exception {
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        try {
+            ChangeSet changes = new ChangeSet();
+            changes.delete("test2.xml");
+
+            final File input = getFile("bla.tar");
+            final InputStream is = new FileInputStream(input);
+            ais = new ArchiveStreamFactory().createArchiveInputStream("tar", is);
+
+            File temp = new File(dir, "bla.tar");
+            out = new ArchiveStreamFactory().createArchiveOutputStream("tar", new FileOutputStream(temp));
+
+            changes.perform(ais, out);
+        } finally {
+            if(out != null) out.close();
+            if(ais != null) ais.close();
+        }
+        // TODO add asserts
+    }
+
+    /**
+     * Simple delete from a jar file
+     * @throws Exception
+     */
+    public void testDeleteFromJar() throws Exception {
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        try {
+            ChangeSet changes = new ChangeSet();
+            changes.delete("test2.xml");
+            changes.delete("META-INF/MANIFEST.MF");
+
+            final File input = getFile("bla.jar");
+            final InputStream is = new FileInputStream(input);
+            ais = new ArchiveStreamFactory().createArchiveInputStream("jar", is);
+
+            File temp = new File(dir, "bla.jar");
+            out = new ArchiveStreamFactory().createArchiveOutputStream("jar", new FileOutputStream(temp));
+
+            changes.perform(ais, out);
+        } finally {
+            if(out != null) out.close();
+            if(ais != null) ais.close();
+        }
+        // TODO add asserts
+    }
+
+    /**
+     * Simple delete from an ar file
+     * @throws Exception
+     */
+    public void testDeleteFromAr() throws Exception {
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        try {
+            ChangeSet changes = new ChangeSet();
+            changes.delete("test2.xml");
+
+            final File input = getFile("bla.ar");
+            final InputStream is = new FileInputStream(input);
+            ais = new ArchiveStreamFactory().createArchiveInputStream("ar", is);
+
+            File temp = new File(dir, "bla.ar");
+            out = new ArchiveStreamFactory().createArchiveOutputStream("ar", new FileOutputStream(temp));
+
+            changes.perform(ais, out);
+        } finally {
+            if(out != null) out.close();
+            if(ais != null) ais.close();
+        }
+        // TODO add asserts
+    }
+
+    public void testDeleteFromAndAddToTar() throws Exception {
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        try {
+            ChangeSet changes = new ChangeSet();
+            changes.delete("test2.xml");
+
+            final File file1 = getFile("test.txt");
+
+            final TarArchiveEntry entry = new TarArchiveEntry("testdata/test.txt");
+            entry.setModTime(0);
+            entry.setSize(file1.length());
+            entry.setUserId(0);
+            entry.setGroupId(0);
+            entry.setUserName("avalon");
+            entry.setGroupName("excalibur");
+            entry.setMode(0100000);
+
+            changes.add(entry, new FileInputStream(file1));
+
+            final File input = getFile("bla.tar");
+            final InputStream is = new FileInputStream(input);
+            ais = new ArchiveStreamFactory().createArchiveInputStream("tar", is);
+
+            File temp = new File(dir, "bla.tar");
+            out = new ArchiveStreamFactory().createArchiveOutputStream("tar", new FileOutputStream(temp));
+
+            changes.perform(ais, out);
+        } finally {
+            if(out != null) out.close();
+            if(ais != null) ais.close();
+        }
+        // TODO add asserts
+    }
+
+    /**
+     * Delete from a jar file and add another file
+     * @throws Exception
+     */
+    public void testDeleteFromAndAddToJar() throws Exception {
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        try {
+            ChangeSet changes = new ChangeSet();
+            changes.delete("test2.xml");
+
+            final File file1 = getFile("test.txt");
+            JarArchiveEntry entry = new JarArchiveEntry("testdata/test.txt");
+            changes.add(entry, new FileInputStream(file1));
+
+            final File input = getFile("bla.jar");
+            final InputStream is = new FileInputStream(input);
+            ais = new ArchiveStreamFactory().createArchiveInputStream("jar", is);
+
+            File temp = new File(dir, "bla.jar");
+            out = new ArchiveStreamFactory().createArchiveOutputStream("jar", new FileOutputStream(temp));
+
+            changes.perform(ais, out);
+        } finally {
+            if(out != null) out.close();
+            if(ais != null) ais.close();
+        }
+        // TODO add asserts
+    }
+
+    /**
+     * Deletes a file from an AR-archive and adds another
+     * @throws Exception
+     */
+    public void testDeleteFromAndAddToAr() throws Exception {
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        try {
+            ChangeSet changes = new ChangeSet();
+            changes.delete("test2.xml");
+
+            final File file1 = getFile("test.txt");
+
+            final ArArchiveEntry entry = new ArArchiveEntry("test.txt", file1.length());
+
+            changes.add(entry, new FileInputStream(file1));
+
+            final File input = getFile("bla.ar");
+            final InputStream is = new FileInputStream(input);
+            ais = new ArchiveStreamFactory().createArchiveInputStream("ar", is);
+
+            File temp = new File(dir, "bla.ar");
+            out = new ArchiveStreamFactory().createArchiveOutputStream("ar", new FileOutputStream(temp));
+
+            changes.perform(ais, out);
+        } finally {
+            if(out != null) out.close();
+            if(ais != null) ais.close();
+        }
+        // TODO add asserts
+    }
+
+    /**
+     * TODO: Move operations are not supported currently
+     * 
+     * mv dir1/test.text dir2/test.txt + delete dir1
+     * Moves the file to dir2 and deletes everything in dir1
+     * @throws Exception
+     */
+    public void testRenameAndDelete() throws Exception {
+    }
+
+    /**
+     * TODO: Move operations are not supported currently
+     * 
+     * add dir1/bla.txt + mv dir1/test.text dir2/test.txt + delete dir1
+     * 
+     * Add dir1/bla.txt should be surpressed. All other dir1 files will be
+     * deleted, except dir1/test.text will be moved
+     * 
+     * @throws Exception
+     */
+    public void testAddMoveDelete() throws Exception {
+    }
 }
