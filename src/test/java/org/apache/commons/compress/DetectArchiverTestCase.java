@@ -32,7 +32,7 @@ import org.apache.commons.compress.archivers.jar.JarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 
-public final class DetectArchiverTestCase extends TestCase {
+public final class DetectArchiverTestCase extends AbstractTestCase {
 	public void testDetection() throws Exception {
 		final ArchiveStreamFactory factory = new ArchiveStreamFactory();
 

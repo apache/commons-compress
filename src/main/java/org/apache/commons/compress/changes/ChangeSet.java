@@ -66,7 +66,6 @@ public final class ChangeSet {
 				if( change.type() == Change.TYPE_DELETE &&
 					entry.getName() != null &&
 					entry.getName().equals(change.targetFile())) {
-					System.out.println("Delete: " + entry.getName());
 					copy = false;
 					it.remove();
 					break;
@@ -83,7 +82,5 @@ public final class ChangeSet {
 		out.putArchiveEntry(entry);
 		IOUtils.copy(in, out);
 		out.closeArchiveEntry();
-		System.out.println("Copy: " + entry.getName());
 	}
-
 }
