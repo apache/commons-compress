@@ -94,6 +94,11 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     public static final int STORED = java.util.zip.ZipEntry.STORED;
 
     /**
+     * default encoding for file names and comment.
+     */
+    static final String DEFAULT_ENCODING = "UTF8";
+
+    /**
      * Current entry.
      *
      * @since 1.1
@@ -205,11 +210,11 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      *
      * <p>For a list of possible values see <a
      * href="http://java.sun.com/j2se/1.5.0/docs/guide/intl/encoding.doc.html">http://java.sun.com/j2se/1.5.0/docs/guide/intl/encoding.doc.html</a>.
-     * Defaults to the platform's default character encoding.</p>
+     * Defaults to UTF-8.</p>
      *
      * @since 1.3
      */
-    private String encoding = null;
+    private String encoding = DEFAULT_ENCODING;
 
     // CheckStyle:VisibilityModifier OFF - bc
 
@@ -302,8 +307,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      *
      * <p>For a list of possible values see <a
      * href="http://java.sun.com/j2se/1.5.0/docs/guide/intl/encoding.doc.html">http://java.sun.com/j2se/1.5.0/docs/guide/intl/encoding.doc.html</a>.
-     * Defaults to the platform's default character encoding.</p>
-     * @param encoding the encoding value
+     * Defaults to UTF-8.</p>
+     * @param encoding the encoding to use for file names, use null
+     * for the platform's default encoding
      * @since 1.3
      */
     public void setEncoding(String encoding) {

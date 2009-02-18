@@ -91,9 +91,9 @@ public class ZipFile {
      *
      * <p>For a list of possible values see <a
      * href="http://java.sun.com/j2se/1.5.0/docs/guide/intl/encoding.doc.html">http://java.sun.com/j2se/1.5.0/docs/guide/intl/encoding.doc.html</a>.
-     * Defaults to the platform's default character encoding.</p>
+     * Defaults to UTF-8.</p>
      */
-    private String encoding = null;
+    private final String encoding;
 
     /**
      * The actual data source.
@@ -101,27 +101,25 @@ public class ZipFile {
     private RandomAccessFile archive;
 
     /**
-     * Opens the given file for reading, assuming the platform's
-     * native encoding for file names.
+     * Opens the given file for reading, assuming "UTF8" for file names.
      *
      * @param f the archive.
      *
      * @throws IOException if an error occurs while reading the file.
      */
     public ZipFile(File f) throws IOException {
-        this(f, null);
+        this(f, ZipArchiveOutputStream.DEFAULT_ENCODING);
     }
 
     /**
-     * Opens the given file for reading, assuming the platform's
-     * native encoding for file names.
+     * Opens the given file for reading, assuming "UTF8".
      *
      * @param name name of the archive.
      *
      * @throws IOException if an error occurs while reading the file.
      */
     public ZipFile(String name) throws IOException {
-        this(new File(name), null);
+        this(new File(name), ZipArchiveOutputStream.DEFAULT_ENCODING);
     }
 
     /**
@@ -129,7 +127,8 @@ public class ZipFile {
      * encoding for file names.
      *
      * @param name name of the archive.
-     * @param encoding the encoding to use for file names
+     * @param encoding the encoding to use for file names, use null
+     * for the platform's default encoding
      *
      * @throws IOException if an error occurs while reading the file.
      */
@@ -142,7 +141,8 @@ public class ZipFile {
      * encoding for file names.
      *
      * @param f the archive.
-     * @param encoding the encoding to use for file names
+     * @param encoding the encoding to use for file names, use null
+     * for the platform's default encoding
      *
      * @throws IOException if an error occurs while reading the file.
      */
