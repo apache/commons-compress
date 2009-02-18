@@ -22,17 +22,28 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.zip.JarMarker;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 
+/**
+ * Subclass that adds a special extra field to the very first entry
+ * which allows the created archive to be used as an executable jar on
+ * Solaris.
+ */
 public class JarArchiveOutputStream extends ZipArchiveOutputStream {
 
-    public JarArchiveOutputStream( final OutputStream out ) {
+    private boolean jarMarkerAdded = false;
+
+    public JarArchiveOutputStream(final OutputStream out) {
         super(out);
     }
 
-    public void putArchiveEntry(ArchiveEntry entry) throws IOException {
-        // TODO special jar stuff
-        super.putArchiveEntry((ZipArchiveEntry) entry);
+    public void putNextEntry(ZipArchiveEntry ze) throws IOException {
+        if (!jarMarkerAdded) {
+            ze.addAsFirstExtraField(JarMarker.getInstance());
+            jarMarkerAdded = true;
+        }
+        super.putNextEntry(ze);
     }
 }
