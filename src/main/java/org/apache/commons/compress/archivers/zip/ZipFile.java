@@ -108,7 +108,7 @@ public class ZipFile {
      * @throws IOException if an error occurs while reading the file.
      */
     public ZipFile(File f) throws IOException {
-        this(f, ZipArchiveOutputStream.DEFAULT_ENCODING);
+        this(f, ZipArchiveOutputStream.UTF8);
     }
 
     /**
@@ -119,7 +119,7 @@ public class ZipFile {
      * @throws IOException if an error occurs while reading the file.
      */
     public ZipFile(String name) throws IOException {
-        this(new File(name), ZipArchiveOutputStream.DEFAULT_ENCODING);
+        this(new File(name), ZipArchiveOutputStream.UTF8);
     }
 
     /**
@@ -293,7 +293,15 @@ public class ZipFile {
             off += SHORT;
             ze.setPlatform((versionMadeBy >> BYTE_SHIFT) & NIBLET_MASK);
 
-            off += WORD; // skip version info and general purpose byte
+            off += SHORT; // skip version info
+
+            final int generalPurposeFlag = ZipShort.getValue(cfh, off);
+            final String entryEncoding = 
+                (generalPurposeFlag & ZipArchiveOutputStream.EFS_FLAG) != 0
+                ? ZipArchiveOutputStream.UTF8
+                : encoding;
+
+            off += SHORT;
 
             ze.setMethod(ZipShort.getValue(cfh, off));
             off += SHORT;
@@ -333,8 +341,7 @@ public class ZipFile {
 
             byte[] fileName = new byte[fileNameLen];
             archive.readFully(fileName);
-            ze.setName(getString(fileName));
-
+            ze.setName(getString(fileName, entryEncoding));
 
             // LFH offset,
             OffsetEntry offset = new OffsetEntry();
@@ -356,7 +363,7 @@ public class ZipFile {
 
             byte[] comment = new byte[commentLen];
             archive.readFully(comment);
-            ze.setComment(getString(comment));
+            ze.setComment(getString(comment, entryEncoding));
 
             archive.readFully(signatureBytes);
             sig = ZipLong.getValue(signatureBytes);
@@ -525,12 +532,13 @@ public class ZipFile {
      * @return String obtained by using the given encoding
      * @throws ZipException if the encoding cannot be recognized.
      */
-    protected String getString(byte[] bytes) throws ZipException {
-        if (encoding == null) {
+    protected String getString(byte[] bytes, String enc)
+        throws ZipException {
+        if (enc == null) {
             return new String(bytes);
         } else {
             try {
-                return new String(bytes, encoding);
+                return new String(bytes, enc);
             } catch (UnsupportedEncodingException uee) {
                 throw new ZipException(uee.getMessage());
             }
