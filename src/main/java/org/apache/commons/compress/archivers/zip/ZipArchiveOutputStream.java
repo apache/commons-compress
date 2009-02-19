@@ -904,14 +904,25 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * this Stream.
      * @param name the string to get bytes from
      * @return the bytes as a byte array
+     * @throws ZipException on error
      *
      * @since 1.3
      */
-    protected byte[] getBytes(String name) {
+    protected byte[] getBytes(String name) throws ZipException {
         if (encoding == null) {
             return name.getBytes();
         } else {
-            return ZipEncodingHelper.encodeName(name, encoding);
+            try {
+                return ZipEncodingHelper.encodeName(name, encoding);
+            } catch (java.nio.charset.UnsupportedCharsetException ex) {
+                // Java 1.4's NIO doesn't recognize a few names that
+                // String.getBytes does
+                try {
+                    return name.getBytes(encoding);
+                } catch (UnsupportedEncodingException uee) {
+                    throw new ZipException(uee.getMessage());
+                }
+            }
         }
     }
 
