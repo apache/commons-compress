@@ -37,19 +37,22 @@ public class UTF8ZipFilesTest extends TestCase {
     private static final String OIL_BARREL_TXT = "\u00D6lf\u00E4sser.txt";
 
     public void testUtf8FileRoundtrip() throws IOException {
-        testFileRoundtrip(UTF_8);
+        testFileRoundtrip(UTF_8, true);
     }
 
+    public void testUtf8FileRoundtripNoEFS() throws IOException {
+        testFileRoundtrip(UTF_8, false);
+    }
 
     public void testCP437FileRoundtrip() throws IOException {
-        testFileRoundtrip(CP437);
+        testFileRoundtrip(CP437, false);
     }
 
     public void testASCIIFileRoundtrip() throws IOException {
-        testFileRoundtrip(US_ASCII);
+        testFileRoundtrip(US_ASCII, false);
     }
 
-    private static void testFileRoundtrip(String encoding)
+    private static void testFileRoundtrip(String encoding, boolean withEFS)
         throws IOException {
 
         try {
@@ -62,7 +65,7 @@ public class UTF8ZipFilesTest extends TestCase {
 
         File file = File.createTempFile(encoding + "-test", ".zip");
         try {
-            createTestFile(file, encoding);
+            createTestFile(file, encoding, withEFS);
             testFile(file, encoding);
         } finally {
             if (file.exists()) {
@@ -71,13 +74,15 @@ public class UTF8ZipFilesTest extends TestCase {
         }
     }
 
-    private static void createTestFile(File file, String encoding)
+    private static void createTestFile(File file, String encoding,
+                                       boolean withEFS)
         throws UnsupportedEncodingException, IOException {
 
         ZipArchiveOutputStream zos = null;
         try {
             zos = new ZipArchiveOutputStream(file);
             zos.setEncoding(encoding);
+            zos.setUseEFS(withEFS);
 
             ZipArchiveEntry ze = new ZipArchiveEntry(OIL_BARREL_TXT);
             if (!ZipEncodingHelper.canEncodeName(ze.getName(),
