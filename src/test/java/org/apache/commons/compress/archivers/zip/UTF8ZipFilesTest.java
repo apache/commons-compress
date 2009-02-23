@@ -43,29 +43,33 @@ public class UTF8ZipFilesTest extends TestCase {
         testFileRoundtrip(UTF_8, true);
     }
 
-    public void xtestUtf8FileRoundtripNoEFS() throws IOException {
+    public void testUtf8FileRoundtripNoEFS() throws IOException {
         testFileRoundtrip(UTF_8, false);
     }
 
-    public void xtestCP437FileRoundtrip() throws IOException {
+    public void testCP437FileRoundtrip() throws IOException {
         testFileRoundtrip(CP437, false);
     }
 
-    public void xtestASCIIFileRoundtrip() throws IOException {
+    public void testASCIIFileRoundtrip() throws IOException {
         testFileRoundtrip(US_ASCII, false);
     }
 
-    /**
+    /*
      * 7-ZIP created archive, uses EFS to signal UTF-8 filenames.
+     *
+     * 7-ZIP doesn't use EFS for strings that can be encoded in CP437
+     * - which is true for OIL_BARREL_TXT.
      */
-    public void testReadEFS() throws IOException, URISyntaxException {
+    public void testRead7ZipArchive() throws IOException, URISyntaxException {
         URL zip = getClass().getResource("/utf8-7zip-test.zip");
         File archive = new File(new URI(zip.toString()));
         ZipFile zf = null;
         try {
-            zf = new ZipFile(archive);
+            zf = new ZipFile(archive, CP437);
             assertNotNull(zf.getEntry(ASCII_TXT));
             assertNotNull(zf.getEntry(EURO_FOR_DOLLAR_TXT));
+            assertNotNull(zf.getEntry(OIL_BARREL_TXT));
         } finally {
             ZipFile.closeQuietly(zf);
         }
