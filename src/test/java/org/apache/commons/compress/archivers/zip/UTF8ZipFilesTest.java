@@ -105,7 +105,7 @@ public class UTF8ZipFilesTest extends TestCase {
         try {
             zos = new ZipArchiveOutputStream(file);
             zos.setEncoding(encoding);
-            zos.setUseEFS(withEFS);
+            zos.setUseLanguageEncodingFlag(withEFS);
 
             ZipArchiveEntry ze = new ZipArchiveEntry(OIL_BARREL_TXT);
             if (!ZipEncodingHelper.canEncodeName(ze.getName(),

@@ -345,11 +345,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Whether to set the EFS flag if the file name encoding is UTF-8.
+     * Whether to set the language encoding flag if the file name
+     * encoding is UTF-8.
      *
      * <p>Defaults to true.</p>
      */
-    public void setUseEFS(boolean b) {
+    public void setUseLanguageEncodingFlag(boolean b) {
         useEFS = b && isUTF8(encoding);
     }
 
