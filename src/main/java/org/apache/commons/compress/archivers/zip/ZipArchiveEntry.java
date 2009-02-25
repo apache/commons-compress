@@ -265,6 +265,18 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     }
 
     /**
+     * Looks up an extra field by its header id.
+     *
+     * @return null if no such field exists.
+     */
+    public ZipExtraField getExtraField(ZipShort type) {
+        if (extraFields != null) {
+            return (ZipExtraField) extraFields.get(type);
+        }
+        return null;
+    }
+
+    /**
      * Throws an Exception if extra data cannot be parsed into extra fields.
      * @param extra an array of bytes to be parsed into extra fields
      * @throws RuntimeException if the bytes cannot be parsed
