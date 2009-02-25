@@ -205,14 +205,8 @@ public class UTF8ZipFilesTest extends TestCase {
     }
 
     private static UnicodePathExtraField findUniCodePath(ZipArchiveEntry ze) {
-
-        ZipExtraField[] efs = ze.getExtraFields();
-        for (int i = 0; i < efs.length; ++i) {
-            if (efs[i].getHeaderId().equals(UnicodePathExtraField.UPATH_ID)) {
-                return (UnicodePathExtraField) efs[i];
-            }
-        }
-        return null;
+        return (UnicodePathExtraField)
+            ze.getExtraField(UnicodePathExtraField.UPATH_ID);
     }
 
     private static void assertUnicodeName(ZipArchiveEntry ze,
