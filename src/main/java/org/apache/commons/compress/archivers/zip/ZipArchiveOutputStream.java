@@ -270,6 +270,11 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private boolean useEFS = true; 
 
     /**
+     * whether to create UnicodePathExtraField-s for each entry.
+     */
+    private boolean createUnicodeExtraFields = false;
+
+    /**
      * Creates a new ZIP OutputStream filtering the underlying stream.
      * @param out the outputstream to zip
      * @since 1.1
@@ -352,6 +357,15 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     public void setUseLanguageEncodingFlag(boolean b) {
         useEFS = b && isUTF8(encoding);
+    }
+
+    /**
+     * Whether to create Unicode Extra Fields for all entries.
+     *
+     * <p>Defaults to false.</p>
+     */
+    public void setCreateUnicodeExtraFields(boolean b) {
+        createUnicodeExtraFields = b;
     }
 
     /**
@@ -450,6 +464,14 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         closeEntry();
 
         entry = ze;
+        if (createUnicodeExtraFields) {
+            ze.addExtraField(new UnicodePathExtraField(ze.getName(),
+                                                       encoding));
+            if (ze.getComment() != null) {
+                ze.addExtraField(new UnicodeCommentExtraField(ze.getComment(),
+                                                              encoding));
+            }
+        }
         entries.add(entry);
 
         if (entry.getMethod() == -1) { // not specified
