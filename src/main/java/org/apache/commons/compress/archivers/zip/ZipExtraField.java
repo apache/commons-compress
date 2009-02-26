@@ -34,7 +34,6 @@ public interface ZipExtraField
      * The Header-ID.
      *
      * @return The HeaderId value
-     * @since 1.1
      */
     ZipShort getHeaderId();
 
@@ -43,7 +42,6 @@ public interface ZipExtraField
      * length specifier.
      *
      * @return The LocalFileDataLength value
-     * @since 1.1
      */
     ZipShort getLocalFileDataLength();
 
@@ -52,7 +50,6 @@ public interface ZipExtraField
      * length specifier.
      *
      * @return The CentralDirectoryLength value
-     * @since 1.1
      */
     ZipShort getCentralDirectoryLength();
 
@@ -61,7 +58,6 @@ public interface ZipExtraField
      * specifier.
      *
      * @return The LocalFileDataData value
-     * @since 1.1
      */
     byte[] getLocalFileDataData();
 
@@ -70,7 +66,6 @@ public interface ZipExtraField
      * length specifier.
      *
      * @return The CentralDirectoryData value
-     * @since 1.1
      */
     byte[] getCentralDirectoryData();
 
@@ -81,7 +76,6 @@ public interface ZipExtraField
      * @param offset offset into buffer to read data
      * @param length the length of data
      * @exception ZipException on error
-     * @since 1.1
      */
     void parseFromLocalFileData( byte[] buffer, int offset, int length )
         throws ZipException;
