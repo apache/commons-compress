@@ -464,14 +464,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         closeEntry();
 
         entry = ze;
-        if (createUnicodeExtraFields) {
-            ze.addExtraField(new UnicodePathExtraField(ze.getName(),
-                                                       encoding));
-            if (ze.getComment() != null) {
-                ze.addExtraField(new UnicodeCommentExtraField(ze.getComment(),
-                                                              encoding));
-            }
-        }
         entries.add(entry);
 
         if (entry.getMethod() == -1) { // not specified
@@ -687,6 +679,17 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @since 1.1
      */
     protected void writeLocalFileHeader(ZipArchiveEntry ze) throws IOException {
+
+        byte[] name = getBytes(ze.getName());
+        if (createUnicodeExtraFields) {
+            ze.addExtraField(new UnicodePathExtraField(ze.getName(), name));
+            String comm = ze.getComment();
+            if (comm != null && !"".equals(comm)) {
+                byte[] commentB = getBytes(comm);
+                ze.addExtraField(new UnicodeCommentExtraField(comm, commentB));
+            }
+        }
+
         offsets.put(ze, ZipLong.getBytes(written));
 
         writeOut(LFH_SIG);
@@ -724,7 +727,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         // CheckStyle:MagicNumber ON
 
         // file name length
-        byte[] name = getBytes(ze.getName());
         writeOut(ZipShort.getBytes(name.length));
         written += SHORT;
 
