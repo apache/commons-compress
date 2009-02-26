@@ -58,7 +58,7 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
                                                                         new BufferedInputStream(new FileInputStream(
                                                                                                                     new File(getClass().getClassLoader().getResource("bla.jar").getFile()))));
         assertNotNull(jar);
-        assertTrue(jar instanceof JarArchiveInputStream);
+        assertTrue(jar instanceof ZipArchiveInputStream);
 
         final ArchiveInputStream cpio = factory.createArchiveInputStream(
                                                                          new BufferedInputStream(new FileInputStream(

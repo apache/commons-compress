@@ -54,36 +54,15 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     }
 
 
-    public static boolean matches( byte[] signature, int length ) {
-        // 4b50 0403 0014 0000
-
-        if (length < 8) {
+    public static boolean matches(byte[] signature, int length) {
+        if (length < ZipArchiveOutputStream.LFH_SIG.length) {
             return false;
         }
 
-        if (signature[0] != 0x50) {
-            return false;
-        }
-        if (signature[1] != 0x4b) {
-            return false;
-        }
-        if (signature[2] != 0x03) {
-            return false;
-        }
-        if (signature[3] != 0x04) {
-            return false;
-        }
-        if (signature[4] != 0x14) {
-            return false;
-        }
-        if (signature[5] != 0x00) {
-            return false;
-        }
-        if (signature[6] != 0x00) {
-            return false;
-        }
-        if (signature[7] != 0x00) {
-            return false;
+        for (int i = 0; i < ZipArchiveOutputStream.LFH_SIG.length; i++) {
+            if (signature[i] != ZipArchiveOutputStream.LFH_SIG[i]) {
+                return false;
+            }
         }
 
         return true;
