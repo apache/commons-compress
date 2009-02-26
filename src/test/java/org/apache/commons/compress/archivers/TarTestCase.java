@@ -91,7 +91,9 @@ public final class TarTestCase extends AbstractTestCase {
         } catch(IOException e) {
         	assertTrue(true);
         } finally {
-        	os2.closeArchiveEntry();
+        	if (os2 != null){
+        	    os2.closeArchiveEntry();
+        	}
         }
     }
     
