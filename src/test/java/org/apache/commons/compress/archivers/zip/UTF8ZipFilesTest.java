@@ -99,6 +99,23 @@ public class UTF8ZipFilesTest extends TestCase {
         }
     }
 
+    public void testZipFileReadsUnicodeFields() throws IOException {
+        File file = File.createTempFile("unicode-test", ".zip");
+        ZipFile zf = null;
+        try {
+            createTestFile(file, US_ASCII, false, true);
+            zf = new ZipFile(file, US_ASCII, true);
+            assertNotNull(zf.getEntry(ASCII_TXT));
+            assertNotNull(zf.getEntry(EURO_FOR_DOLLAR_TXT));
+            assertNotNull(zf.getEntry(OIL_BARREL_TXT));
+        } finally {
+            ZipFile.closeQuietly(zf);
+            if (file.exists()) {
+                file.delete();
+            }
+        }
+    }
+
     private static void testFileRoundtrip(String encoding, boolean withEFS,
                                           boolean withExplicitUnicodeExtra)
         throws IOException {
