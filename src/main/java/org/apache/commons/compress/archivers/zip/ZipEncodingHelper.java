@@ -184,8 +184,12 @@ abstract class ZipEncodingHelper {
      *                 <code>"UTF-8"</code> is supported in ZIP file
      *                 version <code>6.3</code> or later.
      */
-    static final String decodeName(byte[] name, String encoding) {
+    static final String decodeName(byte[] name, String encoding)
+        throws java.nio.charset.CharacterCodingException {
         Charset cs = Charset.forName(encoding);
-        return cs.decode(ByteBuffer.wrap(name)).toString();
+        return cs.newDecoder()
+            .onMalformedInput(CodingErrorAction.REPORT)
+            .onUnmappableCharacter(CodingErrorAction.REPORT)
+            .decode(ByteBuffer.wrap(name)).toString();
     }
 }
