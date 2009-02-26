@@ -19,7 +19,6 @@
 package org.apache.commons.compress.archivers.zip;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
