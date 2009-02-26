@@ -19,7 +19,6 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
@@ -563,7 +562,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
     // used to be implemented via FilterOutputStream
     /**
-     * Invokes the {@see #write(byte[],int,int) three-arg version}.
+     * Invokes the {@link #write(byte[],int,int)} three-arg version.
      */
     public void write(byte[] b) throws IOException {
         write(b, 0, b.length);
