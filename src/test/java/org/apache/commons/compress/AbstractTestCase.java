@@ -97,7 +97,6 @@ public abstract class AbstractTestCase extends TestCase {
      */
     protected File createArchive(String archivename) throws Exception {
         ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
         try {
             File temp = File.createTempFile("test", "." + archivename);
 
@@ -144,7 +143,6 @@ public abstract class AbstractTestCase extends TestCase {
             return temp;
         } finally {
             if(out != null) out.close();
-            if(ais != null) ais.close();
         }
     }
 
@@ -168,7 +166,7 @@ public abstract class AbstractTestCase extends TestCase {
         result.mkdir();
 
         ArchiveEntry entry = null;
-        while((entry = (ArchiveEntry)in.getNextEntry()) != null) {
+        while((entry = in.getNextEntry()) != null) {
             File outfile = new File(result.getCanonicalPath() + "/result/" + entry.getName());
             outfile.getParentFile().mkdirs();
             OutputStream out = new FileOutputStream(outfile);
