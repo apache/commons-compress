@@ -43,7 +43,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     /**
      * Creates a new zip entry with the specified name.
      * @param name the name of the entry
-     * @since 1.1
      */
     public ZipArchiveEntry(String name) {
         super(name);
@@ -52,7 +51,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     /**
      * Creates a new zip entry with fields taken from the specified zip entry.
      * @param entry the entry to get fields from
-     * @since 1.1
      * @throws ZipException on error
      */
     public ZipArchiveEntry(java.util.zip.ZipEntry entry) throws ZipException {
@@ -70,7 +68,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * Creates a new zip entry with fields taken from the specified zip entry.
      * @param entry the entry to get fields from
      * @throws ZipException on error
-     * @since 1.1
      */
     public ZipArchiveEntry(ZipArchiveEntry entry) throws ZipException {
         this((java.util.zip.ZipEntry) entry);
@@ -80,7 +77,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     }
 
     /**
-     * @since 1.9
      */
     protected ZipArchiveEntry() {
         super("");
@@ -89,7 +85,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     /**
      * Overwrite clone.
      * @return a cloned copy of this ZipArchiveEntry
-     * @since 1.1
      */
     public Object clone() {
         ZipArchiveEntry e = (ZipArchiveEntry) super.clone();
@@ -105,7 +100,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * Retrieves the internal file attributes.
      *
      * @return the internal file attributes
-     * @since 1.1
      */
     public int getInternalAttributes() {
         return internalAttributes;
@@ -114,7 +108,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     /**
      * Sets the internal file attributes.
      * @param value an <code>int</code> value
-     * @since 1.1
      */
     public void setInternalAttributes(int value) {
         internalAttributes = value;
@@ -123,7 +116,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     /**
      * Retrieves the external file attributes.
      * @return the external file attributes
-     * @since 1.1
      */
     public long getExternalAttributes() {
         return externalAttributes;
@@ -132,7 +124,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     /**
      * Sets the external file attributes.
      * @param value an <code>long</code> value
-     * @since 1.1
      */
     public void setExternalAttributes(long value) {
         externalAttributes = value;
@@ -142,7 +133,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * Sets Unix permissions in a way that is understood by Info-Zip's
      * unzip command.
      * @param mode an <code>int</code> value
-     * @since Ant 1.5.2
      */
     public void setUnixMode(int mode) {
         // CheckStyle:MagicNumberCheck OFF - no point
@@ -158,7 +148,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     /**
      * Unix permission.
      * @return the unix permissions
-     * @since Ant 1.6
      */
     public int getUnixMode() {
         return platform != PLATFORM_UNIX ? 0 :
@@ -171,8 +160,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      *
      * @return PLATFORM_FAT unless {@link #setUnixMode setUnixMode}
      * has been called, in which case PLATORM_UNIX will be returned.
-     *
-     * @since Ant 1.5.2
      */
     public int getPlatform() {
         return platform;
@@ -181,7 +168,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     /**
      * Set the platform (UNIX or FAT).
      * @param platform an <code>int</code> value - 0 is FAT, 3 is UNIX
-     * @since 1.9
      */
     protected void setPlatform(int platform) {
         this.platform = platform;
@@ -190,7 +176,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     /**
      * Replaces all currently attached extra fields with the new array.
      * @param fields an array of extra fields
-     * @since 1.1
      */
     public void setExtraFields(ZipExtraField[] fields) {
         extraFields = new LinkedHashMap();
@@ -203,7 +188,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     /**
      * Retrieves extra fields.
      * @return an array of the extra fields
-     * @since 1.1
      */
     public ZipExtraField[] getExtraFields() {
         if (extraFields == null) {
@@ -220,7 +204,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * <p>If no extra field of the same type exists, the field will be
      * added as last field.</p>
      * @param ze an extra field
-     * @since 1.1
      */
     public void addExtraField(ZipExtraField ze) {
         if (extraFields == null) {
@@ -236,7 +219,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      *
      * <p>The new extra field will be the first one.</p>
      * @param ze an extra field
-     * @since 1.1
      */
     public void addAsFirstExtraField(ZipExtraField ze) {
         LinkedHashMap copy = extraFields;
@@ -252,7 +234,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     /**
      * Remove an extra fields.
      * @param type the type of extra field to remove
-     * @since 1.1
      */
     public void removeExtraField(ZipShort type) {
         if (extraFields == null) {
@@ -280,7 +261,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * Throws an Exception if extra data cannot be parsed into extra fields.
      * @param extra an array of bytes to be parsed into extra fields
      * @throws RuntimeException if the bytes cannot be parsed
-     * @since 1.1
      * @throws RuntimeException on error
      */
     public void setExtra(byte[] extra) throws RuntimeException {
@@ -296,8 +276,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * java.util.zip.ZipOutputStream} seems to access the extra data
      * directly, so overriding getExtra doesn't help - we need to
      * modify super's data directly.
-     *
-     * @since 1.1
      */
     protected void setExtra() {
         super.setExtra(ExtraFieldUtils.mergeLocalFileDataData(getExtraFields()));
@@ -306,7 +284,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     /**
      * Retrieves the extra data for the local file data.
      * @return the extra data for local file
-     * @since 1.1
      */
     public byte[] getLocalFileDataExtra() {
         byte[] extra = getExtra();
@@ -316,30 +293,14 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     /**
      * Retrieves the extra data for the central directory.
      * @return the central directory extra data
-     * @since 1.1
      */
     public byte[] getCentralDirectoryExtra() {
         return ExtraFieldUtils.mergeCentralDirectoryData(getExtraFields());
     }
 
     /**
-     * Make this class work in JDK 1.1 like a 1.2 class.
-     *
-     * <p>This either stores the size for later usage or invokes
-     * setCompressedSize via reflection.</p>
-     * @param size the size to use
-     * @deprecated since 1.7.
-     *             Use setCompressedSize directly.
-     * @since 1.2
-     */
-    public void setComprSize(long size) {
-        setCompressedSize(size);
-    }
-
-    /**
      * Get the name of the entry.
      * @return the entry name
-     * @since 1.9
      */
     public String getName() {
         return name == null ? super.getName() : name;
@@ -348,7 +309,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     /**
      * Is this entry a directory?
      * @return true if the entry is a directory
-     * @since 1.10
      */
     public boolean isDirectory() {
         return getName().endsWith("/");
@@ -366,7 +326,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * Get the hashCode of the entry.
      * This uses the name as the hashcode.
      * @return a hashcode.
-     * @since Ant 1.7
      */
     public int hashCode() {
         // this method has severe consequences on performance. We cannot rely
@@ -381,7 +340,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * which is basically the equals method of the Object class.
      * @param o the object to compare to
      * @return true if this object is the same as <code>o</code>
-     * @since Ant 1.7
      */
     public boolean equals(Object o) {
         return (this == o);

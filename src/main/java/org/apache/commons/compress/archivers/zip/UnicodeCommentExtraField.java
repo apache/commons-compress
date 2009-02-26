@@ -43,7 +43,7 @@ public class UnicodeCommentExtraField extends AbstractUnicodeExtraField {
 
     /**
      * Assemble as unicode comment extension from the comment and
-     * encoding of the orginal zip entry.
+     * encoding of the original zip entry.
      * 
      * @param comment The file comment
      * @param zipEncoding The encoding of the comment in the zip file,

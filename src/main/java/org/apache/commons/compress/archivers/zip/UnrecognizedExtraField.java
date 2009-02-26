@@ -30,23 +30,17 @@ public class UnrecognizedExtraField
     /**
      * Extra field data in central directory - without Header-ID or length
      * specifier.
-     *
-     * @since 1.1
      */
     private byte[] m_centralData;
 
     /**
      * The Header-ID.
-     *
-     * @since 1.1
      */
     private ZipShort m_headerID;
 
     /**
      * Extra field data in local file data - without Header-ID or length
      * specifier.
-     *
-     * @since 1.1
      */
     private byte[] m_localData;
 

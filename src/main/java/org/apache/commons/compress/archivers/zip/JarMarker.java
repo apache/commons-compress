@@ -22,8 +22,6 @@ import java.util.zip.ZipException;
 /**
  * If this extra field is added as the very first extra field of the
  * archive, Solaris will consider it an executable jar file.
- *
- * @since Ant 1.6.3
  */
 public final class JarMarker implements ZipExtraField {
 
@@ -75,7 +73,6 @@ public final class JarMarker implements ZipExtraField {
      * The actual data to put into local file data - without Header-ID
      * or length specifier.
      * @return the data
-     * @since 1.1
      */
     public byte[] getLocalFileDataData() {
         return NO_BYTES;

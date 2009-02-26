@@ -74,22 +74,16 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
     /**
      * Compression method for deflated entries.
-     *
-     * @since 1.1
      */
     public static final int DEFLATED = java.util.zip.ZipEntry.DEFLATED;
 
     /**
      * Default compression level for deflated entries.
-     *
-     * @since Ant 1.7
      */
     public static final int DEFAULT_COMPRESSION = Deflater.DEFAULT_COMPRESSION;
 
     /**
      * Compression method for stored entries.
-     *
-     * @since 1.1
      */
     public static final int STORED = java.util.zip.ZipEntry.STORED;
 
@@ -111,108 +105,78 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
     /**
      * Current entry.
-     *
-     * @since 1.1
      */
     private ZipArchiveEntry entry;
 
     /**
      * The file comment.
-     *
-     * @since 1.1
      */
     private String comment = "";
 
     /**
      * Compression level for next entry.
-     *
-     * @since 1.1
      */
     private int level = DEFAULT_COMPRESSION;
 
     /**
      * Has the compression level changed when compared to the last
      * entry?
-     *
-     * @since 1.5
      */
     private boolean hasCompressionLevelChanged = false;
 
     /**
      * Default compression method for next entry.
-     *
-     * @since 1.1
      */
     private int method = java.util.zip.ZipEntry.DEFLATED;
 
     /**
-     * List of ZipEntries written so far.
-     *
-     * @since 1.1
+     * List of ZipArchiveEntries written so far.
      */
     private final List entries = new LinkedList();
 
     /**
      * CRC instance to avoid parsing DEFLATED data twice.
-     *
-     * @since 1.1
      */
     private final CRC32 crc = new CRC32();
 
     /**
      * Count the bytes written to out.
-     *
-     * @since 1.1
      */
     private long written = 0;
 
     /**
      * Data for local header data
-     *
-     * @since 1.1
      */
     private long dataStart = 0;
 
     /**
      * Offset for CRC entry in the local file header data for the
      * current entry starts here.
-     *
-     * @since 1.15
      */
     private long localDataStart = 0;
 
     /**
      * Start of central directory.
-     *
-     * @since 1.1
      */
     private long cdOffset = 0;
 
     /**
      * Length of central directory.
-     *
-     * @since 1.1
      */
     private long cdLength = 0;
 
     /**
      * Helper, a 0 as ZipShort.
-     *
-     * @since 1.1
      */
     private static final byte[] ZERO = {0, 0};
 
     /**
      * Helper, a 0 as ZipLong.
-     *
-     * @since 1.1
      */
     private static final byte[] LZERO = {0, 0, 0, 0};
 
     /**
      * Holds the offsets of the LFH starts for each entry.
-     *
-     * @since 1.1
      */
     private final Map offsets = new HashMap();
 
@@ -222,8 +186,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * <p>For a list of possible values see <a
      * href="http://java.sun.com/j2se/1.5.0/docs/guide/intl/encoding.doc.html">http://java.sun.com/j2se/1.5.0/docs/guide/intl/encoding.doc.html</a>.
      * Defaults to UTF-8.</p>
-     *
-     * @since 1.3
      */
     private String encoding = DEFAULT_ENCODING;
 
@@ -236,8 +198,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * backwards compatibility.  This class used to extend {@link
      * java.util.zip.DeflaterOutputStream DeflaterOutputStream} up to
      * Revision 1.13.</p>
-     *
-     * @since 1.14
      */
     protected Deflater def = new Deflater(level, true);
 
@@ -248,8 +208,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * backwards compatibility.  This class used to extend {@link
      * java.util.zip.DeflaterOutputStream DeflaterOutputStream} up to
      * Revision 1.13.</p>
-     *
-     * @since 1.14
      */
     protected byte[] buf = new byte[BUFFER_SIZE];
 
@@ -257,8 +215,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
     /**
      * Optional random access output.
-     *
-     * @since 1.14
      */
     private RandomAccessFile raf = null;
 
@@ -277,7 +233,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Creates a new ZIP OutputStream filtering the underlying stream.
      * @param out the outputstream to zip
-     * @since 1.1
      */
     public ZipArchiveOutputStream(OutputStream out) {
         this.out = out;
@@ -287,7 +242,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * Creates a new ZIP OutputStream writing to a File.  Will use
      * random access if possible.
      * @param file the file to zip to
-     * @since 1.14
      * @throws IOException on error
      */
     public ZipArchiveOutputStream(File file) throws IOException {
@@ -317,7 +271,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * uncompressed size for {@link #STORED} entries before
      * invoking {@link #putNextEntry}.
      * @return true if seekable
-     * @since 1.17
      */
     public boolean isSeekable() {
         return raf != null;
@@ -331,7 +284,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * Defaults to UTF-8.</p>
      * @param encoding the encoding to use for file names, use null
      * for the platform's default encoding
-     * @since 1.3
      */
     public void setEncoding(final String encoding) {
         this.encoding = encoding;
@@ -342,8 +294,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * The encoding to use for filenames and the file comment.
      *
      * @return null if using the platform's default character encoding.
-     *
-     * @since 1.3
      */
     public String getEncoding() {
         return encoding;
@@ -371,8 +321,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Finishs writing the contents and closes this as well as the
      * underlying stream.
-     *
-     * @since 1.1
      * @throws IOException on error
      */
     public void finish() throws IOException {
@@ -389,8 +337,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
     /**
      * Writes all necessary data for this entry.
-     *
-     * @since 1.1
      * @throws IOException on error
      */
     public void closeEntry() throws IOException {
@@ -457,7 +403,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Begin writing next entry.
      * @param ze the entry to write
-     * @since 1.1
      * @throws IOException on error
      */
     public void putNextEntry(ZipArchiveEntry ze) throws IOException {
@@ -498,7 +443,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Set the file comment.
      * @param comment the comment
-     * @since 1.1
      */
     public void setComment(String comment) {
         this.comment = comment;
@@ -510,7 +454,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * <p>Default is Deflater.DEFAULT_COMPRESSION.</p>
      * @param level the compression level.
      * @throws IllegalArgumentException if an invalid compression level is specified.
-     * @since 1.1
      */
     public void setLevel(int level) {
         if (level < Deflater.DEFAULT_COMPRESSION
@@ -527,7 +470,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      *
      * <p>Default is DEFLATED.</p>
      * @param method an <code>int</code> from java.util.zip.ZipEntry
-     * @since 1.1
      */
     public void setMethod(int method) {
         this.method = method;
@@ -574,7 +516,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      *
      * <p>Delegates to the three arg method.</p>
      * @param b the byte to write
-     * @since 1.14
      * @throws IOException on error
      */
     public void write(int b) throws IOException {
@@ -588,7 +529,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * associated with the stream.
      *
      * @exception  IOException  if an I/O error occurs.
-     * @since 1.14
      */
     public void close() throws IOException {
         finish();
@@ -606,7 +546,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * to be written out to the stream.
      *
      * @exception  IOException  if an I/O error occurs.
-     * @since 1.14
      */
     public void flush() throws IOException {
         if (out != null) {
@@ -635,34 +574,24 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     /**
      * local file header signature
-     *
-     * @since 1.1
      */
     static final byte[] LFH_SIG = ZipLong.getBytes(0X04034B50L);
     /**
      * data descriptor signature
-     *
-     * @since 1.1
      */
     static final byte[] DD_SIG = ZipLong.getBytes(0X08074B50L);
     /**
      * central file header signature
-     *
-     * @since 1.1
      */
     static final byte[] CFH_SIG = ZipLong.getBytes(0X02014B50L);
     /**
      * end of central dir signature
-     *
-     * @since 1.1
      */
     static final byte[] EOCD_SIG = ZipLong.getBytes(0X06054B50L);
 
     /**
      * Writes next block of compressed data to the output stream.
      * @throws IOException on error
-     *
-     * @since 1.14
      */
     protected final void deflate() throws IOException {
         int len = def.deflate(buf, 0, buf.length);
@@ -675,8 +604,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * Writes the local file header entry
      * @param ze the entry to write
      * @throws IOException on error
-     *
-     * @since 1.1
      */
     protected void writeLocalFileHeader(ZipArchiveEntry ze) throws IOException {
 
@@ -750,8 +677,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * Writes the data descriptor entry.
      * @param ze the entry to write
      * @throws IOException on error
-     *
-     * @since 1.1
      */
     protected void writeDataDescriptor(ZipArchiveEntry ze) throws IOException {
         if (ze.getMethod() != DEFLATED || raf != null) {
@@ -770,8 +695,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * Writes the central file header entry.
      * @param ze the entry to write
      * @throws IOException on error
-     *
-     * @since 1.1
      */
     protected void writeCentralFileHeader(ZipArchiveEntry ze) throws IOException {
         writeOut(CFH_SIG);
@@ -855,8 +778,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Writes the &quot;End of central dir record&quot;.
      * @throws IOException on error
-     *
-     * @since 1.1
      */
     protected void writeCentralDirectoryEnd() throws IOException {
         writeOut(EOCD_SIG);
@@ -882,8 +803,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
     /**
      * Smallest date/time ZIP can handle.
-     *
-     * @since 1.1
      */
     private static final byte[] DOS_TIME_MIN = ZipLong.getBytes(0x00002100L);
 
@@ -891,7 +810,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * Convert a Date object to a DOS date/time field.
      * @param time the <code>Date</code> to convert
      * @return the date as a <code>ZipLong</code>
-     * @since 1.1
      */
     protected static ZipLong toDosTime(Date time) {
         return new ZipLong(toDosTime(time.getTime()));
@@ -903,7 +821,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * <p>Stolen from InfoZip's <code>fileio.c</code></p>
      * @param t number of milliseconds since the epoch
      * @return the date as a byte array
-     * @since 1.26
      */
     protected static byte[] toDosTime(long t) {
         Date time = new Date(t);
@@ -930,8 +847,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @param name the string to get bytes from
      * @return the bytes as a byte array
      * @throws ZipException on error
-     *
-     * @since 1.3
      */
     protected byte[] getBytes(String name) throws ZipException {
         if (encoding == null) {
@@ -955,8 +870,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * Write bytes to output or random access file.
      * @param data the byte array to write
      * @throws IOException on error
-     *
-     * @since 1.14
      */
     protected final void writeOut(byte[] data) throws IOException {
         writeOut(data, 0, data.length);
@@ -968,8 +881,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @param offset the start position to write from
      * @param length the number of bytes to write
      * @throws IOException on error
-     *
-     * @since 1.14
      */
     protected final void writeOut(byte[] data, int offset, int length)
         throws IOException {
@@ -985,7 +896,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * has wrapped around and re-creates the original value.
      * @param i the value to treat as unsigned int.
      * @return the unsigned int as a long.
-     * @since 1.34
      */
     protected static long adjustToLong(int i) {
         if (i < 0) {

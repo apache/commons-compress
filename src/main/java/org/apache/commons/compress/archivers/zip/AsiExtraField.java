@@ -52,41 +52,29 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     private static final int      WORD = 4;
     /**
      * Standard Unix stat(2) file mode.
-     *
-     * @since 1.1
      */
     private int mode = 0;
     /**
      * User ID.
-     *
-     * @since 1.1
      */
     private int uid = 0;
     /**
      * Group ID.
-     *
-     * @since 1.1
      */
     private int gid = 0;
     /**
      * File this entry points to, if it is a symbolic link.
      *
      * <p>empty string - if entry is not a symbolic link.</p>
-     *
-     * @since 1.1
      */
     private String link = "";
     /**
      * Is this an entry for a directory?
-     *
-     * @since 1.1
      */
     private boolean dirFlag = false;
 
     /**
      * Instance used to calculate checksums.
-     *
-     * @since 1.1
      */
     private CRC32 crc = new CRC32();
 
@@ -97,7 +85,6 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     /**
      * The Header-ID.
      * @return the value for the header id for this extrafield
-     * @since 1.1
      */
     public ZipShort getHeaderId() {
         return HEADER_ID;
@@ -107,7 +94,6 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      * Length of the extra field in the local file data - without
      * Header-ID or length specifier.
      * @return a <code>ZipShort</code> for the length of the data of this extra field
-     * @since 1.1
      */
     public ZipShort getLocalFileDataLength() {
         return new ZipShort(WORD         // CRC
@@ -121,7 +107,6 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     /**
      * Delegate to local file data.
      * @return the centralDirectory length
-     * @since 1.1
      */
     public ZipShort getCentralDirectoryLength() {
         return getLocalFileDataLength();
@@ -131,7 +116,6 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      * The actual data to put into local file data - without Header-ID
      * or length specifier.
      * @return get the data
-     * @since 1.1
      */
     public byte[] getLocalFileDataData() {
         // CRC will be added later
@@ -164,7 +148,6 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     /**
      * Delegate to local file data.
      * @return the local file data
-     * @since 1.1
      */
     public byte[] getCentralDirectoryData() {
         return getLocalFileDataData();
@@ -173,7 +156,6 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     /**
      * Set the user id.
      * @param uid the user id
-     * @since 1.1
      */
     public void setUserId(int uid) {
         this.uid = uid;
@@ -182,7 +164,6 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     /**
      * Get the user id.
      * @return the user id
-     * @since 1.1
      */
     public int getUserId() {
         return uid;
@@ -191,7 +172,6 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     /**
      * Set the group id.
      * @param gid the group id
-     * @since 1.1
      */
     public void setGroupId(int gid) {
         this.gid = gid;
@@ -200,7 +180,6 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     /**
      * Get the group id.
      * @return the group id
-     * @since 1.1
      */
     public int getGroupId() {
         return gid;
@@ -211,8 +190,6 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      *
      * @param name Name of the file this entry links to, empty String
      *             if it is not a symbolic link.
-     *
-     * @since 1.1
      */
     public void setLinkedFile(String name) {
         link = name;
@@ -224,8 +201,6 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      *
      * @return name of the file this entry links to if it is a
      *         symbolic link, the empty string otherwise.
-     *
-     * @since 1.1
      */
     public String getLinkedFile() {
         return link;
@@ -234,7 +209,6 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     /**
      * Is this entry a symbolic link?
      * @return true if this is a symbolic link
-     * @since 1.1
      */
     public boolean isLink() {
         return getLinkedFile().length() != 0;
@@ -243,7 +217,6 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     /**
      * File mode of this file.
      * @param mode the file mode
-     * @since 1.1
      */
     public void setMode(int mode) {
         this.mode = getMode(mode);
@@ -252,7 +225,6 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     /**
      * File mode of this file.
      * @return the file mode
-     * @since 1.1
      */
     public int getMode() {
         return mode;
@@ -261,7 +233,6 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     /**
      * Indicate whether this entry is a directory.
      * @param dirFlag if true, this entry is a directory
-     * @since 1.1
      */
     public void setDirectory(boolean dirFlag) {
         this.dirFlag = dirFlag;
@@ -271,7 +242,6 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     /**
      * Is this entry a directory?
      * @return true if this entry is a directory
-     * @since 1.1
      */
     public boolean isDirectory() {
         return dirFlag && !isLink();
@@ -282,7 +252,6 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      * @param data an array of bytes
      * @param offset the start offset
      * @param length the number of bytes in the array from offset
-     * @since 1.1
      * @throws ZipException on error
      */
     public void parseFromLocalFileData(byte[] data, int offset, int length)
@@ -322,7 +291,6 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      * Get the file mode for given permissions with the correct file type.
      * @param mode the mode
      * @return the type with the mode
-     * @since 1.1
      */
     protected int getMode(int mode) {
         int type = FILE_FLAG;

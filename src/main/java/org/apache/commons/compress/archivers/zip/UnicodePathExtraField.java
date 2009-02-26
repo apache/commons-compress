@@ -43,7 +43,7 @@ public class UnicodePathExtraField extends AbstractUnicodeExtraField {
 
     /**
      * Assemble as unicode path extension from the name and encoding
-     * of the orginal zip entry.
+     * of the original zip entry.
      * 
      * @param name The file name
      * @param zipEncoding The encoding of the filename in the zip
