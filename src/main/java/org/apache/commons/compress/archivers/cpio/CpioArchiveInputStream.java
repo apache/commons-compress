@@ -73,7 +73,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
 
     private long crc = 0;
 
-    private InputStream in = null;
+    private final InputStream in;
 
     /**
      * Construct the cpio input stream
