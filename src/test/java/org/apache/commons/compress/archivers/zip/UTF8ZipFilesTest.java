@@ -89,7 +89,7 @@ public class UTF8ZipFilesTest extends TestCase {
         File archive = new File(new URI(zip.toString()));
         ZipFile zf = null;
         try {
-            zf = new ZipFile(archive, CP437);
+            zf = new ZipFile(archive, CP437, false);
             assertNotNull(zf.getEntry(ASCII_TXT));
             assertNotNull(zf.getEntry(EURO_FOR_DOLLAR_TXT));
             assertNotNull(zf.getEntry(OIL_BARREL_TXT));
@@ -199,7 +199,7 @@ public class UTF8ZipFilesTest extends TestCase {
         throws IOException {
         ZipFile zf = null;
         try {
-            zf = new ZipFile(file, encoding);
+            zf = new ZipFile(file, encoding, false);
 
             Enumeration e = zf.getEntries();
             while (e.hasMoreElements()) {
