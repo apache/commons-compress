@@ -23,11 +23,11 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 public class ArArchiveEntry implements ArchiveEntry {
 
 	private final String name;
-	private int userId;
-	private int groupId;
-	private int mode;
-	private long lastModified;
-	private long length;
+	private final int userId;
+	private final int groupId;
+	private final int mode;
+	private final long lastModified;
+	private final long length;
 
 	public ArArchiveEntry(String name, long length) {
 		this(name, length, 0, 0, 33188, System.currentTimeMillis());
