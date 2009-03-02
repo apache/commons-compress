@@ -22,7 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
-import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -87,14 +87,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     public static final int STORED = java.util.zip.ZipEntry.STORED;
 
     /**
-     * name of the encoding UTF-8
-     */
-    static final String UTF8 = "UTF8";
-
-    /**
      * default encoding for file names and comment.
      */
-    static final String DEFAULT_ENCODING = UTF8;
+    static final String DEFAULT_ENCODING = ZipEncodingHelper.UTF8;
 
      /**
      * General purpose flag, which indicates that filenames are
@@ -188,7 +183,16 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     private String encoding = DEFAULT_ENCODING;
 
-    // CheckStyle:VisibilityModifier OFF - bc
+    /**
+     * The zip encoding to use for filenames and the file comment.
+     *
+     * This field is of internal use and will be set in {@link
+     * #setEncoding(String)}.
+     */
+    private ZipEncoding zipEncoding =
+        ZipEncodingHelper.getZipEncoding(DEFAULT_ENCODING);
+
+   // CheckStyle:VisibilityModifier OFF - bc
 
     /**
      * This Deflater object is used for output.
@@ -263,8 +267,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * This method indicates whether this archive is writing to a seekable stream (i.e., to a random
-     * access file).
+     * This method indicates whether this archive is writing to a
+     * seekable stream (i.e., to a random access file).
      *
      * <p>For seekable streams, you don't need to calculate the CRC or
      * uncompressed size for {@link #STORED} entries before
@@ -286,7 +290,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     public void setEncoding(final String encoding) {
         this.encoding = encoding;
-        useEFS &= isUTF8(encoding);
+        this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
+        useEFS &= ZipEncodingHelper.isUTF8(encoding);
     }
 
     /**
@@ -305,7 +310,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * <p>Defaults to true.</p>
      */
     public void setUseLanguageEncodingFlag(boolean b) {
-        useEFS = b && isUTF8(encoding);
+        useEFS = b && ZipEncodingHelper.isUTF8(encoding);
     }
 
     /**
@@ -452,13 +457,14 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      *
      * <p>Default is Deflater.DEFAULT_COMPRESSION.</p>
      * @param level the compression level.
-     * @throws IllegalArgumentException if an invalid compression level is specified.
+     * @throws IllegalArgumentException if an invalid compression
+     * level is specified.
      */
     public void setLevel(int level) {
         if (level < Deflater.DEFAULT_COMPRESSION
             || level > Deflater.BEST_COMPRESSION) {
-            throw new IllegalArgumentException(
-                                               "Invalid compression level: " + level);
+            throw new IllegalArgumentException("Invalid compression level: "
+                                               + level);
         }
         hasCompressionLevelChanged = (this.level != level);
         this.level = level;
@@ -606,13 +612,31 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     protected void writeLocalFileHeader(ZipArchiveEntry ze) throws IOException {
 
-        byte[] name = getBytes(ze.getName());
+        boolean encodable = this.zipEncoding.canEncode(ze.getName());
+        ByteBuffer name = this.zipEncoding.encode(ze.getName());
+
         if (createUnicodeExtraFields) {
-            ze.addExtraField(new UnicodePathExtraField(ze.getName(), name));
+
+            /*            if (!encodable) { -- FIXME decide what to*/
+                ze.addExtraField(new UnicodePathExtraField(ze.getName(),
+                                                           name.array(),
+                                                           name.arrayOffset(),
+                                                           name.limit()));
+            /* } */
+
             String comm = ze.getComment();
             if (comm != null && !"".equals(comm)) {
-                byte[] commentB = getBytes(comm);
-                ze.addExtraField(new UnicodeCommentExtraField(comm, commentB));
+
+                boolean commentEncodable = this.zipEncoding.canEncode(comm);
+
+                /*            if (!commentEncodable) { -- FIXME decide what to*/
+                    ByteBuffer commentB = this.zipEncoding.encode(comm);
+                    ze.addExtraField(new UnicodeCommentExtraField(comm,
+                                                                  commentB.array(),
+                                                                  commentB.arrayOffset(),
+                                                                  commentB.limit())
+                                     );
+                /* } */
             }
         }
 
@@ -653,7 +677,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         // CheckStyle:MagicNumber ON
 
         // file name length
-        writeOut(ZipShort.getBytes(name.length));
+        writeOut(ZipShort.getBytes(name.limit()));
         written += SHORT;
 
         // extra field length
@@ -662,8 +686,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         written += SHORT;
 
         // file name
-        writeOut(name);
-        written += name.length;
+        writeOut(name.array(), name.arrayOffset(), name.limit());
+        written += name.limit();
 
         // extra field
         writeOut(extra);
@@ -727,8 +751,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         // CheckStyle:MagicNumber ON
 
         // file name length
-        byte[] name = getBytes(ze.getName());
-        writeOut(ZipShort.getBytes(name.length));
+        ByteBuffer name = this.zipEncoding.encode(ze.getName());
+        writeOut(ZipShort.getBytes(name.limit()));
         written += SHORT;
 
         // extra field length
@@ -741,8 +765,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         if (comm == null) {
             comm = "";
         }
-        byte[] commentB = getBytes(comm);
-        writeOut(ZipShort.getBytes(commentB.length));
+        ByteBuffer commentB = this.zipEncoding.encode(comm);
+        writeOut(ZipShort.getBytes(commentB.limit()));
         written += SHORT;
 
         // disk number start
@@ -762,16 +786,16 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         written += WORD;
 
         // file name
-        writeOut(name);
-        written += name.length;
+        writeOut(name.array(), name.arrayOffset(), name.limit());
+        written += name.limit();
 
         // extra field
         writeOut(extra);
         written += extra.length;
 
         // file comment
-        writeOut(commentB);
-        written += commentB.length;
+        writeOut(commentB.array(), commentB.arrayOffset(), commentB.limit());
+        written += commentB.limit();
     }
 
     /**
@@ -795,9 +819,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         writeOut(ZipLong.getBytes(cdOffset));
 
         // ZIP file comment
-        byte[] data = getBytes(comment);
-        writeOut(ZipShort.getBytes(data.length));
-        writeOut(data);
+        ByteBuffer data = this.zipEncoding.encode(comment);
+        writeOut(ZipShort.getBytes(data.limit()));
+        writeOut(data.array(), data.arrayOffset(), data.limit());
     }
 
     /**
@@ -838,31 +862,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             |         (time.getSeconds() >> 1);
         return ZipLong.getBytes(value);
         // CheckStyle:MagicNumberCheck ON
-    }
-
-    /**
-     * Retrieve the bytes for the given String in the encoding set for
-     * this Stream.
-     * @param name the string to get bytes from
-     * @return the bytes as a byte array
-     * @throws ZipException on error
-     */
-    protected byte[] getBytes(String name) throws ZipException {
-        if (encoding == null) {
-            return name.getBytes();
-        } else {
-            try {
-                return ZipEncodingHelper.encodeName(name, encoding);
-            } catch (java.nio.charset.UnsupportedCharsetException ex) {
-                // Java 1.4's NIO doesn't recognize a few names that
-                // String.getBytes does
-                try {
-                    return name.getBytes(encoding);
-                } catch (UnsupportedEncodingException uee) {
-                    throw new ZipException(uee.getMessage());
-                }
-            }
-        }
     }
 
     /**
@@ -908,19 +907,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         while (!def.needsInput()) {
             deflate();
         }
-    }
-
-    /**
-     * Whether a given encoding - or the platform's default encoding
-     * if the parameter is null - is UTF-8.
-     */
-    static boolean isUTF8(String encoding) {
-        if (encoding == null) {
-            // check platform's default encoding
-            encoding = System.getProperty("file.encoding");
-        }
-        return UTF8.equalsIgnoreCase(encoding)
-            || "utf-8".equalsIgnoreCase(encoding);
     }
 
     private void writeVersionNeededToExtractAndGeneralPurposeBits(final int
