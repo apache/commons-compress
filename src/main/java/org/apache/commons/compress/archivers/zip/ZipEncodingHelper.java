@@ -31,20 +31,20 @@ abstract class ZipEncodingHelper {
 
     /**
      * A class, which holds the high characters of a simple encoding
-     * and lazily instantiates a Simple8BitZipEnoding instance in a
+     * and lazily instantiates a Simple8BitZipEncoding instance in a
      * thread-safe manner.
      */
     private static class SimpleEncodingHolder {
 
         private final char [] highChars;
-        private Simple8BitZipEnoding encoding;
+        private Simple8BitZipEncoding encoding;
 
         /**
          * Instantiate a simple encoding holder.
          * 
          * @param highChars The characters for byte codes 128 to 255.
          * 
-         * @see Simple8BitZipEnoding#Simple8BitZipEnoding(char[])
+         * @see Simple8BitZipEncoding#Simple8BitZipEncoding(char[])
          */
         SimpleEncodingHolder(char [] highChars) {
             this.highChars = highChars;
@@ -54,9 +54,9 @@ abstract class ZipEncodingHelper {
          * @return The associated {@see Simple8BitZipEncoding}, which
          *         is instantiated if not done so far.
          */
-        public synchronized Simple8BitZipEnoding getEncoding() {
+        public synchronized Simple8BitZipEncoding getEncoding() {
             if (this.encoding == null) {
-                this.encoding = new Simple8BitZipEnoding(this.highChars);
+                this.encoding = new Simple8BitZipEncoding(this.highChars);
             }
             return this.encoding;
         }
