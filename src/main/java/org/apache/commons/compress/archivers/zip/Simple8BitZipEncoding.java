@@ -44,7 +44,7 @@ import java.util.List;
  * 
  * <p>The methods of this class are reentrant.</p>
  */
-class Simple8BitZipEnoding implements ZipEncoding {
+class Simple8BitZipEncoding implements ZipEncoding {
 
     /**
      * A character entity, which is put to the reverse mapping table
@@ -88,7 +88,7 @@ class Simple8BitZipEnoding implements ZipEncoding {
      * @param highChars The characters for byte values of 128 to 255
      * stored as an array of 128 chars.
      */
-    public Simple8BitZipEnoding(char[] highChars) {
+    public Simple8BitZipEncoding(char[] highChars) {
         this.highChars = highChars;
         this.reverseMapping = new ArrayList(this.highChars.length);
 
