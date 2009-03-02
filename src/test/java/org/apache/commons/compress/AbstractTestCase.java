@@ -27,6 +27,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -50,7 +51,7 @@ public abstract class AbstractTestCase extends TestCase {
         addURL(new File("src/test/resources").toURL());
     }
 
-    protected File getFile( String path ) {
+    protected File getFile(String path) {
         return new File(getClass().getClassLoader().getResource(path).getFile());
     }
 
@@ -60,25 +61,29 @@ public abstract class AbstractTestCase extends TestCase {
     }
 
     /**
-     * Adds a URL to the classpath. This method is necessary when running 
-     * junit tests from within eclipse.
-     * @param url the url to add
-     * @throws Exception if an error occurs
+     * Adds a URL to the classpath. This method is necessary when running junit
+     * tests from within eclipse.
+     * 
+     * @param url
+     *            the url to add
+     * @throws Exception
+     *             if an error occurs
      */
     public void addURL(URL url) throws Exception {
-        URLClassLoader classLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+        URLClassLoader classLoader = (URLClassLoader) ClassLoader
+                .getSystemClassLoader();
         Class clazz = URLClassLoader.class;
 
-        Method method= clazz.getDeclaredMethod("addURL", new Class[] { URL.class });
+        Method method = clazz.getDeclaredMethod("addURL",
+                new Class[] { URL.class });
         method.setAccessible(true);
         method.invoke(classLoader, new Object[] { url });
     }
 
     /**
-     * Creates an archive of 5 textbased files in several directories.
-     * The archivername is the factory identifier for the archiver, for example
-     * zip, tar, cpio, jar, ar.
-     * The archive is created as a temp file.
+     * Creates an archive of 5 textbased files in several directories. The
+     * archivername is the factory identifier for the archiver, for example zip,
+     * tar, cpio, jar, ar. The archive is created as a temp file.
      * 
      * The archive contains the following files:
      * <ul>
@@ -91,9 +96,11 @@ public abstract class AbstractTestCase extends TestCase {
      * <li>test with spaces.txt</li>
      * </ul>
      * 
-     * @param archivename the identifier of this archive
+     * @param archivename
+     *            the identifier of this archive
      * @return the newly created file
-     * @throws Exception in case something goes wrong
+     * @throws Exception
+     *             in case something goes wrong
      */
     protected File createArchive(String archivename) throws Exception {
         ArchiveOutputStream out = null;
@@ -101,7 +108,8 @@ public abstract class AbstractTestCase extends TestCase {
             File temp = File.createTempFile("test", "." + archivename);
 
             final OutputStream stream = new FileOutputStream(temp);
-            out = new ArchiveStreamFactory().createArchiveOutputStream(archivename, stream);
+            out = new ArchiveStreamFactory().createArchiveOutputStream(
+                    archivename, stream);
 
             final File file1 = getFile("test1.xml");
             final File file2 = getFile("test2.xml");
@@ -116,67 +124,108 @@ public abstract class AbstractTestCase extends TestCase {
             IOUtils.copy(new FileInputStream(file1), out);
             out.closeArchiveEntry();
 
-            out.putArchiveEntry(new ZipArchiveEntry("testdata/test2.xml"));
+            entry = new ZipArchiveEntry("testdata/test2.xml");
+            entry.setSize(file1.length());
+            out.putArchiveEntry(entry);
             IOUtils.copy(new FileInputStream(file2), out);
             out.closeArchiveEntry();
 
-            out.putArchiveEntry(new ZipArchiveEntry("test/test3.xml"));
+            entry = new ZipArchiveEntry("test/test3.xml");
+            entry.setSize(file1.length());
+            out.putArchiveEntry(entry);
             IOUtils.copy(new FileInputStream(file3), out);
             out.closeArchiveEntry();
 
-            out.putArchiveEntry(new ZipArchiveEntry("bla/test4.xml"));
+            entry = new ZipArchiveEntry("bla/test4.xml");
+            entry.setSize(file1.length());
+            out.putArchiveEntry(entry);
             IOUtils.copy(new FileInputStream(file4), out);
             out.closeArchiveEntry();
 
-            out.putArchiveEntry(new ZipArchiveEntry("test.txt"));
+            entry = new ZipArchiveEntry("bla/test5.xml");
+            entry.setSize(file1.length());
+            out.putArchiveEntry(entry);
+            IOUtils.copy(new FileInputStream(file4), out);
+            out.closeArchiveEntry();
+
+            entry = new ZipArchiveEntry("bla/blubber/test6.xml");
+            entry.setSize(file1.length());
+            out.putArchiveEntry(entry);
+            IOUtils.copy(new FileInputStream(file4), out);
+            out.closeArchiveEntry();
+
+            entry = new ZipArchiveEntry("test.txt");
+            entry.setSize(file1.length());
+            out.putArchiveEntry(entry);
             IOUtils.copy(new FileInputStream(file5), out);
             out.closeArchiveEntry();
 
-            out.putArchiveEntry(new ZipArchiveEntry("something/bla"));
+            entry = new ZipArchiveEntry("something/bla");
+            entry.setSize(file1.length());
+            out.putArchiveEntry(entry);
             IOUtils.copy(new FileInputStream(file6), out);
             out.closeArchiveEntry();
 
-            out.putArchiveEntry(new ZipArchiveEntry("test with spaces.txt"));
+            entry = new ZipArchiveEntry("test with spaces.txt");
+            entry.setSize(file1.length());
+            out.putArchiveEntry(entry);
             IOUtils.copy(new FileInputStream(file6), out);
             out.closeArchiveEntry();
 
             return temp;
         } finally {
-            if(out != null) out.close();
+            if (out != null)
+                out.close();
         }
     }
 
     /**
      * Checks if an archive contains all expected files.
      * 
-     * @param archive 
-     *                              the archive to check
-     * @param expected 
-     *                              a list with expected string filenames
+     * @param archive
+     *            the archive to check
+     * @param expected
+     *            a list with expected string filenames
      * @throws Exception
      */
-    protected void checkArchiveContent(File archive, List expected) 
-        throws Exception {
+    protected void checkArchiveContent(File archive, List expected)
+            throws Exception {
         final InputStream is = new FileInputStream(archive);
         final BufferedInputStream buf = new BufferedInputStream(is);
-        final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream(buf);
+        final ArchiveInputStream in = new ArchiveStreamFactory()
+                .createArchiveInputStream(buf);
+        this.checkArchiveContent(in, expected);
+    }
 
+    protected void checkArchiveContent(ArchiveInputStream in, List expected)
+            throws Exception {
         File result = File.createTempFile("dir-result", "");
         result.delete();
         result.mkdir();
 
         ArchiveEntry entry = null;
-        while((entry = in.getNextEntry()) != null) {
-            File outfile = new File(result.getCanonicalPath() + "/result/" + entry.getName());
+        while ((entry = in.getNextEntry()) != null) {
+            File outfile = new File(result.getCanonicalPath() + "/result/"
+                    + entry.getName());
             outfile.getParentFile().mkdirs();
             OutputStream out = new FileOutputStream(outfile);
-            if(!expected.remove(entry.getName())) {
-                fail("unexpected entry: " + entry.getName());
-            } 
             IOUtils.copy(in, out);
             out.close();
+
+            if (!outfile.exists()) {
+                fail("extraction failed: " + entry.getName());
+            }
+            if (!expected.remove(entry.getName())) {
+                fail("unexpected entry: " + entry.getName());
+            }
         }
         in.close();
-        assertEquals(expected.size(), 0);
+        if (expected.size() > 0) {
+            for (Iterator iterator = expected.iterator(); iterator.hasNext();) {
+                String name = (String) iterator.next();
+                fail("Expected entry: " + name);
+            }
+        }
+        assertEquals(0, expected.size());
     }
 }
