@@ -19,133 +19,114 @@
 package org.apache.commons.compress.archivers.zip;
 
 /**
- * Simple placeholder for all those extra fields we don't want to deal with. <p>
+ * Simple placeholder for all those extra fields we don't want to deal
+ * with.
  *
- * Assumes local file data and central directory entries are identical - unless
- * told the opposite.</p>
+ * <p>Assumes local file data and central directory entries are
+ * identical - unless told the opposite.</p>
+ *
  */
-public class UnrecognizedExtraField
-    implements ZipExtraField
-{
-    /**
-     * Extra field data in central directory - without Header-ID or length
-     * specifier.
-     */
-    private byte[] m_centralData;
+public class UnrecognizedExtraField implements ZipExtraField {
 
     /**
      * The Header-ID.
      */
-    private ZipShort m_headerID;
+    private ZipShort headerId;
 
     /**
-     * Extra field data in local file data - without Header-ID or length
-     * specifier.
+     * Set the header id.
+     * @param headerId the header id to use
      */
-    private byte[] m_localData;
-
-    /**
-     * Set the central directory data
-     *
-     * @param centralData the central directory data
-     */
-    public void setCentralDirectoryData( final byte[] centralData )
-    {
-        m_centralData = copy(centralData);
-    }
-
-       /**
-     * Set the header ID.
-     *
-     * @param headerID the header ID
-     */
-    public void setHeaderId( final ZipShort headerID )
-    {
-        m_headerID = headerID;
+    public void setHeaderId(ZipShort headerId) {
+        this.headerId = headerId;
     }
 
     /**
-     * Set the local file data.
-     *
-     * @param localData the local file data
+     * Get the header id.
+     * @return the header id
      */
-    public void setLocalFileDataData( final byte[] localData )
-    {
-        m_localData = copy(localData);
+    public ZipShort getHeaderId() {
+        return headerId;
     }
 
     /**
-     * Get the central directory data.
-     *
-     * @return the central directory data.
+     * Extra field data in local file data - without
+     * Header-ID or length specifier.
      */
-    public byte[] getCentralDirectoryData()
-    {
-        if( m_centralData != null )
-        {
-            return copy(m_centralData);
-        }
-        return getLocalFileDataData();
+    private byte[] localData;
+
+    /**
+     * Set the extra field data in the local file data -
+     * without Header-ID or length specifier.
+     * @param data the field data to use
+     */
+    public void setLocalFileDataData(byte[] data) {
+        localData = copy(data);
     }
 
     /**
-     * Get the length of the central directory in bytes.
-     *
-     * @return the length of the central directory in bytes.
+     * Get the length of the local data.
+     * @return the length of the local data
      */
-    public ZipShort getCentralDirectoryLength()
-    {
-        if( m_centralData != null )
-        {
-            return new ZipShort( m_centralData.length );
+    public ZipShort getLocalFileDataLength() {
+        return new ZipShort(localData.length);
+    }
+
+    /**
+     * Get the local data.
+     * @return the local data
+     */
+    public byte[] getLocalFileDataData() {
+        return copy(localData);
+    }
+
+    /**
+     * Extra field data in central directory - without
+     * Header-ID or length specifier.
+     */
+    private byte[] centralData;
+
+    /**
+     * Set the extra field data in central directory.
+     * @param data the data to use
+     */
+    public void setCentralDirectoryData(byte[] data) {
+        centralData = copy(data);
+    }
+
+    /**
+     * Get the central data length.
+     * If there is no central data, get the local file data length.
+     * @return the central data length
+     */
+    public ZipShort getCentralDirectoryLength() {
+        if (centralData != null) {
+            return new ZipShort(centralData.length);
         }
         return getLocalFileDataLength();
     }
 
     /**
-     * Get the HeaderID.
-     *
-     * @return the HeaderID
+     * Get the central data.
+     * @return the central data if present, else return the local file data
      */
-    public ZipShort getHeaderId()
-    {
-        return m_headerID;
+    public byte[] getCentralDirectoryData() {
+        if (centralData != null) {
+            return copy(centralData);
+        }
+        return getLocalFileDataData();
     }
 
     /**
-     * Get the local file data.
-     *
-     * @return the local file data
+     * @param data the array of bytes.
+     * @param offset the source location in the data array.
+     * @param length the number of bytes to use in the data array.
+     * @see ZipExtraField#parseFromLocalFileData(byte[], int, int)
      */
-    public byte[] getLocalFileDataData()
-    {
-        return copy(m_localData);
-    }
-
-    /**
-     * Get the length of local file data in bytes.
-     *
-     * @return the length of local file data in bytes
-     */
-    public ZipShort getLocalFileDataLength()
-    {
-        return new ZipShort( m_localData.length );
-    }
-
-    /**
-     * Parse LocalFiledata out of supplied buffer.
-     *
-     * @param buffer the buffer to use
-     * @param offset the offset into buffer
-     * @param length then length of data
-     */
-    public void parseFromLocalFileData( final byte[] buffer,
-                                        final int offset,
-                                        final int length )
-    {
-        final byte[] fileData = new byte[ length ];
-        System.arraycopy( buffer, offset, fileData, 0, length );
-        setLocalFileDataData( fileData );
+    public void parseFromLocalFileData(byte[] data, int offset, int length) {
+        byte[] tmp = new byte[length];
+        System.arraycopy(data, offset, tmp, 0, length);
+        setLocalFileDataData(tmp);
     }
 
     private static byte[] copy(byte[] from) {
