@@ -101,4 +101,14 @@ public final class JarMarker implements ZipExtraField {
             throw new ZipException("JarMarker doesn't expect any data");
         }
     }
+
+    /**
+     * Doesn't do anything special since this class always uses the
+     * same data in central directory and local file data.
+     */
+    public void parseFromCentralDirectoryData(byte[] buffer, int offset,
+                                              int length)
+        throws ZipException {
+        parseFromLocalFileData(buffer, offset, length);
+    }
 }

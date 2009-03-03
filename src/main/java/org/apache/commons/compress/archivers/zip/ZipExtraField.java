@@ -28,8 +28,7 @@ import java.util.zip.ZipException;
  * to be. {@link java.util.zip.ZipOutputStream java.util.zip.ZipOutputStream}
  * will only use the local file data in both places.</p>
  */
-public interface ZipExtraField
-{
+public interface ZipExtraField {
     /**
      * The Header-ID.
      *
@@ -77,6 +76,17 @@ public interface ZipExtraField
      * @param length the length of data
      * @exception ZipException on error
      */
-    void parseFromLocalFileData( byte[] buffer, int offset, int length )
+    void parseFromLocalFileData(byte[] buffer, int offset, int length)
+        throws ZipException;
+
+    /**
+     * Populate data from this array as if it was in central directory data.
+     *
+     * @param buffer the buffer to read data from
+     * @param offset offset into buffer to read data
+     * @param length the length of data
+     * @exception ZipException on error
+     */
+    void parseFromCentralDirectoryData(byte[] buffer, int offset, int length)
         throws ZipException;
 }
