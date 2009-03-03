@@ -99,6 +99,24 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         }
     }
 
+    /*
+     * WinZIP created archive, uses Unicode Extra Fields but only in
+     * the central directory.
+     */
+    public void testReadWinZipArchive() throws IOException, URISyntaxException {
+        URL zip = getClass().getResource("/utf8-winzip-test.zip");
+        File archive = new File(new URI(zip.toString()));
+        ZipFile zf = null;
+        try {
+            zf = new ZipFile(archive, null, true);
+            assertNotNull(zf.getEntry(ASCII_TXT));
+            assertNotNull(zf.getEntry(EURO_FOR_DOLLAR_TXT));
+            assertNotNull(zf.getEntry(OIL_BARREL_TXT));
+        } finally {
+            ZipFile.closeQuietly(zf);
+        }
+    }
+
     public void testZipFileReadsUnicodeFields() throws IOException {
         File file = File.createTempFile("unicode-test", ".zip");
         ZipFile zf = null;

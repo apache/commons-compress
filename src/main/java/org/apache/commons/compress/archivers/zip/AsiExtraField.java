@@ -288,6 +288,16 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     }
 
     /**
+     * Doesn't do anything special since this class always uses the
+     * same data in central directory and local file data.
+     */
+    public void parseFromCentralDirectoryData(byte[] buffer, int offset,
+                                              int length)
+        throws ZipException {
+        parseFromLocalFileData(buffer, offset, length);
+    }
+
+    /**
      * Get the file mode for given permissions with the correct file type.
      * @param mode the mode
      * @return the type with the mode
