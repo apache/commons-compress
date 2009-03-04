@@ -229,6 +229,11 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private boolean useEFS = true; 
 
     /**
+     * Whether to encode non-encodable file names as UTF-8.
+     */
+    private boolean fallbackToUTF8 = false;
+
+    /**
      * whether to create UnicodePathExtraField-s for each entry.
      */
     private UnicodeExtraFieldPolicy createUnicodeExtraFields =
@@ -321,6 +326,16 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     public void setCreateUnicodeExtraFields(UnicodeExtraFieldPolicy b) {
         createUnicodeExtraFields = b;
+    }
+
+    /**
+     * Whether to fall back to UTF and the language encoding flag if
+     * the file name cannot be encoded using the specified encoding.
+     *
+     * <p>Defaults to false.</p>
+     */
+    public void setFallbackToUTF8(boolean b) {
+        fallbackToUTF8 = b;
     }
 
     /**
@@ -613,8 +628,13 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     protected void writeLocalFileHeader(ZipArchiveEntry ze) throws IOException {
 
-        boolean encodable = this.zipEncoding.canEncode(ze.getName());
-        ByteBuffer name = this.zipEncoding.encode(ze.getName());
+        boolean encodable = zipEncoding.canEncode(ze.getName());
+        ByteBuffer name;
+        if (!encodable && fallbackToUTF8) {
+            name = ZipEncodingHelper.UTF8_ZIP_ENCODING.encode(ze.getName());
+        } else {
+            name = zipEncoding.encode(ze.getName());
+        }
 
         if (createUnicodeExtraFields != UnicodeExtraFieldPolicy.NEVER) {
 
@@ -651,7 +671,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         //store method in local variable to prevent multiple method calls
         final int zipMethod = ze.getMethod();
 
-        writeVersionNeededToExtractAndGeneralPurposeBits(zipMethod);
+        writeVersionNeededToExtractAndGeneralPurposeBits(zipMethod,
+                                                         !encodable
+                                                         && fallbackToUTF8);
         written += WORD;
 
         // compression method
@@ -732,7 +754,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         written += SHORT;
 
         final int zipMethod = ze.getMethod();
-        writeVersionNeededToExtractAndGeneralPurposeBits(zipMethod);
+        final boolean encodable = zipEncoding.canEncode(ze.getName());
+        writeVersionNeededToExtractAndGeneralPurposeBits(zipMethod,
+                                                         !encodable
+                                                         && fallbackToUTF8);
         written += WORD;
 
         // compression method
@@ -754,7 +779,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         // CheckStyle:MagicNumber ON
 
         // file name length
-        ByteBuffer name = this.zipEncoding.encode(ze.getName());
+        ByteBuffer name;
+        if (!encodable && fallbackToUTF8) {
+            name = ZipEncodingHelper.UTF8_ZIP_ENCODING.encode(ze.getName());
+        } else {
+            name = zipEncoding.encode(ze.getName());
+        }
         writeOut(ZipShort.getBytes(name.limit()));
         written += SHORT;
 
@@ -768,7 +798,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         if (comm == null) {
             comm = "";
         }
-        ByteBuffer commentB = this.zipEncoding.encode(comm);
+        ByteBuffer commentB;
+        if (!encodable && fallbackToUTF8) {
+            commentB = ZipEncodingHelper.UTF8_ZIP_ENCODING.encode(comm);
+        } else {
+            commentB = zipEncoding.encode(comm);
+        }
         writeOut(ZipShort.getBytes(commentB.limit()));
         written += SHORT;
 
@@ -913,12 +948,14 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     private void writeVersionNeededToExtractAndGeneralPurposeBits(final int
-                                                                  zipMethod)
+                                                                  zipMethod,
+                                                                  final boolean
+                                                                  utfFallback)
         throws IOException {
 
         // CheckStyle:MagicNumber OFF
         int versionNeededToExtract = 10;
-        int generalPurposeFlag = useEFS ? EFS_FLAG : 0;
+        int generalPurposeFlag = (useEFS || utfFallback) ? EFS_FLAG : 0;
         if (zipMethod == DEFLATED && raf == null) {
             // requires version 2 as we are going to store length info
             // in the data descriptor
