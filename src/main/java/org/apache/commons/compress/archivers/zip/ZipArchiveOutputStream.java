@@ -990,8 +990,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
          * Create Unicode extra fields for filenames that cannot be
          * encoded using the specified encoding.
          */
-        public static final UnicodeExtraFieldPolicy NOT_ENCODABLE =
-            new UnicodeExtraFieldPolicy("not encodable");
+        public static final UnicodeExtraFieldPolicy NOT_ENCODEABLE =
+            new UnicodeExtraFieldPolicy("not encodeable");
 
         private final String name;
         private UnicodeExtraFieldPolicy(String n) {
