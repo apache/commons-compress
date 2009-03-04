@@ -231,7 +231,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * whether to create UnicodePathExtraField-s for each entry.
      */
-    private boolean createUnicodeExtraFields = false;
+    private UnicodeExtraFieldPolicy createUnicodeExtraFields =
+        UnicodeExtraFieldPolicy.NEVER;
 
     /**
      * Creates a new ZIP OutputStream filtering the underlying stream.
@@ -314,11 +315,11 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Whether to create Unicode Extra Fields for all entries.
+     * Whether to create Unicode Extra Fields.
      *
-     * <p>Defaults to false.</p>
+     * <p>Defaults to NEVER.</p>
      */
-    public void setCreateUnicodeExtraFields(boolean b) {
+    public void setCreateUnicodeExtraFields(UnicodeExtraFieldPolicy b) {
         createUnicodeExtraFields = b;
     }
 
@@ -615,28 +616,30 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         boolean encodable = this.zipEncoding.canEncode(ze.getName());
         ByteBuffer name = this.zipEncoding.encode(ze.getName());
 
-        if (createUnicodeExtraFields) {
+        if (createUnicodeExtraFields != UnicodeExtraFieldPolicy.NEVER) {
 
-            /*            if (!encodable) { -- FIXME decide what to*/
+            if (createUnicodeExtraFields == UnicodeExtraFieldPolicy.ALWAYS
+                || !encodable) {
                 ze.addExtraField(new UnicodePathExtraField(ze.getName(),
                                                            name.array(),
                                                            name.arrayOffset(),
                                                            name.limit()));
-            /* } */
+            }
 
             String comm = ze.getComment();
             if (comm != null && !"".equals(comm)) {
 
                 boolean commentEncodable = this.zipEncoding.canEncode(comm);
 
-                /*            if (!commentEncodable) { -- FIXME decide what to*/
+                if (createUnicodeExtraFields == UnicodeExtraFieldPolicy.ALWAYS
+                    || !commentEncodable) {
                     ByteBuffer commentB = this.zipEncoding.encode(comm);
                     ze.addExtraField(new UnicodeCommentExtraField(comm,
                                                                   commentB.array(),
                                                                   commentB.arrayOffset(),
                                                                   commentB.limit())
                                      );
-                /* } */
+                }
             }
         }
 
@@ -929,5 +932,36 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         writeOut(ZipShort.getBytes(versionNeededToExtract));
         // general purpose bit flag
         writeOut(ZipShort.getBytes(generalPurposeFlag));
+    }
+
+    /**
+     * enum that represents the possible policies for creating Unicode
+     * extra fields.
+     */
+    public static final class UnicodeExtraFieldPolicy {
+        /**
+         * Always create Unicode extra fields.
+         */
+        public static final UnicodeExtraFieldPolicy ALWAYS =
+            new UnicodeExtraFieldPolicy("always");
+        /**
+         * Never create Unicode extra fields.
+         */
+        public static final UnicodeExtraFieldPolicy NEVER =
+            new UnicodeExtraFieldPolicy("never");
+        /**
+         * Create Unicode extra fields for filenames that cannot be
+         * encoded using the specified encoding.
+         */
+        public static final UnicodeExtraFieldPolicy NOT_ENCODABLE =
+            new UnicodeExtraFieldPolicy("not encodable");
+
+        private final String name;
+        private UnicodeExtraFieldPolicy(String n) {
+            name = n;
+        }
+        public String toString() {
+            return name;
+        }
     }
 }
