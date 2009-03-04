@@ -66,7 +66,7 @@ public class ZipArchiveOutputStreamTest extends TestCase {
     }
 
     public void testAdjustToLong() {
-        assertEquals((long) Integer.MAX_VALUE,
+        assertEquals(Integer.MAX_VALUE,
                      ZipArchiveOutputStream.adjustToLong(Integer.MAX_VALUE));
         assertEquals(((long) Integer.MAX_VALUE) + 1,
                      ZipArchiveOutputStream.adjustToLong(Integer.MAX_VALUE + 1));
