@@ -161,7 +161,11 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
             zos = new ZipArchiveOutputStream(file);
             zos.setEncoding(encoding);
             zos.setUseLanguageEncodingFlag(withEFS);
-            zos.setCreateUnicodeExtraFields(!withExplicitUnicodeExtra);
+            zos.setCreateUnicodeExtraFields(withExplicitUnicodeExtra ? 
+                                            ZipArchiveOutputStream
+                                            .UnicodeExtraFieldPolicy.NEVER
+                                            : ZipArchiveOutputStream
+                                            .UnicodeExtraFieldPolicy.ALWAYS);
 
             ZipArchiveEntry ze = new ZipArchiveEntry(OIL_BARREL_TXT);
             if (withExplicitUnicodeExtra
