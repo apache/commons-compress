@@ -65,8 +65,8 @@ class Simple8BitZipEncoding implements ZipEncoding {
         }
 
         public String toString() {
-            return "0x" + Integer.toHexString(0xffff & (int) unicode)
-                + "->0x" + Integer.toHexString(0xff & (int) code);
+            return "0x" + Integer.toHexString(0xffff & unicode)
+                + "->0x" + Integer.toHexString(0xff & code);
         }
     }
 
@@ -114,7 +114,7 @@ class Simple8BitZipEncoding implements ZipEncoding {
         }
 
         // byte is signed, so 128 == -128 and 255 == -1
-        return this.highChars[128 + (int) b];
+        return this.highChars[128 + b];
     }
 
     /**

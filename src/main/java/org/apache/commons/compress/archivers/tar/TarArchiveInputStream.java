@@ -286,7 +286,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      */
     public int read() throws IOException {
         int num = read(oneBuf, 0, 1);
-        return num == -1 ? -1 : ((int) oneBuf[0]) & BYTE_MASK;
+        return num == -1 ? -1 : oneBuf[0] & BYTE_MASK;
     }
 
     /**

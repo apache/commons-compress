@@ -1041,7 +1041,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
                     if (unLo > unHi) {
                         break;
                     }
-                    n = ((int) block[zptr[unLo] + d + 1]) - med;
+                    n = block[zptr[unLo] + d + 1] - med;
                     if (n == 0) {
                         int temp = 0;
                         temp = zptr[unLo];
@@ -1060,7 +1060,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
                     if (unLo > unHi) {
                         break;
                     }
-                    n = ((int) block[zptr[unHi] + d + 1]) - med;
+                    n = block[zptr[unHi] + d + 1] - med;
                     if (n == 0) {
                         int temp = 0;
                         temp = zptr[unHi];
