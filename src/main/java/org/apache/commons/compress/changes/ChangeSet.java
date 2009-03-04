@@ -33,7 +33,7 @@ import org.apache.commons.compress.utils.IOUtils;
 public final class ChangeSet {
 
     private final Set changes = Collections
-            .synchronizedSet(new LinkedHashSet());;
+            .synchronizedSet(new LinkedHashSet());
 
     public void delete(final String pFilename) {
         addDeletion(new Change(pFilename));
