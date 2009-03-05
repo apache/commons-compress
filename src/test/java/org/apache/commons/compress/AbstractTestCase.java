@@ -23,8 +23,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Iterator;
@@ -51,8 +53,17 @@ public abstract class AbstractTestCase extends TestCase {
         addURL(new File("src/test/resources").toURL());
     }
 
-    protected File getFile(String path) {
-        return new File(getClass().getClassLoader().getResource(path).getFile());
+    protected File getFile(String path) throws IOException {
+        URL url = getClass().getResource(path);
+        if (url == null) {
+            throw new java.io.FileNotFoundException(path + " doesn't exist");
+        }
+        try {
+            return new File(new URI(url.toString()));
+        } catch (java.net.URISyntaxException ex) {
+            // impossible since URL.toString() should always yield a valid URI
+            throw new IOException(ex.getMessage(), ex);
+        }
     }
 
     protected void tearDown() throws Exception {
@@ -71,11 +82,11 @@ public abstract class AbstractTestCase extends TestCase {
      */
     public void addURL(URL url) throws Exception {
         URLClassLoader classLoader = (URLClassLoader) ClassLoader
-                .getSystemClassLoader();
+            .getSystemClassLoader();
         Class clazz = URLClassLoader.class;
 
         Method method = clazz.getDeclaredMethod("addURL",
-                new Class[] { URL.class });
+                                                new Class[] { URL.class });
         method.setAccessible(true);
         method.invoke(classLoader, new Object[] { url });
     }
@@ -109,7 +120,7 @@ public abstract class AbstractTestCase extends TestCase {
 
             final OutputStream stream = new FileOutputStream(temp);
             out = new ArchiveStreamFactory().createArchiveOutputStream(
-                    archivename, stream);
+                                                                       archivename, stream);
 
             final File file1 = getFile("test1.xml");
             final File file2 = getFile("test2.xml");
@@ -189,16 +200,16 @@ public abstract class AbstractTestCase extends TestCase {
      * @throws Exception
      */
     protected void checkArchiveContent(File archive, List expected)
-            throws Exception {
+        throws Exception {
         final InputStream is = new FileInputStream(archive);
         final BufferedInputStream buf = new BufferedInputStream(is);
         final ArchiveInputStream in = new ArchiveStreamFactory()
-                .createArchiveInputStream(buf);
+            .createArchiveInputStream(buf);
         this.checkArchiveContent(in, expected);
     }
 
     protected void checkArchiveContent(ArchiveInputStream in, List expected)
-            throws Exception {
+        throws Exception {
         File result = File.createTempFile("dir-result", "");
         result.delete();
         result.mkdir();
@@ -206,7 +217,7 @@ public abstract class AbstractTestCase extends TestCase {
         ArchiveEntry entry = null;
         while ((entry = in.getNextEntry()) != null) {
             File outfile = new File(result.getCanonicalPath() + "/result/"
-                    + entry.getName());
+                                    + entry.getName());
             outfile.getParentFile().mkdirs();
             OutputStream out = new FileOutputStream(outfile);
             IOUtils.copy(in, out);
