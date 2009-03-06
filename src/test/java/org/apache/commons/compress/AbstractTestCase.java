@@ -23,12 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.Method;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Iterator;
 import java.util.List;
 
@@ -88,8 +83,7 @@ public abstract class AbstractTestCase extends TestCase {
             File temp = File.createTempFile("test", "." + archivename);
 
             final OutputStream stream = new FileOutputStream(temp);
-            out = new ArchiveStreamFactory().createArchiveOutputStream(
-                                                                       archivename, stream);
+            out = new ArchiveStreamFactory().createArchiveOutputStream(archivename, stream);
 
             final File file1 = getFile("test1.xml");
             final File file2 = getFile("test2.xml");
