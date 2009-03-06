@@ -49,46 +49,15 @@ public abstract class AbstractTestCase extends TestCase {
         dir = File.createTempFile("dir", "");
         dir.delete();
         dir.mkdir();
-
-        addURL(new File("src/test/resources").toURL());
     }
 
-    protected File getFile(String path) throws IOException {
-        URL url = getClass().getResource(path);
-        if (url == null) {
-            throw new java.io.FileNotFoundException(path + " doesn't exist");
-        }
-        try {
-            return new File(new URI(url.toString()));
-        } catch (java.net.URISyntaxException ex) {
-            // impossible since URL.toString() should always yield a valid URI
-            throw new IOException(ex.getMessage());
-        }
+    protected File getFile(String path) {
+        return new File("src/test/resources", path);
     }
 
     protected void tearDown() throws Exception {
         dir.delete();
         dir = null;
-    }
-
-    /**
-     * Adds a URL to the classpath. This method is necessary when running junit
-     * tests from within eclipse.
-     * 
-     * @param url
-     *            the url to add
-     * @throws Exception
-     *             if an error occurs
-     */
-    public void addURL(URL url) throws Exception {
-        URLClassLoader classLoader = (URLClassLoader) ClassLoader
-            .getSystemClassLoader();
-        Class clazz = URLClassLoader.class;
-
-        Method method = clazz.getDeclaredMethod("addURL",
-                                                new Class[] { URL.class });
-        method.setAccessible(true);
-        method.invoke(classLoader, new Object[] { url });
     }
 
     /**
