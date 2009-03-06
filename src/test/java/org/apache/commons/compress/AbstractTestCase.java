@@ -62,7 +62,7 @@ public abstract class AbstractTestCase extends TestCase {
             return new File(new URI(url.toString()));
         } catch (java.net.URISyntaxException ex) {
             // impossible since URL.toString() should always yield a valid URI
-            throw new IOException(ex.getMessage(), ex);
+            throw new IOException(ex.getMessage());
         }
     }
 
