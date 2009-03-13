@@ -219,7 +219,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Optional random access output.
      */
-    private RandomAccessFile raf = null;
+    private final RandomAccessFile raf;
 
     private final OutputStream out;
 
@@ -245,6 +245,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     public ZipArchiveOutputStream(OutputStream out) {
         this.out = out;
+        this.raf = null;
     }
 
     /**
@@ -255,21 +256,23 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     public ZipArchiveOutputStream(File file) throws IOException {
         OutputStream o = null;
+        RandomAccessFile _raf = null;
         try {
-            raf = new RandomAccessFile(file, "rw");
-            raf.setLength(0);
+            _raf = new RandomAccessFile(file, "rw");
+            _raf.setLength(0);
         } catch (IOException e) {
-            if (raf != null) {
+            if (_raf != null) {
                 try {
-                    raf.close();
+                    _raf.close();
                 } catch (IOException inner) {
                     // ignore
                 }
-                raf = null;
+                _raf = null;
             }
             o = new FileOutputStream(file);
         }
         out = o;
+        raf = _raf;
     }
 
     /**
