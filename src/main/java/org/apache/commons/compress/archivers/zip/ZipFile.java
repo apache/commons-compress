@@ -104,7 +104,7 @@ public class ZipFile {
     /**
      * The actual data source.
      */
-    private RandomAccessFile archive;
+    private final RandomAccessFile archive;
 
     /**
      * Whether to look for and use Unicode extra fields.
