@@ -28,44 +28,53 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 
 /**
- * Factory to create Compressor[In|Out]putStreams from names
- * In order add other implementations you should extend CompressorStreamFactory
- * and override the appropriate methods (and call their implementation
- * from super of course)
+ * Factory to create Compressor[In|Out]putStreams from names In order add other
+ * implementations you should extend CompressorStreamFactory and override the
+ * appropriate methods (and call their implementation from super of course)
  * 
- * TODO add example here 
+ * TODO add example here
  * 
  */
 public class CompressorStreamFactory {
 
-	public CompressorInputStream createCompressorInputStream( final String name, final InputStream in ) throws CompressorException {
-		try {
+    public CompressorInputStream createCompressorInputStream(final String name,
+            final InputStream in) throws CompressorException {
+        if (name == null || in == null) {
+            throw new IllegalArgumentException(
+                    "Compressor name and stream must not be null.");
+        }
 
-			if("gz".equalsIgnoreCase(name)) {
-				return new GzipCompressorInputStream(in);
-			} else if("bzip2".equalsIgnoreCase(name)) {
-				return new BZip2CompressorInputStream(in);
-			} 
-
-			return null;
-		
-		} catch (IOException e) {
-			throw new CompressorException("Could not create CompressorInputStream", e);
-		}
+        try {
+            if ("gz".equalsIgnoreCase(name)) {
+                return new GzipCompressorInputStream(in);
+            } else if ("bzip2".equalsIgnoreCase(name)) {
+                return new BZip2CompressorInputStream(in);
+            }
+            throw new CompressorException("Compressor: " + name + " not found.");
+        } catch (IOException e) {
+            throw new CompressorException(
+                    "Could not create CompressorInputStream", e);
+        }
     }
 
-    public CompressorOutputStream createCompressorOutputStream( final String name, final OutputStream out ) throws CompressorException {
-		try {
+    public CompressorOutputStream createCompressorOutputStream(
+            final String name, final OutputStream out)
+            throws CompressorException {
+        if (name == null || out == null) {
+            throw new IllegalArgumentException(
+                    "Compressor name and stream must not be null.");
+        }
 
-			if("gz".equalsIgnoreCase(name)) {
-					return new GzipCompressorOutputStream(out);
-			} else if("bzip2".equalsIgnoreCase(name)) {
-					return new BZip2CompressorOutputStream(out);
-			} 
-			return null;
-
-		} catch (IOException e) {
-			throw new CompressorException("Could not create CompressorOutputStream", e);
-		}
+        try {
+            if ("gz".equalsIgnoreCase(name)) {
+                return new GzipCompressorOutputStream(out);
+            } else if ("bzip2".equalsIgnoreCase(name)) {
+                return new BZip2CompressorOutputStream(out);
+            }
+            throw new CompressorException("Compressor: " + name + " not found.");
+        } catch (IOException e) {
+            throw new CompressorException(
+                    "Could not create CompressorOutputStream", e);
+        }
     }
 }

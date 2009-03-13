@@ -34,67 +34,94 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 
 /**
- * Factory to create Archive[In|Out]putStreams from names
- * or the first bytes of the InputStream. In order add other
- * implementations you should extend ArchiveStreamFactory
- * and override the appropriate methods (and call their implementation
- * from super of course)
+ * Factory to create Archive[In|Out]putStreams from names or the first bytes of
+ * the InputStream. In order add other implementations you should extend
+ * ArchiveStreamFactory and override the appropriate methods (and call their
+ * implementation from super of course)
  * 
- * TODO add example here 
+ * TODO add example here
  * 
  */
-
 public class ArchiveStreamFactory {
 
-    public ArchiveInputStream createArchiveInputStream( final String archiverName, final InputStream in ) throws ArchiveException {
+    public ArchiveInputStream createArchiveInputStream(
+            final String archiverName, final InputStream in)
+            throws ArchiveException {
+        if (archiverName == null || in == null) {
+            throw new IllegalArgumentException("Archivername must not be null.");
+        }
+
         if ("ar".equalsIgnoreCase(archiverName)) {
             return new ArArchiveInputStream(in);
-        } else if("zip".equalsIgnoreCase(archiverName)) {
+        } else if ("zip".equalsIgnoreCase(archiverName)) {
             return new ZipArchiveInputStream(in);
-        } else if("tar".equalsIgnoreCase(archiverName)) {
+        } else if ("tar".equalsIgnoreCase(archiverName)) {
             return new TarArchiveInputStream(in);
-        } else if("jar".equalsIgnoreCase(archiverName)) {
+        } else if ("jar".equalsIgnoreCase(archiverName)) {
             return new JarArchiveInputStream(in);
-        } else if("cpio".equalsIgnoreCase(archiverName)) {
+        } else if ("cpio".equalsIgnoreCase(archiverName)) {
             return new CpioArchiveInputStream(in);
         }
-        return null;
+        throw new ArchiveException("Archiver: " + archiverName + " not found.");
     }
 
-    public ArchiveOutputStream createArchiveOutputStream( final String archiverName, final OutputStream out ) throws ArchiveException {
+    public ArchiveOutputStream createArchiveOutputStream(
+            final String archiverName, final OutputStream out)
+            throws ArchiveException {
+        if (archiverName == null || out == null) {
+            throw new IllegalArgumentException(
+                    "Archivername and stream must not be null.");
+        }
+
         if ("ar".equalsIgnoreCase(archiverName)) {
             return new ArArchiveOutputStream(out);
-        } else if("zip".equalsIgnoreCase(archiverName)) {
+        } else if ("zip".equalsIgnoreCase(archiverName)) {
             return new ZipArchiveOutputStream(out);
-        } else if("tar".equalsIgnoreCase(archiverName)) {
+        } else if ("tar".equalsIgnoreCase(archiverName)) {
             return new TarArchiveOutputStream(out);
-        } else if("jar".equalsIgnoreCase(archiverName)) {
+        } else if ("jar".equalsIgnoreCase(archiverName)) {
             return new JarArchiveOutputStream(out);
-        } else if("cpio".equalsIgnoreCase(archiverName)) {
+        } else if ("cpio".equalsIgnoreCase(archiverName)) {
             return new CpioArchiveOutputStream(out);
         }
-        return null;
+        throw new ArchiveException("Archiver: " + archiverName + " not found.");
     }
 
-    public ArchiveInputStream createArchiveInputStream( final InputStream input ) throws IOException {
+    public ArchiveInputStream createArchiveInputStream(final InputStream in)
+            throws ArchiveException {
+        if (in == null) {
+            throw new IllegalArgumentException("Stream must not be null.");
+        }
+
+        if (!in.markSupported()) {
+            throw new IllegalArgumentException("Mark is not supported.");
+        }
 
         final byte[] signature = new byte[12];
-        input.mark(signature.length);
-        int signatureLength = input.read(signature);
-        // TODO if reset is not supported pass on the IOException or return null?
-        input.reset();
+        in.mark(signature.length);
+        try {
+            int signatureLength = in.read(signature);
+            in.reset();
+            if (ZipArchiveInputStream.matches(signature, signatureLength)) {
+                return new ZipArchiveInputStream(in);
+            } else if (JarArchiveInputStream
+                    .matches(signature, signatureLength)) {
+                return new JarArchiveInputStream(in);
+            } else if (TarArchiveInputStream
+                    .matches(signature, signatureLength)) {
+                return new TarArchiveInputStream(in);
+            } else if (ArArchiveInputStream.matches(signature, signatureLength)) {
+                return new ArArchiveInputStream(in);
+            } else if (CpioArchiveInputStream.matches(signature,
+                    signatureLength)) {
+                return new CpioArchiveInputStream(in);
+            }
+        } catch (IOException e) {
+            throw new ArchiveException(
+                    "Could not use reset and mark operations.", e);
+        }
 
-        if(ZipArchiveInputStream.matches(signature, signatureLength)) {
-            return new ZipArchiveInputStream(input);
-        } else if(JarArchiveInputStream.matches(signature, signatureLength)) {
-            return new JarArchiveInputStream(input);
-        } else if(TarArchiveInputStream.matches(signature, signatureLength)) {
-            return new TarArchiveInputStream(input);
-        } else if(ArArchiveInputStream.matches(signature, signatureLength)) {
-            return new ArArchiveInputStream(input);
-        } else if(CpioArchiveInputStream.matches(signature, signatureLength)) {
-            return new CpioArchiveInputStream(input);
-        } 
-        return null;
+        throw new ArchiveException(
+                "No Archiver not found for this stream signature");
     }
 }
