@@ -83,7 +83,8 @@ public abstract class AbstractTestCase extends TestCase {
             File temp = File.createTempFile("test", "." + archivename);
 
             final OutputStream stream = new FileOutputStream(temp);
-            out = new ArchiveStreamFactory().createArchiveOutputStream(archivename, stream);
+            out = new ArchiveStreamFactory().createArchiveOutputStream(
+                    archivename, stream);
 
             final File file1 = getFile("test1.xml");
             final File file2 = getFile("test2.xml");
@@ -99,49 +100,49 @@ public abstract class AbstractTestCase extends TestCase {
             out.closeArchiveEntry();
 
             entry = new ZipArchiveEntry("testdata/test2.xml");
-            entry.setSize(file1.length());
+            entry.setSize(file2.length());
             out.putArchiveEntry(entry);
             IOUtils.copy(new FileInputStream(file2), out);
             out.closeArchiveEntry();
 
             entry = new ZipArchiveEntry("test/test3.xml");
-            entry.setSize(file1.length());
+            entry.setSize(file3.length());
             out.putArchiveEntry(entry);
             IOUtils.copy(new FileInputStream(file3), out);
             out.closeArchiveEntry();
 
             entry = new ZipArchiveEntry("bla/test4.xml");
-            entry.setSize(file1.length());
+            entry.setSize(file4.length());
             out.putArchiveEntry(entry);
             IOUtils.copy(new FileInputStream(file4), out);
             out.closeArchiveEntry();
 
             entry = new ZipArchiveEntry("bla/test5.xml");
-            entry.setSize(file1.length());
+            entry.setSize(file4.length());
             out.putArchiveEntry(entry);
             IOUtils.copy(new FileInputStream(file4), out);
             out.closeArchiveEntry();
 
             entry = new ZipArchiveEntry("bla/blubber/test6.xml");
-            entry.setSize(file1.length());
+            entry.setSize(file4.length());
             out.putArchiveEntry(entry);
             IOUtils.copy(new FileInputStream(file4), out);
             out.closeArchiveEntry();
 
             entry = new ZipArchiveEntry("test.txt");
-            entry.setSize(file1.length());
+            entry.setSize(file5.length());
             out.putArchiveEntry(entry);
             IOUtils.copy(new FileInputStream(file5), out);
             out.closeArchiveEntry();
 
             entry = new ZipArchiveEntry("something/bla");
-            entry.setSize(file1.length());
+            entry.setSize(file6.length());
             out.putArchiveEntry(entry);
             IOUtils.copy(new FileInputStream(file6), out);
             out.closeArchiveEntry();
 
             entry = new ZipArchiveEntry("test with spaces.txt");
-            entry.setSize(file1.length());
+            entry.setSize(file6.length());
             out.putArchiveEntry(entry);
             IOUtils.copy(new FileInputStream(file6), out);
             out.closeArchiveEntry();
@@ -163,16 +164,16 @@ public abstract class AbstractTestCase extends TestCase {
      * @throws Exception
      */
     protected void checkArchiveContent(File archive, List expected)
-        throws Exception {
+            throws Exception {
         final InputStream is = new FileInputStream(archive);
         final BufferedInputStream buf = new BufferedInputStream(is);
         final ArchiveInputStream in = new ArchiveStreamFactory()
-            .createArchiveInputStream(buf);
+                .createArchiveInputStream(buf);
         this.checkArchiveContent(in, expected);
     }
 
     protected void checkArchiveContent(ArchiveInputStream in, List expected)
-        throws Exception {
+            throws Exception {
         File result = File.createTempFile("dir-result", "");
         result.delete();
         result.mkdir();
@@ -180,7 +181,7 @@ public abstract class AbstractTestCase extends TestCase {
         ArchiveEntry entry = null;
         while ((entry = in.getNextEntry()) != null) {
             File outfile = new File(result.getCanonicalPath() + "/result/"
-                                    + entry.getName());
+                    + entry.getName());
             outfile.getParentFile().mkdirs();
             OutputStream out = new FileOutputStream(outfile);
             IOUtils.copy(in, out);
