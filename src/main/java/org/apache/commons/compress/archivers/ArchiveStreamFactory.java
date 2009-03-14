@@ -44,6 +44,15 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
  */
 public class ArchiveStreamFactory {
 
+    /**
+     * Create an archive input stream from an archiver name and an input stream.
+     * 
+     * @param archiverName the archive name, i.e. "ar", "zip", "tar", "jar" or "cpio"
+     * @param in the input stream
+     * @return the archive input stream
+     * @throws ArchiveException
+     * @throws IllegalArgumentException if the archiver name is null or not known
+     */
     public ArchiveInputStream createArchiveInputStream(
             final String archiverName, final InputStream in)
             throws ArchiveException {
@@ -65,6 +74,15 @@ public class ArchiveStreamFactory {
         throw new ArchiveException("Archiver: " + archiverName + " not found.");
     }
 
+    /**
+     * Create an archive output stream from an archiver name and an input stream.
+     * 
+     * @param archiverName the archive name, i.e. "ar", "zip", "tar", "jar" or "cpio"
+     * @param out the output stream
+     * @return the archive output stream
+     * @throws ArchiveException
+     * @throws IllegalArgumentException if the archiver name is null or not known
+     */
     public ArchiveOutputStream createArchiveOutputStream(
             final String archiverName, final OutputStream out)
             throws ArchiveException {
@@ -87,6 +105,15 @@ public class ArchiveStreamFactory {
         throw new ArchiveException("Archiver: " + archiverName + " not found.");
     }
 
+    /**
+     * Create an archive input stream from an input stream, autodetecting
+     * the archive type from the first few bytes of the stream.
+     * 
+     * @param in the input stream
+     * @return the archive input stream
+     * @throws ArchiveException
+     * @throws IllegalArgumentException if the archiver name is null or not known
+     */
     public ArchiveInputStream createArchiveInputStream(final InputStream in)
             throws ArchiveException {
         if (in == null) {
@@ -122,6 +149,6 @@ public class ArchiveStreamFactory {
         }
 
         throw new ArchiveException(
-                "No Archiver not found for this stream signature");
+                "No Archiver found for the stream signature");
     }
 }
