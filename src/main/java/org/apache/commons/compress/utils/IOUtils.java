@@ -25,23 +25,32 @@ import java.io.OutputStream;
 public final class IOUtils {
 
 	/**
-     * Copies the content of a InputStream into an OutputStream
+     * Copies the content of a InputStream into an OutputStream.
+     * Uses a default buffer size of 8024 bytes.
      * 
      * @param input
      *            the InputStream to copy
      * @param output
      *            the target Stream
      * @throws IOException
-     *             if the streams are interrupted
+     *             if an error occurs
      */
     public static void copy(final InputStream input, final OutputStream output) throws IOException {
-        final byte[] buffer = new byte[8024];
-        int n = 0;
-        while (-1 != (n = input.read(buffer))) {
-            output.write(buffer, 0, n);
-        }
+        copy(input, output, 8024);
     }
     
+    /**
+     * Copies the content of a InputStream into an OutputStream
+     * 
+     * @param input
+     *            the InputStream to copy
+     * @param output
+     *            the target Stream
+     * @param buffersize
+     *            the buffer size to use
+     * @throws IOException
+     *             if an error occurs
+     */
     public static void copy(final InputStream input, final OutputStream output, int buffersize) throws IOException {
         final byte[] buffer = new byte[buffersize];
         int n = 0;
