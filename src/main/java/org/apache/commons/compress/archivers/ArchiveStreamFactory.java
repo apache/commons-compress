@@ -50,8 +50,8 @@ public class ArchiveStreamFactory {
      * @param archiverName the archive name, i.e. "ar", "zip", "tar", "jar" or "cpio"
      * @param in the input stream
      * @return the archive input stream
-     * @throws ArchiveException
-     * @throws IllegalArgumentException if the archiver name is null or not known
+     * @throws ArchiveException if the archiver name is not known
+     * @throws IllegalArgumentException if the archiver name or stream is null
      */
     public ArchiveInputStream createArchiveInputStream(
             final String archiverName, final InputStream in)
@@ -80,8 +80,8 @@ public class ArchiveStreamFactory {
      * @param archiverName the archive name, i.e. "ar", "zip", "tar", "jar" or "cpio"
      * @param out the output stream
      * @return the archive output stream
-     * @throws ArchiveException
-     * @throws IllegalArgumentException if the archiver name is null or not known
+     * @throws ArchiveException if the archiver name is not known
+     * @throws IllegalArgumentException if the archiver name or stream is null
      */
     public ArchiveOutputStream createArchiveOutputStream(
             final String archiverName, final OutputStream out)
@@ -111,8 +111,8 @@ public class ArchiveStreamFactory {
      * 
      * @param in the input stream
      * @return the archive input stream
-     * @throws ArchiveException
-     * @throws IllegalArgumentException if the archiver name is null or not known
+     * @throws ArchiveException if the archiver name is not known
+     * @throws IllegalArgumentException if the stream is null or does not support mark
      */
     public ArchiveInputStream createArchiveInputStream(final InputStream in)
             throws ArchiveException {
