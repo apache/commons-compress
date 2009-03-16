@@ -349,16 +349,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     }
 
     /**
-     * The equality method. In this case, the implementation returns 'this == o'
-     * which is basically the equals method of the Object class.
-     * @param o the object to compare to
-     * @return true if this object is the same as <code>o</code>
-     */
-    public boolean equals(Object o) {
-        return (this == o);
-    }
-
-    /**
      * If there are no extra fields, use the given fields as new extra
      * data - otherwise merge the fields assuming the existing fields
      * and the new fields stem from different locations inside the
