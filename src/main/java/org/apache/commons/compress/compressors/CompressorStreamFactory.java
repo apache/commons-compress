@@ -37,6 +37,15 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
  */
 public class CompressorStreamFactory {
 
+    /**
+     * Create a compressor input stream from a compressor name and an input stream.
+     * 
+     * @param name of the compressor, i.e. "gz" or "bzip2"
+     * @param in the input stream
+     * @return compressor input stream
+     * @throws CompressorException if the compressor name is not known
+     * @throws IllegalArgumentException if the name or input stream is null
+     */
     public CompressorInputStream createCompressorInputStream(final String name,
             final InputStream in) throws CompressorException {
         if (name == null || in == null) {
