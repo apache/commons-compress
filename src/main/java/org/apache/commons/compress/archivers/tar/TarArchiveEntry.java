@@ -213,8 +213,8 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
                     char ch2 = fileName.charAt(1);
 
                     if (ch2 == ':'
-                            && ((ch1 >= 'a' && ch1 <= 'z')
-                                || (ch1 >= 'A' && ch1 <= 'Z'))) {
+                        && ((ch1 >= 'a' && ch1 <= 'z')
+                            || (ch1 >= 'A' && ch1 <= 'Z'))) {
                         fileName = fileName.substring(2);
                     }
                 }
@@ -515,7 +515,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      */
     public boolean isGNULongNameEntry() {
         return linkFlag == LF_GNUTYPE_LONGNAME
-                           && name.toString().equals(GNU_LONGLINK);
+            && name.toString().equals(GNU_LONGLINK);
     }
 
     /**
