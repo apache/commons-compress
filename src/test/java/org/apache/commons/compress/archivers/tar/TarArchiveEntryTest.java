@@ -50,6 +50,7 @@ public class TarArchiveEntryTest extends TestCase {
         try {
             tout = new TarArchiveOutputStream(new FileOutputStream(f));
             TarArchiveEntry t = new TarArchiveEntry(new File(ROOT));
+            t.setSize(0);
             tout.putNextEntry(t);
             tout.closeEntry();
             t = new TarArchiveEntry(new File(new File(ROOT), "foo.txt"));
@@ -73,13 +74,18 @@ public class TarArchiveEntryTest extends TestCase {
             tout = null;
 
             tin = new TarArchiveInputStream(new FileInputStream(f));
+            //tin.setDebug(true);
             t = tin.getNextTarEntry();
+            assertNotNull(t);
             assertEquals("/", t.getName());
             t = tin.getNextTarEntry();
+            assertNotNull(t);
             assertEquals("foo.txt", t.getName());
             t = tin.getNextTarEntry();
+            assertNotNull(t);
             assertEquals("bar.txt", t.getName());
             t = tin.getNextTarEntry();
+            assertNotNull(t);
             assertEquals("baz.txt", t.getName());
         } finally {
             if (tin != null) {
