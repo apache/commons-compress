@@ -212,12 +212,13 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
             if (nameLength == 0 || name.charAt(nameLength - 1) != '/') {
                 this.name.append("/");
             }
+            this.size = 0;
         } else {
             this.mode = DEFAULT_FILE_MODE;
             this.linkFlag = LF_NORMAL;
+            this.size = file.length();
         }
 
-        this.size = file.length();
         this.modTime = file.lastModified() / MILLIS_PER_SECOND;
         this.devMajor = 0;
         this.devMinor = 0;

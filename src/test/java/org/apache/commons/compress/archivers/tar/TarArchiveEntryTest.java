@@ -50,7 +50,6 @@ public class TarArchiveEntryTest extends TestCase {
         try {
             tout = new TarArchiveOutputStream(new FileOutputStream(f));
             TarArchiveEntry t = new TarArchiveEntry(new File(ROOT));
-            t.setSize(0);
             tout.putNextEntry(t);
             tout.closeEntry();
             t = new TarArchiveEntry(new File(new File(ROOT), "foo.txt"));
