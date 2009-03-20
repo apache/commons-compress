@@ -39,18 +39,16 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     /** GNU tar extensions are used to store long file names in the archive. */
     public static final int LONGFILE_GNU = 2;
 
-    // CheckStyle:VisibilityModifier OFF - bc
-    protected boolean   debug;
-    protected long      currSize;
-    protected String    currName;
-    protected long      currBytes;
-    protected byte[]    oneBuf;
-    protected byte[]    recordBuf;
-    protected int       assemLen;
-    protected byte[]    assemBuf;
-    protected TarBuffer buffer;
-    protected int       longFileMode = LONGFILE_ERROR;
-    // CheckStyle:VisibilityModifier ON
+    private boolean   debug;// NOT READ
+    private long      currSize;
+    private String    currName;
+    private long      currBytes;
+    private final byte[]    oneBuf;
+    private final byte[]    recordBuf;
+    private int       assemLen;
+    private final byte[]    assemBuf;
+    protected final TarBuffer buffer;
+    private int       longFileMode = LONGFILE_ERROR;
 
     private boolean closed = false;
 
@@ -366,11 +364,6 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     public String getDefaultFileExtension() {
         return "tar";
-    }
-
-    public byte[] getHeader() {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     public String getName() {

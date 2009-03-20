@@ -346,7 +346,7 @@ public class ZipFile {
             // FIXME this is actually not very cpu cycles friendly as we are converting from
             // dos to java while the underlying Sun implementation will convert
             // from java to dos time for internal storage...
-            long time = dosToJavaTime(ZipLong.getValue(cfh, off));
+            long time = ZipUtil.dosToJavaTime(ZipLong.getValue(cfh, off));
             ze.setTime(time);
             off += WORD;
 
@@ -537,34 +537,6 @@ public class ZipFile {
             }
         }
     }
-
-    /**
-     * Convert a DOS date/time field to a Date object.
-     *
-     * @param zipDosTime contains the stored DOS time.
-     * @return a Date instance corresponding to the given time.
-     */
-    protected static Date fromDosTime(ZipLong zipDosTime) {
-        long dosTime = zipDosTime.getValue();
-        return new Date(dosToJavaTime(dosTime));
-    }
-
-    /*
-     * Converts DOS time to Java time (number of milliseconds since epoch).
-     */
-    private static long dosToJavaTime(long dosTime) {
-        Calendar cal = Calendar.getInstance();
-        // CheckStyle:MagicNumberCheck OFF - no point
-        cal.set(Calendar.YEAR, (int) ((dosTime >> 25) & 0x7f) + 1980);
-        cal.set(Calendar.MONTH, (int) ((dosTime >> 21) & 0x0f) - 1);
-        cal.set(Calendar.DATE, (int) (dosTime >> 16) & 0x1f);
-        cal.set(Calendar.HOUR_OF_DAY, (int) (dosTime >> 11) & 0x1f);
-        cal.set(Calendar.MINUTE, (int) (dosTime >> 5) & 0x3f);
-        cal.set(Calendar.SECOND, (int) (dosTime << 1) & 0x3e);
-        // CheckStyle:MagicNumberCheck ON
-        return cal.getTime().getTime();
-    }
-
 
     /**
      * Checks whether the archive starts with a LFH.  If it doesn't,

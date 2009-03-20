@@ -42,25 +42,20 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     private static final int LARGE_BUFFER_SIZE = 32 * 1024;
     private static final int BYTE_MASK = 0xFF;
 
-    // CheckStyle:VisibilityModifier OFF - bc
-    protected boolean debug;
-    protected boolean hasHitEOF;
-    protected long entrySize;
-    protected long entryOffset;
-    protected byte[] readBuf;
-    protected TarBuffer buffer;
-    protected TarArchiveEntry currEntry;
+    private boolean debug;
+    private boolean hasHitEOF;
+    private long entrySize;
+    private long entryOffset;
+    private byte[] readBuf;
+    protected final TarBuffer buffer;
+    private TarArchiveEntry currEntry;
 
     /**
      * This contents of this array is not used at all in this class,
-     * it is only here to avoid repreated object creation during calls
+     * it is only here to avoid repeated object creation during calls
      * to the no-arg read method.
      */
-    protected byte[] oneBuf;
-
-    // CheckStyle:VisibilityModifier ON
-
-    private final InputStream in;
+    private final byte[] oneBuf;
 
     /**
      * Constructor for TarInputStream.
@@ -86,8 +81,6 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @param recordSize the record size to use
      */
     public TarArchiveInputStream(InputStream is, int blockSize, int recordSize) {
-        this.in = is;
-
         this.buffer = new TarBuffer(is, blockSize, recordSize);
         this.readBuf = null;
         this.oneBuf = new byte[1];
@@ -389,6 +382,23 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             out.write(buf, 0, numRead);
         }
     }
+
+    protected final TarArchiveEntry getCurrentEntry() {
+        return currEntry;
+    }
+
+    protected final void setCurrentEntry(TarArchiveEntry e) {
+        currEntry = e;
+    }
+
+    protected final boolean isAtEOF() {
+        return hasHitEOF;
+    }
+
+    protected final void setAtEOF(boolean b) {
+        hasHitEOF = b;
+    }
+
 
     // used to be implemented via FilterInputStream
     public int read(byte[] b) throws IOException {

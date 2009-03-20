@@ -64,10 +64,12 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * pathname c_chksum 8 0 for "new" portable format; for CRC format the sum of
  * all the bytes in the file
  * 
- * based on code from the jRPM project (jrpm.sourceforge.net) 
+ * This class uses mutable fields and is not considered to be threadsafe.
+ * 
+ * based on code from the jRPM project (jrpm.sourceforge.net)
  */
 public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
-	
+
     private long chksum = 0;
 
     private short fileFormat = -1;
@@ -99,13 +101,6 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     private long uid = 0;
 
     /**
-     * Ceates a CPIOArchiveEntry without a cpio format.
-     */
-    public CpioArchiveEntry() {
-        // do nothing
-    }
-
-    /**
      * Ceates a CPIOArchiveEntry with a specified format.
      * 
      * @param format
@@ -116,8 +111,8 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Ceates a CPIOArchiveEntry with a specified name. The format of this entry will
-     * be the new format.
+     * Ceates a CPIOArchiveEntry with a specified name. The format of this entry
+     * will be the new format.
      * 
      * @param name
      *            The name of this entry.
@@ -128,20 +123,20 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Ceates a CPIOArchiveEntry with a specified name. The format of this entry will
-     * be the new format.
+     * Ceates a CPIOArchiveEntry with a specified name. The format of this entry
+     * will be the new format.
      * 
      * @param name
      *            The name of this entry.
      * @param size
-     * 			  The size of this entry
+     *            The size of this entry
      */
     public CpioArchiveEntry(final String name, final long size) {
         this(FORMAT_NEW);
         this.name = name;
         this.setSize(size);
     }
-    
+
     /**
      * Check if the method is allowed for the defined format.
      */
@@ -175,7 +170,8 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * 
      * @return Returns the device id.
      * @throws UnsupportedOperationException
-     *             if this method is called for a CPIOArchiveEntry with a new format.
+     *             if this method is called for a CPIOArchiveEntry with a new
+     *             format.
      */
     public long getDevice() {
         checkOldFormat();
@@ -187,7 +183,8 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * 
      * @return Returns the major device id.
      * @throws UnsupportedOperationException
-     *             if this method is called for a CPIOArchiveEntry with an old format.
+     *             if this method is called for a CPIOArchiveEntry with an old
+     *             format.
      */
     public long getDeviceMaj() {
         checkNewFormat();
@@ -209,7 +206,9 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * 
      * @return Returns the filesize.
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.commons.compress.archivers.ArchiveEntry#getSize()
      */
     public long getSize() {
@@ -284,7 +283,8 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * 
      * @return Returns the remote device id.
      * @throws UnsupportedOperationException
-     *             if this method is called for a CPIOArchiveEntry with a new format.
+     *             if this method is called for a CPIOArchiveEntry with a new
+     *             format.
      */
     public long getRemoteDevice() {
         checkOldFormat();
@@ -296,7 +296,8 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * 
      * @return Returns the remote major device id.
      * @throws UnsupportedOperationException
-     *             if this method is called for a CPIOArchiveEntry with an old format.
+     *             if this method is called for a CPIOArchiveEntry with an old
+     *             format.
      */
     public long getRemoteDeviceMaj() {
         checkNewFormat();
@@ -308,7 +309,8 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * 
      * @return Returns the remote minor device id.
      * @throws UnsupportedOperationException
-     *             if this method is called for a CPIOArchiveEntry with an old format.
+     *             if this method is called for a CPIOArchiveEntry with an old
+     *             format.
      */
     public long getRemoteDeviceMin() {
         checkNewFormat();
@@ -423,7 +425,8 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @param device
      *            The device id to set.
      * @throws UnsupportedOperationException
-     *             if this method is called for a CPIOArchiveEntry with a new format.
+     *             if this method is called for a CPIOArchiveEntry with a new
+     *             format.
      */
     public void setDevice(final long device) {
         checkOldFormat();
@@ -474,7 +477,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @param format
      *            The format to set.
      */
-    void setFormat(final short format) {
+    final void setFormat(final short format) {
         switch (format) {
         case FORMAT_NEW:
             this.fileFormat = FORMAT_NEW;
@@ -536,10 +539,9 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
             break;
         default:
             // FIXME: testCpioUnarchive fails if I change the line to
-            //        actually throw the excpetion
-            new IllegalArgumentException("Unknown mode (full mode: "
-                                               + mode + ", masked mode: "
-                                               + (mode & S_IFMT));
+            // actually throw the excpetion
+            new IllegalArgumentException("Unknown mode (full mode: " + mode
+                    + ", masked mode: " + (mode & S_IFMT));
         }
 
         this.mode = mode;
@@ -571,7 +573,8 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @param device
      *            The remote device id to set.
      * @throws UnsupportedOperationException
-     *             if this method is called for a CPIOArchiveEntry with a new format.
+     *             if this method is called for a CPIOArchiveEntry with a new
+     *             format.
      */
     public void setRemoteDevice(final long device) {
         checkOldFormat();
@@ -584,7 +587,8 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @param rmaj
      *            The remote major device id to set.
      * @throws UnsupportedOperationException
-     *             if this method is called for a CPIOArchiveEntry with an old format.
+     *             if this method is called for a CPIOArchiveEntry with an old
+     *             format.
      */
     public void setRemoteDeviceMaj(final long rmaj) {
         checkNewFormat();
@@ -597,7 +601,8 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @param rmin
      *            The remote minor device id to set.
      * @throws UnsupportedOperationException
-     *             if this method is called for a CPIOArchiveEntry with an old format.
+     *             if this method is called for a CPIOArchiveEntry with an old
+     *             format.
      */
     public void setRemoteDeviceMin(final long rmin) {
         checkNewFormat();

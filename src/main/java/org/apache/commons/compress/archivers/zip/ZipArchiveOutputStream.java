@@ -192,29 +192,17 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private ZipEncoding zipEncoding =
         ZipEncodingHelper.getZipEncoding(DEFAULT_ENCODING);
 
-   // CheckStyle:VisibilityModifier OFF - bc
-
     /**
      * This Deflater object is used for output.
      *
-     * <p>This attribute is only protected to provide a level of API
-     * backwards compatibility.  This class used to extend {@link
-     * java.util.zip.DeflaterOutputStream DeflaterOutputStream} up to
-     * Revision 1.13.</p>
      */
-    protected Deflater def = new Deflater(level, true);
+    protected final Deflater def = new Deflater(level, true);
 
     /**
      * This buffer servers as a Deflater.
      *
-     * <p>This attribute is only protected to provide a level of API
-     * backwards compatibility.  This class used to extend {@link
-     * java.util.zip.DeflaterOutputStream DeflaterOutputStream} up to
-     * Revision 1.13.</p>
      */
-    protected byte[] buf = new byte[BUFFER_SIZE];
-
-    // CheckStyle:VisibilityModifier ON
+    private final byte[] buf = new byte[BUFFER_SIZE];
 
     /**
      * Optional random access output.
@@ -376,8 +364,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                 deflate();
             }
 
-            entry.setSize(adjustToLong(def.getTotalIn()));
-            entry.setCompressedSize(adjustToLong(def.getTotalOut()));
+            entry.setSize(ZipUtil.adjustToLong(def.getTotalIn()));
+            entry.setCompressedSize(ZipUtil.adjustToLong(def.getTotalOut()));
             entry.setCrc(realCrc);
 
             def.reset();
@@ -688,7 +676,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         written += SHORT;
 
         // last mod. time and date
-        writeOut(toDosTime(ze.getTime()));
+        writeOut(ZipUtil.toDosTime(ze.getTime()));
         written += WORD;
 
         // CRC
@@ -772,7 +760,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         written += SHORT;
 
         // last mod. time and date
-        writeOut(toDosTime(ze.getTime()));
+        writeOut(ZipUtil.toDosTime(ze.getTime()));
         written += WORD;
 
         // CRC
@@ -871,46 +859,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Smallest date/time ZIP can handle.
-     */
-    private static final byte[] DOS_TIME_MIN = ZipLong.getBytes(0x00002100L);
-
-    /**
-     * Convert a Date object to a DOS date/time field.
-     * @param time the <code>Date</code> to convert
-     * @return the date as a <code>ZipLong</code>
-     */
-    protected static ZipLong toDosTime(Date time) {
-        return new ZipLong(toDosTime(time.getTime()));
-    }
-
-    /**
-     * Convert a Date object to a DOS date/time field.
-     *
-     * <p>Stolen from InfoZip's <code>fileio.c</code></p>
-     * @param t number of milliseconds since the epoch
-     * @return the date as a byte array
-     */
-    protected static byte[] toDosTime(long t) {
-        Date time = new Date(t);
-        // CheckStyle:MagicNumberCheck OFF - I do not think that using constants
-        //                                   here will improve the readablity
-        int year = time.getYear() + 1900;
-        if (year < 1980) {
-            return DOS_TIME_MIN;
-        }
-        int month = time.getMonth() + 1;
-        long value =  ((year - 1980) << 25)
-            |         (month << 21)
-            |         (time.getDate() << 16)
-            |         (time.getHours() << 11)
-            |         (time.getMinutes() << 5)
-            |         (time.getSeconds() >> 1);
-        return ZipLong.getBytes(value);
-        // CheckStyle:MagicNumberCheck ON
-    }
-
-    /**
      * Write bytes to output or random access file.
      * @param data the byte array to write
      * @throws IOException on error
@@ -932,20 +880,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             raf.write(data, offset, length);
         } else {
             out.write(data, offset, length);
-        }
-    }
-
-    /**
-     * Assumes a negative integer really is a positive integer that
-     * has wrapped around and re-creates the original value.
-     * @param i the value to treat as unsigned int.
-     * @return the unsigned int as a long.
-     */
-    protected static long adjustToLong(int i) {
-        if (i < 0) {
-            return 2 * ((long) Integer.MAX_VALUE) + 2 + i;
-        } else {
-            return i;
         }
     }
 
