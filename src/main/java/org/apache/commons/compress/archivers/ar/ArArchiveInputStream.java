@@ -24,6 +24,9 @@ import java.io.InputStream;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 
+/**
+ * Implements the "ar" archive format as an input stream
+ */
 public class ArArchiveInputStream extends ArchiveInputStream {
 
     private final InputStream input;

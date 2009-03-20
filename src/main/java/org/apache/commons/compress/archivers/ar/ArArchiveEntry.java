@@ -20,6 +20,9 @@ package org.apache.commons.compress.archivers.ar;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 
+/**
+ * Represents an archive entry in the "ar" format.
+ */
 public class ArArchiveEntry implements ArchiveEntry {
 
 	private final String name;

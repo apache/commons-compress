@@ -219,7 +219,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Optional random access output.
      */
-    private RandomAccessFile raf = null;
+    private final RandomAccessFile raf;
 
     private final OutputStream out;
 
@@ -245,6 +245,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     public ZipArchiveOutputStream(OutputStream out) {
         this.out = out;
+        this.raf = null;
     }
 
     /**
@@ -255,21 +256,23 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     public ZipArchiveOutputStream(File file) throws IOException {
         OutputStream o = null;
+        RandomAccessFile _raf = null;
         try {
-            raf = new RandomAccessFile(file, "rw");
-            raf.setLength(0);
+            _raf = new RandomAccessFile(file, "rw");
+            _raf.setLength(0);
         } catch (IOException e) {
-            if (raf != null) {
+            if (_raf != null) {
                 try {
-                    raf.close();
+                    _raf.close();
                 } catch (IOException inner) {
                     // ignore
                 }
-                raf = null;
+                _raf = null;
             }
             o = new FileOutputStream(file);
         }
         out = o;
+        raf = _raf;
     }
 
     /**
@@ -629,12 +632,16 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     protected void writeLocalFileHeader(ZipArchiveEntry ze) throws IOException {
 
         boolean encodable = zipEncoding.canEncode(ze.getName());
-        ByteBuffer name;
+        
+        final ZipEncoding entryEncoding;
+        
         if (!encodable && fallbackToUTF8) {
-            name = ZipEncodingHelper.UTF8_ZIP_ENCODING.encode(ze.getName());
+            entryEncoding = ZipEncodingHelper.UTF8_ZIP_ENCODING;
         } else {
-            name = zipEncoding.encode(ze.getName());
+            entryEncoding = zipEncoding;
         }
+        
+        ByteBuffer name = entryEncoding.encode(ze.getName());        
 
         if (createUnicodeExtraFields != UnicodeExtraFieldPolicy.NEVER) {
 
@@ -653,7 +660,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
                 if (createUnicodeExtraFields == UnicodeExtraFieldPolicy.ALWAYS
                     || !commentEncodable) {
-                    ByteBuffer commentB = this.zipEncoding.encode(comm);
+                    ByteBuffer commentB = entryEncoding.encode(comm);
                     ze.addExtraField(new UnicodeCommentExtraField(comm,
                                                                   commentB.array(),
                                                                   commentB.arrayOffset(),
@@ -779,12 +786,16 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         // CheckStyle:MagicNumber ON
 
         // file name length
-        ByteBuffer name;
+        final ZipEncoding entryEncoding;
+        
         if (!encodable && fallbackToUTF8) {
-            name = ZipEncodingHelper.UTF8_ZIP_ENCODING.encode(ze.getName());
+            entryEncoding = ZipEncodingHelper.UTF8_ZIP_ENCODING;
         } else {
-            name = zipEncoding.encode(ze.getName());
+            entryEncoding = zipEncoding;
         }
+        
+        ByteBuffer name = entryEncoding.encode(ze.getName());        
+
         writeOut(ZipShort.getBytes(name.limit()));
         written += SHORT;
 
@@ -798,12 +809,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         if (comm == null) {
             comm = "";
         }
-        ByteBuffer commentB;
-        if (!encodable && fallbackToUTF8) {
-            commentB = ZipEncodingHelper.UTF8_ZIP_ENCODING.encode(comm);
-        } else {
-            commentB = zipEncoding.encode(comm);
-        }
+        
+        ByteBuffer commentB = entryEncoding.encode(comm);
+        
         writeOut(ZipShort.getBytes(commentB.limit()));
         written += SHORT;
 
@@ -990,8 +998,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
          * Create Unicode extra fields for filenames that cannot be
          * encoded using the specified encoding.
          */
-        public static final UnicodeExtraFieldPolicy NOT_ENCODABLE =
-            new UnicodeExtraFieldPolicy("not encodable");
+        public static final UnicodeExtraFieldPolicy NOT_ENCODEABLE =
+            new UnicodeExtraFieldPolicy("not encodeable");
 
         private final String name;
         private UnicodeExtraFieldPolicy(String n) {

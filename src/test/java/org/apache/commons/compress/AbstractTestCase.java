@@ -24,9 +24,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Iterator;
 import java.util.List;
 
@@ -47,37 +44,15 @@ public abstract class AbstractTestCase extends TestCase {
         dir = File.createTempFile("dir", "");
         dir.delete();
         dir.mkdir();
-
-        addURL(new File("src/test/resources").toURL());
     }
 
     protected File getFile(String path) {
-        return new File(getClass().getClassLoader().getResource(path).getFile());
+        return new File("src/test/resources", path);
     }
 
     protected void tearDown() throws Exception {
         dir.delete();
         dir = null;
-    }
-
-    /**
-     * Adds a URL to the classpath. This method is necessary when running junit
-     * tests from within eclipse.
-     * 
-     * @param url
-     *            the url to add
-     * @throws Exception
-     *             if an error occurs
-     */
-    public void addURL(URL url) throws Exception {
-        URLClassLoader classLoader = (URLClassLoader) ClassLoader
-                .getSystemClassLoader();
-        Class clazz = URLClassLoader.class;
-
-        Method method = clazz.getDeclaredMethod("addURL",
-                new Class[] { URL.class });
-        method.setAccessible(true);
-        method.invoke(classLoader, new Object[] { url });
     }
 
     /**
@@ -125,49 +100,49 @@ public abstract class AbstractTestCase extends TestCase {
             out.closeArchiveEntry();
 
             entry = new ZipArchiveEntry("testdata/test2.xml");
-            entry.setSize(file1.length());
+            entry.setSize(file2.length());
             out.putArchiveEntry(entry);
             IOUtils.copy(new FileInputStream(file2), out);
             out.closeArchiveEntry();
 
             entry = new ZipArchiveEntry("test/test3.xml");
-            entry.setSize(file1.length());
+            entry.setSize(file3.length());
             out.putArchiveEntry(entry);
             IOUtils.copy(new FileInputStream(file3), out);
             out.closeArchiveEntry();
 
             entry = new ZipArchiveEntry("bla/test4.xml");
-            entry.setSize(file1.length());
+            entry.setSize(file4.length());
             out.putArchiveEntry(entry);
             IOUtils.copy(new FileInputStream(file4), out);
             out.closeArchiveEntry();
 
             entry = new ZipArchiveEntry("bla/test5.xml");
-            entry.setSize(file1.length());
+            entry.setSize(file4.length());
             out.putArchiveEntry(entry);
             IOUtils.copy(new FileInputStream(file4), out);
             out.closeArchiveEntry();
 
             entry = new ZipArchiveEntry("bla/blubber/test6.xml");
-            entry.setSize(file1.length());
+            entry.setSize(file4.length());
             out.putArchiveEntry(entry);
             IOUtils.copy(new FileInputStream(file4), out);
             out.closeArchiveEntry();
 
             entry = new ZipArchiveEntry("test.txt");
-            entry.setSize(file1.length());
+            entry.setSize(file5.length());
             out.putArchiveEntry(entry);
             IOUtils.copy(new FileInputStream(file5), out);
             out.closeArchiveEntry();
 
             entry = new ZipArchiveEntry("something/bla");
-            entry.setSize(file1.length());
+            entry.setSize(file6.length());
             out.putArchiveEntry(entry);
             IOUtils.copy(new FileInputStream(file6), out);
             out.closeArchiveEntry();
 
             entry = new ZipArchiveEntry("test with spaces.txt");
-            entry.setSize(file1.length());
+            entry.setSize(file6.length());
             out.putArchiveEntry(entry);
             IOUtils.copy(new FileInputStream(file6), out);
             out.closeArchiveEntry();
