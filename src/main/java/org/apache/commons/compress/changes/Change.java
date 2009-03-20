@@ -24,14 +24,14 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 
 
 public class Change {
-	private String targetFile = null;
-	private ArchiveEntry entry = null;
-	private InputStream input = null;
-	private int type = 0;
+	private final String targetFile;
+	private final ArchiveEntry entry;
+	private final InputStream input;
+	private final int type;
 	
 	static final int TYPE_DELETE = 1;
 	static final int TYPE_ADD = 2;
-	static final int TYPE_MOVE = 3;
+	static final int TYPE_MOVE = 3; // NOT USED
 	
 	/**
 	 * Constructor. Takes the filename of the file to be deleted
@@ -44,6 +44,8 @@ public class Change {
 		}
 		targetFile = pFilename;
 		type = TYPE_DELETE;
+		input = null;
+		entry = null;
 	}
 	
 //	public Change(final String pOldname, final ArchiveEntry pEntry) {
@@ -62,6 +64,7 @@ public class Change {
 		this.entry = pEntry;
 		this.input = pInput;
 		type = TYPE_ADD;
+		targetFile = null;
 	}
 	
 	public ArchiveEntry getEntry() {

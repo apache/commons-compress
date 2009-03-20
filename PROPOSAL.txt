@@ -1,0 +1,54 @@
+Proposal for Compress Package
+
+(0) rationale
+
+Ant contains packages to deal with tar, bzip2 and zip archives that
+have been reused in various projects in- and outside of Apache.
+
+Compress provides a focused home for these packages together with
+new external contributions for the ar and cpio formats with a focus on
+being a reusable library - unlike the code in Ant.
+
+(1) scope of the package
+
+The package provides a unified API for different archiving and
+compression formats together with implementations for these
+algorithms.
+
+(1.5) interaction with other packages
+
+No interactions planned ATM.
+
+(2) identify the initial source for the package
+
+Compress' code is already part of the sandbox.
+
+(2.1) identify the base name for the package
+
+org.apache.commons.compress
+
+(2.2) identify the coding conventions for this package
+
+The code uses the conventions from the Jakarta Turbine package.
+
+(3) identify any Commons resources to be created
+
+(3.1) mailing list
+
+No changes.
+
+(3.2) SVN repositories
+
+The package will need to move from the sandbox.
+
+(3.3) JIRA
+
+A new Commons Compress JIRA project shall be created and the issues of
+the Compress Component of the Commons Sandbox project migrated to the
+new project.
+
+(4) identify the initial set of committers to be listed in the Status File.
+
+Henri Yandell
+Stefan Bodewig
+Torsten Curdt
