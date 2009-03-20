@@ -23,7 +23,7 @@ import java.util.Date;
 
 import junit.framework.TestCase;
 
-public class ZipArchiveOutputStreamTest extends TestCase {
+public class ZipUtilTest extends TestCase {
     
     private Date time;
     private ZipLong zl;
@@ -31,7 +31,7 @@ public class ZipArchiveOutputStreamTest extends TestCase {
     /**
      * Constructor
      */	
-    public ZipArchiveOutputStreamTest(String name) {
+    public ZipUtilTest(String name) {
         super(name);
     }
 	
@@ -61,17 +61,17 @@ public class ZipArchiveOutputStreamTest extends TestCase {
     }
     
     public void testZipLong() throws Exception {
-        ZipLong test = ZipArchiveOutputStream.toDosTime(time);
+        ZipLong test = ZipUtil.toDosTime(time);
         assertEquals(test.getValue(), zl.getValue());
     }
 
     public void testAdjustToLong() {
         assertEquals(Integer.MAX_VALUE,
-                     ZipArchiveOutputStream.adjustToLong(Integer.MAX_VALUE));
+                     ZipUtil.adjustToLong(Integer.MAX_VALUE));
         assertEquals(((long) Integer.MAX_VALUE) + 1,
-                     ZipArchiveOutputStream.adjustToLong(Integer.MAX_VALUE + 1));
+                     ZipUtil.adjustToLong(Integer.MAX_VALUE + 1));
         assertEquals(2 * ((long) Integer.MAX_VALUE),
-                     ZipArchiveOutputStream.adjustToLong(2 * Integer.MAX_VALUE));
+                     ZipUtil.adjustToLong(2 * Integer.MAX_VALUE));
     }
 
 }

@@ -213,25 +213,25 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
       index of the last char in the block, so
       the block size == last + 1.
     */
-    int last;
+    private int last;
 
     /*
       index in zptr[] of original string after sorting.
     */
-    int origPtr;
+    private int origPtr;
 
     /*
       always: in the range 0 .. 9.
       The current block size is 100000 * this number.
     */
-    int blockSize100k;
+    private int blockSize100k;
 
-    boolean blockRandomised;
+    private boolean blockRandomised;
 
-    int bytesOut;
-    int bsBuff;
-    int bsLive;
-    CRC mCrc = new CRC();
+    private int bytesOut;
+    private int bsBuff;
+    private int bsLive;
+    private final CRC mCrc = new CRC();
 
     private boolean[] inUse = new boolean[256];
     private int nInUse;
@@ -364,7 +364,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
         }
     }
 
-    boolean closed = false;
+    private boolean closed = false;
 
     protected void finalize() throws Throwable {
         close();

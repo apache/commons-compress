@@ -26,9 +26,9 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 
 /**
- * CPIOArchiveInputStream is a stream for reading cpio streams. All formats of cpio are
- * supported (old ascii, old binary, new portable format and the new portable
- * format with crc).
+ * CPIOArchiveInputStream is a stream for reading cpio streams. All formats of
+ * cpio are supported (old ascii, old binary, new portable format and the new
+ * portable format with crc).
  * <p/>
  * <p/>
  * The stream can be read by extracting a cpio entry (containing all
@@ -54,10 +54,13 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
  * <p/>
  * Note: This implementation should be compatible to cpio 2.5
  * 
- * based on code from the jRPM project (jrpm.sourceforge.net) 
+ * This class uses mutable fields and is not considered to be threadsafe.
+ * 
+ * based on code from the jRPM project (jrpm.sourceforge.net)
  */
 
-public class CpioArchiveInputStream extends ArchiveInputStream implements CpioConstants {
+public class CpioArchiveInputStream extends ArchiveInputStream implements
+        CpioConstants {
 
     private boolean closed = false;
 
@@ -67,9 +70,9 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
 
     private boolean entryEOF = false;
 
-    private byte[] singleByteBuf = new byte[1];
+    private final byte[] singleByteBuf = new byte[1];
 
-    private byte tmpbuf[] = new byte[4096];
+    private final byte tmpbuf[] = new byte[4096];
 
     private long crc = 0;
 
@@ -77,8 +80,9 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
 
     /**
      * Construct the cpio input stream
-     *
-     * @param in The cpio stream
+     * 
+     * @param in
+     *            The cpio stream
      */
     public CpioArchiveInputStream(final InputStream in) {
         this.in = in;
@@ -90,10 +94,11 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
      * <p/>
      * Programs should not count on this method to return the actual number of
      * bytes that could be read without blocking.
-     *
+     * 
      * @return 1 before EOF and 0 after EOF has reached for current entry.
-     * @throws IOException if an I/O error has occurred or if a CPIO file error has
-     *                     occurred
+     * @throws IOException
+     *             if an I/O error has occurred or if a CPIO file error has
+     *             occurred
      */
     public int available() throws IOException {
         ensureOpen();
@@ -104,44 +109,10 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
     }
 
     /**
-     * Converts a byte array to a long. Halfwords can be swaped with setting
-     * swapHalfWord=true.
-     *
-     * @param number       An array of bytes containing a number
-     * @param swapHalfWord Swap halfwords ([0][1][2][3]->[1][0][3][2])
-     * @return The long value
-     */
-    private long byteArray2long(final byte[] number, final boolean swapHalfWord) {
-        long ret = 0;
-        int pos = 0;
-        byte tmp_number[] = new byte[number.length];
-        System.arraycopy(number, 0, tmp_number, 0, number.length);
-
-        if (tmp_number.length % 2 != 0) {
-            throw new UnsupportedOperationException();
-        }
-
-        if (!swapHalfWord) {
-            byte tmp = 0;
-            for (pos = 0; pos < tmp_number.length; pos++) {
-                tmp = tmp_number[pos];
-                tmp_number[pos++] = tmp_number[pos];
-                tmp_number[pos] = tmp;
-            }
-        }
-
-        ret = tmp_number[0] & 0xFF;
-        for (pos = 1; pos < tmp_number.length; pos++) {
-            ret <<= 8;
-            ret |= tmp_number[pos] & 0xFF;
-        }
-        return ret;
-    }
-
-    /**
      * Closes the CPIO input stream.
-     *
-     * @throws IOException if an I/O error has occurred
+     * 
+     * @throws IOException
+     *             if an I/O error has occurred
      */
     public void close() throws IOException {
         if (!this.closed) {
@@ -153,9 +124,10 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
     /**
      * Closes the current CPIO entry and positions the stream for reading the
      * next entry.
-     *
-     * @throws IOException if an I/O error has occurred or if a CPIO file error has
-     *                     occurred
+     * 
+     * @throws IOException
+     *             if an I/O error has occurred or if a CPIO file error has
+     *             occurred
      */
     public void closeEntry() throws IOException {
         ensureOpen();
@@ -168,8 +140,9 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
 
     /**
      * Check to make sure that this stream has not been closed
-     *
-     * @throws IOException if the stream is already closed
+     * 
+     * @throws IOException
+     *             if the stream is already closed
      */
     private void ensureOpen() throws IOException {
         if (this.closed) {
@@ -180,10 +153,11 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
     /**
      * Reads the next CPIO file entry and positions stream at the beginning of
      * the entry data.
-     *
+     * 
      * @return the CPIOArchiveEntry just read
-     * @throws IOException if an I/O error has occurred or if a CPIO file error has
-     *                     occurred
+     * @throws IOException
+     *             if an I/O error has occurred or if a CPIO file error has
+     *             occurred
      */
     public CpioArchiveEntry getNextCPIOEntry() throws IOException {
         ensureOpen();
@@ -192,9 +166,9 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
         }
         byte magic[] = new byte[2];
         readFully(magic, 0, magic.length);
-        if (byteArray2long(magic, false) == MAGIC_OLD_BINARY) {
+        if (CpioUtil.byteArray2long(magic, false) == MAGIC_OLD_BINARY) {
             this.entry = readOldBinaryEntry(false);
-        } else if (byteArray2long(magic, true) == MAGIC_OLD_BINARY) {
+        } else if (CpioUtil.byteArray2long(magic, true) == MAGIC_OLD_BINARY) {
             this.entry = readOldBinaryEntry(true);
         } else {
             byte more_magic[] = new byte[4];
@@ -202,7 +176,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
             byte tmp[] = new byte[6];
             System.arraycopy(magic, 0, tmp, 0, magic.length);
             System.arraycopy(more_magic, 0, tmp, magic.length,
-                             more_magic.length);
+                    more_magic.length);
             String magicString = new String(tmp);
             if (magicString.equals(MAGIC_NEW)) {
                 this.entry = readNewEntry(false);
@@ -237,30 +211,35 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
     /**
      * Reads a byte of data. This method will block until enough input is
      * available.
-     *
+     * 
      * @return the byte read, or -1 if end of input is reached
-     * @throws IOException if an I/O error has occurred or if a CPIO file error has
-     *                     occurred
+     * @throws IOException
+     *             if an I/O error has occurred or if a CPIO file error has
+     *             occurred
      */
     public int read() throws IOException {
         return read(this.singleByteBuf, 0, 1) == -1 ? -1
-            : this.singleByteBuf[0] & 0xff;
+                : this.singleByteBuf[0] & 0xff;
     }
 
     /**
      * Reads from the current CPIO entry into an array of bytes. Blocks until
      * some input is available.
-     *
-     * @param b   the buffer into which the data is read
-     * @param off the start offset of the data
-     * @param len the maximum number of bytes read
+     * 
+     * @param b
+     *            the buffer into which the data is read
+     * @param off
+     *            the start offset of the data
+     * @param len
+     *            the maximum number of bytes read
      * @return the actual number of bytes read, or -1 if the end of the entry is
      *         reached
-     * @throws IOException if an I/O error has occurred or if a CPIO file error has
-     *                     occurred
+     * @throws IOException
+     *             if an I/O error has occurred or if a CPIO file error has
+     *             occurred
      */
     public int read(final byte[] b, final int off, final int len)
-        throws IOException {
+            throws IOException {
         ensureOpen();
         if (off < 0 || len < 0 || off > b.length - len) {
             throw new IndexOutOfBoundsException();
@@ -286,7 +265,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
             return -1;
         }
         int tmplength = (int) Math.min(len, this.entry.getSize()
-                                       - this.entryBytesRead);
+                - this.entryBytesRead);
         if (tmplength < 0) {
             return -1;
         }
@@ -303,7 +282,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
     }
 
     private final int readFully(final byte[] b, final int off, final int len)
-        throws IOException {
+            throws IOException {
         if (len < 0) {
             throw new IndexOutOfBoundsException();
         }
@@ -319,20 +298,21 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
     }
 
     private long readBinaryLong(final int length, final boolean swapHalfWord)
-        throws IOException {
+            throws IOException {
         byte tmp[] = new byte[length];
         readFully(tmp, 0, tmp.length);
-        return byteArray2long(tmp, swapHalfWord);
+        return CpioUtil.byteArray2long(tmp, swapHalfWord);
     }
 
     private long readAsciiLong(final int length, final int radix)
-        throws IOException {
+            throws IOException {
         byte tmpBuffer[] = new byte[length];
         readFully(tmpBuffer, 0, tmpBuffer.length);
         return Long.parseLong(new String(tmpBuffer), radix);
     }
 
-    private CpioArchiveEntry readNewEntry(final boolean hasCrc) throws IOException {
+    private CpioArchiveEntry readNewEntry(final boolean hasCrc)
+            throws IOException {
         CpioArchiveEntry ret;
         if (hasCrc) {
             ret = new CpioArchiveEntry(FORMAT_NEW_CRC);
@@ -378,7 +358,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
     }
 
     private CpioArchiveEntry readOldBinaryEntry(final boolean swapHalfWord)
-        throws IOException {
+            throws IOException {
         CpioArchiveEntry ret = new CpioArchiveEntry(FORMAT_OLD_BINARY);
 
         ret.setDevice(readBinaryLong(2, swapHalfWord));
@@ -405,11 +385,14 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
 
     /**
      * Skips specified number of bytes in the current CPIO entry.
-     *
-     * @param n the number of bytes to skip
+     * 
+     * @param n
+     *            the number of bytes to skip
      * @return the actual number of bytes skipped
-     * @throws IOException              if an I/O error has occurred
-     * @throws IllegalArgumentException if n < 0
+     * @throws IOException
+     *             if an I/O error has occurred
+     * @throws IllegalArgumentException
+     *             if n < 0
      */
     public long skip(final long n) throws IOException {
         if (n < 0) {

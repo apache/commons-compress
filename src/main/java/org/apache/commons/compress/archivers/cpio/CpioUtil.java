@@ -1,0 +1,80 @@
+package org.apache.commons.compress.archivers.cpio;
+
+class CpioUtil {
+    /**
+     * Converts a byte array to a long. Halfwords can be swaped with setting
+     * swapHalfWord=true.
+     * 
+     * @param number
+     *            An array of bytes containing a number
+     * @param swapHalfWord
+     *            Swap halfwords ([0][1][2][3]->[1][0][3][2])
+     * @return The long value
+     */
+    static long byteArray2long(final byte[] number, final boolean swapHalfWord) {
+        long ret = 0;
+        int pos = 0;
+        byte tmp_number[] = new byte[number.length];
+        System.arraycopy(number, 0, tmp_number, 0, number.length);
+
+        if (tmp_number.length % 2 != 0) {
+            throw new UnsupportedOperationException();
+        }
+
+        if (!swapHalfWord) {
+            byte tmp = 0;
+            for (pos = 0; pos < tmp_number.length; pos++) {
+                tmp = tmp_number[pos];
+                tmp_number[pos++] = tmp_number[pos];
+                tmp_number[pos] = tmp;
+            }
+        }
+
+        ret = tmp_number[0] & 0xFF;
+        for (pos = 1; pos < tmp_number.length; pos++) {
+            ret <<= 8;
+            ret |= tmp_number[pos] & 0xFF;
+        }
+        return ret;
+    }
+
+    /**
+     * Converts a byte array to a long. Halfwords can be swaped with setting
+     * swapHalfWord=true.
+     * 
+     * @param number
+     *            An array of bytes containing a number
+     * @param length
+     *            The length of the returned array
+     * @param swapHalfWord
+     *            Swap halfwords ([0][1][2][3]->[1][0][3][2])
+     * @return The long value
+     */
+    static byte[] long2byteArray(final long number, final int length,
+            final boolean swapHalfWord) {
+        byte[] ret = new byte[length];
+        int pos = 0;
+        long tmp_number = 0;
+
+        if (length % 2 != 0 || length < 2) {
+            throw new UnsupportedOperationException();
+        }
+
+        tmp_number = number;
+        for (pos = length - 1; pos >= 0; pos--) {
+            ret[pos] = (byte) (tmp_number & 0xFF);
+            tmp_number >>= 8;
+        }
+
+        if (!swapHalfWord) {
+            byte tmp = 0;
+            for (pos = 0; pos < length; pos++) {
+                tmp = ret[pos];
+                ret[pos++] = ret[pos];
+                ret[pos] = tmp;
+            }
+        }
+
+        return ret;
+    }
+}
