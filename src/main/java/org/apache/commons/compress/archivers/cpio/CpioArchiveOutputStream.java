@@ -27,27 +27,27 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 
 /**
- * CPIOArchiveOutputStream is a stream for writting cpio streams. All formats of
- * cpio are supported (old ascii, old binary, new portable format and the new
- * portable format with crc).
+ * CPIOArchiveOutputStream is a stream for writing CPIO streams. All formats of
+ * CPIO are supported (old ASCII, old binary, new portable format and the new
+ * portable format with CRC).
  * <p/>
  * <p/>
- * An entry can be written by creating an instance of CPIOArchiveEntry and fill
- * it with the necessary values and put it into the cpio stream. Afterwards
- * write the contents of the file into the cpio stream. Either close the stream
+ * An entry can be written by creating an instance of CpioArchiveEntry and fill
+ * it with the necessary values and put it into the CPIO stream. Afterwards
+ * write the contents of the file into the CPIO stream. Either close the stream
  * by calling finish() or put a next entry into the cpio stream.
  * <p/>
  * <code><pre>
- * CPIOArchiveOutputStream cpioOut = new CPIOArchiveOutputStream(new BufferedOutputStream(
- *         new FileOutputStream(new File(&quot;test.cpio&quot;))));
- * CPIOArchiveEntry cpioEntry = new CPIOArchiveEntry();
- * cpioEntry.setName(&quot;testfile&quot;);
- * String testContents = &quot;12345&quot;;
- * cpioEntry.setFileSize(testContents.length());
- * cpioOut.putNextEntry(cpioEntry);
- * cpioOut.write(testContents.getBytes());
- * cpioOut.finish();
- * cpioOut.close();
+ * CpioArchiveOutputStream out = new CpioArchiveOutputStream(
+ *         new FileOutputStream(new File(&quot;test.cpio&quot;)));
+ * CpioArchiveEntry entry = new CpioArchiveEntry();
+ * entry.setName(&quot;testfile&quot;);
+ * String contents = &quot;12345&quot;;
+ * entry.setFileSize(contents.length());
+ * out.putNextEntry(entry);
+ * out.write(testContents.getBytes());
+ * out.finish();
+ * out.close();
  * </pre></code>
  * <p/>
  * Note: This implementation should be compatible to cpio 2.5

@@ -23,50 +23,111 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 /**
  * A cpio archive consists of a sequence of files. There are several types of
  * headers defided in two categories of new and old format. The headers are
- * recognized by magic numbers: "070701" ascii for "new" portable format
- * "070702" ascii for "new" portable format with CRC format "070707" ascii for
- * old ascii "070707" short for old binary CPIO 2.5 knows also about tar, but it
- * is not recognized here.
+ * recognized by magic numbers:
  * 
- * OLD FORMAT: Each file has a 76(ascii)/26(binary) byte header, a variable
- * length, NUL terminated filename, and variable length file data. A header for
- * a filename "TRAILER!!!" indicates the end of the archive.
+ * <ul>
+ * <li>"070701" ASCII for new portable format</li>
+ * <li>"070702" ASCII for new portable format with CRC format</li>
+ * <li>"070707" ASCII for old ascii (also known as Portable ASCII, odc or old
+ * character format</li>
+ * <li>"070707" ASCII for old binary</li>
+ * </ul>
  * 
- * All the fields in the header are ISO 646 (approximately ASCII) strings of
- * octal numbers, left padded, not NUL terminated.
+ * <p>The old binary format is limited to 16 bits for user id, group
+ * id, device, and inode numbers. It is limited to 4 gigabyte file
+ * sizes.
  * 
- * Field Name Length in Bytes Notes ASCII / BINARY c_magic 6 / 2 c_dev 6 / 2
- * Device that contains a directory entry for this file c_ino 6 / 2 I-node
- * number that identifies the input file to the file system c_mode 6 / 2 Mode of
- * the input file c_uid 6 / 2 User ID of the owner of the input file c_gid 6 / 2
- * Group ID of the owner of the input file c_nlink 6 / 2 Number of links that
- * are connected to the input file c_rdev 6 / 2 ID of the remote device from
- * which the input file is taken only valid for chr and blk special files
- * c_mtime 11 / 4 Time when data was last modified. For remote files, this field
- * contains the time at the server c_namesize 6 / 2 Length of the path name,
- * including the terminating null byte c_filesize 11 / 4 Length of the file in
- * bytes. This is the length of the data section that follows the header
- * structure. Must be 0 for FIFOs and directories
+ * The old ASCII format is limited to 18 bits for the user id, group
+ * id, device, and inode numbers. It is limited to 8 gigabyte file
+ * sizes.
  * 
- * Special files, directories, and the trailer are recorded with the h_filesize
- * field equal to 0.
+ * The new ASCII format is limited to 4 gigabyte file sizes.
  * 
- * NEW FORMAT: Each file has a 110 byte header, a variable length, NUL
- * terminated filename, and variable length file data. A header for a filename
- * "TRAILER!!!" indicates the end of the archive. All the fields in the header
- * are ISO 646 (approximately ASCII) strings of hexadecimal numbers, left
- * padded, not NUL terminated.
+ * CPIO 2.5 knows also about tar, but it is not recognized here.</p>
  * 
- * Field Name Length in Bytes Notes c_magic 6 c_ino 8 c_mode 8 c_uid 8 c_gid 8
- * c_nlink 8 c_mtime 8 c_filesize 8 must be 0 for FIFOs and directories c_maj 8
- * c_min 8 c_rmaj 8 only valid for chr and blk special files c_rmin 8 only valid
- * for chr and blk special files c_namesize 8 count includes terminating NUL in
- * pathname c_chksum 8 0 for "new" portable format; for CRC format the sum of
- * all the bytes in the file
  * 
- * This class uses mutable fields and is not considered to be threadsafe.
+ * <h3>OLD FORMAT</h3>
  * 
- * based on code from the jRPM project (jrpm.sourceforge.net)
+ * <p>Each file has a 76 (ascii) / 26 (binary) byte header, a variable
+ * length, NUL terminated filename, and variable length file data. A
+ * header for a filename "TRAILER!!!" indicates the end of the
+ * archive.</p>
+ * 
+ * <p>All the fields in the header are ISO 646 (approximately ASCII)
+ * strings of octal numbers, left padded, not NUL terminated.</p>
+ * 
+ * <pre>
+ * FIELDNAME        NOTES 
+ * c_magic          The integer value octal 070707.  This value can be used to deter-
+ *                  mine whether this archive is written with little-endian or big-
+ *                  endian integers.
+ * c_dev            Device that contains a directory entry for this file 
+ * c_ino            I-node number that identifies the input file to the file system 
+ * c_mode           The mode specifies both the regular permissions and the file type.
+ * c_uid            Numeric User ID of the owner of the input file 
+ * c_gid            Numeric Group ID of the owner of the input file 
+ * c_nlink          Number of links that are connected to the input file 
+ * c_rdev           For block special and character special entries, this field 
+ *                  contains the associated device number.  For all other entry types,
+ *                  it should be set to zero by writers and ignored by readers.
+ * c_mtime[2]       Modification time of the file, indicated as the number of seconds
+ *                  since the start of the epoch, 00:00:00 UTC January 1, 1970.  The
+ *                  four-byte integer is stored with the most-significant 16 bits
+ *                  first followed by the least-significant 16 bits.  Each of the two
+ *                  16 bit values are stored in machine-native byte order.
+ * c_namesize       Length of the path name, including the terminating null byte 
+ * c_filesize[2]    Length of the file in bytes. This is the length of the data 
+ *                  section that follows the header structure. Must be 0 for 
+ *                  FIFOs and directories
+ *               
+ * All fields are unsigned short fields with 16-bit integer values
+ * </pre>
+ * 
+ * <p>Special files, directories, and the trailer are recorded with
+ * the h_filesize field equal to 0.</p>
+ * 
+ * 
+ * <h3>NEW FORMAT</h3>
+ * 
+ * <p>Each file has a 110 byte header, a variable length, NUL
+ * terminated filename, and variable length file data. A header for a
+ * filename "TRAILER!!!" indicates the end of the archive. All the
+ * fields in the header are ISO 646 (approximately ASCII) strings of
+ * hexadecimal numbers, left padded, not NUL terminated.</p>
+ * 
+ * <pre>
+ * FIELDNAME        NOTES 
+ * c_magic[6]       The string 070701 for new ASCII, the string 070702 for new ASCII with CRC
+ * c_ino[8]
+ * c_mode[8]
+ * c_uid[8]
+ * c_gid[8]
+ * c_nlink[8]
+ * c_mtim[8]
+ * c_filesize[8]    must be 0 for FIFOs and directories 
+ * c_maj[8]
+ * c_min[8] 
+ * c_rmaj[8]        only valid for chr and blk special files 
+ * c_rmin[8]        only valid for chr and blk special files 
+ * c_namesize[8]    count includes terminating NUL in pathname 
+ * c_check[8]       0 for "new" portable format; for CRC format
+ *                  the sum of all the bytes in the file
+ * </pre>
+ * 
+ * <p>New ASCII Format The "new" ASCII format uses 8-byte hexadecimal
+ * fields for all numbers and separates device numbers into separate
+ * fields for major and minor numbers.</p>
+ * 
+ * <p>The pathname is followed by NUL bytes so that the total size of
+ * the fixed header plus pathname is a multiple of four. Likewise, the
+ * file data is padded to a multiple of four bytes.</p>
+ * 
+ * <p>This class uses mutable fields and is not considered to be
+ * threadsafe.</p>
+ * 
+ * <p>Based on code from the jRPM project (http://jrpm.sourceforge.net).
+ *
+ * @see http://people.freebsd.org/~kientzle/libarchive/man/cpio.5.txt
  */
 public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
 
