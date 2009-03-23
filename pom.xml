@@ -120,7 +120,7 @@
   </build>
 
   <reporting>
-    <plugins>
+    <!--plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
@@ -128,7 +128,7 @@
           <configLocation>checkstyle.xml</configLocation>
         </configuration>
       </plugin>
-    </plugins>
+    </plugins-->
   </reporting>
 
 </project>
