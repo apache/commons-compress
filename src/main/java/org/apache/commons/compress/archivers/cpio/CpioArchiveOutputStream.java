@@ -287,7 +287,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      *             if an I/O error has occurred or if a CPIO file error has
      *             occurred
      */
-    public synchronized void write(final byte[] b, final int off, final int len)
+    public void write(final byte[] b, final int off, final int len)
             throws IOException {
         ensureOpen();
         if (off < 0 || len < 0 || off > b.length - len) {
