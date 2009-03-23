@@ -26,20 +26,11 @@
   </bannerRight>
 
   <body>
-
     <menu name="Compress">
       <item name="Overview"    href="/index.html"/>
       <item name="Download"    href="/downloads.html"/>
       <item name="Wiki"        href="http://wiki.apache.org/commons/Compress"/>
     </menu>
-    
-    <menu name="Development">
-      <item name="Mailing Lists"           href="/mail-lists.html"/>
-      <item name="Issue Tracking"          href="/issue-tracking.html"/>
-      <item name="Team"                    href="/team-list.html"/>
-      <item name="Source Repository"       href="/source-repository.html"/>
-      <item name="Javadoc (latest)"        href="/apidocs/index.html"/>
-    </menu>
-
   </body>
+  
 </project>
