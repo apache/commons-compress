@@ -22,12 +22,12 @@
 
    <body>
       <section name="Download Compress">
-         
+
          <subsection name="Releases">
             <p>
-               There are currently no official downloads, and will not be until Compress moves out of the Sandbox.
+               There are currently no official downloads.
 <!--
-               Download the <a href="http://jakarta.apache.org/site/downloads/downloads_commons-compress.cgi">Latest Release</a>
+               Download the <a href="http://commons.apache.org/downloads/download_compress.cgi">Latest Release</a>
                of Commons Compress.
 -->
             </p>
@@ -36,7 +36,7 @@
 
          <subsection name="Nightly Builds">
             <p>
-               <a href="http://people.apache.org/builds/jakarta-commons/nightly/commons-compress/">Nightly Builds</a>
+               <a href="http://people.apache.org/builds/commons/nightly/commons-compress/">Nightly Builds</a>
                are built once a day from the current SVN HEAD. This is (nearly) the latest code and so should
                be treated with caution.
             </p>
@@ -46,7 +46,7 @@
             <p>
                Older releases are retained by the Apache Software Foundation but are
                moved into a
-               <a href="http://archive.apache.org/dist/jakarta/commons/compress/">
+               <a href="http://archive.apache.org/dist/commons/compress/">
              special archive area</a>.
             </p>
          </subsection>
