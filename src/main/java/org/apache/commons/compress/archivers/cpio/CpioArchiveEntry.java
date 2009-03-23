@@ -127,7 +127,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * 
  * <p>Based on code from the jRPM project (http://jrpm.sourceforge.net).
  *
- * @see http://people.freebsd.org/~kientzle/libarchive/man/cpio.5.txt
+ * @see "http://people.freebsd.org/~kientzle/libarchive/man/cpio.5.txt"
  */
 public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
 

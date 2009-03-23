@@ -35,7 +35,7 @@ public class TarArchiveEntryTest extends TestCase {
     /**
      * JIRA issue SANDBOX-284
      *
-     * @see https://issues.apache.org/jira/browse/SANDBOX-284
+     * @see "https://issues.apache.org/jira/browse/SANDBOX-284"
      */
     public void testFileSystemRoot() {
         TarArchiveEntry t = new TarArchiveEntry(new File(ROOT));
