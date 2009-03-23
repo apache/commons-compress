@@ -36,8 +36,8 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
  * specified by the entry.
  * <p/>
  * <code><pre>
- * CPIOArchiveInputStream cpioIn = new CPIOArchiveInputStream(new BufferedInputStream(
- *         new FileInputStream(new File(&quot;test.cpio&quot;))));
+ * CPIOArchiveInputStream cpioIn = new CPIOArchiveInputStream(
+ *         new FileInputStream(new File(&quot;test.cpio&quot;)));
  * CPIOArchiveEntry cpioEntry;
  * <p/>
  * while ((cpioEntry = cpioIn.getNextEntry()) != null) {
@@ -56,7 +56,7 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
  * 
  * This class uses mutable fields and is not considered to be threadsafe.
  * 
- * based on code from the jRPM project (jrpm.sourceforge.net)
+ * Based on code from the jRPM project (jrpm.sourceforge.net)
  */
 
 public class CpioArchiveInputStream extends ArchiveInputStream implements
