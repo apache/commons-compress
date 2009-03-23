@@ -17,9 +17,8 @@
    limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>  
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
@@ -31,6 +30,11 @@
   <name>Commons Compress</name>
   <url>http://commons.apache.org/sandbox/compress/</url>
   <description>Commons Compress is a component that contains Tar, Zip and BZip2 packages</description>
+  
+  <issueManagement>
+    <system>jira</system>
+    <url>http://issues.apache.org/jira/browse/SANDBOX</url>
+  </issueManagement>
   
   <dependencies>
     <dependency>
@@ -91,36 +95,69 @@
     <maven.compile.target>1.4</maven.compile.target>
     <commons.componentid>compress</commons.componentid>
     <commons.jira.componentid>12311183</commons.jira.componentid>
+    <!-- configuration bits for cutting a release candidate -->
+    <commons.release.version>1.0</commons.release.version>
+    <commons.rc.version>RC1</commons.rc.version>    
   </properties> 
 
   <build>
     <plugins>
-      <!-- turn off cobertura until we figure out why it's hanging -->
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>cobertura-maven-plugin</artifactId>
+        <!-- create the source and binary assemblies -->
+        <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
-          <instrumentation>
-            <excludes>
-            <exclude>org/apache/commons/compress/bzip2/**/*.class</exclude>
-            <exclude>org/apache/commons/compress/compressors/bzip2/**/*.class</exclude>
-            </excludes>
-          </instrumentation>
+          <descriptors>
+            <descriptor>src/assembly/bin.xml</descriptor>
+            <descriptor>src/assembly/src.xml</descriptor>
+          </descriptors>
+          <tarLongFileMode>gnu</tarLongFileMode>
         </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>clean</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-      
+      </plugin>    
+    </plugins>      
   </build>
 
   <reporting>
-    <!--plugins>
+    <plugins>     
+      <plugin>
+        <!-- generate the changes report from changes.xml and link to JIRA -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-changes-plugin</artifactId>
+        <version>2.0</version>
+        <configuration>
+          <issueLinkTemplate>%URL%/%ISSUE%</issueLinkTemplate>
+        </configuration>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>changes-report</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin> 
+      <plugin>
+        <!-- generate a code coverage report -->
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <version>2.2</version>
+      </plugin>
+      <plugin>
+        <!-- generate the PMD reports -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <minimumTokens>200</minimumTokens>
+          <targetJdk>${maven.compile.source}</targetJdk>
+          <rulesets>
+            <ruleset>/rulesets/basic.xml</ruleset>
+            <ruleset>/rulesets/finalizers.xml</ruleset>            
+            <ruleset>/rulesets/imports.xml</ruleset>
+            <ruleset>/rulesets/unusedcode.xml</ruleset>
+          </rulesets>
+        </configuration>
+      </plugin>                 
+      <!-- 2009-03-23 sgoeschl fix this is currently broken since there is no checkstyle.xml -->
+      <!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
@@ -128,7 +165,22 @@
           <configLocation>checkstyle.xml</configLocation>
         </configuration>
       </plugin>
-    </plugins-->
+      -->
+    </plugins>
   </reporting>
 
+  <profiles>
+    <profile>
+      <id>rc</id>
+      <distributionManagement>
+        <!-- Cannot define in parent ATM, see COMMONSSITE-26 -->
+        <site>
+          <id>apache.website</id>
+          <name>Apache Commons Release Candidate Staging Site</name>
+          <url>${commons.deployment.protocol}://people.apache.org/www/people.apache.org/builds/commons/${commons.componentid}/${commons.release.version}/${commons.rc.version}/site</url>
+        </site>
+      </distributionManagement>
+    </profile>
+  </profiles>
+  
 </project>
