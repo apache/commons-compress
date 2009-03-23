@@ -18,7 +18,7 @@
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>  
+  <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
@@ -28,14 +28,14 @@
   <artifactId>commons-compress</artifactId>
   <version>1.0-SNAPSHOT</version>
   <name>Commons Compress</name>
-  <url>http://commons.apache.org/sandbox/compress/</url>
+  <url>http://commons.apache.org/compress/</url>
   <description>Commons Compress is a component that contains Ar, Cpio, Jar, Tar, Zip and BZip2 packages</description>
-  
+
   <issueManagement>
     <system>jira</system>
-    <url>http://issues.apache.org/jira/browse/SANDBOX</url>
+    <url>http://issues.apache.org/jira/browse/COMPRESS</url>
   </issueManagement>
-  
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -73,7 +73,7 @@
       <email>wolfgang.glas at ev-i.at</email>
     </contributor>
   </contributors>
-    
+
   <scm>
     <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/compress/trunk</connection>
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/compress/trunk</developerConnection>
@@ -84,7 +84,7 @@
     <site>
       <id>website</id>
       <name>Apache Website</name>
-      <url>scp://people.apache.org/www/commons.apache.org/sandbox/compress/</url>
+      <url>scp://people.apache.org/www/commons.apache.org/compress/</url>
     </site>
   </distributionManagement>
 
@@ -98,8 +98,8 @@
     <commons.jira.pid>12310904</commons.jira.pid>
     <!-- configuration bits for cutting a release candidate -->
     <commons.release.version>1.0</commons.release.version>
-    <commons.rc.version>RC1</commons.rc.version>    
-  </properties> 
+    <commons.rc.version>RC1</commons.rc.version>
+  </properties>
 
   <build>
     <plugins>
@@ -113,12 +113,12 @@
           </descriptors>
           <tarLongFileMode>gnu</tarLongFileMode>
         </configuration>
-      </plugin>    
-    </plugins>      
+      </plugin>
+    </plugins>
   </build>
 
   <reporting>
-    <plugins>     
+    <plugins>
       <plugin>
         <!-- generate the changes report from changes.xml and link to JIRA -->
         <groupId>org.apache.maven.plugins</groupId>
@@ -134,7 +134,7 @@
             </reports>
           </reportSet>
         </reportSets>
-      </plugin> 
+      </plugin>
       <plugin>
         <!-- generate a code coverage report -->
         <groupId>org.codehaus.mojo</groupId>
@@ -151,12 +151,12 @@
           <targetJdk>${maven.compile.source}</targetJdk>
           <rulesets>
             <ruleset>/rulesets/basic.xml</ruleset>
-            <ruleset>/rulesets/finalizers.xml</ruleset>            
+            <ruleset>/rulesets/finalizers.xml</ruleset>
             <ruleset>/rulesets/imports.xml</ruleset>
             <ruleset>/rulesets/unusedcode.xml</ruleset>
           </rulesets>
         </configuration>
-      </plugin>                 
+      </plugin>
       <!-- 2009-03-23 sgoeschl fix this is currently broken since there is no checkstyle.xml -->
       <!--
       <plugin>
@@ -183,5 +183,5 @@
       </distributionManagement>
     </profile>
   </profiles>
-  
+
 </project>
