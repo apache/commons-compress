@@ -161,16 +161,6 @@
           </rulesets>
         </configuration>
       </plugin>
-      <!-- 2009-03-23 sgoeschl fix this is currently broken since there is no checkstyle.xml -->
-      <!--
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <configuration>
-          <configLocation>checkstyle.xml</configLocation>
-        </configuration>
-      </plugin>
-      -->
     </plugins>
   </reporting>
 
