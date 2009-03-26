@@ -28,6 +28,7 @@ import java.util.Map;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveEntry;
+import org.apache.commons.compress.archivers.cpio.CpioConstants;
 import org.apache.commons.compress.utils.IOUtils;
 
 public final class CpioTestCase extends AbstractTestCase {
@@ -60,11 +61,15 @@ public final class CpioTestCase extends AbstractTestCase {
 
             final OutputStream out = new FileOutputStream(output);
             final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("cpio", out);
-            os.putArchiveEntry(new CpioArchiveEntry("test1.xml", file1.length()));
+            CpioArchiveEntry entry = new CpioArchiveEntry("test1.xml", file1.length());
+            entry.setMode(CpioConstants.C_ISREG);
+            os.putArchiveEntry(entry);
             IOUtils.copy(new FileInputStream(file1), os);
             os.closeArchiveEntry();
 
-            os.putArchiveEntry(new CpioArchiveEntry("test2.xml", file2.length()));
+            entry = new CpioArchiveEntry("test2.xml", file2.length());
+            entry.setMode(CpioConstants.C_ISREG);
+            os.putArchiveEntry(entry);
             IOUtils.copy(new FileInputStream(file2), os);
             os.closeArchiveEntry();
 
