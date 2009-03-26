@@ -66,6 +66,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             ChangeSet changes = new ChangeSet();
             changes.delete("bla");
             changes.perform(ais, out);
+            is.close();
 
         } finally {
             if (out != null)
@@ -110,6 +111,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             ChangeSet changes = new ChangeSet();
             changes.delete("bla/test5.xml");
             changes.perform(ais, out);
+            is.close();
 
         } finally {
             if (out != null)
@@ -161,6 +163,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             changes.add(entry, new FileInputStream(file1));
 
             changes.perform(ais, out);
+            is.close();
 
         } finally {
             if (out != null)
@@ -210,6 +213,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             changes.delete("testdata/test1.xml");
 
             changes.perform(ais, out);
+            is.close();
 
         } finally {
             if (out != null)
@@ -262,6 +266,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             changes.delete("blub");
 
             changes.perform(ais, out);
+            is.close();
 
         } finally {
             if (out != null)
@@ -316,6 +321,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             changes.delete("bla");
 
             changes.perform(ais, out);
+            is.close();
 
         } finally {
             if (out != null)
