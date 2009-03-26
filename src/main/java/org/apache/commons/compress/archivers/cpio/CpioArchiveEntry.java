@@ -588,7 +588,8 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      *            The mode to set.
      */
     public void setMode(final long mode) {
-        switch ((int) (mode & S_IFMT)) {
+        final long maskedMode = mode & S_IFMT;
+        switch ((int) maskedMode) {
         case C_ISDIR:
         case C_ISLNK:
         case C_ISREG:
@@ -601,8 +602,10 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
         default:
             // FIXME: testCpioUnarchive fails if I change the line to
             // actually throw the excpetion
-            new IllegalArgumentException("Unknown mode (full mode: " + mode
-                    + ", masked mode: " + (mode & S_IFMT));
+            new IllegalArgumentException(
+                    "Unknown mode. "
+                    + "Full: " + Long.toHexString(mode) 
+                    + " Masked: " + Long.toHexString(maskedMode));
         }
 
         this.mode = mode;
