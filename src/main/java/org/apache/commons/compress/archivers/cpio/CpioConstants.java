@@ -22,6 +22,7 @@ package org.apache.commons.compress.archivers.cpio;
  * All constants needed by CPIO.
  * 
  * based on code from the jRPM project (jrpm.sourceforge.net) 
+ * 
  */
 public interface CpioConstants {
     /** magic number of a cpio entry in the new format */
@@ -56,6 +57,9 @@ public interface CpioConstants {
 
     /** Mask for all file type bits. */
     final int S_IFMT = 0170000;
+
+ // http://www.opengroup.org/onlinepubs/9699919799/basedefs/cpio.h.html
+ // has a list of the C_xxx constatnts
 
     /** Defines a directory */
     final int C_ISDIR = 0040000;
@@ -114,12 +118,12 @@ public interface CpioConstants {
     /** Permits others to execute the file or to search the file's directory */
     final int C_IXOTH = 000001;
 
-    /** TODO document */
+    /** Set user ID */
     final int C_ISUID = 004000;
 
-    /** TODO document */
+    /** Set group ID */
     final int C_ISGID = 002000;
 
-    /** TODO document */
+    /** On directories, restricted deletion flag. */
     final int C_ISVTX = 001000;
 }
