@@ -41,9 +41,11 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
  * CpioArchiveOutputStream out = new CpioArchiveOutputStream(
  *         new FileOutputStream(new File("test.cpio")));
  * CpioArchiveEntry entry = new CpioArchiveEntry();
- * entry.setName(&quot;testfile&quot;);
+ * entry.setName("testfile");
  * String contents = &quot;12345&quot;;
  * entry.setFileSize(contents.length());
+ * entry.setMode(CpioConstants.C_ISREG); // regular file
+ * ... set other attributes, e.g. time, number of links
  * out.putNextEntry(entry);
  * out.write(testContents.getBytes());
  * out.close();
@@ -146,7 +148,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         }
 
         final short format = e.getFormat();
-        if (format == -1) {
+        if (format == 0) {// Not yet initialised
             e.setFormat(this.entryFormat);
         } else if (format != this.entryFormat){
             throw new IOException("Header format: "+format+" does not match existing format: "+this.entryFormat);
