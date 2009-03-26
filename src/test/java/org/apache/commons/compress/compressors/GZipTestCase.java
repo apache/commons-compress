@@ -43,8 +43,11 @@ public final class GZipTestCase extends AbstractTestCase {
 		final File output = new File(dir, "bla.tar");
         final InputStream is = new FileInputStream(input);
         final CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("gz", is);
-        IOUtils.copy(in, new FileOutputStream(output));
+        FileOutputStream out = new FileOutputStream(output);
+        IOUtils.copy(in, out);
 		in.close();
+		is.close();
+		out.close();
     }
 
 }
