@@ -65,6 +65,7 @@ public final class ArTestCase extends AbstractTestCase {
 			IOUtils.copy(new FileInputStream(file2), os);
 			os.closeArchiveEntry();
 			os.close();
+			out.close();
 		}
 		
 		// UnArArchive Operation
@@ -80,6 +81,7 @@ public final class ArTestCase extends AbstractTestCase {
     
         out.close();
         in.close();
+        is.close();
 	}
 
 }
