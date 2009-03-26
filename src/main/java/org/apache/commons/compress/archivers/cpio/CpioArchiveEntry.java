@@ -132,18 +132,23 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  */
 public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
 
-    private long chksum = 0;
-
+    // Header description fields - should be same throughout an archive
+    
     /**
      * See {@link CpioArchiveEntry#setFormat(short)} for possible values.
      */
-   private short fileFormat = -1;
+    private short fileFormat = 0; // Default chosen so checkNewFormat() and checkOldFormat() both fail 
+
+    /** The number of bytes in each header record; depends on the file format */
+    private long headerSize = -1;
+
+    // Header fields
+    
+    private long chksum = 0;
 
     private long filesize = 0;
 
     private long gid = 0;
-
-    private long headerSize = -1;
 
     private long inode = 0;
 
@@ -151,9 +156,9 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
 
     private long min = 0;
 
-    private long mode = -1;
+    private long mode = 0;
 
-    private long mtime = -1;
+    private long mtime = 0;
 
     private String name;
 
@@ -188,7 +193,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Ceates a CPIOArchiveEntry with a specified name. The format of this entry
+     * Creates a CPIOArchiveEntry with a specified name. The format of this entry
      * will be the new format.
      * 
      * @param name
@@ -535,12 +540,14 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Set the format for this entry. Possible values are:
+     * Set the header format for this entry.
+     * <br/>
+     * Possible values are:
      * <p>
-     * {@link CPIOConstants.FORMAT_NEW}<br/>
-     * {@link CPIOConstants.FORMAT_NEW_CRC}<br/>
-     * {@link CPIOConstants.FORMAT_OLD_BINARY}<br/>
-     * {@link CPIOConstants.FORMAT_OLD_ASCII}<br/>
+     * {@link CpioConstants.FORMAT_NEW}<br/>
+     * {@link CpioConstants.FORMAT_NEW_CRC}<br/>
+     * {@link CpioConstants.FORMAT_OLD_BINARY}<br/>
+     * {@link CpioConstants.FORMAT_OLD_ASCII}<br/>
      * 
      * @param format
      *            The format to set.
@@ -548,24 +555,21 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     final void setFormat(final short format) {
         switch (format) {
         case FORMAT_NEW:
-            this.fileFormat = FORMAT_NEW;
             this.headerSize = 110;
             break;
         case FORMAT_NEW_CRC:
-            this.fileFormat = FORMAT_NEW_CRC;
             this.headerSize = 110;
             break;
         case FORMAT_OLD_ASCII:
-            this.fileFormat = FORMAT_OLD_ASCII;
             this.headerSize = 76;
             break;
         case FORMAT_OLD_BINARY:
-            this.fileFormat = FORMAT_OLD_BINARY;
             this.headerSize = 26;
             break;
         default:
             throw new IllegalArgumentException("Unknown header type");
         }
+        this.fileFormat = format;
     }
 
     /**
