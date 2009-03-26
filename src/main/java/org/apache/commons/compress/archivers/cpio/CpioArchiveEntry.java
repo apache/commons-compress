@@ -30,9 +30,9 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * <li>"070702" ASCII for new portable format with CRC format</li>
  * <li>"070707" ASCII for old ascii (also known as Portable ASCII, odc or old
  * character format</li>
- * <li>"070707" ASCII for old binary</li>
+ * <li>070707 binary for old binary</li>
  * </ul>
- * 
+ *
  * <p>The old binary format is limited to 16 bits for user id, group
  * id, device, and inode numbers. It is limited to 4 gigabyte file
  * sizes.
@@ -127,6 +127,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * 
  * <p>Based on code from the jRPM project (http://jrpm.sourceforge.net).
  *
+ * <p>The MAGIC numbers and other constants are defined in {@link CpioConstants}
  * @see "http://people.freebsd.org/~kientzle/libarchive/man/cpio.5.txt"
  */
 public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
