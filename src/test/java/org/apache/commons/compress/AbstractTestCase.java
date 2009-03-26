@@ -51,6 +51,12 @@ public abstract class AbstractTestCase extends TestCase {
     }
 
     protected void tearDown() throws Exception {
+        String[] f = dir.list();
+        if (f != null) {
+            for (int i = 0; i < f.length; i++) {
+                new File(dir, f[i]).delete();
+            }
+        }
         dir.delete();
         dir = null;
     }
@@ -79,10 +85,11 @@ public abstract class AbstractTestCase extends TestCase {
      */
     protected File createArchive(String archivename) throws Exception {
         ArchiveOutputStream out = null;
+        OutputStream stream = null;
         try {
             File temp = File.createTempFile("test", "." + archivename);
 
-            final OutputStream stream = new FileOutputStream(temp);
+            stream = new FileOutputStream(temp);
             out = new ArchiveStreamFactory().createArchiveOutputStream(
                     archivename, stream);
 
@@ -149,8 +156,11 @@ public abstract class AbstractTestCase extends TestCase {
 
             return temp;
         } finally {
-            if (out != null)
+            if (out != null) {
                 out.close();
+            } else if (stream != null) {
+                stream.close();
+            }
         }
     }
 
@@ -166,10 +176,14 @@ public abstract class AbstractTestCase extends TestCase {
     protected void checkArchiveContent(File archive, List expected)
             throws Exception {
         final InputStream is = new FileInputStream(archive);
-        final BufferedInputStream buf = new BufferedInputStream(is);
-        final ArchiveInputStream in = new ArchiveStreamFactory()
+        try {
+            final BufferedInputStream buf = new BufferedInputStream(is);
+            final ArchiveInputStream in = new ArchiveStreamFactory()
                 .createArchiveInputStream(buf);
-        this.checkArchiveContent(in, expected);
+            this.checkArchiveContent(in, expected);
+        } finally {
+            is.close();
+        }
     }
 
     protected void checkArchiveContent(ArchiveInputStream in, List expected)
@@ -184,8 +198,11 @@ public abstract class AbstractTestCase extends TestCase {
                     + entry.getName());
             outfile.getParentFile().mkdirs();
             OutputStream out = new FileOutputStream(outfile);
-            IOUtils.copy(in, out);
-            out.close();
+            try {
+                IOUtils.copy(in, out);
+            } finally {
+                out.close();
+            }
 
             if (!outfile.exists()) {
                 fail("extraction failed: " + entry.getName());
