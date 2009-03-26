@@ -64,7 +64,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
 
     private boolean finished;
 
-    private short entryFormat = FORMAT_NEW;
+    private final short entryFormat;
 
     private final HashMap names = new HashMap();
 
@@ -84,7 +84,17 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      */
     public CpioArchiveOutputStream(final OutputStream out, final short format) {
         this.out = new FilterOutputStream(out);
-        setFormat(format);
+        switch (format) {
+        case FORMAT_NEW:
+        case FORMAT_NEW_CRC:
+        case FORMAT_OLD_ASCII:
+        case FORMAT_OLD_BINARY:
+            break;
+        default:
+            throw new IllegalArgumentException("Unknown format: "+format);
+        
+        }
+        this.entryFormat = format;
     }
 
     /**
@@ -107,29 +117,6 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     private void ensureOpen() throws IOException {
         if (this.closed) {
             throw new IOException("Stream closed");
-        }
-    }
-
-    /**
-     * Set a default header format. This will be used if no format is defined in
-     * the cpioEntry given to putNextEntry().
-     * 
-     * @param format
-     *            A CPIO format
-     */
-    private void setFormat(final short format) {
-        switch (format) {
-        case FORMAT_NEW:
-        case FORMAT_NEW_CRC:
-        case FORMAT_OLD_ASCII:
-        case FORMAT_OLD_BINARY:
-            break;
-        default:
-            throw new IllegalArgumentException("Unknown header type");
-
-        }
-        synchronized (this) {
-            this.entryFormat = format;
         }
     }
 
