@@ -193,7 +193,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         this.entryEOF = false;
         this.crc = 0;
 
-        if (this.entry.getName().equals("TRAILER!!!")) {
+        if (this.entry.getName().equals(CPIO_TRAILER)) {
             this.entryEOF = true;
             return null;
         }

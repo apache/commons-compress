@@ -126,4 +126,7 @@ public interface CpioConstants {
 
     /** On directories, restricted deletion flag. */
     final int C_ISVTX = 001000;
+    
+    /** The special trailer marker */
+    final String CPIO_TRAILER = "TRAILER!!!";
 }
