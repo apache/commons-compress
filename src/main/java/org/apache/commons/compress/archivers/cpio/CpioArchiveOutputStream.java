@@ -64,6 +64,9 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
 
     private boolean finished;
 
+    /**
+     * See {@link CpioArchiveEntry#setFormat(short)} for possible values.
+     */
     private final short entryFormat;
 
     private final HashMap names = new HashMap();
@@ -142,10 +145,11 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
             e.setTime(System.currentTimeMillis());
         }
 
-        // TODO what happens if an entry has an other format than the
-        // outputstream?
-        if (e.getFormat() == -1) {
+        final short format = e.getFormat();
+        if (format == -1) {
             e.setFormat(this.entryFormat);
+        } else if (format != this.entryFormat){
+            throw new IOException("Header format: "+format+" does not match existing format: "+this.entryFormat);
         }
 
         if (this.names.put(e.getName(), e) != null) {
