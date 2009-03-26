@@ -134,7 +134,10 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
 
     private long chksum = 0;
 
-    private short fileFormat = -1;
+    /**
+     * See {@link CpioArchiveEntry#setFormat(short)} for possible values.
+     */
+   private short fileFormat = -1;
 
     private long filesize = 0;
 
@@ -533,8 +536,11 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
 
     /**
      * Set the format for this entry. Possible values are:
-     * CPIOConstants.FORMAT_NEW, CPIOConstants.FORMAT_NEW_CRC,
-     * CPIOConstants.FORMAT_OLD_BINARY, CPIOConstants.FORMAT_OLD_ASCII
+     * <p>
+     * {@link CPIOConstants.FORMAT_NEW}<br/>
+     * {@link CPIOConstants.FORMAT_NEW_CRC}<br/>
+     * {@link CPIOConstants.FORMAT_OLD_BINARY}<br/>
+     * {@link CPIOConstants.FORMAT_OLD_ASCII}<br/>
      * 
      * @param format
      *            The format to set.
