@@ -49,6 +49,7 @@ public final class CpioTestCase extends AbstractTestCase {
         os.closeArchiveEntry();
 
         os.close();
+        out.close();
     }
 
     public void testCpioUnarchive() throws Exception {
@@ -87,6 +88,7 @@ public final class CpioTestCase extends AbstractTestCase {
             result.put(entry.getName(), target);
         }
         in.close();
+        is.close();
 
         int lineSepLength = System.getProperty("line.separator").length();
 

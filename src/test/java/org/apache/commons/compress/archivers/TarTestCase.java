@@ -67,9 +67,12 @@ public final class TarTestCase extends AbstractTestCase {
         entry.setGroupName("excalibur");
         entry.setMode(0100000);
         os.putArchiveEntry(entry);
-        IOUtils.copy(new FileInputStream(file1), os);
+        FileInputStream in = new FileInputStream(file1);
+        IOUtils.copy(in, os);
         os.closeArchiveEntry();
         os.close();
+        out.close();
+        in.close();
         
         
         ArchiveOutputStream os2 = null;
@@ -93,6 +96,7 @@ public final class TarTestCase extends AbstractTestCase {
         } finally {
         	if (os2 != null){
         	    os2.closeArchiveEntry();
+        	    os2.close();
         	}
         }
     }
@@ -104,8 +108,8 @@ public final class TarTestCase extends AbstractTestCase {
         final TarArchiveEntry entry = (TarArchiveEntry)in.getNextEntry();
         final OutputStream out = new FileOutputStream(new File(dir, entry.getName()));
         IOUtils.copy(in, out);
-        out.close();
         in.close();
+        out.close();
     }
 
 }
