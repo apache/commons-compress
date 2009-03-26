@@ -53,6 +53,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
         File result = File.createTempFile("test", ".zip");
+        result.deleteOnExit();
         try {
 
             final InputStream is = new FileInputStream(input);
@@ -96,6 +97,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
         File result = File.createTempFile("test", ".zip");
+        result.deleteOnExit();
         try {
 
             final InputStream is = new FileInputStream(input);
@@ -141,6 +143,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
         File result = File.createTempFile("test", ".zip");
+        result.deleteOnExit();
         try {
 
             final InputStream is = new FileInputStream(input);
@@ -189,6 +192,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
         File result = File.createTempFile("test", ".zip");
+        result.deleteOnExit();
         try {
 
             final InputStream is = new FileInputStream(input);
@@ -240,6 +244,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
         File result = File.createTempFile("test", ".zip");
+        result.deleteOnExit();
         try {
 
             final InputStream is = new FileInputStream(input);
@@ -291,6 +296,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
         File result = File.createTempFile("test", ".zip");
+        result.deleteOnExit();
         try {
 
             final InputStream is = new FileInputStream(input);
@@ -348,6 +354,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                     .createArchiveInputStream("zip", is);
 
             temp = File.createTempFile("test", ".zip");
+            temp.deleteOnExit();
             out = new ArchiveStreamFactory().createArchiveOutputStream("zip",
                     new FileOutputStream(temp));
 

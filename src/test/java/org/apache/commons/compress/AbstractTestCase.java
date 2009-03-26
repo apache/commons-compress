@@ -22,6 +22,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
@@ -39,11 +40,18 @@ import org.apache.commons.compress.utils.IOUtils;
 public abstract class AbstractTestCase extends TestCase {
 
     protected File dir;
+    protected File resultDir;
 
     protected void setUp() throws Exception {
-        dir = File.createTempFile("dir", "");
-        dir.delete();
-        dir.mkdir();
+        dir = mkdir("dir");
+        resultDir = mkdir("dir-result");
+    }
+
+    protected static File mkdir(String name) throws IOException {
+        File f = File.createTempFile(name, "");
+        f.delete();
+        f.mkdir();
+        return f;
     }
 
     protected File getFile(String path) {
@@ -51,14 +59,19 @@ public abstract class AbstractTestCase extends TestCase {
     }
 
     protected void tearDown() throws Exception {
-        String[] f = dir.list();
-        if (f != null) {
-            for (int i = 0; i < f.length; i++) {
-                new File(dir, f[i]).delete();
+        rmdir(dir);
+        rmdir(resultDir);
+        dir = resultDir = null;
+    }
+
+    protected static void rmdir(File f) throws IOException {
+        String[] s = f.list();
+        if (s != null) {
+            for (int i = 0; i < s.length; i++) {
+                new File(f, s[i]).delete();
             }
         }
-        dir.delete();
-        dir = null;
+        f.delete();
     }
 
     /**

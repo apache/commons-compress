@@ -42,10 +42,11 @@ public final class ZipTestCase extends AbstractTestCase {
         final File file1 = getFile("test1.xml");
         final File file2 = getFile("test2.xml");
 
-        {
-            final OutputStream out = new FileOutputStream(output);
-            final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("zip", out);
-
+        final OutputStream out = new FileOutputStream(output);
+        ArchiveOutputStream os = null;
+        try {
+            os = new ArchiveStreamFactory()
+                .createArchiveOutputStream("zip", out);
             os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
             IOUtils.copy(new FileInputStream(file1), os);
             os.closeArchiveEntry();
@@ -53,30 +54,41 @@ public final class ZipTestCase extends AbstractTestCase {
             os.putArchiveEntry(new ZipArchiveEntry("testdata/test2.xml"));
             IOUtils.copy(new FileInputStream(file2), os);
             os.closeArchiveEntry();
-            os.close();
+        } finally {
+            if (os != null) {
+                os.close();
+            } else {
+                out.close();
+            }
         }
 
         // Unarchive the same
         List results = new ArrayList();
 
-        {
-            final InputStream is = new FileInputStream(output);
-            final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("zip", is);
-
-            File result = File.createTempFile("dir-result", "");
-            result.delete();
-            result.mkdir();
+        final InputStream is = new FileInputStream(output);
+        ArchiveInputStream in = null;
+        try {
+            in = new ArchiveStreamFactory()
+                .createArchiveInputStream("zip", is);
 
             ZipArchiveEntry entry = null;
             while((entry = (ZipArchiveEntry)in.getNextEntry()) != null) {
-                File outfile = new File(result.getCanonicalPath() + "/result/" + entry.getName());
+                File outfile = new File(resultDir.getCanonicalPath() + "/result/" + entry.getName());
                 outfile.getParentFile().mkdirs();
-                OutputStream out = new FileOutputStream(outfile);
-                IOUtils.copy(in, out);
-                out.close();
+                OutputStream o = new FileOutputStream(outfile);
+                try {
+                    IOUtils.copy(in, o);
+                } finally {
+                    o.close();
+                }
                 results.add(outfile);
             }
-            in.close();
+        } finally {
+            if (in != null) {
+                in.close();
+            } else {
+                is.close();
+            }
         }
 
         assertEquals(results.size(), 2);
