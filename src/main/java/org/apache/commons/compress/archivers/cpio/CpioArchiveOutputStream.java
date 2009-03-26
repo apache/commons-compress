@@ -318,7 +318,6 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
             closeArchiveEntry();
         }
         this.cpioEntry = new CpioArchiveEntry(this.entryFormat);
-        this.cpioEntry.setMode(0);
         this.cpioEntry.setName(CPIO_TRAILER);
         this.cpioEntry.setNumberOfLinks(1);
         writeHeader(this.cpioEntry);
