@@ -611,9 +611,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
         case C_ISNWK:
             break;
         default:
-            // FIXME: testCpioUnarchive fails if I change the line to
-            // actually throw the excpetion
-            new IllegalArgumentException(
+            throw new IllegalArgumentException(
                     "Unknown mode. "
                     + "Full: " + Long.toHexString(mode) 
                     + " Masked: " + Long.toHexString(maskedMode));
