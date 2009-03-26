@@ -42,9 +42,12 @@ public abstract class AbstractTestCase extends TestCase {
     protected File dir;
     protected File resultDir;
 
+    private File archive;
+
     protected void setUp() throws Exception {
         dir = mkdir("dir");
         resultDir = mkdir("dir-result");
+        archive = null;
     }
 
     protected static File mkdir(String name) throws IOException {
@@ -62,9 +65,14 @@ public abstract class AbstractTestCase extends TestCase {
         rmdir(dir);
         rmdir(resultDir);
         dir = resultDir = null;
+        if (archive != null) {
+            if (!archive.delete()){
+                throw new Exception("Could not delete "+archive.getPath());
+            }
+        }
     }
 
-    protected static void rmdir(File f) throws IOException {
+    protected static void rmdir(File f) {
         String[] s = f.list();
         if (s != null) {
             for (int i = 0; i < s.length; i++) {
@@ -100,9 +108,9 @@ public abstract class AbstractTestCase extends TestCase {
         ArchiveOutputStream out = null;
         OutputStream stream = null;
         try {
-            File temp = File.createTempFile("test", "." + archivename);
+            archive = File.createTempFile("test", "." + archivename);
 
-            stream = new FileOutputStream(temp);
+            stream = new FileOutputStream(archive);
             out = new ArchiveStreamFactory().createArchiveOutputStream(
                     archivename, stream);
 
@@ -167,7 +175,7 @@ public abstract class AbstractTestCase extends TestCase {
             IOUtils.copy(new FileInputStream(file6), out);
             out.closeArchiveEntry();
 
-            return temp;
+            return archive;
         } finally {
             if (out != null) {
                 out.close();
