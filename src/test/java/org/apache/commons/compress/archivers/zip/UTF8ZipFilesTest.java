@@ -19,6 +19,7 @@
 package org.apache.commons.compress.archivers.zip;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -99,6 +100,24 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         }
     }
 
+    public void testRead7ZipArchiveForStream() throws IOException,
+                                                      URISyntaxException {
+        URL zip = getClass().getResource("/utf8-7zip-test.zip");
+        FileInputStream archive =
+            new FileInputStream(new File(new URI(zip.toString())));
+        ZipArchiveInputStream zi = null;
+        try {
+            zi = new ZipArchiveInputStream(archive, CP437, false);
+            assertEquals(ASCII_TXT, zi.getNextEntry().getName());
+            assertEquals(OIL_BARREL_TXT, zi.getNextEntry().getName());
+            assertEquals(EURO_FOR_DOLLAR_TXT, zi.getNextEntry().getName());
+        } finally {
+            if (zi != null) {
+                zi.close();
+            }
+        }
+    }
+
     /*
      * WinZIP created archive, uses Unicode Extra Fields but only in
      * the central directory.
@@ -117,7 +136,46 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         }
     }
 
+    public void testReadWinZipArchiveForStream() throws IOException,
+                                                      URISyntaxException {
+        URL zip = getClass().getResource("/utf8-winzip-test.zip");
+        FileInputStream archive =
+            new FileInputStream(new File(new URI(zip.toString())));
+        ZipArchiveInputStream zi = null;
+        try {
+            zi = new ZipArchiveInputStream(archive, null, true);
+            assertEquals(EURO_FOR_DOLLAR_TXT, zi.getNextEntry().getName());
+            assertEquals(OIL_BARREL_TXT, zi.getNextEntry().getName());
+            assertEquals(ASCII_TXT, zi.getNextEntry().getName());
+        } finally {
+            if (zi != null) {
+                zi.close();
+            }
+        }
+    }
+
     public void testZipFileReadsUnicodeFields() throws IOException {
+        File file = File.createTempFile("unicode-test", ".zip");
+        ZipArchiveInputStream zi = null;
+        try {
+            createTestFile(file, US_ASCII, false, true);
+            FileInputStream archive = new FileInputStream(file);
+            zi = new ZipArchiveInputStream(archive, US_ASCII, true);
+            assertEquals(OIL_BARREL_TXT, zi.getNextEntry().getName());
+            assertEquals(EURO_FOR_DOLLAR_TXT, zi.getNextEntry().getName());
+            assertEquals(ASCII_TXT, zi.getNextEntry().getName());
+        } finally {
+            if (zi != null) {
+                zi.close();
+            }
+            if (file.exists()) {
+                file.delete();
+            }
+        }
+    }
+
+    public void testZipArchiveInputStreamReadsUnicodeFields()
+        throws IOException {
         File file = File.createTempFile("unicode-test", ".zip");
         ZipFile zf = null;
         try {

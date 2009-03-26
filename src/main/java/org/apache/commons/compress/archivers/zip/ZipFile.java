@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.zip.CRC32;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipException;
@@ -62,8 +61,8 @@ public class ZipFile {
     private static final int HASH_SIZE = 509;
     private static final int SHORT     =   2;
     private static final int WORD      =   4;
-    private static final int NIBLET_MASK = 0x0f;
-    private static final int BYTE_SHIFT = 8;
+    static final int NIBLET_MASK = 0x0f;
+    static final int BYTE_SHIFT = 8;
     private static final int POS_0 = 0;
     private static final int POS_1 = 1;
     private static final int POS_2 = 2;
@@ -529,9 +528,14 @@ public class ZipFile {
                 + SHORT + SHORT + fileNameLen + extraFieldLen;
 
             if (entriesWithoutEFS.containsKey(ze)) {
-                setNameAndCommentFromExtraFields(ze,
-                                                 (NameAndComment)
-                                                 entriesWithoutEFS.get(ze));
+                String orig = ze.getName();
+                NameAndComment nc = (NameAndComment) entriesWithoutEFS.get(ze);
+                ZipUtil.setNameAndCommentFromExtraFields(ze, nc.name,
+                                                         nc.comment);
+                if (!orig.equals(ze.getName())) {
+                    nameMap.remove(orig);
+                    nameMap.put(ze.getName(), ze);
+                }
             }
         }
     }
@@ -550,64 +554,6 @@ public class ZipFile {
             }
         }
         return true;
-    }
-
-    /**
-     * If the entry has Unicode*ExtraFields and the CRCs of the
-     * names/comments match those of the extra fields, transfer the
-     * known Unicode values from the extra field.
-     */
-    private void setNameAndCommentFromExtraFields(ZipArchiveEntry ze,
-                                                  NameAndComment nc) {
-        UnicodePathExtraField name = (UnicodePathExtraField)
-            ze.getExtraField(UnicodePathExtraField.UPATH_ID);
-        String originalName = ze.getName();
-        String newName = getUnicodeStringIfOriginalMatches(name, nc.name);
-        if (newName != null && !originalName.equals(newName)) {
-            ze.setName(newName);
-            nameMap.remove(originalName);
-            nameMap.put(newName, ze);
-        }
-
-        if (nc.comment != null && nc.comment.length > 0) {
-            UnicodeCommentExtraField cmt = (UnicodeCommentExtraField)
-                ze.getExtraField(UnicodeCommentExtraField.UCOM_ID);
-            String newComment =
-                getUnicodeStringIfOriginalMatches(cmt, nc.comment);
-            if (newComment != null) {
-                ze.setComment(newComment);
-            }
-        }
-    }
-
-    /**
-     * If the stored CRC matches the one of the given name, return the
-     * Unicode name of the given field.
-     *
-     * <p>If the field is null or the CRCs don't match, return null
-     * instead.</p>
-     */
-    private String getUnicodeStringIfOriginalMatches(AbstractUnicodeExtraField f,
-                                                     byte[] orig) {
-        if (f != null) {
-            CRC32 crc32 = new CRC32();
-            crc32.update(orig);
-            long origCRC32 = crc32.getValue();
-
-            if (origCRC32 == f.getNameCRC32()) {
-                try {
-                    return ZipEncodingHelper
-                        .UTF8_ZIP_ENCODING.decode(f.getUnicodeName());
-                } catch (IOException ex) {
-                    // UTF-8 unsupported?  should be impossible the
-                    // Unicode*ExtraField must contain some bad bytes
-
-                    // TODO log this anywhere?
-                    return null;
-                }
-            }
-        }
-        return null;
     }
 
     /**
