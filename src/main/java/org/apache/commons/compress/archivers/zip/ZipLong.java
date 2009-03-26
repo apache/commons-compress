@@ -41,6 +41,9 @@ public final class ZipLong implements Cloneable {
 
     private final long value;
 
+    public static final ZipLong CFH_SIG = new ZipLong(0X02014B50L);
+    public static final ZipLong LFH_SIG = new ZipLong(0X04034B50L);
+
     /**
      * Create instance from a number.
      * @param value the long to store as a ZipLong

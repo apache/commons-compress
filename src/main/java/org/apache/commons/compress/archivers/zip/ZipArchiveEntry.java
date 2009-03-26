@@ -55,6 +55,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      */
     public ZipArchiveEntry(java.util.zip.ZipEntry entry) throws ZipException {
         super(entry);
+        setName(entry.getName());
         byte[] extra = entry.getExtra();
         if (extra != null) {
             setExtraFields(ExtraFieldUtils.parse(extra));

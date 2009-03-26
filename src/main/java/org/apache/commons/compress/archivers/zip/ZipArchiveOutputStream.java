@@ -57,10 +57,10 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
  */
 public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
-    private static final int BYTE_MASK = 0xFF;
+    static final int BYTE_MASK = 0xFF;
     private static final int SHORT = 2;
     private static final int WORD = 4;
-    private static final int BUFFER_SIZE = 512;
+    static final int BUFFER_SIZE = 512;
     /* 
      * Apparently Deflater.setInput gets slowed down a lot on Sun JVMs
      * when it gets handed a really big buffer.  See
@@ -586,7 +586,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * local file header signature
      */
-    static final byte[] LFH_SIG = ZipLong.getBytes(0X04034B50L);
+    static final byte[] LFH_SIG = ZipLong.LFH_SIG.getBytes();
     /**
      * data descriptor signature
      */
@@ -594,7 +594,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * central file header signature
      */
-    static final byte[] CFH_SIG = ZipLong.getBytes(0X02014B50L);
+    static final byte[] CFH_SIG = ZipLong.CFH_SIG.getBytes();
     /**
      * end of central dir signature
      */

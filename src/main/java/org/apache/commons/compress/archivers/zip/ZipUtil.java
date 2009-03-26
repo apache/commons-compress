@@ -17,8 +17,10 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.zip.CRC32;
 
 public abstract class ZipUtil {
     /**
@@ -101,6 +103,65 @@ public abstract class ZipUtil {
         cal.set(Calendar.SECOND, (int) (dosTime << 1) & 0x3e);
         // CheckStyle:MagicNumberCheck ON
         return cal.getTime().getTime();
+    }
+
+    /**
+     * If the entry has Unicode*ExtraFields and the CRCs of the
+     * names/comments match those of the extra fields, transfer the
+     * known Unicode values from the extra field.
+     */
+    static void setNameAndCommentFromExtraFields(ZipArchiveEntry ze,
+                                                 byte[] originalNameBytes,
+                                                 byte[] commentBytes) {
+        UnicodePathExtraField name = (UnicodePathExtraField)
+            ze.getExtraField(UnicodePathExtraField.UPATH_ID);
+        String originalName = ze.getName();
+        String newName = getUnicodeStringIfOriginalMatches(name,
+                                                           originalNameBytes);
+        if (newName != null && !originalName.equals(newName)) {
+            ze.setName(newName);
+        }
+
+        if (commentBytes != null && commentBytes.length > 0) {
+            UnicodeCommentExtraField cmt = (UnicodeCommentExtraField)
+                ze.getExtraField(UnicodeCommentExtraField.UCOM_ID);
+            String newComment =
+                getUnicodeStringIfOriginalMatches(cmt, commentBytes);
+            if (newComment != null) {
+                ze.setComment(newComment);
+            }
+        }
+    }
+
+    /**
+     * If the stored CRC matches the one of the given name, return the
+     * Unicode name of the given field.
+     *
+     * <p>If the field is null or the CRCs don't match, return null
+     * instead.</p>
+     */
+    private static 
+        String getUnicodeStringIfOriginalMatches(AbstractUnicodeExtraField f,
+                                                 byte[] orig) {
+        if (f != null) {
+            CRC32 crc32 = new CRC32();
+            crc32.update(orig);
+            long origCRC32 = crc32.getValue();
+
+            if (origCRC32 == f.getNameCRC32()) {
+                try {
+                    return ZipEncodingHelper
+                        .UTF8_ZIP_ENCODING.decode(f.getUnicodeName());
+                } catch (IOException ex) {
+                    // UTF-8 unsupported?  should be impossible the
+                    // Unicode*ExtraField must contain some bad bytes
+
+                    // TODO log this anywhere?
+                    return null;
+                }
+            }
+        }
+        return null;
     }
 
 
