@@ -34,8 +34,10 @@ public final class BZip2TestCase extends AbstractTestCase {
 		final File output = new File(dir, "test.txt.bz2");
 		final OutputStream out = new FileOutputStream(output);
 		final CompressorOutputStream cos = new CompressorStreamFactory().createCompressorOutputStream("bzip2", out);
-		IOUtils.copy(new FileInputStream(input), cos);
+		FileInputStream in = new FileInputStream(input);
+		IOUtils.copy(in, cos);
 		cos.close();
+		in.close();
 	}
 	
 	public void testBzip2Unarchive() throws Exception {
@@ -43,8 +45,10 @@ public final class BZip2TestCase extends AbstractTestCase {
 		final File output = new File(dir, "bla.txt");
         final InputStream is = new FileInputStream(input);
         final CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("bzip2", is);
-        IOUtils.copy(in, new FileOutputStream(output));
-		in.close();
+        FileOutputStream os = new FileOutputStream(output);
+        IOUtils.copy(in, os);
+		is.close();
+		os.close();
     }
 
 }
