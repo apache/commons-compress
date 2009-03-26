@@ -39,14 +39,13 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
  * <p/>
  * <code><pre>
  * CpioArchiveOutputStream out = new CpioArchiveOutputStream(
- *         new FileOutputStream(new File(&quot;test.cpio&quot;)));
+ *         new FileOutputStream(new File("test.cpio")));
  * CpioArchiveEntry entry = new CpioArchiveEntry();
  * entry.setName(&quot;testfile&quot;);
  * String contents = &quot;12345&quot;;
  * entry.setFileSize(contents.length());
  * out.putNextEntry(entry);
  * out.write(testContents.getBytes());
- * out.finish();
  * out.close();
  * </pre></code>
  * <p/>
@@ -150,7 +149,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     public void putNextEntry(final CpioArchiveEntry e) throws IOException {
         ensureOpen();
         if (this.cpioEntry != null) {
-            closeEntry(); // close previous entry
+            closeArchiveEntry(); // close previous entry
         }
         if (e.getTime() == -1) {
             e.setTime(System.currentTimeMillis());
@@ -242,15 +241,13 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         pad(entry.getHeaderSize() + entry.getName().length() + 1, 2);
     }
 
-    /**
-     * Closes the current CPIO entry and positions the stream for writing the
-     * next entry.
+    /*(non-Javadoc)
      * 
-     * @throws IOException
-     *             if an I/O error has occurred or if a CPIO file error has
-     *             occurred
+     * @see
+     * org.apache.commons.compress.archivers.ArchiveOutputStream#closeArchiveEntry
+     * ()
      */
-    public void closeEntry() throws IOException {
+    public void closeArchiveEntry() throws IOException {
         ensureOpen();
 
         if (this.cpioEntry.getSize() != this.written) {
@@ -327,14 +324,14 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
             return;
         }
         if (this.cpioEntry != null) {
-            closeEntry();
+            closeArchiveEntry();
         }
         this.cpioEntry = new CpioArchiveEntry(this.entryFormat);
         this.cpioEntry.setMode(0);
         this.cpioEntry.setName("TRAILER!!!");
         this.cpioEntry.setNumberOfLinks(1);
         writeHeader(this.cpioEntry);
-        closeEntry();
+        closeArchiveEntry();
     }
 
     /**
@@ -346,6 +343,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      */
     public void close() throws IOException {
         if (!this.closed) {
+            this.finish();
             super.close();
             this.closed = true;
         }
@@ -392,17 +390,6 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     private void writeCString(final String str) throws IOException {
         out.write(str.getBytes());
         out.write('\0');
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.commons.compress.archivers.ArchiveOutputStream#closeArchiveEntry
-     * ()
-     */
-    public void closeArchiveEntry() throws IOException {
-        this.closeEntry();
     }
 
     /*
