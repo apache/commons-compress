@@ -30,7 +30,7 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
  * <p>
  * The compression requires large amounts of memory. Thus you should call the
  * {@link #close() close()} method as soon as possible, to force
- * <tt>CBZip2OutputStream</tt> to release the allocated memory.
+ * <tt>BZip2CompressorOutputStream</tt> to release the allocated memory.
  * </p>
  *
  * <p> You can shrink the amount of allocated memory and maybe raise
@@ -47,7 +47,7 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
  * </pre>
  *
  * <p> To get the memory required for decompression by {@link
- * CBZip2InputStream CBZip2InputStream} use </p>
+ * BZip2CompressorInputStream} use </p>
  *
  * <pre>
  * &lt;code&gt;65k + (5 * blocksize)&lt;/code&gt;.
@@ -112,7 +112,7 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
  * </table>
  *
  * <p>
- * For decompression <tt>CBZip2InputStream</tt> allocates less memory if the
+ * For decompression <tt>BZip2CompressorInputStream</tt> allocates less memory if the
  * bzipped input is smaller than one block.
  * </p>
  *
@@ -1620,7 +1620,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
 
                 while (true) {
                     while (unLo <= unHi) {
-                        final int n = ((int) block[fmap[unLo] + d1] & 0xff)
+                        final int n = (block[fmap[unLo] + d1] & 0xff)
                             - med;
                         if (n == 0) {
                             final int temp = fmap[unLo];
@@ -1634,7 +1634,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                     }
 
                     while (unLo <= unHi) {
-                        final int n = ((int) block[fmap[unHi] + d1] & 0xff)
+                        final int n = (block[fmap[unHi] + d1] & 0xff)
                             - med;
                         if (n == 0) {
                             final int temp = fmap[unHi];

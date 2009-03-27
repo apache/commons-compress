@@ -96,7 +96,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     private BZip2CompressorInputStream.Data data;
 
     /**
-     * Constructs a new CBZip2InputStream which decompresses bytes read from the
+     * Constructs a new BZip2CompressorInputStream which decompresses bytes read from the
      * specified stream.
      * 
      * <p>
