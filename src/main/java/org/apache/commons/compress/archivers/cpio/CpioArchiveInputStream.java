@@ -200,13 +200,11 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         return this.entry;
     }
 
-    private long skip(final long count, final int border) throws IOException {
-        long skip = count % border;
-        if (skip > 0) {
-            skip = this.in.skip(border - skip);
-            // TODO - what if not enough bytes are skipped?
+    private void skip(int bytes) throws IOException{
+        final byte[] buff = new byte[4]; // Cannot be more than 3 bytes
+        if (bytes > 0) {
+            readFully(buff, 0, bytes);
         }
-        return skip;
     }
 
     /**
@@ -251,15 +249,10 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         if (this.entry == null || this.entryEOF) {
             return -1;
         }
-        // N.B. These checks assume format is not 0 - otherwise condition is always true
         if (this.entryBytesRead == this.entry.getSize()) {
-            if ((this.entry.getFormat() | FORMAT_NEW_MASK) == FORMAT_NEW_MASK) {
-                skip(this.entry.getSize(), 4);
-            } else if ((this.entry.getFormat() | FORMAT_OLD_BINARY) == FORMAT_OLD_BINARY) {
-                skip(this.entry.getSize(), 2);
-            } // No need to skip for FORMAT_OLD_ASCII
+            skip(entry.getDataPadCount());
             this.entryEOF = true;
-            if ((this.entry.getFormat() | FORMAT_NEW_CRC) == FORMAT_NEW_CRC) {
+            if (this.entry.getFormat() == FORMAT_NEW_CRC) {
                 if (this.crc != this.entry.getChksum()) {
                     throw new IOException("CRC Error");
                 }
@@ -345,7 +338,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
             // TODO - change this to throw
             new IOException("Mode 0 only allowed in the trailer. Found: "+name).printStackTrace();
         }
-        skip(ret.getHeaderSize() + namesize, 4);
+        skip(ret.getHeaderPadCount());
 
         return ret;
     }
@@ -383,7 +376,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         long namesize = readBinaryLong(2, swapHalfWord);
         ret.setSize(readBinaryLong(4, swapHalfWord));
         ret.setName(readCString((int) namesize));
-        skip(ret.getHeaderSize() + namesize, 2);
+        skip(ret.getHeaderPadCount());
 
         return ret;
     }
