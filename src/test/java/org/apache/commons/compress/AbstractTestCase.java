@@ -76,10 +76,19 @@ public abstract class AbstractTestCase extends TestCase {
         String[] s = f.list();
         if (s != null) {
             for (int i = 0; i < s.length; i++) {
-                new File(f, s[i]).delete();
+                final File file = new File(f, s[i]);
+                if (file.isDirectory()){
+                    rmdir(file);
+                }
+                boolean ok = file.delete();
+                if (!ok && file.exists()){
+                    System.out.println("Failed to delete "+s[i]+" in "+f.getPath());
+                }
             }
         }
-        f.delete();
+        if (!f.delete()){
+            throw new Error("Failed to delete "+f.getPath());
+        }
     }
 
     /**
@@ -240,5 +249,6 @@ public abstract class AbstractTestCase extends TestCase {
             }
         }
         assertEquals(0, expected.size());
+        rmdir(result);
     }
 }
