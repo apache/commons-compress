@@ -148,9 +148,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         }
 
         final short format = e.getFormat();
-        if (format == 0) {// Not yet initialised
-            e.setFormat(this.entryFormat);
-        } else if (format != this.entryFormat){
+        if (format != this.entryFormat){
             throw new IOException("Header format: "+format+" does not match existing format: "+this.entryFormat);
         }
 
