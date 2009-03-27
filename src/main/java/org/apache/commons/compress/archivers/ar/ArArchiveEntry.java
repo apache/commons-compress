@@ -22,6 +22,8 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 
 /**
  * Represents an archive entry in the "ar" format.
+ * 
+ * @Immutable
  */
 public class ArArchiveEntry implements ArchiveEntry {
 

@@ -25,7 +25,10 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 
 /**
- * Implements the "ar" archive format as an input stream
+ * Implements the "ar" archive format as an input stream.
+ * 
+ * This class is thread-safe if the InputStream is thread-safe.
+ * 
  */
 public class ArArchiveInputStream extends ArchiveInputStream {
 
