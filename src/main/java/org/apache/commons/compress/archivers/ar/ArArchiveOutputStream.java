@@ -25,7 +25,9 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 
 /**
- * Implements the "ar" archive format as an output stream
+ * Implements the "ar" archive format as an output stream.
+ * 
+ * @NotThreadSafe
  */
 public class ArArchiveOutputStream extends ArchiveOutputStream {
 
