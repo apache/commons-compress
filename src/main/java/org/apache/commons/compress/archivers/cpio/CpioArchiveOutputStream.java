@@ -60,7 +60,7 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         CpioConstants {
 
-    private CpioArchiveEntry cpioEntry;
+    private CpioArchiveEntry entry;
 
     private boolean closed = false;
 
@@ -140,7 +140,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      */
     public void putNextEntry(final CpioArchiveEntry e) throws IOException {
         ensureOpen();
-        if (this.cpioEntry != null) {
+        if (this.entry != null) {
             closeArchiveEntry(); // close previous entry
         }
         if (e.getTime() == -1) {
@@ -159,7 +159,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         }
 
         writeHeader(e);
-        this.cpioEntry = e;
+        this.entry = e;
         this.written = 0;
     }
 
@@ -200,7 +200,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         writeAsciiLong(entry.getName().length() + 1, 8, 16);
         writeAsciiLong(entry.getChksum(), 8, 16);
         writeCString(entry.getName());
-        pad(entry.getHeaderSize() + entry.getName().length() + 1, 4);
+        pad(entry.getHeaderPadCount());
     }
 
     private void writeOldAsciiEntry(final CpioArchiveEntry entry)
@@ -231,7 +231,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         writeBinaryLong(entry.getName().length() + 1, 2, swapHalfWord);
         writeBinaryLong(entry.getSize(), 4, swapHalfWord);
         writeCString(entry.getName());
-        pad(entry.getHeaderSize() + entry.getName().length() + 1, 2);
+        pad(entry.getHeaderPadCount());
     }
 
     /*(non-Javadoc)
@@ -243,23 +243,18 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     public void closeArchiveEntry() throws IOException {
         ensureOpen();
 
-        if (this.cpioEntry.getSize() != this.written) {
+        if (this.entry.getSize() != this.written) {
             throw new IOException("invalid entry size (expected "
-                    + this.cpioEntry.getSize() + " but got " + this.written
+                    + this.entry.getSize() + " but got " + this.written
                     + " bytes)");
         }
-        // N.B. These checks assume format is not 0
-        if ((this.cpioEntry.getFormat() | FORMAT_NEW_MASK) == FORMAT_NEW_MASK) {
-            pad(this.cpioEntry.getSize(), 4);
-        } else if ((this.cpioEntry.getFormat() | FORMAT_OLD_BINARY) == FORMAT_OLD_BINARY) {
-            pad(this.cpioEntry.getSize(), 2);
-        } // No need to pad for FORMAT_OLD_ASCII
-        if ((this.cpioEntry.getFormat() | FORMAT_NEW_CRC) == FORMAT_NEW_CRC) {
-            if (this.crc != this.cpioEntry.getChksum()) {
+        pad(this.entry.getDataPadCount());
+        if (this.entry.getFormat() == FORMAT_NEW_CRC) {
+            if (this.crc != this.entry.getChksum()) {
                 throw new IOException("CRC Error");
             }
         }
-        this.cpioEntry = null;
+        this.entry = null;
         this.crc = 0;
         this.written = 0;
     }
@@ -287,16 +282,15 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
             return;
         }
 
-        if (this.cpioEntry == null) {
+        if (this.entry == null) {
             throw new IOException("no current CPIO entry");
         }
-        if (this.written + len > this.cpioEntry.getSize()) {
+        if (this.written + len > this.entry.getSize()) {
             throw new IOException("attempt to write past end of STORED entry");
         }
         out.write(b, off, len);
         this.written += len;
-        // format is assumed non-zero here, otherwise the condition is always true
-        if ((this.cpioEntry.getFormat() | FORMAT_NEW_CRC) == FORMAT_NEW_CRC) {
+        if (this.entry.getFormat() == FORMAT_NEW_CRC) {
             for (int pos = 0; pos < len; pos++) {
                 this.crc += b[pos] & 0xFF;
             }
@@ -318,13 +312,13 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         if (this.finished) {
             return;
         }
-        if (this.cpioEntry != null) {
+        if (this.entry != null) {
             closeArchiveEntry();
         }
-        this.cpioEntry = new CpioArchiveEntry(this.entryFormat);
-        this.cpioEntry.setName(CPIO_TRAILER);
-        this.cpioEntry.setNumberOfLinks(1);
-        writeHeader(this.cpioEntry);
+        this.entry = new CpioArchiveEntry(this.entryFormat);
+        this.entry.setName(CPIO_TRAILER);
+        this.entry.setNumberOfLinks(1);
+        writeHeader(this.entry);
         closeArchiveEntry();
     }
 
@@ -343,11 +337,10 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         }
     }
 
-    private void pad(final long count, final int border) throws IOException {
-        long pad = count % border;
-        if (pad > 0) {
-            byte tmp[] = new byte[(int) (border - pad)];
-            out.write(tmp);
+    private void pad(int count) throws IOException{
+        if (count > 0){
+            byte buff[] = new byte[count];
+            out.write(buff);
         }
     }
 
