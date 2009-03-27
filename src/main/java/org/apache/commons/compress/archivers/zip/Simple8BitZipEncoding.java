@@ -42,6 +42,7 @@ import java.util.List;
  * implementation, Cp437 and Cp850.</p>
  * 
  * <p>The methods of this class are reentrant.</p>
+ * @Immutable
  */
 class Simple8BitZipEncoding implements ZipEncoding {
 
@@ -88,17 +89,17 @@ class Simple8BitZipEncoding implements ZipEncoding {
      * stored as an array of 128 chars.
      */
     public Simple8BitZipEncoding(char[] highChars) {
-        this.highChars = highChars;
-        this.reverseMapping = new ArrayList(this.highChars.length);
+        this.highChars = (char[]) highChars.clone();
+        List temp = new ArrayList(this.highChars.length);
 
         byte code = 127;
 
         for (int i = 0; i < this.highChars.length; ++i) {
-            this.reverseMapping.add(new Simple8BitChar(++code,
-                                                       this.highChars[i]));
+            temp.add(new Simple8BitChar(++code, this.highChars[i]));
         }
 
-        Collections.sort(this.reverseMapping);
+        Collections.sort(temp);
+        this.reverseMapping = Collections.unmodifiableList(temp);
     }
 
     /**
