@@ -123,7 +123,11 @@ public final class ArTestCase extends AbstractTestCase {
 				
 				if ("test1.xml".equals(entry.getName())) {
 					aos.putArchiveEntry(entry);
+					IOUtils.copy(ais, aos);
+				} else {
+			        IOUtils.copy(ais, new ByteArrayOutputStream());
 				}
+			
 			}
 			ais.close();
 			aos.close();
@@ -136,15 +140,14 @@ public final class ArTestCase extends AbstractTestCase {
 
 		{
 			final InputStream is = new FileInputStream(output2);
-			final ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(is);
+			final ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(new BufferedInputStream(is));
 			while(true) {
 				final ArArchiveEntry entry = (ArArchiveEntry)ais.getNextEntry();
 				if (entry == null) {
 					break;
 				}
 				
-				final ByteArrayOutputStream os = new ByteArrayOutputStream();
-		        IOUtils.copy(ais, os);
+		        IOUtils.copy(ais, new ByteArrayOutputStream());
 		        
 		        sum +=  entry.getLength();
 			}
@@ -152,7 +155,7 @@ public final class ArTestCase extends AbstractTestCase {
 			is.close();			
 		}
 
-		assertEquals(0, sum);
+		assertEquals(76, sum);
 		
 	}
 
