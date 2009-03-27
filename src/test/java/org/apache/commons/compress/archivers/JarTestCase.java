@@ -79,6 +79,7 @@ public final class JarTestCase extends AbstractTestCase {
         out.close();
         
         in.close();
+        is.close();
     }
 	
 	public void testJarUnarchiveAll() throws Exception {
@@ -102,6 +103,7 @@ public final class JarTestCase extends AbstractTestCase {
 		}
 		
 		in.close();
+		is.close();
 	}
 
 }

@@ -57,10 +57,9 @@ public final class ZipTestCase extends AbstractTestCase {
         } finally {
             if (os != null) {
                 os.close();
-            } else {
-                out.close();
             }
         }
+        out.close();
 
         // Unarchive the same
         List results = new ArrayList();
@@ -86,10 +85,9 @@ public final class ZipTestCase extends AbstractTestCase {
         } finally {
             if (in != null) {
                 in.close();
-            } else {
-                is.close();
             }
         }
+        is.close();
 
         assertEquals(results.size(), 2);
         File result = (File)results.get(0);
