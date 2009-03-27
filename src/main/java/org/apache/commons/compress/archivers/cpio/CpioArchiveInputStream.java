@@ -200,10 +200,11 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         return this.entry;
     }
 
-    private long pad(final long count, final int border) throws IOException {
+    private long skip(final long count, final int border) throws IOException {
         long skip = count % border;
         if (skip > 0) {
             skip = this.in.skip(border - skip);
+            // TODO - what if not enough bytes are skipped?
         }
         return skip;
     }
@@ -250,12 +251,13 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         if (this.entry == null || this.entryEOF) {
             return -1;
         }
+        // N.B. These checks assume format is not 0 - otherwise condition is always true
         if (this.entryBytesRead == this.entry.getSize()) {
             if ((this.entry.getFormat() | FORMAT_NEW_MASK) == FORMAT_NEW_MASK) {
-                pad(this.entry.getSize(), 4);
+                skip(this.entry.getSize(), 4);
             } else if ((this.entry.getFormat() | FORMAT_OLD_BINARY) == FORMAT_OLD_BINARY) {
-                pad(this.entry.getSize(), 2);
-            }
+                skip(this.entry.getSize(), 2);
+            } // No need to skip for FORMAT_OLD_ASCII
             this.entryEOF = true;
             if ((this.entry.getFormat() | FORMAT_NEW_CRC) == FORMAT_NEW_CRC) {
                 if (this.crc != this.entry.getChksum()) {
@@ -271,6 +273,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         }
 
         int tmpread = this.in.read(b, off, tmplength);
+        // TODO - what about EOF or short reads?
         if ((this.entry.getFormat() | FORMAT_NEW_CRC) == FORMAT_NEW_CRC) {
             for (int pos = 0; pos < tmpread; pos++) {
                 this.crc += b[pos] & 0xFF;
@@ -342,7 +345,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
             // TODO - change this to throw
             new IOException("Mode 0 only allowed in the trailer. Found: "+name).printStackTrace();
         }
-        pad(ret.getHeaderSize() + namesize, 4);
+        skip(ret.getHeaderSize() + namesize, 4);
 
         return ret;
     }
@@ -380,7 +383,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         long namesize = readBinaryLong(2, swapHalfWord);
         ret.setSize(readBinaryLong(4, swapHalfWord));
         ret.setName(readCString((int) namesize));
-        pad(ret.getHeaderSize() + namesize, 2);
+        skip(ret.getHeaderSize() + namesize, 2);
 
         return ret;
     }

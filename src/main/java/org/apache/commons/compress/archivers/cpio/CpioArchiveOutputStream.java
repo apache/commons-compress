@@ -248,11 +248,12 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
                     + this.cpioEntry.getSize() + " but got " + this.written
                     + " bytes)");
         }
+        // N.B. These checks assume format is not 0
         if ((this.cpioEntry.getFormat() | FORMAT_NEW_MASK) == FORMAT_NEW_MASK) {
             pad(this.cpioEntry.getSize(), 4);
         } else if ((this.cpioEntry.getFormat() | FORMAT_OLD_BINARY) == FORMAT_OLD_BINARY) {
             pad(this.cpioEntry.getSize(), 2);
-        }
+        } // No need to pad for FORMAT_OLD_ASCII
         if ((this.cpioEntry.getFormat() | FORMAT_NEW_CRC) == FORMAT_NEW_CRC) {
             if (this.crc != this.cpioEntry.getChksum()) {
                 throw new IOException("CRC Error");
@@ -294,6 +295,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         }
         out.write(b, off, len);
         this.written += len;
+        // format is assumed non-zero here, otherwise the condition is always true
         if ((this.cpioEntry.getFormat() | FORMAT_NEW_CRC) == FORMAT_NEW_CRC) {
             for (int pos = 0; pos < len; pos++) {
                 this.crc += b[pos] & 0xFF;
@@ -342,9 +344,9 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     }
 
     private void pad(final long count, final int border) throws IOException {
-        long skip = count % border;
-        if (skip > 0) {
-            byte tmp[] = new byte[(int) (border - skip)];
+        long pad = count % border;
+        if (pad > 0) {
+            byte tmp[] = new byte[(int) (border - pad)];
             out.write(tmp);
         }
     }
