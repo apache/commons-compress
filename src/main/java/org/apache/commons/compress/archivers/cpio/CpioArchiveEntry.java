@@ -81,11 +81,16 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  *                  FIFOs and directories
  *               
  * All fields are unsigned short fields with 16-bit integer values
+ * apart from c_mtime and c_filesize which are 32-bit integer values
  * </pre>
+ * 
+ * <p>If necessary, the filename and file data are padded with a NUL byte to an even length</p>
  * 
  * <p>Special files, directories, and the trailer are recorded with
  * the h_filesize field equal to 0.</p>
  * 
+ * <p>In the ASCII version of this format, the 16-bit entries are represented as 6-byte octal numbers,
+ * and the 32-bit entries are represented as 11-byte octal numbers. No padding is added.</p>
  * 
  * <h3>NEW FORMAT</h3>
  * 
@@ -140,12 +145,16 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     private short fileFormat = 0; // Default chosen so checkNewFormat() and checkOldFormat() both fail 
 
     /** The number of bytes in each header record; depends on the file format */
-    private long headerSize = -1;
+    private int headerSize = -1;
+
+    /** The boundary to which the header and data elements are aligned: 0, 2 or 4 bytes */
+    private int alignmentBoundary;
 
     // Header fields
     
     private long chksum = 0;
 
+    /** Number of bytes in the file */
     private long filesize = 0;
 
     private long gid = 0;
@@ -227,8 +236,10 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
 
     /**
      * Get the checksum.
+     * Only supported for the new formats.
      * 
      * @return Returns the checksum.
+     * @throws UnsupportedOperationException if the format is not a new format
      */
     public long getChksum() {
         checkNewFormat();
@@ -265,6 +276,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * Get the minor device id
      * 
      * @return Returns the minor device id.
+     * @throws UnsupportedOperationException if format is not a new format
      */
     public long getDeviceMin() {
         checkNewFormat();
@@ -275,10 +287,6 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * Get the filesize.
      * 
      * @return Returns the filesize.
-     */
-    /*
-     * (non-Javadoc)
-     * 
      * @see org.apache.commons.compress.archivers.ArchiveEntry#getSize()
      */
     public long getSize() {
@@ -304,12 +312,51 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Get the size of this entry on the stream
+     * Get the header size for this CPIO format
      * 
-     * @return Returns the size.
+     * @return Returns the header size in bytes.
      */
-    public long getHeaderSize() {
+    public int getHeaderSize() {
         return this.headerSize;
+    }
+
+    /**
+     * Get the alignment boundary for this CPIO format
+     * 
+     * @return Returns the aligment boundary (0, 2, 4) in bytes
+     */
+    public int getAlignmentBoundary() {
+        return this.alignmentBoundary;
+    }
+
+    /**
+     * Get the number of bytes needed to pad the header to the alignment boundary.
+     * 
+     * @return the number of bytes needed to pad the header (0,1,2,3)
+     */
+    public int getHeaderPadCount(){
+        if (this.alignmentBoundary == 0) return 0;
+        int size = this.headerSize+this.name.length()+1; // Name has terminating null
+        int remain = size % this.alignmentBoundary;
+        if (remain > 0){
+            return this.alignmentBoundary - remain;
+        }
+        return 0;
+    }
+
+    /**
+     * Get the number of bytes needed to pad the data to the alignment boundary.
+     * 
+     * @return the number of bytes needed to pad the data (0,1,2,3)
+     */
+    public int getDataPadCount(){
+        if (this.alignmentBoundary == 0) return 0;
+        long size = this.filesize;
+        int remain = (int) (size % this.alignmentBoundary);
+        if (remain > 0){
+            return this.alignmentBoundary - remain;
+        }
+        return 0;
     }
 
     /**
@@ -556,15 +603,19 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
         switch (format) {
         case FORMAT_NEW:
             this.headerSize = 110;
+            this.alignmentBoundary = 4;
             break;
         case FORMAT_NEW_CRC:
             this.headerSize = 110;
+            this.alignmentBoundary = 4;
             break;
         case FORMAT_OLD_ASCII:
             this.headerSize = 76;
+            this.alignmentBoundary = 0;
             break;
         case FORMAT_OLD_BINARY:
             this.headerSize = 26;
+            this.alignmentBoundary = 2;
             break;
         default:
             throw new IllegalArgumentException("Unknown header type");
