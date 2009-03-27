@@ -101,7 +101,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         if (current != null) {
             closeEntry();
         }
-        int x = 0, count = 0;
         byte[] lfh = new byte[LFH_LEN];
         try {
             readFully(lfh);
