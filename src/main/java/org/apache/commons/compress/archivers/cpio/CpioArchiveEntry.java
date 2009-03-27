@@ -134,6 +134,8 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  *
  * <p>The MAGIC numbers and other constants are defined in {@link CpioConstants}
  * @see "http://people.freebsd.org/~kientzle/libarchive/man/cpio.5.txt"
+ * 
+ * @NotThreadSafe
  */
 public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
 
@@ -142,13 +144,13 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * See {@link CpioArchiveEntry#setFormat(short)} for possible values.
      */
-    private short fileFormat = 0; // Default chosen so checkNewFormat() and checkOldFormat() both fail 
+    private final short fileFormat; 
 
     /** The number of bytes in each header record; depends on the file format */
-    private int headerSize = -1;
+    private final int headerSize;
 
     /** The boundary to which the header and data elements are aligned: 0, 2 or 4 bytes */
-    private int alignmentBoundary;
+    private final int alignmentBoundary;
 
     // Header fields
     
@@ -184,9 +186,37 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * 
      * @param format
      *            The cpio format for this entry.
+     * <br/>
+     * Possible format values are:
+     * <p>
+     * CpioConstants.FORMAT_NEW<br/>
+     * CpioConstants.FORMAT_NEW_CRC<br/>
+     * CpioConstants.FORMAT_OLD_BINARY<br/>
+     * CpioConstants.FORMAT_OLD_ASCII<br/>
+     * 
      */
     public CpioArchiveEntry(final short format) {
-        setFormat(format);
+        switch (format) {
+        case FORMAT_NEW:
+            this.headerSize = 110;
+            this.alignmentBoundary = 4;
+            break;
+        case FORMAT_NEW_CRC:
+            this.headerSize = 110;
+            this.alignmentBoundary = 4;
+            break;
+        case FORMAT_OLD_ASCII:
+            this.headerSize = 76;
+            this.alignmentBoundary = 0;
+            break;
+        case FORMAT_OLD_BINARY:
+            this.headerSize = 26;
+            this.alignmentBoundary = 2;
+            break;
+        default:
+            throw new IllegalArgumentException("Unknown header type");
+        }
+        this.fileFormat = format;
     }
 
     /**
@@ -584,43 +614,6 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
                     + ">");
         }
         this.filesize = size;
-    }
-
-    /**
-     * Set the header format for this entry.
-     * <br/>
-     * Possible values are:
-     * <p>
-     * {@link CpioConstants.FORMAT_NEW}<br/>
-     * {@link CpioConstants.FORMAT_NEW_CRC}<br/>
-     * {@link CpioConstants.FORMAT_OLD_BINARY}<br/>
-     * {@link CpioConstants.FORMAT_OLD_ASCII}<br/>
-     * 
-     * @param format
-     *            The format to set.
-     */
-    final void setFormat(final short format) {
-        switch (format) {
-        case FORMAT_NEW:
-            this.headerSize = 110;
-            this.alignmentBoundary = 4;
-            break;
-        case FORMAT_NEW_CRC:
-            this.headerSize = 110;
-            this.alignmentBoundary = 4;
-            break;
-        case FORMAT_OLD_ASCII:
-            this.headerSize = 76;
-            this.alignmentBoundary = 0;
-            break;
-        case FORMAT_OLD_BINARY:
-            this.headerSize = 26;
-            this.alignmentBoundary = 2;
-            break;
-        default:
-            throw new IllegalArgumentException("Unknown header type");
-        }
-        this.fileFormat = format;
     }
 
     /**
