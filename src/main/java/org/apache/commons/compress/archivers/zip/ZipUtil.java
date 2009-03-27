@@ -22,6 +22,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.zip.CRC32;
 
+/**
+ * Utility class for handling DOS and Java time conversions.
+ * @Immutable
+ */
 public abstract class ZipUtil {
     /**
      * Smallest date/time ZIP can handle.
@@ -50,7 +54,7 @@ public abstract class ZipUtil {
         //                                   here will improve the readablity
         int year = time.getYear() + 1900;
         if (year < 1980) {
-            return DOS_TIME_MIN;
+            return (byte[]) DOS_TIME_MIN.clone(); // stop callers from changing the array
         }
         int month = time.getMonth() + 1;
         long value =  ((year - 1980) << 25)
