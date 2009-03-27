@@ -107,10 +107,16 @@ public final class ArTestCase extends AbstractTestCase {
 			out.close();
 		}
 		
+		assertEquals(282, output.length());
+		
 		final File output2 = new File(dir, "bla2.ar");		
+
+		int copied = 0;
+		int deleted = 0;
 
 		{
 			// remove all but one file
+
 			final InputStream is = new FileInputStream(output);
 			final OutputStream os = new FileOutputStream(output2);
 			final ArchiveOutputStream aos = new ArchiveStreamFactory().createArchiveOutputStream("ar", os);
@@ -124,8 +130,11 @@ public final class ArTestCase extends AbstractTestCase {
 				if ("test1.xml".equals(entry.getName())) {
 					aos.putArchiveEntry(entry);
 					IOUtils.copy(ais, aos);
+					aos.closeArchiveEntry();
+					copied++;
 				} else {
 			        IOUtils.copy(ais, new ByteArrayOutputStream());
+			        deleted++;
 				}
 			
 			}
@@ -135,7 +144,11 @@ public final class ArTestCase extends AbstractTestCase {
 			os.close();			
 		}
 
+		assertEquals(1, copied);
+		assertEquals(1, deleted);
+		assertEquals(144, output2.length());
 		
+		long files = 0;
 		long sum = 0;
 
 		{
@@ -150,11 +163,13 @@ public final class ArTestCase extends AbstractTestCase {
 		        IOUtils.copy(ais, new ByteArrayOutputStream());
 		        
 		        sum +=  entry.getLength();
+		        files++;
 			}
 			ais.close();
 			is.close();			
 		}
 
+		assertEquals(1, files);
 		assertEquals(76, sum);
 		
 	}
