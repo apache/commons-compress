@@ -25,7 +25,7 @@ package org.apache.commons.compress.archivers.cpio;
  */
 class CpioUtil {
     /**
-     * Converts a byte array to a long. Halfwords can be swaped with setting
+     * Converts a byte array to a long. Halfwords can be swapped by setting
      * swapHalfWord=true.
      * 
      * @param number
@@ -33,16 +33,17 @@ class CpioUtil {
      * @param swapHalfWord
      *            Swap halfwords ([0][1][2][3]->[1][0][3][2])
      * @return The long value
+     * @throws UnsupportedOperationException if number length is not a multiple of 2
      */
     static long byteArray2long(final byte[] number, final boolean swapHalfWord) {
+        if (number.length % 2 != 0) {
+            throw new UnsupportedOperationException();
+        }
+
         long ret = 0;
         int pos = 0;
         byte tmp_number[] = new byte[number.length];
         System.arraycopy(number, 0, tmp_number, 0, number.length);
-
-        if (tmp_number.length % 2 != 0) {
-            throw new UnsupportedOperationException();
-        }
 
         if (!swapHalfWord) {
             byte tmp = 0;
@@ -62,16 +63,18 @@ class CpioUtil {
     }
 
     /**
-     * Converts a byte array to a long. Halfwords can be swaped with setting
-     * swapHalfWord=true.
+     * Converts a long number to a byte array 
+     * Halfwords can be swapped by setting swapHalfWord=true.
      * 
-     * @param number
-     *            An array of bytes containing a number
+     * @param number 
+     *            the input long number to be converted
+     *            
      * @param length
      *            The length of the returned array
      * @param swapHalfWord
      *            Swap halfwords ([0][1][2][3]->[1][0][3][2])
      * @return The long value
+     * @throws UnsupportedOperationException if the length is not a positive multiple of two
      */
     static byte[] long2byteArray(final long number, final int length,
             final boolean swapHalfWord) {
