@@ -25,7 +25,7 @@ import java.util.zip.ZipException;
 
 /**
  * ZipExtraField related methods
- *
+ * @NotThreadSafe because the HashMap is not synch.
  */
 // CheckStyle:HideUtilityClassConstructorCheck OFF (bc)
 public class ExtraFieldUtils {

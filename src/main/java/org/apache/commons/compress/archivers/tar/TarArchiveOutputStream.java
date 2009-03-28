@@ -27,7 +27,7 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
  * The TarOutputStream writes a UNIX tar archive as an OutputStream.
  * Methods are provided to put entries, and then write their contents
  * by writing to this stream using write().
- *
+ * @NotThreadSafe
  */
 public class TarArchiveOutputStream extends ArchiveOutputStream {
     /** Fail if a long file name is required in the archive. */

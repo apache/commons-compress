@@ -33,6 +33,7 @@ package org.apache.commons.compress.archivers.zip;
  *         NameCRC32     4 bytes     File Name Field CRC32 Checksum
  *         UnicodeName   Variable    UTF-8 version of the entry File Name
  * </pre>
+ * @NotThreadSafe super-class is not thread-safe
  */
 public class UnicodePathExtraField extends AbstractUnicodeExtraField {
 
