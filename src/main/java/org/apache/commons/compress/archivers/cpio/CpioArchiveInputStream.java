@@ -425,12 +425,34 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         return getNextCPIOEntry();
     }
 
+    /**
+     * Checks if the signature matches one of the following magic values:
+     * 
+     * Strings:
+     *  
+     * "070701" - MAGIC_NEW
+     * "070702" - MAGIC_NEW_CRC
+     * "070707" - MAGIC_OLD_ASCII
+     * 
+     * Octal Binary value:
+     * 
+     * 070707 - MAGIC_OLD_BINARY (held as a short) = 0x71C7 or 0xC771
+     */
     public static boolean matches(byte[] signature, int length) {
-        // 3037 3037 30
-
-        if (length < 5) {
+        if (length < 6) {
             return false;
         }
+        
+        // Check binary values
+        if (signature[0] == 0x71 && signature[1] == 0xc7) {
+            return true;
+        }
+        if (signature[1] == 0x71 && signature[2] == 0xc7) {
+            return true;
+        }
+
+        // Check Ascii (String) values
+        // 3037 3037 30nn
         if (signature[0] != 0x30) {
             return false;
         }
@@ -446,7 +468,17 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         if (signature[4] != 0x30) {
             return false;
         }
+        // Check last byte
+        if (signature[5] == 0x31) {
+            return true;
+        }
+        if (signature[5] == 0x32) {
+            return true;
+        }
+        if (signature[5] == 0x37) {
+            return true;
+        }
 
-        return true;
+        return false;
     }
 }
