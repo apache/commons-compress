@@ -33,7 +33,7 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
  * appropriate methods (and call their implementation from super of course)
  * 
  * TODO add example here
- * 
+ * @Immutable
  */
 public class CompressorStreamFactory {
 

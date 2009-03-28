@@ -22,6 +22,7 @@ import java.util.zip.ZipException;
 /**
  * If this extra field is added as the very first extra field of the
  * archive, Solaris will consider it an executable jar file.
+ * @Immutable
  */
 public final class JarMarker implements ZipExtraField {
 

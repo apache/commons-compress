@@ -38,6 +38,7 @@ import java.nio.ByteBuffer;
  * available.</p>
  * 
  * <p>The methods of this class are reentrant.</p>
+ * @Immutable
  */
 class FallbackZipEncoding implements ZipEncoding {
     private final String charset;

@@ -20,7 +20,7 @@ package org.apache.commons.compress.archivers.zip;
 /**
  * Utility class that represents a two byte integer with conversion
  * rules for the big endian byte order of ZIP files.
- *
+ * @Immutable
  */
 public final class ZipShort implements Cloneable {
     private static final int BYTE_MASK = 0xFF;

@@ -21,6 +21,7 @@ package org.apache.commons.compress.archivers.tar;
 /**
  * This class provides static utility methods to work with byte streams.
  *
+ * @Immutable
  */
 // CheckStyle:HideUtilityClassConstructorCheck OFF (bc)
 public class TarUtils {

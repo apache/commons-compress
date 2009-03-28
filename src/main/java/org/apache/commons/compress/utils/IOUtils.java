@@ -22,6 +22,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * Utility functions
+ * @Immutable
+ */
 public final class IOUtils {
 
 	/**
