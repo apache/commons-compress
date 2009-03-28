@@ -21,6 +21,21 @@ package org.apache.commons.compress.archivers;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Archive input streams are expected to override the<br/>
+ * {@link #read()} and {@link #read(byte[] b, int off, int len)} <br/>
+ * methods so that reading from the stream generates EOF for the end of
+ * data in each entry as well as at the end of the file proper. The
+ * {@link #getNextEntry()} method is used to reset the input stream
+ * ready for reading the data from the next entry.
+ * <p>
+ * The input stream classes must also implement a method with the signature:
+ * <pre>
+ * public static boolean matches(byte[] signature, int length)
+ * </pre>
+ * which is used by the {@link ArchiveStreamFactory} to autodetect
+ * the archive type from the first few bytes of a stream. 
+ */
 public abstract class ArchiveInputStream extends InputStream {
 
     /**
