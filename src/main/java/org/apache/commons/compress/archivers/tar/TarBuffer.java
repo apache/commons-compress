@@ -33,10 +33,10 @@ import java.util.Arrays;
  * <p>
  * You should never have a need to access this class directly.
  * TarBuffers are created by Tar IO Streams.
- *
+ * @NotThreadSafe
  */
 
-public class TarBuffer {
+class TarBuffer { // Not public, because only needed by the Tar IO streams
 
     /** Default record size */
     public static final int DEFAULT_RCDSIZE = (512);
