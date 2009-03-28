@@ -135,6 +135,9 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * <p>The MAGIC numbers and other constants are defined in {@link CpioConstants}
  * @see "http://people.freebsd.org/~kientzle/libarchive/man/cpio.5.txt"
  * 
+ * <p>
+ * N.B. does not handle the cpio "tar" format
+ * </p>
  * @NotThreadSafe
  */
 public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
