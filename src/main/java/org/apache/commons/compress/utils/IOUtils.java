@@ -39,8 +39,8 @@ public final class IOUtils {
      * @throws IOException
      *             if an error occurs
      */
-    public static void copy(final InputStream input, final OutputStream output) throws IOException {
-        copy(input, output, 8024);
+    public static long copy(final InputStream input, final OutputStream output) throws IOException {
+        return copy(input, output, 8024);
     }
     
     /**
@@ -55,11 +55,14 @@ public final class IOUtils {
      * @throws IOException
      *             if an error occurs
      */
-    public static void copy(final InputStream input, final OutputStream output, int buffersize) throws IOException {
+    public static long copy(final InputStream input, final OutputStream output, int buffersize) throws IOException {
         final byte[] buffer = new byte[buffersize];
         int n = 0;
+        long count=0;
         while (-1 != (n = input.read(buffer))) {
             output.write(buffer, 0, n);
+            count += n;
         }
+        return count;
     }
 }
