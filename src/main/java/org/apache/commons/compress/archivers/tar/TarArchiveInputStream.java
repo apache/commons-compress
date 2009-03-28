@@ -399,12 +399,6 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         hasHitEOF = b;
     }
 
-
-    // used to be implemented via FilterInputStream
-    public int read(byte[] b) throws IOException {
-        return read(b, 0, b.length);
-    }
-
     // ArchiveInputStream
 
     public static boolean matches(byte[] signature, int length) {
