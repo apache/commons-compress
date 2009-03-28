@@ -27,15 +27,16 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  */
 public class ArArchiveEntry implements ArchiveEntry {
 
-	private final String name;
+    private final String name;
 	private final int userId;
 	private final int groupId;
 	private final int mode;
+    private static final int DEFAULT_MODE = 33188; // = (octal) 0100644 
 	private final long lastModified;
 	private final long length;
 
 	public ArArchiveEntry(String name, long length) {
-		this(name, length, 0, 0, 33188, System.currentTimeMillis());
+		this(name, length, 0, 0, DEFAULT_MODE, System.currentTimeMillis());
 	}
 	
 	public ArArchiveEntry(String name, long length, int userId, int groupId, int mode, long lastModified) {
