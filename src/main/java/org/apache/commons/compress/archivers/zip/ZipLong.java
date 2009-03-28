@@ -20,6 +20,7 @@ package org.apache.commons.compress.archivers.zip;
 /**
  * Utility class that represents a four byte integer with conversion
  * rules for the big endian byte order of ZIP files.
+ * @Immutable
  */
 public final class ZipLong implements Cloneable {
 

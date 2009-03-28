@@ -40,7 +40,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
  * implementation from super of course)
  * 
  * TODO add example here
- * 
+ * @Immutable
  */
 public class ArchiveStreamFactory {
 

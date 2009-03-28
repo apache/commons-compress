@@ -18,6 +18,11 @@
  */
 package org.apache.commons.compress.archivers.cpio;
 
+/**
+ * Package private utility class for Cpio
+ * 
+ * @Immutable
+ */
 class CpioUtil {
     /**
      * Converts a byte array to a long. Halfwords can be swaped with setting

@@ -22,7 +22,9 @@ import java.io.InputStream;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 
-
+/**
+ * @Immutable
+ */
 public class Change {
 	private final String targetFile;
 	private final ArchiveEntry entry;

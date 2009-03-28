@@ -36,6 +36,7 @@ import java.nio.charset.CodingErrorAction;
  * implementation, most notably the default ZIP encoding Cp437.</p>
  * 
  * <p>The methods of this class are reentrant.</p>
+ * @Immutable
  */
 class NioZipEncoding implements ZipEncoding {
     private final Charset charset;
