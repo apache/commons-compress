@@ -29,6 +29,8 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
  * Subclass that adds a special extra field to the very first entry
  * which allows the created archive to be used as an executable jar on
  * Solaris.
+ * 
+ * @NotThreadSafe
  */
 public class JarArchiveOutputStream extends ZipArchiveOutputStream {
 

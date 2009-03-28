@@ -34,7 +34,7 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
  * methods are provided to position at each successive entry in
  * the archive, and the read each entry as a normal input stream
  * using read().
- *
+ * @NotThreadSafe
  */
 public class TarArchiveInputStream extends ArchiveInputStream {
     private static final int SMALL_BUFFER_SIZE = 256;

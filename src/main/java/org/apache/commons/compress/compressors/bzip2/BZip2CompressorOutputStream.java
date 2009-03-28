@@ -123,7 +123,7 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
  * <p>
  * TODO: Update to BZip2 1.0.1
  * </p>
- *
+ * @NotThreadSafe
  */
 public class BZip2CompressorOutputStream extends CompressorOutputStream
     implements BZip2Constants {

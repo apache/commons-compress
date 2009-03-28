@@ -24,6 +24,7 @@ import java.util.zip.ZipException;
 
 /**
  * A common base class for Unicode extra information extra fields.
+ * @NotThreadSafe
  */
 public abstract class AbstractUnicodeExtraField implements ZipExtraField {
     private long nameCRC32;

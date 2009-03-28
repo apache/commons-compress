@@ -70,7 +70,8 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * char devminor[8];
  * } header;
  * </pre>
- *
+ * 
+ * @NotThreadSafe
  */
 
 public class TarArchiveEntry implements TarConstants, ArchiveEntry {

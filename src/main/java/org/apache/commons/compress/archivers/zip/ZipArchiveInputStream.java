@@ -30,6 +30,10 @@ import java.util.zip.ZipException;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 
+/**
+ * Implements and input stream that can read Zip archives.
+ * @NotThreadSafe
+ */
 public class ZipArchiveInputStream extends ArchiveInputStream {
 
     private static final int SHORT = 2;

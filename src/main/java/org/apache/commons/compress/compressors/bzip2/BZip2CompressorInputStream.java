@@ -32,6 +32,8 @@ import org.apache.commons.compress.compressors.CompressorInputStream;
 /**
  * An input stream that decompresses from the BZip2 format (without the file
  * header chars) to be read as any other stream.
+ * 
+ * @NotThreadSafe
  */
 public class BZip2CompressorInputStream extends CompressorInputStream implements
                                                                           BZip2Constants {

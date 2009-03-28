@@ -46,7 +46,7 @@ abstract class ZipEncodingHelper {
          * 
          * @see Simple8BitZipEncoding#Simple8BitZipEncoding(char[])
          */
-        SimpleEncodingHolder(char [] highChars) {
+        SimpleEncodingHolderxx(char [] highChars) {
             this.highChars = highChars;
         }
 

@@ -25,6 +25,11 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 
+/**
+ * Implements an input stream that can read entries from jar files.
+ * 
+ * @NotThreadSafe
+ */
 public class JarArchiveInputStream extends ZipArchiveInputStream {
 
     public JarArchiveInputStream( final InputStream inputStream ) {

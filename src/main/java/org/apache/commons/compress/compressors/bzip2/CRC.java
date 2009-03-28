@@ -21,6 +21,7 @@ package org.apache.commons.compress.compressors.bzip2;
 /**
  * A simple class the hold and calculate the CRC for sanity checking of the
  * data.
+ * @NotThreadSafe
  */
 class CRC {
     private static final int crc32Table[] = {

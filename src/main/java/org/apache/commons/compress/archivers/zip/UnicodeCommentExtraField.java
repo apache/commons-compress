@@ -33,6 +33,7 @@ package org.apache.commons.compress.archivers.zip;
  *         ComCRC32      4 bytes     Comment Field CRC32 Checksum
  *         UnicodeCom    Variable    UTF-8 version of the entry comment
  * </pre>
+ * @NotThreadSafe super-class is not thread-safe
  */
 public class UnicodeCommentExtraField extends AbstractUnicodeExtraField {
 

@@ -53,7 +53,7 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
  * the {@link #STORED STORED} method, here setting the CRC and
  * uncompressed size information is required before {@link
  * #putNextEntry putNextEntry} can be called.</p>
- *
+ * @NotThreadSafe
  */
 public class ZipArchiveOutputStream extends ArchiveOutputStream {
 

@@ -24,7 +24,7 @@ package org.apache.commons.compress.archivers.zip;
  *
  * <p>Assumes local file data and central directory entries are
  * identical - unless told the opposite.</p>
- *
+ * @NotThreadSafe
  */
 public class UnrecognizedExtraField implements ZipExtraField {
 

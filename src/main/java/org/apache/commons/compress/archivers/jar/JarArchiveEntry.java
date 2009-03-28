@@ -27,6 +27,10 @@ import java.util.zip.ZipException;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 
+/**
+ * 
+ * @NotThreadSafe
+ */
 public class JarArchiveEntry extends ZipArchiveEntry implements ArchiveEntry {
 
 	private Attributes manifestAttributes = null;
