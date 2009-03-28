@@ -56,7 +56,34 @@
             </subsection>
         </section>
         <section name="Documentation">
+          <p>The compress component is split into <em>compressors</em> and
+            <em>archivers</em>.  While <em>compressors</em>
+            (un)compress streams that usually store a single
+            entry, <em>archivers</em> deal with archives that contain
+            structured content represented
+            by <code>ArchiveEntry</code> instances which in turn
+            usually correspond to single files or directories.</p>
+
+          <p>Currently the bzip2 and gzip formats are supported as
+            compressors where gzip support is provided by
+            the <code>java.util.zip</code> package of the Java class
+            library.</p>
+
+          <p>The ar, cpio, tar and zip formats are supported as
+            archivers where the <a href="zip.html">zip</a>
+            implementation provides capabilities that go beyond the
+            features found in java.util.zip.</p>
+
+          <p>The compress component provides abstract base classes for
+            compressors and archivers together with factories that can
+            be used to choose implementations by algorithm name.  In
+            the case of input streams the factories can also be used
+            to guess the format and provide the matching
+            implementation.</p>
+
           <ul>
+            <li>The <a href="examples.html">examples page</a> contains
+            more detailed information and some examples.</li>
             <li>The <a href="apidocs/index.html">Javadoc</a> of the latest SVN</li>
             <li>The <a href="http://svn.apache.org/viewvc/commons/proper/compress/">SVN
                 repository</a> can be browsed.</li>

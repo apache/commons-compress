@@ -1,0 +1,279 @@
+<?xml version="1.0"?>
+<!--
+
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+-->
+<document>
+  <properties>
+    <title>Commons Compress Examples</title>
+    <author email="dev@commons.apache.org">Commons Documentation Team</author>
+  </properties>
+  <body>
+    <section name="Examples">
+
+      <subsection name="Factories">
+
+        <p>Compress provides factory methods to create input/output
+          streams based on the names of the compressor or archiver
+          format as well as factory methods that try to guess the
+          format of an input stream.</p>
+
+        <p>To create a compressor writing to a given output by using
+          the algorithm name:</p>
+        <source><![CDATA[
+CompressorOutputStream gzippedOut = new CompressorStreamFactory()
+    .createCompressorOutputStream("gz", myOutputStream);
+]]></source>
+
+        <p>Make the factory guess the input format for a given stream:</p>
+        <source><![CDATA[
+ArchiveInputStream input = new ArchiveStreamFactory()
+    .createArchiveInputStream(originalInput);
+]]></source>
+
+      </subsection>
+
+      <subsection name="ar">
+
+        <p>In addition to the information stored
+          in <code>ArchiveEntry</code> a <code>ArArchiveEntry</code>
+          stores information about the owner user and group as well as
+          Unix permissions.</p>
+
+        <p>Adding an entry to an ar archive:</p>
+<source><![CDATA[
+ArArchiveEntry entry = new ArArchiveEntry(name, size);
+arOutput.putNextEntry(entry);
+arOutput.write(contentOfEntry);
+arOutput.closeArchiveEntry();
+]]></source>
+
+        <p>Reading entries from an ar archive:</p>
+<source><![CDATA[
+ArArchiveEntry entry = (ArArchiveEntry) arInput.getNextEntry();
+byte[] content = new byte[entry.getSize()];
+LOOP UNTIL entry.getSize() HAS BEEN READ {
+    arInput(read, offset, content.length - offset);
+}
+]]></source>
+
+      </subsection>
+
+      <subsection name="cpio">
+
+        <p>In addition to the information stored
+          in <code>ArchiveEntry</code> a <code>CpioArchiveEntry</code>
+          stores various attributes including information about the
+          original owner and permissions.</p>
+
+        <p>The cpio package supports the "new portable" as well as the
+          "old" format of CPIO archives in their binary, ASCII and
+          "with CRC" variants.</p>
+
+        <p>Adding an entry to a cpio archive:</p>
+<source><![CDATA[
+CpioArchiveEntry entry = new CpioArchiveEntry(name, size);
+cpioOutput.putNextEntry(entry);
+cpioOutput.write(contentOfEntry);
+cpioOutput.closeArchiveEntry();
+]]></source>
+
+        <p>Reading entries from an cpio archive:</p>
+<source><![CDATA[
+CpioArchiveEntry entry = cpioInput.getNextCPIOEntry();
+byte[] content = new byte[entry.getSize()];
+LOOP UNTIL entry.getSize() HAS BEEN READ {
+    cpioInput(read, offset, content.length - offset);
+}
+]]></source>
+
+      </subsection>
+
+      <subsection name="tar">
+
+        <p>In addition to the information stored
+          in <code>ArchiveEntry</code> a <code>TarArchiveEntry</code>
+          stores various attributes including information about the
+          original owner and permissions.</p>
+
+        <p>There are several different tar formats and the TAR package
+          of Compress 1.0 only provides the common functionality of
+          the existing variants.</p>
+        <p>The original format didn't support file names longer than
+          100 characters and the tar package will fail if you try to
+          add an entry longer than that.
+          The <code>longFileMode</code> option
+          of <code>TarArchiveOutputStream</code> can be used to make
+          the archive truncate such names or use the GNU tar variant
+          of storing such names.  If you choose the GNU tar option,
+          the archive can not be extracted using many other tar
+          implementations like the ones of OpenBSD, Solaris or MacOS
+          X.</p>
+
+        <p><code>TarArchiveInputStream</code> will recognize the GNU
+          tar extension for long file names and read the longer names
+          accordingly.</p>
+
+        <p>Adding an entry to a tar archive:</p>
+<source><![CDATA[
+TarArchiveEntry entry = new TarArchiveEntry(name);
+entry.setSize(size);
+tarOutput.putNextEntry(entry);
+tarOutput.write(contentOfEntry);
+tarOutput.closeArchiveEntry();
+]]></source>
+
+        <p>Reading entries from an tar archive:</p>
+<source><![CDATA[
+TarArchiveEntry entry = tarInput.getNextTarEntry();
+byte[] content = new byte[entry.getSize()];
+LOOP UNTIL entry.getSize() HAS BEEN READ {
+    tarInput(read, offset, content.length - offset);
+}
+]]></source>
+      </subsection>
+
+      <subsection name="zip">
+        <p>The ZIP package has a <a href="zip.html">dedicated
+            documentation page</a>.</p>
+
+        <p>Adding an entry to a zip archive:</p>
+<source><![CDATA[
+ZipArchiveEntry entry = new ZipArchiveEntry(name);
+entry.setSize(size);
+zipOutput.putNextEntry(entry);
+zipOutput.write(contentOfEntry);
+zipOutput.closeArchiveEntry();
+]]></source>
+
+        <p>Reading entries from an zip archive:</p>
+<source><![CDATA[
+ZipArchiveEntry entry = zipInput.getNextZipEntry();
+byte[] content = new byte[entry.getSize()];
+LOOP UNTIL entry.getSize() HAS BEEN READ {
+    zipInput(read, offset, content.length - offset);
+}
+]]></source>
+
+        <p>Reading entries from an zip archive using the
+          recommended <code>ZipFile</code> class:</p>
+<source><![CDATA[
+ZipArchiveEntry entry = zipFile.getEntry(name);
+InputStream content = zipFile.getInputStream(entry);
+try {
+    READ UNTIL content IS EXHAUSTED
+} finally {
+    content.close();
+}
+]]></source>
+      </subsection>
+
+      <subsection name="jar">
+        <p>In general, JAR archives are ZIP files, so the JAR package
+          supports all options provided by the ZIP package.</p>
+
+        <p>To be interoperable JAR archives should always be created
+          using the UTF-8 encoding for file names (which is the
+          default).</p>
+
+        <p>Archives created using <code>JarArchiveOutputStream</code>
+          will implicitly add a <code>JarMarker</code> extra field to
+          the very first archive entry of the archive which will make
+          Solaris recognize them as Java archives and allows them to
+          be used as executables.</p>
+
+        <p>Note that <code>ArchiveStreamFactory</code> doesn't
+          distinguish ZIP archives from JAR archives, so if you use
+          the one-argument <code>createArchiveInputStream</code>
+          method on a JAR archive, it will still return the more
+          generic <code>ZipArchiveInputStream</code>.</p>
+
+        <p>The <code>JarArchiveEntry</code> class contains fields for
+          certificates and attributes that are planned to be supported
+          in the future but are not supported as of Compress 1.0.</p>
+
+        <p>Adding an entry to a jar archive:</p>
+<source><![CDATA[
+JarArchiveEntry entry = new JarArchiveEntry(name, size);
+entry.setSize(size);
+jarOutput.putNextEntry(entry);
+jarOutput.write(contentOfEntry);
+jarOutput.closeArchiveEntry();
+]]></source>
+
+        <p>Reading entries from an jar archive:</p>
+<source><![CDATA[
+JarArchiveEntry entry = jarInput.getNextJarEntry();
+byte[] content = new byte[entry.getSize()];
+LOOP UNTIL entry.getSize() HAS BEEN READ {
+    jarInput(read, offset, content.length - offset);
+}
+]]></source>
+      </subsection>
+
+      <subsection name="bzip2">
+
+        <p>Note that <code>BZipCompressorOutputStream</code> keeps
+          hold of some big data structures in memory.  While it is
+          true recommended for any stream that you close it as soon as
+          you no longer needed, this is even more important
+          for <code>BZipCompressorOutputStream</code>.</p>
+
+        <p>Uncompressing a given bzip2 compressed file (you would
+          certainly add exception handling and make sure all streams
+          get closed properly):</p>
+<source><![CDATA[
+FileInputStream in = new FileInputStream("archive.tar.bz2");
+FileOutputStream out = new FileOutputStream("archive.tar");
+BZip2CompressorInputStream bzIn = new BZip2CompressorInputStream(in);
+final byte[] buffer = new byte[buffersize];
+int n = 0;
+while (-1 != (n = bzIn.read(buffer))) {
+    out.write(buffer, 0, n);
+}
+out.close();
+bzIn.close();
+]]></source>
+
+      </subsection>
+
+      <subsection name="gzip">
+
+        <p>The implementation of this package is provided by
+          the <code>java.util.zip</code> package of the Java class
+          library.</p>
+
+        <p>Uncompressing a given bzip2 compressed file (you would
+          certainly add exception handling and make sure all streams
+          get closed properly):</p>
+<source><![CDATA[
+FileInputStream in = new FileInputStream("archive.tar.gz");
+FileOutputStream out = new FileOutputStream("archive.tar");
+GZipCompressorInputStream bzIn = new GZipCompressorInputStream(in);
+final byte[] buffer = new byte[buffersize];
+int n = 0;
+while (-1 != (n = bzIn.read(buffer))) {
+    out.write(buffer, 0, n);
+}
+out.close();
+bzIn.close();
+]]></source>
+      </subsection>
+
+    </section>
+  </body>
+</document>
