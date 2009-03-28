@@ -348,7 +348,10 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
 
         ret.setDevice(readAsciiLong(6, 8));
         ret.setInode(readAsciiLong(6, 8));
-        ret.setMode(readAsciiLong(6, 8));
+        final long mode = readAsciiLong(6, 8);
+        if (mode != 0) {
+            ret.setMode(mode);
+        }
         ret.setUID(readAsciiLong(6, 8));
         ret.setGID(readAsciiLong(6, 8));
         ret.setNumberOfLinks(readAsciiLong(6, 8));
@@ -356,7 +359,12 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         ret.setTime(readAsciiLong(11, 8));
         long namesize = readAsciiLong(6, 8);
         ret.setSize(readAsciiLong(11, 8));
-        ret.setName(readCString((int) namesize));
+        final String name = readCString((int) namesize);
+        ret.setName(name);
+        if (mode == 0 && !name.equals(CPIO_TRAILER)){
+            // TODO - change this to throw
+            new IOException("Mode 0 only allowed in the trailer. Found: "+name).printStackTrace();
+        }
 
         return ret;
     }
@@ -367,7 +375,10 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
 
         ret.setDevice(readBinaryLong(2, swapHalfWord));
         ret.setInode(readBinaryLong(2, swapHalfWord));
-        ret.setMode(readBinaryLong(2, swapHalfWord));
+        final long mode = readBinaryLong(2, swapHalfWord);
+        if (mode != 0){
+            ret.setMode(mode);            
+        }
         ret.setUID(readBinaryLong(2, swapHalfWord));
         ret.setGID(readBinaryLong(2, swapHalfWord));
         ret.setNumberOfLinks(readBinaryLong(2, swapHalfWord));
@@ -375,7 +386,12 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         ret.setTime(readBinaryLong(4, swapHalfWord));
         long namesize = readBinaryLong(2, swapHalfWord);
         ret.setSize(readBinaryLong(4, swapHalfWord));
-        ret.setName(readCString((int) namesize));
+        final String name = readCString((int) namesize);
+        ret.setName(name);
+        if (mode == 0 && !name.equals(CPIO_TRAILER)){
+            // TODO - change this to throw
+            new IOException("Mode 0 only allowed in the trailer. Found: "+name).printStackTrace();
+        }
         skip(ret.getHeaderPadCount());
 
         return ret;
