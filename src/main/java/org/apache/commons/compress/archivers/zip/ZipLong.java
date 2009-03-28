@@ -42,7 +42,10 @@ public final class ZipLong implements Cloneable {
 
     private final long value;
 
+    /** Central File Header Signature */
     public static final ZipLong CFH_SIG = new ZipLong(0X02014B50L);
+
+    /** Local File Header Signature */
     public static final ZipLong LFH_SIG = new ZipLong(0X04034B50L);
 
     /**

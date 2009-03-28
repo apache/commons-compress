@@ -257,7 +257,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
                     throw new IOException("CRC Error");
                 }
             }
-            return -1;
+            return -1; // EOF for this entry
         }
         int tmplength = (int) Math.min(len, this.entry.getSize()
                 - this.entryBytesRead);
@@ -267,7 +267,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
 
         int tmpread = this.in.read(b, off, tmplength);
         // TODO - what about EOF or short reads?
-        if ((this.entry.getFormat() | FORMAT_NEW_CRC) == FORMAT_NEW_CRC) {
+        if (this.entry.getFormat() == FORMAT_NEW_CRC) {
             for (int pos = 0; pos < tmpread; pos++) {
                 this.crc += b[pos] & 0xFF;
             }
