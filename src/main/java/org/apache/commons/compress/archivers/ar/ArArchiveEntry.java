@@ -27,6 +27,12 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  */
 public class ArArchiveEntry implements ArchiveEntry {
 
+    /** The header for each entry */
+    public static final String HEADER = "!<arch>\n";
+
+    /** The trailer for each entry */
+    public static final String TRAILER = "`\012";
+    
     private final String name;
 	private final int userId;
 	private final int groupId;
