@@ -228,10 +228,15 @@ public abstract class AbstractTestCase extends TestCase {
                     + entry.getName());
             outfile.getParentFile().mkdirs();
             OutputStream out = new FileOutputStream(outfile);
+            long copied=0;
             try {
-                IOUtils.copy(in, out);
+                copied=IOUtils.copy(in, out);
             } finally {
                 out.close();
+            }
+
+            if (entry.getSize() != -1) {// some test cases don't set the size
+                assertEquals(entry.getSize(), copied);
             }
 
             if (!outfile.exists()) {
