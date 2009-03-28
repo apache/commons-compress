@@ -444,10 +444,10 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         }
         
         // Check binary values
-        if (signature[0] == 0x71 && signature[1] == 0xc7) {
+        if (signature[0] == 0x71 && (signature[1] & 0xFF) == 0xc7) {
             return true;
         }
-        if (signature[1] == 0x71 && signature[2] == 0xc7) {
+        if (signature[1] == 0x71 && (signature[0] & 0xFF) == 0xc7) {
             return true;
         }
 
