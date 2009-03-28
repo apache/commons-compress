@@ -41,14 +41,14 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     }
 
     private long writeArchiveHeader() throws IOException {
-        final String header = "!<arch>\n";
-        out.write(header.getBytes());
-        return header.length();
+        byte [] header = ArArchiveEntry.HEADER.getBytes();
+        out.write(header);
+        return header.length;
     }
 
     public void closeArchiveEntry() throws IOException {
         if ((entryOffset % 2) != 0) {
-            out.write('\n');
+            out.write('\n'); // Pad byte
             archiveOffset++;
         }
     }
@@ -137,7 +137,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
 
         offset = fill(offset, 58, ' ');
 
-        offset += write("`\012");
+        offset += write(ArArchiveEntry.TRAILER);
 
         return offset;
     }

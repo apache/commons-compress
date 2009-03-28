@@ -42,7 +42,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
     public ArArchiveEntry getNextArEntry() throws IOException {
 
         if (offset == 0) {
-            final byte[] expected = "!<arch>\n".getBytes();
+            final byte[] expected = ArArchiveEntry.HEADER.getBytes();
             final byte[] realized = new byte[expected.length]; 
             final int read = read(realized);
             if (read != expected.length) {
@@ -78,7 +78,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         read(length);
 
         {
-            final byte[] expected = "`\012".getBytes();
+            final byte[] expected = ArArchiveEntry.TRAILER.getBytes();
             final byte[] realized = new byte[expected.length]; 
             final int read = read(realized);
             if (read != expected.length) {
