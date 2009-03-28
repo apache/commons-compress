@@ -27,7 +27,7 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 /**
  * Implements the "ar" archive format as an input stream.
  * 
- * This class is thread-safe if the InputStream is thread-safe.
+ * @NotThreadSafe
  * 
  */
 public class ArArchiveInputStream extends ArchiveInputStream {
