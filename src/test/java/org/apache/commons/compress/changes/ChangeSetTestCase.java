@@ -18,11 +18,13 @@
  */
 package org.apache.commons.compress.changes;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.compress.AbstractTestCase;
@@ -41,6 +43,16 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 public final class ChangeSetTestCase extends AbstractTestCase {
     
     private ArchiveStreamFactory factory = new ArchiveStreamFactory();
+
+    private void archiveListDelete(String prefix){
+        Iterator it = archiveList.iterator();
+        while(it.hasNext()){
+            String entry = (String) it.next();
+            if (entry.equals(prefix) || entry.startsWith(prefix+"/")){
+                it.remove();
+            }
+        }
+    }
 
     /**
      * Tries to delete the folder "bla" from a zip file. This should result in
@@ -67,6 +79,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
             ChangeSet changes = new ChangeSet();
             changes.delete("bla");
+            archiveListDelete("bla");
             changes.perform(ais, out);
             is.close();
 
@@ -77,15 +90,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                 ais.close();
         }
 
-        List expected = new ArrayList();
-        expected.add("testdata/test1.xml");
-        expected.add("testdata/test2.xml");
-        expected.add("test/test3.xml");
-        expected.add("test.txt");
-        expected.add("something/bla");
-        expected.add("test with spaces.txt");
-
-        this.checkArchiveContent(result, expected);
+        this.checkArchiveContent(result, archiveList);
     }
 
     /**
@@ -111,6 +116,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
             ChangeSet changes = new ChangeSet();
             changes.delete("bla/test5.xml");
+            archiveListDelete("bla/test5.xml");
             changes.perform(ais, out);
             is.close();
 
@@ -121,16 +127,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                 ais.close();
         }
 
-        List expected = new ArrayList();
-        expected.add("testdata/test1.xml");
-        expected.add("testdata/test2.xml");
-        expected.add("test/test3.xml");
-        expected.add("test.txt");
-        expected.add("something/bla");
-        expected.add("test with spaces.txt");
-        expected.add("bla/test4.xml");
-        expected.add("bla/blubber/test6.xml");
-        this.checkArchiveContent(result, expected);
+        this.checkArchiveContent(result, archiveList);
     }
 
     /**
@@ -156,11 +153,13 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
             ChangeSet changes = new ChangeSet();
             changes.delete("bla");
+            archiveListDelete("bla");
 
             // Add a file
             final File file1 = getFile("test.txt");
             ArchiveEntry entry = new ZipArchiveEntry("bla/test.txt");
             changes.add(entry, new FileInputStream(file1));
+            archiveList.add("bla/test.txt");
 
             changes.perform(ais, out);
             is.close();
@@ -172,16 +171,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                 ais.close();
         }
 
-        List expected = new ArrayList();
-        expected.add("testdata/test1.xml");
-        expected.add("testdata/test2.xml");
-        expected.add("test/test3.xml");
-        expected.add("test.txt");
-        expected.add("something/bla");
-        expected.add("bla/test.txt");
-        expected.add("test with spaces.txt");
-
-        this.checkArchiveContent(result, expected);
+        this.checkArchiveContent(result, archiveList);
     }
 
     /**
@@ -208,8 +198,10 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             final File file1 = getFile("test.txt");
             ArchiveEntry entry = new ZipArchiveEntry("blub/test.txt");
             changes.add(entry, new FileInputStream(file1));
+            archiveList.add("blub/test.txt");
 
             changes.delete("testdata/test1.xml");
+            archiveListDelete("testdata/test1.xml");
 
             changes.perform(ais, out);
             is.close();
@@ -221,22 +213,11 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                 ais.close();
         }
 
-        List expected = new ArrayList();
-        expected.add("testdata/test2.xml");
-        expected.add("test/test3.xml");
-        expected.add("blub/test.txt");
-        expected.add("bla/test5.xml");
-        expected.add("bla/blubber/test6.xml");
-        expected.add("test.txt");
-        expected.add("something/bla");
-        expected.add("bla/test4.xml");
-        expected.add("test with spaces.txt");
-
-        this.checkArchiveContent(result, expected);
+        this.checkArchiveContent(result, archiveList);
     }
 
     /**
-     * add blub/test.txt + delete blub Should add dir1/test.txt and delete it
+     * add blub/test.txt + delete blub Should add blub/test.txt and delete it
      * afterwards. In this example, the zip archive should stay untouched.
      * 
      * @throws Exception
@@ -260,8 +241,10 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             final File file1 = getFile("test.txt");
             ArchiveEntry entry = new ZipArchiveEntry("blub/test.txt");
             changes.add(entry, new FileInputStream(file1));
+            archiveList.add("blub/test.txt");
 
             changes.delete("blub");
+            archiveListDelete("blub");
 
             changes.perform(ais, out);
             is.close();
@@ -273,18 +256,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                 ais.close();
         }
 
-        List expected = new ArrayList();
-        expected.add("testdata/test1.xml");
-        expected.add("testdata/test2.xml");
-        expected.add("test/test3.xml");
-        expected.add("test.txt");
-        expected.add("bla/test5.xml");
-        expected.add("bla/blubber/test6.xml");
-        expected.add("something/bla");
-        expected.add("bla/test4.xml");
-        expected.add("test with spaces.txt");
-
-        this.checkArchiveContent(result, expected);
+        this.checkArchiveContent(result, archiveList);
     }
 
     /**
@@ -314,8 +286,10 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             final File file1 = getFile("test.txt");
             ArchiveEntry entry = new ZipArchiveEntry("bla/test.txt");
             changes.add(entry, new FileInputStream(file1));
+            archiveList.add("bla/test.txt");
 
             changes.delete("bla");
+            archiveListDelete("bla");
 
             changes.perform(ais, out);
             is.close();
@@ -327,15 +301,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                 ais.close();
         }
 
-        List expected = new ArrayList();
-        expected.add("testdata/test1.xml");
-        expected.add("testdata/test2.xml");
-        expected.add("test/test3.xml");
-        expected.add("test.txt");
-        expected.add("something/bla");
-        expected.add("test with spaces.txt");
-
-        this.checkArchiveContent(result, expected);
+        this.checkArchiveContent(result, archiveList);
     }
 
     /**
@@ -483,7 +449,6 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         List expected = new ArrayList();
         expected.add("test1.xml");
         expected.add("testdata/test.txt");
-        // TODO: automatic detection of TAR archive temp fails here
         final ArchiveInputStream in = factory.createArchiveInputStream("tar", new FileInputStream(temp));
         this.checkArchiveContent(in, expected);
     }
