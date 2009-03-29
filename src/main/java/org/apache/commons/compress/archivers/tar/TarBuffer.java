@@ -211,6 +211,9 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
         }
 
         if (inStream == null) {
+            if (outStream == null) {
+                throw new IOException("input buffer is closed");
+            }
             throw new IOException("reading from an output buffer");
         }
 
@@ -332,6 +335,9 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
         }
 
         if (outStream == null) {
+            if (inStream == null){
+                throw new IOException("Output buffer is closed");
+            }
             throw new IOException("writing to an input buffer");
         }
 
@@ -369,6 +375,9 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
         }
 
         if (outStream == null) {
+            if (inStream == null){
+                throw new IOException("Output buffer is closed");
+            }
             throw new IOException("writing to an input buffer");
         }
 
