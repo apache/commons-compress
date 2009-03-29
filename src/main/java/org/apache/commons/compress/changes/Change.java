@@ -26,11 +26,13 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * @Immutable
  */
 public class Change {
-	private final String targetFile;
-	private final ArchiveEntry entry;
-	private final InputStream input;
-	private final int type;
+	private final String targetFile; // entry name to delete
+	private final ArchiveEntry entry; // new entry to add
+	private final InputStream input; // source for new entry
 	
+	// Type of change
+	private final int type;
+	// Possible type values
 	static final int TYPE_DELETE = 1;
 	static final int TYPE_ADD = 2;
 	static final int TYPE_MOVE = 3; // NOT USED
@@ -59,6 +61,12 @@ public class Change {
 //		type = TYPE_MOVE;
 //	}
 	
+	/**
+	 * Construct a change which adds an entry.
+	 * 
+	 * @param pEntry the entry details
+	 * @param pInput the InputStream for the entry data
+	 */
 	public Change(final ArchiveEntry pEntry, final InputStream pInput) {
 		if(pEntry == null || pInput == null) {
 			throw new NullPointerException();
