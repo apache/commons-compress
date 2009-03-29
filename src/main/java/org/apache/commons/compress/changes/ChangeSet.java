@@ -137,5 +137,6 @@ public final class ChangeSet {
         out.putArchiveEntry(entry);
         IOUtils.copy(in, out);
         out.closeArchiveEntry();
+        in.close();
     }
 }
