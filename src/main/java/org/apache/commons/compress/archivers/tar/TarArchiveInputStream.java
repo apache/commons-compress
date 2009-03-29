@@ -402,7 +402,8 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     // ArchiveInputStream
 
     public static boolean matches(byte[] signature, int length) {
-        // 6574 7473 2e31 6d78
+        // 6574 7473 2e31 6d78 == "test1.xml"
+        // TODO replace with a proper test if possible - see COMPRESS-65
 
         if (length < 8) {
             return false;
