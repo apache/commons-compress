@@ -39,6 +39,9 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
  * Checks several ChangeSet business logics.
  */
 public final class ChangeSetTestCase extends AbstractTestCase {
+    
+    private ArchiveStreamFactory factory = new ArchiveStreamFactory();
+
     /**
      * Tries to delete the folder "bla" from a zip file. This should result in
      * the deletion of bla/*, which actually means bla/test4.xml should be
@@ -57,10 +60,9 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         try {
 
             final InputStream is = new FileInputStream(input);
-            ais = new ArchiveStreamFactory()
-                    .createArchiveInputStream("zip", is);
+            ais = factory.createArchiveInputStream("zip", is);
 
-            out = new ArchiveStreamFactory().createArchiveOutputStream("zip",
+            out = factory.createArchiveOutputStream("zip",
                     new FileOutputStream(result));
 
             ChangeSet changes = new ChangeSet();
@@ -102,10 +104,9 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         try {
 
             final InputStream is = new FileInputStream(input);
-            ais = new ArchiveStreamFactory()
-                    .createArchiveInputStream("zip", is);
+            ais = factory.createArchiveInputStream("zip", is);
 
-            out = new ArchiveStreamFactory().createArchiveOutputStream("zip",
+            out = factory.createArchiveOutputStream("zip",
                     new FileOutputStream(result));
 
             ChangeSet changes = new ChangeSet();
@@ -149,9 +150,8 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         try {
 
             final InputStream is = new FileInputStream(input);
-            ais = new ArchiveStreamFactory()
-                    .createArchiveInputStream("zip", is);
-            out = new ArchiveStreamFactory().createArchiveOutputStream("zip",
+            ais = factory.createArchiveInputStream("zip", is);
+            out = factory.createArchiveOutputStream("zip",
                     new FileOutputStream(result));
 
             ChangeSet changes = new ChangeSet();
@@ -199,9 +199,8 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         try {
 
             final InputStream is = new FileInputStream(input);
-            ais = new ArchiveStreamFactory()
-                    .createArchiveInputStream("zip", is);
-            out = new ArchiveStreamFactory().createArchiveOutputStream("zip",
+            ais = factory.createArchiveInputStream("zip", is);
+            out = factory.createArchiveOutputStream("zip",
                     new FileOutputStream(result));
 
             ChangeSet changes = new ChangeSet();
@@ -252,9 +251,8 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         try {
 
             final InputStream is = new FileInputStream(input);
-            ais = new ArchiveStreamFactory()
-                    .createArchiveInputStream("zip", is);
-            out = new ArchiveStreamFactory().createArchiveOutputStream("zip",
+            ais = factory.createArchiveInputStream("zip", is);
+            out = factory.createArchiveOutputStream("zip",
                     new FileOutputStream(result));
 
             ChangeSet changes = new ChangeSet();
@@ -305,9 +303,8 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         try {
 
             final InputStream is = new FileInputStream(input);
-            ais = new ArchiveStreamFactory()
-                    .createArchiveInputStream("zip", is);
-            out = new ArchiveStreamFactory().createArchiveOutputStream("zip",
+            ais = factory.createArchiveInputStream("zip", is);
+            out = factory.createArchiveOutputStream("zip",
                     new FileOutputStream(result));
 
             ChangeSet changes = new ChangeSet();
@@ -356,12 +353,11 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
             final File input = getFile("bla.zip");
             final InputStream is = new FileInputStream(input);
-            ais = new ArchiveStreamFactory()
-                    .createArchiveInputStream("zip", is);
+            ais = factory.createArchiveInputStream("zip", is);
 
             temp = File.createTempFile("test", ".zip");
             temp.deleteOnExit();
-            out = new ArchiveStreamFactory().createArchiveOutputStream("zip",
+            out = factory.createArchiveOutputStream("zip",
                     new FileOutputStream(temp));
 
             changes.perform(ais, out);
@@ -393,11 +389,10 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
             final File input = getFile("bla.tar");
             final InputStream is = new FileInputStream(input);
-            ais = new ArchiveStreamFactory()
-                    .createArchiveInputStream("tar", is);
+            ais = factory.createArchiveInputStream("tar", is);
 
             temp = new File(dir, "bla.tar");
-            out = new ArchiveStreamFactory().createArchiveOutputStream("tar",
+            out = factory.createArchiveOutputStream("tar",
                     new FileOutputStream(temp));
 
             changes.perform(ais, out);
@@ -430,11 +425,10 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
             final File input = getFile("bla.jar");
             final InputStream is = new FileInputStream(input);
-            ais = new ArchiveStreamFactory()
-                    .createArchiveInputStream("jar", is);
+            ais = factory.createArchiveInputStream("jar", is);
 
             temp = new File(dir, "bla.jar");
-            out = new ArchiveStreamFactory().createArchiveOutputStream("jar",
+            out = factory.createArchiveOutputStream("jar",
                     new FileOutputStream(temp));
 
             changes.perform(ais, out);
@@ -473,11 +467,10 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
             final File input = getFile("bla.tar");
             final InputStream is = new FileInputStream(input);
-            ais = new ArchiveStreamFactory()
-                    .createArchiveInputStream("tar", is);
+            ais = factory.createArchiveInputStream("tar", is);
 
             temp = new File(dir, "bla.tar");
-            out = new ArchiveStreamFactory().createArchiveOutputStream("tar",
+            out = factory.createArchiveOutputStream("tar",
                     new FileOutputStream(temp));
 
             changes.perform(ais, out);
@@ -491,8 +484,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         expected.add("test1.xml");
         expected.add("testdata/test.txt");
         // TODO: automatic detection of TAR archive temp fails here
-        final ArchiveInputStream in = new ArchiveStreamFactory()
-                .createArchiveInputStream("tar", new FileInputStream(temp));
+        final ArchiveInputStream in = factory.createArchiveInputStream("tar", new FileInputStream(temp));
         this.checkArchiveContent(in, expected);
     }
 
@@ -518,11 +510,10 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
             final File input = getFile("bla.jar");
             final InputStream is = new FileInputStream(input);
-            ais = new ArchiveStreamFactory()
-                    .createArchiveInputStream("jar", is);
+            ais = factory.createArchiveInputStream("jar", is);
 
             temp = new File(dir, "bla.jar");
-            out = new ArchiveStreamFactory().createArchiveOutputStream("jar",
+            out = factory.createArchiveOutputStream("jar",
                     new FileOutputStream(temp));
 
             changes.perform(ais, out);
@@ -553,10 +544,10 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
             final File input = getFile("bla.ar");
             final InputStream is = new FileInputStream(input);
-            ais = new ArchiveStreamFactory().createArchiveInputStream("ar", is);
+            ais = factory.createArchiveInputStream("ar", is);
 
             temp = new File(dir, "bla.ar");
-            out = new ArchiveStreamFactory().createArchiveOutputStream("ar",
+            out = factory.createArchiveOutputStream("ar",
                     new FileOutputStream(temp));
 
             changes.perform(ais, out);
@@ -596,10 +587,10 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
             final File input = getFile("bla.ar");
             final InputStream is = new FileInputStream(input);
-            ais = new ArchiveStreamFactory().createArchiveInputStream("ar", is);
+            ais = factory.createArchiveInputStream("ar", is);
 
             temp = new File(dir, "bla.ar");
-            out = new ArchiveStreamFactory().createArchiveOutputStream("ar",
+            out = factory.createArchiveOutputStream("ar",
                     new FileOutputStream(temp));
 
             changes.perform(ais, out);
