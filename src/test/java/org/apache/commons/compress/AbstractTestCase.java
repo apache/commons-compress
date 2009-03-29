@@ -21,10 +21,12 @@ package org.apache.commons.compress;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -42,7 +44,10 @@ public abstract class AbstractTestCase extends TestCase {
     protected File dir;
     protected File resultDir;
 
-    private File archive;
+    private File archive; // used to delete the archive in tearDown
+    protected List archiveList; // Lists the content of the archive as originally created
+    
+    private ArchiveStreamFactory factory = new ArchiveStreamFactory();
 
     protected void setUp() throws Exception {
         dir = mkdir("dir");
@@ -92,7 +97,7 @@ public abstract class AbstractTestCase extends TestCase {
     }
 
     /**
-     * Creates an archive of 5 textbased files in several directories. The
+     * Creates an archive of textbased files in several directories. The
      * archivername is the factory identifier for the archiver, for example zip,
      * tar, cpio, jar, ar. The archive is created as a temp file.
      * 
@@ -102,6 +107,8 @@ public abstract class AbstractTestCase extends TestCase {
      * <li>testdata/test2.xml</li>
      * <li>test/test3.xml</li>
      * <li>bla/test4.xml</li>
+     * <li>bla/test5.xml</li>
+     * <li>bla/blubber/test6.xml</li>
      * <li>test.txt</li>
      * <li>something/bla</li>
      * <li>test with spaces.txt</li>
@@ -118,10 +125,10 @@ public abstract class AbstractTestCase extends TestCase {
         OutputStream stream = null;
         try {
             archive = File.createTempFile("test", "." + archivename);
+            archiveList = new ArrayList();
 
             stream = new FileOutputStream(archive);
-            out = new ArchiveStreamFactory().createArchiveOutputStream(
-                    archivename, stream);
+            out = factory.createArchiveOutputStream(archivename, stream);
 
             final File file1 = getFile("test1.xml");
             final File file2 = getFile("test2.xml");
@@ -130,59 +137,15 @@ public abstract class AbstractTestCase extends TestCase {
             final File file5 = getFile("test.txt");
             final File file6 = getFile("test with spaces.txt");
 
-            ZipArchiveEntry entry = new ZipArchiveEntry("testdata/test1.xml");
-            entry.setSize(file1.length());
-            out.putArchiveEntry(entry);
-            IOUtils.copy(new FileInputStream(file1), out);
-            out.closeArchiveEntry();
-
-            entry = new ZipArchiveEntry("testdata/test2.xml");
-            entry.setSize(file2.length());
-            out.putArchiveEntry(entry);
-            IOUtils.copy(new FileInputStream(file2), out);
-            out.closeArchiveEntry();
-
-            entry = new ZipArchiveEntry("test/test3.xml");
-            entry.setSize(file3.length());
-            out.putArchiveEntry(entry);
-            IOUtils.copy(new FileInputStream(file3), out);
-            out.closeArchiveEntry();
-
-            entry = new ZipArchiveEntry("bla/test4.xml");
-            entry.setSize(file4.length());
-            out.putArchiveEntry(entry);
-            IOUtils.copy(new FileInputStream(file4), out);
-            out.closeArchiveEntry();
-
-            entry = new ZipArchiveEntry("bla/test5.xml");
-            entry.setSize(file4.length());
-            out.putArchiveEntry(entry);
-            IOUtils.copy(new FileInputStream(file4), out);
-            out.closeArchiveEntry();
-
-            entry = new ZipArchiveEntry("bla/blubber/test6.xml");
-            entry.setSize(file4.length());
-            out.putArchiveEntry(entry);
-            IOUtils.copy(new FileInputStream(file4), out);
-            out.closeArchiveEntry();
-
-            entry = new ZipArchiveEntry("test.txt");
-            entry.setSize(file5.length());
-            out.putArchiveEntry(entry);
-            IOUtils.copy(new FileInputStream(file5), out);
-            out.closeArchiveEntry();
-
-            entry = new ZipArchiveEntry("something/bla");
-            entry.setSize(file6.length());
-            out.putArchiveEntry(entry);
-            IOUtils.copy(new FileInputStream(file6), out);
-            out.closeArchiveEntry();
-
-            entry = new ZipArchiveEntry("test with spaces.txt");
-            entry.setSize(file6.length());
-            out.putArchiveEntry(entry);
-            IOUtils.copy(new FileInputStream(file6), out);
-            out.closeArchiveEntry();
+            addArchiveEntry(out, "testdata/test1.xml", file1);
+            addArchiveEntry(out, "testdata/test2.xml", file2);
+            addArchiveEntry(out, "test/test3.xml", file3);
+            addArchiveEntry(out, "bla/test4.xml", file4);
+            addArchiveEntry(out, "bla/test5.xml", file4);
+            addArchiveEntry(out, "bla/blubber/test6.xml", file4);
+            addArchiveEntry(out, "test.txt", file5);
+            addArchiveEntry(out, "something/bla", file6);
+            addArchiveEntry(out, "test with spaces.txt", file6);
 
             return archive;
         } finally {
@@ -192,6 +155,47 @@ public abstract class AbstractTestCase extends TestCase {
                 stream.close();
             }
         }
+    }
+
+    /**
+     * Add an entry to the archive, and keep track of the names in archiveList.
+     * 
+     * @param out
+     * @param file1
+     * @throws IOException
+     * @throws FileNotFoundException
+     */
+    private void addArchiveEntry(ArchiveOutputStream out, String filename, final File infile)
+            throws IOException, FileNotFoundException {
+        ZipArchiveEntry entry = new ZipArchiveEntry(filename);
+        entry.setSize(infile.length());
+        out.putArchiveEntry(entry);
+        IOUtils.copy(new FileInputStream(infile), out);
+        out.closeArchiveEntry();
+        archiveList.add(filename);
+    }
+
+    /**
+     * Create an empty archive.
+     * @param archivename
+     * @return the archive File
+     * @throws Exception
+     */
+    protected File createEmptyArchive(String archivename) throws Exception {
+        ArchiveOutputStream out = null;
+        OutputStream stream = null;
+        try {
+            archive = File.createTempFile("empty", "." + archivename);
+            stream = new FileOutputStream(archive);
+            out = factory.createArchiveOutputStream(archivename, stream);
+        } finally {
+            if (out != null) {
+                out.close();
+            } else if (stream != null) {
+                stream.close();
+            }
+        }
+        return archive;
     }
 
     /**
@@ -208,8 +212,7 @@ public abstract class AbstractTestCase extends TestCase {
         final InputStream is = new FileInputStream(archive);
         try {
             final BufferedInputStream buf = new BufferedInputStream(is);
-            final ArchiveInputStream in = new ArchiveStreamFactory()
-                .createArchiveInputStream(buf);
+            final ArchiveInputStream in = factory.createArchiveInputStream(buf);
             this.checkArchiveContent(in, expected);
         } finally {
             is.close();
@@ -222,38 +225,41 @@ public abstract class AbstractTestCase extends TestCase {
         result.delete();
         result.mkdir();
 
-        ArchiveEntry entry = null;
-        while ((entry = in.getNextEntry()) != null) {
-            File outfile = new File(result.getCanonicalPath() + "/result/"
-                    + entry.getName());
-            outfile.getParentFile().mkdirs();
-            OutputStream out = new FileOutputStream(outfile);
-            long copied=0;
-            try {
-                copied=IOUtils.copy(in, out);
-            } finally {
-                out.close();
-            }
+        try {
+            ArchiveEntry entry = null;
+            while ((entry = in.getNextEntry()) != null) {
+                File outfile = new File(result.getCanonicalPath() + "/result/"
+                        + entry.getName());
+                outfile.getParentFile().mkdirs();
+                OutputStream out = new FileOutputStream(outfile);
+                long copied=0;
+                try {
+                    copied=IOUtils.copy(in, out);
+                } finally {
+                    out.close();
+                }
 
-            if (entry.getSize() != -1) {// some test cases don't set the size
-                assertEquals(entry.getSize(), copied);
-            }
+                if (entry.getSize() != -1) {// some test cases don't set the size
+                    assertEquals(entry.getSize(), copied);
+                }
 
-            if (!outfile.exists()) {
-                fail("extraction failed: " + entry.getName());
+                if (!outfile.exists()) {
+                    fail("extraction failed: " + entry.getName());
+                }
+                if (!expected.remove(entry.getName())) {
+                    fail("unexpected entry: " + entry.getName());
+                }
             }
-            if (!expected.remove(entry.getName())) {
-                fail("unexpected entry: " + entry.getName());
+            in.close();
+            if (expected.size() > 0) {
+                for (Iterator iterator = expected.iterator(); iterator.hasNext();) {
+                    String name = (String) iterator.next();
+                    fail("Expected entry: " + name);
+                }
             }
+            assertEquals(0, expected.size());
+        } finally {
+            rmdir(result);
         }
-        in.close();
-        if (expected.size() > 0) {
-            for (Iterator iterator = expected.iterator(); iterator.hasNext();) {
-                String name = (String) iterator.next();
-                fail("Expected entry: " + name);
-            }
-        }
-        assertEquals(0, expected.size());
-        rmdir(result);
     }
 }
