@@ -34,9 +34,11 @@ public class ArArchiveInputStream extends ArchiveInputStream {
 
     private final InputStream input;
     private long offset = 0;
+    private boolean closed;
 
     public ArArchiveInputStream( final InputStream pInput ) {
         input = pInput;
+        closed = false;
     }
 
     public ArArchiveEntry getNextArEntry() throws IOException {
@@ -98,6 +100,13 @@ public class ArArchiveInputStream extends ArchiveInputStream {
 
     public ArchiveEntry getNextEntry() throws IOException {
         return getNextArEntry();
+    }
+
+    public void close() throws IOException {
+        if (!closed) {
+            closed = true;
+            input.close();
+        }
     }
 
     public int read() throws IOException {
