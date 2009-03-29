@@ -116,7 +116,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
      */
     public void close() throws IOException {
         if (!this.closed) {
-            super.close();
+            in.close();
             this.closed = true;
         }
     }
