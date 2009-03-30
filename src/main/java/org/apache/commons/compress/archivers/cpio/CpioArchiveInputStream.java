@@ -249,8 +249,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
             return -1;
         }
 
-        int tmpread = this.in.read(b, off, tmplength);
-        // TODO - what about EOF or short reads?
+        int tmpread = readFully(b, off, tmplength);
         if (this.entry.getFormat() == FORMAT_NEW_CRC) {
             for (int pos = 0; pos < tmpread; pos++) {
                 this.crc += b[pos] & 0xFF;
@@ -319,8 +318,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         String name = readCString((int) namesize);
         ret.setName(name);
         if (mode == 0 && !name.equals(CPIO_TRAILER)){
-            // TODO - change this to throw
-            new IOException("Mode 0 only allowed in the trailer. Found: "+name).printStackTrace();
+            throw new IOException("Mode 0 only allowed in the trailer. Found entry name: "+name);
         }
         skip(ret.getHeaderPadCount());
 
@@ -346,8 +344,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         final String name = readCString((int) namesize);
         ret.setName(name);
         if (mode == 0 && !name.equals(CPIO_TRAILER)){
-            // TODO - change this to throw
-            new IOException("Mode 0 only allowed in the trailer. Found: "+name).printStackTrace();
+            throw new IOException("Mode 0 only allowed in the trailer. Found entry: "+name);
         }
 
         return ret;
@@ -373,8 +370,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         final String name = readCString((int) namesize);
         ret.setName(name);
         if (mode == 0 && !name.equals(CPIO_TRAILER)){
-            // TODO - change this to throw
-            new IOException("Mode 0 only allowed in the trailer. Found: "+name).printStackTrace();
+            throw new IOException("Mode 0 only allowed in the trailer. Found entry: "+name);
         }
         skip(ret.getHeaderPadCount());
 
