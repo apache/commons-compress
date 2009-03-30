@@ -18,7 +18,6 @@
  */
 package org.apache.commons.compress.changes;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -594,5 +593,48 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * @throws Exception
      */
     public void testAddMoveDelete() throws Exception {
+    }
+    
+    /**
+     * Check can add a file to an empty archive.
+     * 
+     * @throws Exception
+     */
+    public void testAddToEmptyArchive() throws Exception {
+        File input = this.createEmptyArchive("zip");
+
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        InputStream is = null;
+        File result = File.createTempFile("test", ".zip");
+        result.deleteOnExit();
+        ChangeSet changes = new ChangeSet();
+        try {
+
+            is = new FileInputStream(input);
+            ais = factory.createArchiveInputStream("zip", is);
+
+            out = factory.createArchiveOutputStream("zip",
+                    new FileOutputStream(result));
+
+            final File file1 = getFile("test.txt");
+            ArchiveEntry entry = new ZipArchiveEntry("bla/test.txt");
+            changes.add(entry, new FileInputStream(file1));
+            archiveList.add("bla/test.txt");
+            changes.perform(ais, out);
+            is.close();
+
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+            if (ais != null) {
+                ais.close(); // will close is 
+            } else if (is != null){
+                is.close();
+            }
+        }
+
+        this.checkArchiveContent(result, archiveList);
     }
 }
