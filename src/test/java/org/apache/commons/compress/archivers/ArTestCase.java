@@ -32,146 +32,146 @@ import org.apache.commons.compress.utils.IOUtils;
 
 public final class ArTestCase extends AbstractTestCase {
 
-	public void testArArchiveCreation() throws Exception {
-		final File output = new File(dir, "bla.ar");
-		
-		final File file1 = getFile("test1.xml");
-		final File file2 = getFile("test2.xml");
-		
-		final OutputStream out = new FileOutputStream(output);
-        final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("ar", out);
-		os.putArchiveEntry(new ArArchiveEntry("test1.xml", file1.length()));
-		IOUtils.copy(new FileInputStream(file1), os);
-		os.closeArchiveEntry();
-		
-		os.putArchiveEntry(new ArArchiveEntry("test2.xml", file2.length()));
-		IOUtils.copy(new FileInputStream(file2), os);
-		os.closeArchiveEntry();
-		
-		os.close();
-	}
+    public void testArArchiveCreation() throws Exception {
+        final File output = new File(dir, "bla.ar");
 
-	public void testArUnarchive() throws Exception {
-		final File output = new File(dir, "bla.ar");
-		{
-			final File file1 = getFile("test1.xml");
-			final File file2 = getFile("test2.xml");
-			
-			final OutputStream out = new FileOutputStream(output);
-	        final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("ar", out);
-			os.putArchiveEntry(new ArArchiveEntry("test1.xml", file1.length()));
-			IOUtils.copy(new FileInputStream(file1), os);
-			os.closeArchiveEntry();
-			
-			os.putArchiveEntry(new ArArchiveEntry("test2.xml", file2.length()));
-			IOUtils.copy(new FileInputStream(file2), os);
-			os.closeArchiveEntry();
-			os.close();
-			out.close();
-		}
-		
-		// UnArArchive Operation
-		final File input = output;
-		final InputStream is = new FileInputStream(input);
-		final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream(new BufferedInputStream(is));
-		final ArArchiveEntry entry = (ArArchiveEntry)in.getNextEntry();
-		
-		File target = new File(dir, entry.getName());
+        final File file1 = getFile("test1.xml");
+        final File file2 = getFile("test2.xml");
+
+        final OutputStream out = new FileOutputStream(output);
+        final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("ar", out);
+        os.putArchiveEntry(new ArArchiveEntry("test1.xml", file1.length()));
+        IOUtils.copy(new FileInputStream(file1), os);
+        os.closeArchiveEntry();
+
+        os.putArchiveEntry(new ArArchiveEntry("test2.xml", file2.length()));
+        IOUtils.copy(new FileInputStream(file2), os);
+        os.closeArchiveEntry();
+
+        os.close();
+    }
+
+    public void testArUnarchive() throws Exception {
+        final File output = new File(dir, "bla.ar");
+        {
+            final File file1 = getFile("test1.xml");
+            final File file2 = getFile("test2.xml");
+
+            final OutputStream out = new FileOutputStream(output);
+            final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("ar", out);
+            os.putArchiveEntry(new ArArchiveEntry("test1.xml", file1.length()));
+            IOUtils.copy(new FileInputStream(file1), os);
+            os.closeArchiveEntry();
+
+            os.putArchiveEntry(new ArArchiveEntry("test2.xml", file2.length()));
+            IOUtils.copy(new FileInputStream(file2), os);
+            os.closeArchiveEntry();
+            os.close();
+            out.close();
+        }
+
+        // UnArArchive Operation
+        final File input = output;
+        final InputStream is = new FileInputStream(input);
+        final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream(new BufferedInputStream(is));
+        final ArArchiveEntry entry = (ArArchiveEntry)in.getNextEntry();
+
+        File target = new File(dir, entry.getName());
         final OutputStream out = new FileOutputStream(target);
-        
+
         IOUtils.copy(in, out);
-    
+
         out.close();
         in.close();
         is.close();
-	}
+    }
 
-	public void testArDelete() throws Exception {
-		final File output = new File(dir, "bla.ar");
-		
-		{
-			// create
-			final File file1 = getFile("test1.xml");
-			final File file2 = getFile("test2.xml");
-			
-			final OutputStream out = new FileOutputStream(output);
-	        final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("ar", out);
-			os.putArchiveEntry(new ArArchiveEntry("test1.xml", file1.length()));
-			IOUtils.copy(new FileInputStream(file1), os);
-			os.closeArchiveEntry();
-			
-			os.putArchiveEntry(new ArArchiveEntry("test2.xml", file2.length()));
-			IOUtils.copy(new FileInputStream(file2), os);
-			os.closeArchiveEntry();
-			os.close();
-			out.close();
-		}
-		
-		assertEquals(282, output.length());
-		
-		final File output2 = new File(dir, "bla2.ar");		
+    public void testArDelete() throws Exception {
+        final File output = new File(dir, "bla.ar");
 
-		int copied = 0;
-		int deleted = 0;
+        {
+            // create
+            final File file1 = getFile("test1.xml");
+            final File file2 = getFile("test2.xml");
 
-		{
-			// remove all but one file
+            final OutputStream out = new FileOutputStream(output);
+            final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("ar", out);
+            os.putArchiveEntry(new ArArchiveEntry("test1.xml", file1.length()));
+            IOUtils.copy(new FileInputStream(file1), os);
+            os.closeArchiveEntry();
 
-			final InputStream is = new FileInputStream(output);
-			final OutputStream os = new FileOutputStream(output2);
-			final ArchiveOutputStream aos = new ArchiveStreamFactory().createArchiveOutputStream("ar", os);
-			final ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(new BufferedInputStream(is));
-			while(true) {
-				final ArArchiveEntry entry = (ArArchiveEntry)ais.getNextEntry();
-				if (entry == null) {
-					break;
-				}
-				
-				if ("test1.xml".equals(entry.getName())) {
-					aos.putArchiveEntry(entry);
-					IOUtils.copy(ais, aos);
-					aos.closeArchiveEntry();
-					copied++;
-				} else {
-			        IOUtils.copy(ais, new ByteArrayOutputStream());
-			        deleted++;
-				}
-			
-			}
-			ais.close();
-			aos.close();
-			is.close();
-			os.close();			
-		}
+            os.putArchiveEntry(new ArArchiveEntry("test2.xml", file2.length()));
+            IOUtils.copy(new FileInputStream(file2), os);
+            os.closeArchiveEntry();
+            os.close();
+            out.close();
+        }
 
-		assertEquals(1, copied);
-		assertEquals(1, deleted);
-		assertEquals(144, output2.length());
-		
-		long files = 0;
-		long sum = 0;
+        assertEquals(282, output.length());
 
-		{
-			final InputStream is = new FileInputStream(output2);
-			final ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(new BufferedInputStream(is));
-			while(true) {
-				final ArArchiveEntry entry = (ArArchiveEntry)ais.getNextEntry();
-				if (entry == null) {
-					break;
-				}
-				
-		        IOUtils.copy(ais, new ByteArrayOutputStream());
-		        
-		        sum +=  entry.getLength();
-		        files++;
-			}
-			ais.close();
-			is.close();			
-		}
+        final File output2 = new File(dir, "bla2.ar");
 
-		assertEquals(1, files);
-		assertEquals(76, sum);
-		
-	}
+        int copied = 0;
+        int deleted = 0;
+
+        {
+            // remove all but one file
+
+            final InputStream is = new FileInputStream(output);
+            final OutputStream os = new FileOutputStream(output2);
+            final ArchiveOutputStream aos = new ArchiveStreamFactory().createArchiveOutputStream("ar", os);
+            final ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(new BufferedInputStream(is));
+            while(true) {
+                final ArArchiveEntry entry = (ArArchiveEntry)ais.getNextEntry();
+                if (entry == null) {
+                    break;
+                }
+
+                if ("test1.xml".equals(entry.getName())) {
+                    aos.putArchiveEntry(entry);
+                    IOUtils.copy(ais, aos);
+                    aos.closeArchiveEntry();
+                    copied++;
+                } else {
+                    IOUtils.copy(ais, new ByteArrayOutputStream());
+                    deleted++;
+                }
+
+            }
+            ais.close();
+            aos.close();
+            is.close();
+            os.close();
+        }
+
+        assertEquals(1, copied);
+        assertEquals(1, deleted);
+        assertEquals(144, output2.length());
+
+        long files = 0;
+        long sum = 0;
+
+        {
+            final InputStream is = new FileInputStream(output2);
+            final ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(new BufferedInputStream(is));
+            while(true) {
+                final ArArchiveEntry entry = (ArArchiveEntry)ais.getNextEntry();
+                if (entry == null) {
+                    break;
+                }
+
+                IOUtils.copy(ais, new ByteArrayOutputStream());
+
+                sum +=  entry.getLength();
+                files++;
+            }
+            ais.close();
+            is.close();
+        }
+
+        assertEquals(1, files);
+        assertEquals(76, sum);
+
+    }
 
 }
