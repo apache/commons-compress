@@ -111,19 +111,17 @@ public class ArArchiveInputStream extends ArchiveInputStream {
 
     public int read() throws IOException {
         final int ret = input.read();
-        offset++;
+        offset += (ret > 0 ? 1 : 0);
         return ret;
     }
 
     public int read(byte b[]) throws IOException {
-        final int ret = read(b, 0, b.length);
-        offset = offset + b.length;
-        return ret;
+        return read(b, 0, b.length);
     }
 
     public int read(byte[] b, int off, int len) throws IOException {
         final int ret = this.input.read(b, off, len);
-        offset = offset + off;
+        offset += (ret > 0 ? ret : 0);
         return ret;
     }
 
