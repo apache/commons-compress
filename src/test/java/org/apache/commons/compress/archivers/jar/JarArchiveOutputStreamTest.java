@@ -38,9 +38,9 @@ public class JarArchiveOutputStreamTest extends TestCase {
 
             out = new JarArchiveOutputStream(new FileOutputStream(testArchive));
             out.putArchiveEntry(new ZipArchiveEntry("foo/"));
-            out.closeEntry();
+            out.closeArchiveEntry();
             out.putArchiveEntry(new ZipArchiveEntry("bar/"));
-            out.closeEntry();
+            out.closeArchiveEntry();
             out.close();
             out = null;
 
