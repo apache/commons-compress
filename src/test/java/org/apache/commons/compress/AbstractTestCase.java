@@ -185,6 +185,7 @@ public abstract class AbstractTestCase extends TestCase {
     protected File createEmptyArchive(String archivename) throws Exception {
         ArchiveOutputStream out = null;
         OutputStream stream = null;
+        archiveList = new ArrayList();
         try {
             archive = File.createTempFile("empty", "." + archivename);
             stream = new FileOutputStream(archive);
