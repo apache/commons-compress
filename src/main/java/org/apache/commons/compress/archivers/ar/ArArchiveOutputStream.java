@@ -145,19 +145,9 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         return offset;
     }
 
-    public void write(int b) throws IOException {
-        out.write(b);
-        entryOffset++;
-    }
-
     public void write(byte[] b, int off, int len) throws IOException {
         out.write(b, off, len);
         entryOffset += len;
-    }
-
-    public void write(byte[] b) throws IOException {
-        out.write(b);
-        entryOffset += b.length;
     }
 
     public void close() throws IOException {
