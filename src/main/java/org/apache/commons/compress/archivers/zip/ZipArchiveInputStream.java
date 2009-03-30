@@ -266,18 +266,26 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         throw new IllegalArgumentException();
     }
 
+    /*
+     *  This test assumes that the zip file does not have any additional leading content,
+     *  which is something that is allowed by the specification (e.g. self-extracting zips)
+     */
     public static boolean matches(byte[] signature, int length) {
         if (length < ZipArchiveOutputStream.LFH_SIG.length) {
             return false;
         }
 
-        for (int i = 0; i < ZipArchiveOutputStream.LFH_SIG.length; i++) {
-            if (signature[i] != ZipArchiveOutputStream.LFH_SIG[i]) {
+        return checksig(signature, ZipArchiveOutputStream.LFH_SIG) // normal file
+            || checksig(signature, ZipArchiveOutputStream.EOCD_SIG); // empty zip
+    }
+
+    private static boolean checksig(byte[] signature, byte[] expected){
+        for (int i = 0; i < expected.length; i++) {
+            if (signature[i] != expected[i]) {
                 return false;
             }
         }
-
-        return true;
+        return true;        
     }
 
     private void closeEntry() throws IOException {
