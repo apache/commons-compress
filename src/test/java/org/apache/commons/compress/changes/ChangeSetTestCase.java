@@ -637,4 +637,94 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
         this.checkArchiveContent(result, archiveList);
     }
+
+    /**
+     * Check can delete and add a file to an archive with a single file
+     * 
+     * @throws Exception
+     */
+    public void testDeleteAddToOneFileArchive() throws Exception {
+        File input = this.createSingleEntryArchive("zip");
+
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        InputStream is = null;
+        File result = File.createTempFile("test", ".zip");
+        result.deleteOnExit();
+        ChangeSet changes = new ChangeSet();
+        try {
+
+            is = new FileInputStream(input);
+            ais = factory.createArchiveInputStream("zip", is);
+
+            out = factory.createArchiveOutputStream("zip",
+                    new FileOutputStream(result));
+            changes.delete("testdata");
+            archiveListDelete("testdata");
+            
+            ArchiveEntry entry = new ZipArchiveEntry("bla/test.txt");
+            changes.add(entry, new FileInputStream(getFile("test.txt")));
+            archiveList.add("bla/test.txt");
+            
+            changes.perform(ais, out);
+            is.close();
+
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+            if (ais != null) {
+                ais.close(); // will close is 
+            } else if (is != null){
+                is.close();
+            }
+        }
+
+        this.checkArchiveContent(result, archiveList);
+    }
+
+    /**
+     * Check can add and delete a file to an archive with a single file
+     * 
+     * @throws Exception
+     */
+    public void testAddDeleteToOneFileArchive() throws Exception {
+        File input = this.createSingleEntryArchive("zip");
+
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        InputStream is = null;
+        File result = File.createTempFile("test", ".zip");
+        result.deleteOnExit();
+        ChangeSet changes = new ChangeSet();
+        try {
+
+            is = new FileInputStream(input);
+            ais = factory.createArchiveInputStream("zip", is);
+
+            out = factory.createArchiveOutputStream("zip",
+                    new FileOutputStream(result));
+            ArchiveEntry entry = new ZipArchiveEntry("bla/test.txt");
+            changes.add(entry, new FileInputStream(getFile("test.txt")));
+            archiveList.add("bla/test.txt");
+
+            changes.delete("testdata");
+            archiveListDelete("testdata");
+            
+            changes.perform(ais, out);
+            is.close();
+
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+            if (ais != null) {
+                ais.close(); // will close is 
+            } else if (is != null){
+                is.close();
+            }
+        }
+
+        this.checkArchiveContent(result, archiveList);
+    }
 }
