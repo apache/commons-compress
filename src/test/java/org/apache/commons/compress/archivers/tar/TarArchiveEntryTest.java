@@ -50,25 +50,25 @@ public class TarArchiveEntryTest extends TestCase {
         try {
             tout = new TarArchiveOutputStream(new FileOutputStream(f));
             TarArchiveEntry t = new TarArchiveEntry(new File(ROOT));
-            tout.putNextEntry(t);
-            tout.closeEntry();
+            tout.putArchiveEntry(t);
+            tout.closeArchiveEntry();
             t = new TarArchiveEntry(new File(new File(ROOT), "foo.txt"));
             t.setSize(6);
-            tout.putNextEntry(t);
+            tout.putArchiveEntry(t);
             tout.write(new byte[] {'h', 'e', 'l', 'l', 'o', ' '});
-            tout.closeEntry();
+            tout.closeArchiveEntry();
             t = new TarArchiveEntry(new File(new File(ROOT), "bar.txt")
                                     .getAbsolutePath());
             t.setSize(5);
-            tout.putNextEntry(t);
+            tout.putArchiveEntry(t);
             tout.write(new byte[] {'w', 'o', 'r', 'l', 'd'});
-            tout.closeEntry();
+            tout.closeArchiveEntry();
             t = new TarArchiveEntry("dummy");
             t.setName(new File(new File(ROOT), "baz.txt").getAbsolutePath());
             t.setSize(1);
-            tout.putNextEntry(t);
+            tout.putArchiveEntry(t);
             tout.write(new byte[] {'!'});
-            tout.closeEntry();
+            tout.closeArchiveEntry();
             tout.close();
             tout = null;
 
