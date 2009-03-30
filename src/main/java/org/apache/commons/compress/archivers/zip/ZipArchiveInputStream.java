@@ -54,7 +54,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     private final Inflater inf = new Inflater(true);
     private final CRC32 crc = new CRC32();
 
-    private final byte[] SINGLE = new byte[1];
     private final byte[] buf = new byte[ZipArchiveOutputStream.BUFFER_SIZE];
 
     private ZipArchiveEntry current = null;
@@ -242,11 +241,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             closed = true;
             in.close();
         }
-    }
-
-    public int read() throws IOException {
-        int num = read(SINGLE, 0, 1);
-        return num == -1 ? -1 : SINGLE[0] & ZipArchiveOutputStream.BYTE_MASK;
     }
 
     public long skip(long value) throws IOException {
