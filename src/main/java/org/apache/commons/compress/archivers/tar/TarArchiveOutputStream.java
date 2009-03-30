@@ -43,7 +43,6 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     private long      currSize;
     private String    currName;
     private long      currBytes;
-    private final byte[]    oneBuf;
     private final byte[]    recordBuf;
     private int       assemLen;
     private final byte[]    assemBuf;
@@ -85,7 +84,6 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         this.assemLen = 0;
         this.assemBuf = new byte[recordSize];
         this.recordBuf = new byte[recordSize];
-        this.oneBuf = new byte[1];
     }
 
     /**
@@ -159,14 +157,16 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * header record and positions the output stream for writing
      * the contents of the entry. Once this method is called, the
      * stream is ready for calls to write() to write the entry's
-     * contents. Once the contents are written, closeEntry()
+     * contents. Once the contents are written, closeArchiveEntry()
      * <B>MUST</B> be called to ensure that all buffered data
      * is completely written to the output stream.
      *
-     * @param entry The TarEntry to be written to the archive.
+     * @param archiveEntry The TarEntry to be written to the archive.
      * @throws IOException on error
+     * @throws ClassCastException if archiveEntry is not an instance of TarArchiveEntry
      */
-    public void putNextEntry(TarArchiveEntry entry) throws IOException {
+    public void putArchiveEntry(ArchiveEntry archiveEntry) throws IOException {
+        TarArchiveEntry entry = (TarArchiveEntry) archiveEntry;
         if (entry.getName().length() >= TarConstants.NAMELEN) {
 
             if (longFileMode == LONGFILE_GNU) {
@@ -176,10 +176,10 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                                                                     TarConstants.LF_GNUTYPE_LONGNAME);
 
                 longLinkEntry.setSize(entry.getName().length() + 1);
-                putNextEntry(longLinkEntry);
+                putArchiveEntry(longLinkEntry);
                 write(entry.getName().getBytes());
                 write(0);
-                closeEntry();
+                closeArchiveEntry();
             } else if (longFileMode != LONGFILE_TRUNCATE) {
                 throw new RuntimeException("file name '" + entry.getName()
                                            + "' is too long ( > "
@@ -210,7 +210,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * next entry written.
      * @throws IOException on error
      */
-    public void closeEntry() throws IOException {
+    public void closeArchiveEntry() throws IOException {
         if (assemLen > 0) {
             for (int i = assemLen; i < assemBuf.length; ++i) {
                 assemBuf[i] = 0;
@@ -228,32 +228,6 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                                   + "' before the '" + currSize
                                   + "' bytes specified in the header were written");
         }
-    }
-
-    /**
-     * Writes a byte to the current tar archive entry.
-     *
-     * This method simply calls read( byte[], int, int ).
-     *
-     * @param b The byte written.
-     * @throws IOException on error
-     */
-    public void write(int b) throws IOException {
-        oneBuf[0] = (byte) b;
-
-        write(oneBuf, 0, 1);
-    }
-
-    /**
-     * Writes bytes to the current tar archive entry.
-     *
-     * This method simply calls write( byte[], int, int ).
-     *
-     * @param wBuf The buffer to write to the archive.
-     * @throws IOException on error
-     */
-    public void write(byte[] wBuf) throws IOException {
-        write(wBuf, 0, wBuf.length);
     }
 
     /**
@@ -353,14 +327,6 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     // ArchiveOutputStream
-
-    public void closeArchiveEntry() throws IOException {
-        closeEntry();
-    }
-
-    public void putArchiveEntry(ArchiveEntry entry) throws IOException {
-        putNextEntry((TarArchiveEntry) entry);
-    }
 
     public String getDefaultFileExtension() {
         return "tar";

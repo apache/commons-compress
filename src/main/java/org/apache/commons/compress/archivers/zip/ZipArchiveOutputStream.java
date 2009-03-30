@@ -52,7 +52,7 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
  * calculate them yourself.  Unfortunately this is not possible for
  * the {@link #STORED STORED} method, here setting the CRC and
  * uncompressed size information is required before {@link
- * #putNextEntry putNextEntry} can be called.</p>
+ * #putArchiveEntry(ArchiveEntry)} can be called.</p>
  * @NotThreadSafe
  */
 public class ZipArchiveOutputStream extends ArchiveOutputStream {
@@ -268,7 +268,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      *
      * <p>For seekable streams, you don't need to calculate the CRC or
      * uncompressed size for {@link #STORED} entries before
-     * invoking {@link #putNextEntry}.
+     * invoking {@link #putArchiveEntry(ArchiveEntry)}.
      * @return true if seekable
      */
     public boolean isSeekable() {
@@ -334,7 +334,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @throws IOException on error
      */
     public void finish() throws IOException {
-        closeEntry();
+        closeArchiveEntry();
         cdOffset = written;
         for (Iterator i = entries.iterator(); i.hasNext(); ) {
             writeCentralFileHeader((ZipArchiveEntry) i.next());
@@ -349,7 +349,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * Writes all necessary data for this entry.
      * @throws IOException on error
      */
-    public void closeEntry() throws IOException {
+    public void closeArchiveEntry() throws IOException {
         if (entry == null) {
             return;
         }
@@ -410,15 +410,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         entry = null;
     }
 
-    /**
-     * Begin writing next entry.
-     * @param ze the entry to write
-     * @throws IOException on error
-     */
-    public void putNextEntry(ZipArchiveEntry ze) throws IOException {
-        closeEntry();
+    /** {@inheritDoc} */
+ // @throws ClassCastException if entry is not an instance of ZipArchiveEntry
+    public void putArchiveEntry(ArchiveEntry archiveEntry) throws IOException {
+        closeArchiveEntry();
 
-        entry = ze;
+        entry = ((ZipArchiveEntry) archiveEntry);
         entries.add(entry);
 
         if (entry.getMethod() == -1) { // not specified
@@ -523,19 +520,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Writes a single byte to ZIP entry.
-     *
-     * <p>Delegates to the three arg method.</p>
-     * @param b the byte to write
-     * @throws IOException on error
-     */
-    public void write(int b) throws IOException {
-        byte[] buff = new byte[1];
-        buff[0] = (byte) (b & BYTE_MASK);
-        write(buff, 0, 1);
-    }
-
-    /**
      * Closes this output stream and releases any system resources
      * associated with the stream.
      *
@@ -562,22 +546,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         if (out != null) {
             out.flush();
         }
-    }
-
-    public void putArchiveEntry(ArchiveEntry entry) throws IOException {
-        putNextEntry((ZipArchiveEntry) entry);
-    }
-
-    public void closeArchiveEntry() {
-        // do nothing
-    }
-
-    // used to be implemented via FilterOutputStream
-    /**
-     * Invokes the {@link #write(byte[],int,int)} three-arg version.
-     */
-    public void write(byte[] b) throws IOException {
-        write(b, 0, b.length);
     }
 
     /*

@@ -132,13 +132,15 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      * the default header format will be used if no other format is specified in
      * the entry.
      * 
-     * @param e
+     * @param entry
      *            the CPIO cpioEntry to be written
      * @throws IOException
      *             if an I/O error has occurred or if a CPIO file error has
      *             occurred
+     * @throws ClassCastException if entry is not an instance of CpioArchiveEntry
      */
-    public void putNextEntry(final CpioArchiveEntry e) throws IOException {
+    public void putArchiveEntry(ArchiveEntry entry) throws IOException {
+        CpioArchiveEntry e = (CpioArchiveEntry) entry;
         ensureOpen();
         if (this.entry != null) {
             closeArchiveEntry(); // close previous entry
@@ -377,23 +379,4 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         out.write('\0');
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.commons.compress.archivers.ArchiveOutputStream#putArchiveEntry
-     * (org.apache.commons.compress.archivers.ArchiveEntry)
-     */
-    public void putArchiveEntry(ArchiveEntry entry) throws IOException {
-        this.putNextEntry((CpioArchiveEntry) entry);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.io.OutputStream#write(int)
-     */
-    public void write(int b) throws IOException {
-        out.write(b);
-    }
 }

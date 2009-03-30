@@ -21,6 +21,7 @@ package org.apache.commons.compress.archivers.jar;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.JarMarker;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
@@ -40,11 +41,12 @@ public class JarArchiveOutputStream extends ZipArchiveOutputStream {
         super(out);
     }
 
-    public void putNextEntry(ZipArchiveEntry ze) throws IOException {
+    // @throws ClassCastException if entry is not an instance of ZipArchiveEntry
+    public void putArchiveEntry(ArchiveEntry ze) throws IOException {
         if (!jarMarkerAdded) {
-            ze.addAsFirstExtraField(JarMarker.getInstance());
+            ((ZipArchiveEntry)ze).addAsFirstExtraField(JarMarker.getInstance());
             jarMarkerAdded = true;
         }
-        super.putNextEntry(ze);
+        super.putArchiveEntry(ze);
     }
 }
