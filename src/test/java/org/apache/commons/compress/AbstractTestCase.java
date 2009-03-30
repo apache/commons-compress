@@ -201,6 +201,32 @@ public abstract class AbstractTestCase extends TestCase {
     }
 
     /**
+     * Create an archive with a single file "testdata/test1.xml".
+     * 
+     * @param archivename
+     * @return the archive File
+     * @throws Exception
+     */
+    protected File createSingleEntryArchive(String archivename) throws Exception {
+        ArchiveOutputStream out = null;
+        OutputStream stream = null;
+        archiveList = new ArrayList();
+        try {
+            archive = File.createTempFile("empty", "." + archivename);
+            stream = new FileOutputStream(archive);
+            out = factory.createArchiveOutputStream(archivename, stream);
+            addArchiveEntry(out, "testdata/test1.xml", getFile("test1.xml"));
+        } finally {
+            if (out != null) {
+                out.close();
+            } else if (stream != null) {
+                stream.close();
+            }
+        }
+        return archive;
+    }
+
+    /**
      * Checks if an archive contains all expected files.
      * 
      * @param archive
