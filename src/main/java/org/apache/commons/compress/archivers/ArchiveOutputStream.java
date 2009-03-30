@@ -36,6 +36,16 @@ public abstract class ArchiveOutputStream extends OutputStream {
     private final byte[] oneByte = new byte[1];
     static final int BYTE_MASK = 0xFF;
 
+    // Methods specific to ArchiveOutputStream
+    
+    /**
+     * Writes the headers for an archive entry to the output stream.
+     * The caller must then write the content to the stream and call
+     * {@link #closeArchiveEntry()} to complete the process.
+     * 
+     * @param entry describes the entry
+     * @throws IOException
+     */
     public abstract void putArchiveEntry(ArchiveEntry entry) throws IOException;
 
     /**
