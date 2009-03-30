@@ -70,8 +70,6 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
 
     private boolean entryEOF = false;
 
-    private final byte[] singleByteBuf = new byte[1];
-
     private final byte tmpbuf[] = new byte[4096];
 
     private long crc = 0;
@@ -129,7 +127,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
      *             if an I/O error has occurred or if a CPIO file error has
      *             occurred
      */
-    public void closeEntry() throws IOException {
+    private void closeEntry() throws IOException {
         ensureOpen();
         while (read(this.tmpbuf, 0, this.tmpbuf.length) != -1) {
             // do nothing
@@ -205,20 +203,6 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         if (bytes > 0) {
             readFully(buff, 0, bytes);
         }
-    }
-
-    /**
-     * Reads a byte of data. This method will block until enough input is
-     * available.
-     * 
-     * @return the byte read, or -1 if end of input is reached
-     * @throws IOException
-     *             if an I/O error has occurred or if a CPIO file error has
-     *             occurred
-     */
-    public int read() throws IOException {
-        return read(this.singleByteBuf, 0, 1) == -1 ? -1
-                : this.singleByteBuf[0] & 0xff;
     }
 
     /**
