@@ -149,7 +149,9 @@ public final class ArTestCase extends AbstractTestCase {
 
         assertEquals(1, copied);
         assertEquals(1, deleted);
-        assertEquals(144, output2.length());
+        assertEquals(8
+                     + 60 + file1.length() + (file1.length() % 2),
+                     output2.length());
 
         long files = 0;
         long sum = 0;
@@ -173,7 +175,7 @@ public final class ArTestCase extends AbstractTestCase {
         }
 
         assertEquals(1, files);
-        assertEquals(76, sum);
+        assertEquals(file1.length(), sum);
 
     }
 
