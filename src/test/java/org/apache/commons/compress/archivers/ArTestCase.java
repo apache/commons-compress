@@ -89,10 +89,10 @@ public final class ArTestCase extends AbstractTestCase {
     public void testArDelete() throws Exception {
         final File output = new File(dir, "bla.ar");
 
+        final File file1 = getFile("test1.xml");
+        final File file2 = getFile("test2.xml");
         {
             // create
-            final File file1 = getFile("test1.xml");
-            final File file2 = getFile("test2.xml");
 
             final OutputStream out = new FileOutputStream(output);
             final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("ar", out);
@@ -107,7 +107,10 @@ public final class ArTestCase extends AbstractTestCase {
             out.close();
         }
 
-        assertEquals(282, output.length());
+        assertEquals(8
+                     + 60 + file1.length() + (file1.length() % 2)
+                     + 60 + file2.length() + (file2.length() % 2),
+                     output.length());
 
         final File output2 = new File(dir, "bla2.ar");
 

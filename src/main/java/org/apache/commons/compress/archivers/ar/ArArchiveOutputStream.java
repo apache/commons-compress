@@ -35,6 +35,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     private long archiveOffset = 0;
     private long entryOffset = 0;
     private ArArchiveEntry prevEntry;
+    private boolean haveUnclosedEntry = true;
 
     public ArArchiveOutputStream( final OutputStream pOut ) {
         this.out = pOut;
@@ -47,10 +48,11 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     }
 
     public void closeArchiveEntry() throws IOException {
-        if ((entryOffset % 2) != 0) {
+        if (prevEntry != null && haveUnclosedEntry && (entryOffset % 2) != 0) {
             out.write('\n'); // Pad byte
             archiveOffset++;
         }
+        haveUnclosedEntry = false;
     }
 
     public void putArchiveEntry( final ArchiveEntry pEntry ) throws IOException {
@@ -70,6 +72,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         archiveOffset += writeEntryHeader(pArEntry);
 
         entryOffset = 0;
+        haveUnclosedEntry = true;
     }
 
     private long fill( final long pOffset, final long pNewOffset, final char pFill ) throws IOException { 
