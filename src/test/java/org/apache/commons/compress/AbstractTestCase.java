@@ -70,8 +70,9 @@ public abstract class AbstractTestCase extends TestCase {
         rmdir(dir);
         rmdir(resultDir);
         dir = resultDir = null;
-        if (archive != null) {
+        if (archive != null && archive.exists()) {
             if (!archive.delete()){
+                // Note: this exception won't be shown if the test has already failed
                 throw new Exception("Could not delete "+archive.getPath());
             }
         }
