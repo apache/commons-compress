@@ -237,7 +237,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
                                                            en.limit()));
             }
 
-            zos.putNextEntry(ze);
+            zos.putArchiveEntry(ze);
             zos.write("Hello, world!".getBytes("US-ASCII"));
             zos.closeEntry();
 
@@ -253,7 +253,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
                                                            en.limit()));
             }
 
-            zos.putNextEntry(ze);
+            zos.putArchiveEntry(ze);
             zos.write("Give me your money!".getBytes("US-ASCII"));
             zos.closeEntry();
 
@@ -270,7 +270,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
                                                            en.limit()));
             }
 
-            zos.putNextEntry(ze);
+            zos.putArchiveEntry(ze);
             zos.write("ascii".getBytes("US-ASCII"));
             zos.closeEntry();
         } finally {
