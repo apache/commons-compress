@@ -35,13 +35,42 @@ public class ArArchiveInputStream extends ArchiveInputStream {
     private final InputStream input;
     private long offset = 0;
     private boolean closed;
+    /*
+     * If getNextEnxtry has been called, the entry metadata is stored in
+     * currentEntry.
+     */
+    private ArArchiveEntry currentEntry = null;
+    /*
+     * The offset where the current entry started. -1 if no entry has been
+     * called
+     */
+    private long entryOffset = -1;
 
     public ArArchiveInputStream( final InputStream pInput ) {
         input = pInput;
         closed = false;
     }
 
+    /**
+     * Returns the next AR entry in this stream.
+     * 
+     * @return the next AR entry.
+     * @throws IOException
+     *             if the entry could not be read
+     */
     public ArArchiveEntry getNextArEntry() throws IOException {
+        if (currentEntry != null) {
+            final long entryEnd = entryOffset + currentEntry.getLength();
+            while (offset < entryEnd) {
+                int x = read();
+                if (x == -1) {
+                    // hit EOF before previous entry was complete
+                    // TODO: throw an exception instead?
+                    return null;
+                }
+            }
+            currentEntry = null;
+        }
 
         if (offset == 0) {
             final byte[] expected = ArArchiveEntry.HEADER.getBytes();
@@ -57,12 +86,15 @@ public class ArArchiveInputStream extends ArchiveInputStream {
             }
         }
 
-        if (input.available() == 0) {
-            return null;
+        if (offset % 2 != 0) {
+            if (read() < 0) {
+                // hit eof
+                return null;
+            }
         }
 
-        if (offset % 2 != 0) {
-            read();
+        if (input.available() == 0) {
+            return null;
         }
 
         final byte[] name = new byte[16];
@@ -93,8 +125,11 @@ public class ArArchiveInputStream extends ArchiveInputStream {
             }
         }
 
-        return new ArArchiveEntry(new String(name).trim(), Long.parseLong(new String(length).trim()));
-
+        entryOffset = offset;
+        currentEntry = new ArArchiveEntry(new String(name).trim(),
+                                          Long.parseLong(new String(length)
+                                                         .trim()));
+        return currentEntry;
     }
 
 
@@ -107,20 +142,30 @@ public class ArArchiveInputStream extends ArchiveInputStream {
             closed = true;
             input.close();
         }
+        currentEntry = null;
     }
 
     public int read() throws IOException {
-        final int ret = input.read();
-        offset += (ret > 0 ? 1 : 0);
-        return ret;
+        byte[] single = new byte[1];
+        int num = read(single, 0, 1);
+        return num == -1 ? -1 : single[0] & 0xff;
     }
 
-    public int read(byte b[]) throws IOException {
+    public int read(byte[] b) throws IOException {
         return read(b, 0, b.length);
     }
 
-    public int read(byte[] b, int off, int len) throws IOException {
-        final int ret = this.input.read(b, off, len);
+    public int read(byte[] b, final int off, final int len) throws IOException {
+        int toRead = len;
+        if (currentEntry != null) {
+            final long entryEnd = entryOffset + currentEntry.getLength();
+            if (len > 0 && entryEnd > offset) {
+                toRead = (int) Math.min(len, entryEnd - offset);
+            } else {
+                return -1;
+            }
+        }
+        final int ret = this.input.read(b, off, toRead);
         offset += (ret > 0 ? ret : 0);
         return ret;
     }
