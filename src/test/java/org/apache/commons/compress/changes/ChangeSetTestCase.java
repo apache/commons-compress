@@ -498,7 +498,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
-    public void XtestDeleteFromAr() throws Exception {
+    public void testDeleteFromAr() throws Exception {
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
         File temp = null;
@@ -522,8 +522,6 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                 ais.close();
         }
 
-        // TODO: check ar file. getNextEntry returns null, but ar -t tempfile.ar
-        // shows still two files
         List expected = new ArrayList();
         expected.add("test1.xml");
         this.checkArchiveContent(temp, expected);
