@@ -145,16 +145,6 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         currentEntry = null;
     }
 
-    public int read() throws IOException {
-        byte[] single = new byte[1];
-        int num = read(single, 0, 1);
-        return num == -1 ? -1 : single[0] & 0xff;
-    }
-
-    public int read(byte[] b) throws IOException {
-        return read(b, 0, b.length);
-    }
-
     public int read(byte[] b, final int off, final int len) throws IOException {
         int toRead = len;
         if (currentEntry != null) {

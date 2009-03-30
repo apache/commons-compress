@@ -40,7 +40,6 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     private static final int SMALL_BUFFER_SIZE = 256;
     private static final int BUFFER_SIZE = 8 * 1024;
     private static final int LARGE_BUFFER_SIZE = 32 * 1024;
-    private static final int BYTE_MASK = 0xFF;
 
     private boolean debug;
     private boolean hasHitEOF;
@@ -49,13 +48,6 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     private byte[] readBuf;
     protected final TarBuffer buffer;
     private TarArchiveEntry currEntry;
-
-    /**
-     * This contents of this array is not used at all in this class,
-     * it is only here to avoid repeated object creation during calls
-     * to the no-arg read method.
-     */
-    private final byte[] oneBuf;
 
     /**
      * Constructor for TarInputStream.
@@ -83,7 +75,6 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     public TarArchiveInputStream(InputStream is, int blockSize, int recordSize) {
         this.buffer = new TarBuffer(is, blockSize, recordSize);
         this.readBuf = null;
-        this.oneBuf = new byte[1];
         this.debug = false;
         this.hasHitEOF = false;
     }
@@ -267,19 +258,6 @@ public class TarArchiveInputStream extends ArchiveInputStream {
 
     public ArchiveEntry getNextEntry() throws IOException {
         return getNextTarEntry();
-    }
-
-    /**
-     * Reads a byte from the current tar archive entry.
-     *
-     * This method simply calls read( byte[], int, int ).
-     *
-     * @return The byte read, or -1 at EOF.
-     * @throws IOException on error
-     */
-    public int read() throws IOException {
-        int num = read(oneBuf, 0, 1);
-        return num == -1 ? -1 : oneBuf[0] & BYTE_MASK;
     }
 
     /**
