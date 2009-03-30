@@ -22,11 +22,12 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Archive input streams are expected to override the<br/>
- * {@link #read()} and {@link #read(byte[] b, int off, int len)} <br/>
- * methods so that reading from the stream generates EOF for the end of
- * data in each entry as well as at the end of the file proper. The
- * {@link #getNextEntry()} method is used to reset the input stream
+ * Archive input streams <b>MUST</b> override the 
+ * {@link #read(byte[], int, int)} - or {@link #read()} -
+ * method so that reading from the stream generates EOF for the end of
+ * data in each entry as well as at the end of the file proper.
+ * <p>
+ * The {@link #getNextEntry()} method is used to reset the input stream
  * ready for reading the data from the next entry.
  * <p>
  * The input stream classes must also implement a method with the signature:
@@ -38,6 +39,9 @@ import java.io.InputStream;
  */
 public abstract class ArchiveInputStream extends InputStream {
 
+    private byte[] SINGLE = new byte[1];
+    private static final int BYTE_MASK = 0xFF;
+
     /**
      * Returns the next Archive Entry in this Stream.
      * @return the next entry
@@ -45,4 +49,32 @@ public abstract class ArchiveInputStream extends InputStream {
      */
     public abstract ArchiveEntry getNextEntry() throws IOException;
 
+    /*
+     * Note that subclasses also implement specific get() methods which
+     * return the appropriate class without need for a cast.
+     * See SVN revision r743259
+     * @return
+     * @throws IOException
+     */
+    // public abstract XXXArchiveEntry getNextXXXEntry() throws IOException;
+
+
+    /**
+     * Reads a byte of data. This method will block until enough input is
+     * available.
+     * 
+     * Simply calls the {@link #read(byte[], int, int)} method.
+     * 
+     * MUST be overridden if the {@link #read(byte[], int, int)} method
+     * is not overridden; may be overridden otherwise.
+     * 
+     * @return the byte read, or -1 if end of input is reached
+     * @throws IOException
+     *             if an I/O error has occurred or if a CPIO file error has
+     *             occurred
+     */
+    public int read() throws IOException {
+        int num = read(SINGLE, 0, 1);
+        return num == -1 ? -1 : SINGLE[0] & BYTE_MASK;
+    }
 }
