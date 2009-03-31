@@ -482,8 +482,13 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * Set this entry's file size.
      *
      * @param size This entry's new file size.
+     * @throws IllegalArgumentException if the size is < 0
+     * or > {@link TarConstants#MAXSIZE} (077777777777L).
      */
     public void setSize(long size) {
+        if (size > MAXSIZE || size < 0){
+            throw new IllegalArgumentException("Size is out of range: "+size);
+        }
         this.size = size;
     }
 

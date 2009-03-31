@@ -95,4 +95,21 @@ public class TarArchiveEntryTest extends TestCase {
             }
         }
     }
+    
+    public void testMaxFileSize(){
+        TarArchiveEntry t = new TarArchiveEntry("");
+        t.setSize(0);
+        t.setSize(1);
+        try {
+            t.setSize(-1);
+            fail("Should have generated IllegalArgumentException");
+        } catch (IllegalArgumentException expected) {
+        }
+        t.setSize(077777777777L);
+        try {
+            t.setSize(0100000000000L);
+            fail("Should have generated IllegalArgumentException");
+        } catch (IllegalArgumentException expected) {
+        }
+    }
 }
