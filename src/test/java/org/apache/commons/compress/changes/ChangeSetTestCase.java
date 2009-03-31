@@ -30,7 +30,6 @@ import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
-import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.ar.ArArchiveEntry;
 import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -41,8 +40,6 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
  */
 public final class ChangeSetTestCase extends AbstractTestCase {
     
-    private ArchiveStreamFactory factory = new ArchiveStreamFactory();
-
     private void archiveListDelete(String prefix){
         Iterator it = archiveList.iterator();
         while(it.hasNext()){
@@ -54,26 +51,27 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     }
 
     /**
-     * Tries to delete the folder "bla" from a zip file. This should result in
+     * Tries to delete the folder "bla" from an archive file. This should result in
      * the deletion of bla/*, which actually means bla/test4.xml should be
-     * removed from this zipfile. The file something/bla (without ending, named
+     * removed from the archive. The file something/bla (without ending, named
      * like the folder) should not be deleted.
      * 
      * @throws Exception
      */
     public void testDeleteDir() throws Exception {
-        File input = this.createArchive("zip");
+        final String archivename = "cpio";
+        File input = this.createArchive(archivename);
 
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
-        File result = File.createTempFile("test", ".zip");
+        File result = File.createTempFile("test", "."+archivename);
         result.deleteOnExit();
         try {
 
             final InputStream is = new FileInputStream(input);
-            ais = factory.createArchiveInputStream("zip", is);
+            ais = factory.createArchiveInputStream(archivename, is);
 
-            out = factory.createArchiveOutputStream("zip",
+            out = factory.createArchiveOutputStream(archivename,
                     new FileOutputStream(result));
 
             ChangeSet changes = new ChangeSet();
@@ -93,24 +91,25 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     }
 
     /**
-     * Tries to delete the file "bla/test5.xml" from a zip file. This should
+     * Tries to delete the file "bla/test5.xml" from an archive. This should
      * result in the deletion of "bla/test5.xml".
      * 
      * @throws Exception
      */
     public void testDeleteFile() throws Exception {
-        File input = this.createArchive("zip");
+        final String archivename = "cpio";
+        File input = this.createArchive(archivename);
 
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
-        File result = File.createTempFile("test", ".zip");
+        File result = File.createTempFile("test", "."+archivename);
         result.deleteOnExit();
         try {
 
             final InputStream is = new FileInputStream(input);
-            ais = factory.createArchiveInputStream("zip", is);
+            ais = factory.createArchiveInputStream(archivename, is);
 
-            out = factory.createArchiveOutputStream("zip",
+            out = factory.createArchiveOutputStream(archivename,
                     new FileOutputStream(result));
 
             ChangeSet changes = new ChangeSet();
@@ -137,17 +136,18 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * @throws Exception
      */
     public void testDeletePlusAdd() throws Exception {
-        File input = this.createArchive("zip");
+        final String archivename = "cpio";
+        File input = this.createArchive(archivename);
 
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
-        File result = File.createTempFile("test", ".zip");
+        File result = File.createTempFile("test", "."+archivename);
         result.deleteOnExit();
         try {
 
             final InputStream is = new FileInputStream(input);
-            ais = factory.createArchiveInputStream("zip", is);
-            out = factory.createArchiveOutputStream("zip",
+            ais = factory.createArchiveInputStream(archivename, is);
+            out = factory.createArchiveOutputStream(archivename,
                     new FileOutputStream(result));
 
             ChangeSet changes = new ChangeSet();
@@ -156,7 +156,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
             // Add a file
             final File file1 = getFile("test.txt");
-            ArchiveEntry entry = new ZipArchiveEntry("bla/test.txt");
+            ArchiveEntry entry = out.createArchiveEntry(file1, "bla/test.txt");
             changes.add(entry, new FileInputStream(file1));
             archiveList.add("bla/test.txt");
 
@@ -179,17 +179,18 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * @throws Exception
      */
     public void testDeleteFromAndAddToZip() throws Exception {
-        File input = this.createArchive("zip");
+        final String archivename = "zip";
+        File input = this.createArchive(archivename);
 
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
-        File result = File.createTempFile("test", ".zip");
+        File result = File.createTempFile("test", "."+archivename);
         result.deleteOnExit();
         try {
 
             final InputStream is = new FileInputStream(input);
-            ais = factory.createArchiveInputStream("zip", is);
-            out = factory.createArchiveOutputStream("zip",
+            ais = factory.createArchiveInputStream(archivename, is);
+            out = factory.createArchiveOutputStream(archivename,
                     new FileOutputStream(result));
 
             ChangeSet changes = new ChangeSet();
@@ -217,22 +218,23 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
     /**
      * add blub/test.txt + delete blub Should add blub/test.txt and delete it
-     * afterwards. In this example, the zip archive should stay untouched.
+     * afterwards. In this example, the archive should stay untouched.
      * 
      * @throws Exception
      */
     public void testAddDeleteAdd() throws Exception {
-        File input = this.createArchive("zip");
+        final String archivename = "cpio";
+        File input = this.createArchive(archivename);
 
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
-        File result = File.createTempFile("test", ".zip");
+        File result = File.createTempFile("test", "."+archivename);
         result.deleteOnExit();
         try {
 
             final InputStream is = new FileInputStream(input);
-            ais = factory.createArchiveInputStream("zip", is);
-            out = factory.createArchiveOutputStream("zip",
+            ais = factory.createArchiveInputStream(archivename, is);
+            out = factory.createArchiveOutputStream(archivename,
                     new FileOutputStream(result));
 
             ChangeSet changes = new ChangeSet();
@@ -260,22 +262,23 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
     /**
      * delete bla + add bla/test.txt + delete bla Deletes dir1/* first, then
-     * surpresses the add of bla.txt cause there is a delete operation later.
+     * suppresses the add of bla.txt because there is a delete operation later.
      * 
      * @throws Exception
      */
     public void testDeleteAddDelete() throws Exception {
-        File input = this.createArchive("zip");
+        final String archivename = "cpio";
+        File input = this.createArchive(archivename);
 
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
-        File result = File.createTempFile("test", ".zip");
+        File result = File.createTempFile("test", "."+archivename);
         result.deleteOnExit();
         try {
 
             final InputStream is = new FileInputStream(input);
-            ais = factory.createArchiveInputStream("zip", is);
-            out = factory.createArchiveOutputStream("zip",
+            ais = factory.createArchiveInputStream(archivename, is);
+            out = factory.createArchiveOutputStream(archivename,
                     new FileOutputStream(result));
 
             ChangeSet changes = new ChangeSet();
@@ -599,20 +602,21 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * @throws Exception
      */
     public void testAddToEmptyArchive() throws Exception {
-        File input = this.createEmptyArchive("zip");
+        final String archivename = "zip";
+        File input = this.createEmptyArchive(archivename);
 
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
         InputStream is = null;
-        File result = File.createTempFile("test", ".zip");
+        File result = File.createTempFile("test", "."+archivename);
         result.deleteOnExit();
         ChangeSet changes = new ChangeSet();
         try {
 
             is = new FileInputStream(input);
-            ais = factory.createArchiveInputStream("zip", is);
+            ais = factory.createArchiveInputStream(archivename, is);
 
-            out = factory.createArchiveOutputStream("zip",
+            out = factory.createArchiveOutputStream(archivename,
                     new FileOutputStream(result));
 
             final File file1 = getFile("test.txt");
@@ -642,26 +646,28 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * @throws Exception
      */
     public void testDeleteAddToOneFileArchive() throws Exception {
-        File input = this.createSingleEntryArchive("zip");
+        final String archivename = "cpio";
+        File input = this.createSingleEntryArchive(archivename);
 
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
         InputStream is = null;
-        File result = File.createTempFile("test", ".zip");
+        File result = File.createTempFile("test", "."+archivename);
         result.deleteOnExit();
         ChangeSet changes = new ChangeSet();
         try {
 
             is = new FileInputStream(input);
-            ais = factory.createArchiveInputStream("zip", is);
+            ais = factory.createArchiveInputStream(archivename, is);
 
-            out = factory.createArchiveOutputStream("zip",
+            out = factory.createArchiveOutputStream(archivename,
                     new FileOutputStream(result));
             changes.delete("testdata");
             archiveListDelete("testdata");
             
-            ArchiveEntry entry = new ZipArchiveEntry("bla/test.txt");
-            changes.add(entry, new FileInputStream(getFile("test.txt")));
+            final File file = getFile("test.txt");
+            ArchiveEntry entry = out.createArchiveEntry(file,"bla/test.txt");
+            changes.add(entry, new FileInputStream(file));
             archiveList.add("bla/test.txt");
             
             changes.perform(ais, out);
@@ -687,23 +693,25 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * @throws Exception
      */
     public void testAddDeleteToOneFileArchive() throws Exception {
-        File input = this.createSingleEntryArchive("zip");
+        final String archivename = "cpio";
+        File input = this.createSingleEntryArchive(archivename);
 
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
         InputStream is = null;
-        File result = File.createTempFile("test", ".zip");
+        File result = File.createTempFile("test", "."+archivename);
         result.deleteOnExit();
         ChangeSet changes = new ChangeSet();
         try {
 
             is = new FileInputStream(input);
-            ais = factory.createArchiveInputStream("zip", is);
+            ais = factory.createArchiveInputStream(archivename, is);
 
-            out = factory.createArchiveOutputStream("zip",
+            out = factory.createArchiveOutputStream(archivename,
                     new FileOutputStream(result));
-            ArchiveEntry entry = new ZipArchiveEntry("bla/test.txt");
-            changes.add(entry, new FileInputStream(getFile("test.txt")));
+            final File file = getFile("test.txt");
+            ArchiveEntry entry = out.createArchiveEntry(file,"bla/test.txt"); 
+            changes.add(entry, new FileInputStream(file));
             archiveList.add("bla/test.txt");
 
             changes.delete("testdata");
