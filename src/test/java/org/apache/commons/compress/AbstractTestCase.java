@@ -36,7 +36,6 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.utils.IOUtils;
 
 public abstract class AbstractTestCase extends TestCase {
@@ -47,7 +46,7 @@ public abstract class AbstractTestCase extends TestCase {
     private File archive; // used to delete the archive in tearDown
     protected List archiveList; // Lists the content of the archive as originally created
     
-    private ArchiveStreamFactory factory = new ArchiveStreamFactory();
+    protected ArchiveStreamFactory factory = new ArchiveStreamFactory();
 
     protected void setUp() throws Exception {
         dir = mkdir("dir");
@@ -168,8 +167,7 @@ public abstract class AbstractTestCase extends TestCase {
      */
     private void addArchiveEntry(ArchiveOutputStream out, String filename, final File infile)
             throws IOException, FileNotFoundException {
-        ZipArchiveEntry entry = new ZipArchiveEntry(filename);
-        entry.setSize(infile.length());
+        ArchiveEntry entry = out.createArchiveEntry(infile, filename);
         out.putArchiveEntry(entry);
         IOUtils.copy(new FileInputStream(infile), out);
         out.closeArchiveEntry();
@@ -215,7 +213,8 @@ public abstract class AbstractTestCase extends TestCase {
             archive = File.createTempFile("empty", "." + archivename);
             stream = new FileOutputStream(archive);
             out = factory.createArchiveOutputStream(archivename, stream);
-            addArchiveEntry(out, "testdata/test1.xml", getFile("test1.xml"));
+            // Use short file name so does not cause problems for ar
+            addArchiveEntry(out, "test1.xml", getFile("test1.xml"));
         } finally {
             if (out != null) {
                 out.close();
@@ -247,6 +246,13 @@ public abstract class AbstractTestCase extends TestCase {
         }
     }
 
+    /**
+     * Checks that an archive input stream can be read, and that the file data matches file sizes.
+     * 
+     * @param in
+     * @param expected list of expected entries or <code>null</code> if no check of names desired
+     * @throws Exception
+     */
     protected void checkArchiveContent(ArchiveInputStream in, List expected)
             throws Exception {
         File result = File.createTempFile("dir-result", "");
@@ -267,25 +273,25 @@ public abstract class AbstractTestCase extends TestCase {
                     out.close();
                 }
 
-                if (entry.getSize() != -1) {// some test cases don't set the size
-                    assertEquals(entry.getSize(), copied);
-                }
+                assertEquals("Entry.size should equal bytes read.",entry.getSize(), copied);
 
                 if (!outfile.exists()) {
                     fail("extraction failed: " + entry.getName());
                 }
-                if (!expected.remove(entry.getName())) {
+                if (expected != null && !expected.remove(entry.getName())) {
                     fail("unexpected entry: " + entry.getName());
                 }
             }
             in.close();
-            if (expected.size() > 0) {
+            if (expected != null && expected.size() > 0) {
                 for (Iterator iterator = expected.iterator(); iterator.hasNext();) {
                     String name = (String) iterator.next();
                     fail("Expected entry: " + name);
                 }
             }
-            assertEquals(0, expected.size());
+            if (expected != null) {
+                assertEquals(0, expected.size());
+            }
         } finally {
             rmdir(result);
         }
