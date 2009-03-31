@@ -646,7 +646,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * @throws Exception
      */
     public void testDeleteAddToOneFileArchive() throws Exception {
-        final String archivename = "cpio";
+        final String archivename = "zip";
         File input = this.createSingleEntryArchive(archivename);
 
         ArchiveOutputStream out = null;
@@ -662,8 +662,8 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
             out = factory.createArchiveOutputStream(archivename,
                     new FileOutputStream(result));
-            changes.delete("testdata");
-            archiveListDelete("testdata");
+            changes.delete("test1.xml");
+            archiveListDelete("test1.xml");
             
             final File file = getFile("test.txt");
             ArchiveEntry entry = out.createArchiveEntry(file,"bla/test.txt");
@@ -714,8 +714,8 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             changes.add(entry, new FileInputStream(file));
             archiveList.add("bla/test.txt");
 
-            changes.delete("testdata");
-            archiveListDelete("testdata");
+            changes.delete("test1.xml");
+            archiveListDelete("test1.xml");
             
             changes.perform(ais, out);
             is.close();

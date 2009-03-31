@@ -199,7 +199,7 @@ public abstract class AbstractTestCase extends TestCase {
     }
 
     /**
-     * Create an archive with a single file "testdata/test1.xml".
+     * Create an archive with a single file "test1.xml".
      * 
      * @param archivename
      * @return the archive File
