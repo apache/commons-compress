@@ -273,7 +273,10 @@ public abstract class AbstractTestCase extends TestCase {
                     out.close();
                 }
 
-                assertEquals("Entry.size should equal bytes read.",entry.getSize(), copied);
+                final long size = entry.getSize();
+                if (size != ArchiveEntry.SIZE_UNKNOWN) {
+                    assertEquals("Entry.size should equal bytes read.",size, copied);
+                }
 
                 if (!outfile.exists()) {
                     fail("extraction failed: " + entry.getName());
