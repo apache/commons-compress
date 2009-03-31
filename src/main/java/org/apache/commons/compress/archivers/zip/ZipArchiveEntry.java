@@ -17,6 +17,7 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.zip.ZipException;
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -82,6 +83,11 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      */
     protected ZipArchiveEntry() {
         super("");
+    }
+
+    public ZipArchiveEntry(File inputFile, String entryName) {
+        this(entryName);
+        // TODO are there any other fields we can set here?
     }
 
     /**

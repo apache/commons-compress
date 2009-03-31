@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.archivers.ar;
 
+import java.io.File;
+
 import org.apache.commons.compress.archivers.ArchiveEntry;
 
 /**
@@ -54,7 +56,12 @@ public class ArArchiveEntry implements ArchiveEntry {
 		this.lastModified = lastModified;
 	}
 
-	public long getSize() {
+	public ArArchiveEntry(File inputFile, String entryName) {
+	    // TODO sort out mode
+        this(entryName, inputFile.length(), 0, 0, 0, inputFile.lastModified());
+    }
+
+    public long getSize() {
 		return this.getLength();
 	}
 	

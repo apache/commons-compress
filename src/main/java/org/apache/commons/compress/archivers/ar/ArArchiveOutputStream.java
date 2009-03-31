@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress.archivers.ar;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -99,7 +100,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
 
         final String n = pEntry.getName();
         if (n.length() > 16) {
-            throw new IOException("filename too long");
+            throw new IOException("filename too long, > 16 chars: "+n);
         }
         offset += write(n);
 
@@ -154,6 +155,11 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         closeArchiveEntry();
         out.close();
         prevEntry = null;
+    }
+
+    public ArchiveEntry createArchiveEntry(File inputFile, String entryName)
+            throws IOException {
+        return new ArArchiveEntry(inputFile, entryName);
     }
 
 }

@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress.archivers;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -55,6 +56,17 @@ public abstract class ArchiveOutputStream extends OutputStream {
      */
     public abstract void closeArchiveEntry() throws IOException;
 
+    /**
+     * Create an archive entry using the inputFile and entryName provided.
+     * 
+     * @param inputFile
+     * @param entryName 
+     * @return the ArchiveEntry set up with details from the file
+     * 
+     * @throws IOException
+     */
+    public abstract ArchiveEntry createArchiveEntry(File inputFile, String entryName) throws IOException;
+    
     // Generic implementations of OutputStream methods that may be useful to sub-classes
     
     /**

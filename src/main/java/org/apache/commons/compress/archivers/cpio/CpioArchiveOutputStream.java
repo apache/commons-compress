@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress.archivers.cpio;
 
+import java.io.File;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -377,6 +378,11 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     private void writeCString(final String str) throws IOException {
         out.write(str.getBytes());
         out.write('\0');
+    }
+
+    public ArchiveEntry createArchiveEntry(File inputFile, String entryName)
+            throws IOException {
+        return new CpioArchiveEntry(inputFile, entryName);
     }
 
 }
