@@ -252,7 +252,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     public CpioArchiveEntry(File inputFile, String entryName) {
-        this(entryName, inputFile.length());
+        this(entryName, inputFile.isFile() ? inputFile.length() : 0);
         long mode=0;
         if (inputFile.isDirectory()){
             mode |= C_ISDIR;
