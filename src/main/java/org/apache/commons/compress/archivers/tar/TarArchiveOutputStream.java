@@ -176,10 +176,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 TarArchiveEntry longLinkEntry = new TarArchiveEntry(TarConstants.GNU_LONGLINK,
                                                                     TarConstants.LF_GNUTYPE_LONGNAME);
 
-                longLinkEntry.setSize(entry.getName().length() + 1);
+                final byte[] nameBytes = entry.getName().getBytes();
+                longLinkEntry.setSize(nameBytes.length + 1); // +1 for NUL
                 putArchiveEntry(longLinkEntry);
-                write(entry.getName().getBytes());
-                write(0);
+                write(nameBytes);
+                write(0); // NUL terminator
                 closeArchiveEntry();
             } else if (longFileMode != LONGFILE_TRUNCATE) {
                 throw new RuntimeException("file name '" + entry.getName()
