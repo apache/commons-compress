@@ -34,6 +34,8 @@ public class TarUtils {
      * Parsing stops when a NUL is found, or a trailing space,
      * or the buffer length is reached.
      *
+     * Behaviour with non-octal input is currently undefined.
+     * 
      * @param buffer The buffer from which to parse.
      * @param offset The offset into the buffer from which to parse.
      * @param length The maximum number of bytes to parse.
@@ -126,11 +128,40 @@ public class TarUtils {
     }
 
     /**
+     * Fill buffer with octal number, with leading zeroes
+     * 
+     * @param value number to convert to octal (assumed >=0)
+     * @param buffer destination buffer
+     * @param offset starting offset in buffer
+     * @param length length of buffer to fill
+     */
+    public static void formatUnsignedOctalString(long value, byte[] buffer,
+            int offset, int length) {
+        length--;
+        if (value == 0) {
+            buffer[offset + length--] = (byte) '0';
+        } else {
+            for (long val = value; length >= 0 && val > 0; --length) {
+                // CheckStyle:MagicNumber OFF
+                buffer[offset + length] = (byte) ((byte) '0' + (byte) (val & 7));
+                val = val >> 3;
+                // CheckStyle:MagicNumber ON
+            }
+        }
+
+        for (; length >= 0; --length) { // leading zeros
+            buffer[offset + length] = (byte) '0';
+        }
+    }
+
+    /**
      * Write an octal integer into a buffer.
      *
      * Adds a trailing space and NUL to end of the buffer.
+     * [Appears to be standard for V7 Unix BSD]
      * Converts the long value (assumed positive) to the buffer.
      * Adds leading spaces to the buffer.
+     * [V7 Unix and Posix use leading zeroes]
      * 
      * @param value The value to write
      * @param buf The buffer to receive the output
@@ -139,35 +170,20 @@ public class TarUtils {
      * @return The updated offset, i.e offset+length
      */
     public static int getOctalBytes(long value, byte[] buf, int offset, int length) {
-        int    idx = length - 1;
 
-        buf[offset + idx] = 0; // Trailing null
-        --idx;
-        buf[offset + idx] = (byte) ' '; // Trailing space TODO - why??
-        --idx;
+        int idx=length-2; // For space and trailing null
+        formatUnsignedOctalString(value, buf, offset, idx);
 
-        if (value == 0) {
-            buf[offset + idx] = (byte) '0';
-            --idx;
-        } else {
-            for (long val = value; idx >= 0 && val > 0; --idx) {
-                // CheckStyle:MagicNumber OFF
-                buf[offset + idx] = (byte) ((byte) '0' + (byte) (val & 7));
-                val = val >> 3;
-                // CheckStyle:MagicNumber ON
-            }
-        }
-
-        for (; idx >= 0; --idx) { // leading spaces
-            buf[offset + idx] = (byte) ' ';
-        }
+        buf[offset + idx++] = (byte) ' '; // Trailing space
+        buf[offset + idx]   = 0; // Trailing null
 
         return offset + length;
     }
 
     /**
      * Write an octal long integer into a buffer.
-     *
+     * The buffer is terminated with a space.
+     * 
      * @param value The value to write as octal
      * @param buf The destinationbuffer.
      * @param offset The starting offset into the buffer.
@@ -175,10 +191,11 @@ public class TarUtils {
      * @return The updated offset
      */
     public static int getLongOctalBytes(long value, byte[] buf, int offset, int length) {
-        byte[] temp = new byte[length + 1];
 
-        getOctalBytes(value, temp, 0, length + 1);
-        System.arraycopy(temp, 0, buf, offset, length);
+        int idx=length-1; // For space
+        
+        formatUnsignedOctalString(value, buf, offset, idx);
+        buf[offset + idx] = (byte) ' '; // Trailing space
 
         return offset + length;
     }
@@ -186,7 +203,7 @@ public class TarUtils {
     /**
      * Writes an octal value into a buffer.
      *
-     * TODO document fully. How does it differ from getOctalBytes?
+     * Checksum is followed by NUL and then space.
      *
      * @param value The value to convert
      * @param buf The destination buffer
@@ -195,10 +212,12 @@ public class TarUtils {
      * @return The updated value of offset, i.e. offset+length
      */
     public static int getCheckSumOctalBytes(long value, byte[] buf, int offset, int length) {
-        getOctalBytes(value, buf, offset, length);
 
-        buf[offset + length - 1] = (byte) ' ';
-        buf[offset + length - 2] = 0;
+        int idx=length-2; // for NUL and space
+        formatUnsignedOctalString(value, buf, offset, idx);
+
+        buf[offset + idx++]   = 0; // Trailing null
+        buf[offset + idx]     = (byte) ' '; // Trailing space
 
         return offset + length;
     }
