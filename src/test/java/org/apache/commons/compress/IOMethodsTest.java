@@ -117,6 +117,7 @@ public class IOMethodsTest extends AbstractTestCase {
         OutputStream out2 = new ByteArrayOutputStream();
         OutputStream out3 = new ByteArrayOutputStream();
         File file = createSingleEntryArchive(archiverName);
+        file.deleteOnExit();
         
         InputStream is1 = new FileInputStream(file);
         ArchiveInputStream ais1 = factory.createArchiveInputStream(archiverName, is1);
