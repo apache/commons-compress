@@ -193,15 +193,26 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     /**
      * Construct an entry for a file. File is set to file, and the
      * header is constructed from information from the file.
+     * The name is set from the normalized file path.
      *
      * @param file The file that the entry represents.
      */
     public TarArchiveEntry(File file) {
+        this(file, normalizeFileName(file.getPath()));
+    }
+    
+    /**
+     * Construct an entry for a file. File is set to file, and the
+     * header is constructed from information from the file.
+     *
+     * @param file The file that the entry represents.
+     * @param fileName the name to be used for the entry.
+     */
+    public TarArchiveEntry(File file, String fileName) {
         this();
 
         this.file = file;
 
-        String fileName = normalizeFileName(file.getPath());
         this.linkName = new StringBuffer("");
         this.name = new StringBuffer(fileName);
 

@@ -910,4 +910,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             return name;
         }
     }
+
+    public ArchiveEntry createArchiveEntry(File inputFile, String entryName)
+            throws IOException {
+        return new ZipArchiveEntry(inputFile, entryName);
+    }
 }

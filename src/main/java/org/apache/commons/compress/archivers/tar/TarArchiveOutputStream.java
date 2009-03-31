@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress.archivers.tar;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -334,6 +335,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     public String getName() {
         return "tar";
+    }
+
+    public ArchiveEntry createArchiveEntry(File inputFile, String entryName)
+            throws IOException {
+        return new TarArchiveEntry(inputFile, entryName);
     }
 
 }

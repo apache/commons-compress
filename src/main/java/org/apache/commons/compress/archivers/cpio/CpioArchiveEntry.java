@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.archivers.cpio;
 
+import java.io.File;
+
 import org.apache.commons.compress.archivers.ArchiveEntry;
 
 /**
@@ -247,6 +249,20 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
         this(FORMAT_NEW);
         this.name = name;
         this.setSize(size);
+    }
+
+    public CpioArchiveEntry(File inputFile, String entryName) {
+        this(entryName, inputFile.length());
+        long mode=0;
+        if (inputFile.isDirectory()){
+            mode |= C_ISDIR;
+        } else if (inputFile.isFile()){
+            mode |= C_ISREG;
+        } else {
+            throw new IllegalArgumentException("Cannot determine type of file "+inputFile.getName());
+        }
+        // TODO set other fields as needed
+        setMode(mode);
     }
 
     /**
