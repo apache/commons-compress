@@ -87,6 +87,8 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
 
     public ZipArchiveEntry(File inputFile, String entryName) {
         this(entryName);
+        setSize(inputFile.length());
+        setTime(inputFile.lastModified());
         // TODO are there any other fields we can set here?
     }
 
