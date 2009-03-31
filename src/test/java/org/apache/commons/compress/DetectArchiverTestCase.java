@@ -27,14 +27,12 @@ import java.util.ArrayList;
 
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
-import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 
 public final class DetectArchiverTestCase extends AbstractTestCase {
-    final ArchiveStreamFactory factory = new ArchiveStreamFactory();
     final ClassLoader classLoader = getClass().getClassLoader();
 
     public void testDetection() throws Exception {
