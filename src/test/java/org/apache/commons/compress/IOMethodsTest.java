@@ -123,9 +123,12 @@ public class IOMethodsTest extends AbstractTestCase {
         ArchiveInputStream ais1 = factory.createArchiveInputStream(archiverName, is1);
         final ArchiveEntry nextEntry = ais1.getNextEntry();
         assertNotNull(nextEntry);
-        final long size = nextEntry.getSize();
-        assertTrue("Size > 0: "+size, size > 0);
-        byte [] buff = new byte[(int)size];
+        
+        byte [] buff = new byte[10]; // small so multiple reads are needed;
+        long size = nextEntry.getSize();
+        if (size != ArchiveEntry.SIZE_UNKNOWN) {
+            assertTrue("Size should be > 0, found: "+size, size > 0);
+        }
         
         InputStream is2 = new FileInputStream(file);
         ArchiveInputStream ais2 = factory.createArchiveInputStream(archiverName, is2);
@@ -145,13 +148,14 @@ public class IOMethodsTest extends AbstractTestCase {
         }
         ais1.close();
 
-        while(ais2.read(buff)>0){
-            out2.write(buff);
+        int bytes;
+        while((bytes = ais2.read(buff)) > 0){
+            out2.write(buff, 0, bytes);
         }
         ais2.close();
         
-        while(ais3.read(buff, 0 , buff.length)>0){
-            out3.write(buff);
+        while((bytes=ais3.read(buff, 0 , buff.length)) > 0){
+            out3.write(buff, 0, bytes);
         }
         ais3.close();
 
