@@ -31,7 +31,14 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 
 /**
- * Implements and input stream that can read Zip archives.
+ * Implements an input stream that can read Zip archives.
+ * <p>
+ * Note that {@link ZipArchiveEntry#getSize()} may return -1 if the DEFLATE algorithm is used, as the size information
+ * is not available from the header.
+ * <p>
+ * The {@link ZipFile} class is preferred when reading from files.
+ *  
+ * @see ZipFile
  * @NotThreadSafe
  */
 public class ZipArchiveInputStream extends ArchiveInputStream {
