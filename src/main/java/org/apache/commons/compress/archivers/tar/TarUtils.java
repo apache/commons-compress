@@ -29,37 +29,40 @@ public class TarUtils {
     private static final int BYTE_MASK = 255;
 
     /**
-     * Parse an octal string from a header buffer. This is used for the
-     * file permission mode value.
+     * Parse an octal string from a buffer.
+     * Leading spaces are ignored.
+     * Parsing stops when a NUL is found, or a trailing space,
+     * or the buffer length is reached.
      *
-     * @param header The header buffer from which to parse.
+     * @param buffer The buffer from which to parse.
      * @param offset The offset into the buffer from which to parse.
-     * @param length The number of header bytes to parse.
+     * @param length The maximum number of bytes to parse.
      * @return The long value of the octal string.
      */
-    public static long parseOctal(byte[] header, int offset, int length) {
+    public static long parseOctal(byte[] buffer, int offset, int length) {
         long    result = 0;
         boolean stillPadding = true;
         int     end = offset + length;
 
         for (int i = offset; i < end; ++i) {
-            if (header[i] == 0) {
+            if (buffer[i] == 0) { // Found trailing null
                 break;
             }
 
-            if (header[i] == (byte) ' ' || header[i] == '0') {
+            // Ignore leading spaces ('0' can be ignored anyway)
+            if (buffer[i] == (byte) ' ' || buffer[i] == '0') {
                 if (stillPadding) {
                     continue;
                 }
 
-                if (header[i] == (byte) ' ') {
+                if (buffer[i] == (byte) ' ') { // Found trailing space
                     break;
                 }
             }
 
             stillPadding = false;
             // CheckStyle:MagicNumber OFF
-            result = (result << 3) + (header[i] - '0');
+            result = (result << 3) + (buffer[i] - '0');// TODO needs to reject invalid bytes
             // CheckStyle:MagicNumber ON
         }
 
@@ -67,44 +70,54 @@ public class TarUtils {
     }
 
     /**
-     * Parse an entry name from a header buffer.
+     * Parse an entry name from a buffer.
+     * Parsing stops when a NUL is found
+     * or the buffer length is reached.
      *
-     * @param header The header buffer from which to parse.
+     * @param buffer The buffer from which to parse.
      * @param offset The offset into the buffer from which to parse.
-     * @param length The number of header bytes to parse.
-     * @return The header's entry name.
+     * @param length The maximum number of bytes to parse.
+     * @return The entry name.
      */
-    public static StringBuffer parseName(byte[] header, int offset, int length) {
+    public static StringBuffer parseName(byte[] buffer, int offset, int length) {
         StringBuffer result = new StringBuffer(length);
         int          end = offset + length;
 
         for (int i = offset; i < end; ++i) {
-            if (header[i] == 0) {
+            if (buffer[i] == 0) { // Trailing null
                 break;
             }
 
-            result.append((char) header[i]);
+            result.append((char) buffer[i]);
         }
 
         return result;
     }
 
     /**
-     * Determine the number of bytes in an entry name.
+     * Copy a name (StringBuffer) into a buffer.
+     * Copies characters from the name into the buffer
+     * starting at the specified offset. 
+     * If the buffer is longer than the name, the buffer
+     * is filled with trailing NULs.
+     * If the name is longer than the buffer,
+     * the output is truncated.
      *
-     * @param name The header name from which to parse.
-     * @param buf The buffer from which to parse.
-     * @param offset The offset into the buffer from which to parse.
-     * @param length The number of header bytes to parse.
-     * @return The number of bytes in a header's entry name.
+     * @param name The header name from which to copy the characters.
+     * @param buf The buffer where the name is to be stored.
+     * @param offset The starting offset into the buffer
+     * @param length The maximum number of header bytes to copy.
+     * @return The updated offset, i.e. offset + length
      */
     public static int getNameBytes(StringBuffer name, byte[] buf, int offset, int length) {
         int i;
 
+        // copy until end of input or output is reached.
         for (i = 0; i < length && i < name.length(); ++i) {
             buf[offset + i] = (byte) name.charAt(i);
         }
 
+        // Pad any remaining output bytes with NUL
         for (; i < length; ++i) {
             buf[offset + i] = 0;
         }
@@ -113,20 +126,24 @@ public class TarUtils {
     }
 
     /**
-     * Parse an octal integer from a header buffer.
+     * Write an octal integer into a buffer.
      *
-     * @param value The header value
-     * @param buf The buffer from which to parse.
-     * @param offset The offset into the buffer from which to parse.
-     * @param length The number of header bytes to parse.
-     * @return The integer value of the octal bytes.
+     * Adds a trailing space and NUL to end of the buffer.
+     * Converts the long value (assumed positive) to the buffer.
+     * Adds leading spaces to the buffer.
+     * 
+     * @param value The value to write
+     * @param buf The buffer to receive the output
+     * @param offset The starting offset into the buffer
+     * @param length The size of the output buffer
+     * @return The updated offset, i.e offset+length
      */
     public static int getOctalBytes(long value, byte[] buf, int offset, int length) {
         int    idx = length - 1;
 
-        buf[offset + idx] = 0;
+        buf[offset + idx] = 0; // Trailing null
         --idx;
-        buf[offset + idx] = (byte) ' ';
+        buf[offset + idx] = (byte) ' '; // Trailing space TODO - why??
         --idx;
 
         if (value == 0) {
@@ -141,7 +158,7 @@ public class TarUtils {
             }
         }
 
-        for (; idx >= 0; --idx) {
+        for (; idx >= 0; --idx) { // leading spaces
             buf[offset + idx] = (byte) ' ';
         }
 
@@ -149,13 +166,13 @@ public class TarUtils {
     }
 
     /**
-     * Parse an octal long integer from a header buffer.
+     * Write an octal long integer into a buffer.
      *
-     * @param value The header value
-     * @param buf The buffer from which to parse.
-     * @param offset The offset into the buffer from which to parse.
-     * @param length The number of header bytes to parse.
-     * @return The long value of the octal bytes.
+     * @param value The value to write as octal
+     * @param buf The destinationbuffer.
+     * @param offset The starting offset into the buffer.
+     * @param length The length of the buffer
+     * @return The updated offset
      */
     public static int getLongOctalBytes(long value, byte[] buf, int offset, int length) {
         byte[] temp = new byte[length + 1];
@@ -167,13 +184,15 @@ public class TarUtils {
     }
 
     /**
-     * Parse the checksum octal integer from a header buffer.
+     * Writes an octal value into a buffer.
      *
-     * @param value The header value
-     * @param buf The buffer from which to parse.
-     * @param offset The offset into the buffer from which to parse.
-     * @param length The number of header bytes to parse.
-     * @return The integer value of the entry's checksum.
+     * TODO document fully. How does it differ from getOctalBytes?
+     *
+     * @param value The value to convert
+     * @param buf The destination buffer
+     * @param offset The starting offset into the buffer.
+     * @param length The size of the buffer.
+     * @return The updated value of offset, i.e. offset+length
      */
     public static int getCheckSumOctalBytes(long value, byte[] buf, int offset, int length) {
         getOctalBytes(value, buf, offset, length);
