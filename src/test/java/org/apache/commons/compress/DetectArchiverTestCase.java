@@ -19,13 +19,10 @@
 package org.apache.commons.compress;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.net.URL;
-import java.util.ArrayList;
 
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -35,6 +32,10 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 
 public final class DetectArchiverTestCase extends AbstractTestCase {
+    public DetectArchiverTestCase(String name) {
+        super(name);
+    }
+
     final ClassLoader classLoader = getClass().getClassLoader();
 
     public void testDetection() throws Exception {
@@ -75,45 +76,6 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
                        new File(rsc.getFile()))));
     }
     
-    // TODO move into separate class and create suite with one file per test
-    // Scan list of archives in resources/archives directory
-    public void testArchives() throws Exception{
-        File arcdir =new File(classLoader.getResource("archives").getFile());
-        assertTrue(arcdir.exists());
-        File listing= new File(arcdir,"files.txt");
-        assertTrue("files.txt is readable",listing.canRead());
-        BufferedReader br = new BufferedReader(new FileReader(listing));
-        final ArrayList fileList = new ArrayList();
-        String line;
-        while ((line=br.readLine())!=null){
-            if (line.startsWith("#")){
-                continue;
-            }
-            String []fields = line.split(" ");
-            fileList.add(fields[1]);
-        }
-        br.close();
-        File[]files=arcdir.listFiles();
-        for (int i=0; i<files.length; i++){
-            final File file = files[i];
-            if (file.getName().endsWith(".txt")){
-                continue;
-            }
-            // Cannot handle these tar files yet 
-            if (file.getName().equals("SunOS_cAEf.tar")
-             || file.getName().equals("FreeBSD_pax.tar")
-             || file.getName().equals("SunOS_cEf.tar")){
-                continue;
-            }
-            ArrayList expected=(ArrayList) fileList.clone();
-            try {
-               checkArchiveContent(file, expected);
-            } catch (ArchiveException e) {
-                fail("Problem checking "+file);
-            }
-        }
-    }
-
     // Check that the empty archives created by the code are readable
     
     // Not possible to detect empty "ar" archive as it is completely empty
