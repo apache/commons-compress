@@ -35,6 +35,11 @@ public class ArArchiveEntry implements ArchiveEntry {
     /** The trailer for each entry */
     public static final String TRAILER = "`\012";
     
+    /**
+     * SVR4/GNU adds a trailing / to names; BSD does not.
+     * They also vary in how names longer than 16 characters are represented.
+     * (Not yet supported by this implementation)
+     */
     private final String name;
 	private final int userId;
 	private final int groupId;
