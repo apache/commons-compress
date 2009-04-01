@@ -48,6 +48,10 @@ public abstract class AbstractTestCase extends TestCase {
     
     protected ArchiveStreamFactory factory = new ArchiveStreamFactory();
 
+    public AbstractTestCase(String name) {
+        super(name);
+    }
+
     protected void setUp() throws Exception {
         dir = mkdir("dir");
         resultDir = mkdir("dir-result");
