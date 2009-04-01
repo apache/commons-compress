@@ -292,7 +292,7 @@ public abstract class AbstractTestCase extends TestCase {
                 if (!outfile.exists()) {
                     fail("extraction failed: " + entry.getName());
                 }
-                if (expected != null && !expected.remove(entry.getName())) {
+                if (expected != null && !expected.remove(getExpectedString(entry))) {
                     fail("unexpected entry: " + entry.getName());
                 }
             }
@@ -309,5 +309,16 @@ public abstract class AbstractTestCase extends TestCase {
         } finally {
             rmdir(result);
         }
+    }
+
+    /**
+     * Override this method to change what is to be compared in the List.
+     * For example, size + name instead of just name.
+     * 
+     * @param entry
+     * @return returns the entry name
+     */
+    protected String getExpectedString(ArchiveEntry entry) {
+        return entry.getName();
     }
 }
