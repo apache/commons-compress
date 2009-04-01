@@ -27,7 +27,9 @@ import java.util.ArrayList;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.utils.ArchiveEntryUtils;
 
 /**
  * Test that can read various archive file examples.
@@ -68,8 +70,7 @@ public class ArchiveReadTests extends AbstractTestCase {
             if (line.startsWith("#")){
                 continue;
             }
-            String []fields = line.split(" ");
-            fileList.add(fields[1]);
+            fileList.add(line);
         }
         br.close();
         File[]files=arcdir.listFiles();
@@ -93,6 +94,11 @@ public class ArchiveReadTests extends AbstractTestCase {
         return suite;
     }
     
+    // files.txt contains size and filename
+    protected String getExpectedString(ArchiveEntry entry) {
+        return entry.getSize() + " " + entry.getName();
+    }
+
     public void testArchive() throws Exception{
         ArrayList expected=(ArrayList) fileList.clone();
         try {
