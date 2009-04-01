@@ -48,6 +48,10 @@ public abstract class AbstractTestCase extends TestCase {
     
     protected ArchiveStreamFactory factory = new ArchiveStreamFactory();
 
+    public AbstractTestCase() {
+        super();
+    }
+
     public AbstractTestCase(String name) {
         super(name);
     }
