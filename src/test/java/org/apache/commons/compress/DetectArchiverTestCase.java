@@ -19,9 +19,11 @@
 package org.apache.commons.compress;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -73,19 +75,38 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
                        new File(rsc.getFile()))));
     }
     
+    // TODO move into separate class and create suite with one file per test
     // Scan list of archives in resources/archives directory
-    public void notyettestArchives() throws Exception{
+    public void testArchives() throws Exception{
         File arcdir =new File(classLoader.getResource("archives").getFile());
         assertTrue(arcdir.exists());
+        File listing= new File(arcdir,"files.txt");
+        assertTrue("files.txt is readable",listing.canRead());
+        BufferedReader br = new BufferedReader(new FileReader(listing));
+        final ArrayList fileList = new ArrayList();
+        String line;
+        while ((line=br.readLine())!=null){
+            if (line.startsWith("#")){
+                continue;
+            }
+            String []fields = line.split(" ");
+            fileList.add(fields[1]);
+        }
+        br.close();
         File[]files=arcdir.listFiles();
         for (int i=0; i<files.length; i++){
             final File file = files[i];
             if (file.getName().endsWith(".txt")){
                 continue;
             }
-           try {
-               // TODO - how to determine expected file contents
-               final ArrayList expected = new ArrayList();
+            // Cannot handle these tar files yet 
+            if (file.getName().equals("SunOS_cAEf.tar")
+             || file.getName().equals("FreeBSD_pax.tar")
+             || file.getName().equals("SunOS_cEf.tar")){
+                continue;
+            }
+            ArrayList expected=(ArrayList) fileList.clone();
+            try {
                checkArchiveContent(file, expected);
             } catch (ArchiveException e) {
                 fail("Problem checking "+file);
