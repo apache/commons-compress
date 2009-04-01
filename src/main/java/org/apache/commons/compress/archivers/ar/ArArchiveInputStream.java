@@ -126,7 +126,13 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         }
 
         entryOffset = offset;
-        currentEntry = new ArArchiveEntry(new String(name).trim(),
+        
+        // SVR4/GNU adds a trailing "/" to names
+        String temp=new String(name).trim();
+        if (temp.endsWith("/")){
+            temp=temp.substring(0, temp.length()-1);
+        }
+        currentEntry = new ArArchiveEntry(temp,
                                           Long.parseLong(new String(length)
                                                          .trim()));
         return currentEntry;
