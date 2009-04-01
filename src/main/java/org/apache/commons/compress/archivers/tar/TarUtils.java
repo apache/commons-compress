@@ -130,6 +130,10 @@ public class TarUtils {
     /**
      * Fill buffer with octal number, with leading zeroes
      * 
+     * The output for negative numbers is not specified,
+     * but currently the method returns a buffer filled with zeros.
+     * This may change.
+     * 
      * @param value number to convert to octal (assumed >=0)
      * @param buffer destination buffer
      * @param offset starting offset in buffer
@@ -160,8 +164,7 @@ public class TarUtils {
      * Adds a trailing space and NUL to end of the buffer.
      * [Appears to be standard for V7 Unix BSD]
      * Converts the long value (assumed positive) to the buffer.
-     * Adds leading spaces to the buffer.
-     * [V7 Unix and Posix use leading zeroes]
+     * Adds leading zeros to the buffer.
      * 
      * @param value The value to write
      * @param buf The buffer to receive the output
@@ -182,6 +185,8 @@ public class TarUtils {
 
     /**
      * Write an octal long integer into a buffer.
+     * Converts the long value (assumed positive) to the buffer.
+     * Adds leading zeros to the buffer.
      * The buffer is terminated with a space.
      * 
      * @param value The value to write as octal
@@ -203,6 +208,8 @@ public class TarUtils {
     /**
      * Writes an octal value into a buffer.
      *
+     * Converts the long value (assumed positive) to the buffer.
+     * Adds leading zeros to the buffer.
      * Checksum is followed by NUL and then space.
      *
      * @param value The value to convert

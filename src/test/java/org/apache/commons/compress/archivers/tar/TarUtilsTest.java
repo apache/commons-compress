@@ -96,4 +96,12 @@ public class TarUtilsTest extends TestCase {
         assertEquals(0  , buffer[buffer.length-2]);
         assertEquals('3', buffer[buffer.length-3]); // end of number
     }
+    
+    public void testNegative() {
+        byte [] buffer = new byte[10];
+        TarUtils.formatUnsignedOctalString(-1, buffer, 0, buffer.length);
+        // Currently negative numbers generate all zero buffer. This may need to change.
+        assertEquals("0000000000", new String(buffer));
+        
+    }
 }
