@@ -29,7 +29,6 @@ import junit.framework.TestSuite;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
-import org.apache.commons.compress.utils.ArchiveEntryUtils;
 
 /**
  * Test that can read various archive file examples.
