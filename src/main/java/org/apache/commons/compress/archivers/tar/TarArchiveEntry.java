@@ -54,24 +54,25 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * The C structure for a Tar Entry's header is:
  * <pre>
  * struct header {
- * char name[100];     // TarConstants.NAMELEN
- * char mode[8];       // TarConstants.MODELEN
- * char uid[8];        // TarConstants.UIDLEN
- * char gid[8];        // TarConstants.GIDLEN
- * char size[12];      // TarConstants.SIZELEN
- * char mtime[12];     // TarConstants.MODTIMELEN
- * char chksum[8];     // TarConstants.CHKSUMLEN
- * char linkflag[1];
- * char linkname[100]; // TarConstants.NAMELEN
+ * char name[100];     // TarConstants.NAMELEN    - offset   0
+ * char mode[8];       // TarConstants.MODELEN    - offset 100
+ * char uid[8];        // TarConstants.UIDLEN     - offset 108
+ * char gid[8];        // TarConstants.GIDLEN     - offset 116
+ * char size[12];      // TarConstants.SIZELEN    - offset 124
+ * char mtime[12];     // TarConstants.MODTIMELEN - offset 136
+ * char chksum[8];     // TarConstants.CHKSUMLEN  - offset 148
+ * char linkflag[1];   //                         - offset 156
+ * char linkname[100]; // TarConstants.NAMELEN    - offset 157
  * The following fields are only present in new-style POSIX tar archives:
- * char magic[8];      // TarConstants.MAGICLEN
- * TODO: Posix/GNU split this into magic[6] and char version[2];
- * char uname[32];     // TarConstants.UNAMELEN
- * char gname[32];     // TarConstants.GNAMELEN
- * char devmajor[8];   // TarConstants.DEVLEN
- * char devminor[8];   // TarConstants.DEVLEN
- * char prefix[155];   // Used if "name" field is not long enough to hold the path
- * char pad[12];       // NULs
+ * char magic[6];      // TarConstants.MAGICLEN   - offset 257
+ * char version[2];    // TarConstants.VERSIONLEN - offset 263
+ * char uname[32];     // TarConstants.UNAMELEN   - offset 265
+ * char gname[32];     // TarConstants.GNAMELEN   - offset 297
+ * char devmajor[8];   // TarConstants.DEVLEN     - offset 329
+ * char devminor[8];   // TarConstants.DEVLEN     - offset 337
+ * char prefix[155];   // TarConstants.PREFIXLEN  - offset 345
+ * // Used if "name" field is not long enough to hold the path
+ * char pad[12];       // NULs                    - offset 500
  * } header;
  * All unused bytes are set to null.
  * New-style GNU tar files are slightly different from the above.
@@ -107,6 +108,8 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
 
     /** The entry's magic tag. */
     private String magic;
+    /** The version of the format */
+    private String version;
 
     /** The entry's user name. */
     private String userName;
@@ -140,6 +143,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      */
     private TarArchiveEntry () {
         this.magic = MAGIC_POSIX;
+        this.version = VERSION_POSIX;
         this.name = "";
         this.linkName = "";
 
@@ -577,6 +581,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         outbuf[offset++] = linkFlag;
         offset = TarUtils.formatNameBytes(linkName, outbuf, offset, NAMELEN);
         offset = TarUtils.formatNameBytes(magic, outbuf, offset, MAGICLEN);
+        offset = TarUtils.formatNameBytes(version, outbuf, offset, VERSIONLEN);
         offset = TarUtils.formatNameBytes(userName, outbuf, offset, UNAMELEN);
         offset = TarUtils.formatNameBytes(groupName, outbuf, offset, GNAMELEN);
         offset = TarUtils.formatOctalBytes(devMajor, outbuf, offset, DEVLEN);
@@ -617,6 +622,8 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         offset += NAMELEN;
         magic = TarUtils.parseName(header, offset, MAGICLEN);
         offset += MAGICLEN;
+        version = TarUtils.parseName(header, offset, VERSIONLEN);
+        offset += VERSIONLEN;
         userName = TarUtils.parseName(header, offset, UNAMELEN);
         offset += UNAMELEN;
         groupName = TarUtils.parseName(header, offset, GNAMELEN);

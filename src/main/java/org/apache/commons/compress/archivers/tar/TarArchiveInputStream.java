@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.utils.ArchiveUtils;
 
 /**
  * The TarInputStream reads a UNIX tar archive as an InputStream.
@@ -380,39 +381,32 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     // ArchiveInputStream
 
     public static boolean matches(byte[] signature, int length) {
-        // 6574 7473 2e31 6d78 == "test1.xml"
-        // TODO replace with a proper test if possible - see COMPRESS-65
-
-        if (length < 8) {
+        if (length < TarConstants.VERSION_OFFSET+TarConstants.VERSIONLEN) {
             return false;
         }
 
-        if (signature[0] != 0x74) {
-            return false;
+        if (ArchiveUtils.matchAsciiBuffer(TarConstants.MAGIC_POSIX, 
+                signature, TarConstants.MAGIC_OFFSET, TarConstants.MAGICLEN)
+            &&
+            ArchiveUtils.matchAsciiBuffer(TarConstants.VERSION_POSIX, 
+                signature, TarConstants.VERSION_OFFSET, TarConstants.VERSIONLEN)
+                ){
+            return true;
         }
-        if (signature[1] != 0x65) {
-            return false;
+        if (ArchiveUtils.matchAsciiBuffer(TarConstants.MAGIC_GNU, 
+                signature, TarConstants.MAGIC_OFFSET, TarConstants.MAGICLEN)
+            &&
+            (
+             ArchiveUtils.matchAsciiBuffer(TarConstants.VERSION_GNU_SPACE, 
+                signature, TarConstants.VERSION_OFFSET, TarConstants.VERSIONLEN)
+            ||
+            ArchiveUtils.matchAsciiBuffer(TarConstants.VERSION_GNU_ZERO, 
+                signature, TarConstants.VERSION_OFFSET, TarConstants.VERSIONLEN)
+            )
+                ){
+            return true;
         }
-        if (signature[2] != 0x73) {
-            return false;
-        }
-        if (signature[3] != 0x74) {
-            return false;
-        }
-        if (signature[4] != 0x31) {
-            return false;
-        }
-        if (signature[5] != 0x2e) {
-            return false;
-        }
-        if (signature[6] != 0x78) {
-            return false;
-        }
-        if (signature[7] != 0x6d) {
-            return false;
-        }
-
-        return true;
+        return false;
     }
 
 }

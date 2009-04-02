@@ -60,10 +60,19 @@ public interface TarConstants {
      */
     long   MAXSIZE = 077777777777L;
 
+    /** Offset of start of magic field within header record */
+    int    MAGIC_OFFSET = 257;
     /**
      * The length of the magic field in a header buffer.
      */
-    int    MAGICLEN = 8; // TODO split this into MAGICLEN=6 and VERSIONLEN=2
+    int    MAGICLEN = 6;
+
+    /** Offset of start of magic field within header record */
+    int    VERSION_OFFSET = 263;
+    /**
+     * Previously this was regarded as part of "magic" field, but it is separate.
+     */
+    int    VERSIONLEN = 2;
 
     /**
      * The length of the modification time field in a header buffer.
@@ -84,6 +93,12 @@ public interface TarConstants {
      * The length of each of the device fields (major and minor) in a header buffer.
      */
     int    DEVLEN = 8;
+
+    /**
+     * Length of the prefix field.
+     * 
+     */
+    int    PREFIXLEN = 155;
 
     /**
      * LF_ constants represent the "link flag" of an entry, or more commonly,
@@ -134,12 +149,16 @@ public interface TarConstants {
     /**
      * The magic tag representing a POSIX tar archive.
      */
-    String MAGIC_POSIX = "ustar"; // TODO this should be NUL-terminated
+    String MAGIC_POSIX = "ustar\0";
+    String VERSION_POSIX = "00";
 
     /**
      * The magic tag representing a GNU tar archive.
      */
-    String MAGIC_GNU = "ustar  "; // TODO this should have single space terminator
+    String MAGIC_GNU = "ustar ";
+    // Appear to be two possible GNU versions
+    String VERSION_GNU_SPACE = " \0";
+    String VERSION_GNU_ZERO  = "0\0";
 
     /**
      * The name of the GNU tar entry which contains a long name.
