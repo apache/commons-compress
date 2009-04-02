@@ -25,18 +25,18 @@ public class TarUtilsTest extends TestCase {
     
     public void testName(){
         byte [] buff = new byte[20];
-        StringBuffer sb1 = new StringBuffer("abcdefghijklmnopqrstuvwxyz");
-        int off = TarUtils.getNameBytes(sb1, buff, 1, buff.length-1);
+        String sb1 = "abcdefghijklmnopqrstuvwxyz";
+        int off = TarUtils.formatNameBytes(sb1, buff, 1, buff.length-1);
         assertEquals(off, 20);
-        StringBuffer sb2 = TarUtils.parseName(buff, 1, 10);
-        assertEquals(sb2.toString(),sb1.substring(0,10));
+        String sb2 = TarUtils.parseName(buff, 1, 10);
+        assertEquals(sb2,sb1.substring(0,10));
         sb2 = TarUtils.parseName(buff, 1, 19);
-        assertEquals(sb2.toString(),sb1.substring(0,19));
+        assertEquals(sb2,sb1.substring(0,19));
         buff = new byte[30];
-        off = TarUtils.getNameBytes(sb1, buff, 1, buff.length-1);
+        off = TarUtils.formatNameBytes(sb1, buff, 1, buff.length-1);
         assertEquals(off, 30);
         sb2 = TarUtils.parseName(buff, 1, buff.length-1);
-        assertEquals(sb1.toString(), sb2.toString());
+        assertEquals(sb1, sb2);
     }
     
     private void fillBuff(byte []buffer, String input){
@@ -61,14 +61,17 @@ public class TarUtilsTest extends TestCase {
         value = TarUtils.parseOctal(buffer,0, 11);
         assertEquals(077777777777L, value);
         fillBuff(buffer, "abcdef"); // Invalid input
-        value = TarUtils.parseOctal(buffer,0, 11);
-//        assertEquals(0, value); // Or perhaps an Exception?
+        try {
+            value = TarUtils.parseOctal(buffer,0, 11);
+            fail("Expected IllegalArgumentException");
+        } catch (IllegalArgumentException expected) {
+        }
     }
     
     private void checkRoundTripOctal(final long value) {
         byte [] buffer = new byte[12];
         long parseValue;
-        TarUtils.getLongOctalBytes(value, buffer, 0, buffer.length);
+        TarUtils.formatLongOctalBytes(value, buffer, 0, buffer.length);
         parseValue = TarUtils.parseOctal(buffer,0, buffer.length);
         assertEquals(value,parseValue);
     }
@@ -84,24 +87,33 @@ public class TarUtilsTest extends TestCase {
     // Check correct trailing bytes are generated
     public void testTrailers() {
         byte [] buffer = new byte[12];
-        TarUtils.getLongOctalBytes(123, buffer, 0, buffer.length);
+        TarUtils.formatLongOctalBytes(123, buffer, 0, buffer.length);
         assertEquals(' ', buffer[buffer.length-1]);
         assertEquals('3', buffer[buffer.length-2]); // end of number
-        TarUtils.getOctalBytes(123, buffer, 0, buffer.length);
+        TarUtils.formatOctalBytes(123, buffer, 0, buffer.length);
         assertEquals(0  , buffer[buffer.length-1]);
         assertEquals(' ', buffer[buffer.length-2]);
         assertEquals('3', buffer[buffer.length-3]); // end of number
-        TarUtils.getCheckSumOctalBytes(123, buffer, 0, buffer.length);
+        TarUtils.formatCheckSumOctalBytes(123, buffer, 0, buffer.length);
         assertEquals(' ', buffer[buffer.length-1]);
         assertEquals(0  , buffer[buffer.length-2]);
         assertEquals('3', buffer[buffer.length-3]); // end of number
     }
     
     public void testNegative() {
-        byte [] buffer = new byte[10];
+        byte [] buffer = new byte[22];
         TarUtils.formatUnsignedOctalString(-1, buffer, 0, buffer.length);
-        // Currently negative numbers generate all zero buffer. This may need to change.
-        assertEquals("0000000000", new String(buffer));
-        
+        assertEquals("1777777777777777777777", new String(buffer));
+    }
+
+    public void testOverflow() {
+        byte [] buffer = new byte[8-1]; // a lot of the numbers have 8-byte buffers (nul term)
+        TarUtils.formatUnsignedOctalString(07777777L, buffer, 0, buffer.length);
+        assertEquals("7777777", new String(buffer));        
+        try {
+            TarUtils.formatUnsignedOctalString(017777777L, buffer, 0, buffer.length);
+            fail("Should have cause IllegalArgumentException");
+        } catch (IllegalArgumentException expected) {
+        }
     }
 }

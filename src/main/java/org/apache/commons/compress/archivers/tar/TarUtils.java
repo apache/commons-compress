@@ -41,30 +41,35 @@ public class TarUtils {
      * @param length The maximum number of bytes to parse.
      * @return The long value of the octal string.
      */
-    public static long parseOctal(byte[] buffer, int offset, int length) {
+    public static long parseOctal(byte[] buffer, final int offset, final int length) {
         long    result = 0;
         boolean stillPadding = true;
         int     end = offset + length;
 
         for (int i = offset; i < end; ++i) {
-            if (buffer[i] == 0) { // Found trailing null
+            final byte currentByte = buffer[i];
+            if (currentByte == 0) { // Found trailing null
                 break;
             }
 
             // Ignore leading spaces ('0' can be ignored anyway)
-            if (buffer[i] == (byte) ' ' || buffer[i] == '0') {
+            if (currentByte == (byte) ' ' || currentByte == '0') {
                 if (stillPadding) {
                     continue;
                 }
 
-                if (buffer[i] == (byte) ' ') { // Found trailing space
+                if (currentByte == (byte) ' ') { // Found trailing space
                     break;
                 }
             }
 
             stillPadding = false;
             // CheckStyle:MagicNumber OFF
-            result = (result << 3) + (buffer[i] - '0');// TODO needs to reject invalid bytes
+            if (currentByte < '0' || currentByte > '7'){
+                throw new IllegalArgumentException(
+                        "Invalid octal digit at position "+i+" in '"+new String(buffer, offset, length)+"'");
+            }
+            result = (result << 3) + (currentByte - '0');// TODO needs to reject invalid bytes
             // CheckStyle:MagicNumber ON
         }
 
@@ -81,7 +86,7 @@ public class TarUtils {
      * @param length The maximum number of bytes to parse.
      * @return The entry name.
      */
-    public static StringBuffer parseName(byte[] buffer, int offset, int length) {
+    public static String parseName(byte[] buffer, final int offset, final int length) {
         StringBuffer result = new StringBuffer(length);
         int          end = offset + length;
 
@@ -93,7 +98,7 @@ public class TarUtils {
             result.append((char) buffer[i]);
         }
 
-        return result;
+        return result.toString();
     }
 
     /**
@@ -111,7 +116,7 @@ public class TarUtils {
      * @param length The maximum number of header bytes to copy.
      * @return The updated offset, i.e. offset + length
      */
-    public static int getNameBytes(StringBuffer name, byte[] buf, int offset, int length) {
+    public static int formatNameBytes(String name, byte[] buf, final int offset, final int length) {
         int i;
 
         // copy until end of input or output is reached.
@@ -128,51 +133,54 @@ public class TarUtils {
     }
 
     /**
-     * Fill buffer with octal number, with leading zeroes
+     * Fill buffer with unsigned octal number, padded with leading zeroes.
      * 
-     * The output for negative numbers is not specified,
-     * but currently the method returns a buffer filled with zeros.
-     * This may change.
-     * 
-     * @param value number to convert to octal (assumed >=0)
+     * @param value number to convert to octal - treated as unsigned
      * @param buffer destination buffer
      * @param offset starting offset in buffer
      * @param length length of buffer to fill
+     * @throws IllegalArgumentException if the value will not fit in the buffer
      */
-    public static void formatUnsignedOctalString(long value, byte[] buffer,
-            int offset, int length) {
-        length--;
+    public static void formatUnsignedOctalString(final long value, byte[] buffer,
+            final int offset, final int length) {
+        int remaining = length;
+        remaining--;
         if (value == 0) {
-            buffer[offset + length--] = (byte) '0';
+            buffer[offset + remaining--] = (byte) '0';
         } else {
-            for (long val = value; length >= 0 && val > 0; --length) {
+            long val = value;
+            for (; remaining >= 0 && val != 0; --remaining) {
                 // CheckStyle:MagicNumber OFF
-                buffer[offset + length] = (byte) ((byte) '0' + (byte) (val & 7));
-                val = val >> 3;
+                buffer[offset + remaining] = (byte) ((byte) '0' + (byte) (val & 7));
+                val = val >>> 3;
                 // CheckStyle:MagicNumber ON
+            }
+            if (val != 0){
+                throw new IllegalArgumentException
+                (value+"="+Long.toOctalString(value)+ " will not fit in octal number buffer of length "+length);
             }
         }
 
-        for (; length >= 0; --length) { // leading zeros
-            buffer[offset + length] = (byte) '0';
+        for (; remaining >= 0; --remaining) { // leading zeros
+            buffer[offset + remaining] = (byte) '0';
         }
     }
 
     /**
      * Write an octal integer into a buffer.
      *
-     * Adds a trailing space and NUL to end of the buffer.
-     * [Appears to be standard for V7 Unix BSD]
-     * Converts the long value (assumed positive) to the buffer.
-     * Adds leading zeros to the buffer.
+     * Uses {@link #formatUnsignedOctalString} to format
+     * the value as an octal string with leading zeros.
+     * The converted number is followed by space and NUL
      * 
      * @param value The value to write
      * @param buf The buffer to receive the output
      * @param offset The starting offset into the buffer
      * @param length The size of the output buffer
      * @return The updated offset, i.e offset+length
+     * @throws IllegalArgumentException if the value (and trailer) will not fit in the buffer
      */
-    public static int getOctalBytes(long value, byte[] buf, int offset, int length) {
+    public static int formatOctalBytes(final long value, byte[] buf, final int offset, final int length) {
 
         int idx=length-2; // For space and trailing null
         formatUnsignedOctalString(value, buf, offset, idx);
@@ -185,17 +193,19 @@ public class TarUtils {
 
     /**
      * Write an octal long integer into a buffer.
-     * Converts the long value (assumed positive) to the buffer.
-     * Adds leading zeros to the buffer.
-     * The buffer is terminated with a space.
+     * 
+     * Uses {@link #formatUnsignedOctalString} to format
+     * the value as an octal string with leading zeros.
+     * The converted number is followed by a space.
      * 
      * @param value The value to write as octal
      * @param buf The destinationbuffer.
      * @param offset The starting offset into the buffer.
      * @param length The length of the buffer
      * @return The updated offset
+     * @throws IllegalArgumentException if the value (and trailer) will not fit in the buffer
      */
-    public static int getLongOctalBytes(long value, byte[] buf, int offset, int length) {
+    public static int formatLongOctalBytes(final long value, byte[] buf, final int offset, final int length) {
 
         int idx=length-1; // For space
         
@@ -207,18 +217,19 @@ public class TarUtils {
 
     /**
      * Writes an octal value into a buffer.
-     *
-     * Converts the long value (assumed positive) to the buffer.
-     * Adds leading zeros to the buffer.
-     * Checksum is followed by NUL and then space.
+     * 
+     * Uses {@link #formatUnsignedOctalString} to format
+     * the value as an octal string with leading zeros.
+     * The converted number is followed by NUL and then space.
      *
      * @param value The value to convert
      * @param buf The destination buffer
      * @param offset The starting offset into the buffer.
      * @param length The size of the buffer.
      * @return The updated value of offset, i.e. offset+length
+     * @throws IllegalArgumentException if the value (and trailer) will not fit in the buffer
      */
-    public static int getCheckSumOctalBytes(long value, byte[] buf, int offset, int length) {
+    public static int formatCheckSumOctalBytes(final long value, byte[] buf, final int offset, final int length) {
 
         int idx=length-2; // for NUL and space
         formatUnsignedOctalString(value, buf, offset, idx);
@@ -235,7 +246,7 @@ public class TarUtils {
      * @param buf The tar entry's header buffer.
      * @return The computed checksum.
      */
-    public static long computeCheckSum(byte[] buf) {
+    public static long computeCheckSum(final byte[] buf) {
         long sum = 0;
 
         for (int i = 0; i < buf.length; ++i) {
