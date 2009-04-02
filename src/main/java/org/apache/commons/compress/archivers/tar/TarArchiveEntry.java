@@ -82,7 +82,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 
 public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     /** The entry's name. */
-    private StringBuffer name;
+    private String name;
 
     /** The entry's permission mode. */
     private int mode;
@@ -103,16 +103,16 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     private byte linkFlag;
 
     /** The entry's link name. */
-    private StringBuffer linkName;
+    private String linkName;
 
     /** The entry's magic tag. */
-    private StringBuffer magic;
+    private String magic;
 
     /** The entry's user name. */
-    private StringBuffer userName;
+    private String userName;
 
     /** The entry's group name. */
-    private StringBuffer groupName;
+    private String groupName;
 
     /** The entry's major device number. */
     private int devMajor;
@@ -139,9 +139,9 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * Construct an empty entry and prepares the header values.
      */
     private TarArchiveEntry () {
-        this.magic = new StringBuffer(MAGIC_POSIX);
-        this.name = new StringBuffer();
-        this.linkName = new StringBuffer();
+        this.magic = MAGIC_POSIX;
+        this.name = "";
+        this.linkName = "";
 
         String user = System.getProperty("user.name", "");
 
@@ -151,8 +151,8 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
 
         this.userId = 0;
         this.groupId = 0;
-        this.userName = new StringBuffer(user);
-        this.groupName = new StringBuffer("");
+        this.userName = user;
+        this.groupName = "";
         this.file = null;
     }
 
@@ -170,16 +170,16 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
 
         this.devMajor = 0;
         this.devMinor = 0;
-        this.name = new StringBuffer(name);
+        this.name = name;
         this.mode = isDir ? DEFAULT_DIR_MODE : DEFAULT_FILE_MODE;
         this.linkFlag = isDir ? LF_DIR : LF_NORMAL;
         this.userId = 0;
         this.groupId = 0;
         this.size = 0;
         this.modTime = (new Date()).getTime() / MILLIS_PER_SECOND;
-        this.linkName = new StringBuffer("");
-        this.userName = new StringBuffer("");
-        this.groupName = new StringBuffer("");
+        this.linkName = "";
+        this.userName = "";
+        this.groupName = "";
         this.devMajor = 0;
         this.devMinor = 0;
 
@@ -219,22 +219,24 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
 
         this.file = file;
 
-        this.linkName = new StringBuffer("");
-        this.name = new StringBuffer(fileName);
+        this.linkName = "";
 
         if (file.isDirectory()) {
             this.mode = DEFAULT_DIR_MODE;
             this.linkFlag = LF_DIR;
 
-            int nameLength = name.length();
+            int nameLength = fileName.length();
             if (nameLength == 0 || name.charAt(nameLength - 1) != '/') {
-                this.name.append("/");
+                this.name = fileName + "/";
+            } else {
+                this.name = fileName;                
             }
             this.size = 0;
         } else {
             this.mode = DEFAULT_FILE_MODE;
             this.linkFlag = LF_NORMAL;
             this.size = file.length();
+            this.name = fileName;
         }
 
         this.modTime = file.lastModified() / MILLIS_PER_SECOND;
@@ -314,7 +316,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @param name This entry's new name.
      */
     public void setName(String name) {
-        this.name = new StringBuffer(normalizeFileName(name));
+        this.name = normalizeFileName(name);
     }
 
     /**
@@ -386,7 +388,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @param userName This entry's new user name.
      */
     public void setUserName(String userName) {
-        this.userName = new StringBuffer(userName);
+        this.userName = userName;
     }
 
     /**
@@ -404,7 +406,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @param groupName This entry's new group name.
      */
     public void setGroupName(String groupName) {
-        this.groupName = new StringBuffer(groupName);
+        this.groupName = groupName;
     }
 
     /**
@@ -559,12 +561,12 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     public void writeEntryHeader(byte[] outbuf) {
         int offset = 0;
 
-        offset = TarUtils.getNameBytes(name, outbuf, offset, NAMELEN);
-        offset = TarUtils.getOctalBytes(mode, outbuf, offset, MODELEN);
-        offset = TarUtils.getOctalBytes(userId, outbuf, offset, UIDLEN);
-        offset = TarUtils.getOctalBytes(groupId, outbuf, offset, GIDLEN);
-        offset = TarUtils.getLongOctalBytes(size, outbuf, offset, SIZELEN);
-        offset = TarUtils.getLongOctalBytes(modTime, outbuf, offset, MODTIMELEN);
+        offset = TarUtils.formatNameBytes(name, outbuf, offset, NAMELEN);
+        offset = TarUtils.formatOctalBytes(mode, outbuf, offset, MODELEN);
+        offset = TarUtils.formatOctalBytes(userId, outbuf, offset, UIDLEN);
+        offset = TarUtils.formatOctalBytes(groupId, outbuf, offset, GIDLEN);
+        offset = TarUtils.formatLongOctalBytes(size, outbuf, offset, SIZELEN);
+        offset = TarUtils.formatLongOctalBytes(modTime, outbuf, offset, MODTIMELEN);
 
         int csOffset = offset;
 
@@ -573,12 +575,12 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         }
 
         outbuf[offset++] = linkFlag;
-        offset = TarUtils.getNameBytes(linkName, outbuf, offset, NAMELEN);
-        offset = TarUtils.getNameBytes(magic, outbuf, offset, MAGICLEN);
-        offset = TarUtils.getNameBytes(userName, outbuf, offset, UNAMELEN);
-        offset = TarUtils.getNameBytes(groupName, outbuf, offset, GNAMELEN);
-        offset = TarUtils.getOctalBytes(devMajor, outbuf, offset, DEVLEN);
-        offset = TarUtils.getOctalBytes(devMinor, outbuf, offset, DEVLEN);
+        offset = TarUtils.formatNameBytes(linkName, outbuf, offset, NAMELEN);
+        offset = TarUtils.formatNameBytes(magic, outbuf, offset, MAGICLEN);
+        offset = TarUtils.formatNameBytes(userName, outbuf, offset, UNAMELEN);
+        offset = TarUtils.formatNameBytes(groupName, outbuf, offset, GNAMELEN);
+        offset = TarUtils.formatOctalBytes(devMajor, outbuf, offset, DEVLEN);
+        offset = TarUtils.formatOctalBytes(devMinor, outbuf, offset, DEVLEN);
 
         while (offset < outbuf.length) {
             outbuf[offset++] = 0;
@@ -586,7 +588,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
 
         long chk = TarUtils.computeCheckSum(outbuf);
 
-        TarUtils.getCheckSumOctalBytes(chk, outbuf, csOffset, CHKSUMLEN);
+        TarUtils.formatCheckSumOctalBytes(chk, outbuf, csOffset, CHKSUMLEN);
     }
 
     /**
