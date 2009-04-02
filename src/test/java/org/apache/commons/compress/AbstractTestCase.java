@@ -247,10 +247,7 @@ public abstract class AbstractTestCase extends TestCase {
         final InputStream is = new FileInputStream(archive);
         try {
             final BufferedInputStream buf = new BufferedInputStream(is);
-            final ArchiveInputStream in =
-                archive.getName().endsWith(".tar") ? // tar does not autodetect at present
-                    factory.createArchiveInputStream("tar", buf) :        
-                    factory.createArchiveInputStream(buf);
+            final ArchiveInputStream in = factory.createArchiveInputStream(buf);
             this.checkArchiveContent(in, expected);
         } finally {
             is.close();
