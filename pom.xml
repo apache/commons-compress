@@ -56,6 +56,11 @@
       <id>bodewig</id>
       <email>bodewig at apache.org</email>
     </developer>
+    <developer>
+      <name>Sebastian Bazley</name>
+      <id>sebb</id>
+      <email>sebb at apache.org</email>
+    </developer>
   </developers>
 
   <contributors>
