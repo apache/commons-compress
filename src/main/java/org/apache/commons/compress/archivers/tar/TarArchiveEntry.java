@@ -54,21 +54,27 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * The C structure for a Tar Entry's header is:
  * <pre>
  * struct header {
- * char name[NAMSIZ];
- * char mode[8];
- * char uid[8];
- * char gid[8];
- * char size[12];
- * char mtime[12];
- * char chksum[8];
- * char linkflag;
- * char linkname[NAMSIZ];
- * char magic[8];
- * char uname[TUNMLEN];
- * char gname[TGNMLEN];
- * char devmajor[8];
- * char devminor[8];
+ * char name[100];     // TarConstants.NAMELEN
+ * char mode[8];       // TarConstants.MODELEN
+ * char uid[8];        // TarConstants.UIDLEN
+ * char gid[8];        // TarConstants.GIDLEN
+ * char size[12];      // TarConstants.SIZELEN
+ * char mtime[12];     // TarConstants.MODTIMELEN
+ * char chksum[8];     // TarConstants.CHKSUMLEN
+ * char linkflag[1];
+ * char linkname[100]; // TarConstants.NAMELEN
+ * The following fields are only present in new-style POSIX tar archives:
+ * char magic[8];      // TarConstants.MAGICLEN
+ * TODO: Posix/GNU split this into magic[6] and char version[2];
+ * char uname[32];     // TarConstants.UNAMELEN
+ * char gname[32];     // TarConstants.GNAMELEN
+ * char devmajor[8];   // TarConstants.DEVLEN
+ * char devminor[8];   // TarConstants.DEVLEN
+ * char prefix[155];   // Used if "name" field is not long enough to hold the path
+ * char pad[12];       // NULs
  * } header;
+ * All unused bytes are set to null.
+ * New-style GNU tar files are slightly different from the above.
  * </pre>
  * 
  * @NotThreadSafe
@@ -133,7 +139,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * Construct an empty entry and prepares the header values.
      */
     private TarArchiveEntry () {
-        this.magic = new StringBuffer(TMAGIC);
+        this.magic = new StringBuffer(MAGIC_POSIX);
         this.name = new StringBuffer();
         this.linkName = new StringBuffer();
 

@@ -63,7 +63,7 @@ public interface TarConstants {
     /**
      * The length of the magic field in a header buffer.
      */
-    int    MAGICLEN = 8;
+    int    MAGICLEN = 8; // TODO split this into MAGICLEN=6 and VERSIONLEN=2
 
     /**
      * The length of the modification time field in a header buffer.
@@ -81,7 +81,7 @@ public interface TarConstants {
     int    GNAMELEN = 32;
 
     /**
-     * The length of the devices field in a header buffer.
+     * The length of each of the device fields (major and minor) in a header buffer.
      */
     int    DEVLEN = 8;
 
@@ -134,17 +134,17 @@ public interface TarConstants {
     /**
      * The magic tag representing a POSIX tar archive.
      */
-    String TMAGIC = "ustar";
+    String MAGIC_POSIX = "ustar"; // TODO this should be NUL-terminated
 
     /**
      * The magic tag representing a GNU tar archive.
      */
-    String GNU_TMAGIC = "ustar  ";
+    String MAGIC_GNU = "ustar  "; // TODO this should have single space terminator
 
     /**
-     * The namr of the GNU tar entry which contains a long name.
+     * The name of the GNU tar entry which contains a long name.
      */
-    String GNU_LONGLINK = "././@LongLink";
+    String GNU_LONGLINK = "././@LongLink"; // TODO rename as LONGLINK_GNU ?
 
     /**
      * Identifies the *next* file on the tape as having a long name.
