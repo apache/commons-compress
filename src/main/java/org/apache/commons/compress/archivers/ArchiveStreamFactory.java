@@ -131,17 +131,20 @@ public class ArchiveStreamFactory {
             in.reset();
             if (ZipArchiveInputStream.matches(signature, signatureLength)) {
                 return new ZipArchiveInputStream(in);
-            } else if (JarArchiveInputStream
-                    .matches(signature, signatureLength)) {
+            } else if (JarArchiveInputStream.matches(signature, signatureLength)) {
                 return new JarArchiveInputStream(in);
-            } else if (TarArchiveInputStream
-                    .matches(signature, signatureLength)) {
-                return new TarArchiveInputStream(in);
             } else if (ArArchiveInputStream.matches(signature, signatureLength)) {
                 return new ArArchiveInputStream(in);
-            } else if (CpioArchiveInputStream.matches(signature,
-                    signatureLength)) {
+            } else if (CpioArchiveInputStream.matches(signature, signatureLength)) {
                 return new CpioArchiveInputStream(in);
+            }
+            // Tar needs a bigger buffer to check the signature; read the first block
+            final byte[] tarheader = new byte[512];
+            in.mark(tarheader.length);
+            signatureLength = in.read(tarheader);
+            in.reset();
+            if (TarArchiveInputStream.matches(tarheader, signatureLength)) {
+                return new TarArchiveInputStream(in);
             }
         } catch (IOException e) {
             throw new ArchiveException(
