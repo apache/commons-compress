@@ -25,7 +25,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 /**
  * @Immutable
  */
-public class Change {
+class Change {
 	private final String targetFile; // entry name to delete
 	private final ArchiveEntry entry; // new entry to add
 	private final InputStream input; // source for new entry
@@ -42,7 +42,7 @@ public class Change {
 	 * from the stream as argument.
 	 * @param pFilename the filename of the file to delete
 	 */
-	public Change(final String pFilename) {
+	Change(final String pFilename) {
 		if(pFilename == null) {
 			throw new NullPointerException();
 		}
@@ -58,7 +58,7 @@ public class Change {
 	 * @param pEntry the entry details
 	 * @param pInput the InputStream for the entry data
 	 */
-	public Change(final ArchiveEntry pEntry, final InputStream pInput) {
+	Change(final ArchiveEntry pEntry, final InputStream pInput) {
 		if(pEntry == null || pInput == null) {
 			throw new NullPointerException();
 		}
