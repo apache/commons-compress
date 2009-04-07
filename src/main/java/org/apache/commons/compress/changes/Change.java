@@ -51,16 +51,7 @@ public class Change {
 		input = null;
 		entry = null;
 	}
-	
-//	public Change(final String pOldname, final ArchiveEntry pEntry) {
-//		if(pOldname == null || pEntry == null) {
-//			throw new NullPointerException();
-//		}
-//		targetFile = pOldname;
-//		entry = pEntry;
-//		type = TYPE_MOVE;
-//	}
-	
+		
 	/**
 	 * Construct a change which adds an entry.
 	 * 
