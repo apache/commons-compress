@@ -23,6 +23,8 @@ import java.io.InputStream;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 
 /**
+ * Change holds meta information about a change.
+ * 
  * @Immutable
  */
 class Change {
