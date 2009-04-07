@@ -37,10 +37,6 @@ public final class ChangeSet {
         addDeletion(new Change(pFilename));
     }
 
-    // public void move( final String pFrom, final String pTo ) {
-    // changes.add(new Change(pFrom, pTo));
-    // }
-
     public void add(final ArchiveEntry pEntry, final InputStream pInput) {
         changes.add(new Change(pEntry, pInput));
     }
