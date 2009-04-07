@@ -20,7 +20,6 @@ package org.apache.commons.compress.changes;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -32,8 +31,7 @@ import org.apache.commons.compress.utils.IOUtils;
 
 public final class ChangeSet {
 
-    private final Set changes = Collections
-            .synchronizedSet(new LinkedHashSet());
+    private final Set changes = new LinkedHashSet();
 
     public void delete(final String pFilename) {
         addDeletion(new Change(pFilename));
@@ -45,10 +43,6 @@ public final class ChangeSet {
 
     public void add(final ArchiveEntry pEntry, final InputStream pInput) {
         changes.add(new Change(pEntry, pInput));
-    }
-
-    public Set asSet() {
-        return changes;
     }
 
     public void perform(ArchiveInputStream in, ArchiveOutputStream out)
