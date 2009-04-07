@@ -25,6 +25,27 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 /**
  * Represents an archive entry in the "ar" format.
  * 
+ * Each AR archive starts with "!<arch>" followed by a LF. After these 8 bytes
+ * the archive entries are listed. The format of an entry header is as it follows:
+ * 
+ * <code>
+ * START BYTE   END BYTE    NAME                    FORMAT      LENGHT
+ * 0            15          File name               ASCII       16
+ * 16           27          Modification timestamp  Decimal     12
+ * 28           33          Owner ID                Decimal     6
+ * 34           39          Group ID                Decimal     6
+ * 40           47          File mode               Octal       8
+ * 48           57          File size (bytes)       Decimal     10
+ * 58           59          File magic              \140\012    2
+ * </code>
+ * 
+ * This specifies that an ar archive entry header contains 60 bytes.
+ * 
+ * Due to the limitation of the file name length to 16 bytes GNU and BSD has
+ * their own variants of this format. This formats are currently not supported
+ * and file names with a bigger size than 16 bytes are not possible at the
+ * moment.
+ * 
  * @Immutable
  */
 public class ArArchiveEntry implements ArchiveEntry {
