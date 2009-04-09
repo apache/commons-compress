@@ -41,6 +41,28 @@
                be treated with caution.
             </p>
          </subsection>
+         
+         <section name="Building Commons Compress">
+            <p>
+                To obtain the Commons Compress source, you can either:
+            </p>
+            <ul>
+                <li>
+                    Check the source out of SVN using:
+                    <br/>
+                    HEAD:
+                    <code>svn co http://svn.apache.org/repos/asf/commons/proper/compress/trunk compress</code>
+                    <br/>
+                    For a certain version please look at
+                    <a href="http://svn.apache.org/repos/asf/commons/proper/compress/tags">
+                        http://svn.apache.org/repos/asf/commons/proper/compress/tags</a>
+                </li>
+            </ul>
+            <p>
+                To build Commons Commpress, you need <a href="http://maven.apache.org">Maven 2</a>.
+                Use: mvn install to build Compress and install it into your local repository.
+            </p>
+        </section>
 <!--
          <subsection name="Archived Releases">
             <p>
