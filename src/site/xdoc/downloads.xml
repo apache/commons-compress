@@ -34,7 +34,7 @@
 
          </subsection>
 
-         <section name="Building Commons Compress">
+         <subsection name="Building Commons Compress">
             <p>
                 To obtain the Commons Compress source, you can either:
             </p>
@@ -54,7 +54,7 @@
                 To build Commons Commpress, you need <a href="http://maven.apache.org">Maven 2</a>.
                 Use: mvn install to build Compress and install it into your local repository.
             </p>
-        </section>
+        </subsection>
 <!--
          <subsection name="Archived Releases">
             <p>
