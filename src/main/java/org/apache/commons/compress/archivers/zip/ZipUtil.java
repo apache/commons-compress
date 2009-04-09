@@ -49,22 +49,21 @@ public abstract class ZipUtil {
      * @return the date as a byte array
      */
     public static byte[] toDosTime(long t) {
-        Date time = new Date(t);
-        // CheckStyle:MagicNumberCheck OFF - I do not think that using constants
-        //                                   here will improve the readablity
-        int year = time.getYear() + 1900;
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(t);
+
+        int year = c.get(Calendar.YEAR);
         if (year < 1980) {
             return (byte[]) DOS_TIME_MIN.clone(); // stop callers from changing the array
         }
-        int month = time.getMonth() + 1;
+        int month = c.get(Calendar.MONTH) + 1;
         long value =  ((year - 1980) << 25)
             |         (month << 21)
-            |         (time.getDate() << 16)
-            |         (time.getHours() << 11)
-            |         (time.getMinutes() << 5)
-            |         (time.getSeconds() >> 1);
+            |         (c.get(Calendar.DAY_OF_MONTH) << 16)
+            |         (c.get(Calendar.HOUR_OF_DAY) << 11)
+            |         (c.get(Calendar.MINUTE) << 5)
+            |         (c.get(Calendar.SECOND) >> 1);
         return ZipLong.getBytes(value);
-        // CheckStyle:MagicNumberCheck ON
     }
 
     /**
