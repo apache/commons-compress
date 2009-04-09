@@ -535,7 +535,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
-    public void XtestDeleteFromAndAddToAr() throws Exception {
+    public void testDeleteFromAndAddToAr() throws Exception {
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
         File temp = null;
@@ -565,7 +565,6 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             if (ais != null)
                 ais.close();
         }
-        System.out.println(temp.getAbsolutePath());
         List expected = new ArrayList();
         expected.add("test1.xml");
         expected.add("test.txt");
