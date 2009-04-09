@@ -31,13 +31,18 @@ import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * ChangeSet collects and performs changes to an archive.
+ * Putting delete changes in this ChangeSet from multiple threads can
+ * cause conflicts.
+ * 
+ * @NotThreadSafe
  */
 public final class ChangeSet {
 
     private final Set changes = new LinkedHashSet();
 
     /**
-     * Deletes the file with the filename from the archive
+     * Deletes the file with the filename from the archive. 
+     * This method is not thread safe.
      * 
      * @param pFilename
      *            the filename of the file to delete
@@ -60,18 +65,20 @@ public final class ChangeSet {
 
     /**
      * Performs all changes collected in this ChangeSet on the input stream and
-     * streams the result to the output stream.
+     * streams the result to the output stream. Since this method works on a copy
+     * of the actual ChangSet, perform may be called more than once.
      * 
      * @param in
      *            the InputStream to perform the changes on
      * @param out
      *            the resulting OutputStream with all modifications
      * @throws IOException
-     *             if an read/write error occursâ
+     *             if an read/write error occurs
      */
     public void perform(ArchiveInputStream in, ArchiveOutputStream out)
             throws IOException {
-        for (Iterator it = changes.iterator(); it.hasNext();) {
+        Set workingSet = new LinkedHashSet(changes);
+        for (Iterator it = workingSet.iterator(); it.hasNext();) {
             Change change = (Change) it.next();
 
             if (change.type() == Change.TYPE_ADD) {
@@ -84,7 +91,7 @@ public final class ChangeSet {
         while ((entry = in.getNextEntry()) != null) {
             boolean copy = true;
 
-            for (Iterator it = changes.iterator(); it.hasNext();) {
+            for (Iterator it = workingSet.iterator(); it.hasNext();) {
                 Change change = (Change) it.next();
 
                 if (change.type() == Change.TYPE_DELETE
@@ -102,7 +109,7 @@ public final class ChangeSet {
             }
 
             if (copy) {
-                if (!isDeletedLater(entry)) {
+                if (!isDeletedLater(workingSet, entry)) {
                     copyStream(in, out, entry);
                 }
             }
@@ -110,7 +117,7 @@ public final class ChangeSet {
     }
 
     /**
-     * Adds an delete change
+     * Adds an delete change. This method is not thread safe.
      * 
      * @param pChange
      *            the change which should result in a deletion
@@ -149,11 +156,11 @@ public final class ChangeSet {
      *            the entry to check
      * @return true, if this entry has an deletion change later, false otherwise
      */
-    private boolean isDeletedLater(ArchiveEntry entry) {
+    private boolean isDeletedLater(Set workingSet, ArchiveEntry entry) {
         String source = entry.getName();
 
-        if (!changes.isEmpty()) {
-            for (Iterator it = changes.iterator(); it.hasNext();) {
+        if (!workingSet.isEmpty()) {
+            for (Iterator it = workingSet.iterator(); it.hasNext();) {
                 Change change = (Change) it.next();
                 if (change.type() == Change.TYPE_DELETE) {
                     String target = change.targetFile();
