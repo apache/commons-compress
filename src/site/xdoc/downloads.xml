@@ -34,14 +34,6 @@
 
          </subsection>
 
-         <subsection name="Nightly Builds">
-            <p>
-               <a href="http://people.apache.org/builds/commons/nightly/commons-compress/">Nightly Builds</a>
-               are built once a day from the current SVN HEAD. This is (nearly) the latest code and so should
-               be treated with caution.
-            </p>
-         </subsection>
-         
          <section name="Building Commons Compress">
             <p>
                 To obtain the Commons Compress source, you can either:
