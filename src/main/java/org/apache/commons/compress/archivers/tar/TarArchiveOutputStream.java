@@ -40,7 +40,6 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     /** GNU tar extensions are used to store long file names in the archive. */
     public static final int LONGFILE_GNU = 2;
 
-    private boolean   debug;// NOT READ
     private long      currSize;
     private String    currName;
     private long      currBytes;
@@ -81,7 +80,6 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         out = os;
 
         this.buffer = new TarBuffer(os, blockSize, recordSize);
-        this.debug = false;
         this.assemLen = 0;
         this.assemBuf = new byte[recordSize];
         this.recordBuf = new byte[recordSize];
@@ -98,24 +96,6 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         this.longFileMode = longFileMode;
     }
 
-
-    /**
-     * Sets the debugging flag.
-     *
-     * @param debugF True to turn on debugging.
-     */
-    public void setDebug(boolean debugF) {
-        this.debug = debugF;
-    }
-
-    /**
-     * Sets the debugging flag in this stream's TarBuffer.
-     *
-     * @param debug True to turn on debugging.
-     */
-    public void setBufferDebug(boolean debug) {
-        buffer.setDebug(debug);
-    }
 
     /**
      * Ends the TAR archive without closing the underlying OutputStream.

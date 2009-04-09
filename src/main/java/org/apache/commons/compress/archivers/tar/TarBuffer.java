@@ -52,8 +52,7 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
     private int             blockSize;
     private int             recordSize;
     private int             recsPerBlock;
-    private boolean         debug;
-
+    
     /**
      * Constructor for a TarBuffer on an input stream.
      * @param inStream the input stream to use
@@ -118,7 +117,6 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
      * Initialization common to all constructors.
      */
     private void initialize(int blockSize, int recordSize) {
-        this.debug = false;
         this.blockSize = blockSize;
         this.recordSize = recordSize;
         this.recsPerBlock = (this.blockSize / this.recordSize);
@@ -150,15 +148,6 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
     }
 
     /**
-     * Set the debugging flag for the buffer.
-     *
-     * @param debug If true, print debugging output.
-     */
-    public void setDebug(boolean debug) {
-        this.debug = debug;
-    }
-
-    /**
      * Determine if an archive record indicate End of Archive. End of
      * archive is indicated by a record that consists entirely of null bytes.
      *
@@ -180,11 +169,6 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
      * @throws IOException on error
      */
     public void skipRecord() throws IOException {
-        if (debug) {
-            System.err.println("SkipRecord: recIdx = " + currRecIdx
-                               + " blkIdx = " + currBlkIdx);
-        }
-
         if (inStream == null) {
             throw new IOException("reading (via skip) from an output buffer");
         }
@@ -205,11 +189,6 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
      * @throws IOException on error
      */
     public byte[] readRecord() throws IOException {
-        if (debug) {
-            System.err.println("ReadRecord: recIdx = " + currRecIdx
-                               + " blkIdx = " + currBlkIdx);
-        }
-
         if (inStream == null) {
             if (outStream == null) {
                 throw new IOException("input buffer is closed");
@@ -238,10 +217,6 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
      * @return false if End-Of-File, else true
      */
     private boolean readBlock() throws IOException {
-        if (debug) {
-            System.err.println("ReadBlock: blkIdx = " + currBlkIdx);
-        }
-
         if (inStream == null) {
             throw new IOException("reading from an output buffer");
         }
@@ -290,11 +265,7 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
             bytesNeeded -= numBytes;
 
             if (numBytes != blockSize) {
-                if (debug) {
-                    System.err.println("ReadBlock: INCOMPLETE READ "
-                                       + numBytes + " of " + blockSize
-                                       + " bytes read.");
-                }
+                // TODO: Incomplete Read occured - throw exception?
             }
         }
 
@@ -329,11 +300,6 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
      * @throws IOException on error
      */
     public void writeRecord(byte[] record) throws IOException {
-        if (debug) {
-            System.err.println("WriteRecord: recIdx = " + currRecIdx
-                               + " blkIdx = " + currBlkIdx);
-        }
-
         if (outStream == null) {
             if (inStream == null){
                 throw new IOException("Output buffer is closed");
@@ -369,11 +335,6 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
      * @throws IOException on error
      */
     public void writeRecord(byte[] buf, int offset) throws IOException {
-        if (debug) {
-            System.err.println("WriteRecord: recIdx = " + currRecIdx
-                               + " blkIdx = " + currBlkIdx);
-        }
-
         if (outStream == null) {
             if (inStream == null){
                 throw new IOException("Output buffer is closed");
@@ -403,10 +364,6 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
      * Write a TarBuffer block to the archive.
      */
     private void writeBlock() throws IOException {
-        if (debug) {
-            System.err.println("WriteBlock: blkIdx = " + currBlkIdx);
-        }
-
         if (outStream == null) {
             throw new IOException("writing to an input buffer");
         }
@@ -422,10 +379,6 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
      * Flush the current data block if it has any data in it.
      */
     private void flushBlock() throws IOException {
-        if (debug) {
-            System.err.println("TarBuffer.flushBlock() called.");
-        }
-
         if (outStream == null) {
             throw new IOException("writing to an input buffer");
         }
@@ -441,10 +394,6 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
      * @throws IOException on error
      */
     public void close() throws IOException {
-        if (debug) {
-            System.err.println("TarBuffer.closeBuffer().");
-        }
-
         if (outStream != null) {
             flushBlock();
 
