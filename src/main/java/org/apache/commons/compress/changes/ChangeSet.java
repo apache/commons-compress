@@ -39,7 +39,6 @@ public final class ChangeSet {
     /**
      * Deletes the file with the filename from the archive. 
      * 
-     * @NotThreadSafe
      * @param pFilename
      *            the filename of the file to delete
      */
@@ -62,7 +61,6 @@ public final class ChangeSet {
     /**
      * Adds an delete change.
      * 
-     * @NotThreadSafe
      * @param pChange
      *            the change which should result in a deletion
      */
