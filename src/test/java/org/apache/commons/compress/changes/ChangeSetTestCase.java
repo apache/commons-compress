@@ -77,7 +77,8 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             ChangeSet changes = new ChangeSet();
             changes.delete("bla");
             archiveListDelete("bla");
-            changes.perform(ais, out);
+            ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
             is.close();
 
         } finally {
@@ -115,7 +116,9 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             ChangeSet changes = new ChangeSet();
             changes.delete("bla/test5.xml");
             archiveListDelete("bla/test5.xml");
-            changes.perform(ais, out);
+            
+            ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
             is.close();
 
         } finally {
@@ -160,7 +163,8 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             changes.add(entry, new FileInputStream(file1));
             archiveList.add("bla/test.txt");
 
-            changes.perform(ais, out);
+            ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
             is.close();
 
         } finally {
@@ -203,7 +207,8 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             changes.delete("testdata/test1.xml");
             archiveListDelete("testdata/test1.xml");
 
-            changes.perform(ais, out);
+            ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
             is.close();
 
         } finally {
@@ -247,7 +252,9 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             changes.delete("blub");
             archiveListDelete("blub");
 
-            changes.perform(ais, out);
+            ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
+            
             is.close();
 
         } finally {
@@ -293,7 +300,9 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             changes.delete("bla");
             archiveListDelete("bla");
 
-            changes.perform(ais, out);
+            ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
+            
             is.close();
 
         } finally {
@@ -328,7 +337,9 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             out = factory.createArchiveOutputStream("zip",
                     new FileOutputStream(temp));
 
-            changes.perform(ais, out);
+            ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
+            
         } finally {
             if (out != null)
                 out.close();
@@ -363,7 +374,9 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             out = factory.createArchiveOutputStream("tar",
                     new FileOutputStream(temp));
 
-            changes.perform(ais, out);
+            ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
+            
         } finally {
             if (out != null)
                 out.close();
@@ -399,7 +412,9 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             out = factory.createArchiveOutputStream("jar",
                     new FileOutputStream(temp));
 
-            changes.perform(ais, out);
+            ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
+            
         } finally {
             if (out != null)
                 out.close();
@@ -441,7 +456,9 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             out = factory.createArchiveOutputStream("tar",
                     new FileOutputStream(temp));
 
-            changes.perform(ais, out);
+            ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
+            
         } finally {
             if (out != null)
                 out.close();
@@ -483,7 +500,9 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             out = factory.createArchiveOutputStream("jar",
                     new FileOutputStream(temp));
 
-            changes.perform(ais, out);
+            ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
+            
         } finally {
             if (out != null)
                 out.close();
@@ -517,7 +536,9 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             out = factory.createArchiveOutputStream("ar",
                     new FileOutputStream(temp));
 
-            changes.perform(ais, out);
+            ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
+            
         } finally {
             if (out != null)
                 out.close();
@@ -558,7 +579,9 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             out = factory.createArchiveOutputStream("ar",
                     new FileOutputStream(temp));
 
-            changes.perform(ais, out);
+            ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
+            
         } finally {
             if (out != null)
                 out.close();
@@ -622,7 +645,8 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             ArchiveEntry entry = new ZipArchiveEntry("bla/test.txt");
             changes.add(entry, new FileInputStream(file1));
             archiveList.add("bla/test.txt");
-            changes.perform(ais, out);
+            ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
             is.close();
 
         } finally {
@@ -669,7 +693,8 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             changes.add(entry, new FileInputStream(file));
             archiveList.add("bla/test.txt");
             
-            changes.perform(ais, out);
+            ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
             is.close();
 
         } finally {
@@ -716,7 +741,8 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             changes.delete("test1.xml");
             archiveListDelete("test1.xml");
             
-            changes.perform(ais, out);
+            ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
             is.close();
 
         } finally {
