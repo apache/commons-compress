@@ -42,7 +42,6 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     private static final int BUFFER_SIZE = 8 * 1024;
     private static final int LARGE_BUFFER_SIZE = 32 * 1024;
 
-    private boolean debug;
     private boolean hasHitEOF;
     private long entrySize;
     private long entryOffset;
@@ -76,18 +75,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     public TarArchiveInputStream(InputStream is, int blockSize, int recordSize) {
         this.buffer = new TarBuffer(is, blockSize, recordSize);
         this.readBuf = null;
-        this.debug = false;
         this.hasHitEOF = false;
-    }
-
-    /**
-     * Sets the debugging flag.
-     *
-     * @param debug True to turn on debugging.
-     */
-    public void setDebug(boolean debug) {
-        this.debug = debug;
-        buffer.setDebug(debug);
     }
 
     /**
@@ -181,14 +169,6 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         if (currEntry != null) {
             long numToSkip = entrySize - entryOffset;
 
-            if (debug) {
-                System.err.println("TarInputStream: SKIP currENTRY '"
-                                   + currEntry.getName() + "' SZ "
-                                   + entrySize + " OFF "
-                                   + entryOffset + "  skipping "
-                                   + numToSkip + " bytes");
-            }
-
             while (numToSkip > 0) {
                 long skipped = skip(numToSkip);
                 if (skipped <= 0) {
@@ -204,14 +184,8 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         byte[] headerBuf = buffer.readRecord();
 
         if (headerBuf == null) {
-            if (debug) {
-                System.err.println("READ NULL RECORD");
-            }
             hasHitEOF = true;
         } else if (buffer.isEOFRecord(headerBuf)) {
-            if (debug) {
-                System.err.println("READ EOF RECORD");
-            }
             hasHitEOF = true;
         }
 
@@ -219,16 +193,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             currEntry = null;
         } else {
             currEntry = new TarArchiveEntry(headerBuf);
-
-            if (debug) {
-                System.err.println("TarInputStream: SET CURRENTRY '"
-                                   + currEntry.getName()
-                                   + "' size = "
-                                   + currEntry.getSize());
-            }
-
             entryOffset = 0;
-
             entrySize = currEntry.getSize();
         }
 
