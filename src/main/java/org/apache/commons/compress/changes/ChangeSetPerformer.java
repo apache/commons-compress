@@ -35,7 +35,7 @@ import org.apache.commons.compress.utils.IOUtils;
  * It operates on a copy of the ChangeSet. If the ChangeSet changes,
  * a new Performer must be created.
  * 
- * @Threadsafe
+ * @ThreadSafe
  * @Immutable
  */
 public class ChangeSetPerformer {
