@@ -99,12 +99,14 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     /**
      * Ends the TAR archive without closing the underlying OutputStream.
-     * The result is that the two EOF records of nulls are written.
+     * 
+     * An archive consists of a series of file entries terminated by an
+     * end-of-archive entry, which consists of two 512 blocks of zero bytes. 
+     * POSIX.1 requires two EOF records, like some other implementations.
+     * 
      * @throws IOException on error
      */
     public void finish() throws IOException {
-        // See Bugzilla 28776 for a discussion on this
-        // http://issues.apache.org/bugzilla/show_bug.cgi?id=28776
         writeEOFRecord();
         writeEOFRecord();
     }
