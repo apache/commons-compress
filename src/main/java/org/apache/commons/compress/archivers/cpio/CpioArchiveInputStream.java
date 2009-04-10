@@ -183,7 +183,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
             } else if (magicString.equals(MAGIC_OLD_ASCII)) {
                 this.entry = readOldAsciiEntry();
             } else {
-                throw new IOException("Unknown magic [" + magicString + "]");
+                throw new IOException("Unknown magic [" + magicString + "]. Occured at byte: " + getCount());
             }
         }
 
@@ -238,7 +238,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
             this.entryEOF = true;
             if (this.entry.getFormat() == FORMAT_NEW_CRC) {
                 if (this.crc != this.entry.getChksum()) {
-                    throw new IOException("CRC Error");
+                    throw new IOException("CRC Error. Occured at byte: " + getCount());
                 }
             }
             return -1; // EOF for this entry
@@ -268,6 +268,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         int n = 0;
         while (n < len) {
             int count = this.in.read(b, off + n, len - n);
+            count(count);
             if (count < 0) {
                 throw new EOFException();
             }
@@ -318,7 +319,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         String name = readCString((int) namesize);
         ret.setName(name);
         if (mode == 0 && !name.equals(CPIO_TRAILER)){
-            throw new IOException("Mode 0 only allowed in the trailer. Found entry name: "+name);
+            throw new IOException("Mode 0 only allowed in the trailer. Found entry name: "+name + " Occured at byte: " + getCount());
         }
         skip(ret.getHeaderPadCount());
 
@@ -344,7 +345,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         final String name = readCString((int) namesize);
         ret.setName(name);
         if (mode == 0 && !name.equals(CPIO_TRAILER)){
-            throw new IOException("Mode 0 only allowed in the trailer. Found entry: "+name);
+            throw new IOException("Mode 0 only allowed in the trailer. Found entry: "+ name + " Occured at byte: " + getCount());
         }
 
         return ret;
@@ -370,7 +371,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         final String name = readCString((int) namesize);
         ret.setName(name);
         if (mode == 0 && !name.equals(CPIO_TRAILER)){
-            throw new IOException("Mode 0 only allowed in the trailer. Found entry: "+name);
+            throw new IOException("Mode 0 only allowed in the trailer. Found entry: "+name + "Occured at byte: " + getCount());
         }
         skip(ret.getHeaderPadCount());
 

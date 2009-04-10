@@ -172,8 +172,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             while (numToSkip > 0) {
                 long skipped = skip(numToSkip);
                 if (skipped <= 0) {
-                    throw new RuntimeException("failed to skip current tar"
-                                               + " entry");
+                    throw new RuntimeException("failed to skip current tar entry");
                 }
                 numToSkip -= skipped;
             }
@@ -278,9 +277,9 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             if (rec == null) {
                 // Unexpected EOF!
                 throw new IOException("unexpected EOF with " + numToRead
-                                      + " bytes unread");
+                                      + " bytes unread. Occured at byte: " + getCount());
             }
-
+            count(rec.length);
             int sz = numToRead;
             int recLen = rec.length;
 
