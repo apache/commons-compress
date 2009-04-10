@@ -208,6 +208,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                     if ((lengthOfLastRead = in.read(buf)) == -1) {
                         return -1;
                     }
+                    count(lengthOfLastRead);
                     bytesReadFromStream += lengthOfLastRead;
                 }
                 int toRead = length > lengthOfLastRead

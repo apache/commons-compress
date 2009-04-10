@@ -41,6 +41,7 @@ public abstract class ArchiveInputStream extends InputStream {
 
     private byte[] SINGLE = new byte[1];
     private static final int BYTE_MASK = 0xFF;
+    private int bytesRead = 0;
 
     /**
      * Returns the next Archive Entry in this Stream.
@@ -60,7 +61,6 @@ public abstract class ArchiveInputStream extends InputStream {
      */
     // public abstract XXXArchiveEntry getNextXXXEntry() throws IOException;
 
-
     /**
      * Reads a byte of data. This method will block until enough input is
      * available.
@@ -78,5 +78,25 @@ public abstract class ArchiveInputStream extends InputStream {
     public int read() throws IOException {
         int num = read(SINGLE, 0, 1);
         return num == -1 ? -1 : SINGLE[0] & BYTE_MASK;
+    }
+    
+    /**
+     * Increments the counter of already read bytes.
+     * Doesn't increment if the EOF has been hit (read == -1)
+     * 
+     * @param read the number of bytes read
+     */
+    protected void count(int read) {
+        if(read != -1) {
+            bytesRead = bytesRead + read;
+        }
+    }
+    
+    /**
+     * Returns the current number of bytes read from this stream.
+     * @return the number of read bytes
+     */
+    public int getCount() {
+        return bytesRead;
     }
 }
