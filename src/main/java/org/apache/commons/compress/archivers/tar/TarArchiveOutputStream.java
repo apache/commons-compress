@@ -310,19 +310,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         out.flush();
     }
 
-    // ArchiveOutputStream
-
-    public String getDefaultFileExtension() {
-        return "tar";
-    }
-
-    public String getName() {
-        return "tar";
-    }
-
     public ArchiveEntry createArchiveEntry(File inputFile, String entryName)
             throws IOException {
         return new TarArchiveEntry(inputFile, entryName);
     }
-
 }
