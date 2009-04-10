@@ -80,13 +80,16 @@ public class ChangeSetPerformer {
             for (Iterator it = workingSet.iterator(); it.hasNext();) {
                 Change change = (Change) it.next();
 
-                if (change.type() == Change.TYPE_DELETE
-                        && entry.getName() != null) {
+                if (change.type() == Change.TYPE_DELETE && 
+                    entry.getName() != null) {
                     if (entry.getName().equals(change.targetFile())) {
                         copy = false;
                         it.remove();
                         break;
-                    } else if (entry.getName().matches(
+                    }
+                } else if(change.type() == Change.TYPE_DELETE_DIR && 
+                          entry.getName() != null) {
+                    if (entry.getName().matches(
                             change.targetFile() + "/.*")) {
                         copy = false;
                         break;
@@ -117,7 +120,7 @@ public class ChangeSetPerformer {
         if (!workingSet.isEmpty()) {
             for (Iterator it = workingSet.iterator(); it.hasNext();) {
                 Change change = (Change) it.next();
-                if (change.type() == Change.TYPE_DELETE) {
+                if (change.type() == Change.TYPE_DELETE || change.type() == Change.TYPE_DELETE_DIR) {
                     String target = change.targetFile();
 
                     if (source.equals(target)) {

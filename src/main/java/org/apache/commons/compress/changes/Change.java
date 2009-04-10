@@ -38,20 +38,21 @@ class Change {
 	static final int TYPE_DELETE = 1;
 	static final int TYPE_ADD = 2;
 	static final int TYPE_MOVE = 3; // NOT USED
+	static final int TYPE_DELETE_DIR = 4;
 	
 	/**
 	 * Constructor. Takes the filename of the file to be deleted
 	 * from the stream as argument.
 	 * @param pFilename the filename of the file to delete
 	 */
-	Change(final String pFilename) {
+	Change(final String pFilename, int type) {
 		if(pFilename == null) {
 			throw new NullPointerException();
 		}
-		targetFile = pFilename;
-		type = TYPE_DELETE;
-		input = null;
-		entry = null;
+		this.targetFile = pFilename;
+		this.type = type;
+		this.input = null;
+		this.entry = null;
 	}
 		
 	/**

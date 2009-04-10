@@ -31,6 +31,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ar.ArArchiveEntry;
+import org.apache.commons.compress.archivers.cpio.CpioArchiveEntry;
 import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -245,11 +246,11 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             ChangeSet changes = new ChangeSet();
 
             final File file1 = getFile("test.txt");
-            ArchiveEntry entry = new ZipArchiveEntry("blub/test.txt");
+            ArchiveEntry entry = new CpioArchiveEntry("blub/test.txt");
             changes.add(entry, new FileInputStream(file1));
             archiveList.add("blub/test.txt");
 
-            changes.delete("blub");
+            changes.deleteDir("blub");
             archiveListDelete("blub");
 
             ChangeSetPerformer performer = new ChangeSetPerformer(changes);
@@ -290,14 +291,14 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
             ChangeSet changes = new ChangeSet();
 
-            changes.delete("bla");
+            changes.deleteDir("bla");
 
             final File file1 = getFile("test.txt");
-            ArchiveEntry entry = new ZipArchiveEntry("bla/test.txt");
+            ArchiveEntry entry = new CpioArchiveEntry("bla/test.txt");
             changes.add(entry, new FileInputStream(file1));
             archiveList.add("bla/test.txt");
 
-            changes.delete("bla");
+            changes.deleteDir("bla");
             archiveListDelete("bla");
 
             ChangeSetPerformer performer = new ChangeSetPerformer(changes);
@@ -400,7 +401,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         try {
             ChangeSet changes = new ChangeSet();
             changes.delete("test2.xml");
-            changes.delete("META-INF");
+            changes.deleteDir("META-INF");
             changes.delete(".classpath");
             changes.delete(".project");
 
@@ -484,7 +485,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         try {
             ChangeSet changes = new ChangeSet();
             changes.delete("test2.xml");
-            changes.delete("META-INF");
+            changes.deleteDir("META-INF");
             changes.delete(".classpath");
             changes.delete(".project");
 
