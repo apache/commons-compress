@@ -305,27 +305,6 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         return totalRead;
     }
 
-    /**
-     * Copies the contents of the current tar archive entry directly into
-     * an output stream.
-     *
-     * @param out The OutputStream into which to write the entry's data.
-     * @throws IOException on error
-     */
-    public void copyEntryContents(OutputStream out) throws IOException {
-        byte[] buf = new byte[LARGE_BUFFER_SIZE];
-
-        while (true) {
-            int numRead = read(buf, 0, buf.length);
-
-            if (numRead == -1) {
-                break;
-            }
-
-            out.write(buf, 0, numRead);
-        }
-    }
-
     protected final TarArchiveEntry getCurrentEntry() {
         return currEntry;
     }
