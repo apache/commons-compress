@@ -61,13 +61,13 @@
       <id>sebb</id>
       <email>sebb at apache.org</email>
     </developer>
+    <developer>
+      <name>Christian Grobmeier</name>
+      <email>grobmeier at apache.org</email>
+    </developer>
   </developers>
 
   <contributors>
-    <contributor>
-      <name>Christian Grobmeier</name>
-      <email>grobmeier at gmail.com</email>
-    </contributor>
     <contributor>
       <name>Wolfgang Glas</name>
       <email>wolfgang.glas at ev-i.at</email>
