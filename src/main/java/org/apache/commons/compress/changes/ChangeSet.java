@@ -42,10 +42,20 @@ public final class ChangeSet {
      * @param pFilename
      *            the filename of the file to delete
      */
-    public void delete(final String pFilename) {
-        addDeletion(new Change(pFilename));
+    public void delete(final String filename) {
+        addDeletion(new Change(filename, Change.TYPE_DELETE));
     }
 
+    /**
+     * Deletes the file with the filename from the archive. 
+     * 
+     * @param pFilename
+     *            the filename of the file to delete
+     */
+    public void deleteDir(final String dirName) {
+        addDeletion(new Change(dirName, Change.TYPE_DELETE_DIR));
+    }
+    
     /**
      * Adds a new archive entry to the archive.
      * 
@@ -65,8 +75,9 @@ public final class ChangeSet {
      *            the change which should result in a deletion
      */
     private void addDeletion(Change pChange) {
-        if (Change.TYPE_DELETE != pChange.type()
-                || pChange.targetFile() == null) {
+        if ((Change.TYPE_DELETE != pChange.type() &&
+            Change.TYPE_DELETE_DIR != pChange.type()) ||    
+            pChange.targetFile() == null) {
             return;
         }
         String source = pChange.targetFile();
@@ -78,9 +89,10 @@ public final class ChangeSet {
                         && change.getEntry() != null) {
                     String target = change.getEntry().getName();
 
-                    if (source.equals(target)) {
+                    if (Change.TYPE_DELETE == pChange.type() && source.equals(target)) {
                         it.remove();
-                    } else if (target.matches(source + "/.*")) {
+                    } else if (Change.TYPE_DELETE_DIR == pChange.type() && 
+                               target.matches(source + "/.*")) {
                         it.remove();
                     }
                 }
