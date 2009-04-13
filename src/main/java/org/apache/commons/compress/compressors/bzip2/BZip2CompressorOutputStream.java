@@ -543,13 +543,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     /**
      * Constructs a new <tt>CBZip2OutputStream</tt> with a blocksize of 900k.
      *
-     * <p>
-     * <b>Attention: </b>The caller is resonsible to write the two BZip2 magic
-     * bytes <tt>"BZ"</tt> to the specified stream prior to calling this
-     * constructor.
-     * </p>
-     *
-     * @param out *
+     * @param out 
      *            the destination stream.
      *
      * @throws IOException
@@ -564,13 +558,6 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
 
     /**
      * Constructs a new <tt>CBZip2OutputStream</tt> with specified blocksize.
-     *
-     * <p>
-     * <b>Attention: </b>The caller is resonsible to write the two BZip2 magic
-     * bytes <tt>"BZ"</tt> to the specified stream prior to calling this
-     * constructor.
-     * </p>
-     *
      *
      * @param out
      *            the destination stream.
@@ -708,17 +695,19 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         }
     }
 
+    /**
+     * Writes magic bytes like BZ on the first position of the stream
+     * and bytes indiciating the file-format, which is 
+     * huffmanised, followed by a digit indicating blockSize100k.
+     * @throws IOException if the magic bytes could not been written
+     */
     private void init() throws IOException {
-        // write magic: done by caller who created this stream
-        // this.out.write('B');
-        // this.out.write('Z');
+        bsPutUByte('B');
+        bsPutUByte('Z');
 
         this.data = new Data(this.blockSize100k);
 
-        /*
-         * Write `magic' bytes h indicating file-format == huffmanised, followed
-         * by a digit indicating blockSize100k.
-         */
+        // huffmanised magic bytes
         bsPutUByte('h');
         bsPutUByte('0' + this.blockSize100k);
 
