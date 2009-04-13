@@ -30,8 +30,7 @@ import java.io.InputStream;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 
 /**
- * An input stream that decompresses from the BZip2 format (without the file
- * header chars) to be read as any other stream.
+ * An input stream that decompresses from the BZip2 format to be read as any other stream.
  * 
  * @NotThreadSafe
  */
