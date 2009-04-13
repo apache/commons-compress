@@ -101,13 +101,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      * Constructs a new BZip2CompressorInputStream which decompresses bytes read from the
      * specified stream.
      * 
-     * <p>
-     * Although BZip2 headers are marked with the magic <tt>"Bz"</tt> this
-     * constructor expects the next byte in the stream to be the first one after
-     * the magic. Thus callers have to skip the first two bytes. Otherwise this
-     * constructor will throw an exception.
-     * </p>
-     * 
      * @throws IOException
      *             if the stream content is malformed or an I/O error occurs.
      * @throws NullPointerException
