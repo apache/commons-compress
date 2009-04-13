@@ -29,7 +29,7 @@ import org.apache.commons.compress.utils.IOUtils;
 
 public final class BZip2TestCase extends AbstractTestCase {
 
-	public void xtestBzipCreation()  throws Exception {
+	public void testBzipCreation()  throws Exception {
 	    File output = null;
 	    final File input = getFile("test.txt");
 	    {
