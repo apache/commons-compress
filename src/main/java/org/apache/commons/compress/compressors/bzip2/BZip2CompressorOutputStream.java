@@ -24,8 +24,7 @@ import java.io.OutputStream;
 import org.apache.commons.compress.compressors.CompressorOutputStream;
 
 /**
- * An output stream that compresses into the BZip2 format (without the file
- * header chars) into another stream.
+ * An output stream that compresses into the BZip2 format into another stream.
  *
  * <p>
  * The compression requires large amounts of memory. Thus you should call the
