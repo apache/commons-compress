@@ -78,15 +78,38 @@ public class ArchiveUtils {
      * @return <code>true</code> if buffer is the same as the expected string
      */
     public static boolean matchAsciiBuffer(String expected, byte[] buffer){
-        byte[] buffer1;
-        try {
-            buffer1 = expected.getBytes("ASCII");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e); // Should not happen
-        }
-        return isEqual(buffer1, 0, buffer1.length, buffer, 0, buffer.length, false);
+        return matchAsciiBuffer(expected, buffer, 0, buffer.length);
     }
     
+    /**
+     * Convert a string to Ascii bytes.
+     * Used for comparing "magic" strings which need to be independent of the default Locale.
+     * 
+     * @param inputString
+     * @return the bytes
+     */
+    public static byte[] toAsciiBytes(String inputString){
+        try {
+            return inputString.getBytes("ASCII");
+        } catch (UnsupportedEncodingException e) {
+           throw new RuntimeException(e); // Should never happen
+        }
+    }
+
+    /**
+     * Convert an input byte array to a String using the ASCII character set.
+     * 
+     * @param inputBytes
+     * @return the bytes, interpreted as an Ascii string
+     */
+    public static String toAsciiString(final byte[] inputBytes){
+        try {
+            return new String(inputBytes, "ASCII");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e); // Should never happen
+        }
+    }
+
     /**
      * Compare byte buffers, optionally ignoring trailing nulls
      * 
