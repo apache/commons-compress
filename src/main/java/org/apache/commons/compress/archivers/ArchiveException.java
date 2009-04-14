@@ -45,8 +45,8 @@ public class ArchiveException extends Exception {
      * @param cause
      *            the cause
      */
-	public ArchiveException(String message, Exception e) {
+	public ArchiveException(String message, Exception cause) {
 		super(message);
-		this.initCause(e);
+		this.initCause(cause);
 	}
 }

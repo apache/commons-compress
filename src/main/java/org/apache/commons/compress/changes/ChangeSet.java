@@ -39,7 +39,7 @@ public final class ChangeSet {
     /**
      * Deletes the file with the filename from the archive. 
      * 
-     * @param pFilename
+     * @param filename
      *            the filename of the file to delete
      */
     public void delete(final String filename) {
@@ -49,7 +49,7 @@ public final class ChangeSet {
     /**
      * Deletes the file with the filename from the archive. 
      * 
-     * @param pFilename
+     * @param dirName
      *            the filename of the file to delete
      */
     public void deleteDir(final String dirName) {
