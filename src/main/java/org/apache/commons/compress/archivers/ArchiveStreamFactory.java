@@ -34,12 +34,39 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 
 /**
- * Factory to create Archive[In|Out]putStreams from names or the first bytes of
+ * <p>Factory to create Archive[In|Out]putStreams from names or the first bytes of
  * the InputStream. In order add other implementations you should extend
  * ArchiveStreamFactory and override the appropriate methods (and call their
- * implementation from super of course)
+ * implementation from super of course).</p>
  * 
- * TODO add example here
+ * Compressing a ZIP-File:
+ * 
+ * <pre>
+ * final OutputStream out = new FileOutputStream(output); 
+ * ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("zip", out);
+ * 
+ * os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
+ * IOUtils.copy(new FileInputStream(file1), os);
+ * os.closeArchiveEntry();
+ *
+ * os.putArchiveEntry(new ZipArchiveEntry("testdata/test2.xml"));
+ * IOUtils.copy(new FileInputStream(file2), os);
+ * os.closeArchiveEntry();
+ * os.close();
+ * </pre>
+ * 
+ * Decompressing a ZIP-File:
+ * 
+ * <pre>
+ * final InputStream is = new FileInputStream(input); 
+ * ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("zip", is);
+ * ZipArchiveEntry entry = (ZipArchiveEntry)in.getNextEntry();
+ * OutputStream out = new FileOutputStream(new File(dir, entry.getName()));
+ * IOUtils.copy(in, out);
+ * out.close();
+ * in.close();
+ * </pre>
+ * 
  * @Immutable
  */
 public class ArchiveStreamFactory {
@@ -107,7 +134,8 @@ public class ArchiveStreamFactory {
 
     /**
      * Create an archive input stream from an input stream, autodetecting
-     * the archive type from the first few bytes of the stream.
+     * the archive type from the first few bytes of the stream. The InputStream
+     * must support marks.
      * 
      * @param in the input stream
      * @return the archive input stream
