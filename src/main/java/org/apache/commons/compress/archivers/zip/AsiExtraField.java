@@ -101,7 +101,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
                           + WORD         // SizDev
                           + 2         // UID
                           + 2         // GID
-                          + getLinkedFile().getBytes().length);
+                          + getLinkedFile().getBytes().length); // TODO is it correct to use the default charset here?
     }
 
     /**
@@ -122,7 +122,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
         byte[] data = new byte[getLocalFileDataLength().getValue() - WORD];
         System.arraycopy(ZipShort.getBytes(getMode()), 0, data, 0, 2);
 
-        byte[] linkArray = getLinkedFile().getBytes();
+        byte[] linkArray = getLinkedFile().getBytes(); // TODO is it correct to use the default charset here?
         // CheckStyle:MagicNumber OFF
         System.arraycopy(ZipLong.getBytes(linkArray.length),
                          0, data, 2, WORD);
@@ -280,7 +280,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
             link = "";
         } else {
             System.arraycopy(tmp, 10, linkArray, 0, linkArray.length);
-            link = new String(linkArray);
+            link = new String(linkArray); // TODO is it correct to use the default charset here?
         }
         // CheckStyle:MagicNumber ON
         setDirectory((newMode & DIR_FLAG) != 0);

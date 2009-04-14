@@ -24,6 +24,7 @@ import java.io.OutputStream;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
+import org.apache.commons.compress.utils.ArchiveUtils;
 
 /**
  * Implements the "ar" archive format as an output stream.
@@ -43,7 +44,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     }
 
     private long writeArchiveHeader() throws IOException {
-        byte [] header = ArArchiveEntry.HEADER.getBytes();
+        byte [] header = ArchiveUtils.toAsciiBytes(ArArchiveEntry.HEADER);
         out.write(header);
         return header.length;
     }

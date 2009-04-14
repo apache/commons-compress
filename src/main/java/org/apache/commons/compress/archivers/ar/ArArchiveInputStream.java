@@ -23,6 +23,7 @@ import java.io.InputStream;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.utils.ArchiveUtils;
 
 /**
  * Implements the "ar" archive format as an input stream.
@@ -73,7 +74,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         }
 
         if (offset == 0) {
-            final byte[] expected = ArArchiveEntry.HEADER.getBytes();
+            final byte[] expected = ArchiveUtils.toAsciiBytes(ArArchiveEntry.HEADER);
             final byte[] realized = new byte[expected.length]; 
             final int read = read(realized);
             if (read != expected.length) {
@@ -81,7 +82,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
             }
             for (int i = 0; i < expected.length; i++) {
                 if (expected[i] != realized[i]) {
-                    throw new IOException("invalid header " + new String(realized));
+                    throw new IOException("invalid header " + ArchiveUtils.toAsciiString(realized));
                 }
             }
         }
@@ -112,7 +113,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         read(length);
 
         {
-            final byte[] expected = ArArchiveEntry.TRAILER.getBytes();
+            final byte[] expected = ArchiveUtils.toAsciiBytes(ArArchiveEntry.TRAILER);
             final byte[] realized = new byte[expected.length]; 
             final int read = read(realized);
             if (read != expected.length) {
@@ -132,7 +133,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         if (temp.endsWith("/")){
             temp=temp.substring(0, temp.length()-1);
         }
-        currentEntry = new ArArchiveEntry(temp,
+        currentEntry = new ArArchiveEntry(temp, // TODO is it correct to use the default charset here?
                                           Long.parseLong(new String(length)
                                                          .trim()));
         return currentEntry;

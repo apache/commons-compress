@@ -158,7 +158,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 TarArchiveEntry longLinkEntry = new TarArchiveEntry(TarConstants.GNU_LONGLINK,
                                                                     TarConstants.LF_GNUTYPE_LONGNAME);
 
-                final byte[] nameBytes = entry.getName().getBytes();
+                final byte[] nameBytes = entry.getName().getBytes(); // TODO is it correct to use the default charset here?
                 longLinkEntry.setSize(nameBytes.length + 1); // +1 for NUL
                 putArchiveEntry(longLinkEntry);
                 write(nameBytes);
