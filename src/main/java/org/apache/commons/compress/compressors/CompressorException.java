@@ -18,23 +18,34 @@
  */
 package org.apache.commons.compress.compressors;
 
+/**
+ * Compressor related exception
+ */
 public class CompressorException extends Exception {
 
-	private static final long serialVersionUID = -2770299103090672278L;
+    /** Serial */
+    private static final long serialVersionUID = -2932901310255908814L;
 
-	public CompressorException() {
-		super();
-	}
+    /**
+     * Constructs a new exception with the specified detail message. The cause
+     * is not initialized.
+     * 
+     * @param message
+     *            the detail message
+     */
+    public CompressorException(String message) {
+        super(message);
+    }
 
-	public CompressorException(String arg0, Throwable arg1) {
-		super(arg0, arg1);
-	}
-
-	public CompressorException(String arg0) {
-		super(arg0);
-	}
-
-	public CompressorException(Throwable arg0) {
-		super(arg0);
-	}
+    /**
+     * Constructs a new exception with the specified detail message and cause.
+     * 
+     * @param message
+     *            the detail message
+     * @param cause
+     *            the cause
+     */
+    public CompressorException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

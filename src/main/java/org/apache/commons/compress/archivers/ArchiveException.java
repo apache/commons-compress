@@ -23,16 +23,28 @@ package org.apache.commons.compress.archivers;
  */
 public class ArchiveException extends Exception {
 
-	private static final long serialVersionUID = 3256440322136748848L;
+	/** Serial */
+    private static final long serialVersionUID = 2772690708123267100L;
 
-	public ArchiveException() {
-		super();
-	}
-
-	public ArchiveException(String message) {
+    /**
+     * Constructs a new exception with the specified detail message. The cause
+     * is not initialized.
+     * 
+     * @param message
+     *            the detail message
+     */
+    public ArchiveException(String message) {
 		super(message);
 	}
 	
+    /**
+     * Constructs a new exception with the specified detail message and cause.
+     * 
+     * @param message
+     *            the detail message
+     * @param cause
+     *            the cause
+     */
 	public ArchiveException(String message, Exception e) {
 		super(message);
 		this.initCause(e);
