@@ -20,10 +20,6 @@ package org.apache.commons.compress;
 
 import org.apache.commons.compress.utils.ArchiveUtils;
 
-/**
- * Check that the different write methods create the same output.
- * TODO perform the same checks for reads.
- */
 public class ArchiveUtilsTest extends AbstractTestCase {
 
     private static final int bytesToTest = 50;
@@ -56,5 +52,19 @@ public class ArchiveUtilsTest extends AbstractTestCase {
         assertFalse(ArchiveUtils.matchAsciiBuffer("abc\0", buffer1));
         assertTrue(ArchiveUtils.matchAsciiBuffer("def\0", buffer2));        
         assertFalse(ArchiveUtils.matchAsciiBuffer("def", buffer2));
+    }
+    
+    public void testAsciiConversions() {
+        asciiToByteAndBackOK("");
+        asciiToByteAndBackOK("abcd");
+        asciiToByteAndBackFail("\u8025");
+    }
+
+    private void asciiToByteAndBackOK(String inputString) {
+        assertEquals(inputString, ArchiveUtils.toAsciiString(ArchiveUtils.toAsciiBytes(inputString)));
+    }
+
+    private void asciiToByteAndBackFail(String inputString) {
+        assertFalse(inputString.equals(ArchiveUtils.toAsciiString(ArchiveUtils.toAsciiBytes(inputString))));
     }
 }
