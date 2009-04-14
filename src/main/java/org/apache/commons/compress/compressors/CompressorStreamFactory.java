@@ -28,11 +28,29 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 
 /**
- * Factory to create Compressor[In|Out]putStreams from names In order add other
+ * <p>Factory to create Compressor[In|Out]putStreams from names. To add other
  * implementations you should extend CompressorStreamFactory and override the
- * appropriate methods (and call their implementation from super of course)
+ * appropriate methods (and call their implementation from super of course).</p>
  * 
- * TODO add example here
+ * Example (Compressing a file):
+ * 
+ * <pre>
+ * final OutputStream out = new FileOutputStream(output); 
+ * CompressorOutputStream cos = 
+ *      new CompressorStreamFactory().createCompressorOutputStream("bzip2", out);
+ * IOUtils.copy(new FileInputStream(input), cos);
+ * cos.close();
+ * </pre>    
+ * 
+ * Example (Compressing a file):
+ * <pre>
+ * final InputStream is = new FileInputStream(input); 
+ * CompressorInputStream in = 
+ *      new CompressorStreamFactory().createCompressorInputStream("bzip2", is);
+ * IOUtils.copy(in, new FileOutputStream(output));
+ * in.close();
+ * </pre>
+ * 
  * @Immutable
  */
 public class CompressorStreamFactory {
