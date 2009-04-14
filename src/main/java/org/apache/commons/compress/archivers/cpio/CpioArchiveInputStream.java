@@ -24,6 +24,7 @@ import java.io.InputStream;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.utils.ArchiveUtils;
 
 /**
  * CPIOArchiveInputStream is a stream for reading cpio streams. All formats of
@@ -175,7 +176,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
             System.arraycopy(magic, 0, tmp, 0, magic.length);
             System.arraycopy(more_magic, 0, tmp, magic.length,
                     more_magic.length);
-            String magicString = new String(tmp);
+            String magicString = ArchiveUtils.toAsciiString(tmp);
             if (magicString.equals(MAGIC_NEW)) {
                 this.entry = readNewEntry(false);
             } else if (magicString.equals(MAGIC_NEW_CRC)) {
@@ -288,7 +289,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
             throws IOException {
         byte tmpBuffer[] = new byte[length];
         readFully(tmpBuffer, 0, tmpBuffer.length);
-        return Long.parseLong(new String(tmpBuffer), radix);
+        return Long.parseLong(ArchiveUtils.toAsciiString(tmpBuffer), radix);
     }
 
     private CpioArchiveEntry readNewEntry(final boolean hasCrc)

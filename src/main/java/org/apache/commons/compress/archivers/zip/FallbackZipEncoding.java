@@ -75,7 +75,7 @@ class FallbackZipEncoding implements ZipEncoding {
      */
     public ByteBuffer encode(String name) throws IOException {
         if (this.charset == null) {
-            return ByteBuffer.wrap(name.getBytes());
+            return ByteBuffer.wrap(name.getBytes()); // TODO is it correct to use the default charset here?
         } else {
             return ByteBuffer.wrap(name.getBytes(this.charset));
         }
@@ -87,7 +87,7 @@ class FallbackZipEncoding implements ZipEncoding {
      */
     public String decode(byte[] data) throws IOException {
         if (this.charset == null) {
-            return new String(data);
+            return new String(data); // TODO is it correct to use the default charset here?
         } else {
             return new String(data,this.charset);
         }

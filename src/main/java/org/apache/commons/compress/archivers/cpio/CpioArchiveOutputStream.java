@@ -26,6 +26,7 @@ import java.util.HashMap;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
+import org.apache.commons.compress.utils.ArchiveUtils;
 
 /**
  * CPIOArchiveOutputStream is a stream for writing CPIO streams. All formats of
@@ -167,15 +168,15 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     private void writeHeader(final CpioArchiveEntry e) throws IOException {
         switch (e.getFormat()) {
         case FORMAT_NEW:
-            out.write(MAGIC_NEW.getBytes());
+            out.write(ArchiveUtils.toAsciiBytes(MAGIC_NEW));
             writeNewEntry(e);
             break;
         case FORMAT_NEW_CRC:
-            out.write(MAGIC_NEW_CRC.getBytes());
+            out.write(ArchiveUtils.toAsciiBytes(MAGIC_NEW_CRC));
             writeNewEntry(e);
             break;
         case FORMAT_OLD_ASCII:
-            out.write(MAGIC_OLD_ASCII.getBytes());
+            out.write(ArchiveUtils.toAsciiBytes(MAGIC_OLD_ASCII));
             writeOldAsciiEntry(e);
             break;
         case FORMAT_OLD_BINARY:
@@ -372,12 +373,12 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         } else {
             tmpStr = tmp.substring(tmp.length() - length);
         }
-        out.write(tmpStr.getBytes());
+        out.write(tmpStr.getBytes()); // TODO is it correct to use the default charset here?
     }
 
     private void writeCString(final String str) throws IOException {
         out.write(str.getBytes());
-        out.write('\0');
+        out.write('\0'); // TODO is it correct to use the default charset here?
     }
 
     public ArchiveEntry createArchiveEntry(File inputFile, String entryName)
