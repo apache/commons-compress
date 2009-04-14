@@ -71,19 +71,19 @@ class Change {
 		targetFile = null;
 	}
 	
-	public ArchiveEntry getEntry() {
+	ArchiveEntry getEntry() {
 		return entry;
 	}
 
-	public InputStream getInput() {
+	InputStream getInput() {
 		return input;
 	}
 
-	public String targetFile() {
+	String targetFile() {
 		return targetFile;
 	}
 	
-	public int type() {
+	int type() {
 		return type;
 	}
 }
