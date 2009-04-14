@@ -59,13 +59,22 @@ public class CompressorStreamFactory {
             } else if ("bzip2".equalsIgnoreCase(name)) {
                 return new BZip2CompressorInputStream(in);
             }
-            throw new CompressorException("Compressor: " + name + " not found.");
         } catch (IOException e) {
             throw new CompressorException(
                     "Could not create CompressorInputStream", e);
         }
+        throw new CompressorException("Compressor: " + name + " not found.");
     }
 
+    /**
+     * Create an compressor output stream from an compressor name and an input stream.
+     * 
+     * @param name the compressor name, i.e. "gz" or "bzip2"
+     * @param out the output stream
+     * @return the compressor output stream
+     * @throws CompressorException if the archiver name is not known
+     * @throws IllegalArgumentException if the archiver name or stream is null
+     */
     public CompressorOutputStream createCompressorOutputStream(
             final String name, final OutputStream out)
             throws CompressorException {
@@ -80,10 +89,10 @@ public class CompressorStreamFactory {
             } else if ("bzip2".equalsIgnoreCase(name)) {
                 return new BZip2CompressorOutputStream(out);
             }
-            throw new CompressorException("Compressor: " + name + " not found.");
         } catch (IOException e) {
             throw new CompressorException(
                     "Could not create CompressorOutputStream", e);
         }
+        throw new CompressorException("Compressor: " + name + " not found.");
     }
 }
