@@ -29,7 +29,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * the archive entries are listed. The format of an entry header is as it follows:
  * 
  * <code>
- * START BYTE   END BYTE    NAME                    FORMAT      LENGHT
+ * START BYTE   END BYTE    NAME                    FORMAT      LENGTH
  * 0            15          File name               ASCII       16
  * 16           27          Modification timestamp  Decimal     12
  * 28           33          Owner ID                Decimal     6
