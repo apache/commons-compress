@@ -132,15 +132,15 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * <p>This class uses mutable fields and is not considered to be
  * threadsafe.</p>
  * 
- * <p>Based on code from the jRPM project (http://jrpm.sourceforge.net).
+ * <p>Based on code from the jRPM project (http://jrpm.sourceforge.net).</p>
  *
- * <p>The MAGIC numbers and other constants are defined in {@link CpioConstants}
- * @see "http://people.freebsd.org/~kientzle/libarchive/man/cpio.5.txt"
+ * <p>The MAGIC numbers and other constants are defined in {@link CpioConstants}</p>
  * 
  * <p>
  * N.B. does not handle the cpio "tar" format
  * </p>
  * @NotThreadSafe
+ * @see "http://people.freebsd.org/~kientzle/libarchive/man/cpio.5.txt"
  */
 public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
 
