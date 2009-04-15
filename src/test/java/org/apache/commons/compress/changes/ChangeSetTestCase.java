@@ -41,11 +41,23 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
  */
 public final class ChangeSetTestCase extends AbstractTestCase {
     
-    private void archiveListDelete(String prefix){
+    // Delete a directory tree
+    private void archiveListDeleteDir(String prefix){
         Iterator it = archiveList.iterator();
         while(it.hasNext()){
             String entry = (String) it.next();
             if (entry.equals(prefix) || entry.startsWith(prefix+"/")){
+                it.remove();
+            }
+        }
+    }
+
+    // Delete a single file
+    private void archiveListDelete(String prefix){
+        Iterator it = archiveList.iterator();
+        while(it.hasNext()){
+            String entry = (String) it.next();
+            if (entry.equals(prefix)){
                 it.remove();
             }
         }
@@ -76,8 +88,8 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                     new FileOutputStream(result));
 
             ChangeSet changes = new ChangeSet();
-            changes.delete("bla");
-            archiveListDelete("bla");
+            changes.deleteDir("bla");
+            archiveListDeleteDir("bla");
             ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
             is.close();
@@ -155,8 +167,8 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                     new FileOutputStream(result));
 
             ChangeSet changes = new ChangeSet();
-            changes.delete("bla");
-            archiveListDelete("bla");
+            changes.deleteDir("bla");
+            archiveListDeleteDir("bla");
 
             // Add a file
             final File file1 = getFile("test.txt");
@@ -251,7 +263,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             archiveList.add("blub/test.txt");
 
             changes.deleteDir("blub");
-            archiveListDelete("blub");
+            archiveListDeleteDir("blub");
 
             ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
@@ -299,7 +311,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             archiveList.add("bla/test.txt");
 
             changes.deleteDir("bla");
-            archiveListDelete("bla");
+            archiveListDeleteDir("bla");
 
             ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
