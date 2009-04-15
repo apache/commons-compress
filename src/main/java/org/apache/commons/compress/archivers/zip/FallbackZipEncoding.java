@@ -25,12 +25,12 @@ import java.nio.ByteBuffer;
 /**
  * A fallback ZipEncoding, which uses a java.io means to encode names.
  *
- * <p>This implementation is not favorable for encodings other than
+ * <p>This implementation is not suitable for encodings other than
  * utf-8, because java.io encodes unmappable character as question
  * marks leading to unreadable ZIP entries on some operating
  * systems.</p>
  * 
- * <p>Furthermore this implementation is unable to tell, whether a
+ * <p>Furthermore this implementation is unable to tell whether a
  * given name can be safely encoded or not.</p>
  * 
  * <p>This implementation acts as a last resort implementation, when
@@ -74,8 +74,8 @@ class FallbackZipEncoding implements ZipEncoding {
      * org.apache.commons.compress.archivers.zip.ZipEncoding#encode(java.lang.String)
      */
     public ByteBuffer encode(String name) throws IOException {
-        if (this.charset == null) {
-            return ByteBuffer.wrap(name.getBytes()); // TODO is it correct to use the default charset here?
+        if (this.charset == null) { // i.e. use default charset, see no-args constructor
+            return ByteBuffer.wrap(name.getBytes());
         } else {
             return ByteBuffer.wrap(name.getBytes(this.charset));
         }
@@ -86,7 +86,7 @@ class FallbackZipEncoding implements ZipEncoding {
      * org.apache.commons.compress.archivers.zip.ZipEncoding#decode(byte[])
      */
     public String decode(byte[] data) throws IOException {
-        if (this.charset == null) {
+        if (this.charset == null) { // i.e. use default charset, see no-args constructor
             return new String(data);
         } else {
             return new String(data,this.charset);
