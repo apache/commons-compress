@@ -377,8 +377,8 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     }
 
     private void writeCString(final String str) throws IOException {
-        out.write(str.getBytes());
-        out.write('\0'); // TODO is it correct to use the default charset here?
+        out.write(str.getBytes()); // TODO is it correct to use the default charset here?
+        out.write('\0');
     }
 
     public ArchiveEntry createArchiveEntry(File inputFile, String entryName)
