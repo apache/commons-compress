@@ -1695,7 +1695,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         int rTPos = 0;
         for (int i = 0, j = 1; i <= lastShadow; i = j, j++) {
             if (rNToGo == 0) {
-                rNToGo = (char) BZip2Constants.rNums[rTPos];
+                rNToGo = (char) Rand.rNums(rTPos);
                 if (++rTPos == 512) {
                     rTPos = 0;
                 }
