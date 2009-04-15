@@ -795,7 +795,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             int su_ch2Shadow = this.data.ll8[this.su_tPos] & 0xff;
             this.su_tPos = this.data.tt[this.su_tPos];
             if (this.su_rNToGo == 0) {
-                this.su_rNToGo = BZip2Constants.rNums[this.su_rTPos] - 1;
+                this.su_rNToGo = Rand.rNums(this.su_rTPos) - 1;
                 if (++this.su_rTPos == 512) {
                     this.su_rTPos = 0;
                 }
@@ -841,7 +841,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             this.su_z = (char) (this.data.ll8[this.su_tPos] & 0xff);
             this.su_tPos = this.data.tt[this.su_tPos];
             if (this.su_rNToGo == 0) {
-                this.su_rNToGo = BZip2Constants.rNums[this.su_rTPos] - 1;
+                this.su_rNToGo = Rand.rNums(this.su_rTPos) - 1;
                 if (++this.su_rTPos == 512) {
                     this.su_rTPos = 0;
                 }
