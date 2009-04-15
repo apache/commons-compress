@@ -89,8 +89,7 @@ public class ChangeSetPerformer {
                         break;
                     }
                 } else if(type == Change.TYPE_DELETE_DIR && name != null) {
-                    if (name.matches(
-                            change.targetFile() + "/.*")) {
+                    if (name.startsWith(change.targetFile() + "/")) {
                         copy = false;
                         break;
                     }
@@ -121,14 +120,13 @@ public class ChangeSetPerformer {
             for (Iterator it = workingSet.iterator(); it.hasNext();) {
                 Change change = (Change) it.next();
                 final int type = change.type();
-                if (type == Change.TYPE_DELETE || type == Change.TYPE_DELETE_DIR) {
-                    String target = change.targetFile();
+                String target = change.targetFile();
+                if (type == Change.TYPE_DELETE && source.equals(target)) {
+                    return true;
+                }
 
-                    if (source.equals(target)) {
-                        return true;
-                    }
-
-                    return (type == Change.TYPE_DELETE_DIR) && source.matches(target + "/.*");
+                if (type == Change.TYPE_DELETE_DIR && source.startsWith(target + "/")){
+                    return true;
                 }
             }
         }
