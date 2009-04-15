@@ -39,7 +39,7 @@ import org.apache.commons.compress.utils.IOUtils;
  * @Immutable
  */
 public class ChangeSetPerformer {
-    private Set changes = null;
+    private final Set changes;
     
     /**
      * Constructs a ChangeSetPerformer with the changes from this ChangeSet
@@ -80,16 +80,16 @@ public class ChangeSetPerformer {
             for (Iterator it = workingSet.iterator(); it.hasNext();) {
                 Change change = (Change) it.next();
 
-                if (change.type() == Change.TYPE_DELETE && 
-                    entry.getName() != null) {
-                    if (entry.getName().equals(change.targetFile())) {
+                final int type = change.type();
+                final String name = entry.getName();
+                if (type == Change.TYPE_DELETE && name != null) {
+                    if (name.equals(change.targetFile())) {
                         copy = false;
                         it.remove();
                         break;
                     }
-                } else if(change.type() == Change.TYPE_DELETE_DIR && 
-                          entry.getName() != null) {
-                    if (entry.getName().matches(
+                } else if(type == Change.TYPE_DELETE_DIR && name != null) {
+                    if (name.matches(
                             change.targetFile() + "/.*")) {
                         copy = false;
                         break;
@@ -120,14 +120,15 @@ public class ChangeSetPerformer {
         if (!workingSet.isEmpty()) {
             for (Iterator it = workingSet.iterator(); it.hasNext();) {
                 Change change = (Change) it.next();
-                if (change.type() == Change.TYPE_DELETE || change.type() == Change.TYPE_DELETE_DIR) {
+                final int type = change.type();
+                if (type == Change.TYPE_DELETE || type == Change.TYPE_DELETE_DIR) {
                     String target = change.targetFile();
 
                     if (source.equals(target)) {
                         return true;
                     }
 
-                    return source.matches(target + "/.*");
+                    return (type == Change.TYPE_DELETE_DIR) && source.matches(target + "/.*");
                 }
             }
         }
