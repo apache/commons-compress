@@ -87,7 +87,7 @@ class FallbackZipEncoding implements ZipEncoding {
      */
     public String decode(byte[] data) throws IOException {
         if (this.charset == null) {
-            return new String(data); // TODO is it correct to use the default charset here?
+            return new String(data);
         } else {
             return new String(data,this.charset);
         }
