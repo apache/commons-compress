@@ -25,7 +25,7 @@ package org.apache.commons.compress.compressors.bzip2;
  */
 interface BZip2Constants {
 
-    int baseBlockSize = 100000;
+    int BASEBLOCKSIZE = 100000;
     int MAX_ALPHA_SIZE = 258;
     int MAX_CODE_LEN = 23;
     int RUNA = 0;
