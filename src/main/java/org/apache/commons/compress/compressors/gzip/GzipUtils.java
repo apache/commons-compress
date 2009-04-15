@@ -23,6 +23,7 @@ import java.util.Map;
 
 /**
  * Utility code for the gzip compression format.
+ * @ThreadSafe
  */
 public class GzipUtils {
 
