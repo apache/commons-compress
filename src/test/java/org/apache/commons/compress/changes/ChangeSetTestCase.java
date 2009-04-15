@@ -46,7 +46,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         Iterator it = archiveList.iterator();
         while(it.hasNext()){
             String entry = (String) it.next();
-            if (entry.equals(prefix) || entry.startsWith(prefix+"/")){
+            if (entry.startsWith(prefix+"/")){ // TODO won't work with folders
                 it.remove();
             }
         }
@@ -144,6 +144,45 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     }
 
     /**
+     * Tries to delete the folder "test.txt" from an archive file.
+     * This should not match any files/folders.
+     * 
+     * @throws Exception
+     */
+    public void testDeleteDir3() throws Exception {
+        final String archivename = "cpio";
+        File input = this.createArchive(archivename);
+
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        File result = File.createTempFile("test", "."+archivename);
+        result.deleteOnExit();
+        try {
+
+            final InputStream is = new FileInputStream(input);
+            ais = factory.createArchiveInputStream(archivename, is);
+
+            out = factory.createArchiveOutputStream(archivename,
+                    new FileOutputStream(result));
+
+            ChangeSet changes = new ChangeSet();
+            changes.deleteDir("test.txt");
+            archiveListDeleteDir("test.txt");
+            ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
+            is.close();
+
+        } finally {
+            if (out != null)
+                out.close();
+            if (ais != null)
+                ais.close();
+        }
+
+        this.checkArchiveContent(result, archiveList);
+    }
+
+    /**
      * Tries to delete the file "bla/test5.xml" from an archive. This should
      * result in the deletion of "bla/test5.xml".
      * 
@@ -168,6 +207,46 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             ChangeSet changes = new ChangeSet();
             changes.delete("bla/test5.xml");
             archiveListDelete("bla/test5.xml");
+            
+            ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
+            is.close();
+
+        } finally {
+            if (out != null)
+                out.close();
+            if (ais != null)
+                ais.close();
+        }
+
+        this.checkArchiveContent(result, archiveList);
+    }
+
+    /**
+     * Tries to delete the file "bla" from an archive. This should
+     * result in the deletion of nothing.
+     * 
+     * @throws Exception
+     */
+    public void testDeleteFile2() throws Exception {
+        final String archivename = "cpio";
+        File input = this.createArchive(archivename);
+
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        File result = File.createTempFile("test", "."+archivename);
+        result.deleteOnExit();
+        try {
+
+            final InputStream is = new FileInputStream(input);
+            ais = factory.createArchiveInputStream(archivename, is);
+
+            out = factory.createArchiveOutputStream(archivename,
+                    new FileOutputStream(result));
+
+            ChangeSet changes = new ChangeSet();
+            changes.delete("bla");
+            //archiveListDelete("bla");
             
             ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
