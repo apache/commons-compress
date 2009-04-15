@@ -129,7 +129,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         entryOffset = offset;
         
         // SVR4/GNU adds a trailing "/" to names
-        String temp=new String(name).trim();
+        String temp=new String(name).trim(); // TODO is it correct to use the default charset here?
         if (temp.endsWith("/")){
             temp=temp.substring(0, temp.length()-1);
         }
