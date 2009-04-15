@@ -105,6 +105,45 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     }
 
     /**
+     * Tries to delete the folder "la" from an archive file. This should result in
+     * the deletion of la/*, which should not match any files/folders.
+     * 
+     * @throws Exception
+     */
+    public void testDeleteDir2() throws Exception {
+        final String archivename = "cpio";
+        File input = this.createArchive(archivename);
+
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        File result = File.createTempFile("test", "."+archivename);
+        result.deleteOnExit();
+        try {
+
+            final InputStream is = new FileInputStream(input);
+            ais = factory.createArchiveInputStream(archivename, is);
+
+            out = factory.createArchiveOutputStream(archivename,
+                    new FileOutputStream(result));
+
+            ChangeSet changes = new ChangeSet();
+            changes.deleteDir("la");
+            archiveListDeleteDir("la");
+            ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
+            is.close();
+
+        } finally {
+            if (out != null)
+                out.close();
+            if (ais != null)
+                ais.close();
+        }
+
+        this.checkArchiveContent(result, archiveList);
+    }
+
+    /**
      * Tries to delete the file "bla/test5.xml" from an archive. This should
      * result in the deletion of "bla/test5.xml".
      * 
