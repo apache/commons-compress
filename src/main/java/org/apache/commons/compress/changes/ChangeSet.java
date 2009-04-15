@@ -47,10 +47,10 @@ public final class ChangeSet {
     }
 
     /**
-     * Deletes the file with the filename from the archive. 
+     * Deletes the directory tree from the archive. 
      * 
      * @param dirName
-     *            the filename of the file to delete
+     *            the name of the directory tree to delete
      */
     public void deleteDir(final String dirName) {
         addDeletion(new Change(dirName, Change.TYPE_DELETE_DIR));
