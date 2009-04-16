@@ -18,9 +18,12 @@
  */
 package org.apache.commons.compress.changes;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -262,6 +265,74 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         this.checkArchiveContent(result, archiveList);
     }
 
+    /**
+     * Tries to delete and then add a file with the same name.
+     * Should delete test/test3.xml and adds test.txt with the name
+     * test/test3.xml
+     * 
+     * @throws Exception
+     */
+    public void testDeletePlusAddSame() throws Exception {
+        final String archivename = "zip";
+        File input = this.createArchive(archivename);
+
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        File result = File.createTempFile("test", "."+archivename);
+        result.deleteOnExit();
+        
+        File testtxt = null;
+        try {
+
+            final InputStream is = new FileInputStream(input);
+            ais = factory.createArchiveInputStream(archivename, is);
+            out = factory.createArchiveOutputStream(archivename,
+                    new FileOutputStream(result));
+
+            ChangeSet changes = new ChangeSet();
+            changes.delete("test/test3.xml");
+            archiveListDelete("test/test3.xml");
+
+            // Add a file
+            testtxt = getFile("test.txt");
+            ArchiveEntry entry = out.createArchiveEntry(testtxt, "test/test3.xml");
+            changes.add(entry, new FileInputStream(testtxt));
+            archiveList.add("test/test3.xml");
+
+            ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
+            is.close();
+
+        } finally {
+            if (out != null)
+                out.close();
+            if (ais != null)
+                ais.close();
+        }
+
+        // Checks
+        ArchiveInputStream in = null;
+        File check = null;
+        try {
+            final InputStream is = new FileInputStream(result);
+            final BufferedInputStream buf = new BufferedInputStream(is);
+            in = factory.createArchiveInputStream(buf);
+            check = this.checkArchiveContent(in, archiveList, false);
+            File test3xml = new File(check,"result/test/test3.xml");
+            assertEquals(testtxt.length(), test3xml.length());
+            
+            BufferedReader reader = new BufferedReader(new FileReader(test3xml));
+            String str;
+            while ((str = reader.readLine()) != null) {
+                // All lines look like this
+                "111111111111111111111111111000101011".equals(str);
+            }
+        } finally {
+            in.close();
+            rmdir(check);
+        } 
+    }
+    
     /**
      * Tries to delete a directory with a file and adds a new directory with a
      * new file and with the same name. Should delete dir1/* and add
