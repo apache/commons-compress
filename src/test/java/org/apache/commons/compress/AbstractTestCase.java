@@ -263,6 +263,20 @@ public abstract class AbstractTestCase extends TestCase {
      */
     protected void checkArchiveContent(ArchiveInputStream in, List expected)
             throws Exception {
+        checkArchiveContent(in, expected, true);
+    }
+    
+    /**
+     * Checks that an archive input stream can be read, and that the file data matches file sizes.
+     * 
+     * @param in
+     * @param expected list of expected entries or <code>null</code> if no check of names desired
+     * @param cleanUp Cleans up resources if true 
+     * @return returns the created result file if cleanUp = false, or null otherwise 
+     * @throws Exception
+     */
+    protected File checkArchiveContent(ArchiveInputStream in, List expected, boolean cleanUp)
+            throws Exception {
         File result = File.createTempFile("dir-result", "");
         result.delete();
         result.mkdir();
@@ -304,8 +318,11 @@ public abstract class AbstractTestCase extends TestCase {
                 assertEquals(0, expected.size());
             }
         } finally {
-            rmdir(result);
+            if (cleanUp) {
+                rmdir(result);
+            }
         }
+        return result;
     }
 
     /**
