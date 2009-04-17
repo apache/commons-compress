@@ -40,4 +40,11 @@ public class ChangeSetResults {
     public List getDeleted() {
         return deleted;
     }
+    
+    boolean hasBeenAdded(String filename) {
+        if(addedFromChangeSet.contains(filename) || addedFromStream.contains(filename)) {
+            return true;
+        } 
+        return false;
+    }
 }

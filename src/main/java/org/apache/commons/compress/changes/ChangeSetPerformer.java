@@ -103,7 +103,7 @@ public class ChangeSetPerformer {
             }
 
             if (copy) {
-                if (!isDeletedLater(workingSet, entry)) {
+                if (!isDeletedLater(workingSet, entry) && !results.hasBeenAdded(entry.getName())) {
                     copyStream(in, out, entry);
                     results.addedFromStream(entry.getName());
                 }
