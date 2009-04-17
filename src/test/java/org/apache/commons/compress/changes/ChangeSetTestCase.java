@@ -67,6 +67,38 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     }
 
     /**
+     * Adds an ArchiveEntry with the same name two times.
+     * Only the latest addition should be found in the ChangeSet,
+     * the first add should be replaced.
+     * 
+     * @throws Exception
+     */
+    public void testAddChangeTwice() throws Exception {
+        InputStream in = null;
+        InputStream in2 = null;
+        try {
+            in = new FileInputStream(getFile("test.txt"));
+            in2 = new FileInputStream(getFile("test2.xml"));
+       
+            ArchiveEntry e = new ZipArchiveEntry("test.txt");
+            ArchiveEntry e2 = new ZipArchiveEntry("test.txt");
+            
+            ChangeSet changes = new ChangeSet();
+            changes.add(e, in);
+            changes.add(e2, in2);
+            
+            assertEquals(1, changes.getChanges().size());
+            Change c = (Change)changes.getChanges().iterator().next();
+            assertEquals(in2, c.getInput());
+        } finally {
+            if (in != null)
+                in.close();
+            if (in2 != null)
+                in2.close();
+        }
+    }
+    
+    /**
      * Tries to delete the folder "bla" from an archive file. This should result in
      * the deletion of bla/*, which actually means bla/test4.xml should be
      * removed from the archive. The file something/bla (without ending, named
