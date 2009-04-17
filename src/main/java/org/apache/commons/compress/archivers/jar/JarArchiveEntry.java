@@ -65,4 +65,18 @@ public class JarArchiveEntry extends ZipArchiveEntry implements ArchiveEntry {
             }
             return null;
 	}
+
+    /* (non-Javadoc)
+     * @see org.apache.commons.compress.archivers.zip.ZipArchiveEntry#equals(java.lang.Object)
+     */
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.commons.compress.archivers.zip.ZipArchiveEntry#hashCode()
+     */
+    public int hashCode() {
+        return super.hashCode();
+    }
 }
