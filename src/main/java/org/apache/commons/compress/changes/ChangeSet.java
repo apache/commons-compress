@@ -65,9 +65,38 @@ public final class ChangeSet {
      *            the datastream to add
      */
     public void add(final ArchiveEntry pEntry, final InputStream pInput) {
-        changes.add(new Change(pEntry, pInput));
+        addAddition(new Change(pEntry, pInput));
     }
 
+    /**
+     * Adds an addition change.
+     * 
+     * @param pChange
+     *            the change which should result in an addition
+     */
+    private void addAddition(Change pChange) {
+        if (Change.TYPE_ADD != pChange.type() ||    
+            pChange.getInput() == null) {
+            return;
+        }
+
+        if (!changes.isEmpty()) {
+            for (Iterator it = changes.iterator(); it.hasNext();) {
+                Change change = (Change) it.next();
+                if (change.type() == Change.TYPE_ADD
+                        && change.getEntry() != null) {
+                    ArchiveEntry entry = change.getEntry();
+
+                    if(entry.equals(pChange.getEntry())) {
+                        it.remove();
+                        break;
+                    }
+                }
+            }
+        }
+        changes.add(pChange);
+    }
+    
     /**
      * Adds an delete change.
      * 
