@@ -59,9 +59,12 @@ public class ChangeSetPerformer {
      *            the resulting OutputStream with all modifications
      * @throws IOException
      *             if an read/write error occurs
+     * @return the results of this operation
      */
-    public void perform(ArchiveInputStream in, ArchiveOutputStream out)
+    public ChangeSetResults perform(ArchiveInputStream in, ArchiveOutputStream out)
             throws IOException {
+        ChangeSetResults results = new ChangeSetResults();
+        
         Set workingSet = new LinkedHashSet(changes);
         
         for (Iterator it = workingSet.iterator(); it.hasNext();) {
@@ -70,6 +73,7 @@ public class ChangeSetPerformer {
             if (change.type() == Change.TYPE_ADD) {
                 copyStream(change.getInput(), out, change.getEntry());
                 it.remove();
+                results.addedFromChangeSet(change.getEntry().getName());
             }
         }
 
@@ -86,11 +90,13 @@ public class ChangeSetPerformer {
                     if (name.equals(change.targetFile())) {
                         copy = false;
                         it.remove();
+                        results.deleted(name);
                         break;
                     }
                 } else if(type == Change.TYPE_DELETE_DIR && name != null) {
                     if (name.startsWith(change.targetFile() + "/")) {
                         copy = false;
+                        results.deleted(name);
                         break;
                     }
                 }
@@ -99,9 +105,12 @@ public class ChangeSetPerformer {
             if (copy) {
                 if (!isDeletedLater(workingSet, entry)) {
                     copyStream(in, out, entry);
+                    results.addedFromStream(entry.getName());
                 }
             }
         }
+        
+        return results;
     }
 
     /**

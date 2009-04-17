@@ -366,6 +366,65 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     }
     
     /**
+     * Checks for the correct ChangeSetResults
+     * 
+     * @throws Exception
+     */
+    public void testChangeSetResults() throws Exception {
+        final String archivename = "cpio";
+        File input = this.createArchive(archivename);
+
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        File result = File.createTempFile("test", "."+archivename);
+        result.deleteOnExit();
+        try {
+
+            final InputStream is = new FileInputStream(input);
+            ais = factory.createArchiveInputStream(archivename, is);
+            out = factory.createArchiveOutputStream(archivename,
+                    new FileOutputStream(result));
+
+            ChangeSet changes = new ChangeSet();
+            changes.deleteDir("bla");
+            archiveListDeleteDir("bla");
+
+            // Add a file
+            final File file1 = getFile("test.txt");
+            ArchiveEntry entry = out.createArchiveEntry(file1, "bla/test.txt");
+            changes.add(entry, new FileInputStream(file1));
+            archiveList.add("bla/test.txt");
+
+            ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            ChangeSetResults results = performer.perform(ais, out);
+            is.close();
+
+            // Checks
+            assertEquals(1,results.getAddedFromChangeSet().size());
+            assertEquals("bla/test.txt",(String)results.getAddedFromChangeSet().iterator().next());
+            assertEquals(3,results.getDeleted().size());
+            assertTrue(results.getDeleted().contains("bla/test4.xml"));
+            assertTrue(results.getDeleted().contains("bla/test5.xml"));
+            assertTrue(results.getDeleted().contains("bla/blubber/test6.xml"));
+            
+            assertTrue(results.getAddedFromStream().contains("testdata/test1.xml"));
+            assertTrue(results.getAddedFromStream().contains("testdata/test2.xml"));
+            assertTrue(results.getAddedFromStream().contains("test/test3.xml"));
+            assertTrue(results.getAddedFromStream().contains("test.txt"));
+            assertTrue(results.getAddedFromStream().contains("something/bla"));
+            assertTrue(results.getAddedFromStream().contains("test with spaces.txt"));
+            assertEquals(6,results.getAddedFromStream().size());
+        } finally {
+            if (out != null)
+                out.close();
+            if (ais != null)
+                ais.close();
+        }
+
+        this.checkArchiveContent(result, archiveList);
+    }
+    
+    /**
      * Tries to delete a directory with a file and adds a new directory with a
      * new file and with the same name. Should delete dir1/* and add
      * dir1/test.txt at the end
