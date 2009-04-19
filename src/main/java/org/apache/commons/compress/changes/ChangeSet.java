@@ -70,6 +70,8 @@ public final class ChangeSet {
     
     /**
      * Adds a new archive entry to the archive.
+     * If replace is set to true, this change will replace all other additions
+     * done in this ChangeSet and all existing entries in the original stream.
      * 
      * @param pEntry
      *            the entry to add
