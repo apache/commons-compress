@@ -110,4 +110,47 @@ public final class ZipTestCase extends AbstractTestCase {
         out.close();
         in.close();
     }
+    
+    /**
+     * Checks if all entries from a nested archive can be read.
+     * The archive: OSX_ArchiveWithNestedArchive.zip contains:
+     * NestedArchiv.zip and test.xml3.
+     * 
+     * The nested archive:  NestedArchive.zip contains test1.xml and test2.xml
+     * 
+     * @throws Exception
+     */
+    public void testListAllFilesWithNestedArchive() throws Exception {
+        final File input = getFile("archives/OSX_ArchiveWithNestedArchive.zip");
+       
+        List results = new ArrayList();
+
+        final InputStream is = new FileInputStream(input);
+        ArchiveInputStream in = null;
+        try {
+            in = new ArchiveStreamFactory().createArchiveInputStream("zip", is);
+
+            ZipArchiveEntry entry = null;
+            while((entry = (ZipArchiveEntry)in.getNextEntry()) != null) {
+                results.add((entry.getName()));
+
+                ArchiveInputStream nestedIn = new ArchiveStreamFactory().createArchiveInputStream("zip", in);
+                ZipArchiveEntry nestedEntry = null;
+                while((nestedEntry = (ZipArchiveEntry)nestedIn.getNextEntry()) != null) {
+                    results.add(nestedEntry.getName());
+                }
+               // nested stream must not be closed here
+            }
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+        }
+        is.close();
+        
+        results.contains("NestedArchiv.zip");
+        results.contains("test1.xml");
+        results.contains("test2.xml");
+        results.contains("test3.xml");
+    }
 }
