@@ -70,7 +70,7 @@ public class ChangeSetPerformer {
         for (Iterator it = workingSet.iterator(); it.hasNext();) {
             Change change = (Change) it.next();
 
-            if (change.type() == Change.TYPE_ADD) {
+            if (change.type() == Change.TYPE_ADD && change.isReplaceMode()) {
                 copyStream(change.getInput(), out, change.getEntry());
                 it.remove();
                 results.addedFromChangeSet(change.getEntry().getName());
@@ -107,6 +107,19 @@ public class ChangeSetPerformer {
                     copyStream(in, out, entry);
                     results.addedFromStream(entry.getName());
                 }
+            }
+        }
+        
+        // Adds files which hasn't been added from the original and do not have replace mode on
+        for (Iterator it = workingSet.iterator(); it.hasNext();) {
+            Change change = (Change) it.next();
+
+            if (change.type() == Change.TYPE_ADD && 
+                !change.isReplaceMode() && 
+                !results.hasBeenAdded(change.getEntry().getName())) {
+                copyStream(change.getInput(), out, change.getEntry());
+                it.remove();
+                results.addedFromChangeSet(change.getEntry().getName());
             }
         }
         

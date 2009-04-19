@@ -99,6 +99,38 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     }
     
     /**
+     * Adds an ArchiveEntry with the same name two times.
+     * Only the first addition should be found in the ChangeSet,
+     * the second add should never be added since replace = false
+     * 
+     * @throws Exception
+     */
+    public void testAddChangeTwiceWithoutReplace() throws Exception {
+        InputStream in = null;
+        InputStream in2 = null;
+        try {
+            in = new FileInputStream(getFile("test.txt"));
+            in2 = new FileInputStream(getFile("test2.xml"));
+       
+            ArchiveEntry e = new ZipArchiveEntry("test.txt");
+            ArchiveEntry e2 = new ZipArchiveEntry("test.txt");
+            
+            ChangeSet changes = new ChangeSet();
+            changes.add(e, in, true);
+            changes.add(e2, in2, false);
+            
+            assertEquals(1, changes.getChanges().size());
+            Change c = (Change)changes.getChanges().iterator().next();
+            assertEquals(in, c.getInput());
+        } finally {
+            if (in != null)
+                in.close();
+            if (in2 != null)
+                in2.close();
+        }
+    }
+    
+    /**
      * Tries to delete the folder "bla" from an archive file. This should result in
      * the deletion of bla/*, which actually means bla/test4.xml should be
      * removed from the archive. The file something/bla (without ending, named
@@ -1051,4 +1083,91 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
         this.checkArchiveContent(result, archiveList);
     }
+    
+    /**
+     * Adds a file with the same filename as an existing file from the stream.
+     * Should lead to a replacement.
+     * 
+     * @throws Exception
+     */
+    public void testAddAllreadyExistingWithReplaceTrue() throws Exception {
+        final String archivename = "zip";
+        File input = this.createArchive(archivename);
+
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        File result = File.createTempFile("test", "."+archivename);
+        result.deleteOnExit();
+        try {
+
+            final InputStream is = new FileInputStream(input);
+            ais = factory.createArchiveInputStream(archivename, is);
+            out = factory.createArchiveOutputStream(archivename,
+                    new FileOutputStream(result));
+
+            ChangeSet changes = new ChangeSet();
+
+            final File file1 = getFile("test.txt");
+            ArchiveEntry entry = new ZipArchiveEntry("testdata/test1.xml");
+            changes.add(entry, new FileInputStream(file1), true);
+            
+            ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            ChangeSetResults results = performer.perform(ais, out);
+            assertTrue(results.getAddedFromChangeSet().contains("testdata/test1.xml"));
+            is.close();
+
+        } finally {
+            if (out != null)
+                out.close();
+            if (ais != null)
+                ais.close();
+        }
+
+        this.checkArchiveContent(result, archiveList);
+    }
+    
+    /**
+     * Adds a file with the same filename as an existing file from the stream.
+     * Should lead to a replacement.
+     * 
+     * @throws Exception
+     */
+    public void testAddAllreadyExistingWithReplaceFalse() throws Exception {
+        final String archivename = "zip";
+        File input = this.createArchive(archivename);
+
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        File result = File.createTempFile("test", "."+archivename);
+        result.deleteOnExit();
+        try {
+
+            final InputStream is = new FileInputStream(input);
+            ais = factory.createArchiveInputStream(archivename, is);
+            out = factory.createArchiveOutputStream(archivename,
+                    new FileOutputStream(result));
+
+            ChangeSet changes = new ChangeSet();
+
+            final File file1 = getFile("test.txt");
+            ArchiveEntry entry = new ZipArchiveEntry("testdata/test1.xml");
+            changes.add(entry, new FileInputStream(file1), false);
+            
+            ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            ChangeSetResults results = performer.perform(ais, out);
+            assertTrue(results.getAddedFromStream().contains("testdata/test1.xml"));
+            assertTrue(results.getAddedFromChangeSet().size() == 0);
+            assertTrue(results.getDeleted().size() == 0);
+            is.close();
+
+        } finally {
+            if (out != null)
+                out.close();
+            if (ais != null)
+                ais.close();
+        }
+
+        this.checkArchiveContent(result, archiveList);
+    }
+    
 }

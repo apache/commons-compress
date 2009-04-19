@@ -31,6 +31,7 @@ class Change {
 	private final String targetFile; // entry name to delete
 	private final ArchiveEntry entry; // new entry to add
 	private final InputStream input; // source for new entry
+	private final boolean replaceMode; // change should replaceMode existing entries
 	
 	// Type of change
 	private final int type;
@@ -53,6 +54,7 @@ class Change {
 		this.type = type;
 		this.input = null;
 		this.entry = null;
+		this.replaceMode = true;
 	}
 		
 	/**
@@ -61,7 +63,7 @@ class Change {
 	 * @param pEntry the entry details
 	 * @param pInput the InputStream for the entry data
 	 */
-	Change(final ArchiveEntry pEntry, final InputStream pInput) {
+	Change(final ArchiveEntry pEntry, final InputStream pInput, boolean replace) {
 		if(pEntry == null || pInput == null) {
 			throw new NullPointerException();
 		}
@@ -69,6 +71,7 @@ class Change {
 		this.input = pInput;
 		type = TYPE_ADD;
 		targetFile = null;
+		this.replaceMode = replace;
 	}
 	
 	ArchiveEntry getEntry() {
@@ -86,4 +89,8 @@ class Change {
 	int type() {
 		return type;
 	}
+
+    boolean isReplaceMode() {
+        return replaceMode;
+    }
 }
