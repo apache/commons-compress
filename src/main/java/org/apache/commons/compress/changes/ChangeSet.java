@@ -65,7 +65,21 @@ public final class ChangeSet {
      *            the datastream to add
      */
     public void add(final ArchiveEntry pEntry, final InputStream pInput) {
-        addAddition(new Change(pEntry, pInput));
+        this.add(pEntry, pInput, true);
+    }
+    
+    /**
+     * Adds a new archive entry to the archive.
+     * 
+     * @param pEntry
+     *            the entry to add
+     * @param pInput
+     *            the datastream to add
+     * @param replace
+     *            indicates the this change should replace existing entries            
+     */
+    public void add(final ArchiveEntry pEntry, final InputStream pInput, final boolean replace) {
+        addAddition(new Change(pEntry, pInput, replace));
     }
 
     /**
@@ -88,8 +102,14 @@ public final class ChangeSet {
                     ArchiveEntry entry = change.getEntry();
 
                     if(entry.equals(pChange.getEntry())) {
-                        it.remove();
-                        break;
+                        if(pChange.isReplaceMode()) {
+                            it.remove();
+                            changes.add(pChange);
+                            return;
+                        } else {
+                            // do not add this change
+                            return;
+                        }
                     }
                 }
             }
