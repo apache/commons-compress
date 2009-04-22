@@ -163,4 +163,10 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         return new ArArchiveEntry(inputFile, entryName);
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.commons.compress.archivers.ArchiveOutputStream#finish()
+     */
+    public void finish() throws IOException {
+        // Nothing to do
+    }
 }

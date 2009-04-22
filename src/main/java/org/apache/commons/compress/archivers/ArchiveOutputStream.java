@@ -27,9 +27,24 @@ import java.io.OutputStream;
  * {@link #write(byte[], int, int)} method to improve performance.
  * They should also override {@link #close()} to ensure that any necessary
  * trailers are added.
+ * 
+ * <p>
+ * The normal sequence of calls for working with ArchiveOutputStreams is:
+ * + create ArchiveOutputStream object
+ * + write SFX header (optional, Zip only)
+ * + repeat as needed:
+ *      - putArchiveEntry() (writes entry header)
+ *      - write() (writes entry data)
+ *      - closeArchiveEntry() (closes entry)
+ * + finish() (ends the addition of entries)
+ * + write additional data if format supports it (optional)
+ * + close()
+ * </p>
+ * 
  * <p>
  * Example usage:<br/>
  * TBA
+ * </p>
  */
 public abstract class ArchiveOutputStream extends OutputStream {
     
@@ -55,6 +70,13 @@ public abstract class ArchiveOutputStream extends OutputStream {
      * @throws IOException
      */
     public abstract void closeArchiveEntry() throws IOException;
+    
+    /**
+     * Finishes the addition of entries to this stream, without closing it.
+     * Additional data can be written, if the format supports it.
+     * @throws IOException
+     */
+    public abstract void finish() throws IOException;
 
     /**
      * Create an archive entry using the inputFile and entryName provided.
