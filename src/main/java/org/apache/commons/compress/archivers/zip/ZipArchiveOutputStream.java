@@ -328,13 +328,14 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         fallbackToUTF8 = b;
     }
 
-    /**
-     * Finishs writing the contents and closes this as well as the
-     * underlying stream.
-     * @throws IOException on error
+    /* (non-Javadoc)
+     * @see org.apache.commons.compress.archivers.ArchiveOutputStream#finish()
      */
     public void finish() throws IOException {
-        closeArchiveEntry();
+        if(entry != null) {
+            throw new IOException("This archives contains unclosed entries.");
+        }
+        
         cdOffset = written;
         for (Iterator i = entries.iterator(); i.hasNext(); ) {
             writeCentralFileHeader((ZipArchiveEntry) i.next());

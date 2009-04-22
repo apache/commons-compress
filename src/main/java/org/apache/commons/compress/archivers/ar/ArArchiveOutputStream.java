@@ -153,7 +153,6 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     }
 
     public void close() throws IOException {
-        closeArchiveEntry();
         out.close();
         prevEntry = null;
     }
@@ -167,6 +166,8 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
      * @see org.apache.commons.compress.archivers.ArchiveOutputStream#finish()
      */
     public void finish() throws IOException {
-        // Nothing to do
+        if(haveUnclosedEntry) {
+            throw new IOException("This archives contains unclosed entries.");
+        }
     }
 }

@@ -104,14 +104,20 @@ public class IOMethodsTest extends AbstractTestCase {
         for (int i=0; i<byteTest.length; i++){
             aos1.write(byteTest[i]);            
         }
+        aos1.closeArchiveEntry();
         aos1.close();
+
         aos2.write(byteTest);
+        aos2.closeArchiveEntry();
         aos2.close();
+        
         aos3.write(byteTest, 0, byteTest.length);
+        aos3.closeArchiveEntry();
         aos3.close();
         assertEquals("out1!=out2",out1.toString(),out2.toString());
         assertEquals("out1!=out3",out1.toString(),out3.toString());
     }
+    
     private void compareReads(String archiverName) throws Exception {
         OutputStream out1 = new ByteArrayOutputStream();
         OutputStream out2 = new ByteArrayOutputStream();

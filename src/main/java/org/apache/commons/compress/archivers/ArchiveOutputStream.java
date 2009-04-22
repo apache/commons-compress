@@ -74,6 +74,9 @@ public abstract class ArchiveOutputStream extends OutputStream {
     /**
      * Finishes the addition of entries to this stream, without closing it.
      * Additional data can be written, if the format supports it.
+     * 
+     * The finish() method throws an Exception if the user forgets to close the entry
+     * .
      * @throws IOException
      */
     public abstract void finish() throws IOException;
