@@ -72,7 +72,7 @@ public final class CpioTestCase extends AbstractTestCase {
             os.putArchiveEntry(entry);
             IOUtils.copy(new FileInputStream(file2), os);
             os.closeArchiveEntry();
-
+            os.finish();
             os.close();
             out.close();
         }

@@ -527,8 +527,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @exception  IOException  if an I/O error occurs.
      */
     public void close() throws IOException {
-        finish();
-
         if (raf != null) {
             raf.close();
         }

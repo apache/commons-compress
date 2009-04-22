@@ -118,14 +118,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Ends the TAR archive and closes the underlying OutputStream.
-     * This means that finish() is called followed by calling the
-     * TarBuffer's close().
+     * Closes the underlying OutputStream.
      * @throws IOException on error
      */
     public void close() throws IOException {
         if (!closed) {
-            finish();
             buffer.close();
             out.close();
             closed = true;

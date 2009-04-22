@@ -53,6 +53,9 @@ public class ChangeSetPerformer {
      * Performs all changes collected in this ChangeSet on the input stream and
      * streams the result to the output stream. Perform may be called more than once.
      * 
+     * This method finishes the stream, no other entries should be added
+     * after that.
+     * 
      * @param in
      *            the InputStream to perform the changes on
      * @param out
@@ -122,7 +125,7 @@ public class ChangeSetPerformer {
                 results.addedFromChangeSet(change.getEntry().getName());
             }
         }
-        
+        out.finish();
         return results;
     }
 
