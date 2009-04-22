@@ -121,7 +121,7 @@ public final class ZipTestCase extends AbstractTestCase {
      * @throws Exception
      */
     public void testListAllFilesWithNestedArchive() throws Exception {
-        final File input = getFile("archives/OSX_ArchiveWithNestedArchive.zip");
+        final File input = getFile("OSX_ArchiveWithNestedArchive.zip");
        
         List results = new ArrayList();
 
