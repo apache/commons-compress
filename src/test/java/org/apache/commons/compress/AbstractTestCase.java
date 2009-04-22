@@ -155,6 +155,7 @@ public abstract class AbstractTestCase extends TestCase {
             addArchiveEntry(out, "something/bla", file6);
             addArchiveEntry(out, "test with spaces.txt", file6);
 
+            out.finish();
             return archive;
         } finally {
             if (out != null) {
@@ -196,6 +197,7 @@ public abstract class AbstractTestCase extends TestCase {
             archive = File.createTempFile("empty", "." + archivename);
             stream = new FileOutputStream(archive);
             out = factory.createArchiveOutputStream(archivename, stream);
+            out.finish();
         } finally {
             if (out != null) {
                 out.close();
@@ -223,6 +225,7 @@ public abstract class AbstractTestCase extends TestCase {
             out = factory.createArchiveOutputStream(archivename, stream);
             // Use short file name so does not cause problems for ar
             addArchiveEntry(out, "test1.xml", getFile("test1.xml"));
+            out.finish();
         } finally {
             if (out != null) {
                 out.close();
