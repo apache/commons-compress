@@ -24,16 +24,30 @@ import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
 
+/**
+ * Implements the "gz" compression format as an input stream.
+ * This classes wraps the standard java classes for working with gz. 
+ */
 public class GzipCompressorInputStream extends CompressorInputStream {
-
+    /* reference to the compressed stream */
     private final GZIPInputStream in; 
 
+    /**
+     * Constructs a new GZip compressed input stream by the referenced
+     * InputStream.
+     * 
+     * @param inputStream the InputStream from which this object should be created of
+     * @throws IOException if the stream could not be created
+     */
     public GzipCompressorInputStream(InputStream inputStream) throws IOException {
         in = new GZIPInputStream(inputStream);
     }
 
+    /* (non-Javadoc)
+     * @see java.io.InputStream#read()
+     */
     public int read() throws IOException {
+        this.count(1);
         return in.read();
     }
-
 }
