@@ -51,6 +51,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     private boolean closed = false;
 
+    /* Indicates if putArchiveEntry has been called without closeArchiveEntry */
+    private boolean haveUnclosedEntry = false;
+    
     private final OutputStream out;
 
     /**
@@ -107,6 +110,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * @throws IOException on error
      */
     public void finish() throws IOException {
+        if(haveUnclosedEntry) {
+            throw new IOException("This archives contains unclosed entries.");
+        }
         writeEOFRecord();
         writeEOFRecord();
     }
@@ -182,6 +188,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             currSize = entry.getSize();
         }
         currName = entry.getName();
+        haveUnclosedEntry = true;
     }
 
     /**
@@ -212,6 +219,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                                   + "' before the '" + currSize
                                   + "' bytes specified in the header were written");
         }
+        haveUnclosedEntry = false;
     }
 
     /**
