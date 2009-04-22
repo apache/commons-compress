@@ -21,5 +21,25 @@ package org.apache.commons.compress.compressors;
 import java.io.InputStream;
 
 public abstract class CompressorInputStream extends InputStream {
-    // TODO 
+    private int bytesRead = 0;
+    
+    /**
+     * Increments the counter of already read bytes.
+     * Doesn't increment if the EOF has been hit (read == -1)
+     * 
+     * @param read the number of bytes read
+     */
+    protected void count(int read) {
+        if(read != -1) {
+            bytesRead = bytesRead + read;
+        }
+    }
+    
+    /**
+     * Returns the current number of bytes read from this stream.
+     * @return the number of read bytes
+     */
+    public int getCount() {
+        return bytesRead;
+    }
 }
