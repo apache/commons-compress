@@ -36,18 +36,26 @@ public class ArArchiveInputStream extends ArchiveInputStream {
     private final InputStream input;
     private long offset = 0;
     private boolean closed;
+    
     /*
      * If getNextEnxtry has been called, the entry metadata is stored in
      * currentEntry.
      */
     private ArArchiveEntry currentEntry = null;
+    
     /*
      * The offset where the current entry started. -1 if no entry has been
      * called
      */
     private long entryOffset = -1;
 
-    public ArArchiveInputStream( final InputStream pInput ) {
+    /**
+     * Constructs an Ar input stream with the referenced stream
+     * 
+     * @param pInput
+     *            the ar input stream
+     */
+    public ArArchiveInputStream(final InputStream pInput) {
         input = pInput;
         closed = false;
     }
@@ -74,15 +82,18 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         }
 
         if (offset == 0) {
-            final byte[] expected = ArchiveUtils.toAsciiBytes(ArArchiveEntry.HEADER);
-            final byte[] realized = new byte[expected.length]; 
+            final byte[] expected = ArchiveUtils
+                    .toAsciiBytes(ArArchiveEntry.HEADER);
+            final byte[] realized = new byte[expected.length];
             final int read = read(realized);
             if (read != expected.length) {
-                throw new IOException("failed to read header. Occured at byte: " + getCount());
+                throw new IOException(
+                        "failed to read header. Occured at byte: " + getCount());
             }
             for (int i = 0; i < expected.length; i++) {
                 if (expected[i] != realized[i]) {
-                    throw new IOException("invalid header " + ArchiveUtils.toAsciiString(realized));
+                    throw new IOException("invalid header "
+                            + ArchiveUtils.toAsciiString(realized));
                 }
             }
         }
@@ -113,37 +124,53 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         read(length);
 
         {
-            final byte[] expected = ArchiveUtils.toAsciiBytes(ArArchiveEntry.TRAILER);
-            final byte[] realized = new byte[expected.length]; 
+            final byte[] expected = ArchiveUtils
+                    .toAsciiBytes(ArArchiveEntry.TRAILER);
+            final byte[] realized = new byte[expected.length];
             final int read = read(realized);
             if (read != expected.length) {
-                throw new IOException("failed to read entry header. Occured at byte: " + getCount());
+                throw new IOException(
+                        "failed to read entry header. Occured at byte: "
+                                + getCount());
             }
             for (int i = 0; i < expected.length; i++) {
                 if (expected[i] != realized[i]) {
-                    throw new IOException("invalid entry header. not read the content? Occured at byte: " + getCount());
+                    throw new IOException(
+                            "invalid entry header. not read the content? Occured at byte: "
+                                    + getCount());
                 }
             }
         }
 
         entryOffset = offset;
-        
+
         // SVR4/GNU adds a trailing "/" to names
-        String temp=new String(name).trim(); // TODO is it correct to use the default charset here?
-        if (temp.endsWith("/")){
-            temp=temp.substring(0, temp.length()-1);
+        String temp = new String(name).trim(); // TODO is it correct to use the
+        // default charset here?
+        if (temp.endsWith("/")) {
+            temp = temp.substring(0, temp.length() - 1);
         }
-        currentEntry = new ArArchiveEntry(temp, // TODO is it correct to use the default charset here?
-                                          Long.parseLong(new String(length)
-                                                         .trim()));
+        currentEntry = new ArArchiveEntry(temp, // TODO is it correct to use the
+                // default charset here?
+                Long.parseLong(new String(length).trim()));
         return currentEntry;
     }
 
-
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.apache.commons.compress.archivers.ArchiveInputStream#getNextEntry()
+     */
     public ArchiveEntry getNextEntry() throws IOException {
         return getNextArEntry();
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.io.InputStream#close()
+     */
     public void close() throws IOException {
         if (!closed) {
             closed = true;
@@ -152,6 +179,11 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         currentEntry = null;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.io.InputStream#read(byte[], int, int)
+     */
     public int read(byte[] b, final int off, final int len) throws IOException {
         int toRead = len;
         if (currentEntry != null) {
@@ -168,6 +200,16 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         return ret;
     }
 
+    /**
+     * Checks if the signature matches ASCII "!<arch>" followed by a single LF
+     * control character
+     * 
+     * @param signature
+     *            the bytes to check
+     * @param length
+     *            the number of bytes to check
+     * @return true, if this stream is an Ar archive stream, false otherwise
+     */
     public static boolean matches(byte[] signature, int length) {
         // 3c21 7261 6863 0a3e
 
