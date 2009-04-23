@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
+import org.apache.commons.compress.utils.ArchiveUtils;
 
 /**
  * The TarOutputStream writes a UNIX tar archive as an OutputStream.
@@ -161,7 +162,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 TarArchiveEntry longLinkEntry = new TarArchiveEntry(TarConstants.GNU_LONGLINK,
                                                                     TarConstants.LF_GNUTYPE_LONGNAME);
 
-                final byte[] nameBytes = entry.getName().getBytes(); // TODO is it correct to use the default charset here?
+                final byte[] nameBytes = ArchiveUtils.toAsciiBytes(entry.getName());
                 longLinkEntry.setSize(nameBytes.length + 1); // +1 for NUL
                 putArchiveEntry(longLinkEntry);
                 write(nameBytes);
