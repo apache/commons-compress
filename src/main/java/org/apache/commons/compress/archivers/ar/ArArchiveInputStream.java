@@ -82,8 +82,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         }
 
         if (offset == 0) {
-            final byte[] expected = ArchiveUtils
-                    .toAsciiBytes(ArArchiveEntry.HEADER);
+            final byte[] expected = ArchiveUtils.toAsciiBytes(ArArchiveEntry.HEADER);
             final byte[] realized = new byte[expected.length];
             final int read = read(realized);
             if (read != expected.length) {
@@ -92,8 +91,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
             }
             for (int i = 0; i < expected.length; i++) {
                 if (expected[i] != realized[i]) {
-                    throw new IOException("invalid header "
-                            + ArchiveUtils.toAsciiString(realized));
+                    throw new IOException("invalid header " + ArchiveUtils.toAsciiString(realized));
                 }
             }
         }
@@ -124,8 +122,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         read(length);
 
         {
-            final byte[] expected = ArchiveUtils
-                    .toAsciiBytes(ArArchiveEntry.TRAILER);
+            final byte[] expected = ArchiveUtils.toAsciiBytes(ArArchiveEntry.TRAILER);
             final byte[] realized = new byte[expected.length];
             final int read = read(realized);
             if (read != expected.length) {
@@ -145,14 +142,14 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         entryOffset = offset;
 
         // SVR4/GNU adds a trailing "/" to names
-        String temp = new String(name).trim(); // TODO is it correct to use the
-        // default charset here?
+        // entry name is stored as ASCII string
+        String temp = ArchiveUtils.toAsciiString(name).trim();
         if (temp.endsWith("/")) {
             temp = temp.substring(0, temp.length() - 1);
         }
-        currentEntry = new ArArchiveEntry(temp, // TODO is it correct to use the
-                // default charset here?
-                Long.parseLong(new String(length).trim()));
+        currentEntry = new ArArchiveEntry(temp, 
+                                          Long.parseLong(
+                                                  new String(length).trim()));
         return currentEntry;
     }
 
