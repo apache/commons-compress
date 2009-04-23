@@ -372,14 +372,24 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         } else {
             tmpStr = tmp.substring(tmp.length() - length);
         }
-        out.write(tmpStr.getBytes()); // TODO is it correct to use the default charset here?
+        out.write(ArchiveUtils.toAsciiBytes(tmpStr));
     }
 
+    /**
+     * Writes an ASCII string to the stream followed by \0
+     * @param str the String to write
+     * @throws IOException if the string couldn't be written
+     */
     private void writeCString(final String str) throws IOException {
-        out.write(str.getBytes()); // TODO is it correct to use the default charset here?
+        out.write(ArchiveUtils.toAsciiBytes(str)); 
         out.write('\0');
     }
 
+    /**
+     * Creates a new ArchiveEntry. The entryName must be an ASCII encoded string.
+     * 
+     * @see org.apache.commons.compress.archivers.ArchiveOutputStream#createArchiveEntry(java.io.File, java.lang.String)
+     */
     public ArchiveEntry createArchiveEntry(File inputFile, String entryName)
             throws IOException {
         return new CpioArchiveEntry(inputFile, entryName);
