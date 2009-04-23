@@ -86,8 +86,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
             final byte[] realized = new byte[expected.length];
             final int read = read(realized);
             if (read != expected.length) {
-                throw new IOException(
-                        "failed to read header. Occured at byte: " + getCount());
+                throw new IOException("failed to read header. Occured at byte: " + getCount());
             }
             for (int i = 0; i < expected.length; i++) {
                 if (expected[i] != realized[i]) {
@@ -126,15 +125,11 @@ public class ArArchiveInputStream extends ArchiveInputStream {
             final byte[] realized = new byte[expected.length];
             final int read = read(realized);
             if (read != expected.length) {
-                throw new IOException(
-                        "failed to read entry header. Occured at byte: "
-                                + getCount());
+                throw new IOException("failed to read entry header. Occured at byte: " + getCount());
             }
             for (int i = 0; i < expected.length; i++) {
                 if (expected[i] != realized[i]) {
-                    throw new IOException(
-                            "invalid entry header. not read the content? Occured at byte: "
-                                    + getCount());
+                    throw new IOException("invalid entry header. not read the content? Occured at byte: " + getCount());
                 }
             }
         }
@@ -147,9 +142,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         if (temp.endsWith("/")) {
             temp = temp.substring(0, temp.length() - 1);
         }
-        currentEntry = new ArArchiveEntry(temp, 
-                                          Long.parseLong(
-                                                  new String(length).trim()));
+        currentEntry = new ArArchiveEntry(temp, Long.parseLong(new String(length).trim()));
         return currentEntry;
     }
 
