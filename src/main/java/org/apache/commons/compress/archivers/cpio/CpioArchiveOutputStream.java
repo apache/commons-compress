@@ -297,6 +297,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
                 this.crc += b[pos] & 0xFF;
             }
         }
+        count(len);
     }
 
     /**
