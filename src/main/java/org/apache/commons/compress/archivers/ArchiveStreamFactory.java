@@ -175,11 +175,9 @@ public class ArchiveStreamFactory {
                 return new TarArchiveInputStream(in);
             }
         } catch (IOException e) {
-            throw new ArchiveException(
-                    "Could not use reset and mark operations.", e);
+            throw new ArchiveException("Could not use reset and mark operations.", e);
         }
 
-        throw new ArchiveException(
-                "No Archiver found for the stream signature");
+        throw new ArchiveException("No Archiver found for the stream signature");
     }
 }
