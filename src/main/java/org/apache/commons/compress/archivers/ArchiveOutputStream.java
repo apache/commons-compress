@@ -52,6 +52,8 @@ public abstract class ArchiveOutputStream extends OutputStream {
     private final byte[] oneByte = new byte[1];
     static final int BYTE_MASK = 0xFF;
 
+    /** holds the number of bytes read in this stream */
+    private int bytesRead = 0;
     // Methods specific to ArchiveOutputStream
     
     /**
@@ -110,4 +112,23 @@ public abstract class ArchiveOutputStream extends OutputStream {
         write(oneByte, 0, 1);
     }
 
+    /**
+     * Increments the counter of already read bytes.
+     * Doesn't increment if the EOF has been hit (read == -1)
+     * 
+     * @param read the number of bytes read
+     */
+    protected void count(int read) {
+        if(read != -1) {
+            bytesRead = bytesRead + read;
+        }
+    }
+    
+    /**
+     * Returns the current number of bytes read from this stream.
+     * @return the number of read bytes
+     */
+    public int getCount() {
+        return bytesRead;
+    }
 }

@@ -518,6 +518,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             written += length;
         }
         crc.update(b, offset, length);
+        count(length);
     }
 
     /**

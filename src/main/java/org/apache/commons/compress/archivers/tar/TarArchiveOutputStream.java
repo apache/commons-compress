@@ -297,6 +297,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             numToWrite -= num;
             wOffset += num;
         }
+        
+        count(numToWrite);
     }
 
     /**
