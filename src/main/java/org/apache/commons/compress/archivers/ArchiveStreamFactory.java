@@ -135,7 +135,7 @@ public class ArchiveStreamFactory {
     /**
      * Create an archive input stream from an input stream, autodetecting
      * the archive type from the first few bytes of the stream. The InputStream
-     * must support marks.
+     * must support marks, like BufferedInputStream.
      * 
      * @param in the input stream
      * @return the archive input stream
