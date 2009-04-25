@@ -392,7 +392,9 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                 "111111111111111111111111111000101011".equals(str);
             }
         } finally {
-            in.close();
+            if (in != null) {
+                in.close();
+            }
             rmdir(check);
         } 
     }
