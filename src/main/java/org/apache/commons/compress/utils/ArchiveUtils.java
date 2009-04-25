@@ -26,6 +26,10 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * Generic Archive utilities
  */
 public class ArchiveUtils {
+    
+    /** Private constructor to prevent instantiation of this utility class. */
+    private ArchiveUtils(){    
+    }
 
     /**
      * Generates a string containing the name, isDirectory setting and size of an entry.

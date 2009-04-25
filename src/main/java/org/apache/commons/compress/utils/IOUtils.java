@@ -28,6 +28,10 @@ import java.io.OutputStream;
  */
 public final class IOUtils {
 
+    /** Private constructor to prevent instantiation of this utility class. */
+    private IOUtils(){    
+    }
+
 	/**
      * Copies the content of a InputStream into an OutputStream.
      * Uses a default buffer size of 8024 bytes.

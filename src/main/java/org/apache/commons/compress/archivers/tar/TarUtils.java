@@ -28,6 +28,10 @@ public class TarUtils {
 
     private static final int BYTE_MASK = 255;
 
+    /** Private constructor to prevent instantiation of this utility class. */
+    private TarUtils(){    
+    }
+
     /**
      * Parse an octal string from a buffer.
      * Leading spaces are ignored.
