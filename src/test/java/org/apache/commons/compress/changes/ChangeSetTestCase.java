@@ -391,6 +391,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                 // All lines look like this
                 "111111111111111111111111111000101011".equals(str);
             }
+            reader.close();
         } finally {
             if (in != null) {
                 in.close();
