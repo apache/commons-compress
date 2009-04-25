@@ -39,7 +39,6 @@ import org.apache.commons.compress.utils.ArchiveUtils;
 public class TarArchiveInputStream extends ArchiveInputStream {
     private static final int SMALL_BUFFER_SIZE = 256;
     private static final int BUFFER_SIZE = 8 * 1024;
-    private static final int LARGE_BUFFER_SIZE = 32 * 1024;
 
     private boolean hasHitEOF;
     private long entrySize;

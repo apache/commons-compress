@@ -54,7 +54,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     /**
      * Whether to look for and use Unicode extra fields.
      */
-    private final boolean useUnicodeExtraFields;
+    private final boolean useUnicodeExtraFields; // TODO not yet used
 
     private final InputStream in;
 
@@ -299,13 +299,11 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         }
         // Ensure all entry bytes are read
         skip(Long.MAX_VALUE);
-        int inB, out;
+        int inB;
         if (current.getMethod() == ZipArchiveOutputStream.DEFLATED) {
             inB = inf.getTotalIn();
-            out = inf.getTotalOut();
         } else {
             inB = readBytesOfEntry;
-            out = readBytesOfEntry;
         }
         int diff = 0;
 
