@@ -89,13 +89,13 @@ public final class TarTestCase extends AbstractTestCase {
         	entry2.setUserName("avalon");
         	entry2.setGroupName("excalibur");
         	entry2.setMode(0100000);
-        	os.putArchiveEntry(entry);
+        	os2.putArchiveEntry(entry);
         	IOUtils.copy(new FileInputStream(file1), os2);
+            os2.closeArchiveEntry();
         } catch(IOException e) {
         	assertTrue(true);
         } finally {
         	if (os2 != null){
-        	    os2.closeArchiveEntry();
         	    os2.close();
         	}
         }
