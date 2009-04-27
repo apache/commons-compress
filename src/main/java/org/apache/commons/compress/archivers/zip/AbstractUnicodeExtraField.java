@@ -46,8 +46,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
      * @param len The length of the encoded filename or commentin
      * <code>bytes</code>.
      */
-    protected AbstractUnicodeExtraField(String text, byte[] bytes, int off,
-                                        int len) {
+    protected AbstractUnicodeExtraField(String text, byte[] bytes, int off, int len) {
         CRC32 crc32 = new CRC32();
         crc32.update(bytes, off, len);
         nameCRC32 = crc32.getValue();
@@ -55,8 +54,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
         try {
             unicodeName = text.getBytes("UTF-8");
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("FATAL: UTF-8 encoding not supported.",
-                                       e);
+            throw new RuntimeException("FATAL: UTF-8 encoding not supported.", e);
         }
     }
 
@@ -69,7 +67,6 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
      * file.
      */
     protected AbstractUnicodeExtraField(String text, byte[] bytes) {
-
         this(text, bytes, 0, bytes.length);
     }
 
@@ -143,8 +140,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
         throws ZipException {
 
         if (length < 5) {
-            throw new ZipException("UniCode path extra data must have at least"
-                                   + " 5 bytes.");
+            throw new ZipException("UniCode path extra data must have at least 5 bytes.");
         }
 
         int version = buffer[offset];
