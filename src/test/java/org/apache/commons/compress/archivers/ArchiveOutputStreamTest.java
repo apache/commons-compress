@@ -155,6 +155,11 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
         }
 
         aos1.putArchiveEntry(aos1.createArchiveEntry(dummy, "dummy"));
+        is = new FileInputStream(dummy);
+        IOUtils.copy(is, aos1);
+        is.close();
+
+        // TODO check if second putArchiveEntry() can follow without closeAE?
         
         try {
             aos1.finish();
