@@ -254,6 +254,10 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         
         ensureOpen();
 
+        if (entry == null) {
+            throw new IOException("Trying to close non-existent entry");
+        }
+
         if (this.entry.getSize() != this.written) {
             throw new IOException("invalid entry size (expected "
                     + this.entry.getSize() + " but got " + this.written
