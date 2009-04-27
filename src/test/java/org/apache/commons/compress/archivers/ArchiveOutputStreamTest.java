@@ -88,4 +88,24 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
         }
     }
 
+    public void testOptionalFinish() throws Exception {
+        OutputStream out1 = new ByteArrayOutputStream();
+        
+        ArchiveOutputStream aos1 = factory.createArchiveOutputStream("zip", out1);
+        aos1.putArchiveEntry(new ZipArchiveEntry("dummy"));
+        aos1.closeArchiveEntry();
+        aos1.close();
+        
+        aos1 = factory.createArchiveOutputStream("jar", out1);
+        aos1.putArchiveEntry(new JarArchiveEntry("dummy"));
+        aos1.closeArchiveEntry();
+        aos1.close();
+        try {
+            aos1.finish();
+            aos1.finish();
+            fail("After putArchive should follow closeArchive");
+        } catch (IOException io) {
+            // Exception expected
+        }
+    }
 }

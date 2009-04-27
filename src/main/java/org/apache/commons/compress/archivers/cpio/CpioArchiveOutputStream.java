@@ -311,10 +311,10 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      */
     public void finish() throws IOException {
         ensureOpen();
-
-        if (this.finished) {
-            return;
+        if (finished) {
+            throw new IOException("This archive has already been finished");
         }
+        
         if (this.entry != null) {
             throw new IOException("This archives contains unclosed entries.");
         }
@@ -323,6 +323,8 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         this.entry.setNumberOfLinks(1);
         writeHeader(this.entry);
         closeArchiveEntry();
+        
+        finished = true;
     }
 
     /**
@@ -333,6 +335,10 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      *             occurred
      */
     public void close() throws IOException {
+        if(!finished) {
+            finish();
+        }
+        
         if (!this.closed) {
             out.close();
             this.closed = true;
