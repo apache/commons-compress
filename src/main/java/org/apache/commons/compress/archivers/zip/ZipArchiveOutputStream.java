@@ -62,6 +62,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private static final int WORD = 4;
     static final int BUFFER_SIZE = 512;
     
+    /** indicates if this archive is finished */
     private boolean finished = false;
     
     /* 

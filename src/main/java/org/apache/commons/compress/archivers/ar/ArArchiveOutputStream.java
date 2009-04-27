@@ -38,6 +38,8 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     private long entryOffset = 0;
     private ArArchiveEntry prevEntry;
     private boolean haveUnclosedEntry = true;
+    
+    /** indicates if this archive is finished */
     private boolean finished = false;
 
     public ArArchiveOutputStream( final OutputStream pOut ) {

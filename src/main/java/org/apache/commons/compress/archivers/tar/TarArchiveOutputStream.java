@@ -52,9 +52,10 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     private boolean closed = false;
 
-    /* Indicates if putArchiveEntry has been called without closeArchiveEntry */
+    /** Indicates if putArchiveEntry has been called without closeArchiveEntry */
     private boolean haveUnclosedEntry = false;
     
+    /** indicates if this archive is finished */
     private boolean finished = false;
     
     private final OutputStream out;
