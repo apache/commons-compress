@@ -37,7 +37,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     private long archiveOffset = 0;
     private long entryOffset = 0;
     private ArArchiveEntry prevEntry;
-    private boolean haveUnclosedEntry = true;
+    private boolean haveUnclosedEntry = false;
     
     /** indicates if this archive is finished */
     private boolean finished = false;
@@ -56,7 +56,10 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         if(finished) {
             throw new IOException("Stream has already been finished");
         }
-        if (prevEntry != null && haveUnclosedEntry && (entryOffset % 2) != 0) {
+        if (prevEntry == null || !haveUnclosedEntry){
+            throw new IOException("No current entry to close");
+        }
+        if ((entryOffset % 2) != 0) {
             out.write('\n'); // Pad byte
             archiveOffset++;
         }
@@ -76,7 +79,9 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
                 throw new IOException("length does not match entry (" + prevEntry.getLength() + " != " + entryOffset);
             }
 
-            closeArchiveEntry();
+            if (haveUnclosedEntry) {
+                closeArchiveEntry();
+            }
         }
 
         prevEntry = pArEntry;
@@ -184,7 +189,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
      */
     public void finish() throws IOException {
         if(haveUnclosedEntry) {
-            throw new IOException("This archives contains unclosed entries.");
+            throw new IOException("This archive contains unclosed entries.");
         } else if(finished) {
             throw new IOException("This archive has already been finished");
         }
