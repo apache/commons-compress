@@ -66,6 +66,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
 
     private boolean closed = false;
 
+    /** indicates if this archive is finished */
     private boolean finished;
 
     /**
