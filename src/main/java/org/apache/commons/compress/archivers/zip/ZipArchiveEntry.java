@@ -279,7 +279,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         try {
             ZipExtraField[] local = ExtraFieldUtils.parse(extra, true);
             mergeExtraFields(local, true);
-        } catch (Exception e) {
+        } catch (ZipException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
@@ -301,7 +301,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         try {
             ZipExtraField[] central = ExtraFieldUtils.parse(b, false);
             mergeExtraFields(central, false);
-        } catch (Exception e) {
+        } catch (ZipException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
