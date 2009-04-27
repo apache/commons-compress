@@ -165,6 +165,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * @throws ClassCastException if archiveEntry is not an instance of TarArchiveEntry
      */
     public void putArchiveEntry(ArchiveEntry archiveEntry) throws IOException {
+        if(finished) {
+            throw new IOException("Stream has already been finished");
+        }
         TarArchiveEntry entry = (TarArchiveEntry) archiveEntry;
         if (entry.getName().length() >= TarConstants.NAMELEN) {
 
@@ -212,6 +215,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * @throws IOException on error
      */
     public void closeArchiveEntry() throws IOException {
+        if(finished) {
+            throw new IOException("Stream has already been finished");
+        }
         if (assemLen > 0) {
             for (int i = assemLen; i < assemBuf.length; ++i) {
                 assemBuf[i] = 0;
@@ -332,6 +338,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     public ArchiveEntry createArchiveEntry(File inputFile, String entryName)
             throws IOException {
+        if(finished) {
+            throw new IOException("Stream has already been finished");
+        }
         return new TarArchiveEntry(inputFile, entryName);
     }
 }

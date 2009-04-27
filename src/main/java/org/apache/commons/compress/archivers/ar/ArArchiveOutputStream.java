@@ -53,6 +53,9 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     }
 
     public void closeArchiveEntry() throws IOException {
+        if(finished) {
+            throw new IOException("Stream has already been finished");
+        }
         if (prevEntry != null && haveUnclosedEntry && (entryOffset % 2) != 0) {
             out.write('\n'); // Pad byte
             archiveOffset++;
@@ -61,6 +64,10 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     }
 
     public void putArchiveEntry( final ArchiveEntry pEntry ) throws IOException {
+        if(finished) {
+            throw new IOException("Stream has already been finished");
+        }
+        
         ArArchiveEntry pArEntry = (ArArchiveEntry)pEntry;
         if (prevEntry == null) {
             archiveOffset += writeArchiveHeader();
@@ -166,6 +173,9 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
 
     public ArchiveEntry createArchiveEntry(File inputFile, String entryName)
             throws IOException {
+        if(finished) {
+            throw new IOException("Stream has already been finished");
+        }
         return new ArArchiveEntry(inputFile, entryName);
     }
 
