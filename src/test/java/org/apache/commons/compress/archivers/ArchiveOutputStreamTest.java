@@ -20,7 +20,9 @@ package org.apache.commons.compress.archivers;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.compress.AbstractTestCase;
@@ -29,6 +31,7 @@ import org.apache.commons.compress.archivers.cpio.CpioArchiveEntry;
 import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.utils.IOUtils;
 
 public class ArchiveOutputStreamTest extends AbstractTestCase {
 
@@ -136,9 +139,14 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
         ArchiveOutputStream aos1;
         aos1 = factory.createArchiveOutputStream(archiveType, out1);
         aos1.putArchiveEntry(aos1.createArchiveEntry(dummy, "dummy"));
+        InputStream is = new FileInputStream(dummy);
+        IOUtils.copy(is, aos1);
+        is.close();
         aos1.closeArchiveEntry();
         aos1.close(); // omitted finish
 
+        // TODO - check if archives ensure that data has been written to the stream?
+        
         aos1 = factory.createArchiveOutputStream(archiveType, out1);
         try {
             aos1.closeArchiveEntry();
