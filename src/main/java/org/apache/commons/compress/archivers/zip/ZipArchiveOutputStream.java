@@ -364,7 +364,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         }
         
         if (entry == null) {
-            return;
+            throw new IOException("No current entry to close");
         }
 
         long realCrc = crc.getValue();
@@ -430,7 +430,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             throw new IOException("Stream has already been finished");
         }
         
-        closeArchiveEntry();
+        if (entry != null) {
+            closeArchiveEntry();
+        }
 
         entry = ((ZipArchiveEntry) archiveEntry);
         entries.add(entry);

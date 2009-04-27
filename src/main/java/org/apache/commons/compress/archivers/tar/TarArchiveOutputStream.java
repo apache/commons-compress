@@ -218,6 +218,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         if(finished) {
             throw new IOException("Stream has already been finished");
         }
+        if (!haveUnclosedEntry){
+            throw new IOException("No current entry to close");
+        }
         if (assemLen > 0) {
             for (int i = assemLen; i < assemBuf.length; ++i) {
                 assemBuf[i] = 0;
