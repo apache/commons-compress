@@ -143,6 +143,10 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      * @throws ClassCastException if entry is not an instance of CpioArchiveEntry
      */
     public void putArchiveEntry(ArchiveEntry entry) throws IOException {
+        if(finished) {
+            throw new IOException("Stream has already been finished");
+        }
+        
         CpioArchiveEntry e = (CpioArchiveEntry) entry;
         ensureOpen();
         if (this.entry != null) {
@@ -244,6 +248,10 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      * ()
      */
     public void closeArchiveEntry() throws IOException {
+        if(finished) {
+            throw new IOException("Stream has already been finished");
+        }
+        
         ensureOpen();
 
         if (this.entry.getSize() != this.written) {
@@ -400,6 +408,9 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      */
     public ArchiveEntry createArchiveEntry(File inputFile, String entryName)
             throws IOException {
+        if(finished) {
+            throw new IOException("Stream has already been finished");
+        }
         return new CpioArchiveEntry(inputFile, entryName);
     }
 

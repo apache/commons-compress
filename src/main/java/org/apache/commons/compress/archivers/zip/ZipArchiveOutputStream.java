@@ -62,8 +62,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private static final int WORD = 4;
     static final int BUFFER_SIZE = 512;
     
-    /** indicates if this archive is finished */
-    private boolean finished = false;
+    /** indicates if this archive is finished. protected for use in Jar implementation */
+    protected boolean finished = false;
     
     /* 
      * Apparently Deflater.setInput gets slowed down a lot on Sun JVMs
@@ -227,8 +227,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * whether to create UnicodePathExtraField-s for each entry.
      */
-    private UnicodeExtraFieldPolicy createUnicodeExtraFields =
-        UnicodeExtraFieldPolicy.NEVER;
+    private UnicodeExtraFieldPolicy createUnicodeExtraFields = UnicodeExtraFieldPolicy.NEVER;
 
     /**
      * Creates a new ZIP OutputStream filtering the underlying stream.
@@ -360,6 +359,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @throws IOException on error
      */
     public void closeArchiveEntry() throws IOException {
+        if(finished) {
+            throw new IOException("Stream has already been finished");
+        }
+        
         if (entry == null) {
             return;
         }
@@ -423,6 +426,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /** {@inheritDoc} */
  // @throws ClassCastException if entry is not an instance of ZipArchiveEntry
     public void putArchiveEntry(ArchiveEntry archiveEntry) throws IOException {
+        if(finished) {
+            throw new IOException("Stream has already been finished");
+        }
+        
         closeArchiveEntry();
 
         entry = ((ZipArchiveEntry) archiveEntry);
@@ -901,13 +908,11 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         /**
          * Always create Unicode extra fields.
          */
-        public static final UnicodeExtraFieldPolicy ALWAYS =
-            new UnicodeExtraFieldPolicy("always");
+        public static final UnicodeExtraFieldPolicy ALWAYS = new UnicodeExtraFieldPolicy("always");
         /**
          * Never create Unicode extra fields.
          */
-        public static final UnicodeExtraFieldPolicy NEVER =
-            new UnicodeExtraFieldPolicy("never");
+        public static final UnicodeExtraFieldPolicy NEVER = new UnicodeExtraFieldPolicy("never");
         /**
          * Create Unicode extra fields for filenames that cannot be
          * encoded using the specified encoding.
@@ -926,6 +931,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
     public ArchiveEntry createArchiveEntry(File inputFile, String entryName)
             throws IOException {
+        if(finished) {
+            throw new IOException("Stream has already been finished");
+        }
         return new ZipArchiveEntry(inputFile, entryName);
     }
 }
