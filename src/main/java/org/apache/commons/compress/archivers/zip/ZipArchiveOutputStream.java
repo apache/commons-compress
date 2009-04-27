@@ -61,6 +61,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private static final int SHORT = 2;
     private static final int WORD = 4;
     static final int BUFFER_SIZE = 512;
+    
+    private boolean finished = false;
+    
     /* 
      * Apparently Deflater.setInput gets slowed down a lot on Sun JVMs
      * when it gets handed a really big buffer.  See
@@ -332,6 +335,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @see org.apache.commons.compress.archivers.ArchiveOutputStream#finish()
      */
     public void finish() throws IOException {
+        if (finished) {
+            throw new IOException("This archive has already been finished");
+        }
+        
         if(entry != null) {
             throw new IOException("This archives contains unclosed entries.");
         }
@@ -344,6 +351,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         writeCentralDirectoryEnd();
         offsets.clear();
         entries.clear();
+        finished = true;
     }
 
     /**
@@ -528,6 +536,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @exception  IOException  if an I/O error occurs.
      */
     public void close() throws IOException {
+        if(!finished) {
+            finish();
+        }
+        
         if (raf != null) {
             raf.close();
         }

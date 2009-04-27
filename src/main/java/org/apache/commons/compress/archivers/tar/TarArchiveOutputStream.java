@@ -55,6 +55,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     /* Indicates if putArchiveEntry has been called without closeArchiveEntry */
     private boolean haveUnclosedEntry = false;
     
+    private boolean finished = false;
+    
     private final OutputStream out;
 
     /**
@@ -111,11 +113,16 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * @throws IOException on error
      */
     public void finish() throws IOException {
+        if (finished) {
+            throw new IOException("This archive has already been finished");
+        }
+        
         if(haveUnclosedEntry) {
             throw new IOException("This archives contains unclosed entries.");
         }
         writeEOFRecord();
         writeEOFRecord();
+        finished = true;
     }
 
     /**
@@ -123,6 +130,10 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * @throws IOException on error
      */
     public void close() throws IOException {
+        if(!finished) {
+            finish();
+        }
+        
         if (!closed) {
             buffer.close();
             out.close();

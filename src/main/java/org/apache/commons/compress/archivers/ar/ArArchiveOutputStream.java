@@ -38,6 +38,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     private long entryOffset = 0;
     private ArArchiveEntry prevEntry;
     private boolean haveUnclosedEntry = true;
+    private boolean finished = false;
 
     public ArArchiveOutputStream( final OutputStream pOut ) {
         this.out = pOut;
@@ -154,6 +155,9 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     }
 
     public void close() throws IOException {
+        if(!finished) {
+            finish();
+        }
         out.close();
         prevEntry = null;
     }
@@ -169,6 +173,9 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     public void finish() throws IOException {
         if(haveUnclosedEntry) {
             throw new IOException("This archives contains unclosed entries.");
+        } else if(finished) {
+            throw new IOException("This archive has already been finished");
         }
+        finished = true;
     }
 }
