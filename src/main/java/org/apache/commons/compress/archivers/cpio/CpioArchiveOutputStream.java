@@ -325,7 +325,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         }
         
         if (this.entry != null) {
-            throw new IOException("This archives contains unclosed entries.");
+            throw new IOException("This archive contains unclosed entries.");
         }
         this.entry = new CpioArchiveEntry(this.entryFormat);
         this.entry.setName(CPIO_TRAILER);
