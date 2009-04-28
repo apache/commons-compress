@@ -54,7 +54,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     /**
      * Whether to look for and use Unicode extra fields.
      */
-    private final boolean useUnicodeExtraFields; // TODO not yet used
+    private final boolean useUnicodeExtraFields;
 
     private final InputStream in;
 
@@ -178,8 +178,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         readFully(extraData);
         current.setExtra(extraData);
 
-        ZipUtil.setNameAndCommentFromExtraFields(current, fileName, null);
-
+        if (!hasEFS && useUnicodeExtraFields) {
+            ZipUtil.setNameAndCommentFromExtraFields(current, fileName, null);
+        }
         return current;
     }
 
