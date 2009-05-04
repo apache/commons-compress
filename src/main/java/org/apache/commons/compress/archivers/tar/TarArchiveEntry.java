@@ -230,7 +230,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
             this.linkFlag = LF_DIR;
 
             int nameLength = fileName.length();
-            if (nameLength == 0 || name.charAt(nameLength - 1) != '/') {
+            if (nameLength == 0 || fileName.charAt(nameLength - 1) != '/') {
                 this.name = fileName + "/";
             } else {
                 this.name = fileName;                
