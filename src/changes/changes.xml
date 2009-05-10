@@ -23,7 +23,10 @@
     <author>Stefan Bodewig</author>
   </properties>
   <body>
-    <release version="1.0-SNAPSHOT" date="as in SVN" description="First Public Release">
+    <release version="1.0" date="as in SVN" description="First Public Release">
+      <action dev="all" type="add">
+        Initial release
+      </action>
       <action dev="sgoeschl" type="fix">
         Updating the pom.xml for preparing a move to commons-proper
       </action>
