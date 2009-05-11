@@ -55,19 +55,21 @@ public final class CpioTestCase extends AbstractTestCase {
 
     public void testCpioUnarchive() throws Exception {
         final File output = new File(dir, "bla.cpio");
+        final File file1 = getFile("test1.xml");
+        final File file2 = getFile("test2.xml");
+        final long file1Length = file1.length();
+        final long file2Length = file2.length();
+        
         {
-            final File file1 = getFile("test1.xml");
-            final File file2 = getFile("test2.xml");
-
             final OutputStream out = new FileOutputStream(output);
             final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("cpio", out);
-            CpioArchiveEntry entry = new CpioArchiveEntry("test1.xml", file1.length());
+            CpioArchiveEntry entry = new CpioArchiveEntry("test1.xml", file1Length);
             entry.setMode(CpioConstants.C_ISREG);
             os.putArchiveEntry(entry);
             IOUtils.copy(new FileInputStream(file1), os);
             os.closeArchiveEntry();
 
-            entry = new CpioArchiveEntry("test2.xml", file2.length());
+            entry = new CpioArchiveEntry("test2.xml", file2Length);
             entry.setMode(CpioConstants.C_ISREG);
             os.putArchiveEntry(entry);
             IOUtils.copy(new FileInputStream(file2), os);
@@ -95,17 +97,13 @@ public final class CpioTestCase extends AbstractTestCase {
         in.close();
         is.close();
 
-        int lineSepLength = System.getProperty("line.separator").length();
-
         File t = (File)result.get("test1.xml");
         assertTrue("Expected " + t.getAbsolutePath() + " to exist", t.exists());
-        assertEquals("length of " + t.getAbsolutePath(),
-                     72 + 4 * lineSepLength, t.length());
+        assertEquals("length of " + t.getAbsolutePath(), file1Length, t.length());
 
         t = (File)result.get("test2.xml");
         assertTrue("Expected " + t.getAbsolutePath() + " to exist", t.exists());
-        assertEquals("length of " + t.getAbsolutePath(),
-                     73 + 5 * lineSepLength, t.length());
+        assertEquals("length of " + t.getAbsolutePath(), file2Length, t.length());
     }
 
 }
