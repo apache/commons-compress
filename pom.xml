@@ -106,6 +106,16 @@
   </properties>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <!-- Override plugin version in parent Pom, which is too old to support manifests -->
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>2.1</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
         <!-- create the source and binary assemblies -->
@@ -116,6 +126,18 @@
             <descriptor>src/assembly/src.xml</descriptor>
           </descriptors>
           <tarLongFileMode>gnu</tarLongFileMode>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+            </manifest>
+          </archive>
         </configuration>
       </plugin>
     </plugins>
