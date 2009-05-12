@@ -109,10 +109,15 @@
     <pluginManagement>
       <plugins>
         <plugin>
-          <!-- Override plugin version in parent Pom, which is too old to support manifests -->
+          <!-- Override plugin versions in parent Pom, which are too old to support manifests -->
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
           <version>2.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.5</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -182,6 +187,27 @@
             <ruleset>/rulesets/unusedcode.xml</ruleset>
           </rulesets>
         </configuration>
+      </plugin>
+      <!-- Override Javadoc config in parent pom to add default manifest entries -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration> 
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+            </manifest>
+          </archive>
+          <aggregate>false</aggregate>
+          <source>${maven.compile.source}</source>
+          <encoding>${commons.encoding}</encoding>
+          <docEncoding>${commons.docEncoding}</docEncoding>
+          <linksource>true</linksource>
+          <links>
+            <link>http://java.sun.com/javase/6/docs/api/</link>
+          </links>
+        </configuration> 
       </plugin>
     </plugins>
   </reporting>
