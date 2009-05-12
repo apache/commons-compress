@@ -47,15 +47,13 @@
             <subsection name="Status">
               <ul>
                 <li>This component has been promoted to Commons proper</li>
-                <li>The code is unreleased</li>
-                <li>Methods and classes can and will appear and
-                disappear without warning</li>
-                <li>If you like the code and want to push it towards a
-                release, join the mailing list!</li>
+                <li>The code has been released as version 1.0</li>
               </ul>
             </subsection>
         </section>
         <section name="Documentation">
+          <p>Commons Compress is intended for working with Java 1.4.2 and higher.</p>
+          
           <p>The compress component is split into <em>compressors</em> and
             <em>archivers</em>.  While <em>compressors</em>
             (un)compress streams that usually store a single
