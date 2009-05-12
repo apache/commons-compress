@@ -52,7 +52,7 @@
             </subsection>
         </section>
         <section name="Documentation">
-          <p>Commons Compress is intended for working with Java 1.4.2 and higher.</p>
+          <p>Commons Compress requires Java 1.4 or later.</p>
           
           <p>The compress component is split into <em>compressors</em> and
             <em>archivers</em>.  While <em>compressors</em>
