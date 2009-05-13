@@ -26,7 +26,7 @@
   </parent>
 
   <artifactId>commons-compress</artifactId>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.0-SNAPSHOT</version>
   <name>Commons Compress</name>
   <url>http://commons.apache.org/compress/</url>
   <description>Commons Compress is a component that contains Ar, Cpio, Jar, Tar, Zip and BZip2 packages</description>
@@ -102,7 +102,7 @@
     <commons.jira.pid>12310904</commons.jira.pid>
     <!-- configuration bits for cutting a release candidate -->
     <commons.release.version>1.0</commons.release.version>
-    <commons.rc.version>RC1</commons.rc.version>
+    <commons.rc.version>RC2</commons.rc.version>
   </properties>
 
   <build>
