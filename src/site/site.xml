@@ -31,7 +31,7 @@
       <item name="Examples"    href="/examples.html"/>
       <item name="Conventions"    href="/conventions.html"/>
       <item name="Issue Tracking" href="/issue-tracking.html"/>
-      <item name="Download"    href="/download_compress.html"/>
+      <item name="Download"    href="/download_compress.cgi"/>
       <item name="Wiki"        href="http://wiki.apache.org/commons/Compress"/>
     </menu>
   </body>
