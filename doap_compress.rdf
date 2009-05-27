@@ -35,11 +35,11 @@
     </repository>
     <release>
       <!--
-      <revision>
+      <Version>
         <name>commons-compress</name>
         <created>2009-03-18</created>
-        <version>1.0</version>
-      </revision>
+        <revision>1.0</revision>
+      </Version>
       -->
     </release>
     <mailing-list rdf:resource="http://commons.apache.org/mail-lists.html"/>
