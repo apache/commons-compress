@@ -373,6 +373,7 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
 
         currRecIdx = 0;
         currBlkIdx++;
+        Arrays.fill(blockBuffer, (byte) 0);
     }
 
     /**
