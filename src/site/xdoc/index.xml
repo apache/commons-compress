@@ -89,7 +89,8 @@
         </section>
         <section name="Releases">
           <p>
-            None.
+            The latest version v1.0, is JDK 1.4 compatible -
+            <a href="http://commons.apache.org/compress/download_compress.cgi">Download now!</a>
           </p>
         </section>
     </body>
