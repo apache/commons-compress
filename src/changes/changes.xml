@@ -20,11 +20,15 @@
 <document>
   <properties>
     <title>commons-compress</title>
-    <author>Stefan Bodewig</author>
   </properties>
   <body>
-    <release version="1.0" date="as in SVN" description="First Public Release">
-      <action dev="all" type="add">
+    <release version="1.1" date="as in SVN" description="Release 1.1">
+      <action issue="COMPRESS-81" type="fix" date="2009-06-30">
+        TarOutputStream can leave garbage at the end of the archive
+      </action>
+    </release>
+    <release version="1.0" date="2009-05-21" description="First Public Release">
+      <action dev="all" type="add" date="2009-05-21">
         Initial release
       </action>
       <action dev="sgoeschl" type="fix">
