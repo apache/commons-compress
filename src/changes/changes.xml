@@ -26,6 +26,10 @@
       <action issue="COMPRESS-81" type="fix" date="2009-06-30">
         TarOutputStream can leave garbage at the end of the archive
       </action>
+      <action issue="COMPRESS-78" type="add" date="2009-06-30"
+              due-to="Jukka Zitting">
+        Add a BZip2Utils class modelled after GZipUtils
+      </action>
     </release>
     <release version="1.0" date="2009-05-21" description="First Public Release">
       <action dev="all" type="add" date="2009-05-21">
