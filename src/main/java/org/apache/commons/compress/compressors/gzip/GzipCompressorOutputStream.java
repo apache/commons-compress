@@ -36,6 +36,14 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
         out.write(b);
     }
 
+    public void write(byte[] b) throws IOException {
+        out.write(b);
+    }
+
+    public void write(byte[] b, int from, int length) throws IOException {
+        out.write(b, from, length);
+    }
+
     public void close() throws IOException {
         out.close();
     }
