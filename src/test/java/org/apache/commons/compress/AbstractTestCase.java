@@ -338,4 +338,25 @@ public abstract class AbstractTestCase extends TestCase {
     protected String getExpectedString(ArchiveEntry entry) {
         return entry.getName();
     }
+
+    /**
+     * Creates a temporary directory and a temporary file inside that
+     * directory, returns both of them (the directory is the first
+     * element of the two element array).
+     */
+    protected File[] createTempDirAndFile() throws IOException {
+        File tmpDir = File.createTempFile("testdir", "");
+        tmpDir.delete();
+        tmpDir.mkdir();
+        tmpDir.deleteOnExit();
+        File tmpFile = File.createTempFile("testfile", "", tmpDir);
+        tmpFile.deleteOnExit();
+        FileOutputStream fos = new FileOutputStream(tmpFile);
+        try {
+            fos.write(new byte[] {'f', 'o', 'o'});
+            return new File[] {tmpDir, tmpFile};
+        } finally {
+            fos.close();
+        }            
+    }
 }

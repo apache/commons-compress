@@ -87,7 +87,8 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     }
 
     public ZipArchiveEntry(File inputFile, String entryName) {
-        this(entryName);
+        this(inputFile.isDirectory() && !entryName.endsWith("/") ? 
+             entryName + "/" : entryName);
         if (inputFile.isFile()){
             setSize(inputFile.length());
         }
