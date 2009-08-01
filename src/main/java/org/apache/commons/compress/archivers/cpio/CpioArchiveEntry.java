@@ -264,6 +264,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
         }
         // TODO set other fields as needed
         setMode(mode);
+        setTime(inputFile.lastModified() / 1000);
     }
 
     /**
