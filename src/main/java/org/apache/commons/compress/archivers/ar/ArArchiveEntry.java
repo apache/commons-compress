@@ -19,6 +19,7 @@
 package org.apache.commons.compress.archivers.ar;
 
 import java.io.File;
+import java.util.Date;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 
@@ -111,6 +112,11 @@ public class ArArchiveEntry implements ArchiveEntry {
 		return lastModified;
 	}
 	
+    /** {@inheritDocs} */
+    public Date getLastModifiedDate() {
+        return new Date(1000 * getLastModified());
+    }
+
 	public long getLength() {
 		return length;
 	}

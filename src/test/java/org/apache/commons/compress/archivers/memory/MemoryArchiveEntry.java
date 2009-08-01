@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress.archivers.memory;
 
+import java.util.Date;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 
 public final class MemoryArchiveEntry implements ArchiveEntry {
@@ -42,4 +43,8 @@ public final class MemoryArchiveEntry implements ArchiveEntry {
 		return false;
 	}
 
+    /** {@inheritDocs} */
+    public Date getLastModifiedDate() {
+        return new Date();
+    }
 }
