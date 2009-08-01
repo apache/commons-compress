@@ -23,25 +23,25 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 
 public final class MemoryArchiveEntry implements ArchiveEntry {
 
-	private final String name;
-	
-	public MemoryArchiveEntry( final String pName ) {
-		name = pName;
-	}
-	
-	public String getName() {
-		return name;
-	}
+    private final String name;
 
-	public long getSize() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+    public MemoryArchiveEntry(final String pName) {
+        name = pName;
+    }
 
-	public boolean isDirectory() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    public String getName() {
+        return name;
+    }
+
+    public long getSize() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    public boolean isDirectory() {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
     /** {@inheritDocs} */
     public Date getLastModifiedDate() {
