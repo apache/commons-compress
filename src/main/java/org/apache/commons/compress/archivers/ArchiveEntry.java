@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.archivers;
 
+import java.util.Date;
+
 /**
  * Represents an entry of an archive.
  */
@@ -34,4 +36,7 @@ public interface ArchiveEntry {
 	
 	/** True if the entry refers to a directory */
 	public boolean isDirectory();
+
+    /** The last modified date of the entry */
+    public Date getLastModifiedDate();
 }

@@ -463,6 +463,11 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         return new Date(modTime * MILLIS_PER_SECOND);
     }
 
+    /** {@inheritDocs} */
+    public Date getLastModifiedDate() {
+        return getModTime();
+    }
+
     /**
      * Get this entry's file.
      *

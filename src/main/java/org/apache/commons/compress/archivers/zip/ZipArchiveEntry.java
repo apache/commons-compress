@@ -18,6 +18,7 @@
 package org.apache.commons.compress.archivers.zip;
 
 import java.io.File;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.zip.ZipException;
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -389,6 +390,11 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
             }
             setExtra();
         }
+    }
+
+    /** {@inheritDocs} */
+    public Date getLastModifiedDate() {
+        return new Date(getTime());
     }
 
     /* (non-Javadoc)

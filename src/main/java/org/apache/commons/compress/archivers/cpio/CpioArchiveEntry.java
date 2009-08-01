@@ -19,6 +19,7 @@
 package org.apache.commons.compress.archivers.cpio;
 
 import java.io.File;
+import java.util.Date;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 
@@ -490,6 +491,11 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      */
     public long getTime() {
         return this.mtime;
+    }
+
+    /** {@inheritDocs} */
+    public Date getLastModifiedDate() {
+        return new Date(1000 * getTime());
     }
 
     /**
