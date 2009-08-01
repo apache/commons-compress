@@ -121,7 +121,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         offset += write(n);
 
         offset = fill(offset, 16, ' ');
-        final String m = "" + (pEntry.getLastModified() / 1000);
+        final String m = "" + (pEntry.getLastModified());
         if (m.length() > 12) {
             throw new IOException("modified too long");
         }
