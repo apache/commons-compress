@@ -70,11 +70,32 @@ public class ArArchiveEntry implements ArchiveEntry {
     private final long lastModified;
     private final long length;
 
+    /**
+     * Create a new instance using a couple of default values.
+     *
+     * <p>Sets userId and groupId to 0, the octal file mode to 644 and
+     * the last modified time to the current time.</p>
+     *
+     * @param name name of the entry
+     * @param length length of the entry in bytes
+     */
     public ArArchiveEntry(String name, long length) {
-        this(name, length, 0, 0, DEFAULT_MODE, System.currentTimeMillis());
+        this(name, length, 0, 0, DEFAULT_MODE,
+             System.currentTimeMillis() / 1000);
     }
 
-    public ArArchiveEntry(String name, long length, int userId, int groupId, int mode, long lastModified) {
+    /**
+     * Create a new instance.
+     *
+     * @param name name of the entry
+     * @param length length of the entry in bytes
+     * @param userId numeric user id
+     * @param groupId numeric group id
+     * @param mode file mode
+     * @param lastModified last modified time in seconds since the epoch
+     */
+    public ArArchiveEntry(String name, long length, int userId, int groupId,
+                          int mode, long lastModified) {
         this.name = name;
         this.length = length;
         this.userId = userId;
@@ -83,9 +104,13 @@ public class ArArchiveEntry implements ArchiveEntry {
         this.lastModified = lastModified;
     }
 
+    /**
+     * Create a new instance using the attributes of the given file
+     */
     public ArArchiveEntry(File inputFile, String entryName) {
         // TODO sort out mode
-        this(entryName, inputFile.isFile() ? inputFile.length() : 0, 0, 0, 0, inputFile.lastModified());
+        this(entryName, inputFile.isFile() ? inputFile.length() : 0,
+             0, 0, 0, inputFile.lastModified() / 1000);
     }
 
     public long getSize() {
@@ -108,6 +133,9 @@ public class ArArchiveEntry implements ArchiveEntry {
         return mode;
     }
 
+    /**
+     * Last modified time in seconds since the epoch.
+     */
     public long getLastModified() {
         return lastModified;
     }
