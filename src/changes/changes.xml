@@ -23,6 +23,17 @@
   </properties>
   <body>
     <release version="1.1" date="as in SVN" description="Release 1.1">
+      <action issue="COMPRESS-83" type="fix" date="2009-08-01">
+        Delegate all read and write methods in GZip stream in order to
+        speed up operations.
+      </action>
+      <action type="add" date="2009-08-01">
+        ArchiveEntry now has a getLastModifiedDate method.
+      </action>
+      <action type="fix" date="2009-08-01">
+        The ar and cpio streams now properly read and write last
+        modified times.
+      </action>
       <action issue="COMPRESS-81" type="fix" date="2009-06-30">
         TarOutputStream can leave garbage at the end of the archive
       </action>
