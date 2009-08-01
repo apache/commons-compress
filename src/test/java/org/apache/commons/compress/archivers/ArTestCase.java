@@ -28,6 +28,8 @@ import java.io.OutputStream;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ar.ArArchiveEntry;
+import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
+import org.apache.commons.compress.archivers.ar.ArArchiveOutputStream;
 import org.apache.commons.compress.utils.IOUtils;
 
 public final class ArTestCase extends AbstractTestCase {
@@ -179,4 +181,192 @@ public final class ArTestCase extends AbstractTestCase {
 
     }
 
+    // TODO: revisit - does AR not support storing directories?
+    public void XtestDirectoryEntryFromFile() throws Exception {
+        File[] tmp = createTempDirAndFile();
+        File archive = null;
+        ArArchiveOutputStream aos = null;
+        ArArchiveInputStream ais = null;
+        try {
+            archive = File.createTempFile("test.", ".ar", tmp[0]);
+            archive.deleteOnExit();
+            aos = new ArArchiveOutputStream(new FileOutputStream(archive));
+            long beforeArchiveWrite = tmp[0].lastModified();
+            ArArchiveEntry in = new ArArchiveEntry(tmp[0], "foo");
+            aos.putArchiveEntry(in);
+            aos.closeArchiveEntry();
+            aos.close();
+            aos = null;
+            ais = new ArArchiveInputStream(new FileInputStream(archive));
+            ArArchiveEntry out = ais.getNextArEntry();
+            ais.close();
+            ais = null;
+            assertNotNull(out);
+            assertEquals("foo/", out.getName());
+            assertEquals(0, out.getSize());
+            // AR stores time with a granularity of 1 second
+            assertEquals(beforeArchiveWrite / 1000,
+                         out.getLastModifiedDate().getTime() / 1000);
+            assertTrue(out.isDirectory());
+        } finally {
+            if (ais != null) {
+                ais.close();
+            }
+            if (aos != null) {
+                aos.close();
+            }
+            if (archive != null) {
+                archive.delete();
+            }
+            tmp[1].delete();
+            tmp[0].delete();
+        }
+    }
+
+    // TODO: revisit - does AR not support storing directories?
+    public void XtestExplicitDirectoryEntry() throws Exception {
+        File[] tmp = createTempDirAndFile();
+        File archive = null;
+        ArArchiveOutputStream aos = null;
+        ArArchiveInputStream ais = null;
+        try {
+            archive = File.createTempFile("test.", ".ar", tmp[0]);
+            archive.deleteOnExit();
+            aos = new ArArchiveOutputStream(new FileOutputStream(archive));
+            long beforeArchiveWrite = tmp[0].lastModified();
+            ArArchiveEntry in = new ArArchiveEntry("foo", 0, 0, 0, 0,
+                                                   tmp[1].lastModified() / 1000);
+            aos.putArchiveEntry(in);
+            aos.closeArchiveEntry();
+            aos.close();
+            aos = null;
+            ais = new ArArchiveInputStream(new FileInputStream(archive));
+            ArArchiveEntry out = ais.getNextArEntry();
+            ais.close();
+            ais = null;
+            assertNotNull(out);
+            assertEquals("foo/", out.getName());
+            assertEquals(0, out.getSize());
+            assertEquals(beforeArchiveWrite / 1000,
+                         out.getLastModifiedDate().getTime() / 1000);
+            assertTrue(out.isDirectory());
+        } finally {
+            if (ais != null) {
+                ais.close();
+            }
+            if (aos != null) {
+                aos.close();
+            }
+            if (archive != null) {
+                archive.delete();
+            }
+            tmp[1].delete();
+            tmp[0].delete();
+        }
+    }
+
+    public void testFileEntryFromFile() throws Exception {
+        File[] tmp = createTempDirAndFile();
+        File archive = null;
+        ArArchiveOutputStream aos = null;
+        ArArchiveInputStream ais = null;
+        FileInputStream fis = null;
+        try {
+            archive = File.createTempFile("test.", ".ar", tmp[0]);
+            archive.deleteOnExit();
+            aos = new ArArchiveOutputStream(new FileOutputStream(archive));
+            ArArchiveEntry in = new ArArchiveEntry(tmp[1], "foo");
+            aos.putArchiveEntry(in);
+            byte[] b = new byte[(int) tmp[1].length()];
+            fis = new FileInputStream(tmp[1]);
+            int read;
+            while ((read = fis.read(b)) > 0) {
+                aos.write(b);
+            }
+            fis.close();
+            fis = null;
+            aos.closeArchiveEntry();
+            aos.close();
+            aos = null;
+            ais = new ArArchiveInputStream(new FileInputStream(archive));
+            ArArchiveEntry out = ais.getNextArEntry();
+            ais.close();
+            ais = null;
+            assertNotNull(out);
+            assertEquals("foo", out.getName());
+            assertEquals(tmp[1].length(), out.getSize());
+            // AR stores time with a granularity of 1 second
+            assertEquals(tmp[1].lastModified() / 1000,
+                         out.getLastModifiedDate().getTime() / 1000);
+            assertFalse(out.isDirectory());
+        } finally {
+            if (ais != null) {
+                ais.close();
+            }
+            if (aos != null) {
+                aos.close();
+            }
+            if (archive != null) {
+                archive.delete();
+            }
+            if (fis != null) {
+                fis.close();
+            }
+            tmp[1].delete();
+            tmp[0].delete();
+        }
+    }
+
+    public void testExplicitFileEntry() throws Exception {
+        File[] tmp = createTempDirAndFile();
+        File archive = null;
+        ArArchiveOutputStream aos = null;
+        ArArchiveInputStream ais = null;
+        FileInputStream fis = null;
+        try {
+            archive = File.createTempFile("test.", ".ar", tmp[0]);
+            archive.deleteOnExit();
+            aos = new ArArchiveOutputStream(new FileOutputStream(archive));
+            ArArchiveEntry in = new ArArchiveEntry("foo", tmp[1].length(),
+                                                   0, 0, 0,
+                                                   tmp[1].lastModified() / 1000);
+            aos.putArchiveEntry(in);
+            byte[] b = new byte[(int) tmp[1].length()];
+            fis = new FileInputStream(tmp[1]);
+            int read;
+            while ((read = fis.read(b)) > 0) {
+                aos.write(b);
+            }
+            fis.close();
+            fis = null;
+            aos.closeArchiveEntry();
+            aos.close();
+            aos = null;
+            ais = new ArArchiveInputStream(new FileInputStream(archive));
+            ArArchiveEntry out = ais.getNextArEntry();
+            ais.close();
+            ais = null;
+            assertNotNull(out);
+            assertEquals("foo", out.getName());
+            assertEquals(tmp[1].length(), out.getSize());
+            assertEquals(tmp[1].lastModified() / 1000,
+                         out.getLastModifiedDate().getTime() / 1000);
+            assertFalse(out.isDirectory());
+        } finally {
+            if (ais != null) {
+                ais.close();
+            }
+            if (aos != null) {
+                aos.close();
+            }
+            if (archive != null) {
+                archive.delete();
+            }
+            if (fis != null) {
+                fis.close();
+            }
+            tmp[1].delete();
+            tmp[0].delete();
+        }
+    }
 }
