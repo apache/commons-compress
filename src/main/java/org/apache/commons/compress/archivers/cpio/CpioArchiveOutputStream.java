@@ -153,7 +153,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
             closeArchiveEntry(); // close previous entry
         }
         if (e.getTime() == -1) {
-            e.setTime(System.currentTimeMillis());
+            e.setTime(System.currentTimeMillis() / 1000);
         }
 
         final short format = e.getFormat();

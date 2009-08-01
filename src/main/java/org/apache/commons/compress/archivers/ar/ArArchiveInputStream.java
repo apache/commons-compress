@@ -142,8 +142,18 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         if (temp.endsWith("/")) {
             temp = temp.substring(0, temp.length() - 1);
         }
-        currentEntry = new ArArchiveEntry(temp, Long.parseLong(new String(length).trim()));
+        currentEntry = new ArArchiveEntry(temp, asLong(length), asInt(userid),
+                                          asInt(groupid), asInt(filemode),
+                                          asLong(lastmodified));
         return currentEntry;
+    }
+
+    private long asLong(byte[] input) {
+        return Long.parseLong(new String(input).trim());
+    }
+
+    private int asInt(byte[] input) {
+        return Integer.parseInt(new String(input).trim());
     }
 
     /*
