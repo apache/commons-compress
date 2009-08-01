@@ -82,7 +82,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * c_filesize[2]    Length of the file in bytes. This is the length of the data 
  *                  section that follows the header structure. Must be 0 for 
  *                  FIFOs and directories
- *               
+ *
  * All fields are unsigned short fields with 16-bit integer values
  * apart from c_mtime and c_filesize which are 32-bit integer values
  * </pre>
@@ -146,7 +146,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
 
     // Header description fields - should be same throughout an archive
-    
+
     /**
      * See {@link CpioArchiveEntry#setFormat(short)} for possible values.
      */
@@ -159,7 +159,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     private final int alignmentBoundary;
 
     // Header fields
-    
+
     private long chksum = 0;
 
     /** Number of bytes in the file */
@@ -636,7 +636,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     public void setSize(final long size) {
         if (size < 0 || size > 0xFFFFFFFFL) {
             throw new IllegalArgumentException("invalid entry size <" + size
-                    + ">");
+                                               + ">");
         }
         this.filesize = size;
     }
@@ -681,9 +681,9 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
             break;
         default:
             throw new IllegalArgumentException(
-                    "Unknown mode. "
-                    + "Full: " + Long.toHexString(mode) 
-                    + " Masked: " + Long.toHexString(maskedMode));
+                                               "Unknown mode. "
+                                               + "Full: " + Long.toHexString(mode) 
+                                               + " Masked: " + Long.toHexString(maskedMode));
         }
 
         this.mode = mode;

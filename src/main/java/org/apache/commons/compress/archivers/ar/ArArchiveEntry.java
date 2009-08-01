@@ -56,74 +56,74 @@ public class ArArchiveEntry implements ArchiveEntry {
 
     /** The trailer for each entry */
     public static final String TRAILER = "`\012";
-    
+
     /**
      * SVR4/GNU adds a trailing / to names; BSD does not.
      * They also vary in how names longer than 16 characters are represented.
      * (Not yet supported by this implementation)
      */
     private final String name;
-	private final int userId;
-	private final int groupId;
-	private final int mode;
+    private final int userId;
+    private final int groupId;
+    private final int mode;
     private static final int DEFAULT_MODE = 33188; // = (octal) 0100644 
-	private final long lastModified;
-	private final long length;
+    private final long lastModified;
+    private final long length;
 
-	public ArArchiveEntry(String name, long length) {
-		this(name, length, 0, 0, DEFAULT_MODE, System.currentTimeMillis());
-	}
-	
-	public ArArchiveEntry(String name, long length, int userId, int groupId, int mode, long lastModified) {
-		this.name = name;
-		this.length = length;
-		this.userId = userId;
-		this.groupId = groupId;
-		this.mode = mode;
-		this.lastModified = lastModified;
-	}
+    public ArArchiveEntry(String name, long length) {
+        this(name, length, 0, 0, DEFAULT_MODE, System.currentTimeMillis());
+    }
 
-	public ArArchiveEntry(File inputFile, String entryName) {
-	    // TODO sort out mode
+    public ArArchiveEntry(String name, long length, int userId, int groupId, int mode, long lastModified) {
+        this.name = name;
+        this.length = length;
+        this.userId = userId;
+        this.groupId = groupId;
+        this.mode = mode;
+        this.lastModified = lastModified;
+    }
+
+    public ArArchiveEntry(File inputFile, String entryName) {
+        // TODO sort out mode
         this(entryName, inputFile.isFile() ? inputFile.length() : 0, 0, 0, 0, inputFile.lastModified());
     }
 
     public long getSize() {
-		return this.getLength();
-	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public int getUserId() {
-		return userId;
-	}
-	
-	public int getGroupId() {
-		return groupId;
-	}
-	
-	public int getMode() {
-		return mode;
-	}
-	
-	public long getLastModified() {
-		return lastModified;
-	}
-	
+        return this.getLength();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public int getGroupId() {
+        return groupId;
+    }
+
+    public int getMode() {
+        return mode;
+    }
+
+    public long getLastModified() {
+        return lastModified;
+    }
+
     /** {@inheritDocs} */
     public Date getLastModifiedDate() {
         return new Date(1000 * getLastModified());
     }
 
-	public long getLength() {
-		return length;
-	}
+    public long getLength() {
+        return length;
+    }
 
-	public boolean isDirectory() {
-		return false;
-	}
+    public boolean isDirectory() {
+        return false;
+    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
