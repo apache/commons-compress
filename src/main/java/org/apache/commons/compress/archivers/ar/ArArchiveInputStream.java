@@ -143,7 +143,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
             temp = temp.substring(0, temp.length() - 1);
         }
         currentEntry = new ArArchiveEntry(temp, asLong(length), asInt(userid),
-                                          asInt(groupid), asInt(filemode),
+                                          asInt(groupid), asInt(filemode, 8),
                                           asLong(lastmodified));
         return currentEntry;
     }
@@ -153,7 +153,11 @@ public class ArArchiveInputStream extends ArchiveInputStream {
     }
 
     private int asInt(byte[] input) {
-        return Integer.parseInt(new String(input).trim());
+        return asInt(input, 10);
+    }
+
+    private int asInt(byte[] input, int base) {
+        return Integer.parseInt(new String(input).trim(), base);
     }
 
     /*

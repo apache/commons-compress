@@ -110,7 +110,7 @@ public class ArArchiveEntry implements ArchiveEntry {
     public ArArchiveEntry(File inputFile, String entryName) {
         // TODO sort out mode
         this(entryName, inputFile.isFile() ? inputFile.length() : 0,
-             0, 0, 0, inputFile.lastModified() / 1000);
+             0, 0, DEFAULT_MODE, inputFile.lastModified() / 1000);
     }
 
     public long getSize() {
