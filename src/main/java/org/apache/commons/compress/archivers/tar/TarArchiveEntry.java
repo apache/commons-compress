@@ -167,9 +167,21 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @param name the entry name
      */
     public TarArchiveEntry(String name) {
+        this(name, false);
+    }
+
+    /**
+     * Construct an entry with only a name. This allows the programmer
+     * to construct the entry's header "by hand". File is set to null.
+     *
+     * @param name the entry name
+     * @param preserveLeadingSlashes whether to allow leading slashes
+     * in the name.
+     */
+    public TarArchiveEntry(String name, boolean preserveLeadingSlashes) {
         this();
 
-        name = normalizeFileName(name);
+        name = normalizeFileName(name, preserveLeadingSlashes);
         boolean isDir = name.endsWith("/");
 
         this.devMajor = 0;
@@ -208,7 +220,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @param file The file that the entry represents.
      */
     public TarArchiveEntry(File file) {
-        this(file, normalizeFileName(file.getPath()));
+        this(file, normalizeFileName(file.getPath(), false));
     }
     
     /**
@@ -320,7 +332,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @param name This entry's new name.
      */
     public void setName(String name) {
-        this.name = normalizeFileName(name);
+        this.name = normalizeFileName(name, false);
     }
 
     /**
@@ -642,7 +654,8 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * Strips Windows' drive letter as well as any leading slashes,
      * turns path separators into forward slahes.
      */
-    private static String normalizeFileName(String fileName) {
+    private static String normalizeFileName(String fileName,
+                                            boolean preserveLeadingSlashes) {
         String osname = System.getProperty("os.name").toLowerCase(Locale.US);
 
         if (osname != null) {
@@ -674,7 +687,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         // No absolute pathnames
         // Windows (and Posix?) paths can start with "\\NetworkDrive\",
         // so we loop on starting /'s.
-        while (fileName.startsWith("/")) {
+        while (!preserveLeadingSlashes && fileName.startsWith("/")) {
             fileName = fileName.substring(1);
         }
         return fileName;

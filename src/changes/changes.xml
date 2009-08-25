@@ -23,6 +23,11 @@
   </properties>
   <body>
     <release version="1.1" date="as in SVN" description="Release 1.1">
+      <action type="add" date="2009-08-25">
+        A new constructor of TarArchiveEntry can create entries with
+        names that start with slashes - the default is to strip
+        leading slashes in order to create relative path names.
+      </action>
       <action issue="COMPRESS-83" type="fix" date="2009-08-01">
         Delegate all read and write methods in GZip stream in order to
         speed up operations.
