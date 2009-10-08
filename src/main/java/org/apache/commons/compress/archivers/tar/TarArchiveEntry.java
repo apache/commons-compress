@@ -210,6 +210,10 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     public TarArchiveEntry(String name, byte linkFlag) {
         this(name);
         this.linkFlag = linkFlag;
+        if (linkFlag == LF_GNUTYPE_LONGNAME) {
+            magic = MAGIC_GNU;
+            version = VERSION_GNU_SPACE;
+        }
     }
 
     /**
