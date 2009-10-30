@@ -236,8 +236,12 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             } catch (DataFormatException e) {
                 throw new ZipException(e.getMessage());
             }
-            if (read == 0 && inf.finished()) {
-                return -1;
+            if (read == 0) {
+                if (inf.finished()) {
+                    return -1;
+                } else if (lengthOfLastRead == -1) {
+                    throw new IOException("Truncated ZIP file");
+                }
             }
             crc.update(buffer, start, read);
             return read;

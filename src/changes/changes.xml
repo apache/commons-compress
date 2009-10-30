@@ -23,6 +23,11 @@
   </properties>
   <body>
     <release version="1.1" date="as in SVN" description="Release 1.1">
+      <action type="fix" issue="COMPRESS-87" date="2009-10-30"
+              due-to="Antoni Mylka">
+        ZipArchiveInputStream could repeatedly return 0 on read() when
+        the archive was truncated.
+      </action>
       <action type="fix" issue="COMPRESS-86" date="2009-10-08">
         Tar archive entries holding the file name for names longer
         than 100 characters in GNU longfile mode didn't properly
