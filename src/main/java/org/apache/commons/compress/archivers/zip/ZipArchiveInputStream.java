@@ -333,10 +333,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                 && !hasDataDescriptor) {
             long remaining = current.getCompressedSize() - bytesReadFromStream;
             while (remaining > 0) {
-                long n = in.skip(remaining);
-                if (n == 0) { // skip() may return 0, use read() as a fallback
-                    n = in.read(buf, 0, (int) Math.min(buf.length, remaining));
-                }
+                long n = in.read(buf, 0, (int) Math.min(buf.length, remaining));
                 if (n < 0) {
                     throw new EOFException(
                             "Truncated ZIP entry: " + current.getName());

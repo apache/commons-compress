@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.utils.IOUtils;
@@ -127,6 +128,32 @@ public final class ZipTestCase extends AbstractTestCase {
         ZipFile moby = new ZipFile(getFile("moby.zip"));
         assertFalse(moby.getEntry("README").isSupportedCompressionMethod());
         moby.close();
+    }
+
+    /**
+     * Test case for being able to skip an entry in an 
+     * {@link ZipArchiveInputStream} even if the compression method of that
+     * entry is unsupported.
+     *
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-93"
+     *        >COMPRESS-93</a>
+     */
+    public void testSkipEntryWithUnsupportedCompressionMethod()
+            throws IOException {
+        ZipArchiveInputStream zip =
+            new ZipArchiveInputStream(new FileInputStream(getFile("moby.zip")));
+        try {
+            ZipArchiveEntry entry = zip.getNextZipEntry();
+            assertEquals("README", entry.getName());
+            assertFalse(entry.isSupportedCompressionMethod());
+            try {
+                assertNull(zip.getNextZipEntry());
+            } catch (IOException e) {
+                fail("COMPRESS-93: Unable to skip an unsupported zip entry");
+            }
+        } finally {
+            zip.close();
+        }
     }
 
     /**
