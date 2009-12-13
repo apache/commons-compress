@@ -195,4 +195,28 @@ public class ZipArchiveEntryTest extends TestCase {
         assertEquals(0x11, ze.getExternalAttributes()  & 0xFFFF);
     }
 
+    /**
+     * Test case for
+     * <a href="https://issues.apache.org/jira/browse/COMPRESS-93"
+     * >COMPRESS-93</a>.
+     */
+    public void testCompressionMethod() {
+        ZipArchiveEntry entry = new ZipArchiveEntry("foo");
+        assertEquals(-1, entry.getMethod());
+        assertFalse(entry.isSupportedCompressionMethod());
+
+        entry.setMethod(ZipArchiveEntry.STORED);
+        assertEquals(ZipArchiveEntry.STORED, entry.getMethod());
+        assertTrue(entry.isSupportedCompressionMethod());
+
+        entry.setMethod(ZipArchiveEntry.DEFLATED);
+        assertEquals(ZipArchiveEntry.DEFLATED, entry.getMethod());
+        assertTrue(entry.isSupportedCompressionMethod());
+
+        // Test the unsupported "imploded" compression method (6)
+        entry.setMethod(6);
+        assertEquals(6, entry.getMethod());
+        assertFalse(entry.isSupportedCompressionMethod());
+    }
+
 }

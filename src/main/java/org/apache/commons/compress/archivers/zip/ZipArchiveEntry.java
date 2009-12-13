@@ -37,6 +37,18 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     private static final int SHORT_MASK = 0xFFFF;
     private static final int SHORT_SHIFT = 16;
 
+    /**
+     * The {@link java.util.zip.ZipEntry} base class only supports
+     * the compression methods STORED and DEFLATED. We override the
+     * field so that any compression methods can be used.
+     * <p>
+     * The default value -1 means that the method has not been specified.
+     *
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-93"
+     *        >COMPRESS-93</a>
+     */
+    private int method = -1;
+
     private int internalAttributes = 0;
     private int platform = PLATFORM_FAT;
     private long externalAttributes = 0;
@@ -66,6 +78,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
             // initializes extra data to an empty byte array
             setExtra();
         }
+        setMethod(entry.getMethod());
     }
 
     /**
@@ -108,6 +121,43 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         e.setExternalAttributes(getExternalAttributes());
         e.setExtraFields(getExtraFields());
         return e;
+    }
+
+    /**
+     * Checks whether the compression method of this entry is supported,
+     * i.e. whether the content of this entry can be accessed.
+     *
+     * @since Commons Compress 1.1
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-93"
+     *         >COMPRESS-93</a>
+     * @return <code>true</code> if the compression method is known
+     *         and supported, <code>false</code> otherwise
+     */
+    public boolean isSupportedCompressionMethod() {
+        return method == STORED || method == DEFLATED;
+    }
+
+    /**
+     * Returns the compression method of this entry, or -1 if the
+     * compression method has not been specified.
+     *
+     * @return compression method
+     */
+    public int getMethod() {
+        return method;
+    }
+
+    /**
+     * Sets the compression method of this entry.
+     *
+     * @param method compression method
+     */
+    public void setMethod(int method) {
+        if (method < 0) {
+            throw new IllegalArgumentException(
+                    "ZIP compression method can not be negative: " + method);
+        }
+        this.method = method;
     }
 
     /**

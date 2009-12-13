@@ -510,7 +510,11 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @throws IOException on error
      */
     public void write(byte[] b, int offset, int length) throws IOException {
-        if (entry.getMethod() == DEFLATED) {
+        if (!entry.isSupportedCompressionMethod()) {
+            throw new IOException(
+                    "Unsupported compression method " + entry.getMethod()
+                    + " in ZIP archive entry " + entry.getName());
+        } else if (entry.getMethod() == DEFLATED) {
             if (length > 0) {
                 if (!def.finished()) {
                     if (length <= DEFLATER_BLOCK_SIZE) {

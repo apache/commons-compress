@@ -199,6 +199,12 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         // avoid int overflow, check null buffer
         if (start <= buffer.length && length >= 0 && start >= 0
             && buffer.length - start >= length) {
+            if (!current.isSupportedCompressionMethod()) {
+                throw new IOException(
+                        "Unsupported compression method " + current.getMethod()
+                        + " in ZIP archive entry " + current.getName());
+            }
+
             if (current.getMethod() == ZipArchiveOutputStream.STORED) {
                 int csize = (int) current.getSize();
                 if (readBytesOfEntry >= csize) {
@@ -224,6 +230,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                 crc.update(buffer, start, toRead);
                 return toRead;
             }
+
             if (inf.needsInput()) {
                 fill();
                 if (lengthOfLastRead > 0) {

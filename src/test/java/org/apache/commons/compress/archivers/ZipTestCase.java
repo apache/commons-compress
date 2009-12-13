@@ -21,6 +21,7 @@ package org.apache.commons.compress.archivers;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -112,7 +113,22 @@ public final class ZipTestCase extends AbstractTestCase {
         out.close();
         in.close();
     }
-    
+
+    /**
+     * Test case for
+     * <a href="https://issues.apache.org/jira/browse/COMPRESS-93"
+     * >COMPRESS-93</a>.
+     */
+    public void testSupportedCompressionMethod() throws IOException {
+        ZipFile bla = new ZipFile(getFile("bla.zip"));
+        assertTrue(bla.getEntry("test1.xml").isSupportedCompressionMethod());
+        bla.close();
+
+        ZipFile moby = new ZipFile(getFile("moby.zip"));
+        assertFalse(moby.getEntry("README").isSupportedCompressionMethod());
+        moby.close();
+    }
+
     /**
      * Checks if all entries from a nested archive can be read.
      * The archive: OSX_ArchiveWithNestedArchive.zip contains:
