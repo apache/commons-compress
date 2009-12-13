@@ -302,6 +302,24 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         return true;        
     }
 
+    /**
+     * Closes the current ZIP archive entry and positions the underlying
+     * stream to the beginning of the next entry. All per-entry variables
+     * and data structures are cleared.
+     * <p>
+     * If the compressed size of this entry is included in the entry header,
+     * then any outstanding bytes are simply skipped from the underlying
+     * stream without uncompressing them. This allows an entry to be safely
+     * closed even if the compression method is unsupported.
+     * <p>
+     * In case we don't know the compressed size of this entry or have
+     * already buffered too much data from the underlying stream to support
+     * uncompression, then the uncompression process is completed and the
+     * end position of the stream is adjusted based on the result of that
+     * process.
+     *
+     * @throws IOException if an error occurs
+     */
     private void closeEntry() throws IOException {
         if (closed) {
             throw new IOException("The stream is closed");
@@ -309,20 +327,39 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         if (current == null) {
             return;
         }
-        // Ensure all entry bytes are read
-        skip(Long.MAX_VALUE);
-        int inB;
-        if (current.getMethod() == ZipArchiveOutputStream.DEFLATED) {
-            inB = inf.getTotalIn();
-        } else {
-            inB = readBytesOfEntry;
-        }
-        int diff = 0;
 
-        // Pushback any required bytes
-        if ((diff = bytesReadFromStream - inB) != 0) {
-            ((PushbackInputStream) in).unread(buf,
-                                              lengthOfLastRead - diff, diff);
+        // Ensure all entry bytes are read
+        if (bytesReadFromStream <= current.getCompressedSize()
+                && !hasDataDescriptor) {
+            long remaining = current.getCompressedSize() - bytesReadFromStream;
+            while (remaining > 0) {
+                long n = in.skip(remaining);
+                if (n == 0) { // skip() may return 0, use read() as a fallback
+                    n = in.read(buf, 0, (int) Math.min(buf.length, remaining));
+                }
+                if (n < 0) {
+                    throw new EOFException(
+                            "Truncated ZIP entry: " + current.getName());
+                } else {
+                    remaining -= n;
+                }
+            }
+        } else {
+            skip(Long.MAX_VALUE);
+
+            int inB;
+            if (current.getMethod() == ZipArchiveOutputStream.DEFLATED) {
+                inB = inf.getTotalIn();
+            } else {
+                inB = readBytesOfEntry;
+            }
+            int diff = 0;
+
+            // Pushback any required bytes
+            if ((diff = bytesReadFromStream - inB) != 0) {
+                ((PushbackInputStream) in).unread(
+                        buf,  lengthOfLastRead - diff, diff);
+            }
         }
 
         if (hasDataDescriptor) {
