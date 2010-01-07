@@ -23,6 +23,12 @@
   </properties>
   <body>
     <release version="1.1" date="as in SVN" description="Release 1.1">
+      <action type="fix" issue="COMPRESS-94" date="2010-01-07"
+              due-to="Anon Devs">
+        ZipArchiveEntry's equals method was broken for entries created
+        with the String-arg constructor.  This lead to broken ZIP
+        archives if two different entries had the same hash code.
+      </action>
       <action type="fix" issue="COMPRESS-87" date="2009-10-30"
               due-to="Antoni Mylka">
         ZipArchiveInputStream could repeatedly return 0 on read() when
