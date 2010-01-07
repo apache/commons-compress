@@ -61,6 +61,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      */
     public ZipArchiveEntry(String name) {
         super(name);
+        setName(name);
     }
 
     /**
@@ -96,7 +97,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     /**
      */
     protected ZipArchiveEntry() {
-        super("");
+        this("");
     }
 
     public ZipArchiveEntry(File inputFile, String entryName) {
@@ -459,11 +460,13 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
             return false;
         }
         ZipArchiveEntry other = (ZipArchiveEntry) obj;
-        if (name == null) {
-            if (other.name != null) {
+        String myName = getName();
+        String otherName = other.getName();
+        if (myName == null) {
+            if (otherName != null) {
                 return false;
             }
-        } else if (!name.equals(other.name)) {
+        } else if (!myName.equals(otherName)) {
             return false;
         }
         return true;

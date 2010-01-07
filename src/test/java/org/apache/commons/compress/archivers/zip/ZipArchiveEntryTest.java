@@ -219,4 +219,14 @@ public class ZipArchiveEntryTest extends TestCase {
         assertFalse(entry.isSupportedCompressionMethod());
     }
 
+    /**
+     * Test case for
+     * <a href="https://issues.apache.org/jira/browse/COMPRESS-94"
+     * >COMPRESS-94</a>.
+     */
+    public void testNotEquals() {
+        ZipArchiveEntry entry1 = new ZipArchiveEntry("foo");
+        ZipArchiveEntry entry2 = new ZipArchiveEntry("bar");
+        assertFalse(entry1.equals(entry2));
+    }
 }
