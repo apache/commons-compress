@@ -18,6 +18,7 @@
 package org.apache.commons.compress.archivers.zip;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.zip.ZipException;
@@ -469,6 +470,26 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         } else if (!myName.equals(otherName)) {
             return false;
         }
-        return true;
+        String myComment = getComment();
+        String otherComment = other.getComment();
+        if (myComment == null) {
+            if (otherComment != null) {
+                return false;
+            }
+        } else if (!myComment.equals(otherComment)) {
+            return false;
+        }
+        return getTime() == other.getTime()
+            && getInternalAttributes() == other.getInternalAttributes()
+            && getPlatform() == other.getPlatform()
+            && getExternalAttributes() == other.getExternalAttributes()
+            && getMethod() == other.getMethod()
+            && getSize() == other.getSize()
+            && getCrc() == other.getCrc()
+            && getCompressedSize() == other.getCompressedSize()
+            && Arrays.equals(getCentralDirectoryExtra(),
+                             other.getCentralDirectoryExtra())
+            && Arrays.equals(getLocalFileDataExtra(),
+                             other.getLocalFileDataExtra());
     }
 }
