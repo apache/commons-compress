@@ -23,6 +23,10 @@
   </properties>
   <body>
     <release version="1.1" date="as in SVN" description="Release 1.1">
+     <action type="add" issue="COMPRESS-95" date="2010-01-29"
+              due-to="Joerg Bellmann">
+        Improve ExceptionMessages in ArchiveStreamFactory
+      </action>
       <action type="fix" issue="COMPRESS-94" date="2010-01-07"
               due-to="Anon Devs">
         ZipArchiveEntry's equals method was broken for entries created
