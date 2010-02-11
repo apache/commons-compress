@@ -113,16 +113,19 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
         <p>There are several different tar formats and the TAR package
           of Compress 1.0 only provides the common functionality of
           the existing variants.</p>
-        <p>The original format didn't support file names longer than
-          100 characters and the tar package will fail if you try to
-          add an entry longer than that.
+        <p>The original format (often called "ustar") didn't support
+          file names longer than 100 characters and the tar package
+          will fail if you try to add an entry longer than that.
           The <code>longFileMode</code> option
           of <code>TarArchiveOutputStream</code> can be used to make
-          the archive truncate such names or use the GNU tar variant
-          of storing such names.  If you choose the GNU tar option,
-          the archive can not be extracted using many other tar
-          implementations like the ones of OpenBSD, Solaris or MacOS
-          X.</p>
+          the archive truncate such names or use a GNU tar variant now
+          refered to as "oldgnu" of storing such names.  If you choose
+          the GNU tar option, the archive can not be extracted using
+          many other tar implementations like the ones of OpenBSD,
+          Solaris or MacOS X.</p>
+        <p>The tar package does not support the full POSIX tar
+          standard nor more modern GNU extension of said standard.  It
+          cannot deal with entries larger than 2 GByte either.</p>
 
         <p><code>TarArchiveInputStream</code> will recognize the GNU
           tar extension for long file names and read the longer names
