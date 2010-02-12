@@ -25,6 +25,16 @@
   <body>
     <section name="Examples">
 
+      <subsection name="Common Notes">
+        <p>The stream classes all wrap around streams provided by the
+          calling code and they work on them directly without any
+          additional buffering.  On the other hand most of them will
+          benefit from buffering so it is highly recommended that
+          users wrap their stream
+          in <code>Buffered<em>(In|Out)</em>putStream</code>s before
+          using the Commons Compress API.</p>
+      </subsection>
+
       <subsection name="Factories">
 
         <p>Compress provides factory methods to create input/output
@@ -240,7 +250,8 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
           certainly add exception handling and make sure all streams
           get closed properly):</p>
 <source><![CDATA[
-FileInputStream in = new FileInputStream("archive.tar.bz2");
+FileInputStream fin = new FileInputStream("archive.tar.bz2");
+BufferedInputStream in = new BufferedInputStream(fin);
 FileOutputStream out = new FileOutputStream("archive.tar");
 BZip2CompressorInputStream bzIn = new BZip2CompressorInputStream(in);
 final byte[] buffer = new byte[buffersize];
@@ -264,7 +275,8 @@ bzIn.close();
           certainly add exception handling and make sure all streams
           get closed properly):</p>
 <source><![CDATA[
-FileInputStream in = new FileInputStream("archive.tar.gz");
+FileInputStream fin = new FileInputStream("archive.tar.gz");
+BufferedInputStream in = new BufferedInputStream(fin);
 FileOutputStream out = new FileOutputStream("archive.tar");
 GZipCompressorInputStream bzIn = new GZipCompressorInputStream(in);
 final byte[] buffer = new byte[buffersize];
