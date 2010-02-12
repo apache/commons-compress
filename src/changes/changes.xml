@@ -23,7 +23,11 @@
   </properties>
   <body>
     <release version="1.1" date="as in SVN" description="Release 1.1">
-     <action type="add" issue="COMPRESS-95" date="2010-01-29"
+      <action type="fix" date="2010-02-12">
+        Improved exception message if the extra field data in ZIP
+        archives cannot be parsed.
+      </action>
+      <action type="add" issue="COMPRESS-95" date="2010-01-29"
               due-to="Joerg Bellmann">
         Improve ExceptionMessages in ArchiveStreamFactory
       </action>
