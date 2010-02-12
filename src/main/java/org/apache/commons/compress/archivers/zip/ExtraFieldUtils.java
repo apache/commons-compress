@@ -112,8 +112,12 @@ public class ExtraFieldUtils {
             ZipShort headerId = new ZipShort(data, start);
             int length = (new ZipShort(data, start + 2)).getValue();
             if (start + WORD + length > data.length) {
-                throw new ZipException("data starting at " + start
-                    + " is in unknown format");
+                throw new ZipException("bad extra field starting at "
+                                       + start + ".  Block length of "
+                                       + length + " bytes exceeds remaining"
+                                       + " data of "
+                                       + (data.length - start - WORD)
+                                       + " bytes.");
             }
             try {
                 ZipExtraField ze = createExtraField(headerId);

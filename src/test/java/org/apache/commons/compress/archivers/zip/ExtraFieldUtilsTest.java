@@ -78,7 +78,8 @@ public class ExtraFieldUtilsTest extends TestCase implements UnixStat {
             fail("data should be invalid");
         } catch (Exception e) {
             assertEquals("message",
-                         "data starting at "+(4+aLocal.length)+" is in unknown format",
+                         "bad extra field starting at "+(4 + aLocal.length)
+                         + ".  Block length of 1 bytes exceeds remaining data of 0 bytes.",
                          e.getMessage());
         }
     }
