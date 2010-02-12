@@ -334,7 +334,8 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
             ZipExtraField[] local = ExtraFieldUtils.parse(extra, true);
             mergeExtraFields(local, true);
         } catch (ZipException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new RuntimeException("Error parsing extra fields for entry: "
+                                       + getName() + " - " + e.getMessage(), e);
         }
     }
 
