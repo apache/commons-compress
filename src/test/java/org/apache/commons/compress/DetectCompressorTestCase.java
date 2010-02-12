@@ -18,9 +18,49 @@
  */
 package org.apache.commons.compress;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.net.URL;
+
 import junit.framework.TestCase;
 
+import org.apache.commons.compress.compressors.CompressorException;
+import org.apache.commons.compress.compressors.CompressorInputStream;
+import org.apache.commons.compress.compressors.CompressorStreamFactory;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+
 public final class DetectCompressorTestCase extends TestCase {
-	public void testDetection() throws Exception {
-	}
+
+    public DetectCompressorTestCase(String name) {
+        super(name);
+    }
+
+    final ClassLoader classLoader = getClass().getClassLoader();
+    final CompressorStreamFactory factory = new CompressorStreamFactory();
+
+    public void testDetection() throws Exception {
+
+        final CompressorInputStream bzip2 = getStreamFor("bla.txt.bz2"); 
+        assertNotNull(bzip2);
+        assertTrue(bzip2 instanceof BZip2CompressorInputStream);
+
+        final CompressorInputStream gzip = getStreamFor("bla.tgz");
+        assertNotNull(gzip);
+        assertTrue(gzip instanceof GzipCompressorInputStream);
+
+    }
+
+    private CompressorInputStream getStreamFor(String resource)
+            throws CompressorException, FileNotFoundException {
+
+        final URL rsc = classLoader.getResource(resource);
+        assertNotNull("Could not find resource "+resource,rsc);
+        return factory.createCompressorInputStream(
+                   new BufferedInputStream(new FileInputStream(
+                       new File(rsc.getFile()))));
+    }
+    
 }
