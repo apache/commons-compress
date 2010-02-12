@@ -69,4 +69,22 @@ public class GzipCompressorInputStream extends CompressorInputStream {
         this.count(read);
         return read;
     }
+
+    public static boolean matches(byte[] signature, int length) {
+
+        if (length < 2) {
+            return false;
+        }
+        
+        if (signature[0] != 31) {
+            return false;
+        }
+
+        if (signature[1] != -117) {
+            return false;
+        }
+        
+        return true;
+    }
+    
 }

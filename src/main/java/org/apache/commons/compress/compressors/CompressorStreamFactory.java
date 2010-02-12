@@ -55,6 +55,48 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
  */
 public class CompressorStreamFactory {
 
+
+    /**
+     * Create an compressor input stream from an input stream, autodetecting
+     * the compressor type from the first few bytes of the stream. The InputStream
+     * must support marks, like BufferedInputStream.
+     * 
+     * @param in the input stream
+     * @return the compressor input stream
+     * @throws CompressorInputStream if the compressor name is not known
+     * @throws IllegalArgumentException if the stream is null or does not support mark
+     */
+    public CompressorInputStream createCompressorInputStream(final InputStream in)
+            throws CompressorException {
+        if (in == null) {
+            throw new IllegalArgumentException("Stream must not be null.");
+        }
+
+        if (!in.markSupported()) {
+            throw new IllegalArgumentException("Mark is not supported.");
+        }
+
+        final byte[] signature = new byte[12];
+        in.mark(signature.length);
+        try {
+            int signatureLength = in.read(signature);
+            in.reset();
+            
+            if (BZip2CompressorInputStream.matches(signature, signatureLength)) {
+                return new BZip2CompressorInputStream(in);
+            }
+            
+            if (GzipCompressorInputStream.matches(signature, signatureLength)) {
+                return new GzipCompressorInputStream(in);
+            }
+
+        } catch (IOException e) {
+            throw new CompressorException("Failed to detect Compressor from InputStream.", e);
+        }
+
+        throw new CompressorException("No Compressor found for the stream signature.");
+    }
+    
     /**
      * Create a compressor input stream from a compressor name and an input stream.
      * 
@@ -72,14 +114,18 @@ public class CompressorStreamFactory {
         }
 
         try {
+            
             if ("gz".equalsIgnoreCase(name)) {
                 return new GzipCompressorInputStream(in);
-            } else if ("bzip2".equalsIgnoreCase(name)) {
+            }
+            
+            if ("bzip2".equalsIgnoreCase(name)) {
                 return new BZip2CompressorInputStream(in);
             }
+            
         } catch (IOException e) {
             throw new CompressorException(
-                    "Could not create CompressorInputStream", e);
+                    "Could not create CompressorInputStream.", e);
         }
         throw new CompressorException("Compressor: " + name + " not found.");
     }
@@ -102,11 +148,15 @@ public class CompressorStreamFactory {
         }
 
         try {
+
             if ("gz".equalsIgnoreCase(name)) {
                 return new GzipCompressorOutputStream(out);
-            } else if ("bzip2".equalsIgnoreCase(name)) {
+            } 
+            
+            if ("bzip2".equalsIgnoreCase(name)) {
                 return new BZip2CompressorOutputStream(out);
             }
+        
         } catch (IOException e) {
             throw new CompressorException(
                     "Could not create CompressorOutputStream", e);
