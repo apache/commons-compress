@@ -271,21 +271,21 @@ bzIn.close();
           the <code>java.util.zip</code> package of the Java class
           library.</p>
 
-        <p>Uncompressing a given bzip2 compressed file (you would
+        <p>Uncompressing a given gzip compressed file (you would
           certainly add exception handling and make sure all streams
           get closed properly):</p>
 <source><![CDATA[
 FileInputStream fin = new FileInputStream("archive.tar.gz");
 BufferedInputStream in = new BufferedInputStream(fin);
 FileOutputStream out = new FileOutputStream("archive.tar");
-GZipCompressorInputStream bzIn = new GZipCompressorInputStream(in);
+GZipCompressorInputStream gzIn = new GZipCompressorInputStream(in);
 final byte[] buffer = new byte[buffersize];
 int n = 0;
-while (-1 != (n = bzIn.read(buffer))) {
+while (-1 != (n = gzIn.read(buffer))) {
     out.write(buffer, 0, n);
 }
 out.close();
-bzIn.close();
+gzIn.close();
 ]]></source>
       </subsection>
 
