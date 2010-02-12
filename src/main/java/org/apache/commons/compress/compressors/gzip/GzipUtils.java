@@ -19,6 +19,7 @@
 package org.apache.commons.compress.compressors.gzip;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -76,7 +77,7 @@ public class GzipUtils {
      *         <code>false</code> otherwise
      */
     public static boolean isCompressedFilename(String filename) {
-        String lower = filename.toLowerCase();
+        String lower = filename.toLowerCase(Locale.ENGLISH);
         int n = lower.length();
         // Shortest suffix is two letters (_z), longest is five (.svgz)
         for (int i = 2; i <= 5 && i < n; i++) {
@@ -101,7 +102,7 @@ public class GzipUtils {
      * @return name of the corresponding uncompressed file
      */
     public static String getUncompressedFilename(String filename) {
-        String lower = filename.toLowerCase();
+        String lower = filename.toLowerCase(Locale.ENGLISH);
         int n = lower.length();
         // Shortest suffix is two letters (_z), longest is five (.svgz)
         for (int i = 2; i <= 5 && i < n; i++) {
@@ -125,7 +126,7 @@ public class GzipUtils {
      * @return name of the corresponding compressed file
      */
     public static String getCompressedFilename(String filename) {
-        String lower = filename.toLowerCase();
+        String lower = filename.toLowerCase(Locale.ENGLISH);
         int n = lower.length();
         // Shortest suffix is four letters (.svg), longest is five (.cpio)
         for (int i = 4; i <= 5 && i < n; i++) {
