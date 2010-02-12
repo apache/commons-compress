@@ -21,6 +21,7 @@ package org.apache.commons.compress.compressors;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Locale;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
@@ -55,6 +56,9 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
  */
 public class CompressorStreamFactory {
 
+    // constants used for case- and locale-insensitive comparisons.
+    private static final String BZ_LC = "bzip2";
+    private static final String GZ_LC = "gz";
 
     /**
      * Create an compressor input stream from an input stream, autodetecting
@@ -113,13 +117,15 @@ public class CompressorStreamFactory {
                     "Compressor name and stream must not be null.");
         }
 
+        String nameToCompare = name.toLowerCase(Locale.ENGLISH);
+
         try {
             
-            if ("gz".equalsIgnoreCase(name)) {
+            if (GZ_LC.equals(nameToCompare)) {
                 return new GzipCompressorInputStream(in);
             }
             
-            if ("bzip2".equalsIgnoreCase(name)) {
+            if (BZ_LC.equals(nameToCompare)) {
                 return new BZip2CompressorInputStream(in);
             }
             
@@ -147,13 +153,15 @@ public class CompressorStreamFactory {
                     "Compressor name and stream must not be null.");
         }
 
+        String nameToCompare = name.toLowerCase(Locale.ENGLISH);
+
         try {
 
-            if ("gz".equalsIgnoreCase(name)) {
+            if (GZ_LC.equals(nameToCompare)) {
                 return new GzipCompressorOutputStream(out);
-            } 
+            }
             
-            if ("bzip2".equalsIgnoreCase(name)) {
+            if (BZ_LC.equals(nameToCompare)) {
                 return new BZip2CompressorOutputStream(out);
             }
         

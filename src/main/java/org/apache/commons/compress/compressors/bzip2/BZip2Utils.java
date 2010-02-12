@@ -19,6 +19,7 @@
 package org.apache.commons.compress.compressors.bzip2;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -58,7 +59,7 @@ public abstract class BZip2Utils {
      *         <code>false</code> otherwise
      */
     public static boolean isCompressedFilename(String filename) {
-        String lower = filename.toLowerCase();
+        String lower = filename.toLowerCase(Locale.ENGLISH);
         int n = lower.length();
         // Shortest suffix is three letters (.bz), longest is five (.tbz2)
         for (int i = 3; i <= 5 && i < n; i++) {
@@ -83,7 +84,7 @@ public abstract class BZip2Utils {
      * @return name of the corresponding uncompressed file
      */
     public static String getUncompressedFilename(String filename) {
-        String lower = filename.toLowerCase();
+        String lower = filename.toLowerCase(Locale.ENGLISH);
         int n = lower.length();
         // Shortest suffix is three letters (.bz), longest is five (.tbz2)
         for (int i = 3; i <= 5 && i < n; i++) {
