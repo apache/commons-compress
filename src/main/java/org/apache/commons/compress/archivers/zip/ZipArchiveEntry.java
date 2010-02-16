@@ -269,7 +269,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
             if (fields[i] instanceof UnparseableExtraFieldData) {
                 unparseableExtra = (UnparseableExtraFieldData) fields[i];
             } else {
-            extraFields.put(fields[i].getHeaderId(), fields[i]);
+                extraFields.put(fields[i].getHeaderId(), fields[i]);
             }
         }
         setExtra();
@@ -315,10 +315,10 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         if (ze instanceof UnparseableExtraFieldData) {
             unparseableExtra = (UnparseableExtraFieldData) ze;
         } else {
-        if (extraFields == null) {
-            extraFields = new LinkedHashMap();
-        }
-        extraFields.put(ze.getHeaderId(), ze);
+            if (extraFields == null) {
+                extraFields = new LinkedHashMap();
+            }
+            extraFields.put(ze.getHeaderId(), ze);
         }
         setExtra();
     }
@@ -334,13 +334,13 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         if (ze instanceof UnparseableExtraFieldData) {
             unparseableExtra = (UnparseableExtraFieldData) ze;
         } else {
-        LinkedHashMap copy = extraFields;
-        extraFields = new LinkedHashMap();
-        extraFields.put(ze.getHeaderId(), ze);
-        if (copy != null) {
-            copy.remove(ze.getHeaderId());
-            extraFields.putAll(copy);
-        }
+            LinkedHashMap copy = extraFields;
+            extraFields = new LinkedHashMap();
+            extraFields.put(ze.getHeaderId(), ze);
+            if (copy != null) {
+                copy.remove(ze.getHeaderId());
+                extraFields.putAll(copy);
+            }
         }
         setExtra();
     }
