@@ -99,6 +99,13 @@
           the package, any other extra field will be stored
           as <code>UnrecognizedExtraField</code>.</p>
 
+        <p>Prior to version 1.1 of this library trying to read an
+          archive with extra fields that didn't follow the recommended
+          structure for those fields would cause Compress to throw an
+          exception.  Starting with version 1.1 these extra fields
+          will now be read
+          as <code>UnparseableExtraFieldData</code>.</p>
+
       </subsection>
 
       <subsection name="Encoding" id="encoding">
