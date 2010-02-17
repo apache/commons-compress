@@ -134,4 +134,7 @@ public interface CpioConstants {
 
     /** The special trailer marker */
     final String CPIO_TRAILER = "TRAILER!!!";
+
+    /** The default block size */
+    final int BLOCK_SIZE = 512;
 }
