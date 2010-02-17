@@ -91,7 +91,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      *            The format of the stream
      */
     public CpioArchiveOutputStream(final OutputStream out, final short format) {
-        this.out = new FilterOutputStream(out);
+        this.out = new CountingStream(out);
         switch (format) {
         case FORMAT_NEW:
         case FORMAT_NEW_CRC:
@@ -336,7 +336,13 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         this.entry.setNumberOfLinks(1);
         writeHeader(this.entry);
         closeArchiveEntry();
-        
+
+        int lengthOfLastBlock =
+            (int) (((CountingStream) out).getTotalWritten() % BLOCK_SIZE);
+        if (lengthOfLastBlock != 0) {
+            pad(BLOCK_SIZE - lengthOfLastBlock);
+        }
+
         finished = true;
     }
 
@@ -418,4 +424,24 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         return new CpioArchiveEntry(inputFile, entryName);
     }
 
+    private static class CountingStream extends FilterOutputStream {
+        private long totalWritten = 0;
+
+        private CountingStream(final OutputStream out) {
+            super(out);
+        }
+        public void write(byte[] b) throws IOException {
+            write(b, 0, b.length);
+        }
+        public void write(int b) throws IOException {
+            totalWritten++;
+            out.write(b);
+        }
+        public void write(byte[] b, int off, int len)
+            throws IOException {
+            totalWritten += len;
+            out.write(b, off, len);
+        }
+        private long getTotalWritten() { return totalWritten; }
+    }
 }
