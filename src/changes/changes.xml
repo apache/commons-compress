@@ -23,6 +23,15 @@
   </properties>
   <body>
     <release version="1.1" date="as in SVN" description="Release 1.1">
+      <action type="fix" date="2010-02-18" issue="COMPRESS-74">
+        ZipArchiveInputStream failed to update the number of bytes
+        read properly.
+      </action>
+      <action type="fix" date="2010-02-18">
+        ArchiveInputStream has a new method getBytesRead that should
+        be preferred over getCount since the later may truncate the
+        number of bytes read for big archives.
+      </action>
       <action type="fix" date="2010-02-18" issue="COMPRESS-85">
         The cpio archives created by CpioArchiveOutputStream couldn't
         be read by many existing native implementations because the

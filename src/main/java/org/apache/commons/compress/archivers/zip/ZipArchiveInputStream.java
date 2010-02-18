@@ -338,6 +338,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                     throw new EOFException(
                             "Truncated ZIP entry: " + current.getName());
                 } else {
+                    count(n);
                     remaining -= n;
                 }
             }
@@ -356,6 +357,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             if ((diff = bytesReadFromStream - inB) != 0) {
                 ((PushbackInputStream) in).unread(
                         buf,  lengthOfLastRead - diff, diff);
+                pushedBackBytes(diff);
             }
         }
 
@@ -375,6 +377,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             throw new IOException("The stream is closed");
         }
         if ((lengthOfLastRead = in.read(buf)) > 0) {
+            count(lengthOfLastRead);
             inf.setInput(buf, 0, lengthOfLastRead);
         }
     }
@@ -386,6 +389,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             if (x == -1) {
                 throw new EOFException();
             }
+            count(x);
         }
     }
 }
