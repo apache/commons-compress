@@ -118,8 +118,8 @@ public abstract class ArchiveOutputStream extends OutputStream {
      * 
      * @param read the number of bytes read
      */
-    protected void count(int read) {
-        count((long) read);
+    protected void count(int written) {
+        count((long) written);
     }
 
     /**
