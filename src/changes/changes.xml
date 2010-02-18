@@ -23,6 +23,12 @@
   </properties>
   <body>
     <release version="1.1" date="as in SVN" description="Release 1.1">
+      <action type="fix" date="2010-02-18" issue="COMPRESS-85">
+        The cpio archives created by CpioArchiveOutputStream couldn't
+        be read by many existing native implementations because the
+        archives contained multiple entries with the same inode/device
+        combinations and weren't padded to a blocksize of 512 bytes.
+      </action>
       <action type="fix" date="2010-02-16" issue="COMPRESS-73">
         ZipArchiveEntry, ZipFile and ZipArchiveInputStream are now
         more lenient when parsing extra fields.
