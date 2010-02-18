@@ -21,7 +21,6 @@ package org.apache.commons.compress.archivers;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Locale;
 
 import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
 import org.apache.commons.compress.archivers.ar.ArArchiveOutputStream;
@@ -72,13 +71,11 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
  */
 public class ArchiveStreamFactory {
 
-    // constants used for case- and locale-insensitive comparisons.
-
-    private static final String AR_LC = "ar";
-    private static final String CPIO_LC = "cpio";
-    private static final String JAR_LC = "jar";
-    private static final String TAR_LC = "tar";
-    private static final String ZIP_LC = "zip";
+    private static final String AR = "ar";
+    private static final String CPIO = "cpio";
+    private static final String JAR = "jar";
+    private static final String TAR = "tar";
+    private static final String ZIP = "zip";
 
     /**
      * Create an archive input stream from an archiver name and an input stream.
@@ -101,21 +98,19 @@ public class ArchiveStreamFactory {
         	throw new IllegalArgumentException("InputStream must not be null.");
         }
 
-        String archiverNameToCompare = archiverName.toLowerCase(Locale.ENGLISH);
-
-        if (AR_LC.equals(archiverNameToCompare)) {
+        if (AR.equalsIgnoreCase(archiverName)) {
             return new ArArchiveInputStream(in);
         }
-        if (ZIP_LC.equals(archiverNameToCompare)) {
+        if (ZIP.equalsIgnoreCase(archiverName)) {
             return new ZipArchiveInputStream(in);
         }
-        if (TAR_LC.equals(archiverNameToCompare)) {
+        if (TAR.equalsIgnoreCase(archiverName)) {
             return new TarArchiveInputStream(in);
         }
-        if (JAR_LC.equals(archiverNameToCompare)) {
+        if (JAR.equalsIgnoreCase(archiverName)) {
             return new JarArchiveInputStream(in);
         }
-        if (CPIO_LC.equals(archiverNameToCompare)) {
+        if (CPIO.equalsIgnoreCase(archiverName)) {
             return new CpioArchiveInputStream(in);
         }
         
@@ -141,21 +136,19 @@ public class ArchiveStreamFactory {
         	throw new IllegalArgumentException("OutputStream must not be null.");
         }
 
-        String archiverNameToCompare = archiverName.toLowerCase(Locale.ENGLISH);
-
-        if (AR_LC.equals(archiverNameToCompare)) {
+        if (AR.equalsIgnoreCase(archiverName)) {
             return new ArArchiveOutputStream(out);
         }
-        if (ZIP_LC.equals(archiverNameToCompare)) {
+        if (ZIP.equalsIgnoreCase(archiverName)) {
             return new ZipArchiveOutputStream(out);
         }
-        if (TAR_LC.equals(archiverNameToCompare)) {
+        if (TAR.equalsIgnoreCase(archiverName)) {
             return new TarArchiveOutputStream(out);
         }
-        if (JAR_LC.equals(archiverNameToCompare)) {
+        if (JAR.equalsIgnoreCase(archiverName)) {
             return new JarArchiveOutputStream(out);
         }
-        if (CPIO_LC.equals(archiverNameToCompare)) {
+        if (CPIO.equalsIgnoreCase(archiverName)) {
             return new CpioArchiveOutputStream(out);
         }
         throw new ArchiveException("Archiver: " + archiverName + " not found.");
