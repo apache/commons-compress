@@ -148,7 +148,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     // Header description fields - should be same throughout an archive
 
     /**
-     * See {@link CpioArchiveEntry#setFormat(short)} for possible values.
+     * See constructor documenation for possible values.
      */
     private final short fileFormat; 
 
@@ -188,7 +188,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     private long uid = 0;
 
     /**
-     * Ceates a CPIOArchiveEntry with a specified format.
+     * Creates a CPIOArchiveEntry with a specified format.
      * 
      * @param format
      *            The cpio format for this entry.
@@ -226,20 +226,39 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Ceates a CPIOArchiveEntry with a specified name. The format of this entry
-     * will be the new format.
+     * Creates a CPIOArchiveEntry with a specified name. The format of
+     * this entry will be the new format.
      * 
      * @param name
      *            The name of this entry.
      */
     public CpioArchiveEntry(final String name) {
-        this(FORMAT_NEW);
+        this(FORMAT_NEW, name);
+    }
+
+    /**
+     * Creates a CPIOArchiveEntry with a specified name.
+     * 
+     * @param format
+     *            The cpio format for this entry.
+     * @param name
+     *            The name of this entry.
+     * <br/>
+     * Possible format values are:
+     * <p>
+     * CpioConstants.FORMAT_NEW<br/>
+     * CpioConstants.FORMAT_NEW_CRC<br/>
+     * CpioConstants.FORMAT_OLD_BINARY<br/>
+     * CpioConstants.FORMAT_OLD_ASCII<br/>
+     */
+    public CpioArchiveEntry(final short format, final String name) {
+        this(format);
         this.name = name;
     }
 
     /**
-     * Creates a CPIOArchiveEntry with a specified name. The format of this entry
-     * will be the new format.
+     * Creates a CPIOArchiveEntry with a specified name. The format of
+     * this entry will be the new format.
      * 
      * @param name
      *            The name of this entry.
@@ -247,20 +266,76 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      *            The size of this entry
      */
     public CpioArchiveEntry(final String name, final long size) {
-        this(FORMAT_NEW);
-        this.name = name;
+        this(name);
         this.setSize(size);
     }
 
+    /**
+     * Creates a CPIOArchiveEntry with a specified name.
+     * 
+     * @param format
+     *            The cpio format for this entry.
+     * @param name
+     *            The name of this entry.
+     * @param size
+     *            The size of this entry
+     * <br/>
+     * Possible format values are:
+     * <p>
+     * CpioConstants.FORMAT_NEW<br/>
+     * CpioConstants.FORMAT_NEW_CRC<br/>
+     * CpioConstants.FORMAT_OLD_BINARY<br/>
+     * CpioConstants.FORMAT_OLD_ASCII<br/>
+     */
+    public CpioArchiveEntry(final short format, final String name,
+                            final long size) {
+        this(format, name);
+        this.setSize(size);
+    }
+
+    /**
+     * Creates a CPIOArchiveEntry with a specified name for a
+     * specified file. The format of this entry will be the new
+     * format.
+     * 
+     * @param inputFile
+     *            The file to gather information from.
+     * @param entryName
+     *            The name of this entry.
+     */
     public CpioArchiveEntry(File inputFile, String entryName) {
-        this(entryName, inputFile.isFile() ? inputFile.length() : 0);
+        this(FORMAT_NEW, inputFile, entryName);
+    }
+
+    /**
+     * Creates a CPIOArchiveEntry with a specified name for a
+     * specified file.
+     * 
+     * @param format
+     *            The cpio format for this entry.
+     * @param inputFile
+     *            The file to gather information from.
+     * @param entryName
+     *            The name of this entry.
+     * <br/>
+     * Possible format values are:
+     * <p>
+     * CpioConstants.FORMAT_NEW<br/>
+     * CpioConstants.FORMAT_NEW_CRC<br/>
+     * CpioConstants.FORMAT_OLD_BINARY<br/>
+     * CpioConstants.FORMAT_OLD_ASCII<br/>
+     */
+    public CpioArchiveEntry(final short format, File inputFile,
+                            String entryName) {
+        this(format, entryName, inputFile.isFile() ? inputFile.length() : 0);
         long mode=0;
         if (inputFile.isDirectory()){
             mode |= C_ISDIR;
         } else if (inputFile.isFile()){
             mode |= C_ISREG;
         } else {
-            throw new IllegalArgumentException("Cannot determine type of file "+inputFile.getName());
+            throw new IllegalArgumentException("Cannot determine type of file "
+                                               + inputFile.getName());
         }
         // TODO set other fields as needed
         setMode(mode);
