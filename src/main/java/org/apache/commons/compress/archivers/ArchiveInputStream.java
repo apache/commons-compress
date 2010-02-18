@@ -43,7 +43,7 @@ public abstract class ArchiveInputStream extends InputStream {
     private static final int BYTE_MASK = 0xFF;
     
     /** holds the number of bytes read in this stream */
-    private int bytesRead = 0;
+    private long bytesRead = 0;
 
     /**
      * Returns the next Archive Entry in this Stream.
@@ -74,8 +74,7 @@ public abstract class ArchiveInputStream extends InputStream {
      * 
      * @return the byte read, or -1 if end of input is reached
      * @throws IOException
-     *             if an I/O error has occurred or if a CPIO file error has
-     *             occurred
+     *             if an I/O error has occurred
      */
     public int read() throws IOException {
         int num = read(SINGLE, 0, 1);
@@ -89,16 +88,45 @@ public abstract class ArchiveInputStream extends InputStream {
      * @param read the number of bytes read
      */
     protected void count(int read) {
-        if(read != -1) {
+        count((long) read);
+    }
+
+    /**
+     * Increments the counter of already read bytes.
+     * Doesn't increment if the EOF has been hit (read == -1)
+     * 
+     * @param read the number of bytes read
+     */
+    protected void count(long read) {
+        if (read != -1) {
             bytesRead = bytesRead + read;
         }
     }
     
     /**
+     * Decrements the counter of already read bytes.
+     * 
+     * @param read the number of bytes pushed back.
+     */
+    protected void pushedBackBytes(long pushedBack) {
+        bytesRead -= pushedBack;
+    }
+    
+    /**
+     * Returns the current number of bytes read from this stream.
+     * @return the number of read bytes
+     * @deprecated this method may yield wrong results for large
+     * archives, use #getBytesRead instead
+     */
+    public int getCount() {
+        return (int) bytesRead;
+    }
+
+    /**
      * Returns the current number of bytes read from this stream.
      * @return the number of read bytes
      */
-    public int getCount() {
+    public long getBytesRead() {
         return bytesRead;
     }
 }

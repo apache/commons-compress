@@ -52,8 +52,8 @@ public abstract class ArchiveOutputStream extends OutputStream {
     private final byte[] oneByte = new byte[1];
     static final int BYTE_MASK = 0xFF;
 
-    /** holds the number of bytes read in this stream */
-    private int bytesRead = 0;
+    /** holds the number of bytes written to this stream */
+    private long bytesWritten = 0;
     // Methods specific to ArchiveOutputStream
     
     /**
@@ -113,22 +113,42 @@ public abstract class ArchiveOutputStream extends OutputStream {
     }
 
     /**
-     * Increments the counter of already read bytes.
+     * Increments the counter of already written bytes.
      * Doesn't increment if the EOF has been hit (read == -1)
      * 
      * @param read the number of bytes read
      */
     protected void count(int read) {
-        if(read != -1) {
-            bytesRead = bytesRead + read;
+        count((long) read);
+    }
+
+    /**
+     * Increments the counter of already written bytes.
+     * Doesn't increment if the EOF has been hit (read == -1)
+     * 
+     * @param written the number of bytes written
+     */
+    protected void count(long written) {
+        if (written != -1) {
+            bytesWritten = bytesWritten + written;
         }
     }
     
     /**
-     * Returns the current number of bytes read from this stream.
-     * @return the number of read bytes
+     * Returns the current number of bytes written to this stream.
+     * @return the number of written bytes
+     * @deprecated this method may yield wrong results for large
+     * archives, use #getBytesWritten instead
      */
     public int getCount() {
-        return bytesRead;
+        return (int) bytesWritten;
+    }
+
+    /**
+     * Returns the current number of bytes written to this stream.
+     * @return the number of written bytes
+     */
+    public long getBytesWritten() {
+        return bytesWritten;
     }
 }
