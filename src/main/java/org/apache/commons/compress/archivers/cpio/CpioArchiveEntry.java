@@ -425,7 +425,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @return Returns the mode.
      */
     public long getMode() {
-        return this.mode;
+        return mode == 0 && !CPIO_TRAILER.equals(name) ? C_ISREG : mode;
     }
 
     /**
@@ -443,7 +443,9 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @return Returns the number of links.
      */
     public long getNumberOfLinks() {
-        return this.nlink;
+        return nlink == 0 ?
+            (isDirectory() ? 2 : 1)
+            : nlink;
     }
 
     /**
