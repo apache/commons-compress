@@ -275,7 +275,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             if (rec == null) {
                 // Unexpected EOF!
                 throw new IOException("unexpected EOF with " + numToRead
-                                      + " bytes unread. Occured at byte: " + getCount());
+                                      + " bytes unread. Occured at byte: " + getBytesRead());
             }
             count(rec.length);
             int sz = numToRead;
