@@ -660,7 +660,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      */
     private static String normalizeFileName(String fileName,
                                             boolean preserveLeadingSlashes) {
-        String osname = System.getProperty("os.name").toLowerCase(Locale.US);
+        String osname = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
 
         if (osname != null) {
 
