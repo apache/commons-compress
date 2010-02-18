@@ -116,7 +116,7 @@ public abstract class ArchiveOutputStream extends OutputStream {
      * Increments the counter of already written bytes.
      * Doesn't increment if the EOF has been hit (read == -1)
      * 
-     * @param read the number of bytes read
+     * @param written the number of bytes written
      */
     protected void count(int written) {
         count((long) written);
