@@ -505,6 +505,18 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
+     * Whether this stream is able to write the given entry.
+     *
+     * <p>May return false if it is set up to use encryption or a
+     * compression method that hasn't been implemented yet.</p>
+     * @since Apache Commons Compress 1.1
+     */
+    public boolean canWrite(ZipArchiveEntry ze) {
+        return !ze.isEncrypted() &&
+            (ze.getMethod() == STORED || ze.getMethod() == DEFLATED);
+    }
+
+    /**
      * Writes bytes to ZIP entry.
      * @param b the byte array to write
      * @param offset the start position to write from
@@ -512,11 +524,16 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @throws IOException on error
      */
     public void write(byte[] b, int offset, int length) throws IOException {
-        if (!entry.isSupportedCompressionMethod()) {
+        if (entry.isEncrypted()) {
+            throw new IOException("Encryption is not supported, used in entry "
+                                  + entry.getName());
+        }
+        if (entry.getMethod() != STORED && entry.getMethod() != DEFLATED) {
             throw new IOException(
                     "Unsupported compression method " + entry.getMethod()
                     + " in ZIP archive entry " + entry.getName());
-        } else if (entry.getMethod() == DEFLATED) {
+        }
+        if (entry.getMethod() == DEFLATED) {
             if (length > 0) {
                 if (!def.finished()) {
                     if (length <= DEFLATER_BLOCK_SIZE) {

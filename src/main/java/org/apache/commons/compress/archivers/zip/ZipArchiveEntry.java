@@ -74,6 +74,8 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     private LinkedHashMap/*<ZipShort, ZipExtraField>*/ extraFields = null;
     private UnparseableExtraFieldData unparseableExtra = null;
     private String name = null;
+    private boolean encrypted;
+    private boolean stronglyEncrypted;
 
     /**
      * Creates a new zip entry with the specified name.
@@ -488,6 +490,41 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         // the empty string in the current implemention (there's no setter)
         // so it is basically draining the performance of a hashmap lookup
         return getName().hashCode();
+    }
+
+    /**
+     * Whether the entry is encrypted.
+     * @since Apache Commons Compress 1.1
+     */
+    public boolean isEncrypted() {
+        return encrypted;
+    }
+
+    /**
+     * Whether the entry is encrypted using strong encryption.
+     * @since Apache Commons Compress 1.1
+     */
+    public boolean isStronglyEncrypted() {
+        return stronglyEncrypted && encrypted;
+    }
+
+    /**
+     * Whether the entry is encrypted.
+     * @since Apache Commons Compress 1.1
+     */
+    public void setEncrypted(boolean b) {
+        encrypted = b;
+    }
+
+    /**
+     * Whether the entry is encrypted using strong encryption.
+     * @since Apache Commons Compress 1.1
+     */
+    public void setStronglyEncrypted(boolean b) {
+        stronglyEncrypted = b;
+        if (b) {
+            setEncrypted(true);
+        }
     }
 
     /**
