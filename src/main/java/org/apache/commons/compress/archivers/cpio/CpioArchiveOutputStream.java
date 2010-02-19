@@ -111,7 +111,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      */
     public CpioArchiveOutputStream(final OutputStream out, final short format,
                                    final int blockSize) {
-        this.out = new CountingStream(out);
+        this.out = out;
         switch (format) {
         case FORMAT_NEW:
         case FORMAT_NEW_CRC:
@@ -195,14 +195,17 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         switch (e.getFormat()) {
         case FORMAT_NEW:
             out.write(ArchiveUtils.toAsciiBytes(MAGIC_NEW));
+            count(6);
             writeNewEntry(e);
             break;
         case FORMAT_NEW_CRC:
             out.write(ArchiveUtils.toAsciiBytes(MAGIC_NEW_CRC));
+            count(6);
             writeNewEntry(e);
             break;
         case FORMAT_OLD_ASCII:
             out.write(ArchiveUtils.toAsciiBytes(MAGIC_OLD_ASCII));
+            count(6);
             writeOldAsciiEntry(e);
             break;
         case FORMAT_OLD_BINARY:
@@ -403,8 +406,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         writeHeader(this.entry);
         closeArchiveEntry();
 
-        int lengthOfLastBlock =
-            (int) (((CountingStream) out).getTotalWritten() % blockSize);
+        int lengthOfLastBlock = (int) (getBytesWritten() % blockSize);
         if (lengthOfLastBlock != 0) {
             pad(blockSize - lengthOfLastBlock);
         }
@@ -434,6 +436,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         if (count > 0){
             byte buff[] = new byte[count];
             out.write(buff);
+            count(count);
         }
     }
 
@@ -441,6 +444,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
             final boolean swapHalfWord) throws IOException {
         byte tmp[] = CpioUtil.long2byteArray(number, length, swapHalfWord);
         out.write(tmp);
+        count(tmp.length);
     }
 
     private void writeAsciiLong(final long number, final int length,
@@ -464,7 +468,9 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         } else {
             tmpStr = tmp.substring(tmp.length() - length);
         }
-        out.write(ArchiveUtils.toAsciiBytes(tmpStr));
+        byte[] b = ArchiveUtils.toAsciiBytes(tmpStr);
+        out.write(b);
+        count(b.length);
     }
 
     /**
@@ -473,8 +479,10 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      * @throws IOException if the string couldn't be written
      */
     private void writeCString(final String str) throws IOException {
-        out.write(ArchiveUtils.toAsciiBytes(str)); 
+        byte[] b = ArchiveUtils.toAsciiBytes(str);
+        out.write(b);
         out.write('\0');
+        count(b.length + 1);
     }
 
     /**
@@ -490,24 +498,4 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         return new CpioArchiveEntry(inputFile, entryName);
     }
 
-    private static class CountingStream extends FilterOutputStream {
-        private long totalWritten = 0;
-
-        private CountingStream(final OutputStream out) {
-            super(out);
-        }
-        public void write(byte[] b) throws IOException {
-            write(b, 0, b.length);
-        }
-        public void write(int b) throws IOException {
-            out.write(b);
-            totalWritten++;
-        }
-        public void write(byte[] b, int off, int len)
-            throws IOException {
-            out.write(b, off, len);
-            totalWritten += len;
-        }
-        private long getTotalWritten() { return totalWritten; }
-    }
 }
