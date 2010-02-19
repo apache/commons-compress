@@ -24,10 +24,20 @@ package org.apache.commons.compress.archivers.zip;
  */
 public class GeneralPurposeBit {
     /**
+     * Indicates that the file is encrypted.
+     */
+    private static final int ENCRYPTION_FLAG = 1 << 0;
+
+    /**
      * Indicates that a data descriptor stored after the file contents
      * will hold CRC and size information.
      */
     private static final int DATA_DESCRIPTOR_FLAG = 1 << 3;
+
+    /**
+     * Indicates strong encryption.
+     */
+    private static final int STRONG_ENCRYPTION_FLAG = 1 << 6;
 
     /**
      * Indicates that filenames are written in utf-8.
@@ -40,6 +50,8 @@ public class GeneralPurposeBit {
 
     private boolean languageEncodingFlag = false;
     private boolean dataDescriptorFlag = false;
+    private boolean encryptionFlag = false;
+    private boolean strongEncryptionFlag = false;
 
     public GeneralPurposeBit() {
     }
@@ -75,6 +87,37 @@ public class GeneralPurposeBit {
     }
 
     /**
+     * whether the current entry is encrypted
+     */
+    public boolean usesEncryption() {
+        return encryptionFlag;
+    }
+
+    /**
+     * whether the current entry will be encrypted
+     */
+    public void useEncryption(boolean b) {
+        encryptionFlag = b;
+    }
+
+    /**
+     * whether the current entry is encrypted using strong encryption
+     */
+    public boolean usesStrongEncryption() {
+        return encryptionFlag && strongEncryptionFlag;
+    }
+
+    /**
+     * whether the current entry will be encrypted  using strong encryption
+     */
+    public void useStrongEncryption(boolean b) {
+        strongEncryptionFlag = b;
+        if (b) {
+            useEncryption(true);
+        }
+    }
+
+    /**
      * Encodes the set bits in a form suitable for ZIP archives.
      */
     public byte[] encode() {
@@ -82,6 +125,10 @@ public class GeneralPurposeBit {
             ZipShort.getBytes((dataDescriptorFlag ? DATA_DESCRIPTOR_FLAG : 0)
                               |
                               (languageEncodingFlag ? UFT8_NAMES_FLAG : 0)
+                              |
+                              (encryptionFlag ? ENCRYPTION_FLAG : 0)
+                              |
+                              (strongEncryptionFlag ? STRONG_ENCRYPTION_FLAG : 0)
                               );
     }
 
@@ -95,6 +142,9 @@ public class GeneralPurposeBit {
         GeneralPurposeBit b = new GeneralPurposeBit();
         b.useDataDescriptor((generalPurposeFlag & DATA_DESCRIPTOR_FLAG) != 0);
         b.useUTF8ForNames((generalPurposeFlag & UFT8_NAMES_FLAG) != 0);
+        b.useStrongEncryption((generalPurposeFlag & STRONG_ENCRYPTION_FLAG)
+                              != 0);
+        b.useEncryption((generalPurposeFlag & ENCRYPTION_FLAG) != 0);
         return b;
     }
 }
