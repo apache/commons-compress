@@ -96,6 +96,7 @@ public abstract class ArchiveInputStream extends InputStream {
      * Doesn't increment if the EOF has been hit (read == -1)
      * 
      * @param read the number of bytes read
+     * @since Apache Commons Compress 1.1
      */
     protected void count(long read) {
         if (read != -1) {
@@ -107,6 +108,7 @@ public abstract class ArchiveInputStream extends InputStream {
      * Decrements the counter of already read bytes.
      * 
      * @param read the number of bytes pushed back.
+     * @since Apache Commons Compress 1.1
      */
     protected void pushedBackBytes(long pushedBack) {
         bytesRead -= pushedBack;
@@ -125,8 +127,24 @@ public abstract class ArchiveInputStream extends InputStream {
     /**
      * Returns the current number of bytes read from this stream.
      * @return the number of read bytes
+     * @since Apache Commons Compress 1.1
      */
     public long getBytesRead() {
         return bytesRead;
     }
+
+    /**
+     * Whether this stream is able to read the given entry.
+     *
+     * <p>Some archive formats support variants or details that are
+     * not supported (yet).</p>
+     *
+     * <p>This implementation always returns true.
+     *
+     * @since Apache Commons Compress 1.1
+     */
+    public boolean canRead(ArchiveEntry ae) {
+        return true;
+    }
+
 }

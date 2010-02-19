@@ -196,10 +196,14 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
      * compression method that hasn't been implemented yet.</p>
      * @since Apache Commons Compress 1.1
      */
-    public boolean canRead(ZipArchiveEntry ze) {
-        return !ze.isEncrypted() &&
-            (ze.getMethod() == ZipArchiveEntry.STORED
-             || ze.getMethod() == ZipArchiveEntry.DEFLATED);
+    public boolean canRead(ArchiveEntry ae) {
+        if (ae instanceof ZipArchiveEntry) {
+            ZipArchiveEntry ze = (ZipArchiveEntry) ae;
+            return !ze.isEncrypted() &&
+                (ze.getMethod() == ZipArchiveEntry.STORED
+                 || ze.getMethod() == ZipArchiveEntry.DEFLATED);
+        }
+        return super.canRead(ae);
     }
 
     public int read(byte[] buffer, int start, int length) throws IOException {

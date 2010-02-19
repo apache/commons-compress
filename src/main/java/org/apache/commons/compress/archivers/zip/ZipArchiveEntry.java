@@ -148,20 +148,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     }
 
     /**
-     * Checks whether the compression method of this entry is supported,
-     * i.e. whether the content of this entry can be accessed.
-     *
-     * @since Commons Compress 1.1
-     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-93"
-     *         >COMPRESS-93</a>
-     * @return <code>true</code> if the compression method is known
-     *         and supported, <code>false</code> otherwise
-     */
-    public boolean isSupportedCompressionMethod() {
-        return method == STORED || method == DEFLATED;
-    }
-
-    /**
      * Returns the compression method of this entry, or -1 if the
      * compression method has not been specified.
      *
