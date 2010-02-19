@@ -23,6 +23,16 @@
   </properties>
   <body>
     <release version="1.1" date="as in SVN" description="Release 1.1">
+      <action type="add" date="2010-02-19">
+        The Zip*Stream and ZipFile classes now have canRead/Write
+        methods that can be used to check whether a given entry can be
+        read/written.
+        The method currently returns false if an entry uses an
+        unsupported compression method or encryption.
+      </action>
+      <action type="add" date="2010-02-19" issue="COMPRESS-89">
+        The ZIP classes now detect encrypted entries.
+      </action>
       <action type="fix" date="2010-02-18" issue="COMPRESS-74">
         ZipArchiveInputStream failed to update the number of bytes
         read properly.
