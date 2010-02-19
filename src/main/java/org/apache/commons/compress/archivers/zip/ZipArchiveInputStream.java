@@ -139,6 +139,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         final ZipEncoding entryEncoding =
             hasUTF8Flag ? ZipEncodingHelper.UTF8_ZIP_ENCODING : zipEncoding;
         hasDataDescriptor = gpFlag.usesDataDescriptor();
+        current.setEncrypted(gpFlag.usesEncryption());
+        current.setStronglyEncrypted(gpFlag.usesStrongEncryption());
 
         off += SHORT;
 
@@ -187,6 +189,19 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         return getNextZipEntry();
     }
 
+    /**
+     * Whether this class is able to read the given entry.
+     *
+     * <p>May return false if it is set up to use encryption or a
+     * compression method that hasn't been implemented yet.</p>
+     * @since Apache Commons Compress 1.1
+     */
+    public boolean canRead(ZipArchiveEntry ze) {
+        return !ze.isEncrypted() &&
+            (ze.getMethod() == ZipArchiveEntry.STORED
+             || ze.getMethod() == ZipArchiveEntry.DEFLATED);
+    }
+
     public int read(byte[] buffer, int start, int length) throws IOException {
         if (closed) {
             throw new IOException("The stream is closed");
@@ -198,7 +213,12 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         // avoid int overflow, check null buffer
         if (start <= buffer.length && length >= 0 && start >= 0
             && buffer.length - start >= length) {
-            if (!current.isSupportedCompressionMethod()) {
+            if (current.isEncrypted()) {
+                throw new IOException("Encryption is not supported, used in "
+                                      + "entry " + current.getName());
+            }
+            if (current.getMethod() != ZipArchiveEntry.STORED
+                && current.getMethod() != ZipArchiveEntry.DEFLATED) {
                 throw new IOException(
                         "Unsupported compression method " + current.getMethod()
                         + " in ZIP archive entry " + current.getName());

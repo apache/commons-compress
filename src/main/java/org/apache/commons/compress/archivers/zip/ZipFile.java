@@ -244,6 +244,19 @@ public class ZipFile {
     }
 
     /**
+     * Whether this class is able to read the given entry.
+     *
+     * <p>May return false if it is set up to use encryption or a
+     * compression method that hasn't been implemented yet.</p>
+     * @since Apache Commons Compress 1.1
+     */
+    public boolean canRead(ZipArchiveEntry ze) {
+        return !ze.isEncrypted() &&
+            (ze.getMethod() == ZipArchiveEntry.STORED
+             || ze.getMethod() == ZipArchiveEntry.DEFLATED);
+    }
+
+    /**
      * Returns an InputStream for reading the contents of the given entry.
      * @param ze the entry to get the stream for.
      * @return a stream to read the entry from.
@@ -256,6 +269,16 @@ public class ZipFile {
         OffsetEntry offsetEntry = (OffsetEntry) entries.get(ze);
         if (offsetEntry == null) {
             return null;
+        }
+        if (ze.isEncrypted()) {
+            throw new IOException("Encryption is not supported, used in "
+                                  + "entry " + ze.getName());
+        }
+        if (ze.getMethod() != ZipArchiveEntry.STORED
+            && ze.getMethod() != ZipArchiveEntry.DEFLATED) {
+            throw new IOException("Unsupported compression method "
+                                  + ze.getMethod() + " in ZIP archive entry "
+                                  + ze.getName());
         }
         long start = offsetEntry.dataOffset;
         BoundedInputStream bis =
@@ -333,6 +356,8 @@ public class ZipFile {
             final boolean hasUTF8Flag = gpFlag.usesUTF8ForNames();
             final ZipEncoding entryEncoding =
                 hasUTF8Flag ? ZipEncodingHelper.UTF8_ZIP_ENCODING : zipEncoding;
+            ze.setEncrypted(gpFlag.usesEncryption());
+            ze.setStronglyEncrypted(gpFlag.usesStrongEncryption());
 
             off += SHORT;
 
