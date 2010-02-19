@@ -329,9 +329,8 @@ public class ZipFile {
 
             off += SHORT; // skip version info
 
-            final int generalPurposeFlag = ZipShort.getValue(cfh, off);
-            final boolean hasUTF8Flag = 
-                (generalPurposeFlag & ZipArchiveOutputStream.UFT8_NAMES_FLAG) != 0;
+            final GeneralPurposeBit gpFlag = GeneralPurposeBit.parse(cfh, off);
+            final boolean hasUTF8Flag = gpFlag.usesUTF8ForNames();
             final ZipEncoding entryEncoding =
                 hasUTF8Flag ? ZipEncodingHelper.UTF8_ZIP_ENCODING : zipEncoding;
 
