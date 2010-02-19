@@ -203,7 +203,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                 (ze.getMethod() == ZipArchiveEntry.STORED
                  || ze.getMethod() == ZipArchiveEntry.DEFLATED);
         }
-        return super.canRead(ae);
+        return false;
     }
 
     public int read(byte[] buffer, int start, int length) throws IOException {
