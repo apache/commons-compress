@@ -517,7 +517,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             return !ze.isEncrypted() &&
                 (ze.getMethod() == STORED || ze.getMethod() == DEFLATED);
         }
-        return super.canWrite(ae);
+        return false;
     }
 
     /**
