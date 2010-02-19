@@ -134,12 +134,11 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         current.setPlatform((versionMadeBy >> ZipFile.BYTE_SHIFT)
                             & ZipFile.NIBLET_MASK);
 
-        final int generalPurposeFlag = ZipShort.getValue(lfh, off);
-        final boolean hasUTF8Flag = 
-            (generalPurposeFlag & ZipArchiveOutputStream.UFT8_NAMES_FLAG) != 0;
+        final GeneralPurposeBit gpFlag = GeneralPurposeBit.parse(lfh, off);
+        final boolean hasUTF8Flag = gpFlag.usesUTF8ForNames();
         final ZipEncoding entryEncoding =
             hasUTF8Flag ? ZipEncodingHelper.UTF8_ZIP_ENCODING : zipEncoding;
-        hasDataDescriptor = (generalPurposeFlag & 8) != 0;
+        hasDataDescriptor = gpFlag.usesDataDescriptor();
 
         off += SHORT;
 

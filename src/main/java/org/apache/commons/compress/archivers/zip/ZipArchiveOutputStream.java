@@ -97,15 +97,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * General purpose flag, which indicates that filenames are
      * written in utf-8.
+     * @deprecated use {@link GeneralPurposeBit#UFT8_NAMES_FLAG} instead
      */
-    public static final int UFT8_NAMES_FLAG = 1 << 11;
-
-    /**
-     * General purpose flag, which indicates that filenames are
-     * written in utf-8.
-     * @deprecated use {@link #UFT8_NAMES_FLAG} instead
-     */
-    public static final int EFS_FLAG = UFT8_NAMES_FLAG;
+    public static final int EFS_FLAG = GeneralPurposeBit.UFT8_NAMES_FLAG;
 
     /**
      * Current entry.
@@ -898,20 +892,20 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
         // CheckStyle:MagicNumber OFF
         int versionNeededToExtract = 10;
-        int generalPurposeFlag = (useUTF8Flag || utfFallback) ? UFT8_NAMES_FLAG : 0;
+        GeneralPurposeBit b = new GeneralPurposeBit();
+        b.useUTF8ForNames(useUTF8Flag || utfFallback);
         if (zipMethod == DEFLATED && raf == null) {
             // requires version 2 as we are going to store length info
             // in the data descriptor
             versionNeededToExtract =  20;
-            // bit3 set to signal, we use a data descriptor
-            generalPurposeFlag |= 8;
+            b.useDataDescriptor(true);
         }
         // CheckStyle:MagicNumber ON
 
         // version needed to extract
         writeOut(ZipShort.getBytes(versionNeededToExtract));
         // general purpose bit flag
-        writeOut(ZipShort.getBytes(generalPurposeFlag));
+        writeOut(b.encode());
     }
 
     /**
