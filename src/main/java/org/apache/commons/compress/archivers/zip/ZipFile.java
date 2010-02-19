@@ -178,8 +178,8 @@ public class ZipFile {
         archive = new RandomAccessFile(f, "r");
         boolean success = false;
         try {
-            Map entriesWithoutEFS = populateFromCentralDirectory();
-            resolveLocalFileHeaderData(entriesWithoutEFS);
+            Map entriesWithoutUTF8Flag = populateFromCentralDirectory();
+            resolveLocalFileHeaderData(entriesWithoutUTF8Flag);
             success = true;
         } finally {
             if (!success) {
@@ -304,7 +304,7 @@ public class ZipFile {
      */
     private Map populateFromCentralDirectory()
         throws IOException {
-        HashMap noEFS = new HashMap();
+        HashMap noUTF8Flag = new HashMap();
 
         positionAtCentralDirectory();
 
@@ -330,10 +330,10 @@ public class ZipFile {
             off += SHORT; // skip version info
 
             final int generalPurposeFlag = ZipShort.getValue(cfh, off);
-            final boolean hasEFS = 
-                (generalPurposeFlag & ZipArchiveOutputStream.EFS_FLAG) != 0;
+            final boolean hasUTF8Flag = 
+                (generalPurposeFlag & ZipArchiveOutputStream.UFT8_NAMES_FLAG) != 0;
             final ZipEncoding entryEncoding =
-                hasEFS ? ZipEncodingHelper.UTF8_ZIP_ENCODING : zipEncoding;
+                hasUTF8Flag ? ZipEncodingHelper.UTF8_ZIP_ENCODING : zipEncoding;
 
             off += SHORT;
 
@@ -396,11 +396,11 @@ public class ZipFile {
             archive.readFully(signatureBytes);
             sig = ZipLong.getValue(signatureBytes);
 
-            if (!hasEFS && useUnicodeExtraFields) {
-                noEFS.put(ze, new NameAndComment(fileName, comment));
+            if (!hasUTF8Flag && useUnicodeExtraFields) {
+                noUTF8Flag.put(ze, new NameAndComment(fileName, comment));
             }
         }
-        return noEFS;
+        return noUTF8Flag;
     }
 
     private static final int MIN_EOCD_SIZE =
@@ -495,7 +495,7 @@ public class ZipFile {
      * <p>Also records the offsets for the data to read from the
      * entries.</p>
      */
-    private void resolveLocalFileHeaderData(Map entriesWithoutEFS)
+    private void resolveLocalFileHeaderData(Map entriesWithoutUTF8Flag)
         throws IOException {
         Enumeration e = getEntries();
         while (e.hasMoreElements()) {
@@ -527,9 +527,9 @@ public class ZipFile {
             offsetEntry.dataOffset = offset + LFH_OFFSET_FOR_FILENAME_LENGTH
                 + SHORT + SHORT + fileNameLen + extraFieldLen;
 
-            if (entriesWithoutEFS.containsKey(ze)) {
+            if (entriesWithoutUTF8Flag.containsKey(ze)) {
                 String orig = ze.getName();
-                NameAndComment nc = (NameAndComment) entriesWithoutEFS.get(ze);
+                NameAndComment nc = (NameAndComment) entriesWithoutUTF8Flag.get(ze);
                 ZipUtil.setNameAndCommentFromExtraFields(ze, nc.name,
                                                          nc.comment);
                 if (!orig.equals(ze.getName())) {

@@ -135,10 +135,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                             & ZipFile.NIBLET_MASK);
 
         final int generalPurposeFlag = ZipShort.getValue(lfh, off);
-        final boolean hasEFS = 
-            (generalPurposeFlag & ZipArchiveOutputStream.EFS_FLAG) != 0;
+        final boolean hasUTF8Flag = 
+            (generalPurposeFlag & ZipArchiveOutputStream.UFT8_NAMES_FLAG) != 0;
         final ZipEncoding entryEncoding =
-            hasEFS ? ZipEncodingHelper.UTF8_ZIP_ENCODING : zipEncoding;
+            hasUTF8Flag ? ZipEncodingHelper.UTF8_ZIP_ENCODING : zipEncoding;
         hasDataDescriptor = (generalPurposeFlag & 8) != 0;
 
         off += SHORT;
@@ -178,7 +178,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         readFully(extraData);
         current.setExtra(extraData);
 
-        if (!hasEFS && useUnicodeExtraFields) {
+        if (!hasUTF8Flag && useUnicodeExtraFields) {
             ZipUtil.setNameAndCommentFromExtraFields(current, fileName, null);
         }
         return current;
