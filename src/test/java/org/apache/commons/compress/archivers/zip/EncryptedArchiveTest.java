@@ -38,7 +38,7 @@ public class EncryptedArchiveTest extends TestCase {
             ZipArchiveEntry zae = zf.getEntry("LICENSE.txt");
             assertTrue(zae.isEncrypted());
             assertFalse(zae.isStronglyEncrypted());
-            assertFalse(zf.canRead(zae));
+            assertFalse(zf.canReadEntryData(zae));
             try {
                 zf.getInputStream(zae);
                 fail("expected an exception");
@@ -61,7 +61,7 @@ public class EncryptedArchiveTest extends TestCase {
             assertEquals("LICENSE.txt", zae.getName());
             assertTrue(zae.isEncrypted());
             assertFalse(zae.isStronglyEncrypted());
-            assertFalse(zin.canRead(zae));
+            assertFalse(zin.canReadEntryData(zae));
             try {
                 byte[] buf = new byte[1024];
                 zin.read(buf, 0, buf.length);

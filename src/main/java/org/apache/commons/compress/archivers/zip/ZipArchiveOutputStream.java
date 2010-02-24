@@ -511,7 +511,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * compression method that hasn't been implemented yet.</p>
      * @since Apache Commons Compress 1.1
      */
-    public boolean canWrite(ArchiveEntry ae) {
+    public boolean canWriteEntryData(ArchiveEntry ae) {
         if (ae instanceof ZipArchiveEntry) {
             ZipArchiveEntry ze = (ZipArchiveEntry) ae;
             return !ze.isEncrypted() &&

@@ -205,20 +205,20 @@ public class ZipArchiveEntryTest extends TestCase {
             new ZipArchiveOutputStream((java.io.OutputStream) null);
         ZipArchiveEntry entry = new ZipArchiveEntry("foo");
         assertEquals(-1, entry.getMethod());
-        assertFalse(zos.canWrite(entry));
+        assertFalse(zos.canWriteEntryData(entry));
 
         entry.setMethod(ZipArchiveEntry.STORED);
         assertEquals(ZipArchiveEntry.STORED, entry.getMethod());
-        assertTrue(zos.canWrite(entry));
+        assertTrue(zos.canWriteEntryData(entry));
 
         entry.setMethod(ZipArchiveEntry.DEFLATED);
         assertEquals(ZipArchiveEntry.DEFLATED, entry.getMethod());
-        assertTrue(zos.canWrite(entry));
+        assertTrue(zos.canWriteEntryData(entry));
 
         // Test the unsupported "imploded" compression method (6)
         entry.setMethod(6);
         assertEquals(6, entry.getMethod());
-        assertFalse(zos.canWrite(entry));
+        assertFalse(zos.canWriteEntryData(entry));
     }
 
     /**

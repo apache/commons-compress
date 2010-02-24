@@ -163,7 +163,7 @@ public abstract class ArchiveOutputStream extends OutputStream {
      * <p>This implementation always returns true.
      * @since Apache Commons Compress 1.1
      */
-    public boolean canWrite(ArchiveEntry ae) {
+    public boolean canWriteEntryData(ArchiveEntry ae) {
         return true;
     }
 }

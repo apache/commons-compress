@@ -250,7 +250,7 @@ public class ZipFile {
      * compression method that hasn't been implemented yet.</p>
      * @since Apache Commons Compress 1.1
      */
-    public boolean canRead(ZipArchiveEntry ze) {
+    public boolean canReadEntryData(ZipArchiveEntry ze) {
         return !ze.isEncrypted() &&
             (ze.getMethod() == ZipArchiveEntry.STORED
              || ze.getMethod() == ZipArchiveEntry.DEFLATED);

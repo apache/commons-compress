@@ -143,7 +143,7 @@ public abstract class ArchiveInputStream extends InputStream {
      *
      * @since Apache Commons Compress 1.1
      */
-    public boolean canRead(ArchiveEntry ae) {
+    public boolean canReadEntryData(ArchiveEntry ae) {
         return true;
     }
 
