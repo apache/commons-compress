@@ -24,9 +24,9 @@
   <body>
     <release version="1.1" date="as in SVN" description="Release 1.1">
       <action type="add" date="2010-02-19">
-        The Archive*Stream and ZipFile classes now have canRead/Write
-        methods that can be used to check whether a given entry can be
-        read/written.
+        The Archive*Stream and ZipFile classes now have
+        can(Read|Write)EntryData methods that can be used to check
+        whether a given entry's data can be read/written.
         The method currently returns false for ZIP archives if an
         entry uses an unsupported compression method or encryption.
       </action>

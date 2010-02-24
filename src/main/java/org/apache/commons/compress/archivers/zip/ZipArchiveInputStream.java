@@ -196,7 +196,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
      * compression method that hasn't been implemented yet.</p>
      * @since Apache Commons Compress 1.1
      */
-    public boolean canRead(ArchiveEntry ae) {
+    public boolean canReadEntryData(ArchiveEntry ae) {
         if (ae instanceof ZipArchiveEntry) {
             ZipArchiveEntry ze = (ZipArchiveEntry) ae;
             return !ze.isEncrypted() &&

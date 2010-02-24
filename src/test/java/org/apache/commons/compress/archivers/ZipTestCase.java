@@ -122,11 +122,11 @@ public final class ZipTestCase extends AbstractTestCase {
      */
     public void testSupportedCompressionMethod() throws IOException {
         ZipFile bla = new ZipFile(getFile("bla.zip"));
-        assertTrue(bla.canRead(bla.getEntry("test1.xml")));
+        assertTrue(bla.canReadEntryData(bla.getEntry("test1.xml")));
         bla.close();
 
         ZipFile moby = new ZipFile(getFile("moby.zip"));
-        assertFalse(moby.canRead(moby.getEntry("README")));
+        assertFalse(moby.canReadEntryData(moby.getEntry("README")));
         moby.close();
     }
 
@@ -145,7 +145,7 @@ public final class ZipTestCase extends AbstractTestCase {
         try {
             ZipArchiveEntry entry = zip.getNextZipEntry();
             assertEquals("README", entry.getName());
-            assertFalse(zip.canRead(entry));
+            assertFalse(zip.canReadEntryData(entry));
             try {
                 assertNull(zip.getNextZipEntry());
             } catch (IOException e) {
