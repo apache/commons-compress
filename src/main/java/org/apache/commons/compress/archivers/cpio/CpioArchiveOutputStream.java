@@ -19,7 +19,6 @@
 package org.apache.commons.compress.archivers.cpio;
 
 import java.io.File;
-import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
@@ -88,7 +87,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
 
     /**
      * Construct the cpio output stream with a specified format and a
-     * blocksize of {@link CpioConstants.BLOCK_SIZE BLOCK_SIZE}.
+     * blocksize of {@link CpioConstants#BLOCK_SIZE BLOCK_SIZE}.
      * 
      * @param out
      *            The cpio stream

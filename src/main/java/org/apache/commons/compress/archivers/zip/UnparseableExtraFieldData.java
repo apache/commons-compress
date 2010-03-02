@@ -99,7 +99,6 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
      * @param buffer the buffer to read data from
      * @param offset offset into buffer to read data
      * @param length the length of data
-     * @exception ZipException on error
      */
     public void parseFromCentralDirectoryData(byte[] buffer, int offset,
                                               int length) {

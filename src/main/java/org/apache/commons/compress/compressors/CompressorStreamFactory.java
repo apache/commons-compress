@@ -65,7 +65,7 @@ public class CompressorStreamFactory {
      * 
      * @param in the input stream
      * @return the compressor input stream
-     * @throws CompressorInputStream if the compressor name is not known
+     * @throws CompressorException if the compressor name is not known
      * @throws IllegalArgumentException if the stream is null or does not support mark
      */
     public CompressorInputStream createCompressorInputStream(final InputStream in)
