@@ -150,7 +150,7 @@ public class ExtraFieldUtils {
                                                             data.length - start);
                     }
                     v.add(field);
-                    /*FALLTHROUGH*/
+                    //$FALL-THROUGH$
                 case UnparseableExtraField.SKIP_KEY:
                     // since we cannot parse the data we must assume
                     // the extra field consumes the whole rest of the
