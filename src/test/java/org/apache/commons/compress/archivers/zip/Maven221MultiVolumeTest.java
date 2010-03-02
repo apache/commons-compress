@@ -31,7 +31,7 @@ import junit.framework.TestCase;
 
 /**
  * JUnit 3 testcase for a multi-volume zip file.
- * 
+ *
  * Some tools (like 7-zip) allow users to split a large archives into 'volumes'
  * with a given size to fit them into multiple cds, usb drives, or emails with
  * an attachment size limit. It's basically the same file split into chunks of
@@ -41,83 +41,82 @@ import junit.framework.TestCase;
  * such a file. This test is intended to prove that this error doesn't occur
  * anymore. All entries but the last one are returned correctly, the last entry
  * yields an exception.
- * 
+ *
  */
 public class Maven221MultiVolumeTest extends TestCase {
 
     private static final String [] ENTRIES = new String [] {
-	"apache-maven-2.2.1/",
-	"apache-maven-2.2.1/LICENSE.txt",
-	"apache-maven-2.2.1/NOTICE.txt",
-	"apache-maven-2.2.1/README.txt",
-	"apache-maven-2.2.1/bin/",
-	"apache-maven-2.2.1/bin/m2.conf",
-	"apache-maven-2.2.1/bin/mvn",
-	"apache-maven-2.2.1/bin/mvn.bat",
-	"apache-maven-2.2.1/bin/mvnDebug",
-	"apache-maven-2.2.1/bin/mvnDebug.bat",
-	"apache-maven-2.2.1/boot/",
-	"apache-maven-2.2.1/boot/classworlds-1.1.jar",
-	"apache-maven-2.2.1/conf/",
-	"apache-maven-2.2.1/conf/settings.xml",
-	"apache-maven-2.2.1/lib/"
+        "apache-maven-2.2.1/",
+        "apache-maven-2.2.1/LICENSE.txt",
+        "apache-maven-2.2.1/NOTICE.txt",
+        "apache-maven-2.2.1/README.txt",
+        "apache-maven-2.2.1/bin/",
+        "apache-maven-2.2.1/bin/m2.conf",
+        "apache-maven-2.2.1/bin/mvn",
+        "apache-maven-2.2.1/bin/mvn.bat",
+        "apache-maven-2.2.1/bin/mvnDebug",
+        "apache-maven-2.2.1/bin/mvnDebug.bat",
+        "apache-maven-2.2.1/boot/",
+        "apache-maven-2.2.1/boot/classworlds-1.1.jar",
+        "apache-maven-2.2.1/conf/",
+        "apache-maven-2.2.1/conf/settings.xml",
+        "apache-maven-2.2.1/lib/"
     };
-    
-    private static final String LAST_ENTRY_NAME = 
-	"apache-maven-2.2.1/lib/maven-2.2.1-uber.jar";
-    
+
+    private static final String LAST_ENTRY_NAME =
+        "apache-maven-2.2.1/lib/maven-2.2.1-uber.jar";
+
     public void testRead7ZipMultiVolumeArchiveForStream() throws IOException,
-	    URISyntaxException {
-	
-	URL zip = getClass().getResource("/apache-maven-2.2.1.zip.001");
-	FileInputStream archive = new FileInputStream(
-		new File(new URI(zip.toString())));
-	ZipArchiveInputStream zi = null;
-	try {
-	    zi = new ZipArchiveInputStream(archive,null,false);
-	    
-	    // these are the entries that are supposed to be processed
-	    // correctly without any problems
-	    for (int i = 0; i < ENTRIES.length; i++) {
-		assertEquals(ENTRIES[i], zi.getNextEntry().getName());
-	    }
-	    
-	    // this is the last entry that is truncated
-	    ArchiveEntry lastEntry = zi.getNextEntry();
-	    assertEquals(LAST_ENTRY_NAME, lastEntry.getName());
-	    byte [] buffer = new byte [4096];
-	    
-	    // before the fix, we'd get 0 bytes on this read and all
-	    // subsequent reads thus a client application might enter
-	    // an infinite loop after the fix, we should get an
-	    // exception
-	    try {
-                int read = 0;
-		while ((read = zi.read(buffer)) > 0) { }
-		fail("shouldn't be able to read from truncated entry");
-	    } catch (IOException e) {
+            URISyntaxException {
+
+        URL zip = getClass().getResource("/apache-maven-2.2.1.zip.001");
+        FileInputStream archive = new FileInputStream(
+            new File(new URI(zip.toString())));
+        ZipArchiveInputStream zi = null;
+        try {
+            zi = new ZipArchiveInputStream(archive,null,false);
+
+            // these are the entries that are supposed to be processed
+            // correctly without any problems
+            for (int i = 0; i < ENTRIES.length; i++) {
+                assertEquals(ENTRIES[i], zi.getNextEntry().getName());
+            }
+
+            // this is the last entry that is truncated
+            ArchiveEntry lastEntry = zi.getNextEntry();
+            assertEquals(LAST_ENTRY_NAME, lastEntry.getName());
+            byte [] buffer = new byte [4096];
+
+            // before the fix, we'd get 0 bytes on this read and all
+            // subsequent reads thus a client application might enter
+            // an infinite loop after the fix, we should get an
+            // exception
+            try {
+                while (zi.read(buffer) > 0) { }
+                fail("shouldn't be able to read from truncated entry");
+            } catch (IOException e) {
                 assertEquals("Truncated ZIP file", e.getMessage());
-	    }
-	    
-	    // and now we get another entry, which should also yield
-	    // an exception
-	    try {
-		zi.getNextEntry();
-		fail("shouldn't be able to read another entry from truncated"
+            }
+
+            // and now we get another entry, which should also yield
+            // an exception
+            try {
+                zi.getNextEntry();
+                fail("shouldn't be able to read another entry from truncated"
                      + " file");
-	    } catch (IOException e) {
-		// this is to be expected
-	    }
-	} finally {
-	    if (zi != null) {
-		zi.close();
-	    }
-	}
+            } catch (IOException e) {
+                // this is to be expected
+            }
+        } finally {
+            if (zi != null) {
+                zi.close();
+            }
+        }
     }
 
     public void testRead7ZipMultiVolumeArchiveForFile()
-        throws IOException, URISyntaxException {
-	URL zip = getClass().getResource("/apache-maven-2.2.1.zip.001");
+        throws URISyntaxException {
+        URL zip = getClass().getResource("/apache-maven-2.2.1.zip.001");
         File file = new File(new URI(zip.toString()));
         try {
             new ZipFile(file);
