@@ -72,7 +72,7 @@ public final class GZipTestCase extends AbstractTestCase {
     }
 
     /**
-     * @see https://issues.apache.org/jira/browse/COMPRESS-84
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-84"
      */
     public void testCorruptedInput() throws Exception {
         InputStream in = null;
