@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.compressors;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -33,21 +35,38 @@ public final class GZipTestCase extends AbstractTestCase {
         final File input = getFile("test1.xml");
         final File output = new File(dir, "test1.xml.gz");
         final OutputStream out = new FileOutputStream(output);
-        final CompressorOutputStream cos = new CompressorStreamFactory().createCompressorOutputStream("gz", out);
-        IOUtils.copy(new FileInputStream(input), cos);
-        cos.close();
+        try {
+            final CompressorOutputStream cos = new CompressorStreamFactory()
+                .createCompressorOutputStream("gz", out);
+            try {
+                IOUtils.copy(new FileInputStream(input), cos);
+            } finally {
+                cos.close();
+            }
+        } finally {
+            out.close();
+        }
     }
 
     public void testGzipUnarchive() throws Exception {
         final File input = getFile("bla.tgz");
         final File output = new File(dir, "bla.tar");
         final InputStream is = new FileInputStream(input);
-        final CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("gz", is);
-        FileOutputStream out = new FileOutputStream(output);
-        IOUtils.copy(in, out);
-        in.close();
-        is.close();
-        out.close();
+        try {
+            final CompressorInputStream in = new CompressorStreamFactory()
+                .createCompressorInputStream("gz", is);
+            FileOutputStream out = null;
+            try {
+                out = new FileOutputStream(output);
+                IOUtils.copy(in, out);
+            } finally {
+                if (out != null) {
+                    out.close();
+                }
+                in.close();
+            }
+        } finally {
+            is.close();
+        }
     }
-
 }
