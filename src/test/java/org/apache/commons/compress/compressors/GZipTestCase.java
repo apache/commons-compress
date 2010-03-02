@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -67,6 +68,46 @@ public final class GZipTestCase extends AbstractTestCase {
             }
         } finally {
             is.close();
+        }
+    }
+
+    /**
+     * @see https://issues.apache.org/jira/browse/COMPRESS-84
+     */
+    public void testCorruptedInput() throws Exception {
+        InputStream in = null;
+        OutputStream out = null;
+        CompressorInputStream cin = null;
+        try {
+            in = new FileInputStream(getFile("bla.tgz"));
+            out = new ByteArrayOutputStream();
+            IOUtils.copy(in, out);
+            in.close();
+            out.close();
+
+            byte[] data = ((ByteArrayOutputStream) out).toByteArray();
+            in = new ByteArrayInputStream(data, 0, data.length - 1);
+            cin = new CompressorStreamFactory()
+                .createCompressorInputStream("gz", in);
+            out = new ByteArrayOutputStream();
+
+            try {
+                IOUtils.copy(cin, out);
+                fail("Expected an exception");
+            } catch (IOException ioex) {
+                // the whole point of the test
+            }
+
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+            if (cin != null) {
+                in.close();
+            }
+            if (in != null) {
+                in.close();
+            }
         }
     }
 }
