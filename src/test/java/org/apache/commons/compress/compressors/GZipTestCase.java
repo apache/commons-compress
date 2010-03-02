@@ -103,7 +103,7 @@ public final class GZipTestCase extends AbstractTestCase {
                 out.close();
             }
             if (cin != null) {
-                in.close();
+                cin.close();
             }
             if (in != null) {
                 in.close();
