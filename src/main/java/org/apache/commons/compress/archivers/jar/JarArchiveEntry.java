@@ -28,43 +28,43 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 
 /**
- * 
+ *
  * @NotThreadSafe
  */
 public class JarArchiveEntry extends ZipArchiveEntry implements ArchiveEntry {
 
-	private Attributes manifestAttributes = null;
-	private Certificate[] certificates = null; 
-	
-	public JarArchiveEntry(ZipEntry entry) throws ZipException {
-		super(entry);
-	}
+    private Attributes manifestAttributes = null;
+    private Certificate[] certificates = null;
 
-	public JarArchiveEntry(String name) {
-		super(name);
-	}
+    public JarArchiveEntry(ZipEntry entry) throws ZipException {
+        super(entry);
+    }
 
-	public JarArchiveEntry(ZipArchiveEntry entry) throws ZipException {
-		super(entry);
-	}
+    public JarArchiveEntry(String name) {
+        super(name);
+    }
 
-	public JarArchiveEntry(JarEntry entry) throws ZipException {
-		super(entry);
-		
-	}
+    public JarArchiveEntry(ZipArchiveEntry entry) throws ZipException {
+        super(entry);
+    }
 
-	public Attributes getManifestAttributes() {
-		return manifestAttributes;
-	}
+    public JarArchiveEntry(JarEntry entry) throws ZipException {
+        super(entry);
 
-	public Certificate[] getCertificates() {
+    }
+
+    public Attributes getManifestAttributes() {
+        return manifestAttributes;
+    }
+
+    public Certificate[] getCertificates() {
             if (certificates != null) {
                 Certificate[] certs = new Certificate[certificates.length];
                 System.arraycopy(certificates, 0, certs, 0, certs.length);
                 return certs;
             }
             return null;
-	}
+    }
 
     /* (non-Javadoc)
      * @see org.apache.commons.compress.archivers.zip.ZipArchiveEntry#equals(java.lang.Object)

@@ -30,20 +30,20 @@ import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.AbstractTestCase;
 
 public final class JarTestCase extends AbstractTestCase {
-	public void testJarArchiveCreation() throws Exception {
-		final File output = new File(dir, "bla.jar");
+    public void testJarArchiveCreation() throws Exception {
+        final File output = new File(dir, "bla.jar");
 
-		final File file1 = getFile("test1.xml");
-		final File file2 = getFile("test2.xml");
-		
+        final File file1 = getFile("test1.xml");
+        final File file2 = getFile("test2.xml");
+
         final OutputStream out = new FileOutputStream(output);
-        
+
         final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("jar", out);
 
         os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
         IOUtils.copy(new FileInputStream(file1), os);
         os.closeArchiveEntry();
-        
+
         os.putArchiveEntry(new ZipArchiveEntry("testdata/test2.xml"));
         IOUtils.copy(new FileInputStream(file2), os);
         os.closeArchiveEntry();
@@ -51,59 +51,59 @@ public final class JarTestCase extends AbstractTestCase {
         os.close();
     }
 
-	
-	public void testJarUnarchive() throws Exception {
-		final File input = getFile("bla.jar");
+
+    public void testJarUnarchive() throws Exception {
+        final File input = getFile("bla.jar");
         final InputStream is = new FileInputStream(input);
         final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("jar", is);
-        
+
         ZipArchiveEntry entry = (ZipArchiveEntry)in.getNextEntry();
         File o = new File(dir, entry.getName());
         o.getParentFile().mkdirs();
         OutputStream out = new FileOutputStream(o);
         IOUtils.copy(in, out);
         out.close();
-        
+
         entry = (ZipArchiveEntry)in.getNextEntry();
         o = new File(dir, entry.getName());
         o.getParentFile().mkdirs();
         out = new FileOutputStream(o);
         IOUtils.copy(in, out);
         out.close();
-        
+
         entry = (ZipArchiveEntry)in.getNextEntry();
         o = new File(dir, entry.getName());
         o.getParentFile().mkdirs();
         out = new FileOutputStream(o);
         IOUtils.copy(in, out);
         out.close();
-        
+
         in.close();
         is.close();
     }
-	
-	public void testJarUnarchiveAll() throws Exception {
-		final File input = getFile("bla.jar");
+
+    public void testJarUnarchiveAll() throws Exception {
+        final File input = getFile("bla.jar");
         final InputStream is = new FileInputStream(input);
         final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("jar", is);
-        
+
         ArchiveEntry entry = in.getNextEntry();
-		while (entry != null) {
-			File archiveEntry = new File(dir, entry.getName());
-			archiveEntry.getParentFile().mkdirs();
-			if(entry.isDirectory()){
-				archiveEntry.mkdir();
-				entry = in.getNextEntry();
-				continue;
-			}
-			OutputStream out = new FileOutputStream(archiveEntry);
-			IOUtils.copy(in, out);
-			out.close();
-			entry = in.getNextEntry();
-		}
-		
-		in.close();
-		is.close();
-	}
+        while (entry != null) {
+            File archiveEntry = new File(dir, entry.getName());
+            archiveEntry.getParentFile().mkdirs();
+            if(entry.isDirectory()){
+                archiveEntry.mkdir();
+                entry = in.getNextEntry();
+                continue;
+            }
+            OutputStream out = new FileOutputStream(archiveEntry);
+            IOUtils.copy(in, out);
+            out.close();
+            entry = in.getNextEntry();
+        }
+
+        in.close();
+        is.close();
+    }
 
 }
