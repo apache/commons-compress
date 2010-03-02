@@ -29,25 +29,25 @@ import org.apache.commons.compress.utils.IOUtils;
 
 public final class GZipTestCase extends AbstractTestCase {
 
-	public void testGzipCreation()  throws Exception {
-		final File input = getFile("test1.xml");
-		final File output = new File(dir, "test1.xml.gz");
-		final OutputStream out = new FileOutputStream(output);
-		final CompressorOutputStream cos = new CompressorStreamFactory().createCompressorOutputStream("gz", out);
-		IOUtils.copy(new FileInputStream(input), cos);
-		cos.close();
-	}
-	
-	public void testGzipUnarchive() throws Exception {
-		final File input = getFile("bla.tgz");
-		final File output = new File(dir, "bla.tar");
+    public void testGzipCreation()  throws Exception {
+        final File input = getFile("test1.xml");
+        final File output = new File(dir, "test1.xml.gz");
+        final OutputStream out = new FileOutputStream(output);
+        final CompressorOutputStream cos = new CompressorStreamFactory().createCompressorOutputStream("gz", out);
+        IOUtils.copy(new FileInputStream(input), cos);
+        cos.close();
+    }
+
+    public void testGzipUnarchive() throws Exception {
+        final File input = getFile("bla.tgz");
+        final File output = new File(dir, "bla.tar");
         final InputStream is = new FileInputStream(input);
         final CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("gz", is);
         FileOutputStream out = new FileOutputStream(output);
         IOUtils.copy(in, out);
-		in.close();
-		is.close();
-		out.close();
+        in.close();
+        is.close();
+        out.close();
     }
 
 }
