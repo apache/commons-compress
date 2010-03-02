@@ -29,13 +29,13 @@ import java.io.OutputStream;
 public final class IOUtils {
 
     /** Private constructor to prevent instantiation of this utility class. */
-    private IOUtils(){    
+    private IOUtils(){
     }
 
-	/**
+    /**
      * Copies the content of a InputStream into an OutputStream.
      * Uses a default buffer size of 8024 bytes.
-     * 
+     *
      * @param input
      *            the InputStream to copy
      * @param output
@@ -46,10 +46,10 @@ public final class IOUtils {
     public static long copy(final InputStream input, final OutputStream output) throws IOException {
         return copy(input, output, 8024);
     }
-    
+
     /**
      * Copies the content of a InputStream into an OutputStream
-     * 
+     *
      * @param input
      *            the InputStream to copy
      * @param output

@@ -23,7 +23,7 @@ package org.apache.commons.compress.archivers;
  */
 public class ArchiveException extends Exception {
 
-	/** Serial */
+    /** Serial */
     private static final long serialVersionUID = 2772690708123267100L;
 
     /**
@@ -34,9 +34,9 @@ public class ArchiveException extends Exception {
      *            the detail message
      */
     public ArchiveException(String message) {
-		super(message);
-	}
-	
+        super(message);
+    }
+
     /**
      * Constructs a new exception with the specified detail message and cause.
      * 
@@ -45,8 +45,8 @@ public class ArchiveException extends Exception {
      * @param cause
      *            the cause
      */
-	public ArchiveException(String message, Exception cause) {
-		super(message);
-		this.initCause(cause);
-	}
+    public ArchiveException(String message, Exception cause) {
+        super(message);
+        this.initCause(cause);
+    }
 }

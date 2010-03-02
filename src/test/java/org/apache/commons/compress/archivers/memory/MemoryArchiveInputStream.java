@@ -25,36 +25,36 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 
 public final class MemoryArchiveInputStream extends ArchiveInputStream {
 
-	private final String[] filenames;
-	private final String[] content;
-	private int p;
-	
-	public MemoryArchiveInputStream( final String[][] pFiles ) {
-		filenames = new String[pFiles.length];
-		content = new String[pFiles.length];
-		
-		for (int i = 0; i < pFiles.length; i++) {
-			String[] nameAndContent = pFiles[i];
-			filenames[i] = nameAndContent[0];
-			content[i] = nameAndContent[1];
-		}
-		p = 0;
-	}
-	
-	public ArchiveEntry getNextEntry() throws IOException {
-		if (p >= filenames.length) {
-			return null;
-		}
+    private final String[] filenames;
+    private final String[] content;
+    private int p;
 
-		return new MemoryArchiveEntry(filenames[p]);
-	}
+    public MemoryArchiveInputStream( final String[][] pFiles ) {
+        filenames = new String[pFiles.length];
+        content = new String[pFiles.length];
 
-	public String readString() {
-		return content[p++];
-	}
-	
-	public int read() throws IOException {
-		return 0;
-	}
+        for (int i = 0; i < pFiles.length; i++) {
+            String[] nameAndContent = pFiles[i];
+            filenames[i] = nameAndContent[0];
+            content[i] = nameAndContent[1];
+        }
+        p = 0;
+    }
+
+    public ArchiveEntry getNextEntry() throws IOException {
+        if (p >= filenames.length) {
+            return null;
+        }
+
+        return new MemoryArchiveEntry(filenames[p]);
+    }
+
+    public String readString() {
+        return content[p++];
+    }
+
+    public int read() throws IOException {
+        return 0;
+    }
 
 }

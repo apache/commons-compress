@@ -30,7 +30,7 @@ public class EncryptedArchiveTest extends TestCase {
 
     public void testReadPasswordEncryptedEntryViaZipFile()
         throws IOException, URISyntaxException {
-	URL zip = getClass().getResource("/password-encrypted.zip");
+        URL zip = getClass().getResource("/password-encrypted.zip");
         File file = new File(new URI(zip.toString()));
         ZipFile zf = null;
         try {
@@ -52,7 +52,7 @@ public class EncryptedArchiveTest extends TestCase {
 
     public void testReadPasswordEncryptedEntryViaStream()
         throws IOException, URISyntaxException {
-	URL zip = getClass().getResource("/password-encrypted.zip");
+        URL zip = getClass().getResource("/password-encrypted.zip");
         File file = new File(new URI(zip.toString()));
         ZipArchiveInputStream zin = null;
         try {

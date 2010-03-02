@@ -95,7 +95,7 @@ public class ArchiveStreamFactory {
         }
         
         if (in == null) {
-        	throw new IllegalArgumentException("InputStream must not be null.");
+            throw new IllegalArgumentException("InputStream must not be null.");
         }
 
         if (AR.equalsIgnoreCase(archiverName)) {
@@ -133,7 +133,7 @@ public class ArchiveStreamFactory {
             throw new IllegalArgumentException("Archivername must not be null.");
         }
         if (out == null) {
-        	throw new IllegalArgumentException("OutputStream must not be null.");
+            throw new IllegalArgumentException("OutputStream must not be null.");
         }
 
         if (AR.equalsIgnoreCase(archiverName)) {

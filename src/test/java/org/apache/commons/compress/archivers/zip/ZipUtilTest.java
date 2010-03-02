@@ -24,17 +24,17 @@ import java.util.Date;
 import junit.framework.TestCase;
 
 public class ZipUtilTest extends TestCase {
-    
+
     private Date time;
     private ZipLong zl;
-    
+
     /**
      * Constructor
-     */	
+     */
     public ZipUtilTest(String name) {
         super(name);
     }
-	
+
     protected void setUp() throws Exception {
         time = new Date();
         Calendar cal = Calendar.getInstance();
@@ -43,7 +43,7 @@ public class ZipUtilTest extends TestCase {
         int month = cal.get(Calendar.MONTH) + 1;
         long value =  ((year - 1980) << 25)
             |         (month << 21)
-            |	      (cal.get(Calendar.DAY_OF_MONTH) << 16)
+            |         (cal.get(Calendar.DAY_OF_MONTH) << 16)
             |         (cal.get(Calendar.HOUR_OF_DAY) << 11)
             |         (cal.get(Calendar.MINUTE) << 5)
             |         (cal.get(Calendar.SECOND) >> 1);
@@ -59,7 +59,7 @@ public class ZipUtilTest extends TestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
     }
-    
+
     public void testZipLong() throws Exception {
         ZipLong test = ZipUtil.toDosTime(time);
         assertEquals(test.getValue(), zl.getValue());

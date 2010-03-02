@@ -33,9 +33,9 @@ import org.apache.commons.compress.utils.IOUtils;
 
 public final class TarTestCase extends AbstractTestCase {
     public void testTarArchiveCreation() throws Exception {
-		final File output = new File(dir, "bla.tar");
-		final File file1 = getFile("test1.xml");
-    	final OutputStream out = new FileOutputStream(output);
+        final File output = new File(dir, "bla.tar");
+        final File file1 = getFile("test1.xml");
+        final OutputStream out = new FileOutputStream(output);
         final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("tar", out);
         final TarArchiveEntry entry = new TarArchiveEntry("testdata/test1.xml");
         entry.setModTime(0);
@@ -50,15 +50,15 @@ public final class TarTestCase extends AbstractTestCase {
         os.closeArchiveEntry();
         os.close();
     }
-    
+
     public void testTarArchiveLongNameCreation() throws Exception {
-    	String name = "testdata/12345678901234567890123456789012345678901234567890123456789012345678901234567890123456.xml";
-    	byte[] bytes = name.getBytes();
-    	assertEquals(bytes.length, 99);
-    	
-		final File output = new File(dir, "bla.tar");
-		final File file1 = getFile("test1.xml");
-    	final OutputStream out = new FileOutputStream(output);
+        String name = "testdata/12345678901234567890123456789012345678901234567890123456789012345678901234567890123456.xml";
+        byte[] bytes = name.getBytes();
+        assertEquals(bytes.length, 99);
+
+        final File output = new File(dir, "bla.tar");
+        final File file1 = getFile("test1.xml");
+        final OutputStream out = new FileOutputStream(output);
         final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("tar", out);
         final TarArchiveEntry entry = new TarArchiveEntry(name);
         entry.setModTime(0);
@@ -75,37 +75,37 @@ public final class TarTestCase extends AbstractTestCase {
         os.close();
         out.close();
         in.close();
-        
-        
+
+
         ArchiveOutputStream os2 = null;
         try {
-        	String toLongName = "testdata/123456789012345678901234567890123456789012345678901234567890123456789012345678901234567.xml";
-        	final File output2 = new File(dir, "bla.tar");
-        	final OutputStream out2 = new FileOutputStream(output2);
-        	os2 = new ArchiveStreamFactory().createArchiveOutputStream("tar", out2);
-        	final TarArchiveEntry entry2 = new TarArchiveEntry(toLongName);
-        	entry2.setModTime(0);
-        	entry2.setSize(file1.length());
-        	entry2.setUserId(0);
-        	entry2.setGroupId(0);
-        	entry2.setUserName("avalon");
-        	entry2.setGroupName("excalibur");
-        	entry2.setMode(0100000);
-        	os2.putArchiveEntry(entry);
-        	IOUtils.copy(new FileInputStream(file1), os2);
+            String toLongName = "testdata/123456789012345678901234567890123456789012345678901234567890123456789012345678901234567.xml";
+            final File output2 = new File(dir, "bla.tar");
+            final OutputStream out2 = new FileOutputStream(output2);
+            os2 = new ArchiveStreamFactory().createArchiveOutputStream("tar", out2);
+            final TarArchiveEntry entry2 = new TarArchiveEntry(toLongName);
+            entry2.setModTime(0);
+            entry2.setSize(file1.length());
+            entry2.setUserId(0);
+            entry2.setGroupId(0);
+            entry2.setUserName("avalon");
+            entry2.setGroupName("excalibur");
+            entry2.setMode(0100000);
+            os2.putArchiveEntry(entry);
+            IOUtils.copy(new FileInputStream(file1), os2);
             os2.closeArchiveEntry();
         } catch(IOException e) {
-        	assertTrue(true);
+            assertTrue(true);
         } finally {
-        	if (os2 != null){
-        	    os2.close();
-        	}
+            if (os2 != null){
+                os2.close();
+            }
         }
     }
-    
+
     public void testTarUnarchive() throws Exception {
-		final File input = getFile("bla.tar");
-		final InputStream is = new FileInputStream(input);
+        final File input = getFile("bla.tar");
+        final InputStream is = new FileInputStream(input);
         final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("tar", is);
         final TarArchiveEntry entry = (TarArchiveEntry)in.getNextEntry();
         final OutputStream out = new FileOutputStream(new File(dir, entry.getName()));
