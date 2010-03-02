@@ -143,7 +143,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     /**
      * Since we do not support marking just yet, we do nothing.
      */
-    public void reset() {
+    public synchronized void reset() {
     }
 
     /**
