@@ -46,7 +46,7 @@
           the algorithm name:</p>
         <source><![CDATA[
 CompressorOutputStream gzippedOut = new CompressorStreamFactory()
-    .createCompressorOutputStream("gz", myOutputStream);
+    .createCompressorOutputStream(CompressorStreamFactory.GZIP, myOutputStream);
 ]]></source>
 
         <p>Make the factory guess the input format for a given stream:</p>

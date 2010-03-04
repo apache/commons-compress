@@ -43,7 +43,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
  * 
  * <pre>
  * final OutputStream out = new FileOutputStream(output); 
- * ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("zip", out);
+ * ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream(ArchiveStreamFactory.ZIP, out);
  * 
  * os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
  * IOUtils.copy(new FileInputStream(file1), os);
@@ -59,7 +59,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
  * 
  * <pre>
  * final InputStream is = new FileInputStream(input); 
- * ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("zip", is);
+ * ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream(ArchiveStreamFactory.ZIP, is);
  * ZipArchiveEntry entry = (ZipArchiveEntry)in.getNextEntry();
  * OutputStream out = new FileOutputStream(new File(dir, entry.getName()));
  * IOUtils.copy(in, out);
@@ -71,11 +71,31 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
  */
 public class ArchiveStreamFactory {
 
-    private static final String AR = "ar";
-    private static final String CPIO = "cpio";
-    private static final String JAR = "jar";
-    private static final String TAR = "tar";
-    private static final String ZIP = "zip";
+    /**
+     * Constant used to identify the AR archive format.
+     * @since Commons Compress 1.1
+     */
+    public static final String AR = "ar";
+    /**
+     * Constant used to identify the CPIO archive format.
+     * @since Commons Compress 1.1
+     */
+    public static final String CPIO = "cpio";
+    /**
+     * Constant used to identify the JAR archive format.
+     * @since Commons Compress 1.1
+     */
+    public static final String JAR = "jar";
+    /**
+     * Constant used to identify the TAR archive format.
+     * @since Commons Compress 1.1
+     */
+    public static final String TAR = "tar";
+    /**
+     * Constant used to identify the ZIP archive format.
+     * @since Commons Compress 1.1
+     */
+    public static final String ZIP = "zip";
 
     /**
      * Create an archive input stream from an archiver name and an input stream.

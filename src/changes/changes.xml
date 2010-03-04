@@ -52,6 +52,10 @@
         ZipArchiveEntry, ZipFile and ZipArchiveInputStream are now
         more lenient when parsing extra fields.
       </action>
+      <action type="add" date="2010-02-12" issue="COMPRESS-97">
+        Added autodetection of compression format to
+        CompressorStreamFactory.
+      </action>
       <action type="fix" date="2010-02-12">
         Improved exception message if the extra field data in ZIP
         archives cannot be parsed.
