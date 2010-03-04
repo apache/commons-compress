@@ -37,7 +37,7 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
  * <pre>
  * final OutputStream out = new FileOutputStream(output); 
  * CompressorOutputStream cos = 
- *      new CompressorStreamFactory().createCompressorOutputStream("bzip2", out);
+ *      new CompressorStreamFactory().createCompressorOutputStream(CompressorStreamFactory.BZIP2, out);
  * IOUtils.copy(new FileInputStream(input), cos);
  * cos.close();
  * </pre>    
@@ -46,7 +46,7 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
  * <pre>
  * final InputStream is = new FileInputStream(input); 
  * CompressorInputStream in = 
- *      new CompressorStreamFactory().createCompressorInputStream("bzip2", is);
+ *      new CompressorStreamFactory().createCompressorInputStream(CompressorStreamFactory.BZIP2, is);
  * IOUtils.copy(in, new FileOutputStream(output));
  * in.close();
  * </pre>
@@ -55,8 +55,16 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
  */
 public class CompressorStreamFactory {
 
-    private static final String BZ = "bzip2";
-    private static final String GZ = "gz";
+    /**
+     * Constant used to identify the BZIP2 compression algorithm.
+     * @since Commons Compress 1.1
+     */
+    public static final String BZIP2 = "bzip2";
+    /**
+     * Constant used to identify the GZIP compression algorithm.
+     * @since Commons Compress 1.1
+     */
+    public static final String GZIP = "gz";
 
     /**
      * Create an compressor input stream from an input stream, autodetecting
@@ -67,6 +75,7 @@ public class CompressorStreamFactory {
      * @return the compressor input stream
      * @throws CompressorException if the compressor name is not known
      * @throws IllegalArgumentException if the stream is null or does not support mark
+     * @since Commons Compress 1.1
      */
     public CompressorInputStream createCompressorInputStream(final InputStream in)
             throws CompressorException {
@@ -117,11 +126,11 @@ public class CompressorStreamFactory {
 
         try {
             
-            if (GZ.equalsIgnoreCase(name)) {
+            if (GZIP.equalsIgnoreCase(name)) {
                 return new GzipCompressorInputStream(in);
             }
             
-            if (BZ.equalsIgnoreCase(name)) {
+            if (BZIP2.equalsIgnoreCase(name)) {
                 return new BZip2CompressorInputStream(in);
             }
             
@@ -151,11 +160,11 @@ public class CompressorStreamFactory {
 
         try {
 
-            if (GZ.equalsIgnoreCase(name)) {
+            if (GZIP.equalsIgnoreCase(name)) {
                 return new GzipCompressorOutputStream(out);
             }
             
-            if (BZ.equalsIgnoreCase(name)) {
+            if (BZIP2.equalsIgnoreCase(name)) {
                 return new BZip2CompressorOutputStream(out);
             }
         
