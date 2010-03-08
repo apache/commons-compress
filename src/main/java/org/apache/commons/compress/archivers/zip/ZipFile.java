@@ -21,9 +21,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
@@ -72,7 +75,7 @@ public class ZipFile {
      * Maps ZipArchiveEntrys to Longs, recording the offsets of the local
      * file headers.
      */
-    private final Map entries = new HashMap(HASH_SIZE);
+    private final Map entries = new LinkedHashMap(HASH_SIZE);
 
     /**
      * Maps String to ZipArchiveEntrys, name -> actual entry.
@@ -226,10 +229,30 @@ public class ZipFile {
 
     /**
      * Returns all entries.
+     *
+     * <p>Entries will be returned in the same order they appear
+     * within the archive's central directory.</p>
+     *
      * @return all entries as {@link ZipArchiveEntry} instances
      */
     public Enumeration getEntries() {
         return Collections.enumeration(entries.keySet());
+    }
+
+    /**
+     * Returns all entries in physical order.
+     *
+     * <p>Entries will be returned in the same order their contents
+     * appear within the archive.</p>
+     *
+     * @return all entries as {@link ZipArchiveEntry} instances
+     *
+     * @since Commons Compress 1.1
+     */
+    public Enumeration getEntriesInPhysicalOrder() {
+        Object[] allEntries = entries.keySet().toArray();
+        Arrays.sort(allEntries, OFFSET_COMPARATOR);
+        return Collections.enumeration(Arrays.asList(allEntries));
     }
 
     /**
@@ -655,4 +678,36 @@ public class ZipFile {
             this.comment = comment;
         }
     }
+
+    /**
+     * Compares two ZupArchiveEntries based on their offset within the archive.
+     *
+     * <p>Won't return any meaningful results if one of the entries
+     * isn't part of the archive at all.</p>
+     *
+     * @since Commons Compress 1.1
+     */
+    private final Comparator OFFSET_COMPARATOR =
+        new Comparator() {
+            public int compare(Object o1, Object o2) {
+                if (o1 == o2)
+                    return 0;
+
+                ZipArchiveEntry e1 = (ZipArchiveEntry) o1;
+                ZipArchiveEntry e2 = (ZipArchiveEntry) o2;
+
+                OffsetEntry off1 = (OffsetEntry) entries.get(e1);
+                OffsetEntry off2 = (OffsetEntry) entries.get(e2);
+                if (off1 == null) {
+                    return 1;
+                }
+                if (off2 == null) {
+                    return -1;
+                }
+                return (int) Math.signum(off1.headerOffset - off2.headerOffset);
+            }
+            public boolean equals(Object o) {
+                return o == this;
+            }
+        };
 }

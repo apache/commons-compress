@@ -23,6 +23,13 @@
   </properties>
   <body>
     <release version="1.1" date="as in SVN" description="Release 1.1">
+      <action type="add" date="2010-03-08" issue="COMPRESS-99">
+        ZipFile#getEntries returns entries in a predictable order -
+        the order they appear inside the central directory.
+        A new method getEntriesInPhysicalOrder returns entries in
+        order of the entry data, i.e. the order ZipArchiveInputStream
+        would see.
+      </action>
       <action type="add" date="2010-02-19">
         The Archive*Stream and ZipFile classes now have
         can(Read|Write)EntryData methods that can be used to check
