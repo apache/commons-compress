@@ -23,6 +23,11 @@
   </properties>
   <body>
     <release version="1.1" date="as in SVN" description="Release 1.1">
+      <action type="add" date="2010-03-09" issue="COMPRESS-98">
+        The ZIP classes will throw specialized exceptions if any
+        attempt is made to read or write data that uses zip features
+        not supported (yet).
+      </action>
       <action type="add" date="2010-03-08" issue="COMPRESS-99">
         ZipFile#getEntries returns entries in a predictable order -
         the order they appear inside the central directory.

@@ -212,15 +212,17 @@ public abstract class ZipUtil {
      * Checks whether the entry requires features not (yet) supported
      * by the library and throws an exception if it does.
      */
-    static void checkRequestedFeatures(ZipArchiveEntry ze) throws IOException {
+    static void checkRequestedFeatures(ZipArchiveEntry ze)
+        throws UnsupportedZipFeatureException {
         if (!supportsEncryptionOf(ze)) {
-            throw new IOException("Encryption is not supported, used in "
-                                  + "entry " + ze.getName());
+            throw
+                new UnsupportedZipFeatureException(UnsupportedZipFeatureException
+                                                   .Feature.ENCRYPTION, ze);
         }
         if (!supportsMethodOf(ze)) {
-            throw new IOException("Unsupported compression method "
-                                  + ze.getMethod() + " in ZIP archive entry "
-                                  + ze.getName());
+            throw
+                new UnsupportedZipFeatureException(UnsupportedZipFeatureException
+                                                   .Feature.METHOD, ze);
         }
     }
 }
