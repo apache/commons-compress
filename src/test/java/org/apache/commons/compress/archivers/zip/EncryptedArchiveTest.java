@@ -42,8 +42,9 @@ public class EncryptedArchiveTest extends TestCase {
             try {
                 zf.getInputStream(zae);
                 fail("expected an exception");
-            } catch (IOException ex) {
-                assertTrue(ex.getMessage().indexOf("Encryption") >= 0);
+            } catch (UnsupportedZipFeatureException ex) {
+                assertSame(UnsupportedZipFeatureException.Feature.ENCRYPTION,
+                           ex.getFeature());
             }
         } finally {
             ZipFile.closeQuietly(zf);
@@ -66,8 +67,9 @@ public class EncryptedArchiveTest extends TestCase {
                 byte[] buf = new byte[1024];
                 zin.read(buf, 0, buf.length);
                 fail("expected an exception");
-            } catch (IOException ex) {
-                assertTrue(ex.getMessage().indexOf("Encryption") >= 0);
+            } catch (UnsupportedZipFeatureException ex) {
+                assertSame(UnsupportedZipFeatureException.Feature.ENCRYPTION,
+                           ex.getFeature());
             }
         } finally {
             if (zin != null) {
