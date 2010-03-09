@@ -180,4 +180,47 @@ public abstract class ZipUtil {
         return null;
     }
 
+    /**
+     * Whether this library is able to read or write the given entry.
+     */
+    static boolean canHandleEntryData(ZipArchiveEntry entry) {
+        return supportsEncryptionOf(entry) && supportsMethodOf(entry);
+    }
+
+    /**
+     * Whether this library supports the encryption used by the given
+     * entry.
+     *
+     * @return true if the entry isn't encrypted at all
+     */
+    private static boolean supportsEncryptionOf(ZipArchiveEntry entry) {
+        return !entry.isEncrypted();
+    }
+
+    /**
+     * Whether this library supports the compression method used by
+     * the given entry.
+     *
+     * @return true if the compression method is STORED or DEFLATED
+     */
+    private static boolean supportsMethodOf(ZipArchiveEntry entry) {
+        return entry.getMethod() == ZipArchiveEntry.STORED
+            || entry.getMethod() == ZipArchiveEntry.DEFLATED;
+    }
+
+    /**
+     * Checks whether the entry requires features not (yet) supported
+     * by the library and throws an exception if it does.
+     */
+    static void checkRequestedFeatures(ZipArchiveEntry ze) throws IOException {
+        if (!supportsEncryptionOf(ze)) {
+            throw new IOException("Encryption is not supported, used in "
+                                  + "entry " + ze.getName());
+        }
+        if (!supportsMethodOf(ze)) {
+            throw new IOException("Unsupported compression method "
+                                  + ze.getMethod() + " in ZIP archive entry "
+                                  + ze.getName());
+        }
+    }
 }

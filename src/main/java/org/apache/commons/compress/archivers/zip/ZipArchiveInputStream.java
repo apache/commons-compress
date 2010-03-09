@@ -198,10 +198,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
      */
     public boolean canReadEntryData(ArchiveEntry ae) {
         if (ae instanceof ZipArchiveEntry) {
-            ZipArchiveEntry ze = (ZipArchiveEntry) ae;
-            return !ze.isEncrypted() &&
-                (ze.getMethod() == ZipArchiveEntry.STORED
-                 || ze.getMethod() == ZipArchiveEntry.DEFLATED);
+            return ZipUtil.canHandleEntryData((ZipArchiveEntry) ae);
         }
         return false;
     }
@@ -217,16 +214,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         // avoid int overflow, check null buffer
         if (start <= buffer.length && length >= 0 && start >= 0
             && buffer.length - start >= length) {
-            if (current.isEncrypted()) {
-                throw new IOException("Encryption is not supported, used in "
-                                      + "entry " + current.getName());
-            }
-            if (current.getMethod() != ZipArchiveEntry.STORED
-                && current.getMethod() != ZipArchiveEntry.DEFLATED) {
-                throw new IOException(
-                        "Unsupported compression method " + current.getMethod()
-                        + " in ZIP archive entry " + current.getName());
-            }
+            ZipUtil.checkRequestedFeatures(current);
 
             if (current.getMethod() == ZipArchiveOutputStream.STORED) {
                 int csize = (int) current.getSize();

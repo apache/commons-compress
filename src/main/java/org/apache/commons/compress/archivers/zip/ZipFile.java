@@ -274,18 +274,16 @@ public class ZipFile {
      * @since Apache Commons Compress 1.1
      */
     public boolean canReadEntryData(ZipArchiveEntry ze) {
-        return !ze.isEncrypted() &&
-            (ze.getMethod() == ZipArchiveEntry.STORED
-             || ze.getMethod() == ZipArchiveEntry.DEFLATED);
+        return ZipUtil.canHandleEntryData(ze);
     }
 
     /**
      * Returns an InputStream for reading the contents of the given entry.
+     *
      * @param ze the entry to get the stream for.
      * @return a stream to read the entry from.
      * @throws IOException if unable to create an input stream from the zipenty
-     * @throws ZipException if the zipentry has an unsupported
-     * compression method
+     * @throws ZipException if the zipentry uses an unsupported feature
      */
     public InputStream getInputStream(ZipArchiveEntry ze)
         throws IOException, ZipException {
@@ -293,16 +291,7 @@ public class ZipFile {
         if (offsetEntry == null) {
             return null;
         }
-        if (ze.isEncrypted()) {
-            throw new IOException("Encryption is not supported, used in "
-                                  + "entry " + ze.getName());
-        }
-        if (ze.getMethod() != ZipArchiveEntry.STORED
-            && ze.getMethod() != ZipArchiveEntry.DEFLATED) {
-            throw new IOException("Unsupported compression method "
-                                  + ze.getMethod() + " in ZIP archive entry "
-                                  + ze.getName());
-        }
+        ZipUtil.checkRequestedFeatures(ze);
         long start = offsetEntry.dataOffset;
         BoundedInputStream bis =
             new BoundedInputStream(start, ze.getCompressedSize());
