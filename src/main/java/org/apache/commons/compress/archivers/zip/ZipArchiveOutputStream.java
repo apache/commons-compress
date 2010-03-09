@@ -513,9 +513,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     public boolean canWriteEntryData(ArchiveEntry ae) {
         if (ae instanceof ZipArchiveEntry) {
-            ZipArchiveEntry ze = (ZipArchiveEntry) ae;
-            return !ze.isEncrypted() &&
-                (ze.getMethod() == STORED || ze.getMethod() == DEFLATED);
+            return ZipUtil.canHandleEntryData((ZipArchiveEntry) ae);
         }
         return false;
     }
@@ -528,15 +526,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @throws IOException on error
      */
     public void write(byte[] b, int offset, int length) throws IOException {
-        if (entry.isEncrypted()) {
-            throw new IOException("Encryption is not supported, used in entry "
-                                  + entry.getName());
-        }
-        if (entry.getMethod() != STORED && entry.getMethod() != DEFLATED) {
-            throw new IOException(
-                    "Unsupported compression method " + entry.getMethod()
-                    + " in ZIP archive entry " + entry.getName());
-        }
+        ZipUtil.checkRequestedFeatures(entry);
         if (entry.getMethod() == DEFLATED) {
             if (length > 0) {
                 if (!def.finished()) {
