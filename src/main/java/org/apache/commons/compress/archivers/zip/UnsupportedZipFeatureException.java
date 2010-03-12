@@ -70,6 +70,10 @@ public class UnsupportedZipFeatureException extends ZipException {
          * The entry used an unsupported compression method.
          */
         public static Feature METHOD = new Feature("compression method");
+        /**
+         * The entry uses a data descriptor.
+         */
+        public static Feature DATA_DESCRIPTOR = new Feature("data descriptor");
         
         private final String name;
 

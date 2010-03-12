@@ -74,8 +74,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     private LinkedHashMap/*<ZipShort, ZipExtraField>*/ extraFields = null;
     private UnparseableExtraFieldData unparseableExtra = null;
     private String name = null;
-    private boolean encrypted;
-    private boolean stronglyEncrypted;
+    private GeneralPurposeBit gpb = new GeneralPurposeBit();
 
     /**
      * Creates a new zip entry with the specified name.
@@ -479,38 +478,19 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     }
 
     /**
-     * Whether the entry is encrypted.
+     * The "general purpose bit" field.
      * @since Apache Commons Compress 1.1
      */
-    public boolean isEncrypted() {
-        return encrypted;
+    public GeneralPurposeBit getGeneralPurposeBit() {
+        return gpb;
     }
 
     /**
-     * Whether the entry is encrypted using strong encryption.
+     * The "general purpose bit" field.
      * @since Apache Commons Compress 1.1
      */
-    public boolean isStronglyEncrypted() {
-        return stronglyEncrypted && encrypted;
-    }
-
-    /**
-     * Whether the entry is encrypted.
-     * @since Apache Commons Compress 1.1
-     */
-    public void setEncrypted(boolean b) {
-        encrypted = b;
-    }
-
-    /**
-     * Whether the entry is encrypted using strong encryption.
-     * @since Apache Commons Compress 1.1
-     */
-    public void setStronglyEncrypted(boolean b) {
-        stronglyEncrypted = b;
-        if (b) {
-            setEncrypted(true);
-        }
+    public void setGeneralPurposeBit(GeneralPurposeBit b) {
+        gpb = b;
     }
 
     /**
@@ -594,6 +574,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
             && Arrays.equals(getCentralDirectoryExtra(),
                              other.getCentralDirectoryExtra())
             && Arrays.equals(getLocalFileDataExtra(),
-                             other.getLocalFileDataExtra());
+                             other.getLocalFileDataExtra())
+            && gpb.equals(other.gpb);
     }
 }

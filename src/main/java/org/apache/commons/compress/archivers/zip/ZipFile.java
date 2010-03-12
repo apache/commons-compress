@@ -368,8 +368,7 @@ public class ZipFile {
             final boolean hasUTF8Flag = gpFlag.usesUTF8ForNames();
             final ZipEncoding entryEncoding =
                 hasUTF8Flag ? ZipEncodingHelper.UTF8_ZIP_ENCODING : zipEncoding;
-            ze.setEncrypted(gpFlag.usesEncryption());
-            ze.setStronglyEncrypted(gpFlag.usesStrongEncryption());
+            ze.setGeneralPurposeBit(gpFlag);
 
             off += SHORT;
 
