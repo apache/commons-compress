@@ -49,6 +49,12 @@ public final class ZipLong implements Cloneable {
     public static final ZipLong LFH_SIG = new ZipLong(0X04034B50L);
 
     /**
+     * Data Descriptor signature
+     * @since Commons Compress 1.1
+     */
+    public static final ZipLong DD_SIG = new ZipLong(0X08074B50L);
+
+    /**
      * Create instance from a number.
      * @param value the long to store as a ZipLong
      */
