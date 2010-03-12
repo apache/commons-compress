@@ -23,6 +23,10 @@
   </properties>
   <body>
     <release version="1.1" date="as in SVN" description="Release 1.1">
+      <action type="fix" date="2010-03-12" issue="COMPRESS-101">
+        ZipArchiveInputStream should now properly read archives that
+        use data descriptors but without the "unofficial" signature.
+      </action>
       <action type="add" date="2010-03-09" issue="COMPRESS-98">
         The ZIP classes will throw specialized exceptions if any
         attempt is made to read or write data that uses zip features

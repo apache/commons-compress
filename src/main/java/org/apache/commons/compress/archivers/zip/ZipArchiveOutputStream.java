@@ -597,7 +597,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * data descriptor signature
      */
-    static final byte[] DD_SIG = ZipLong.getBytes(0X08074B50L);
+    static final byte[] DD_SIG = ZipLong.DD_SIG.getBytes();
     /**
      * central file header signature
      */

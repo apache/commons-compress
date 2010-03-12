@@ -373,7 +373,15 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         }
 
         if (hasDataDescriptor) {
-            readFully(new byte[4 * WORD]);
+            byte[] sig = new byte[WORD];
+            readFully(sig);
+            if (ZipLong.DD_SIG.equals(new ZipLong(sig))) {
+                readFully(new byte[3 * WORD]);
+            } else {
+                // data descriptor without signature, we've already
+                // read the CRC
+                readFully(new byte[2 * WORD]);
+            }
         }
 
         inf.reset();
