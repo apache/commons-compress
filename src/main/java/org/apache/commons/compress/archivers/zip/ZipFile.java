@@ -668,7 +668,7 @@ public class ZipFile {
     }
 
     /**
-     * Compares two ZupArchiveEntries based on their offset within the archive.
+     * Compares two ZipArchiveEntries based on their offset within the archive.
      *
      * <p>Won't return any meaningful results if one of the entries
      * isn't part of the archive at all.</p>
@@ -692,7 +692,8 @@ public class ZipFile {
                 if (off2 == null) {
                     return -1;
                 }
-                return (int) Math.signum(off1.headerOffset - off2.headerOffset);
+                long val = (off1.headerOffset - off2.headerOffset);
+                return val == 0 ? 0 : val < 0 ? -1 : +1;
             }
             public boolean equals(Object o) {
                 return o == this;
