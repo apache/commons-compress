@@ -32,8 +32,8 @@ public class UnsupportedZipFeatureException extends ZipException {
 
     /**
      * Creates an exception.
-     * @param the feature that is not supported
-     * @param the entry using the feature
+     * @param reason the feature that is not supported
+     * @param entry the entry using the feature
      */
     public UnsupportedZipFeatureException(Feature reason,
                                           ZipArchiveEntry entry) {
@@ -65,15 +65,15 @@ public class UnsupportedZipFeatureException extends ZipException {
         /**
          * The entry is encrypted.
          */
-        public static Feature ENCRYPTION = new Feature("encryption");
+        public static final Feature ENCRYPTION = new Feature("encryption");
         /**
          * The entry used an unsupported compression method.
          */
-        public static Feature METHOD = new Feature("compression method");
+        public static final Feature METHOD = new Feature("compression method");
         /**
          * The entry uses a data descriptor.
          */
-        public static Feature DATA_DESCRIPTOR = new Feature("data descriptor");
+        public static final Feature DATA_DESCRIPTOR = new Feature("data descriptor");
         
         private final String name;
 
