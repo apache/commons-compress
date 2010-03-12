@@ -139,8 +139,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         final ZipEncoding entryEncoding =
             hasUTF8Flag ? ZipEncodingHelper.UTF8_ZIP_ENCODING : zipEncoding;
         hasDataDescriptor = gpFlag.usesDataDescriptor();
-        current.setEncrypted(gpFlag.usesEncryption());
-        current.setStronglyEncrypted(gpFlag.usesStrongEncryption());
+        current.setGeneralPurposeBit(gpFlag);
 
         off += SHORT;
 

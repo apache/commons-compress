@@ -23,6 +23,12 @@
   </properties>
   <body>
     <release version="1.1" date="as in SVN" description="Release 1.1">
+      <action type="fix" date="2010-03-12" issue="COMPRESS-100">
+        ZipArchiveInputStream will throw an exception if it detects an
+        entry that uses a data descriptor for a STORED entry since it
+        cannot reliably find the end of data for this "compression"
+        method.
+      </action>
       <action type="fix" date="2010-03-12" issue="COMPRESS-101">
         ZipArchiveInputStream should now properly read archives that
         use data descriptors but without the "unofficial" signature.

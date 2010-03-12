@@ -36,8 +36,8 @@ public class EncryptedArchiveTest extends TestCase {
         try {
             zf = new ZipFile(file);
             ZipArchiveEntry zae = zf.getEntry("LICENSE.txt");
-            assertTrue(zae.isEncrypted());
-            assertFalse(zae.isStronglyEncrypted());
+            assertTrue(zae.getGeneralPurposeBit().usesEncryption());
+            assertFalse(zae.getGeneralPurposeBit().usesStrongEncryption());
             assertFalse(zf.canReadEntryData(zae));
             try {
                 zf.getInputStream(zae);
@@ -60,8 +60,8 @@ public class EncryptedArchiveTest extends TestCase {
             zin = new ZipArchiveInputStream(new FileInputStream(file));
             ZipArchiveEntry zae = zin.getNextZipEntry();
             assertEquals("LICENSE.txt", zae.getName());
-            assertTrue(zae.isEncrypted());
-            assertFalse(zae.isStronglyEncrypted());
+            assertTrue(zae.getGeneralPurposeBit().usesEncryption());
+            assertFalse(zae.getGeneralPurposeBit().usesStrongEncryption());
             assertFalse(zin.canReadEntryData(zae));
             try {
                 byte[] buf = new byte[1024];

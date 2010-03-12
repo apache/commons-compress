@@ -184,7 +184,8 @@ public abstract class ZipUtil {
      * Whether this library is able to read or write the given entry.
      */
     static boolean canHandleEntryData(ZipArchiveEntry entry) {
-        return supportsEncryptionOf(entry) && supportsMethodOf(entry);
+        return supportsEncryptionOf(entry) && supportsMethodOf(entry)
+            && supportsDataDescriptorFor(entry);
     }
 
     /**
@@ -194,7 +195,7 @@ public abstract class ZipUtil {
      * @return true if the entry isn't encrypted at all
      */
     private static boolean supportsEncryptionOf(ZipArchiveEntry entry) {
-        return !entry.isEncrypted();
+        return !entry.getGeneralPurposeBit().usesEncryption();
     }
 
     /**
@@ -205,6 +206,17 @@ public abstract class ZipUtil {
      */
     private static boolean supportsMethodOf(ZipArchiveEntry entry) {
         return entry.getMethod() == ZipArchiveEntry.STORED
+            || entry.getMethod() == ZipArchiveEntry.DEFLATED;
+    }
+
+    /**
+     * Whether this entry requires a data descriptor this library can work with.
+     *
+     * @return true if the entry doesn't require any data descriptor
+     * or the method is DEFLATED).
+     */
+    private static boolean supportsDataDescriptorFor(ZipArchiveEntry entry) {
+        return !entry.getGeneralPurposeBit().usesDataDescriptor()
             || entry.getMethod() == ZipArchiveEntry.DEFLATED;
     }
 
@@ -223,6 +235,11 @@ public abstract class ZipUtil {
             throw
                 new UnsupportedZipFeatureException(UnsupportedZipFeatureException
                                                    .Feature.METHOD, ze);
+        }
+        if (!supportsDataDescriptorFor(ze)) {
+            throw
+                new UnsupportedZipFeatureException(UnsupportedZipFeatureException
+                                                   .Feature.DATA_DESCRIPTOR, ze);
         }
     }
 }

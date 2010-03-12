@@ -21,8 +21,9 @@ package org.apache.commons.compress.archivers.zip;
  * Parser/encoder for the "general purpose bit" field in ZIP's local
  * file and central directory headers.
  * @since Apache Commons Compress 1.1
+ * @NotThreadSafe
  */
-public class GeneralPurposeBit {
+public final class GeneralPurposeBit {
     /**
      * Indicates that the file is encrypted.
      */
@@ -146,5 +147,23 @@ public class GeneralPurposeBit {
                               != 0);
         b.useEncryption((generalPurposeFlag & ENCRYPTION_FLAG) != 0);
         return b;
+    }
+
+    public int hashCode() {
+        return 3 * (7 * (13 * (17 * (encryptionFlag ? 1 : 0)
+                               + (strongEncryptionFlag ? 1 : 0))
+                         + (languageEncodingFlag ? 1 : 0))
+                    + (dataDescriptorFlag ? 1 : 0));
+    }
+
+    public boolean equals(Object o) {
+        if (!(o instanceof GeneralPurposeBit)) {
+            return false;
+        }
+        GeneralPurposeBit g = (GeneralPurposeBit) o;
+        return g.encryptionFlag == encryptionFlag
+            && g.strongEncryptionFlag == strongEncryptionFlag
+            && g.languageEncodingFlag == languageEncodingFlag
+            && g.dataDescriptorFlag == dataDescriptorFlag;
     }
 }
