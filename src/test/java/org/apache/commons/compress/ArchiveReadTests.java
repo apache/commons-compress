@@ -46,7 +46,7 @@ public class ArchiveReadTests extends AbstractTestCase {
     final static ClassLoader classLoader = ArchiveReadTests.class.getClassLoader();
 
     private File file;
-    private static ArrayList fileList = new ArrayList();
+    private static final ArrayList fileList = new ArrayList();
     
     public ArchiveReadTests(String name) {
         super(name);
