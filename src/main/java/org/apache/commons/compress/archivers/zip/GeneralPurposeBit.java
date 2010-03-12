@@ -19,7 +19,7 @@ package org.apache.commons.compress.archivers.zip;
 
 /**
  * Parser/encoder for the "general purpose bit" field in ZIP's local
- * file and cebtral directory headers.
+ * file and central directory headers.
  * @since Apache Commons Compress 1.1
  */
 public class GeneralPurposeBit {

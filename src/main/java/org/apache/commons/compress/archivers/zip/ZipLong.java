@@ -50,7 +50,7 @@ public final class ZipLong implements Cloneable {
 
     /**
      * Data Descriptor signature
-     * @since Commons Compress 1.1
+     * @since Apache Commons Compress 1.1
      */
     public static final ZipLong DD_SIG = new ZipLong(0X08074B50L);
 
