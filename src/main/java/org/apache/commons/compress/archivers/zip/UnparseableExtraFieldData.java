@@ -21,7 +21,7 @@ package org.apache.commons.compress.archivers.zip;
 /**
  * Wrapper for extra field data that doesn't conform to the recommended format of header-tag + size + data.
  *
- * <p>The header-id is artificial (and not listed as a know ID in
+ * <p>The header-id is artificial (and not listed as a known ID in
  * {@link http://www.pkware.com/documents/casestudies/APPNOTE.TXT
  * APPNOTE.TXT}.  Since it isn't used anywhere except to satisfy the
  * ZipExtraField contract it shouldn't matter anyway.</p>
