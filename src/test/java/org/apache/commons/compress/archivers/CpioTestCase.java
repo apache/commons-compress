@@ -205,8 +205,7 @@ public final class CpioTestCase extends AbstractTestCase {
             tos.putArchiveEntry(in);
             byte[] b = new byte[(int) tmp[1].length()];
             fis = new FileInputStream(tmp[1]);
-            int read;
-            while ((read = fis.read(b)) > 0) {
+            while (fis.read(b) > 0) {
                 tos.write(b);
             }
             fis.close();
@@ -259,8 +258,7 @@ public final class CpioTestCase extends AbstractTestCase {
             tos.putArchiveEntry(in);
             byte[] b = new byte[(int) tmp[1].length()];
             fis = new FileInputStream(tmp[1]);
-            int read;
-            while ((read = fis.read(b)) > 0) {
+            while (fis.read(b) > 0) {
                 tos.write(b);
             }
             fis.close();

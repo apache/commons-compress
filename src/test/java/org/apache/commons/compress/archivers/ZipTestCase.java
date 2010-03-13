@@ -287,8 +287,7 @@ public final class ZipTestCase extends AbstractTestCase {
             zos.putArchiveEntry(in);
             byte[] b = new byte[(int) tmp[1].length()];
             fis = new FileInputStream(tmp[1]);
-            int read;
-            while ((read = fis.read(b)) > 0) {
+            while (fis.read(b) > 0) {
                 zos.write(b);
             }
             fis.close();
@@ -336,8 +335,7 @@ public final class ZipTestCase extends AbstractTestCase {
             zos.putArchiveEntry(in);
             byte[] b = new byte[(int) tmp[1].length()];
             fis = new FileInputStream(tmp[1]);
-            int read;
-            while ((read = fis.read(b)) > 0) {
+            while (fis.read(b) > 0) {
                 zos.write(b);
             }
             fis.close();
