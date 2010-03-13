@@ -43,7 +43,7 @@ public final class MemoryArchiveEntry implements ArchiveEntry {
         return false;
     }
 
-    /** {@inheritDocs} */
+    /** {@inheritDoc} */
     public Date getLastModifiedDate() {
         return new Date();
     }
