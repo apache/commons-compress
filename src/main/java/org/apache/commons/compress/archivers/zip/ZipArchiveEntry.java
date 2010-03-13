@@ -529,7 +529,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         }
     }
 
-    /** {@inheritDocs} */
+    /** {@inheritDoc} */
     public Date getLastModifiedDate() {
         return new Date(getTime());
     }

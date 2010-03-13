@@ -140,7 +140,7 @@ public class ArArchiveEntry implements ArchiveEntry {
         return lastModified;
     }
 
-    /** {@inheritDocs} */
+    /** {@inheritDoc} */
     public Date getLastModifiedDate() {
         return new Date(1000 * getLastModified());
     }
