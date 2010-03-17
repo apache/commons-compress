@@ -372,15 +372,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         }
 
         if (hasDataDescriptor) {
-            byte[] sig = new byte[WORD];
-            readFully(sig);
-            if (ZipLong.DD_SIG.equals(new ZipLong(sig))) {
-                readFully(new byte[3 * WORD]);
-            } else {
-                // data descriptor without signature, we've already
-                // read the CRC
-                readFully(new byte[2 * WORD]);
-            }
+            readDataDescriptor();
         }
 
         inf.reset();
@@ -410,4 +402,21 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             count(x);
         }
     }
+
+    private void readDataDescriptor() throws IOException {
+        byte[] b = new byte[WORD];
+        readFully(b);
+        ZipLong val = new ZipLong(b);
+        if (ZipLong.DD_SIG.equals(val)) {
+            // data descriptor with signature, skip sig
+            readFully(b);
+            val = new ZipLong(b);
+        }
+        current.setCrc(val.getValue());
+        readFully(b);
+        current.setCompressedSize(new ZipLong(b).getValue());
+        readFully(b);
+        current.setSize(new ZipLong(b).getValue());
+    }
+
 }
