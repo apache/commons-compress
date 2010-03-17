@@ -197,7 +197,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
      */
     public boolean canReadEntryData(ArchiveEntry ae) {
         if (ae instanceof ZipArchiveEntry) {
-            return ZipUtil.canHandleEntryData((ZipArchiveEntry) ae);
+            ZipArchiveEntry ze = (ZipArchiveEntry) ae;
+            return ZipUtil.canHandleEntryData(ze)
+                && supportsDataDescriptorFor(ze);
+
         }
         return false;
     }
@@ -214,6 +217,12 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         if (start <= buffer.length && length >= 0 && start >= 0
             && buffer.length - start >= length) {
             ZipUtil.checkRequestedFeatures(current);
+            if (!supportsDataDescriptorFor(current)) {
+                throw new UnsupportedZipFeatureException(UnsupportedZipFeatureException
+                                                         .Feature
+                                                         .DATA_DESCRIPTOR,
+                                                         current);
+            }
 
             if (current.getMethod() == ZipArchiveOutputStream.STORED) {
                 int csize = (int) current.getSize();
@@ -417,6 +426,17 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         current.setCompressedSize(new ZipLong(b).getValue());
         readFully(b);
         current.setSize(new ZipLong(b).getValue());
+    }
+
+    /**
+     * Whether this entry requires a data descriptor this library can work with.
+     *
+     * @return true if the entry doesn't require any data descriptor
+     * or the method is DEFLATED).
+     */
+    private static boolean supportsDataDescriptorFor(ZipArchiveEntry entry) {
+        return !entry.getGeneralPurposeBit().usesDataDescriptor()
+            || entry.getMethod() == ZipArchiveEntry.DEFLATED;
     }
 
 }
