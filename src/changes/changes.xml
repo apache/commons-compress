@@ -23,6 +23,13 @@
   </properties>
   <body>
     <release version="1.1" date="as in SVN" description="Release 1.1">
+      <action type="add" date="2010-03-19" issue="COMPRESS-103">
+        ZipArchiveInputStream can optionally extract data that used
+        the STORED compression method and a data descriptor.
+        Doing so in a stream is not safe in general, so you have to
+        explicitly enable the feature.  By default the stream will
+        throw an exception if it encounters such an entry.
+      </action>
       <action type="fix" date="2010-03-12" issue="COMPRESS-100">
         ZipArchiveInputStream will throw an exception if it detects an
         entry that uses a data descriptor for a STORED entry since it

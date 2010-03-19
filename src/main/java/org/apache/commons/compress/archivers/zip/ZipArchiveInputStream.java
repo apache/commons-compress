@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -70,6 +72,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     private int bytesReadFromStream = 0;
     private int lengthOfLastRead = 0;
     private boolean hasDataDescriptor = false;
+    private ByteArrayInputStream lastStoredEntry = null;
+
+    private boolean allowStoredEntriesWithDataDescriptor = false;
 
     private static final int LFH_LEN = 30;
     /*
@@ -99,9 +104,27 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     public ZipArchiveInputStream(InputStream inputStream,
                                  String encoding,
                                  boolean useUnicodeExtraFields) {
+        this(inputStream, encoding, useUnicodeExtraFields, false);
+    }
+
+    /**
+     * @param encoding the encoding to use for file names, use null
+     * for the platform's default encoding
+     * @param useUnicodeExtraFields whether to use InfoZIP Unicode
+     * Extra Fields (if present) to set the file names.
+     * @param allowStoredEntriesWithDataDescriptor whether the stream
+     * will try to read STORED entries that use a data descriptor
+     * @since Apache Commons Compress 1.1
+     */
+    public ZipArchiveInputStream(InputStream inputStream,
+                                 String encoding,
+                                 boolean useUnicodeExtraFields,
+                                 boolean allowStoredEntriesWithDataDescriptor) {
         zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
         this.useUnicodeExtraFields = useUnicodeExtraFields;
         in = new PushbackInputStream(inputStream, buf.length);
+        this.allowStoredEntriesWithDataDescriptor =
+            allowStoredEntriesWithDataDescriptor;
     }
 
     public ZipArchiveEntry getNextZipEntry() throws IOException {
@@ -225,6 +248,13 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             }
 
             if (current.getMethod() == ZipArchiveOutputStream.STORED) {
+                if (hasDataDescriptor) {
+                    if (lastStoredEntry == null) {
+                        readStoredEntry();
+                    }
+                    return lastStoredEntry.read(buffer, start, length);
+                }
+
                 int csize = (int) current.getSize();
                 if (readBytesOfEntry >= csize) {
                     return -1;
@@ -380,7 +410,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             }
         }
 
-        if (hasDataDescriptor) {
+        if (lastStoredEntry == null && hasDataDescriptor) {
             readDataDescriptor();
         }
 
@@ -389,6 +419,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             lengthOfLastRead = 0;
         crc.reset();
         current = null;
+        lastStoredEntry = null;
     }
 
     private void fill() throws IOException {
@@ -431,12 +462,96 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     /**
      * Whether this entry requires a data descriptor this library can work with.
      *
-     * @return true if the entry doesn't require any data descriptor
-     * or the method is DEFLATED).
+     * @return true if allowStoredEntriesWithDataDescriptor is true,
+     * the entry doesn't require any data descriptor or the method is
+     * DEFLATED.
      */
-    private static boolean supportsDataDescriptorFor(ZipArchiveEntry entry) {
-        return !entry.getGeneralPurposeBit().usesDataDescriptor()
+    private boolean supportsDataDescriptorFor(ZipArchiveEntry entry) {
+        return allowStoredEntriesWithDataDescriptor ||
+            !entry.getGeneralPurposeBit().usesDataDescriptor()
             || entry.getMethod() == ZipArchiveEntry.DEFLATED;
     }
 
+    /**
+     * Caches a stored entry that uses the data descriptor.
+     *
+     * <ul>
+     *   <li>Reads a stored entry until the signature of a local file
+     *     header, central directory header or data descriptor has been
+     *     found.</li>
+     *   <li>Stores all entry data in lastStoredEntry.</p>
+     *   <li>Rewinds the stream to position at the data
+     *     descriptor.</li>
+     *   <li>reads the data descriptor</li>
+     * </ul>
+     *
+     * <p>After calling this method the entry should know its size,
+     * the entry's data is cached and the stream is positioned at the
+     * next local file or central directory header.</p>
+     */
+    private void readStoredEntry() throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        byte[] LFH = ZipLong.LFH_SIG.getBytes();
+        byte[] CFH = ZipLong.CFH_SIG.getBytes();
+        byte[] DD = ZipLong.DD_SIG.getBytes();
+        int off = 0;
+        boolean done = false;
+
+        while (!done) {
+            int r = in.read(buf, off, ZipArchiveOutputStream.BUFFER_SIZE - off);
+            if (r <= 0) {
+                // read the whole archive without ever finding a
+                // central directory
+                throw new IOException("Truncated ZIP file");
+            }
+            if (r + off < 4) {
+                // buf is too small to check for a signature, loop
+                off += r;
+                continue;
+            }
+
+            int readTooMuch = 0;
+            for (int i = 0; !done && i < r - 4; i++) {
+                if (buf[i] == LFH[0] && buf[i + 1] == LFH[1]) {
+                    if ((buf[i + 2] == LFH[2] && buf[i + 3] == LFH[3])
+                        || (buf[i] == CFH[2] && buf[i + 3] == CFH[3])) {
+                        // found a LFH or CFH:
+                        readTooMuch = off + r - i - 12 /* dd without signature */;
+                        done = true;
+                    }
+                    else if (buf[i + 2] == DD[2] && buf[i + 3] == DD[3]) {
+                        // found DD:
+                        readTooMuch = off + r - i;
+                        done = true;
+                    }
+                    if (done) {
+                        // * push back bytes read in excess as well as the data
+                        //   descriptor
+                        // * copy the remaining bytes to cache
+                        // * read data descriptor
+                        ((PushbackInputStream) in).unread(buf, off + r - readTooMuch, readTooMuch);
+                        bos.write(buf, 0, i);
+                        readDataDescriptor();
+                    }
+                }
+            }
+            if (!done) {
+                // worst case we've read a data descriptor without a
+                // signature (12 bytes) plus the first three bytes of
+                // a LFH or CFH signature
+                // save the last 15 bytes in the buffer, cache
+                // anything in front of that, read on
+                if (off + r > 15) {
+                    bos.write(buf, 0, off + r - 15);
+                    System.arraycopy(buf, off + r - 15, buf, 0, 15);
+                    off = 15;
+                } else {
+                    off += r;
+                }
+            }
+        }
+
+        byte[] b = bos.toByteArray();
+        lastStoredEntry = new ByteArrayInputStream(b);
+    }
 }

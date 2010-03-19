@@ -21,9 +21,12 @@ package org.apache.commons.compress.archivers.zip;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * Simple command line application that lists the contents of a ZIP archive.
@@ -38,6 +41,8 @@ public final class Lister {
         String archive;
         boolean useStream = false;
         String encoding;
+        boolean allowStoredEntriesWithDataDescriptor = false;
+        String dir;
     }
 
     public static void main(String[] args) throws IOException {
@@ -52,11 +57,16 @@ public final class Lister {
                 new BufferedInputStream(new FileInputStream(f));
             try {
                 ZipArchiveInputStream zs =
-                    new ZipArchiveInputStream(fs, cl.encoding, true);
+                    new ZipArchiveInputStream(fs, cl.encoding, true,
+                                              cl.allowStoredEntriesWithDataDescriptor);
                 for (ArchiveEntry entry = zs.getNextEntry();
                      entry != null;
                      entry = zs.getNextEntry()) {
-                    list((ZipArchiveEntry) entry);
+                    ZipArchiveEntry ze = (ZipArchiveEntry) entry;
+                    list(ze);
+                    if (cl.dir != null) {
+                        extract(cl.dir, ze, zs);
+                    }
                 }
             } finally {
                 fs.close();
@@ -66,7 +76,16 @@ public final class Lister {
             try {
                 for (Enumeration entries = zf.getEntries();
                      entries.hasMoreElements(); ) {
-                    list((ZipArchiveEntry) entries.nextElement());
+                    ZipArchiveEntry ze = (ZipArchiveEntry) entries.nextElement();
+                    list(ze);
+                    if (cl.dir != null) {
+                        InputStream is = zf.getInputStream(ze);
+                        try {
+                            extract(cl.dir, ze, is);
+                        } finally {
+                            is.close();
+                        }
+                    }
                 }
             } finally {
                 zf.close();
@@ -76,6 +95,23 @@ public final class Lister {
 
     private static void list(ZipArchiveEntry entry) {
         System.out.println(entry.getName());
+    }
+
+    private static void extract(String dir, ZipArchiveEntry entry,
+                                InputStream is) throws IOException {
+        File f = new File(dir, entry.getName());
+        if (!f.getParentFile().exists()) {
+            f.getParentFile().mkdirs();
+        }
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(f);
+            IOUtils.copy(is, fos);
+        } finally {
+            if (fos != null) {
+                fos.close();
+            }
+        }
     }
 
     private static CommandLine parse(String[] args) {
@@ -89,8 +125,17 @@ public final class Lister {
                     System.err.println("missing argument to -enc");
                     error = true;
                 }
+            } else if (args[i].equals("-extract")) {
+                if (args.length > i + 1) {
+                    cl.dir = args[++i];
+                } else {
+                    System.err.println("missing argument to -extract");
+                    error = true;
+                }
             } else if (args[i].equals("-stream")) {
                 cl.useStream = true;
+            } else if (args[i].equals("+storeddd")) {
+                cl.allowStoredEntriesWithDataDescriptor = true;
             } else if (args[i].equals("-file")) {
                 cl.useStream = false;
             } else if (cl.archive != null) {
@@ -107,7 +152,8 @@ public final class Lister {
     }
 
     private static void usage() {
-        System.err.println("lister [-enc encoding] [-stream] [-file] archive");
+        System.err.println("lister [-enc encoding] [-stream] [-file]"
+                           + " [+storeddd] [-extract dir] archive");
         System.exit(1);
     }
 }
