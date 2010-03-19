@@ -81,8 +81,25 @@
           first and provide correct and complete information on any
           ZIP archive.</p>
 
+        <p>ZIP archives know a feature called the data descriptor
+          which is a way to store an entry's length after the entry's
+          data.  This can only work reliably if the size information
+          can be taken from the central directory or the data itself
+          can signal it is complete, which is true for data that is
+          compressed using the DEFLATED compression algorithm.</p>
+
+        <p><code>ZipFile</code> has access to the central directory
+          and can extract entries using the data descriptor reliably.
+          The same is true for <code>ZipArchiveInputStream</code> as
+          long as the entry is DEFLATED.  For STORED
+          entries <code>ZipArchiveInputStream</code> can try to read
+          ahead until if finds the next entry, but this approach is
+          not safe and has to be enabled by a constructor argument
+          explicitly.</p>
+
         <p>If possible, you should always prefer <code>ZipFile</code>
           over <code>ZipArchiveInputStream</code>.</p>
+
       </subsection>
 
       <subsection name="Extra Fields">
