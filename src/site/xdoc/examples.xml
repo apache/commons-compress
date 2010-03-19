@@ -77,7 +77,7 @@ arOutput.closeArchiveEntry();
 ArArchiveEntry entry = (ArArchiveEntry) arInput.getNextEntry();
 byte[] content = new byte[entry.getSize()];
 LOOP UNTIL entry.getSize() HAS BEEN READ {
-    arInput(read, offset, content.length - offset);
+    arInput.read(content, offset, content.length - offset);
 }
 ]]></source>
 
@@ -107,7 +107,7 @@ cpioOutput.closeArchiveEntry();
 CpioArchiveEntry entry = cpioInput.getNextCPIOEntry();
 byte[] content = new byte[entry.getSize()];
 LOOP UNTIL entry.getSize() HAS BEEN READ {
-    cpioInput(read, offset, content.length - offset);
+    cpioInput.read(content, offset, content.length - offset);
 }
 ]]></source>
 
@@ -155,7 +155,7 @@ tarOutput.closeArchiveEntry();
 TarArchiveEntry entry = tarInput.getNextTarEntry();
 byte[] content = new byte[entry.getSize()];
 LOOP UNTIL entry.getSize() HAS BEEN READ {
-    tarInput(read, offset, content.length - offset);
+    tarInput.read(content, offset, content.length - offset);
 }
 ]]></source>
       </subsection>
@@ -178,7 +178,7 @@ zipOutput.closeArchiveEntry();
 ZipArchiveEntry entry = zipInput.getNextZipEntry();
 byte[] content = new byte[entry.getSize()];
 LOOP UNTIL entry.getSize() HAS BEEN READ {
-    zipInput(read, offset, content.length - offset);
+    zipInput.read(content, offset, content.length - offset);
 }
 ]]></source>
 
@@ -233,7 +233,7 @@ jarOutput.closeArchiveEntry();
 JarArchiveEntry entry = jarInput.getNextJarEntry();
 byte[] content = new byte[entry.getSize()];
 LOOP UNTIL entry.getSize() HAS BEEN READ {
-    jarInput(read, offset, content.length - offset);
+    jarInput.read(content, offset, content.length - offset);
 }
 ]]></source>
       </subsection>
