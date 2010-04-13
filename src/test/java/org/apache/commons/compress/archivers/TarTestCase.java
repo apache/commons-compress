@@ -53,7 +53,7 @@ public final class TarTestCase extends AbstractTestCase {
 
     public void testTarArchiveLongNameCreation() throws Exception {
         String name = "testdata/12345678901234567890123456789012345678901234567890123456789012345678901234567890123456.xml";
-        byte[] bytes = name.getBytes();
+        byte[] bytes = name.getBytes("UTF-8");
         assertEquals(bytes.length, 99);
 
         final File output = new File(dir, "bla.tar");
