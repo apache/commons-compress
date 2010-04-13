@@ -53,8 +53,11 @@ o COMPRESS-85:  The cpio archives created by CpioArchiveOutputStream couldn't
         combinations and weren't padded to a blocksize of 512 bytes. 
 o COMPRESS-73:  ZipArchiveEntry, ZipFile and ZipArchiveInputStream are now
         more lenient when parsing extra fields. 
+o COMPRESS-82:  cpio is terribly slow.
+        Documented that buffered streams are needed for performance 
 o Improved exception message if the extra field data in ZIP
         archives cannot be parsed. 
+o COMPRESS-17:  Tar format unspecified - current support documented. 
 o COMPRESS-94:  ZipArchiveEntry's equals method was broken for entries created
         with the String-arg constructor.  This lead to broken ZIP
         archives if two different entries had the same hash code. Thanks to Anon Devs. 
@@ -69,6 +72,8 @@ o The ar and cpio streams now properly read and write last
         modified times. 
 o COMPRESS-81:  TarOutputStream can leave garbage at the end of the archive 
 
+Changes:
+o COMPRESS-79:  Move DOS/Java time conversions into Zip utility class. 
 
  
 For complete information on Commons Compress, including instructions on how to submit bug reports,
