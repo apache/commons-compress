@@ -85,6 +85,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" date="2010-02-19" issue="COMPRESS-89">
         The ZIP classes now detect encrypted entries.
       </action>
+      <action type="update" date="2010-02-18" issue="COMPRESS-79">
+        Move DOS/Java time conversions into Zip utility class.
+      </action>
       <action type="fix" date="2010-02-18" issue="COMPRESS-74">
         ZipArchiveInputStream failed to update the number of bytes
         read properly.
@@ -104,6 +107,10 @@ The <action> type attribute can be add,update,fix,remove.
         ZipArchiveEntry, ZipFile and ZipArchiveInputStream are now
         more lenient when parsing extra fields.
       </action>
+      <action type="fix" date="2010-02-12" issue="COMPRESS-82">
+        cpio is terribly slow.
+        Documented that buffered streams are needed for performance
+      </action>
       <action type="add" date="2010-02-12" issue="COMPRESS-97">
         Added autodetection of compression format to
         CompressorStreamFactory.
@@ -111,6 +118,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" date="2010-02-12">
         Improved exception message if the extra field data in ZIP
         archives cannot be parsed.
+      </action>
+      <action type="fix" date="2010-02-11" issue="COMPRESS-17">
+        Tar format unspecified - current support documented.
       </action>
       <action type="add" issue="COMPRESS-95" date="2010-01-29"
               due-to="Joerg Bellmann">
