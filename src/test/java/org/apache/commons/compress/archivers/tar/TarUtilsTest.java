@@ -39,14 +39,14 @@ public class TarUtilsTest extends TestCase {
         assertEquals(sb1, sb2);
     }
     
-    private void fillBuff(byte []buffer, String input){
+    private void fillBuff(byte []buffer, String input) throws Exception{
         for(int i=0; i<buffer.length;i++){
             buffer[i]=0;
         }
-        System.arraycopy(input.getBytes(),0,buffer,0,Math.min(buffer.length,input.length()));        
+        System.arraycopy(input.getBytes("UTF-8"),0,buffer,0,Math.min(buffer.length,input.length()));        
     }
 
-    public void testParseOctal(){
+    public void testParseOctal() throws Exception{
         byte [] buffer = new byte[20];
         fillBuff(buffer,"777777777777 ");
         long value; 
