@@ -29,7 +29,10 @@
   <version>1.1-SNAPSHOT</version>
   <name>Commons Compress</name>
   <url>http://commons.apache.org/compress/</url>
-  <description>Commons Compress is a component that contains Ar, Cpio, Jar, Tar, Zip and BZip2 packages</description>
+  <description>
+  Commons Compress defines an API for working with compression and archive formats.
+  These include: bzip2, gzip and ar, cpio, jar, tar, zip.
+  </description>
 
   <properties>
     <maven.compile.source>1.4</maven.compile.source>
