@@ -131,6 +131,19 @@
           </archive>
         </configuration>
       </plugin>
+      <!-- Repeat the configuration here for use when directly invoking the plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-changes-plugin</artifactId>
+        <version>2.3</version>
+        <configuration>
+          <issueLinkTemplatePerSystem>
+            <default>%URL%/%ISSUE%</default>
+          </issueLinkTemplatePerSystem>
+          <template>release-notes.vm</template>
+          <templateDirectory>src/changes</templateDirectory>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -140,14 +153,19 @@
         <!-- generate the changes report from changes.xml and link to JIRA -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-changes-plugin</artifactId>
-        <version>2.0</version>
+        <version>2.3</version>
         <configuration>
-          <issueLinkTemplate>%URL%/%ISSUE%</issueLinkTemplate>
+           <issueLinkTemplatePerSystem>
+               <default>%URL%/%ISSUE%</default>
+           </issueLinkTemplatePerSystem>
+           <template>release-notes.vm</template>
+           <templateDirectory>src/changes</templateDirectory>
         </configuration>
         <reportSets>
           <reportSet>
             <reports>
               <report>changes-report</report>
+              <report>jira-report</report>
             </reports>
           </reportSet>
         </reportSets>
