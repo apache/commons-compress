@@ -32,7 +32,7 @@ SVN commits. TBA how to use this with SVN.
 
 To generate the release notes from this file:
 
-mvn changes:announcement-generate
+mvn changes:announcement-generate -Prelnotes
 mv target/announcement/release-notes.vm RELEASE-NOTES.txt
 then tweak the formatting if necessary 
 and commit
