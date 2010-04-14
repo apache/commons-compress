@@ -131,19 +131,6 @@
           </archive>
         </configuration>
       </plugin>
-      <!-- Repeat the configuration here for use when directly invoking the plugin -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-changes-plugin</artifactId>
-        <version>2.3</version>
-        <configuration>
-          <issueLinkTemplatePerSystem>
-            <default>%URL%/%ISSUE%</default>
-          </issueLinkTemplatePerSystem>
-          <template>release-notes.vm</template>
-          <templateDirectory>src/changes</templateDirectory>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 
@@ -158,8 +145,6 @@
            <issueLinkTemplatePerSystem>
                <default>%URL%/%ISSUE%</default>
            </issueLinkTemplatePerSystem>
-           <template>release-notes.vm</template>
-           <templateDirectory>src/changes</templateDirectory>
         </configuration>
         <reportSets>
           <reportSet>
@@ -227,6 +212,23 @@
           <url>${commons.deployment.protocol}://people.apache.org/www/people.apache.org/builds/commons/${commons.componentid}/${commons.release.version}/${commons.rc.version}/site</url>
         </site>
       </distributionManagement>
+    </profile>
+    <profile>
+      <id>relnotes</id>
+      <!-- Override the built-in announce.vm in order to generate release notes -->
+      <build>
+        <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-changes-plugin</artifactId>
+              <version>2.3</version>
+              <configuration>
+                <template>release-notes.vm</template>
+                <templateDirectory>src/changes</templateDirectory>
+              </configuration>
+            </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 
