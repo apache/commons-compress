@@ -61,10 +61,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private static final int SHORT = 2;
     private static final int WORD = 4;
     static final int BUFFER_SIZE = 512;
-    
+
     /** indicates if this archive is finished. protected for use in Jar implementation */
     protected boolean finished = false;
-    
+
     /* 
      * Apparently Deflater.setInput gets slowed down a lot on Sun JVMs
      * when it gets handed a really big buffer.  See
@@ -340,11 +340,11 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         if (finished) {
             throw new IOException("This archive has already been finished");
         }
-        
-        if(entry != null) {
+
+        if (entry != null) {
             throw new IOException("This archives contains unclosed entries.");
         }
-        
+
         cdOffset = written;
         for (Iterator i = entries.iterator(); i.hasNext(); ) {
             writeCentralFileHeader((ZipArchiveEntry) i.next());
@@ -361,10 +361,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @throws IOException on error
      */
     public void closeArchiveEntry() throws IOException {
-        if(finished) {
+        if (finished) {
             throw new IOException("Stream has already been finished");
         }
-        
+
         if (entry == null) {
             throw new IOException("No current entry to close");
         }
@@ -428,10 +428,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /** {@inheritDoc} */
  // @throws ClassCastException if entry is not an instance of ZipArchiveEntry
     public void putArchiveEntry(ArchiveEntry archiveEntry) throws IOException {
-        if(finished) {
+        if (finished) {
             throw new IOException("Stream has already been finished");
         }
-        
+
         if (entry != null) {
             closeArchiveEntry();
         }
@@ -563,10 +563,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @exception  IOException  if an I/O error occurs.
      */
     public void close() throws IOException {
-        if(!finished) {
+        if (!finished) {
             finish();
         }
-        
+
         if (raf != null) {
             raf.close();
         }
@@ -626,16 +626,16 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     protected void writeLocalFileHeader(ZipArchiveEntry ze) throws IOException {
 
         boolean encodable = zipEncoding.canEncode(ze.getName());
-        
+
         final ZipEncoding entryEncoding;
-        
+
         if (!encodable && fallbackToUTF8) {
             entryEncoding = ZipEncodingHelper.UTF8_ZIP_ENCODING;
         } else {
             entryEncoding = zipEncoding;
         }
-        
-        ByteBuffer name = entryEncoding.encode(ze.getName());        
+
+        ByteBuffer name = entryEncoding.encode(ze.getName());
 
         if (createUnicodeExtraFields != UnicodeExtraFieldPolicy.NEVER) {
 
@@ -781,14 +781,14 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
         // file name length
         final ZipEncoding entryEncoding;
-        
+
         if (!encodable && fallbackToUTF8) {
             entryEncoding = ZipEncodingHelper.UTF8_ZIP_ENCODING;
         } else {
             entryEncoding = zipEncoding;
         }
-        
-        ByteBuffer name = entryEncoding.encode(ze.getName());        
+
+        ByteBuffer name = entryEncoding.encode(ze.getName());
 
         writeOut(ZipShort.getBytes(name.limit()));
         written += SHORT;
@@ -803,9 +803,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         if (comm == null) {
             comm = "";
         }
-        
+
         ByteBuffer commentB = entryEncoding.encode(comm);
-        
+
         writeOut(ZipShort.getBytes(commentB.limit()));
         written += SHORT;
 
@@ -961,7 +961,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     public ArchiveEntry createArchiveEntry(File inputFile, String entryName)
             throws IOException {
-        if(finished) {
+        if (finished) {
             throw new IOException("Stream has already been finished");
         }
         return new ZipArchiveEntry(inputFile, entryName);
