@@ -78,6 +78,10 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
 
     /**
      * Creates a new zip entry with the specified name.
+     *
+     * <p>Assumes the entry represents a directory if and only if the
+     * name ends with a forward slash "/".</p>
+     *
      * @param name the name of the entry
      */
     public ZipArchiveEntry(String name) {
@@ -87,6 +91,10 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
 
     /**
      * Creates a new zip entry with fields taken from the specified zip entry.
+     *
+     * <p>Assumes the entry represents a directory if and only if the
+     * name ends with a forward slash "/".</p>
+     *
      * @param entry the entry to get fields from
      * @throws ZipException on error
      */
@@ -107,6 +115,10 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
 
     /**
      * Creates a new zip entry with fields taken from the specified zip entry.
+     *
+     * <p>Assumes the entry represents a directory if and only if the
+     * name ends with a forward slash "/".</p>
+     *
      * @param entry the entry to get fields from
      * @throws ZipException on error
      */
@@ -123,6 +135,15 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         this("");
     }
 
+    /**
+     * Creates a new zip entry taking some information from the given
+     * file and using the provided name.
+     *
+     * <p>The name will be adjusted to end with a forward slash "/" if
+     * the file is a directory.  If the file is not a directory a
+     * potential trailing forward slash will be stripped from the
+     * entry name.</p>
+     */
     public ZipArchiveEntry(File inputFile, String entryName) {
         this(inputFile.isDirectory() && !entryName.endsWith("/") ? 
              entryName + "/" : entryName);
