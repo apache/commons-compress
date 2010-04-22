@@ -695,8 +695,5 @@ public class ZipFile {
                 long val = (off1.headerOffset - off2.headerOffset);
                 return val == 0 ? 0 : val < 0 ? -1 : +1;
             }
-            public boolean equals(Object o) {
-                return o == this;
-            }
         };
 }
