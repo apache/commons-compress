@@ -46,10 +46,6 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
     <release version="1.1" date="as in SVN" description="Release 1.1">
-      <action type="update" date="2010-04-22" issue="COMPRESS-106">
-       Remove unnecessary method 
-       ZipFile.OFFSET_COMPARATOR.new Comparator() {...}.equals(Object o) 
-      </action>
       <action type="update" date="2010-04-19" issue="COMPRESS-105">
        Document that the name of an ZipArchiveEntry determines whether
        an entry is considered a directory or not. 
