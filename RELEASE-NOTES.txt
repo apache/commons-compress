@@ -73,6 +73,12 @@ o The ar and cpio streams now properly read and write last
 o COMPRESS-81:  TarOutputStream can leave garbage at the end of the archive 
 
 Changes:
+o COMPRESS-106:  Remove unnecessary method 
+       ZipFile.OFFSET_COMPARATOR.new Comparator() {...}.equals(Object o) 
+o COMPRESS-105:  Document that the name of an ZipArchiveEntry determines whether
+       an entry is considered a directory or not. 
+       If you don't use the constructor with the File argument the entry's
+        name must end in a "/" in order for the entry to be known as a directory. 
 o COMPRESS-79:  Move DOS/Java time conversions into Zip utility class. 
 
  

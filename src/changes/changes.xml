@@ -46,6 +46,16 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
     <release version="1.1" date="as in SVN" description="Release 1.1">
+      <action type="update" date="2010-04-22" issue="COMPRESS-106">
+       Remove unnecessary method 
+       ZipFile.OFFSET_COMPARATOR.new Comparator() {...}.equals(Object o) 
+      </action>
+      <action type="update" date="2010-04-19" issue="COMPRESS-105">
+       Document that the name of an ZipArchiveEntry determines whether
+       an entry is considered a directory or not. 
+       If you don't use the constructor with the File argument the entry's
+        name must end in a "/" in order for the entry to be known as a directory.
+      </action>
       <action type="add" date="2010-03-19" issue="COMPRESS-103">
         ZipArchiveInputStream can optionally extract data that used
         the STORED compression method and a data descriptor.
