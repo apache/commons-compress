@@ -289,15 +289,18 @@ public abstract class AbstractTestCase extends TestCase {
             while ((entry = in.getNextEntry()) != null) {
                 File outfile = new File(result.getCanonicalPath() + "/result/"
                         + entry.getName());
-                outfile.getParentFile().mkdirs();
-                OutputStream out = new FileOutputStream(outfile);
                 long copied=0;
-                try {
-                    copied=IOUtils.copy(in, out);
-                } finally {
-                    out.close();
+                if (entry.isDirectory()){
+                    outfile.mkdirs();
+                } else {
+                    outfile.getParentFile().mkdirs();
+                    OutputStream out = new FileOutputStream(outfile);
+                    try {
+                        copied=IOUtils.copy(in, out);
+                    } finally {
+                        out.close();
+                    }                    
                 }
-
                 final long size = entry.getSize();
                 if (size != ArchiveEntry.SIZE_UNKNOWN) {
                     assertEquals("Entry.size should equal bytes read.",size, copied);
@@ -307,7 +310,7 @@ public abstract class AbstractTestCase extends TestCase {
                     fail("extraction failed: " + entry.getName());
                 }
                 if (expected != null && !expected.remove(getExpectedString(entry))) {
-                    fail("unexpected entry: " + entry.getName());
+                    fail("unexpected entry: " + getExpectedString(entry));
                 }
             }
             in.close();
