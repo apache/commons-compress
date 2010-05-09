@@ -36,6 +36,8 @@ o ArchiveEntry now has a getLastModifiedDate method.
 o COMPRESS-78:  Add a BZip2Utils class modelled after GZipUtils Thanks to Jukka Zitting. 
 
 Fixed Bugs:
+o COMPRESS-110:  Support "ustar" prefix field, which is used when file paths are longer
+       than 100 characters. 
 o COMPRESS-100:  ZipArchiveInputStream will throw an exception if it detects an
         entry that uses a data descriptor for a STORED entry since it
         cannot reliably find the end of data for this "compression"
