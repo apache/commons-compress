@@ -537,6 +537,15 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     }
 
     /**
+     * Check if this is a Pax header.
+     * 
+     * @return <code>true</code> if this is a Pax header.
+     */
+    public boolean isPaxHeader(){
+        return linkFlag == LF_PAX_EXTENDED_HEADER || linkFlag == LF_PAX_GLOBAL_EXTENDED_HEADER;
+    }
+
+    /**
      * Return whether or not this entry represents a directory.
      *
      * @return True if this entry is a directory.
@@ -652,6 +661,11 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         devMajor = (int) TarUtils.parseOctal(header, offset, DEVLEN);
         offset += DEVLEN;
         devMinor = (int) TarUtils.parseOctal(header, offset, DEVLEN);
+        offset += DEVLEN;
+        String prefix = TarUtils.parseName(header, offset, PREFIXLEN);
+        if (prefix.length() >0){
+            name = prefix + "/" + name;
+        }
     }
 
     /**
