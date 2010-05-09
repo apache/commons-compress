@@ -147,6 +147,23 @@ public interface TarConstants {
     byte   LF_CONTIG = (byte) '7';
 
     /**
+     * Identifies the *next* file on the tape as having a long name.
+     */
+    byte LF_GNUTYPE_LONGNAME = (byte) 'L';
+
+    // See "http://www.opengroup.org/onlinepubs/009695399/utilities/pax.html#tag_04_100_13_02"
+
+    /**
+     * Identifies the entry as a Pax extended header.
+     */
+    byte LF_PAX_EXTENDED_HEADER = (byte) 'x';
+    
+    /**
+     * Identifies the entry as a Pax global extended header.
+     */
+    byte LF_PAX_GLOBAL_EXTENDED_HEADER = (byte) 'g';
+    
+    /**
      * The magic tag representing a POSIX tar archive.
      */
     String MAGIC_POSIX = "ustar\0";
@@ -161,12 +178,16 @@ public interface TarConstants {
     String VERSION_GNU_ZERO  = "0\0";
 
     /**
+     * The magic tag representing an Ant tar archive.
+     */
+    String MAGIC_ANT = "ustar\0";
+    // Does not appear to have a version, however Ant does write 8 bytes,
+    // so assume the version is 2 nulls
+    String VERSION_ANT = "\0\0";
+
+    /**
      * The name of the GNU tar entry which contains a long name.
      */
     String GNU_LONGLINK = "././@LongLink"; // TODO rename as LONGLINK_GNU ?
 
-    /**
-     * Identifies the *next* file on the tape as having a long name.
-     */
-    byte LF_GNUTYPE_LONGNAME = (byte) 'L';
 }
