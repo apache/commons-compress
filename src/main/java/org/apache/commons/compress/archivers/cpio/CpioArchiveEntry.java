@@ -250,6 +250,8 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * CpioConstants.FORMAT_NEW_CRC<br/>
      * CpioConstants.FORMAT_OLD_BINARY<br/>
      * CpioConstants.FORMAT_OLD_ASCII<br/>
+     * 
+     * @since Apache Commons Compress 1.1
      */
     public CpioArchiveEntry(final short format, final String name) {
         this(format);
@@ -286,6 +288,8 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * CpioConstants.FORMAT_NEW_CRC<br/>
      * CpioConstants.FORMAT_OLD_BINARY<br/>
      * CpioConstants.FORMAT_OLD_ASCII<br/>
+     * 
+     * @since Apache Commons Compress 1.1
      */
     public CpioArchiveEntry(final short format, final String name,
                             final long size) {
@@ -324,6 +328,8 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * CpioConstants.FORMAT_NEW_CRC<br/>
      * CpioConstants.FORMAT_OLD_BINARY<br/>
      * CpioConstants.FORMAT_OLD_ASCII<br/>
+     * 
+     * @since Apache Commons Compress 1.1
      */
     public CpioArchiveEntry(final short format, File inputFile,
                             String entryName) {

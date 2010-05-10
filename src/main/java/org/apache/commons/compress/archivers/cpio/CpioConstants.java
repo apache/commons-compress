@@ -135,6 +135,10 @@ public interface CpioConstants {
     /** The special trailer marker */
     final String CPIO_TRAILER = "TRAILER!!!";
 
-    /** The default block size */
+    /**
+     * The default block size.
+     * 
+     * @since Apache Commons Compress 1.1
+     */
     final int BLOCK_SIZE = 512;
 }
