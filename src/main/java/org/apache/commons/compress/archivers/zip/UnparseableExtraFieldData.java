@@ -25,6 +25,8 @@ package org.apache.commons.compress.archivers.zip;
  * {@link <a href="http://www.pkware.com/documents/casestudies/APPNOTE.TXT">
  * APPNOTE.TXT</a>}).  Since it isn't used anywhere except to satisfy the
  * ZipExtraField contract it shouldn't matter anyway.</p>
+ *
+ * @since Apache Commons Compress 1.1
  * @NotThreadSafe
  */
 public final class UnparseableExtraFieldData implements ZipExtraField {

@@ -45,6 +45,16 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
         return getNextJarEntry();
     }
 
+    /**
+     * Checks if the signature matches what is expected for a jar file
+     * (in this case it is the same as for a zip file).
+     * 
+     * @param signature
+     *            the bytes to check
+     * @param length
+     *            the number of bytes to check
+     * @return true, if this stream is a jar archive stream, false otherwise
+     */
     public static boolean matches(byte[] signature, int length ) {
         return ZipArchiveInputStream.matches(signature, length);
     }

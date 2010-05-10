@@ -177,6 +177,8 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @param name the entry name
      * @param preserveLeadingSlashes whether to allow leading slashes
      * in the name.
+     * 
+     * @since Apache Commons Compress 1.1
      */
     public TarArchiveEntry(String name, boolean preserveLeadingSlashes) {
         this();
@@ -359,9 +361,13 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
 
     /**
      * Set this entry's link name.
+     * 
+     * @param link the link name to use.
+     * 
+     * @since Apache Commons Compress 1.1
      */
     public void setLinkName(String link) {
-        linkName = link;
+        this.linkName = link;
     }
 
     /**
@@ -547,6 +553,8 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * Check if this is a Pax header.
      * 
      * @return <code>true</code> if this is a Pax header.
+     * 
+     * @since Apache Commons Compress 1.1
      */
     public boolean isPaxHeader(){
         return linkFlag == LF_PAX_EXTENDED_HEADER_LC
@@ -557,6 +565,8 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * Check if this is a Pax header.
      * 
      * @return <code>true</code> if this is a Pax header.
+     * 
+     * @since Apache Commons Compress 1.1
      */
     public boolean isGlobalPaxHeader(){
         return linkFlag == LF_PAX_GLOBAL_EXTENDED_HEADER;

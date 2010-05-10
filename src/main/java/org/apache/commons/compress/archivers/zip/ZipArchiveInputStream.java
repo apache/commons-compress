@@ -329,9 +329,16 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         throw new IllegalArgumentException();
     }
 
-    /*
-     *  This test assumes that the zip file does not have any additional leading content,
-     *  which is something that is allowed by the specification (e.g. self-extracting zips)
+    /**
+     * Checks if the signature matches what is expected for a zip file.
+     * Does not currently handle self-extracting zips which may have arbitrary
+     * leading content.
+     * 
+     * @param signature
+     *            the bytes to check
+     * @param length
+     *            the number of bytes to check
+     * @return true, if this stream is a zip archive stream, false otherwise
      */
     public static boolean matches(byte[] signature, int length) {
         if (length < ZipArchiveOutputStream.LFH_SIG.length) {

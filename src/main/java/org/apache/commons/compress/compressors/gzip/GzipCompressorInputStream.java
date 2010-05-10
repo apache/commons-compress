@@ -52,8 +52,10 @@ public class GzipCompressorInputStream extends CompressorInputStream {
         return read;
     }
 
-    /* (non-Javadoc)
-     * @see java.io.InputStream#read(byte[])
+    /**
+     * {@inheritDoc}
+     * 
+     * @since Apache Commons Compress 1.1
      */
     public int read(byte[] b) throws IOException {
         int read = in.read(b);
@@ -61,8 +63,10 @@ public class GzipCompressorInputStream extends CompressorInputStream {
         return read;
     }
 
-    /* (non-Javadoc)
-     * @see java.io.InputStream#read(byte[], int, int)
+    /**
+     * {@inheritDoc}
+     * 
+     * @since Apache Commons Compress 1.1
      */
     public int read(byte[] b, int from, int length) throws IOException {
         int read = in.read(b, from, length);
@@ -70,6 +74,17 @@ public class GzipCompressorInputStream extends CompressorInputStream {
         return read;
     }
 
+    /**
+     * Checks if the signature matches what is expected for a gzip file.
+     * 
+     * @param signature
+     *            the bytes to check
+     * @param length
+     *            the number of bytes to check
+     * @return true, if this stream is a gzipped compressed stream, false otherwise
+     * 
+     * @since Apache Commons Compress 1.1
+     */
     public static boolean matches(byte[] signature, int length) {
 
         if (length < 2) {

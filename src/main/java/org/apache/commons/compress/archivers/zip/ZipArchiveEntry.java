@@ -172,6 +172,8 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * compression method has not been specified.
      *
      * @return compression method
+     *
+     * @since Apache Commons Compress 1.1
      */
     public int getMethod() {
         return method;
@@ -181,6 +183,8 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * Sets the compression method of this entry.
      *
      * @param method compression method
+     *
+     * @since Apache Commons Compress 1.1
      */
     public void setMethod(int method) {
         if (method < 0) {
@@ -297,6 +301,8 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * extra fields as {@link UnparseableExtraFieldData} if such data
      * exists.
      * @return an array of the extra fields
+     *
+     * @since Apache Commons Compress 1.1
      */
     public ZipExtraField[] getExtraFields(boolean includeUnparseable) {
         if (extraFields == null) {
@@ -369,6 +375,8 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
 
     /**
      * Removes unparseable extra field data.
+     *
+     * @since Apache Commons Compress 1.1
      */
     public void removeUnparseableExtraFieldData() {
         if (unparseableExtra == null) {
@@ -394,6 +402,8 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * Looks up extra field data that couldn't be parsed correctly.
      *
      * @return null if no such field exists.
+     *
+     * @since Apache Commons Compress 1.1
      */
     public UnparseableExtraFieldData getUnparseableExtraFieldData() {
         return unparseableExtra;

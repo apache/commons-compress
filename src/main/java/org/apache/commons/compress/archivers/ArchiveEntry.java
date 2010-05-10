@@ -37,6 +37,10 @@ public interface ArchiveEntry {
     /** True if the entry refers to a directory */
     public boolean isDirectory();
 
-    /** The last modified date of the entry */
+    /**
+     * The last modified date of the entry.
+     * 
+     * @since Apache Commons Compress 1.1
+     */
     public Date getLastModifiedDate();
 }
