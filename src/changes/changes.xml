@@ -46,6 +46,14 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
     <release version="1.1" date="as in SVN" description="Release 1.1">
+      <action issue="COMPRESS-109" type="update" date="2010-05-10">
+       Tar implementation does not support Pax headers
+       Added support for reading pax headers.
+       Note: does not support global pax headers
+      </action>    
+      <action issue="COMPRESS-107" type="fix" date="2010-05-10">
+       ArchiveStreamFactory does not recognise tar files created by Ant
+      </action>    
       <action issue="COMPRESS-110" type="fix" date="2010-05-09">
        Support "ustar" prefix field, which is used when file paths are longer
        than 100 characters.
