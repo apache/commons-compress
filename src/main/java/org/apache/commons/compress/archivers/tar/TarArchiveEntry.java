@@ -673,6 +673,10 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         devMinor = (int) TarUtils.parseOctal(header, offset, DEVLEN);
         offset += DEVLEN;
         String prefix = TarUtils.parseName(header, offset, PREFIXLEN);
+        // SunOS tar -E does not add / to directory names, so fix up to be consistent
+        if (isDirectory() && !name.endsWith("/")){
+            name = name + "/";
+        }
         if (prefix.length() >0){
             name = prefix + "/" + name;
         }
