@@ -358,6 +358,13 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     }
 
     /**
+     * Set this entry's link name.
+     */
+    public void setLinkName(String link) {
+        linkName = link;
+    }
+
+    /**
      * Get this entry's user id.
      *
      * @return This entry's user id.
