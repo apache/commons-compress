@@ -29,7 +29,7 @@
                 <include>NOTICE.txt</include>
                 <include>pom.xml</include>
                 <include>STATUS</include>
-                <include>findbugs-exclude-filter.xml</include>                
+                <include>findbugs-exclude-filter.xml</include>
             </includes>
         </fileSet>
         <fileSet>
