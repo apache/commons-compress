@@ -22,7 +22,7 @@
 This file is also used by the maven-changes-plugin to generate the release notes.
 Useful ways of finding items to add to this file are:
 
-1.  Add items when you fix a bug or add a feature (this makes the 
+1.  Add items when you fix a bug or add a feature (this makes the
 release process easy :-).
 
 2.  Do a JIRA search for tickets closed since the previous release.
@@ -34,8 +34,7 @@ To generate the release notes from this file:
 
 mvn changes:announcement-generate -Prelnotes
 mv target/announcement/release-notes.vm RELEASE-NOTES.txt
-then tweak the formatting if necessary 
-and commit
+then tweak the formatting if necessary and commit
 
 The <action> type attribute can be add,update,fix,remove.
 -->
@@ -50,17 +49,17 @@ The <action> type attribute can be add,update,fix,remove.
        Tar implementation does not support Pax headers
        Added support for reading pax headers.
        Note: does not support global pax headers
-      </action>    
+      </action>
       <action issue="COMPRESS-107" type="fix" date="2010-05-10">
        ArchiveStreamFactory does not recognise tar files created by Ant
-      </action>    
+      </action>
       <action issue="COMPRESS-110" type="fix" date="2010-05-09">
        Support "ustar" prefix field, which is used when file paths are longer
        than 100 characters.
-      </action>    
+      </action>
       <action type="update" date="2010-04-19" issue="COMPRESS-105">
        Document that the name of an ZipArchiveEntry determines whether
-       an entry is considered a directory or not. 
+       an entry is considered a directory or not.
        If you don't use the constructor with the File argument the entry's
         name must end in a "/" in order for the entry to be known as a directory.
       </action>
