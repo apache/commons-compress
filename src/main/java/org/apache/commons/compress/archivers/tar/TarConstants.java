@@ -156,7 +156,8 @@ public interface TarConstants {
     /**
      * Identifies the entry as a Pax extended header.
      */
-    byte LF_PAX_EXTENDED_HEADER = (byte) 'x';
+    byte LF_PAX_EXTENDED_HEADER_LC = (byte) 'x'; //
+    byte LF_PAX_EXTENDED_HEADER_UC = (byte) 'X'; // SunOS tar -E
     
     /**
      * Identifies the entry as a Pax global extended header.

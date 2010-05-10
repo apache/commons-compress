@@ -542,7 +542,17 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @return <code>true</code> if this is a Pax header.
      */
     public boolean isPaxHeader(){
-        return linkFlag == LF_PAX_EXTENDED_HEADER || linkFlag == LF_PAX_GLOBAL_EXTENDED_HEADER;
+        return linkFlag == LF_PAX_EXTENDED_HEADER_LC
+            || linkFlag == LF_PAX_EXTENDED_HEADER_UC;
+    }
+
+    /**
+     * Check if this is a Pax header.
+     * 
+     * @return <code>true</code> if this is a Pax header.
+     */
+    public boolean isGlobalPaxHeader(){
+        return linkFlag == LF_PAX_GLOBAL_EXTENDED_HEADER;
     }
 
     /**
