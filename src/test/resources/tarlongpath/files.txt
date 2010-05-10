@@ -1,0 +1,42 @@
+#   Licensed to the Apache Software Foundation (ASF) under one or more
+#   contributor license agreements.  See the NOTICE file distributed with
+#   this work for additional information regarding copyright ownership.
+#   The ASF licenses this file to You under the Apache License, Version 2.0
+#   (the "License"); you may not use this file except in compliance with
+#   the License.  You may obtain a copy of the License at
+# 
+#       http://www.apache.org/licenses/LICENSE-2.0
+# 
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#
+#
+#   File prefixes correspond to the following OSes:
+#   cygwin - CYGWIN_NT-5.1 1.7.1(0.218/5/3)
+#   hudson - SunOS 5.10
+#   minotaur - FreeBSD 8.0-STABLE
+#   vmgump - Linux 2.6.24-27-server 
+#   winXP_ant - Ant 1.7.1 on Windows/XP
+#
+compress-test/
+compress-test/dir1/
+compress-test/dir1/dir2/
+compress-test/dir1/dir2/dir3/
+compress-test/dir1/dir2/dir3/dir4/
+compress-test/dir1/dir2/dir3/dir4/dir5/
+compress-test/dir1/dir2/dir3/dir4/dir5/dir6/
+compress-test/dir1/dir2/dir3/dir4/dir5/dir6/dir7/
+compress-test/dir1/dir2/dir3/dir4/dir5/dir6/dir7/dir8/
+compress-test/dir1/dir2/dir3/dir4/dir5/dir6/dir7/dir8/dir9/
+compress-test/dir1/dir2/dir3/dir4/dir5/dir6/dir7/dir8/dir9/dir10/
+compress-test/dir1/dir2/dir3/dir4/dir5/dir6/dir7/dir8/dir9/dir10/file12345678901234567890.txt
+compress-test/dir1/dir2/dir3/dir4/dir5/dir6/dir7/dir8/dir9/dir10/file1234567890123456789012345678901234567890123456789012345678901234567890.txt
+compress-test/dir1/dir2/dir3/dir4/dir5/dir6/dir7/dir8/dir9/dir10/file123456789012345678901234567890123456789012345678901234567890.txt
+compress-test/dir1/dir2/dir3/dir4/dir5/dir6/dir7/dir8/dir9/dir10/file.txt
+compress-test/dir1/dir2/dir3/dir4/dir5/dir6/dir7/dir8/dir9/dir10/file123456789012345678901234567890.txt
+compress-test/dir1/dir2/dir3/dir4/dir5/dir6/dir7/dir8/dir9/dir10/file1234567890.txt
+compress-test/dir1/dir2/dir3/dir4/dir5/dir6/dir7/dir8/dir9/dir10/file1234567890123456789012345678901234567890.txt
+compress-test/dir1/dir2/dir3/dir4/dir5/dir6/dir7/dir8/dir9/dir10/file12345678901234567890123456789012345678901234567890.txt
