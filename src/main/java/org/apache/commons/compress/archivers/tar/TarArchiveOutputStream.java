@@ -339,6 +339,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         out.flush();
     }
 
+    /** {@inheritDoc} */
     public ArchiveEntry createArchiveEntry(File inputFile, String entryName)
             throws IOException {
         if(finished) {

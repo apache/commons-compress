@@ -207,6 +207,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         return current;
     }
 
+    /** {@inheritDoc} */
     public ArchiveEntry getNextEntry() throws IOException {
         return getNextZipEntry();
     }

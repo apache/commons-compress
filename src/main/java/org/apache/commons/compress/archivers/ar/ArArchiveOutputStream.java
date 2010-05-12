@@ -52,6 +52,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         return header.length;
     }
 
+    /** {@inheritDoc} */
     public void closeArchiveEntry() throws IOException {
         if(finished) {
             throw new IOException("Stream has already been finished");
@@ -66,6 +67,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         haveUnclosedEntry = false;
     }
 
+    /** {@inheritDoc} */
     public void putArchiveEntry( final ArchiveEntry pEntry ) throws IOException {
         if(finished) {
             throw new IOException("Stream has already been finished");
@@ -168,6 +170,9 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         entryOffset += len;
     }
 
+    /**
+     * Calls finish if necessary, and then closes the OutputStream
+     */
     public void close() throws IOException {
         if(!finished) {
             finish();
@@ -176,6 +181,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         prevEntry = null;
     }
 
+    /** {@inheritDoc} */
     public ArchiveEntry createArchiveEntry(File inputFile, String entryName)
             throws IOException {
         if(finished) {
@@ -184,9 +190,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         return new ArArchiveEntry(inputFile, entryName);
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.commons.compress.archivers.ArchiveOutputStream#finish()
-     */
+    /** {@inheritDoc} */
     public void finish() throws IOException {
         if(haveUnclosedEntry) {
             throw new IOException("This archive contains unclosed entries.");

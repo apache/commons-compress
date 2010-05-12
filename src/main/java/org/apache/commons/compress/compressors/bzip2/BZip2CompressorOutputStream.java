@@ -431,6 +431,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         init();
     }
 
+    /** {@inheritDoc} */
     public void write(final int b) throws IOException {
         if (this.out != null) {
             write0(b);
