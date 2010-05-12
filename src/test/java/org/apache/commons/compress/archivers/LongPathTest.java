@@ -16,8 +16,9 @@
  * 
  */
 
-package org.apache.commons.compress.archivers.tar;
+package org.apache.commons.compress.archivers;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,10 +26,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 
 /**
  * Test that can read various tar file examples.
@@ -36,26 +40,28 @@ import org.apache.commons.compress.AbstractTestCase;
  * The class uses nested suites in order to be able to name the test after the file name,
  * as JUnit does not allow one to change the display name of a test.
  */
-public class TarReadTest extends AbstractTestCase {
+public class LongPathTest extends AbstractTestCase {
     
-    private static final ClassLoader classLoader = TarReadTest.class.getClassLoader();
+    private static final ClassLoader classLoader = LongPathTest.class.getClassLoader();
 
     private File file;
 
     private static final ArrayList fileList = new ArrayList();
+
+    private final ArchiveStreamFactory factory = new ArchiveStreamFactory();
     
-    public TarReadTest(String name) {
+    public LongPathTest(String name) {
         super(name);
     }
     
-    private TarReadTest(String name, File file){
+    private LongPathTest(String name, File file){
         super(name);
         this.file = file;
     }
     
     public static TestSuite suite() throws IOException{
         TestSuite suite = new TestSuite("TarReadTests");
-        File arcdir =new File(classLoader.getResource("tarlongpath").getFile());
+        File arcdir =new File(classLoader.getResource("longpath").getFile());
         assertTrue(arcdir.exists());
         File listing= new File(arcdir,"files.txt");
         assertTrue("File listing is readable",listing.canRead());
@@ -76,15 +82,33 @@ public class TarReadTest extends AbstractTestCase {
             }
             // Appears to be the only way to give the test a variable name
             TestSuite namedSuite = new TestSuite(file.getName());
-            Test test = new TarReadTest("testArchive", file);
+            Test test = new LongPathTest("testArchive", file);
             namedSuite.addTest(test);
             suite.addTest(namedSuite);
         }        
         return suite;
     }
     
-    public void testArchive() throws Exception{
+    public void testArchive() throws Exception {
         ArrayList expected=(ArrayList) fileList.clone();
-        checkArchiveContent(new TarArchiveInputStream(new FileInputStream(file)), expected);
+        String name = file.getName();
+        if ("minotaur.jar".equals(name) || "minotaur-0.jar".equals(name)){
+            expected.add("META-INF/");
+            expected.add("META-INF/MANIFEST.MF");
+        }
+        ArchiveInputStream ais = factory.createArchiveInputStream(new BufferedInputStream(new FileInputStream(file)));
+        // check if expected type recognised
+        if (name.endsWith(".tar")){
+            assertTrue(ais instanceof TarArchiveInputStream);
+        } else if (name.endsWith(".jar") || name.endsWith(".zip")){
+            assertTrue(ais instanceof ZipArchiveInputStream);
+        } else {
+            fail("Unexpected file type: "+name);
+        }
+        try {
+            checkArchiveContent(ais, expected);
+        } catch (AssertionFailedError e) {
+            fail("Error processing "+file.getName()+" "+e);
+        }
     }
 }
