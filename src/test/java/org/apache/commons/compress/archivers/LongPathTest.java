@@ -31,6 +31,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 
@@ -60,7 +61,7 @@ public class LongPathTest extends AbstractTestCase {
     }
     
     public static TestSuite suite() throws IOException{
-        TestSuite suite = new TestSuite("TarReadTests");
+        TestSuite suite = new TestSuite("LongPathTests");
         File arcdir =new File(classLoader.getResource("longpath").getFile());
         assertTrue(arcdir.exists());
         File listing= new File(arcdir,"files.txt");
@@ -102,6 +103,15 @@ public class LongPathTest extends AbstractTestCase {
             assertTrue(ais instanceof TarArchiveInputStream);
         } else if (name.endsWith(".jar") || name.endsWith(".zip")){
             assertTrue(ais instanceof ZipArchiveInputStream);
+        } else if (name.endsWith(".cpio")){
+            assertTrue(ais instanceof CpioArchiveInputStream);
+            // Hack: cpio does not add trailing "/" to directory names
+            for(int i=0; i < expected.size(); i++){
+                String ent = (String) expected.get(i);
+                if (ent.endsWith("/")){
+                    expected.set(i, ent.substring(0, ent.length()-1));
+                }
+            }
         } else {
             fail("Unexpected file type: "+name);
         }
