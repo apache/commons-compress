@@ -43,9 +43,7 @@ public class GzipCompressorInputStream extends CompressorInputStream {
         in = new GZIPInputStream(inputStream);
     }
 
-    /* (non-Javadoc)
-     * @see java.io.InputStream#read()
-     */
+    /** {@inheritDoc} */
     public int read() throws IOException {
         int read = in.read();
         this.count(read < 0 ? -1 : 1);

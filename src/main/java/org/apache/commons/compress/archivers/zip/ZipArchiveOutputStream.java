@@ -333,9 +333,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         fallbackToUTF8 = b;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.commons.compress.archivers.ArchiveOutputStream#finish()
-     */
+    /** {@inheritDoc} */
     public void finish() throws IOException {
         if (finished) {
             throw new IOException("This archive has already been finished");
@@ -425,8 +423,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         entry = null;
     }
 
-    /** {@inheritDoc} */
- // @throws ClassCastException if entry is not an instance of ZipArchiveEntry
+    /**
+     * {@inheritDoc} 
+     * @throws ClassCastException if entry is not an instance of ZipArchiveEntry
+     */
     public void putArchiveEntry(ArchiveEntry archiveEntry) throws IOException {
         if (finished) {
             throw new IOException("Stream has already been finished");

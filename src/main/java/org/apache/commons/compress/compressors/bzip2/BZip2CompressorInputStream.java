@@ -112,11 +112,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         init();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.io.InputStream#read()
-     */
+    /** {@inheritDoc} */
     public int read() throws IOException {
         if (this.in != null) {
             return read0();

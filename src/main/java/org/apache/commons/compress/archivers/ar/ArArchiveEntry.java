@@ -113,10 +113,12 @@ public class ArArchiveEntry implements ArchiveEntry {
              0, 0, DEFAULT_MODE, inputFile.lastModified() / 1000);
     }
 
+    /** {@inheritDoc} */
     public long getSize() {
         return this.getLength();
     }
 
+    /** {@inheritDoc} */
     public String getName() {
         return name;
     }
@@ -149,13 +151,12 @@ public class ArArchiveEntry implements ArchiveEntry {
         return length;
     }
 
+    /** {@inheritDoc} */
     public boolean isDirectory() {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
+    /** {@inheritDoc} */
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -163,9 +164,7 @@ public class ArArchiveEntry implements ArchiveEntry {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
