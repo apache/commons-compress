@@ -78,12 +78,6 @@ public class ArchiveReadTests extends AbstractTestCase {
             if (file.getName().endsWith(".txt")){
                 continue;
             }
-            // Cannot handle these tar files yet 
-            if (file.getName().equals("SunOS_cAEf.tar")
-             || file.getName().equals("FreeBSD_pax.tar")
-             || file.getName().equals("SunOS_cEf.tar")){
-                continue;
-            }
             // Appears to be the only way to give the test a variable name
             TestSuite namedSuite = new TestSuite(file.getName());
             Test test = new ArchiveReadTests("testArchive", file);
