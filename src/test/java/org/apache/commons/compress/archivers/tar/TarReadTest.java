@@ -36,19 +36,19 @@ import org.apache.commons.compress.AbstractTestCase;
  * The class uses nested suites in order to be able to name the test after the file name,
  * as JUnit does not allow one to change the display name of a test.
  */
-public class TarReadTests extends AbstractTestCase {
+public class TarReadTest extends AbstractTestCase {
     
-    private static final ClassLoader classLoader = TarReadTests.class.getClassLoader();
+    private static final ClassLoader classLoader = TarReadTest.class.getClassLoader();
 
     private File file;
 
     private static final ArrayList fileList = new ArrayList();
     
-    public TarReadTests(String name) {
+    public TarReadTest(String name) {
         super(name);
     }
     
-    private TarReadTests(String name, File file){
+    private TarReadTest(String name, File file){
         super(name);
         this.file = file;
     }
@@ -76,7 +76,7 @@ public class TarReadTests extends AbstractTestCase {
             }
             // Appears to be the only way to give the test a variable name
             TestSuite namedSuite = new TestSuite(file.getName());
-            Test test = new TarReadTests("testArchive", file);
+            Test test = new TarReadTest("testArchive", file);
             namedSuite.addTest(test);
             suite.addTest(namedSuite);
         }        
