@@ -52,6 +52,7 @@ public interface TarConstants {
 
     /**
      * The length of the size field in a header buffer.
+     * Includes the trailing space or NUL.
      */
     int    SIZELEN = 12;
 
