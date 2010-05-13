@@ -31,6 +31,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
@@ -110,6 +111,21 @@ public class LongPathTest extends AbstractTestCase {
                 String ent = (String) expected.get(i);
                 if (ent.endsWith("/")){
                     expected.set(i, ent.substring(0, ent.length()-1));
+                }
+            }
+        } else if (name.endsWith(".ar")){
+            assertTrue(ais instanceof ArArchiveInputStream);
+            // CPIO does not store directories or directory names
+            expected.clear();
+            for(int i=0; i < fileList.size(); i++){
+                String ent = (String) fileList.get(i);
+                if (!ent.endsWith("/")){// not a directory
+                    final int lastSlash = ent.lastIndexOf('/');
+                    if (lastSlash >= 0) { // extract path name
+                        expected.add(ent.substring(lastSlash+1, ent.length()));                        
+                    } else {
+                        expected.add(ent);
+                    }
                 }
             }
         } else {
