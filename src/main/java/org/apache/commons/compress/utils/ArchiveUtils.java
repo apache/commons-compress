@@ -115,6 +115,22 @@ public class ArchiveUtils {
     }
 
     /**
+     * Convert an input byte array to a String using the ASCII character set.
+     * 
+     * @param inputBytes input byte array
+     * @param offset offset within array
+     * @param length length of array
+     * @return the bytes, interpreted as an Ascii string
+     */
+    public static String toAsciiString(final byte[] inputBytes, int offset, int length){
+        try {
+            return new String(inputBytes, offset, length, "ASCII");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e); // Should never happen
+        }
+    }
+
+    /**
      * Compare byte buffers, optionally ignoring trailing nulls
      * 
      * @param buffer1
