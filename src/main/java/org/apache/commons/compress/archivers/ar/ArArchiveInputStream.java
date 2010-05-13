@@ -43,6 +43,9 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      */
     private ArArchiveEntry currentEntry = null;
     
+    // Storage area for extra long names (GNU ar)
+    private byte[] namebuffer = null;
+    
     /*
      * The offset where the current entry started. -1 if no entry has been
      * called
@@ -125,22 +128,38 @@ public class ArArchiveInputStream extends ArchiveInputStream {
             final byte[] realized = new byte[expected.length];
             final int read = read(realized);
             if (read != expected.length) {
-                throw new IOException("failed to read entry header. Occured at byte: " + getBytesRead());
+                throw new IOException("failed to read entry trailer. Occured at byte: " + getBytesRead());
             }
             for (int i = 0; i < expected.length; i++) {
                 if (expected[i] != realized[i]) {
-                    throw new IOException("invalid entry header. not read the content? Occured at byte: " + getBytesRead());
+                    throw new IOException("invalid entry trailer. not read the content? Occured at byte: " + getBytesRead());
                 }
             }
         }
 
         entryOffset = offset;
 
-        // SVR4/GNU adds a trailing "/" to names
+//        GNU ar stores multiple extended filenames in the data section of a file with the name "//", this record is referred to by future headers. A header references an extended filename by storing a "/" followed by a decimal offset to the start of the filename in the extended filename data section. The format of this "//" file itself is simply a list of the long filenames, each separated by one or more LF characters. Note that the decimal offsets are number of characters, not line or string number within the "//" file.
+//
+//        GNU ar uses a '/' to mark the end of the filename; this allows for the use of spaces without the use of an extended filename.
+
         // entry name is stored as ASCII string
         String temp = ArchiveUtils.toAsciiString(name).trim();
-        if (temp.endsWith("/")) {
+        
+        if (temp.equals("//")){ // GNU extended filenames entry
+            int bufflen = asInt(length); // Assume length will fit in an int
+            namebuffer = new byte[bufflen];
+            int read = read(namebuffer, 0, bufflen);
+            if (read != bufflen){
+                throw new IOException("Failed to read complete // record: expected="+bufflen+" read="+read);
+            }
+            currentEntry = new ArArchiveEntry(temp, bufflen);
+            return getNextArEntry();
+        } else if (temp.endsWith("/")) { // GNU terminator
             temp = temp.substring(0, temp.length() - 1);
+        } else if (temp.matches("^/\\d+")) {// GNU long filename ref.
+            int offset = Integer.parseInt(temp.substring(1));// get the offset
+            temp = getExtendedName(offset); // convert to the long name
         }
         currentEntry = new ArArchiveEntry(temp, asLong(length), asInt(userid),
                                           asInt(groupid), asInt(filemode, 8),
@@ -148,6 +167,27 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         return currentEntry;
     }
 
+    /**
+     * Get an extended name from the GNU extended name buffer.
+     * 
+     * @param offset pointer to entry within the buffer
+     * @return the extended file name; without trailing "/" if present.
+     * @throws IOException if name not found or buffer not set up
+     */
+    private String getExtendedName(int offset) throws IOException{
+        if (namebuffer == null) {
+            throw new IOException("Cannot process GNU long filename as no // record was found");
+        }
+        for(int i=offset; i < namebuffer.length; i++){
+            if (namebuffer[i]=='\012'){
+                if (namebuffer[i-1]=='/') {
+                    i--; // drop trailing /
+                }
+                return ArchiveUtils.toAsciiString(namebuffer, offset, i-offset);
+            }
+        }
+        throw new IOException("Failed to read entry: "+offset);
+    }
     private long asLong(byte[] input) {
         return Long.parseLong(new String(input).trim());
     }
