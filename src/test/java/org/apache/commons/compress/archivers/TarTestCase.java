@@ -114,6 +114,17 @@ public final class TarTestCase extends AbstractTestCase {
         out.close();
     }
 
+    public void testCOMPRESS114() throws Exception {
+        final File input = getFile("compress-114.tar");
+        final InputStream is = new FileInputStream(input);
+        final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("tar", is);
+        TarArchiveEntry entry = (TarArchiveEntry)in.getNextEntry();
+        assertEquals("3北盕06盬2345盳B眑a北北北北BLA", entry.getName());
+        entry = (TarArchiveEntry)in.getNextEntry();
+        assertEquals("0302-0601-3北盕06盬2345盳B眑a北北北北BLA",entry.getName());
+        in.close();
+    }
+
     public void testDirectoryEntryFromFile() throws Exception {
         File[] tmp = createTempDirAndFile();
         File archive = null;

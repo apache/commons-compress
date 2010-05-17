@@ -45,6 +45,9 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
     <release version="1.1" date="as in SVN" description="Release 1.1">
+      <action issue="COMPRESS-118" type="fix" date="2010-05-17">
+       TarUtils.parseName does not properly handle characters outside the range 0-127
+      </action>
       <action issue="COMPRESS-112" type="update" date="2010-05-13">
        ArArchiveInputStream does not handle GNU extended filename records (//)
       </action>
