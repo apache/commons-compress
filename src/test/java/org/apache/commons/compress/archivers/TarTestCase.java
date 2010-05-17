@@ -115,7 +115,7 @@ public final class TarTestCase extends AbstractTestCase {
     }
 
     public void testCOMPRESS114() throws Exception {
-        final File input = getFile("compress-114.tar");
+        final File input = getFile("COMPRESS-114.tar");
         final InputStream is = new FileInputStream(input);
         final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("tar", is);
         TarArchiveEntry entry = (TarArchiveEntry)in.getNextEntry();
