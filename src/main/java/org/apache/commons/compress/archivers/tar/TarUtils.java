@@ -95,11 +95,11 @@ public class TarUtils {
         int          end = offset + length;
 
         for (int i = offset; i < end; ++i) {
-            if (buffer[i] == 0) { // Trailing null
+            byte b = buffer[i];
+            if (b == 0) { // Trailing null
                 break;
             }
-
-            result.append((char) buffer[i]);
+            result.append((char) (b & 0xFF)); // Allow for sign-extension
         }
 
         return result.toString();
