@@ -77,6 +77,8 @@ o The ar and cpio streams now properly read and write last
 o COMPRESS-81:  TarOutputStream can leave garbage at the end of the archive 
 
 Changes:
+o COMPRESS-108:  Command-line interface to list archive contents.
+       Usage: java -jar commons-compress-n.m.jar archive-name [zip|tar|etc] 
 o COMPRESS-112:  ArArchiveInputStream does not handle GNU extended filename records (//) 
 o COMPRESS-109:  Tar implementation does not support Pax headers
        Added support for reading pax headers.
