@@ -107,7 +107,7 @@ public abstract class ArchiveInputStream extends InputStream {
     /**
      * Decrements the counter of already read bytes.
      * 
-     * @param read the number of bytes pushed back.
+     * @param pushedBack the number of bytes pushed back.
      * @since Apache Commons Compress 1.1
      */
     protected void pushedBackBytes(long pushedBack) {
