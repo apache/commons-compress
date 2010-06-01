@@ -39,30 +39,20 @@ public class TarUtilsTest extends TestCase {
         assertEquals(sb1, sb2);
     }
     
-    private void fillBuff(byte []buffer, String input) throws Exception{
-        for(int i=0; i<buffer.length;i++){
-            buffer[i]=0;
-        }
-        System.arraycopy(input.getBytes("UTF-8"),0,buffer,0,Math.min(buffer.length,input.length()));        
-    }
-
     public void testParseOctal() throws Exception{
-        byte [] buffer = new byte[20];
-        fillBuff(buffer,"777777777777 ");
         long value; 
-        value = TarUtils.parseOctal(buffer,0, 11);
-        assertEquals(077777777777L, value);
-        value = TarUtils.parseOctal(buffer,0, 12);
-        assertEquals(0777777777777L, value);
-        buffer[11]=' ';
-        value = TarUtils.parseOctal(buffer,0, 11);
-        assertEquals(077777777777L, value);
-        buffer[11]=0;
-        value = TarUtils.parseOctal(buffer,0, 11);
-        assertEquals(077777777777L, value);
-        fillBuff(buffer, "abcdef"); // Invalid input
+        byte [] buffer;
+        final long MAX_OCTAL  = 077777777777L; // Allowed 11 digits
+        final String maxOctal = "77777777777 "; // Maximum valid octal
+        buffer = maxOctal.getBytes("UTF-8");
+        value = TarUtils.parseOctal(buffer,0, buffer.length);
+        assertEquals(MAX_OCTAL, value);
+        buffer[buffer.length-1]=0;
+        value = TarUtils.parseOctal(buffer,0, buffer.length);
+        assertEquals(MAX_OCTAL, value);
+        buffer = "abcdef".getBytes("UTF-8"); // Invalid input
         try {
-            value = TarUtils.parseOctal(buffer,0, 11);
+            TarUtils.parseOctal(buffer,0, buffer.length);
             fail("Expected IllegalArgumentException");
         } catch (IllegalArgumentException expected) {
         }
