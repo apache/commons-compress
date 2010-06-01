@@ -134,6 +134,9 @@ The <action> type attribute can be add,update,fix,remove.
         ZipArchiveEntry, ZipFile and ZipArchiveInputStream are now
         more lenient when parsing extra fields.
       </action>
+      <action issue="COMPRESS-75" type="update" date="2010-02-12">
+       ZipArchiveInputStream does not show location in file where a problem occurred.
+      </action>
       <action type="fix" date="2010-02-12" issue="COMPRESS-82">
         cpio is terribly slow.
         Documented that buffered streams are needed for performance

@@ -88,6 +88,7 @@ o COMPRESS-105:  Document that the name of an ZipArchiveEntry determines whether
        If you don't use the constructor with the File argument the entry's
         name must end in a "/" in order for the entry to be known as a directory. 
 o COMPRESS-79:  Move DOS/Java time conversions into Zip utility class. 
+o COMPRESS-75:  ZipArchiveInputStream does not show location in file where a problem occurred. 
 
  
 For complete information on Commons Compress, including instructions on how to submit bug reports,
