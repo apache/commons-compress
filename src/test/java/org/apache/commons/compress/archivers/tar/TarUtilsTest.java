@@ -50,7 +50,13 @@ public class TarUtilsTest extends TestCase {
         buffer[buffer.length-1]=0;
         value = TarUtils.parseOctal(buffer,0, buffer.length);
         assertEquals(MAX_OCTAL, value);
-        buffer = "abcdef".getBytes("UTF-8"); // Invalid input
+        buffer = "abcdef ".getBytes("UTF-8"); // Invalid input
+        try {
+            TarUtils.parseOctal(buffer,0, buffer.length);
+            fail("Expected IllegalArgumentException");
+        } catch (IllegalArgumentException expected) {
+        }
+        buffer = "77777777777".getBytes("UTF-8"); // Invalid input
         try {
             TarUtils.parseOctal(buffer,0, buffer.length);
             fail("Expected IllegalArgumentException");
