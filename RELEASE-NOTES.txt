@@ -7,6 +7,11 @@ Release 1.1
 Changes in this version include:
 
 New features:
+o COMPRESS-108:  Command-line interface to list archive contents.
+       Usage: java -jar commons-compress-n.m.jar archive-name [zip|tar|etc] 
+o COMPRESS-109:  Tar implementation does not support Pax headers
+       Added support for reading pax headers.
+       Note: does not support global pax headers 
 o COMPRESS-103:  ZipArchiveInputStream can optionally extract data that used
         the STORED compression method and a data descriptor.
         Doing so in a stream is not safe in general, so you have to
@@ -36,6 +41,7 @@ o ArchiveEntry now has a getLastModifiedDate method.
 o COMPRESS-78:  Add a BZip2Utils class modelled after GZipUtils Thanks to Jukka Zitting. 
 
 Fixed Bugs:
+o COMPRESS-113:  TarArchiveEntry.parseTarHeader() includes the trailing space/NUL when parsing the octal size 
 o COMPRESS-118:  TarUtils.parseName does not properly handle characters outside the range 0-127 
 o COMPRESS-107:  ArchiveStreamFactory does not recognise tar files created by Ant 
 o COMPRESS-110:  Support "ustar" prefix field, which is used when file paths are longer
@@ -77,12 +83,7 @@ o The ar and cpio streams now properly read and write last
 o COMPRESS-81:  TarOutputStream can leave garbage at the end of the archive 
 
 Changes:
-o COMPRESS-108:  Command-line interface to list archive contents.
-       Usage: java -jar commons-compress-n.m.jar archive-name [zip|tar|etc] 
 o COMPRESS-112:  ArArchiveInputStream does not handle GNU extended filename records (//) 
-o COMPRESS-109:  Tar implementation does not support Pax headers
-       Added support for reading pax headers.
-       Note: does not support global pax headers 
 o COMPRESS-105:  Document that the name of an ZipArchiveEntry determines whether
        an entry is considered a directory or not.
        If you don't use the constructor with the File argument the entry's
