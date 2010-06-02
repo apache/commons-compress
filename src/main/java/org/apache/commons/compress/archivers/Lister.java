@@ -39,6 +39,10 @@ public final class Lister {
     private static final ArchiveStreamFactory factory = new ArchiveStreamFactory();
     
     public static void main(String[] args) throws Exception {
+        if (args.length == 0) {
+            usage();
+            return;
+        }
         System.out.println("Analysing "+args[0]);
         File f = new File(args[0]);
         if (!f.isFile()) {
@@ -58,6 +62,11 @@ public final class Lister {
         }
         ais.close();
         fis.close();
+    }
+
+    private static void usage() {
+        System.out.println("Parameters: archive-name [archive-type]");
+        
     }
 
 }
