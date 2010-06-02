@@ -45,6 +45,9 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
     <release version="1.1" date="as in SVN" description="Release 1.1">
+      <action issue="COMPRESS-72" type="fix" date="2010-06-02">
+       Move acknowledgements from NOTICE to README
+      </action> 
       <action issue="COMPRESS-113" type="fix" date="2010-06-02">
        TarArchiveEntry.parseTarHeader() includes the trailing space/NUL when parsing the octal size
       </action> 

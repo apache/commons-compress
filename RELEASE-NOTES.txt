@@ -41,6 +41,7 @@ o ArchiveEntry now has a getLastModifiedDate method.
 o COMPRESS-78:  Add a BZip2Utils class modelled after GZipUtils Thanks to Jukka Zitting. 
 
 Fixed Bugs:
+o COMPRESS-72:  Move acknowledgements from NOTICE to README 
 o COMPRESS-113:  TarArchiveEntry.parseTarHeader() includes the trailing space/NUL when parsing the octal size 
 o COMPRESS-118:  TarUtils.parseName does not properly handle characters outside the range 0-127 
 o COMPRESS-107:  ArchiveStreamFactory does not recognise tar files created by Ant 
