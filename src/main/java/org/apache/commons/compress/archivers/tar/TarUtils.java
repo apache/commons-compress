@@ -35,49 +35,84 @@ public class TarUtils {
     /**
      * Parse an octal string from a buffer.
      * Leading spaces are ignored.
-     * Parsing stops when a NUL is found, or a trailing space,
-     * or the buffer length is reached.
+     * The buffer must contain a trailing space or NUL,
+     * and may contain an additional trailing space or NUL.
      *
-     * Behaviour with non-octal input is currently undefined.
-     * 
+     * The input buffer is allowed to contain all NULs,
+     * in which case the method returns 0L
+     * (this allows for missing fields).
+     *
      * @param buffer The buffer from which to parse.
      * @param offset The offset into the buffer from which to parse.
-     * @param length The maximum number of bytes to parse.
+     * @param length The maximum number of bytes to parse - must be at least 2 bytes.
      * @return The long value of the octal string.
+     * @throws IllegalArgumentException if the trailing space/NUL is missing or if a invalid byte is detected.
      */
-    public static long parseOctal(byte[] buffer, final int offset, final int length) {
+    public static long parseOctal(final byte[] buffer, final int offset, final int length) {
         long    result = 0;
-        boolean stillPadding = true;
         int     end = offset + length;
+        int     start = offset;
 
-        for (int i = offset; i < end; ++i) {
-            final byte currentByte = buffer[i];
-            if (currentByte == 0) { // Found trailing null
+        if (length < 2){
+            throw new IllegalArgumentException("Length "+length+" must be at least 2");
+        }
+
+        boolean allNUL = true;
+        for (int i = start; i < end; i++){
+            if (buffer[i] != 0){
+                allNUL = false;
                 break;
             }
+        }
+        if (allNUL) {
+            return 0L;
+        }
 
-            // Ignore leading spaces ('0' can be ignored anyway)
-            if (currentByte == (byte) ' ' || currentByte == '0') {
-                if (stillPadding) {
-                    continue;
-                }
-
-                if (currentByte == (byte) ' ') { // Found trailing space
-                    break;
-                }
+        // Skip leading spaces
+        while (start < end){
+            if (buffer[start] == ' '){
+                start++;
+            } else {
+                break;
             }
+        }
 
-            stillPadding = false;
+        // Must have trailing NUL or space
+        byte trailer;
+        trailer = buffer[end-1];
+        if (trailer == 0 || trailer == ' '){
+            end--;
+        } else {
+            throw new IllegalArgumentException(
+                    exceptionMessage(buffer, offset, length, end-1, trailer));
+        }
+        // May have additional NUL or space
+        trailer = buffer[end-1];
+        if (trailer == 0 || trailer == ' '){
+            end--;
+        }
+
+        for ( ;start < end; start++) {
+            final byte currentByte = buffer[start];
             // CheckStyle:MagicNumber OFF
             if (currentByte < '0' || currentByte > '7'){
                 throw new IllegalArgumentException(
-                        "Invalid octal digit at position "+i+" in '"+new String(buffer, offset, length)+"'");
+                        exceptionMessage(buffer, offset, length, start, currentByte));
             }
-            result = (result << 3) + (currentByte - '0');// TODO needs to reject invalid bytes
+            result = (result << 3) + (currentByte - '0'); // convert from ASCII
             // CheckStyle:MagicNumber ON
         }
 
         return result;
+    }
+
+    // Helper method to generate the exception message
+    private static String exceptionMessage(byte[] buffer, final int offset,
+            final int length, int current, final byte currentByte) {
+        String string = new String(buffer, offset, length);
+        string=string.replaceAll("\0", "{NUL}"); // Replace NULs to allow string to be printed
+        final String s = "Invalid byte "+currentByte+" at offset "+(current-offset)+" in '"+string+"' len="+length;
+        return s;
     }
 
     /**
