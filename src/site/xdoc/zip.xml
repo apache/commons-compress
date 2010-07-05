@@ -93,7 +93,7 @@
           The same is true for <code>ZipArchiveInputStream</code> as
           long as the entry is DEFLATED.  For STORED
           entries <code>ZipArchiveInputStream</code> can try to read
-          ahead until if finds the next entry, but this approach is
+          ahead until it finds the next entry, but this approach is
           not safe and has to be enabled by a constructor argument
           explicitly.</p>
 
