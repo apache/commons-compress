@@ -123,6 +123,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         }
         writeEOFRecord();
         writeEOFRecord();
+        buffer.flushBlock();
         finished = true;
     }
 
