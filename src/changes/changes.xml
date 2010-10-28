@@ -46,7 +46,7 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.2" date="as in SVN" description="Release 1.2">
       <action issue="COMPRESS-119" type="fix" date="2010-10-26">
-        TarArchiveOutputStream#finish now writes all buffered data ot the stream
+        TarArchiveOutputStream#finish now writes all buffered data to the stream
       </action> 
     </release>
     <release version="1.1" date="2010-08-13" description="Release 1.1">
