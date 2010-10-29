@@ -594,6 +594,66 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     }
 
     /**
+     * Check if this is a "normal file"
+     *
+     * @since Apache Commons Compress 1.2
+     */
+    public boolean isFile() {
+        if (file != null) {
+            return file.isFile();
+        }
+        if (linkFlag == LF_OLDNORM || linkFlag == LF_NORMAL) {
+            return true;
+        }
+        return !getName().endsWith("/");
+    }
+
+    /**
+     * Check if this is a symbolic link entry.
+     *
+     * @since Apache Commons Compress 1.2
+     */
+    public boolean isSymbolicLink() {
+        return linkFlag == LF_SYMLINK;
+    }
+
+    /**
+     * Check if this is a link entry.
+     *
+     * @since Apache Commons Compress 1.2
+     */
+    public boolean isLink() {
+        return linkFlag == LF_LINK;
+    }
+
+    /**
+     * Check if this is a character device entry.
+     *
+     * @since Apache Commons Compress 1.2
+     */
+    public boolean isCharacterDevice() {
+        return linkFlag == LF_CHR;
+    }
+
+    /**
+     * Check if this is a block device entry.
+     *
+     * @since Apache Commons Compress 1.2
+     */
+    public boolean isBlockDevice() {
+        return linkFlag == LF_BLK;
+    }
+
+    /**
+     * Check if this is a FIFO (pipe) entry.
+     *
+     * @since Apache Commons Compress 1.2
+     */
+    public boolean isFIFO() {
+        return linkFlag == LF_FIFO;
+    }
+
+    /**
      * If this entry represents a file, and the file is a directory, return
      * an array of TarEntries for this entry's children.
      *
