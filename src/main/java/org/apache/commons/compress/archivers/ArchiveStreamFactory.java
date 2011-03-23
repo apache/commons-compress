@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress.archivers;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -215,6 +216,14 @@ public class ArchiveStreamFactory {
             in.reset();
             if (TarArchiveInputStream.matches(tarheader, signatureLength)) {
                 return new TarArchiveInputStream(in);
+            }
+            // COMPRESS-117 - improve auto-recognition
+            try {
+                TarArchiveInputStream tais = new TarArchiveInputStream(new ByteArrayInputStream(tarheader));
+                tais.getNextEntry();
+                return new TarArchiveInputStream(in);
+            } catch (Exception e) { // can generate IllegalArgumentException as well as IOException
+                // ignored
             }
         } catch (IOException e) {
             throw new ArchiveException("Could not use reset and mark operations.", e);
