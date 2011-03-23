@@ -38,6 +38,21 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
 
     final ClassLoader classLoader = getClass().getClassLoader();
 
+    public void testDetectionNotArchive() throws FileNotFoundException {
+        try {
+            getStreamFor("test.txt");
+            fail("Expected ArchiveException");
+        } catch (ArchiveException e) {
+            // expected
+        }
+    }
+
+    public void testCOMPRESS117() throws Exception {
+        final ArchiveInputStream tar = getStreamFor("COMPRESS-117.tar");
+        assertNotNull(tar);
+        assertTrue(tar instanceof TarArchiveInputStream);
+    }
+
     public void testDetection() throws Exception {
 
         final ArchiveInputStream ar = getStreamFor("bla.ar"); 
