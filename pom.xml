@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>17</version>
+    <version>20</version>
   </parent>
 
   <groupId>org.apache.commons</groupId>
@@ -31,7 +31,7 @@
   <name>Commons Compress</name>
   <url>http://commons.apache.org/compress/</url>
   <description>
-  Commons Compress defines an API for working with compression and archive formats.
+  Apache Commons Compress software defines an API for working with compression and archive formats.
   These include: bzip2, gzip and ar, cpio, jar, tar, zip.
   </description>
 
