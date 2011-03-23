@@ -45,6 +45,10 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
     <release version="1.2" date="as in SVN" description="Release 1.2">
+      <action issue="COMPRESS-127" type="fix" date="2011-03-23">
+        Calling close() on inputStream returned by CompressorStreamFactory.createCompressorInputStream()
+        does not close the underlying input stream.
+      </action> 
       <action issue="COMPRESS-122" type="add" date="2010-10-29">
         TarArchiveEntry provides access to the flags that determine
         whether it is an archived symbolic link, pipe or other

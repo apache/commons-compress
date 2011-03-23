@@ -100,4 +100,14 @@ public class GzipCompressorInputStream extends CompressorInputStream {
         return true;
     }
     
+    /**
+     * Closes the input stream (unless it is System.in).
+     * 
+     * @since 1.2
+     */
+    public void close() throws IOException {
+        if (this.in != System.in) {
+            this.in.close();
+        }
+    }
 }
