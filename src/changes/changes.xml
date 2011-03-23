@@ -45,6 +45,10 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
     <release version="1.2" date="as in SVN" description="Release 1.2">
+      <action issue="COMPRESS-125" type="fix" date="2011-03-23">
+        BZip2CompressorInputStream throws IOException if underlying stream returns available() == 0.
+        Removed the check.
+      </action> 
       <action issue="COMPRESS-127" type="fix" date="2011-03-23">
         Calling close() on inputStream returned by CompressorStreamFactory.createCompressorInputStream()
         does not close the underlying input stream.

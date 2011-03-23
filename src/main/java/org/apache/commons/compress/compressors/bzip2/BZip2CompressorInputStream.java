@@ -208,9 +208,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         if (null == in) {
             throw new IOException("No InputStream");
         }
-        if (in.available() == 0) {
-            throw new IOException("Empty InputStream");
-        }
         checkMagicChar('B', "first");
         checkMagicChar('Z', "second");
         checkMagicChar('h', "third");
