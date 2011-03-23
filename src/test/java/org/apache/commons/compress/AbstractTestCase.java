@@ -86,6 +86,11 @@ public abstract class AbstractTestCase extends TestCase {
     }
 
     protected static void rmdir(File f) {
+        // Sometimes fails without a pause - perhaps file close is partially asynchronous?
+        try {
+            Thread.sleep(20);
+        } catch (InterruptedException e) {
+        }
         String[] s = f.list();
         if (s != null) {
             for (int i = 0; i < s.length; i++) {
@@ -99,7 +104,8 @@ public abstract class AbstractTestCase extends TestCase {
                 }
             }
         }
-        if (!f.delete()){
+        f.delete(); // safer to delete and check
+        if (f.exists()){
             throw new Error("Failed to delete "+f.getPath());
         }
     }
