@@ -45,6 +45,10 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
     <release version="1.2" date="as in SVN" description="Release 1.2">
+      <action type="update" date="2011-04-18">
+        ZipFile now implements finalize which closes the underlying
+        file.
+      </action>
       <action issue="COMPRESS-117" type="update" date="2011-03-23">
         Certain tar files not recognised by ArchiveStreamFactory.
       </action> 

@@ -112,6 +112,11 @@ public class ZipFile {
     private final boolean useUnicodeExtraFields;
 
     /**
+     * Whether the file is closed.
+     */
+    private boolean closed;
+
+    /**
      * Opens the given file for reading, assuming "UTF8" for file names.
      *
      * @param f the archive.
@@ -208,8 +213,11 @@ public class ZipFile {
      * Closes the archive.
      * @throws IOException if an error occurs closing the archive.
      */
-    public void close() throws IOException {
-        archive.close();
+    public synchronized void close() throws IOException {
+        if (!closed) {
+            closed = true;
+            archive.close();
+        }
     }
 
     /**
@@ -304,6 +312,19 @@ public class ZipFile {
             default:
                 throw new ZipException("Found unsupported compression method "
                                        + ze.getMethod());
+        }
+    }
+
+    /**
+     * Ensures that the close method of this zipfile is called when
+     * there are no more references to it.
+     * @see close()
+     */
+    protected void finalize() throws Throwable {
+        try {
+            close();
+        } finally {
+            super.finalize();
         }
     }
 
