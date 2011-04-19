@@ -198,6 +198,7 @@ public class ZipFile {
         } finally {
             if (!success) {
                 try {
+                    closed = true;
                     archive.close();
                 } catch (IOException e2) {
                     // swallow, throw the original exception instead
