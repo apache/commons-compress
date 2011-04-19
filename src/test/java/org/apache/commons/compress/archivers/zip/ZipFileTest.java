@@ -88,6 +88,16 @@ public class ZipFileTest extends TestCase {
         assertEntryName(l, 22, "ZipUtil");
     }
 
+    public void testDoubleClose() throws Exception {
+        readOrderTest();
+        zf.close();
+        try {
+            zf.close();
+        } catch (Exception ex) {
+            fail("Caught exception of second close");
+        }
+    }
+
     /*
      * ordertest.zip has been handcrafted.
      *

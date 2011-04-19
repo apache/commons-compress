@@ -213,11 +213,9 @@ public class ZipFile {
      * Closes the archive.
      * @throws IOException if an error occurs closing the archive.
      */
-    public synchronized void close() throws IOException {
-        if (!closed) {
-            closed = true;
-            archive.close();
-        }
+    public void close() throws IOException {
+        closed = true;
+        archive.close();
     }
 
     /**
