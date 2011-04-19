@@ -102,6 +102,11 @@ public class ZipFile {
     private final ZipEncoding zipEncoding;
 
     /**
+     * File name of actual source.
+     */
+    private final String archiveName;
+
+    /**
      * The actual data source.
      */
     private final RandomAccessFile archive;
@@ -180,6 +185,7 @@ public class ZipFile {
      */
     public ZipFile(File f, String encoding, boolean useUnicodeExtraFields)
         throws IOException {
+        this.archiveName = f.getAbsolutePath();
         this.encoding = encoding;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
         this.useUnicodeExtraFields = useUnicodeExtraFields;
@@ -214,7 +220,11 @@ public class ZipFile {
      * @throws IOException if an error occurs closing the archive.
      */
     public void close() throws IOException {
+        // this flag is only written here and read in finalize() which
+        // can never be run in parallel.
+        // no synchronization needed.
         closed = true;
+
         archive.close();
     }
 
@@ -320,7 +330,11 @@ public class ZipFile {
      */
     protected void finalize() throws Throwable {
         try {
-            close();
+            if (!closed) {
+                System.err.println("Cleaning up unclosed ZipFile for archive "
+                                   + archiveName);
+                close();
+            }
         } finally {
             super.finalize();
         }
