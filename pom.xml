@@ -205,7 +205,7 @@
           <docEncoding>${commons.docEncoding}</docEncoding>
           <linksource>true</linksource>
           <links>
-            <link>http://java.sun.com/javase/6/docs/api/</link>
+            <link>http://download.oracle.com/javase/6/docs/api/</link>
           </links>
           <tags>
             <tag>
