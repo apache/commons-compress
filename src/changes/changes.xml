@@ -45,6 +45,9 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
     <release version="1.2" date="as in SVN" description="Release 1.2">
+      <action issue="COMPRESS-139" type="fix" date="2011-07-13">
+        ZipFile may leak resources on some JDKs.
+      </action> 
       <action type="update" date="2011-04-18">
         ZipFile now implements finalize which closes the underlying
         file.
