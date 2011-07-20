@@ -36,16 +36,16 @@ public class ArArchiveInputStream extends ArchiveInputStream {
     private final InputStream input;
     private long offset = 0;
     private boolean closed;
-    
+
     /*
      * If getNextEnxtry has been called, the entry metadata is stored in
      * currentEntry.
      */
     private ArArchiveEntry currentEntry = null;
-    
+
     // Storage area for extra long names (GNU ar)
     private byte[] namebuffer = null;
-    
+
     /*
      * The offset where the current entry started. -1 if no entry has been
      * called
@@ -145,7 +145,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
 
         // entry name is stored as ASCII string
         String temp = ArchiveUtils.toAsciiString(name).trim();
-        
+
         if (temp.equals("//")){ // GNU extended filenames entry
             int bufflen = asInt(length); // Assume length will fit in an int
             namebuffer = new byte[bufflen];
@@ -161,8 +161,8 @@ public class ArArchiveInputStream extends ArchiveInputStream {
             int offset = Integer.parseInt(temp.substring(1));// get the offset
             temp = getExtendedName(offset); // convert to the long name
         }
-        currentEntry = new ArArchiveEntry(temp, asLong(length), asInt(userid),
-                                          asInt(groupid), asInt(filemode, 8),
+        currentEntry = new ArArchiveEntry(temp, asLong(length), asInt(userid, true),
+                                          asInt(groupid, true), asInt(filemode, 8),
                                           asLong(lastmodified));
         return currentEntry;
     }
@@ -193,11 +193,23 @@ public class ArArchiveInputStream extends ArchiveInputStream {
     }
 
     private int asInt(byte[] input) {
-        return asInt(input, 10);
+        return asInt(input, 10, false);
+    }
+
+    private int asInt(byte[] input, boolean treatBlankAsZero) {
+        return asInt(input, 10, treatBlankAsZero);
     }
 
     private int asInt(byte[] input, int base) {
-        return Integer.parseInt(new String(input).trim(), base);
+        return asInt(input, base, false);
+    }
+
+    private int asInt(byte[] input, int base, boolean treatBlankAsZero) {
+        String string = new String(input).trim();
+        if (string.length() == 0 && treatBlankAsZero) {
+            return 0;
+        }
+        return Integer.parseInt(string, base);
     }
 
     /*
