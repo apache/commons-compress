@@ -47,6 +47,8 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * and file names with a bigger size than 16 bytes are not possible at the
  * moment.
  * 
+ * @see http://www.freebsd.org/cgi/man.cgi?query=ar&sektion=5
+ *
  * @Immutable
  */
 public class ArArchiveEntry implements ArchiveEntry {

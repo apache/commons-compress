@@ -45,6 +45,11 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
     <release version="1.2" date="as in SVN" description="Release 1.2">
+      <action issue="COMPRESS-140" type="fix" date="2011-07-20"
+              due-to="Trejkaz">
+        ArArchiveInputStream fails if entries contain only blanks for
+        userId or groupId.
+      </action> 
       <action issue="COMPRESS-139" type="fix" date="2011-07-13">
         ZipFile may leak resources on some JDKs.
       </action> 
