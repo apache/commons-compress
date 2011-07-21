@@ -43,6 +43,7 @@ public class ExtraFieldUtils {
         register(JarMarker.class);
         register(UnicodePathExtraField.class);
         register(UnicodeCommentExtraField.class);
+        register(Zip64ExtendedInformationExtraField.class);
     }
 
     /**

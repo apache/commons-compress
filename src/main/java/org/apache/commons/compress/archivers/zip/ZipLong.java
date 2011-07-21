@@ -160,4 +160,8 @@ public final class ZipLong implements Cloneable {
             throw new RuntimeException(cnfe);
         }
     }
+
+    public String toString() {
+        return "ZipLong value: " + value;
+    }
 }
