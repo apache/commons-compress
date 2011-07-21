@@ -89,7 +89,7 @@ public final class ZipShort implements Cloneable {
      * Helper method to get the value as a java int from two bytes starting at given array offset
      * @param bytes the array of bytes
      * @param offset the offset to start
-     * @return the correspondanding java int value
+     * @return the corresponding java int value
      */
     public static int getValue(byte[] bytes, int offset) {
         int value = (bytes[offset + 1] << BYTE_1_SHIFT) & BYTE_1_MASK;
@@ -100,7 +100,7 @@ public final class ZipShort implements Cloneable {
     /**
      * Helper method to get the value as a java int from a two-byte array
      * @param bytes the array of bytes
-     * @return the correspondanding java int value
+     * @return the corresponding java int value
      */
     public static int getValue(byte[] bytes) {
         return getValue(bytes, 0);
