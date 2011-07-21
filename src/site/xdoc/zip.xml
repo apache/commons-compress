@@ -30,7 +30,8 @@
 
       <ul>
         <li>Support for encodings other than UTF-8 for filenames and
-          comments.</li>
+          comments.  Starting with Java7 this is supported
+          by <code>java.util.zip</code> as well.</li>
         <li>Access to internal and external attributes (which are used
           to store Unix permission by some zip implementations).</li>
         <li>Structured support for extra fields.</li>
@@ -195,6 +196,13 @@
             names, it doesn't set or recognize any flags or Unicode
             extra fields.</li>
 
+          <li>Starting with Java7 <code>java.util.zip</code> writes
+            UTF-8 by default and uses the language encoding flag.  It
+            is possible to specify a different encoding when
+            reading/writing ZIPs via new constructors.  The package
+            now recognizes the language encoding flag when reading and
+            ignores the Unicode extra fields.</li>
+
           <li>7Zip writes CodePage 437 by default but uses UTF-8 and
             the language encoding flag when writing entries that
             cannot be encoded as CodePage 437 (similar to the zip task
@@ -226,8 +234,8 @@
         <p>If you are creating jars, then java.util.zip is your main
           consumer.  We recommend you set the encoding to UTF-8 and
           keep the language encoding flag enabled.  The flag won't
-          help or hurt java.util.zip but archivers that support it
-          will show the correct file names.</p>
+          help or hurt java.util.zip prior to Java7 but archivers that
+          support it will show the correct file names.</p>
 
         <p>For maximum interop it is probably best to set the encoding
           to UTF-8, enable the language encoding flag and create
