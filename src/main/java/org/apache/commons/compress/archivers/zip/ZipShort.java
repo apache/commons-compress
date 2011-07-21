@@ -134,4 +134,8 @@ public final class ZipShort implements Cloneable {
             throw new RuntimeException(cnfe);
         }
     }
+
+    public String toString() {
+        return "ZipShort value: " + value;
+    }
 }

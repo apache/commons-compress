@@ -220,4 +220,8 @@ public final class ZipEightByteInteger {
     public int hashCode() {
         return value.hashCode();
     }
+
+    public String toString() {
+        return "ZipEightByteInteger value: " + value;
+    }
 }
