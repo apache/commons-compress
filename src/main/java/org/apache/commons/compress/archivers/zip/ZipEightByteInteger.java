@@ -23,6 +23,8 @@ import java.math.BigInteger;
  * Utility class that represents an eight byte integer with conversion
  * rules for the big endian byte order of ZIP files.
  * @Immutable
+ *
+ * @since Apache Commons Compress 1.2
  */
 public final class ZipEightByteInteger {
 
