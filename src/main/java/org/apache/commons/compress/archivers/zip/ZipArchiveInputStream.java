@@ -68,8 +68,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     private ZipArchiveEntry current = null;
     private boolean closed = false;
     private boolean hitCentralDirectory = false;
-    private int readBytesOfEntry = 0, offsetInBuffer = 0;
-    private int bytesReadFromStream = 0;
+    private int offsetInBuffer = 0;
+    private long readBytesOfEntry = 0, bytesReadFromStream = 0;
     private int lengthOfLastRead = 0;
     private boolean hasDataDescriptor = false;
     private ByteArrayInputStream lastStoredEntry = null;
@@ -256,7 +256,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                     return lastStoredEntry.read(buffer, start, length);
                 }
 
-                int csize = (int) current.getSize();
+                long csize = current.getSize();
                 if (readBytesOfEntry >= csize) {
                     return -1;
                 }
@@ -272,7 +272,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                     ? lengthOfLastRead - offsetInBuffer
                     : length;
                 if ((csize - readBytesOfEntry) < toRead) {
-                    toRead = csize - readBytesOfEntry;
+                    // if it is smaller than toRead then it fits into an int
+                    toRead = (int) (csize - readBytesOfEntry);
                 }
                 System.arraycopy(buf, offsetInBuffer, buffer, start, toRead);
                 offsetInBuffer += toRead;
@@ -417,16 +418,19 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         } else {
             skip(Long.MAX_VALUE);
 
-            int inB;
+            long inB;
             if (current.getMethod() == ZipArchiveOutputStream.DEFLATED) {
                 inB = inf.getTotalIn();
             } else {
                 inB = readBytesOfEntry;
             }
-            int diff = 0;
+
+            // this is at most a single read() operation and can't
+            // exceed the range of int
+            int diff = (int) (bytesReadFromStream - inB);
 
             // Pushback any required bytes
-            if ((diff = bytesReadFromStream - inB) != 0) {
+            if (diff > 0) {
                 ((PushbackInputStream) in).unread(
                         buf,  lengthOfLastRead - diff, diff);
                 pushedBackBytes(diff);
@@ -438,8 +442,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         }
 
         inf.reset();
-        readBytesOfEntry = offsetInBuffer = bytesReadFromStream =
-            lengthOfLastRead = 0;
+        readBytesOfEntry = bytesReadFromStream = 0L;
+        offsetInBuffer = lengthOfLastRead = 0;
         crc.reset();
         current = null;
         lastStoredEntry = null;
