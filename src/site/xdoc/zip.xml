@@ -253,6 +253,28 @@
           extract the file names correctly.</p>
       </subsection>
 
+      <subsection name="Encryption and Alternative Compression Algorithms"
+                  id="encryption">
+        
+        <p>In most cases entries of an archive are not encrypted and
+        are either not compressed at all or use the DEFLATED
+        algorithm, Commons Compress' ZIP archiver will handle them
+        just fine.</p>
+
+        <p>The ZIP specification allows for various other compression
+        algorithms and also supports several different ways of
+        encrypting archive contents.  Neither of those methods is
+        currently supported by Commons Compress and any such entry can
+        not be extracted by the archiving code.</p>
+
+        <p><code>ZipFile</code>'s and
+        <code>ZipArchiveInputStream</code>'s
+        <code>canReadEntryData</code> methods will return false for
+        encrypted entries or entries using an unsupported encryption
+        mechanism.  Using this method it is possible to at least
+        detect and skip the entries that can not be extracted.</p>
+
+      </subsection>
     </section>
   </body>
 </document>
