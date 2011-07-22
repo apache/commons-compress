@@ -68,14 +68,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      */
     private int method = -1;
 
-    /**
-     * The {@link java.util.zip.ZipEntry#setSize} method in the base
-     * class throws an IllegalArgumentException if the size is bigger
-     * than 2GB for Java versions < 7.  Need to keep our own size
-     * information for Zip64 support.
-     */
-    private long size = SIZE_UNKNOWN;
-
     private int internalAttributes = 0;
     private int platform = PLATFORM_FAT;
     private long externalAttributes = 0;
@@ -119,7 +111,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
             setExtra();
         }
         setMethod(entry.getMethod());
-        this.size = entry.getSize();
     }
 
     /**
@@ -502,27 +493,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      */
     protected void setName(String name) {
         this.name = name;
-    }
-
-    /**
-     * Gets the uncompressed size of the entry data.
-     * @return the entry size
-     */
-    public long getSize() {
-        return size;
-    }
-
-    /**
-     * Sets the uncompressed size of the entry data.
-     * @param size the uncompressed size in bytes
-     * @exception IllegalArgumentException if the specified size is less
-     *            than 0
-     */
-    public void setSize(long size) {
-        if (size < 0) {
-            throw new IllegalArgumentException("invalid entry size");
-        }
-        this.size = size;
     }
 
     /**
