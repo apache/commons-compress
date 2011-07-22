@@ -57,6 +57,20 @@ ArchiveInputStream input = new ArchiveStreamFactory()
 
       </subsection>
 
+      <subsection name="Unsupported Features">
+        <p>Many of the supported formats have developed different
+        dialects and extensions and some formats allow for features
+        (not yet) supported by Commons Compress.</p>
+
+        <p>The <code>ArchiveInputStream</code> class provides a method
+        <code>canReadEntryData</code> that will return false if
+        Commons Compress can detect that an archive uses a feature
+        that is not supported by the current implementation.  If it
+        returns false you should not try to read the entry but skip
+        over it.</p>
+
+      </subsection>
+
       <subsection name="ar">
 
         <p>In addition to the information stored
