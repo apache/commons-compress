@@ -185,23 +185,18 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             readBuf = null;
         }
 
-        byte[] headerBuf = buffer.readRecord();
-
-        if (headerBuf == null) {
-            hasHitEOF = true;
-        } else if (buffer.isEOFRecord(headerBuf)) {
-            hasHitEOF = true;
-        }
+        byte[] headerBuf = getRecord();
 
         if (hasHitEOF) {
             currEntry = null;
-        } else {
-            currEntry = new TarArchiveEntry(headerBuf);
-            entryOffset = 0;
-            entrySize = currEntry.getSize();
+            return null;
         }
 
-        if (currEntry != null && currEntry.isGNULongNameEntry()) {
+        currEntry = new TarArchiveEntry(headerBuf);
+        entryOffset = 0;
+        entrySize = currEntry.getSize();
+
+        if (currEntry.isGNULongNameEntry()) {
             // read in the name
             StringBuffer longName = new StringBuffer();
             byte[] buf = new byte[SMALL_BUFFER_SIZE];
@@ -223,11 +218,43 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             currEntry.setName(longName.toString());
         }
 
-        if (currEntry != null && currEntry.isPaxHeader()){ // Process Pax headers
+        if (currEntry.isPaxHeader()){ // Process Pax headers
             paxHeaders();
         }
 
+        if (currEntry.isGNUSparse()){ // Process sparse files
+            readGNUSparse();
+        }
+
         return currEntry;
+    }
+
+    /**
+     * Get the next record in this tar archive. This will skip
+     * over any remaining data in the current entry, if there
+     * is one, and place the input stream at the header of the
+     * next entry.
+     * If there are no more entries in the archive, null will
+     * be returned to indicate that the end of the archive has
+     * been reached.
+     *
+     * @return The next header in the archive, or null.
+     * @throws IOException on error
+     */
+    private byte[] getRecord() throws IOException {
+        if (hasHitEOF) {
+            return null;
+        }
+
+        byte[] headerBuf = buffer.readRecord();
+
+        if (headerBuf == null) {
+            hasHitEOF = true;
+        } else if (buffer.isEOFRecord(headerBuf)) {
+            hasHitEOF = true;
+        }
+
+        return hasHitEOF ? null : headerBuf;
     }
 
     private void paxHeaders() throws IOException{
@@ -298,6 +325,35 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             } else if ("size".equals(key)){
                 currEntry.setSize(Long.parseLong(val));
             }
+        }
+    }
+
+    /**
+     * Adds the sparse chunks from the current entry to the sparse chunks,
+     * including any additional sparse entries following the current entry.
+     * 
+     * @throws IOException on error 
+     * 
+     * @todo Sparse files get not yet really processed. 
+     */
+    private void readGNUSparse() throws IOException {
+        /* we do not really process sparse files yet
+        sparses = new ArrayList();
+        sparses.addAll(currEntry.getSparses());
+        */
+        if (currEntry.isExtended()) {
+            TarArchiveSparseEntry entry;
+            do {
+                byte[] headerBuf = getRecord();
+                if (hasHitEOF) {
+                    currEntry = null;
+                    break;
+                }
+                entry = new TarArchiveSparseEntry(headerBuf);
+                /* we do not really process sparse files yet
+                sparses.addAll(entry.getSparses());
+                */
+            } while (entry.isExtended());
         }
     }
 
@@ -383,6 +439,19 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         entryOffset += totalRead;
 
         return totalRead;
+    }
+
+    /**
+     * Whether this class is able to read the given entry.
+     *
+     * <p>May return false if the current entry is a sparse file.</p>
+     */
+    public boolean canReadEntryData(ArchiveEntry ae) {
+        if (ae instanceof TarArchiveEntry) {
+            TarArchiveEntry te = (TarArchiveEntry) ae;
+            return !te.isGNUSparse();
+        }
+        return false;
     }
 
     protected final TarArchiveEntry getCurrentEntry() {
