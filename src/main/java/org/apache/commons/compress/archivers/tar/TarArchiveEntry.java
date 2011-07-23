@@ -19,6 +19,7 @@
 package org.apache.commons.compress.archivers.tar;
 
 import java.io.File;
+import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.Locale;
 
@@ -78,6 +79,30 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * New-style GNU tar files are slightly different from the above.
  * </pre>
  * 
+ * <p>
+ * The C structure for a old GNU Tar Entry's header is:
+ * <pre>
+ * struct oldgnu_header {
+ * char unused_pad1[345]; // TarConstants.PAD1LEN_GNU       - offset 0
+ * char atime[12];        // TarConstants.ATIMELEN_GNU      - offset 345
+ * char ctime[12];        // TarConstants.CTIMELEN_GNU      - offset 357
+ * char offset[12];       // TarConstants.OFFSETLEN_GNU     - offset 369
+ * char longnames[4];     // TarConstants.LONGNAMESLEN_GNU  - offset 381
+ * char unused_pad2;      // TarConstants.PAD2LEN_GNU       - offset 385
+ * struct sparse sp[4];   // TarConstants.SPARSELEN_GNU     - offset 386
+ * char isextended;       // TarConstants.ISEXTENDEDLEN_GNU - offset 482
+ * char realsize[12];     // TarConstants.REALSIZELEN_GNU   - offset 483
+ * char unused_pad[17];   // TarConstants.PAD3LEN_GNU       - offset 495
+ * };
+ * </pre>
+ * Whereas, "struct sparse" is:
+ * <pre>
+ * struct sparse {
+ * char offset[12];   // offset 0
+ * char numbytes[12]; // offset 12
+ * };
+ * </pre>
+ *
  * @NotThreadSafe
  */
 
@@ -122,6 +147,12 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
 
     /** The entry's minor device number. */
     private int devMinor;
+
+    /** If an extension sparse header follows. */
+    private boolean isExtended;
+
+    /** The entry's real size in case of a sparse file. */
+    private long realSize;
 
     /** The entry's file reference */
     private File file;
@@ -228,7 +259,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     public TarArchiveEntry(File file) {
         this(file, normalizeFileName(file.getPath(), false));
     }
-    
+
     /**
      * Construct an entry for a file. File is set to file, and the
      * header is constructed from information from the file.
@@ -251,7 +282,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
             if (nameLength == 0 || fileName.charAt(nameLength - 1) != '/') {
                 this.name = fileName + "/";
             } else {
-                this.name = fileName;                
+                this.name = fileName;
             }
             this.size = 0;
         } else {
@@ -538,6 +569,33 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         this.size = size;
     }
 
+    /**
+     * Indicates in case of a sparse file if an extension sparse header
+     * follows.
+     *
+     * @return true if an extension sparse header follows.
+     */
+    public boolean isExtended() {
+        return isExtended;
+    }
+
+    /**
+     * Get this entry's real file size in case of a sparse file.
+     *
+     * @return This entry's real file size.
+     */
+    public long getRealSize() {
+        return realSize;
+    }
+
+    /**
+     * Indicate if this entry is a GNU sparse block 
+     *
+     * @return true if this is a sparse extension provided by GNU tar
+     */
+    public boolean isGNUSparse() {
+        return linkFlag == LF_GNUTYPE_SPARSE;
+    }
 
     /**
      * Indicate if this entry is a GNU long name block
@@ -749,13 +807,34 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         offset += DEVLEN;
         devMinor = (int) TarUtils.parseOctal(header, offset, DEVLEN);
         offset += DEVLEN;
-        String prefix = TarUtils.parseName(header, offset, PREFIXLEN);
-        // SunOS tar -E does not add / to directory names, so fix up to be consistent
-        if (isDirectory() && !name.endsWith("/")){
-            name = name + "/";
+
+        int type = evaluateType(header);
+        switch (type) {
+        case FORMAT_OLDGNU: {
+            offset += ATIMELEN_GNU;
+            offset += CTIMELEN_GNU;
+            offset += OFFSETLEN_GNU;
+            offset += LONGNAMESLEN_GNU;
+            offset += PAD2LEN_GNU;
+            offset += SPARSELEN_GNU;
+            isExtended = TarUtils.parseBoolean(header, offset);
+            offset += ISEXTENDEDLEN_GNU;
+            realSize = TarUtils.parseOctal(header, offset, REALSIZELEN_GNU);
+            offset += REALSIZELEN_GNU;
+            break;
         }
-        if (prefix.length() >0){
-            name = prefix + "/" + name;
+        case FORMAT_POSIX:
+        default: {
+            String prefix = TarUtils.parseName(header, offset, PREFIXLEN);
+            // SunOS tar -E does not add / to directory names, so fix
+            // up to be consistent
+            if (isDirectory() && !name.endsWith("/")){
+                name = name + "/";
+            }
+            if (prefix.length() > 0){
+                name = prefix + "/" + name;
+            }
+        }
         }
     }
 
@@ -800,6 +879,21 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
             fileName = fileName.substring(1);
         }
         return fileName;
+    }
+
+    /**
+     * Evaluate an entry's header format from a header buffer.
+     *
+     * @param header The tar entry header buffer to evaluate the format for.
+     * @return format type
+     */
+    private int evaluateType(byte[] header) {
+        final ByteBuffer magic = ByteBuffer.wrap(header, MAGIC_OFFSET, MAGICLEN);
+        if (magic.compareTo(ByteBuffer.wrap(MAGIC_GNU.getBytes())) == 0)
+            return FORMAT_OLDGNU;
+        if (magic.compareTo(ByteBuffer.wrap(MAGIC_POSIX.getBytes())) == 0)
+            return FORMAT_POSIX;
+        return 0;
     }
 }
 
