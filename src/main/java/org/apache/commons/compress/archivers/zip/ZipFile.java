@@ -450,7 +450,7 @@ public class ZipFile {
 
             byte[] fileName = new byte[fileNameLen];
             archive.readFully(fileName);
-            ze.setName(entryEncoding.decode(fileName));
+            ze.setName(entryEncoding.decode(fileName), fileName);
 
             // LFH offset,
             OffsetEntry offset = new OffsetEntry();
