@@ -334,10 +334,9 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
                     + " bytes)");
         }
         pad(this.entry.getDataPadCount());
-        if (this.entry.getFormat() == FORMAT_NEW_CRC) {
-            if (this.crc != this.entry.getChksum()) {
-                throw new IOException("CRC Error");
-            }
+        if (this.entry.getFormat() == FORMAT_NEW_CRC
+            && this.crc != this.entry.getChksum()) {
+            throw new IOException("CRC Error");
         }
         this.entry = null;
         this.crc = 0;

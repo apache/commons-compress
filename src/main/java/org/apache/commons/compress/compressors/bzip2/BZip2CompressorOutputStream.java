@@ -772,7 +772,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         sendMTFValues6(nGroups, alphaSize);
 
         /* And finally, the block data proper */
-        sendMTFValues7(nSelectors);
+        sendMTFValues7();
     }
 
     private void sendMTFValues0(final int nGroups, final int alphaSize) {
@@ -1125,7 +1125,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         this.bsLive = bsLiveShadow;
     }
 
-    private void sendMTFValues7(final int nSelectors) throws IOException {
+    private void sendMTFValues7() throws IOException {
         final Data dataShadow = this.data;
         final byte[][] len = dataShadow.sendMTFValues_len;
         final int[][] code = dataShadow.sendMTFValues_code;

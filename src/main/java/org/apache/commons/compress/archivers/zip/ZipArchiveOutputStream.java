@@ -528,23 +528,21 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     public void write(byte[] b, int offset, int length) throws IOException {
         ZipUtil.checkRequestedFeatures(entry);
         if (entry.getMethod() == DEFLATED) {
-            if (length > 0) {
-                if (!def.finished()) {
-                    if (length <= DEFLATER_BLOCK_SIZE) {
-                        def.setInput(b, offset, length);
+            if (length > 0 && !def.finished()) {
+                if (length <= DEFLATER_BLOCK_SIZE) {
+                    def.setInput(b, offset, length);
+                    deflateUntilInputIsNeeded();
+                } else {
+                    final int fullblocks = length / DEFLATER_BLOCK_SIZE;
+                    for (int i = 0; i < fullblocks; i++) {
+                        def.setInput(b, offset + i * DEFLATER_BLOCK_SIZE,
+                                     DEFLATER_BLOCK_SIZE);
                         deflateUntilInputIsNeeded();
-                    } else {
-                        final int fullblocks = length / DEFLATER_BLOCK_SIZE;
-                        for (int i = 0; i < fullblocks; i++) {
-                            def.setInput(b, offset + i * DEFLATER_BLOCK_SIZE,
-                                         DEFLATER_BLOCK_SIZE);
-                            deflateUntilInputIsNeeded();
-                        }
-                        final int done = fullblocks * DEFLATER_BLOCK_SIZE;
-                        if (done < length) {
-                            def.setInput(b, offset + done, length - done);
-                            deflateUntilInputIsNeeded();
-                        }
+                    }
+                    final int done = fullblocks * DEFLATER_BLOCK_SIZE;
+                    if (done < length) {
+                        def.setInput(b, offset + done, length - done);
+                        deflateUntilInputIsNeeded();
                     }
                 }
             }

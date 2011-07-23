@@ -200,7 +200,7 @@ public class ZipFile {
                 try {
                     closed = true;
                     archive.close();
-                } catch (IOException e2) {
+                } catch (IOException e2) { // NOPMD
                     // swallow, throw the original exception instead
                 }
             }
@@ -238,8 +238,8 @@ public class ZipFile {
         if (zipfile != null) {
             try {
                 zipfile.close();
-            } catch (IOException e) {
-                //ignore
+            } catch (IOException e) { // NOPMD
+                //ignore, that's why the method is called "quietly"
             }
         }
     }
