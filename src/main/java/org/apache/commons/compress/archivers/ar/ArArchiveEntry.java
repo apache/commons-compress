@@ -42,10 +42,10 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * 
  * This specifies that an ar archive entry header contains 60 bytes.
  * 
- * Due to the limitation of the file name length to 16 bytes GNU and BSD has
- * their own variants of this format. This formats are currently not supported
- * and file names with a bigger size than 16 bytes are not possible at the
- * moment.
+ * Due to the limitation of the file name length to 16 bytes GNU and
+ * BSD has their own variants of this format. Currently Commons
+ * Compress can read but not write the GNU variant and doesn't support
+ * the BSD variant at all.
  * 
  * @see http://www.freebsd.org/cgi/man.cgi?query=ar&sektion=5
  *
@@ -62,7 +62,7 @@ public class ArArchiveEntry implements ArchiveEntry {
     /**
      * SVR4/GNU adds a trailing / to names; BSD does not.
      * They also vary in how names longer than 16 characters are represented.
-     * (Not yet supported by this implementation)
+     * (Not yet fully supported by this implementation)
      */
     private final String name;
     private final int userId;
