@@ -21,9 +21,21 @@ package org.apache.commons.compress.archivers.tar;
 /**
  * This interface contains all the definitions used in the package.
  *
+ * For tar formats (FORMAT_OLDGNU, FORMAT_POSIX, etc.) see GNU tar
+ * <I>tar.h</I> type <I>enum archive_format</I>
  */
 // CheckStyle:InterfaceIsTypeCheck OFF (bc)
 public interface TarConstants {
+
+    /**
+     * GNU format as per before tar 1.12.
+     */
+    int    FORMAT_OLDGNU = 2;
+
+    /**
+     * Pure Posix format.
+     */
+    int    FORMAT_POSIX = 3;
 
     /**
      * The length of the name field in a header buffer.
@@ -102,6 +114,66 @@ public interface TarConstants {
     int    PREFIXLEN = 155;
 
     /**
+     * The length of the access time field in an old GNU header buffer.
+     * 
+     */
+    int    ATIMELEN_GNU = 12;
+
+    /**
+     * The length of the created time field in an old GNU header buffer.
+     * 
+     */
+    int    CTIMELEN_GNU = 12;
+
+    /**
+     * The length of the multivolume start offset field in an old GNU header buffer. 
+     * 
+     */
+    int    OFFSETLEN_GNU = 12;
+
+    /**
+     * The length of the long names field in an old GNU header buffer. 
+     * 
+     */
+    int    LONGNAMESLEN_GNU = 4;
+
+    /**
+     * The length of the padding field in an old GNU header buffer. 
+     * 
+     */
+    int    PAD2LEN_GNU = 1;
+
+    /**
+     * The sum of the length of all sparse headers in an old GNU header buffer. 
+     * 
+     */
+    int    SPARSELEN_GNU = 96;
+
+    /**
+     * The length of the is extension field in an old GNU header buffer. 
+     * 
+     */
+    int    ISEXTENDEDLEN_GNU = 1;
+
+    /**
+     * The length of the real size field in an old GNU header buffer. 
+     * 
+     */
+    int    REALSIZELEN_GNU = 12;
+
+    /**
+     * The sum of the length of all sparse headers in a sparse header buffer. 
+     * 
+     */
+    int    SPARSELEN_GNU_SPARSE = 504;
+
+    /**
+     * The length of the is extension field in a sparse header buffer. 
+     * 
+     */
+    int    ISEXTENDEDLEN_GNU_SPARSE = 1;
+
+    /**
      * LF_ constants represent the "link flag" of an entry, or more commonly,
      * the "entry type". This is the "old way" of indicating a normal file.
      */
@@ -151,6 +223,12 @@ public interface TarConstants {
      * Identifies the *next* file on the tape as having a long name.
      */
     byte LF_GNUTYPE_LONGNAME = (byte) 'L';
+
+    /**
+     * Sparse file type.
+     * @since Apache Commons Compress 1.1.1
+     */
+    byte LF_GNUTYPE_SPARSE = (byte) 'S';
 
     // See "http://www.opengroup.org/onlinepubs/009695399/utilities/pax.html#tag_04_100_13_02"
 

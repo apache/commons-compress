@@ -106,6 +106,21 @@ public class TarUtils {
         return result;
     }
 
+    /**
+     * Parse a boolean byte from a buffer.
+     * Leading spaces and NUL are ignored.
+     * The buffer may contain trailing spaces or NULs.
+     *
+     * @param buffer The buffer from which to parse.
+     * @param offset The offset into the buffer from which to parse.
+     * @param length The maximum number of bytes to parse - must be at least 1 byte.
+     * @return The boolean value of the bytes.
+     * @throws IllegalArgumentException if an invalid byte is detected.
+     */
+    public static boolean parseBoolean(final byte[] buffer, final int offset) {
+        return (buffer[offset] == 1);
+    }
+
     // Helper method to generate the exception message
     private static String exceptionMessage(byte[] buffer, final int offset,
             final int length, int current, final byte currentByte) {
