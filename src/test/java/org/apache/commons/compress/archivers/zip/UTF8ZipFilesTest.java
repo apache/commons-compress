@@ -192,6 +192,35 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         }
     }
 
+    public void testRawNameReadFromZipFile()
+        throws IOException, URISyntaxException {
+        URL zip = getClass().getResource("/utf8-7zip-test.zip");
+        File archive = new File(new URI(zip.toString()));
+        ZipFile zf = null;
+        try {
+            zf = new ZipFile(archive, CP437, false);
+            assertRawNameOfAcsiiTxt(zf.getEntry(ASCII_TXT));
+        } finally {
+            ZipFile.closeQuietly(zf);
+        }
+    }
+
+    public void testRawNameReadFromStream()
+        throws IOException, URISyntaxException {
+        URL zip = getClass().getResource("/utf8-7zip-test.zip");
+        FileInputStream archive =
+            new FileInputStream(new File(new URI(zip.toString())));
+        ZipArchiveInputStream zi = null;
+        try {
+            zi = new ZipArchiveInputStream(archive, CP437, false);
+            assertRawNameOfAcsiiTxt((ZipArchiveEntry) zi.getNextEntry());
+        } finally {
+            if (zi != null) {
+                zi.close();
+            }
+        }
+    }
+
     private static void testFileRoundtrip(String encoding, boolean withEFS,
                                           boolean withExplicitUnicodeExtra)
         throws IOException {
@@ -343,5 +372,15 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
 
     }
 
+    private static void assertRawNameOfAcsiiTxt(ZipArchiveEntry ze) {
+        byte[] b = ze.getRawName();
+        assertNotNull(b);
+        final int len = ASCII_TXT.length();
+        assertEquals(len, b.length);
+        for (int i = 0; i < len; i++) {
+            assertEquals("Byte " + i, (byte) ASCII_TXT.charAt(i), b[i]);
+        }
+        assertNotSame(b, ze.getRawName());
+    }
 }
 

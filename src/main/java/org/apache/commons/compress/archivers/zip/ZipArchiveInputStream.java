@@ -195,7 +195,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
 
         byte[] fileName = new byte[fileNameLen];
         readFully(fileName);
-        current.setName(entryEncoding.decode(fileName));
+        current.setName(entryEncoding.decode(fileName), fileName);
 
         byte[] extraData = new byte[extraLen];
         readFully(extraData);
