@@ -222,7 +222,9 @@ public class ArchiveStreamFactory {
                 TarArchiveInputStream tais = new TarArchiveInputStream(new ByteArrayInputStream(tarheader));
                 tais.getNextEntry();
                 return new TarArchiveInputStream(in);
-            } catch (Exception e) { // can generate IllegalArgumentException as well as IOException
+            } catch (Exception e) { // NOPMD
+                // can generate IllegalArgumentException as well as IOException
+                // autodetection, simply not a TAR
                 // ignored
             }
         } catch (IOException e) {
