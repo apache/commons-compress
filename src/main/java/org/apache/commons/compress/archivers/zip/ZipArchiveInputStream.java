@@ -32,8 +32,11 @@ import java.util.zip.ZipException;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 
+import static org.apache.commons.compress.archivers.zip.ZipConstants.BYTE_MASK;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MIN_VERSION;
 
 /**
  * Implements an input stream that can read Zip archives.
@@ -72,6 +75,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     private long readBytesOfEntry = 0, bytesReadFromStream = 0;
     private int lengthOfLastRead = 0;
     private boolean hasDataDescriptor = false;
+    private boolean usesZip64 = false;
     private ByteArrayInputStream lastStoredEntry = null;
 
     private boolean allowStoredEntriesWithDataDescriptor = false;
@@ -153,6 +157,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         current = new ZipArchiveEntry();
 
         int versionMadeBy = ZipShort.getValue(lfh, off);
+        usesZip64 = (versionMadeBy & BYTE_MASK) >= ZIP64_MIN_VERSION;
         off += SHORT;
         current.setPlatform((versionMadeBy >> ZipFile.BYTE_SHIFT)
                             & ZipFile.NIBLET_MASK);
@@ -173,14 +178,15 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         current.setTime(time);
         off += WORD;
 
+        ZipLong size = null, cSize = null;
         if (!hasDataDescriptor) {
             current.setCrc(ZipLong.getValue(lfh, off));
             off += WORD;
 
-            current.setCompressedSize(ZipLong.getValue(lfh, off));
+            cSize = new ZipLong(lfh, off);
             off += WORD;
 
-            current.setSize(ZipLong.getValue(lfh, off));
+            size = new ZipLong(lfh, off);
             off += WORD;
         } else {
             off += 3 * WORD;
@@ -203,6 +209,25 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
 
         if (!hasUTF8Flag && useUnicodeExtraFields) {
             ZipUtil.setNameAndCommentFromExtraFields(current, fileName, null);
+        }
+        if (!hasDataDescriptor) {
+            if (usesZip64 && (cSize.equals(ZipLong.ZIP64_MAGIC)
+                              || size.equals(ZipLong.ZIP64_MAGIC))
+                ) {
+                Zip64ExtendedInformationExtraField z64 =
+                    (Zip64ExtendedInformationExtraField)
+                    current.getExtraField(Zip64ExtendedInformationExtraField
+                                          .HEADER_ID);
+                if (z64 == null) {
+                    throw new ZipException("expected ZIP64 extra field");
+                }
+                current.setCompressedSize(z64.getCompressedSize()
+                                          .getLongValue());
+                current.setSize(z64.getSize().getLongValue());
+            } else {
+                current.setCompressedSize(cSize.getValue());
+                current.setSize(size.getValue());
+            }
         }
         return current;
     }
@@ -485,10 +510,18 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             val = new ZipLong(b);
         }
         current.setCrc(val.getValue());
+        if (!usesZip64) {
         readFully(b);
         current.setCompressedSize(new ZipLong(b).getValue());
         readFully(b);
         current.setSize(new ZipLong(b).getValue());
+        } else {
+            byte[] b8 = new byte[DWORD];
+            readFully(b8);
+            current.setCompressedSize(ZipEightByteInteger.getLongValue(b8));
+            readFully(b8);
+            current.setSize(ZipEightByteInteger.getLongValue(b8));
+        }
     }
 
     /**
@@ -529,6 +562,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         int off = 0;
         boolean done = false;
 
+        // length of DD without signature
+        int ddLen = usesZip64 ? WORD + 2 * DWORD : 3 * WORD;
+
         while (!done) {
             int r = in.read(buf, off, ZipArchiveOutputStream.BUFFER_SIZE - off);
             if (r <= 0) {
@@ -548,7 +584,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                     if ((buf[i + 2] == LFH[2] && buf[i + 3] == LFH[3])
                         || (buf[i] == CFH[2] && buf[i + 3] == CFH[3])) {
                         // found a LFH or CFH:
-                        readTooMuch = off + r - i - 12 /* dd without signature */;
+                        readTooMuch = off + r - i - ddLen;
                         done = true;
                     }
                     else if (buf[i + 2] == DD[2] && buf[i + 3] == DD[3]) {
@@ -569,14 +605,15 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             }
             if (!done) {
                 // worst case we've read a data descriptor without a
-                // signature (12 bytes) plus the first three bytes of
+                // signature (up to 20 bytes) plus the first three bytes of
                 // a LFH or CFH signature
-                // save the last 15 bytes in the buffer, cache
+                // save the last ddLen + 3 bytes in the buffer, cache
                 // anything in front of that, read on
-                if (off + r > 15) {
-                    bos.write(buf, 0, off + r - 15);
-                    System.arraycopy(buf, off + r - 15, buf, 0, 15);
-                    off = 15;
+                if (off + r > ddLen + 3) {
+                    bos.write(buf, 0, off + r - ddLen - 3);
+                    System.arraycopy(buf, off + r - ddLen - 3, buf, 0,
+                                     ddLen + 3);
+                    off = ddLen + 3;
                 } else {
                     off += r;
                 }

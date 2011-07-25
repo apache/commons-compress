@@ -77,7 +77,7 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
     // to see whether they do have a problem with the extraneous
     // information inside the LFH
 
-    private static final ZipShort HEADER_ID = new ZipShort(0x0001);
+    static final ZipShort HEADER_ID = new ZipShort(0x0001);
 
     private static final int WORD = 4, DWORD = 8;
 

@@ -33,4 +33,10 @@ final class ZipConstants {
 
     /** length of a ZipLong in bytes */
     static final int WORD = 4;
+
+    /** length of a ZipEightByteInteger in bytes */
+    static final int DWORD = 8;
+
+    /** ZIP specification version that introduced ZIP64 */
+    static final int ZIP64_MIN_VERSION = 45;
 }
