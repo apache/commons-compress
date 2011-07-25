@@ -56,6 +56,13 @@ public final class ZipLong implements Cloneable {
     public static final ZipLong DD_SIG = new ZipLong(0X08074B50L);
 
     /**
+     * Value stored in size and similar fields if ZIP64 extensions are
+     * used.
+     * @since Apache Commons Compress 1.3
+     */
+    static final ZipLong ZIP64_MAGIC = new ZipLong(0xFFFFFFFFL);
+
+    /**
      * Create instance from a number.
      * @param value the long to store as a ZipLong
      */

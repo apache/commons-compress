@@ -31,6 +31,13 @@ public final class ZipShort implements Cloneable {
     private final int value;
 
     /**
+     * Value stored in size and similar fields if ZIP64 extensions are
+     * used.
+     * @since Apache Commons Compress 1.3
+     */
+    static final ZipShort ZIP64_MAGIC = new ZipShort(0xFFFF);
+
+    /**
      * Create instance from a number.
      * @param value the int to store as a ZipShort
      */
