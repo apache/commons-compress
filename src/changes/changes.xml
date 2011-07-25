@@ -47,8 +47,9 @@ The <action> type attribute can be add,update,fix,remove.
     <release version="1.2" date="as in SVN" description="Release 1.2">
       <action issue="COMPRESS-145" type="fix" date="2011-07-23"
               due-tue="Patrick Dreyer">
-        TarArchiveInputStream now detects sparse entries and properly
-        reports it cannot extract their contents.
+        TarArchiveInputStream now detects sparse entries using the
+        oldgnu format and properly reports it cannot extract their
+        contents.
       </action>
       <action issue="COMPRESS-123" type="add" date="2011-07-23">
         ZipArchiveEntry has a new method getRawName that provides the
