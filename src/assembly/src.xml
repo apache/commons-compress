@@ -32,6 +32,7 @@
                 <include>pom.xml</include>
                 <include>STATUS</include>
                 <include>findbugs-exclude-filter.xml</include>
+                <include>pmd-ruleset.xml</include>
             </includes>
         </fileSet>
         <fileSet>
