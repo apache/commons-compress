@@ -35,10 +35,10 @@ public class ExtraFieldUtils {
     /**
      * Static registry of known extra fields.
      */
-    private static final Map implementations;
+    private static final Map<ZipShort, Class<?>> implementations;
 
     static {
-        implementations = new HashMap();
+        implementations = new HashMap<ZipShort, Class<?>>();
         register(AsiExtraField.class);
         register(JarMarker.class);
         register(UnicodePathExtraField.class);
@@ -53,7 +53,7 @@ public class ExtraFieldUtils {
      * the {@link ZipExtraField ZipExtraField interface}.</p>
      * @param c the class to register
      */
-    public static void register(Class c) {
+    public static void register(Class<?> c) {
         try {
             ZipExtraField ze = (ZipExtraField) c.newInstance();
             implementations.put(ze.getHeaderId(), c);
@@ -76,7 +76,7 @@ public class ExtraFieldUtils {
      */
     public static ZipExtraField createExtraField(ZipShort headerId)
         throws InstantiationException, IllegalAccessException {
-        Class c = (Class) implementations.get(headerId);
+        Class<?> c = implementations.get(headerId);
         if (c != null) {
             return (ZipExtraField) c.newInstance();
         }
@@ -127,7 +127,7 @@ public class ExtraFieldUtils {
     public static ZipExtraField[] parse(byte[] data, boolean local,
                                         UnparseableExtraField onUnparseableData)
         throws ZipException {
-        List v = new ArrayList();
+        List<ZipExtraField> v = new ArrayList<ZipExtraField>();
         int start = 0;
         LOOP:
         while (start <= data.length - WORD) {
@@ -182,7 +182,7 @@ public class ExtraFieldUtils {
         }
 
         ZipExtraField[] result = new ZipExtraField[v.size()];
-        return (ZipExtraField[]) v.toArray(result);
+        return v.toArray(result);
     }
 
     /**

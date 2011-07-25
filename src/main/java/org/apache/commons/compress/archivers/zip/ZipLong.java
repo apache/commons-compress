@@ -17,6 +17,9 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import static org.apache.commons.compress.archivers.zip.ZipConstants.BYTE_MASK;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
+
 /**
  * Utility class that represents a four byte integer with conversion
  * rules for the big endian byte order of ZIP files.
@@ -24,9 +27,7 @@ package org.apache.commons.compress.archivers.zip;
  */
 public final class ZipLong implements Cloneable {
 
-    private static final int WORD = 4;
     //private static final int BYTE_BIT_SIZE = 8;
-    private static final int BYTE_MASK = 0xFF;
 
     private static final int BYTE_1 = 1;
     private static final int BYTE_1_MASK = 0xFF00;
@@ -137,6 +138,7 @@ public final class ZipLong implements Cloneable {
      * @param o an object to compare
      * @return true if the objects are equal
      */
+    @Override
     public boolean equals(Object o) {
         if (o == null || !(o instanceof ZipLong)) {
             return false;
@@ -148,10 +150,12 @@ public final class ZipLong implements Cloneable {
      * Override to make two instances with same value equal.
      * @return the value stored in the ZipLong
      */
+    @Override
     public int hashCode() {
         return (int) value;
     }
 
+    @Override
     public Object clone() {
         try {
             return super.clone();
@@ -161,6 +165,7 @@ public final class ZipLong implements Cloneable {
         }
     }
 
+    @Override
     public String toString() {
         return "ZipLong value: " + value;
     }

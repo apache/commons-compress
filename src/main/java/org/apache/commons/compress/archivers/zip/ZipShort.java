@@ -17,13 +17,14 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import static org.apache.commons.compress.archivers.zip.ZipConstants.BYTE_MASK;
+
 /**
  * Utility class that represents a two byte integer with conversion
  * rules for the big endian byte order of ZIP files.
  * @Immutable
  */
 public final class ZipShort implements Cloneable {
-    private static final int BYTE_MASK = 0xFF;
     private static final int BYTE_1_MASK = 0xFF00;
     private static final int BYTE_1_SHIFT = 8;
 
@@ -111,6 +112,7 @@ public final class ZipShort implements Cloneable {
      * @param o an object to compare
      * @return true if the objects are equal
      */
+    @Override
     public boolean equals(Object o) {
         if (o == null || !(o instanceof ZipShort)) {
             return false;
@@ -122,10 +124,12 @@ public final class ZipShort implements Cloneable {
      * Override to make two instances with same value equal.
      * @return the value stored in the ZipShort
      */
+    @Override
     public int hashCode() {
         return value;
     }
 
+    @Override
     public Object clone() {
         try {
             return super.clone();
@@ -135,6 +139,7 @@ public final class ZipShort implements Cloneable {
         }
     }
 
+    @Override
     public String toString() {
         return "ZipShort value: " + value;
     }

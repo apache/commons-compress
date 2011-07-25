@@ -149,6 +149,7 @@ public final class GeneralPurposeBit {
         return b;
     }
 
+    @Override
     public int hashCode() {
         return 3 * (7 * (13 * (17 * (encryptionFlag ? 1 : 0)
                                + (strongEncryptionFlag ? 1 : 0))
@@ -156,6 +157,7 @@ public final class GeneralPurposeBit {
                     + (dataDescriptorFlag ? 1 : 0));
     }
 
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof GeneralPurposeBit)) {
             return false;

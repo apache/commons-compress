@@ -32,6 +32,9 @@ import java.util.zip.ZipException;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 
+import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
+
 /**
  * Implements an input stream that can read Zip archives.
  * <p>
@@ -44,9 +47,6 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
  * @NotThreadSafe
  */
 public class ZipArchiveInputStream extends ArchiveInputStream {
-
-    private static final int SHORT = 2;
-    private static final int WORD = 4;
 
     /**
      * The zip encoding to use for filenames and the file comment.
@@ -208,6 +208,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     }
 
     /** {@inheritDoc} */
+    @Override
     public ArchiveEntry getNextEntry() throws IOException {
         return getNextZipEntry();
     }
@@ -219,6 +220,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
      * compression method that hasn't been implemented yet.</p>
      * @since Apache Commons Compress 1.1
      */
+    @Override
     public boolean canReadEntryData(ArchiveEntry ae) {
         if (ae instanceof ZipArchiveEntry) {
             ZipArchiveEntry ze = (ZipArchiveEntry) ae;
@@ -229,6 +231,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         return false;
     }
 
+    @Override
     public int read(byte[] buffer, int start, int length) throws IOException {
         if (closed) {
             throw new IOException("The stream is closed");
@@ -307,6 +310,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         throw new ArrayIndexOutOfBoundsException();
     }
 
+    @Override
     public void close() throws IOException {
         if (!closed) {
             closed = true;
@@ -329,6 +333,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
      * @throws IOException - if an I/O error occurs.
      * @throws IllegalArgumentException - if value is negative.
      */
+    @Override
     public long skip(long value) throws IOException {
         if (value >= 0) {
             long skipped = 0;

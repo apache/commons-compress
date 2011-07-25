@@ -79,7 +79,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     private int internalAttributes = 0;
     private int platform = PLATFORM_FAT;
     private long externalAttributes = 0;
-    private LinkedHashMap/*<ZipShort, ZipExtraField>*/ extraFields = null;
+    private LinkedHashMap<ZipShort, ZipExtraField> extraFields = null;
     private UnparseableExtraFieldData unparseableExtra = null;
     private String name = null;
     private byte[] rawName = null;
@@ -168,6 +168,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * Overwrite clone.
      * @return a cloned copy of this ZipArchiveEntry
      */
+    @Override
     public Object clone() {
         ZipArchiveEntry e = (ZipArchiveEntry) super.clone();
 
@@ -286,7 +287,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * @param fields an array of extra fields
      */
     public void setExtraFields(ZipExtraField[] fields) {
-        extraFields = new LinkedHashMap();
+        extraFields = new LinkedHashMap<ZipShort, ZipExtraField>();
         for (int i = 0; i < fields.length; i++) {
             if (fields[i] instanceof UnparseableExtraFieldData) {
                 unparseableExtra = (UnparseableExtraFieldData) fields[i];
@@ -320,11 +321,12 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
                 ? new ZipExtraField[0]
                 : new ZipExtraField[] { unparseableExtra };
         }
-        List result = new ArrayList(extraFields.values());
+        List<ZipExtraField> result =
+            new ArrayList<ZipExtraField>(extraFields.values());
         if (includeUnparseable && unparseableExtra != null) {
             result.add(unparseableExtra);
         }
-        return (ZipExtraField[]) result.toArray(new ZipExtraField[0]);
+        return result.toArray(new ZipExtraField[0]);
     }
 
     /**
@@ -340,7 +342,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
             unparseableExtra = (UnparseableExtraFieldData) ze;
         } else {
             if (extraFields == null) {
-                extraFields = new LinkedHashMap();
+                extraFields = new LinkedHashMap<ZipShort, ZipExtraField>();
             }
             extraFields.put(ze.getHeaderId(), ze);
         }
@@ -359,7 +361,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
             unparseableExtra = (UnparseableExtraFieldData) ze;
         } else {
             LinkedHashMap copy = extraFields;
-            extraFields = new LinkedHashMap();
+            extraFields = new LinkedHashMap<ZipShort, ZipExtraField>();
             extraFields.put(ze.getHeaderId(), ze);
             if (copy != null) {
                 copy.remove(ze.getHeaderId());
@@ -403,7 +405,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      */
     public ZipExtraField getExtraField(ZipShort type) {
         if (extraFields != null) {
-            return (ZipExtraField) extraFields.get(type);
+            return extraFields.get(type);
         }
         return null;
     }
@@ -427,6 +429,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * @throws RuntimeException if the bytes cannot be parsed
      * @throws RuntimeException on error
      */
+    @Override
     public void setExtra(byte[] extra) throws RuntimeException {
         try {
             ZipExtraField[] local =
@@ -434,7 +437,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
                                       ExtraFieldUtils.UnparseableExtraField.READ);
             mergeExtraFields(local, true);
         } catch (ZipException e) {
-            // actually this is not be possible as of Commons Compress 1.1
+            // actually this is not possible as of Commons Compress 1.1
             throw new RuntimeException("Error parsing extra fields for entry: "
                                        + getName() + " - " + e.getMessage(), e);
         }
@@ -485,6 +488,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * Get the name of the entry.
      * @return the entry name
      */
+    @Override
     public String getName() {
         return name == null ? super.getName() : name;
     }
@@ -509,6 +513,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * Gets the uncompressed size of the entry data.
      * @return the entry size
      */
+    @Override
     public long getSize() {
         return size;
     }
@@ -519,6 +524,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * @exception IllegalArgumentException if the specified size is less
      *            than 0
      */
+    @Override
     public void setSize(long size) {
         if (size < 0) {
             throw new IllegalArgumentException("invalid entry size");
@@ -559,6 +565,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * This uses the name as the hashcode.
      * @return a hashcode.
      */
+    @Override
     public int hashCode() {
         // this method has severe consequences on performance. We cannot rely
         // on the super.hashCode() method since super.getName() always return
@@ -627,6 +634,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
