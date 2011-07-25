@@ -138,6 +138,7 @@
           <archive>
             <manifestEntries>
               <Main-Class>org.apache.commons.compress.archivers.Lister</Main-Class>
+              <Extension-Name>org.apache.commons.compress</Extension-Name>
             </manifestEntries>
           </archive>
         </configuration>
