@@ -96,8 +96,9 @@ public class ChangeSetPerformer {
                         results.deleted(name);
                         break;
                     }
-                } else if(type == Change.TYPE_DELETE_DIR && name != null) {
-                    if (name.startsWith(change.targetFile() + "/")) {
+                } else if (type == Change.TYPE_DELETE_DIR && name != null) {
+                    // don't combine ifs to make future extensions more easy
+                    if (name.startsWith(change.targetFile() + "/")) { // NOPMD
                         copy = false;
                         results.deleted(name);
                         break;
@@ -105,11 +106,11 @@ public class ChangeSetPerformer {
                 }
             }
 
-            if (copy) {
-                if (!isDeletedLater(workingSet, entry) && !results.hasBeenAdded(entry.getName())) {
-                    copyStream(in, out, entry);
-                    results.addedFromStream(entry.getName());
-                }
+            if (copy
+                && !isDeletedLater(workingSet, entry)
+                && !results.hasBeenAdded(entry.getName())) {
+                copyStream(in, out, entry);
+                results.addedFromStream(entry.getName());
             }
         }
         

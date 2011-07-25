@@ -130,7 +130,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
      */
     private void closeEntry() throws IOException {
         ensureOpen();
-        while (read(this.tmpbuf, 0, this.tmpbuf.length) != -1) {
+        while (read(this.tmpbuf, 0, this.tmpbuf.length) != -1) { // NOPMD
             // do nothing
         }
 
@@ -237,10 +237,10 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         if (this.entryBytesRead == this.entry.getSize()) {
             skip(entry.getDataPadCount());
             this.entryEOF = true;
-            if (this.entry.getFormat() == FORMAT_NEW_CRC) {
-                if (this.crc != this.entry.getChksum()) {
-                    throw new IOException("CRC Error. Occured at byte: " + getBytesRead());
-                }
+            if (this.entry.getFormat() == FORMAT_NEW_CRC
+                && this.crc != this.entry.getChksum()) {
+                throw new IOException("CRC Error. Occured at byte: "
+                                      + getBytesRead());
             }
             return -1; // EOF for this entry
         }
