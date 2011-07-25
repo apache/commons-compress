@@ -82,7 +82,7 @@ class Simple8BitZipEncoding implements ZipEncoding {
      * field.  This list is used to binary search reverse mapping of
      * unicode characters with a character code greater than 127.
      */
-    private final List reverseMapping;
+    private final List<Simple8BitChar> reverseMapping;
 
     /**
      * @param highChars The characters for byte values of 128 to 255
@@ -90,7 +90,7 @@ class Simple8BitZipEncoding implements ZipEncoding {
      */
     public Simple8BitZipEncoding(char[] highChars) {
         this.highChars = (char[]) highChars.clone();
-        List temp = new ArrayList(this.highChars.length);
+        List temp = new ArrayList<Simple8BitChar>(this.highChars.length);
 
         byte code = 127;
 
@@ -172,7 +172,7 @@ class Simple8BitZipEncoding implements ZipEncoding {
 
             int i = i0 + (i1 - i0) / 2;
 
-            Simple8BitChar m = (Simple8BitChar) this.reverseMapping.get(i);
+            Simple8BitChar m = this.reverseMapping.get(i);
 
             if (m.unicode == c) {
                 return m;
@@ -189,7 +189,7 @@ class Simple8BitZipEncoding implements ZipEncoding {
             return null;
         }
 
-        Simple8BitChar r = (Simple8BitChar) this.reverseMapping.get(i0);
+        Simple8BitChar r = this.reverseMapping.get(i0);
 
         if (r.unicode != c) {
             return null;
