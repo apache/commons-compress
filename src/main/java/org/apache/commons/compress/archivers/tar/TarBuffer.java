@@ -173,10 +173,8 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
             throw new IOException("reading (via skip) from an output buffer");
         }
 
-        if (currRecIdx >= recsPerBlock) {
-            if (!readBlock()) {
-                return;    // UNDONE
-            }
+        if (currRecIdx >= recsPerBlock && !readBlock()) {
+            return;    // UNDONE
         }
 
         currRecIdx++;
@@ -196,10 +194,8 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
             throw new IOException("reading from an output buffer");
         }
 
-        if (currRecIdx >= recsPerBlock) {
-            if (!readBlock()) {
-                return null;
-            }
+        if (currRecIdx >= recsPerBlock && !readBlock()) {
+            return null;
         }
 
         byte[] result = new byte[recordSize];
@@ -407,9 +403,8 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
         } else if (inStream != null) {
             if (inStream != System.in) {
                 inStream.close();
-
-                inStream = null;
             }
+            inStream = null;
         }
     }
 }

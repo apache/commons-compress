@@ -98,11 +98,9 @@ public class ArArchiveInputStream extends ArchiveInputStream {
             }
         }
 
-        if (offset % 2 != 0) {
-            if (read() < 0) {
-                // hit eof
-                return null;
-            }
+        if (offset % 2 != 0 && read() < 0) {
+            // hit eof
+            return null;
         }
 
         if (input.available() == 0) {
