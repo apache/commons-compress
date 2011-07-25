@@ -46,12 +46,13 @@
             </ul>
             <subsection name="Status">
               <ul>
-                <li>The code has been released as version 1.1</li>
+                <li>The code has been released as version 1.2</li>
               </ul>
             </subsection>
         </section>
         <section name="Documentation">
-          <p>Commons Compress requires Java 1.4 or later.</p>
+          <p>Commons Compress 1.2 requires Java 1.4 or later and will
+            be the last version that doesn't require Java 5.</p>
           
           <p>The compress component is split into <em>compressors</em> and
             <em>archivers</em>.  While <em>compressors</em>
@@ -88,7 +89,7 @@
         </section>
         <section name="Releases">
           <p>
-            The latest version v1.1, is JDK 1.4 compatible -
+            The latest version v1.2, is JDK 1.4 compatible -
             <a href="http://commons.apache.org/compress/download_compress.cgi">Download now!</a>
           </p>
         </section>
