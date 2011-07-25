@@ -512,9 +512,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         current.setCrc(val.getValue());
         if (!usesZip64) {
             readFully(b);
-            current.setCompressedSize(new ZipLong(b).getValue());
+            current.setCompressedSize(ZipLong.getValue(b));
             readFully(b);
-            current.setSize(new ZipLong(b).getValue());
+            current.setSize(ZipLong.getValue(b));
         } else {
             byte[] b8 = new byte[DWORD];
             readFully(b8);
