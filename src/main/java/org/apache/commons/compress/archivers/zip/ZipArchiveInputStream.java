@@ -420,7 +420,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
 
             long inB;
             if (current.getMethod() == ZipArchiveOutputStream.DEFLATED) {
-                inB = inf.getTotalIn();
+                inB = inf.getBytesRead();
             } else {
                 inB = readBytesOfEntry;
             }

@@ -376,8 +376,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                 deflate();
             }
 
-            entry.setSize(ZipUtil.adjustToLong(def.getTotalIn()));
-            entry.setCompressedSize(ZipUtil.adjustToLong(def.getTotalOut()));
+            entry.setSize(def.getBytesRead());
+            entry.setCompressedSize(def.getBytesWritten());
             entry.setCrc(realCrc);
 
             def.reset();
