@@ -533,11 +533,15 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     }
 
     /**
-     * Package private setter that sets the name using the raw bytes
-     * and the string created from it by guessing or suing the
-     * configured encoding.
+     * Sets the name using the raw bytes and the string created from
+     * it by guessing or using the configured encoding.
+     * @param name the name to use created from the raw bytes using
+     * the guessed or configured encoding
+     * @param rawName the bytes originally read as name from the
+     * archive
+     * @since Apache Commons Compress 1.2
      */
-    void setName(String name, byte[] rawName) {
+    protected void setName(String name, byte[] rawName) {
         setName(name);
         this.rawName = rawName;
     }

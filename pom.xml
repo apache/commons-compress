@@ -42,8 +42,8 @@
     <commons.jira.id>COMPRESS</commons.jira.id>
     <commons.jira.pid>12310904</commons.jira.pid>
     <!-- configuration bits for cutting a release candidate -->
-    <commons.release.version>1.1</commons.release.version>
-    <commons.rc.version>RC2</commons.rc.version>
+    <commons.release.version>1.2</commons.release.version>
+    <commons.rc.version></commons.rc.version>
   </properties>
 
   <issueManagement>
@@ -138,6 +138,7 @@
           <archive>
             <manifestEntries>
               <Main-Class>org.apache.commons.compress.archivers.Lister</Main-Class>
+              <Extension-Name>org.apache.commons.compress</Extension-Name>
             </manifestEntries>
           </archive>
         </configuration>
