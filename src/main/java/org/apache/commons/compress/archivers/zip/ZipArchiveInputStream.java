@@ -157,7 +157,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         current = new ZipArchiveEntry();
 
         int versionMadeBy = ZipShort.getValue(lfh, off);
-        usesZip64 = (versionMadeBy & BYTE_MASK) >= ZIP64_MIN_VERSION;
         off += SHORT;
         current.setPlatform((versionMadeBy >> ZipFile.BYTE_SHIFT)
                             & ZipFile.NIBLET_MASK);
@@ -211,16 +210,11 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             ZipUtil.setNameAndCommentFromExtraFields(current, fileName, null);
         }
 
-        Zip64ExtendedInformationExtraField z64 = null;
-        if (usesZip64) {
-            z64 = (Zip64ExtendedInformationExtraField)
-                current.getExtraField(Zip64ExtendedInformationExtraField
-                                      .HEADER_ID);
-            if (z64 == null) {
-                // "version made by" >= 4.5 for some other reason than ZIP64
-                usesZip64 = false;
-            }
-        }
+        Zip64ExtendedInformationExtraField z64 =  
+            (Zip64ExtendedInformationExtraField)
+            current.getExtraField(Zip64ExtendedInformationExtraField
+                                  .HEADER_ID);
+        usesZip64 = z64 != null;
         if (!hasDataDescriptor) {
             if (usesZip64 && (cSize.equals(ZipLong.ZIP64_MAGIC)
                               || size.equals(ZipLong.ZIP64_MAGIC))
