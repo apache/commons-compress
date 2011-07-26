@@ -210,17 +210,21 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         if (!hasUTF8Flag && useUnicodeExtraFields) {
             ZipUtil.setNameAndCommentFromExtraFields(current, fileName, null);
         }
+
+        Zip64ExtendedInformationExtraField z64 = null;
+        if (usesZip64) {
+            z64 = (Zip64ExtendedInformationExtraField)
+                current.getExtraField(Zip64ExtendedInformationExtraField
+                                      .HEADER_ID);
+            if (z64 == null) {
+                // "version made by" >= 4.5 for some other reason than ZIP64
+                usesZip64 = false;
+            }
+        }
         if (!hasDataDescriptor) {
             if (usesZip64 && (cSize.equals(ZipLong.ZIP64_MAGIC)
                               || size.equals(ZipLong.ZIP64_MAGIC))
                 ) {
-                Zip64ExtendedInformationExtraField z64 =
-                    (Zip64ExtendedInformationExtraField)
-                    current.getExtraField(Zip64ExtendedInformationExtraField
-                                          .HEADER_ID);
-                if (z64 == null) {
-                    throw new ZipException("expected ZIP64 extra field");
-                }
                 current.setCompressedSize(z64.getCompressedSize()
                                           .getLongValue());
                 current.setSize(z64.getSize().getLongValue());
