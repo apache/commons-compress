@@ -1,100 +1,50 @@
                         
 
-              Apache Commons Compress 1.1 RELEASE NOTES
+              Apache Commons Compress 1.2 RELEASE NOTES
 
-Release 1.1
+Release 1.2 - a bugfix release,
+        
+              The last release expected to be compatible with Java 1.4.
 
 Changes in this version include:
 
 New features:
-o COMPRESS-108:  Command-line interface to list archive contents.
-       Usage: java -jar commons-compress-n.m.jar archive-name [zip|tar|etc] 
-o COMPRESS-109:  Tar implementation does not support Pax headers
-       Added support for reading pax headers.
-       Note: does not support global pax headers 
-o COMPRESS-103:  ZipArchiveInputStream can optionally extract data that used
-        the STORED compression method and a data descriptor.
-        Doing so in a stream is not safe in general, so you have to
-        explicitly enable the feature.  By default the stream will
-        throw an exception if it encounters such an entry. 
-o COMPRESS-98:  The ZIP classes will throw specialized exceptions if any
-        attempt is made to read or write data that uses zip features
-        not supported (yet). 
-o COMPRESS-99:  ZipFile#getEntries returns entries in a predictable order -
-        the order they appear inside the central directory.
-        A new method getEntriesInPhysicalOrder returns entries in
-        order of the entry data, i.e. the order ZipArchiveInputStream
-        would see. 
-o The Archive*Stream and ZipFile classes now have
-        can(Read|Write)EntryData methods that can be used to check
-        whether a given entry's data can be read/written.
-        The method currently returns false for ZIP archives if an
-        entry uses an unsupported compression method or encryption. 
-o COMPRESS-89:  The ZIP classes now detect encrypted entries. 
-o COMPRESS-97:  Added autodetection of compression format to
-        CompressorStreamFactory. 
-o COMPRESS-95:  Improve ExceptionMessages in ArchiveStreamFactory Thanks to Joerg Bellmann. 
-o A new constructor of TarArchiveEntry can create entries with
-        names that start with slashes - the default is to strip
-        leading slashes in order to create relative path names. 
-o ArchiveEntry now has a getLastModifiedDate method. 
-o COMPRESS-78:  Add a BZip2Utils class modelled after GZipUtils Thanks to Jukka Zitting. 
+o COMPRESS-123:  ZipArchiveEntry has a new method getRawName that provides the
+        original bytes that made up the name.  This may allow user
+        code to detect the encoding. 
+o COMPRESS-122:  TarArchiveEntry provides access to the flags that determine
+        whether it is an archived symbolic link, pipe or other
+        "uncommon" file system object. 
 
 Fixed Bugs:
-o COMPRESS-72:  Move acknowledgements from NOTICE to README 
-o COMPRESS-113:  TarArchiveEntry.parseTarHeader() includes the trailing space/NUL when parsing the octal size 
-o COMPRESS-118:  TarUtils.parseName does not properly handle characters outside the range 0-127 
-o COMPRESS-107:  ArchiveStreamFactory does not recognise tar files created by Ant 
-o COMPRESS-110:  Support "ustar" prefix field, which is used when file paths are longer
-       than 100 characters. 
-o COMPRESS-100:  ZipArchiveInputStream will throw an exception if it detects an
-        entry that uses a data descriptor for a STORED entry since it
-        cannot reliably find the end of data for this "compression"
-        method. 
-o COMPRESS-101:  ZipArchiveInputStream should now properly read archives that
-        use data descriptors but without the "unofficial" signature. 
-o COMPRESS-74:  ZipArchiveInputStream failed to update the number of bytes
-        read properly. 
-o ArchiveInputStream has a new method getBytesRead that should
-        be preferred over getCount since the later may truncate the
-        number of bytes read for big archives. 
-o COMPRESS-85:  The cpio archives created by CpioArchiveOutputStream couldn't
-        be read by many existing native implementations because the
-        archives contained multiple entries with the same inode/device
-        combinations and weren't padded to a blocksize of 512 bytes. 
-o COMPRESS-73:  ZipArchiveEntry, ZipFile and ZipArchiveInputStream are now
-        more lenient when parsing extra fields. 
-o COMPRESS-82:  cpio is terribly slow.
-        Documented that buffered streams are needed for performance 
-o Improved exception message if the extra field data in ZIP
-        archives cannot be parsed. 
-o COMPRESS-17:  Tar format unspecified - current support documented. 
-o COMPRESS-94:  ZipArchiveEntry's equals method was broken for entries created
-        with the String-arg constructor.  This lead to broken ZIP
-        archives if two different entries had the same hash code. Thanks to Anon Devs. 
-o COMPRESS-87:  ZipArchiveInputStream could repeatedly return 0 on read() when
-        the archive was truncated. Thanks to Antoni Mylka. 
-o COMPRESS-86:  Tar archive entries holding the file name for names longer
-        than 100 characters in GNU longfile mode didn't properly
-        specify they'd be using the "oldgnu" extension. 
-o COMPRESS-83:  Delegate all read and write methods in GZip stream in order to
-        speed up operations. 
-o The ar and cpio streams now properly read and write last
-        modified times. 
-o COMPRESS-81:  TarOutputStream can leave garbage at the end of the archive 
+o COMPRESS-129:  ZipArchiveInputStream could fail with a "Truncated ZIP" error
+        message for entries between 2 GByte and 4 GByte in size. 
+o COMPRESS-145:  TarArchiveInputStream now detects sparse entries using the
+        oldgnu format and properly reports it cannot extract their
+        contents. 
+o COMPRESS-130:  The Javadoc for ZipArchiveInputStream#skip now matches the
+        implementation, the code has been made more defensive. 
+o COMPRESS-140:  ArArchiveInputStream fails if entries contain only blanks for
+        userId or groupId. Thanks to Trejkaz. 
+o COMPRESS-139:  ZipFile may leak resources on some JDKs. 
+o COMPRESS-125:  BZip2CompressorInputStream throws IOException if
+        underlying stream returns available() == 0.
+        Removed the check. 
+o COMPRESS-127:  Calling close() on inputStream returned by
+        CompressorStreamFactory.createCompressorInputStream()
+        does not close the underlying input stream. 
+o COMPRESS-119:  TarArchiveOutputStream#finish now writes all buffered
+        data to the stream 
 
 Changes:
-o COMPRESS-112:  ArArchiveInputStream does not handle GNU extended filename records (//) 
-o COMPRESS-105:  Document that the name of an ZipArchiveEntry determines whether
-       an entry is considered a directory or not.
-       If you don't use the constructor with the File argument the entry's
-        name must end in a "/" in order for the entry to be known as a directory. 
-o COMPRESS-79:  Move DOS/Java time conversions into Zip utility class. 
-o COMPRESS-75:  ZipArchiveInputStream does not show location in file where a problem occurred. 
+o ZipFile now implements finalize which closes the underlying
+        file. 
+o COMPRESS-117:  Certain tar files not recognised by ArchiveStreamFactory. 
 
  
-For complete information on Commons Compress, including instructions on how to submit bug reports,
-patches, or suggestions for improvement, see the Apache Commons Compress website:
+For complete information on Commons Compress, including instructions
+on how to submit bug reports, patches, or suggestions for improvement,
+see the Apache Commons Compress website:
 
 http://commons.apache.org/compress/
 

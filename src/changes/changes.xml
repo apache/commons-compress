@@ -44,7 +44,12 @@ The <action> type attribute can be add,update,fix,remove.
     <title>commons-compress</title>
   </properties>
   <body>
-    <release version="1.2" date="as in SVN" description="Release 1.2">
+    <release version="1.2" date="as in SVN"
+             description="Release 1.2 - a bugfix release, the last release expected to be compatible with Java 1.4">
+      <action issue="COMPRESS-129" type="fix" date="2011-07-26">
+        ZipArchiveInputStream could fail with a "Truncated ZIP" error
+        message for entries between 2 GByte and 4 GByte in size.
+      </action>
       <action issue="COMPRESS-145" type="fix" date="2011-07-23"
               due-tue="Patrick Dreyer">
         TarArchiveInputStream now detects sparse entries using the
