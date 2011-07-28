@@ -40,6 +40,8 @@ import static org.apache.commons.compress.archivers.zip.ZipConstants.DEFLATE_MIN
 import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC_SHORT;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MIN_VERSION;
 
 /**
@@ -879,13 +881,14 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         writeOut(ZERO);
 
         // number of entries
-        byte[] num = ZipShort.getBytes(entries.size());
+        byte[] num = ZipShort.getBytes(Math.min(entries.size(),
+                                                ZIP64_MAGIC_SHORT));
         writeOut(num);
         writeOut(num);
 
         // length and location of CD
-        writeOut(ZipLong.getBytes(cdLength));
-        writeOut(ZipLong.getBytes(cdOffset));
+        writeOut(ZipLong.getBytes(Math.min(cdLength, ZIP64_MAGIC)));
+        writeOut(ZipLong.getBytes(Math.min(cdOffset, ZIP64_MAGIC)));
 
         // ZIP file comment
         ByteBuffer data = this.zipEncoding.encode(comment);
@@ -896,11 +899,20 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private static final byte[] ONE = ZipLong.getBytes(1L);
 
     /**
-     * Writes the &quot;ZIP64 End of central dir record&quot; and &quot;ZIP64 End of central dir locator&quot;.
+     * Writes the &quot;ZIP64 End of central dir record&quot; and
+     * &quot;ZIP64 End of central dir locator&quot;.
      * @throws IOException on error
      * @since Apache Commons Compress 1.3
      */
     protected void writeZip64CentralDirectory() throws IOException {
+        if (!hasUsedZip64) {
+            if (cdOffset >= ZIP64_MAGIC || cdLength >= ZIP64_MAGIC
+                || entries.size() >= ZIP64_MAGIC_SHORT) {
+                // actually "will use"
+                hasUsedZip64 = true;
+            }
+        }
+
         if (!hasUsedZip64) {
             return;
         }
