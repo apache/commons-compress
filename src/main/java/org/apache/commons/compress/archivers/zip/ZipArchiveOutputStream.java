@@ -337,6 +337,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void finish() throws IOException {
         if (finished) {
             throw new IOException("This archive has already been finished");
@@ -361,6 +362,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * Writes all necessary data for this entry.
      * @throws IOException on error
      */
+    @Override
     public void closeArchiveEntry() throws IOException {
         if (finished) {
             throw new IOException("Stream has already been finished");
@@ -430,6 +432,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * {@inheritDoc} 
      * @throws ClassCastException if entry is not an instance of ZipArchiveEntry
      */
+    @Override
     public void putArchiveEntry(ArchiveEntry archiveEntry) throws IOException {
         if (finished) {
             throw new IOException("Stream has already been finished");
@@ -514,6 +517,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * compression method that hasn't been implemented yet.</p>
      * @since Apache Commons Compress 1.1
      */
+    @Override
     public boolean canWriteEntryData(ArchiveEntry ae) {
         if (ae instanceof ZipArchiveEntry) {
             return ZipUtil.canHandleEntryData((ZipArchiveEntry) ae);
@@ -528,6 +532,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @param length the number of bytes to write
      * @throws IOException on error
      */
+    @Override
     public void write(byte[] b, int offset, int length) throws IOException {
         ZipUtil.checkRequestedFeatures(entry);
         if (entry.getMethod() == DEFLATED) {
@@ -563,6 +568,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      *
      * @exception  IOException  if an I/O error occurs.
      */
+    @Override
     public void close() throws IOException {
         if (!finished) {
             finish();
@@ -582,6 +588,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      *
      * @exception  IOException  if an I/O error occurs.
      */
+    @Override
     public void flush() throws IOException {
         if (out != null) {
             out.flush();
@@ -960,6 +967,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      *
      * <p>Must not be used if the stream has already been closed.</p>
      */
+    @Override
     public ArchiveEntry createArchiveEntry(File inputFile, String entryName)
             throws IOException {
         if (finished) {
