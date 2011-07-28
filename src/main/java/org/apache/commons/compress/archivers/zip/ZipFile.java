@@ -333,7 +333,7 @@ public class ZipFile {
     /**
      * Ensures that the close method of this zipfile is called when
      * there are no more references to it.
-     * @see close()
+     * @see #close()
      */
     protected void finalize() throws Throwable {
         try {
