@@ -36,8 +36,11 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 
 import static org.apache.commons.compress.archivers.zip.ZipConstants.BYTE_MASK;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.DEFLATE_MIN_VERSION;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MIN_VERSION;
 
 /**
  * Reimplementation of {@link java.util.zip.ZipOutputStream
@@ -178,8 +181,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Holds the offsets of the LFH starts for each entry.
      */
-    private final Map<ZipArchiveEntry, byte[]> offsets =
-        new HashMap<ZipArchiveEntry, byte[]>();
+    private final Map<ZipArchiveEntry, Long> offsets =
+        new HashMap<ZipArchiveEntry, Long>();
 
     /**
      * The encoding to use for filenames and the file comment.
@@ -233,6 +236,13 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * whether to create UnicodePathExtraField-s for each entry.
      */
     private UnicodeExtraFieldPolicy createUnicodeExtraFields = UnicodeExtraFieldPolicy.NEVER;
+
+    /**
+     * Whether anything inside this archive has used a ZIP64 feature.
+     *
+     * @since Apache Commons Compress 1.3
+     */
+    private boolean hasUsedZip64 = false;
 
     /**
      * Creates a new ZIP OutputStream filtering the underlying stream.
@@ -352,6 +362,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             writeCentralFileHeader(ze);
         }
         cdLength = written - cdOffset;
+        writeZip64CentralDirectory();
         writeCentralDirectoryEnd();
         offsets.clear();
         entries.clear();
@@ -614,6 +625,14 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * end of central dir signature
      */
     static final byte[] EOCD_SIG = ZipLong.getBytes(0X06054B50L);
+    /**
+     * ZIP64 end of central dir signature
+     */
+    static final byte[] ZIP64_EOCD_SIG = ZipLong.getBytes(0X06064B50L);
+    /**
+     * ZIP64 end of central dir locator signature
+     */
+    static final byte[] ZIP64_EOCD_LOC_SIG = ZipLong.getBytes(0X07064B50L);
 
     /**
      * Writes next block of compressed data to the output stream.
@@ -672,7 +691,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             }
         }
 
-        offsets.put(ze, ZipLong.getBytes(written));
+        offsets.put(ze, Long.valueOf(written));
 
         writeOut(LFH_SIG);
         written += WORD;
@@ -759,7 +778,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
         // version made by
         // CheckStyle:MagicNumber OFF
-        writeOut(ZipShort.getBytes((ze.getPlatform() << 8) | 20));
+        writeOut(ZipShort.getBytes((ze.getPlatform() << 8) | 
+                                   (!hasUsedZip64 ? DEFLATE_MIN_VERSION
+                                                  : ZIP64_MIN_VERSION)));
         written += SHORT;
 
         final int zipMethod = ze.getMethod();
@@ -830,7 +851,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         written += WORD;
 
         // relative offset of LFH
-        writeOut(offsets.get(ze));
+        writeOut(ZipLong.getBytes(offsets.get(ze).longValue()));
         written += WORD;
 
         // file name
@@ -870,6 +891,64 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         ByteBuffer data = this.zipEncoding.encode(comment);
         writeOut(ZipShort.getBytes(data.limit()));
         writeOut(data.array(), data.arrayOffset(), data.limit());
+    }
+
+    private static final byte[] ONE = ZipLong.getBytes(1L);
+
+    /**
+     * Writes the &quot;ZIP64 End of central dir record&quot; and &quot;ZIP64 End of central dir locator&quot;.
+     * @throws IOException on error
+     * @since Apache Commons Compress 1.3
+     */
+    protected void writeZip64CentralDirectory() throws IOException {
+        if (!hasUsedZip64) {
+            return;
+        }
+
+        long offset = written;
+
+        writeOut(ZIP64_EOCD_SIG);
+        // size, we don't have any variable length as we don't support
+        // the extensible data sector, yet
+        writeOut(ZipEightByteInteger
+                 .getBytes(SHORT   /* version made by */
+                           + SHORT /* version needed to extract */
+                           + WORD  /* disk number */
+                           + WORD  /* disk with central directory */
+                           + DWORD /* number of entries in CD on this disk */
+                           + DWORD /* total number of entries */
+                           + DWORD /* size of CD */
+                           + DWORD /* offset of CD */
+                           ));
+
+        // version made by and version needed to extract
+        writeOut(ZipShort.getBytes(ZIP64_MIN_VERSION));
+        writeOut(ZipShort.getBytes(ZIP64_MIN_VERSION));
+
+        // disk numbers - four bytes this time
+        writeOut(LZERO);
+        writeOut(LZERO);
+
+        // number of entries
+        byte[] num = ZipEightByteInteger.getBytes(entries.size());
+        writeOut(num);
+        writeOut(num);
+
+        // length and location of CD
+        writeOut(ZipEightByteInteger.getBytes(cdLength));
+        writeOut(ZipEightByteInteger.getBytes(cdOffset));
+
+        // no "zip64 extensible data sector" for now
+
+        // and now the "ZIP64 end of central directory locator"
+        writeOut(ZIP64_EOCD_LOC_SIG);
+
+        // disk number holding the ZIP64 EOCD record
+        writeOut(LZERO);
+        // relative offset of ZIP64 EOCD record
+        writeOut(ZipEightByteInteger.getBytes(offset));
+        // total number of disks
+        writeOut(ONE);
     }
 
     /**

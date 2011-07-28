@@ -37,6 +37,9 @@ final class ZipConstants {
     /** length of a ZipEightByteInteger in bytes */
     static final int DWORD = 8;
 
+    /** ZIP specification version that introduced DEFLATE method */
+    static final int DEFLATE_MIN_VERSION = 20;
+
     /** ZIP specification version that introduced ZIP64 */
     static final int ZIP64_MIN_VERSION = 45;
 }
