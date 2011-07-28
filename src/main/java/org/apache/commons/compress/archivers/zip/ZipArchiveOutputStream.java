@@ -35,6 +35,10 @@ import java.util.zip.ZipException;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 
+import static org.apache.commons.compress.archivers.zip.ZipConstants.BYTE_MASK;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
+
 /**
  * Reimplementation of {@link java.util.zip.ZipOutputStream
  * java.util.zip.ZipOutputStream} that does handle the extended
@@ -57,9 +61,6 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
  */
 public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
-    static final int BYTE_MASK = 0xFF;
-    private static final int SHORT = 2;
-    private static final int WORD = 4;
     static final int BUFFER_SIZE = 512;
 
     /** indicates if this archive is finished. protected for use in Jar implementation */
@@ -130,7 +131,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * List of ZipArchiveEntries written so far.
      */
-    private final List entries = new LinkedList();
+    private final List<ZipArchiveEntry> entries =
+        new LinkedList<ZipArchiveEntry>();
 
     /**
      * CRC instance to avoid parsing DEFLATED data twice.
@@ -176,7 +178,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Holds the offsets of the LFH starts for each entry.
      */
-    private final Map offsets = new HashMap();
+    private final Map<ZipArchiveEntry, byte[]> offsets =
+        new HashMap<ZipArchiveEntry, byte[]>();
 
     /**
      * The encoding to use for filenames and the file comment.
@@ -344,8 +347,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         }
 
         cdOffset = written;
-        for (Iterator i = entries.iterator(); i.hasNext(); ) {
-            writeCentralFileHeader((ZipArchiveEntry) i.next());
+        for (ZipArchiveEntry ze : entries) {
+            writeCentralFileHeader(ze);
         }
         cdLength = written - cdOffset;
         writeCentralDirectoryEnd();
@@ -820,7 +823,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         written += WORD;
 
         // relative offset of LFH
-        writeOut((byte[]) offsets.get(ze));
+        writeOut(offsets.get(ze));
         written += WORD;
 
         // file name
