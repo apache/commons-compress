@@ -25,7 +25,7 @@
 
   <groupId>org.apache.commons</groupId>
   <artifactId>commons-compress</artifactId>
-  <version>1.3-SNAPSHOT</version>
+  <version>1.2</version>
   <name>Commons Compress</name>
   <url>http://commons.apache.org/compress/</url>
   <description>
@@ -41,7 +41,7 @@
     <commons.jira.pid>12310904</commons.jira.pid>
     <!-- configuration bits for cutting a release candidate -->
     <commons.release.version>1.2</commons.release.version>
-    <commons.rc.version>RC1</commons.rc.version>
+    <commons.rc.version>RC2</commons.rc.version>
   </properties>
 
   <issueManagement>
@@ -92,9 +92,9 @@
   </contributors>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/compress/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/compress/trunk</developerConnection>
-    <url>http://svn.apache.org/repos/asf/commons/proper/compress/trunk</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/compress/tags/COMPRESS_1.2</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/compress/tags/COMPRESS_1.2</developerConnection>
+    <url>http://svn.apache.org/repos/asf/commons/proper/compress/tags/COMPRESS_1.2</url>
   </scm>
 
   <distributionManagement>
