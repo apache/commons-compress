@@ -196,6 +196,119 @@ public class Zip64SupportTest {
             });
     }
 
+    /*
+     * Individual sizes don't require ZIP64 but the offset of the
+     * third entry is bigger than 0xFFFFFFFF so a ZIP64 extended
+     * information is needed inside the central directory.
+     *
+     * Creates a temporary archive of approx 5GB in size
+     */ 
+    @Test public void write3EntriesCreatingBigArchive() throws Throwable {
+        withTemporaryArchive("write3EntriesCreatingBigArchive",
+                             new ZipOutputTest() {
+                public void test(File f, ZipArchiveOutputStream zos)
+                    throws IOException {
+                    byte[] buf = new byte[1000 * 1000];
+                    ZipArchiveEntry zae = null;
+                    for (int i = 0; i < 2; i++) {
+                        zae = new ZipArchiveEntry(String.valueOf(i));
+                        zae.setSize(FIVE_BILLION / 2);
+                        zae.setMethod(ZipArchiveEntry.STORED);
+                        zae.setCrc(0);
+                        zos.putArchiveEntry(zae);
+                        for (int j = 0; j < FIVE_BILLION / 2 / 1000 / 1000;
+                             j++) {
+                            zos.write(buf);
+                        }
+                        zos.closeArchiveEntry();
+                    }
+                    zae = new ZipArchiveEntry(String.valueOf(2));
+                    zae.setSize(0);
+                    zos.putArchiveEntry(zae);
+                    zos.closeArchiveEntry();
+                    zos.close();
+
+                    RandomAccessFile a = new RandomAccessFile(f, "r");
+                    try {
+                        final long end = a.length();
+                        long cdOffsetLoc = end - 22 /* eocd.length */
+                            - 20 /* z64 eocd locator.length */
+                            - 56 /* z64 eocd without extensible data sector */
+                            + 48 /* position in z64 eocd */;
+                        // seek to central directory
+                        a.seek(cdOffsetLoc);
+                        byte[] cdOffset = new byte[8];
+                        a.readFully(cdOffset);
+                        a.seek(ZipEightByteInteger.getLongValue(cdOffset));
+                        // skip first two entries
+                        a.skipBytes(2 * 47 /* CD entry of file with
+                                              file name length 1 and no
+                                              extra data */);
+
+                        // grab third entry, verify offset is
+                        // 0xFFFFFFFF and it has a ZIP64 extended
+                        // information extra field
+                        byte[] header = new byte[8];
+                        a.readFully(header);
+                        assertArrayEquals(new byte[] {
+                                // sig
+                                (byte) 0x50, (byte) 0x4b, 1, 2,
+                                // version made by
+                                45, 0,
+                                // version needed to extract
+                                45, 0,
+                            }, header);
+                        // ignore GPB, method, timestamp, CRC, compressed size
+                        a.skipBytes(16);
+                        byte[] rest = new byte[23];
+                        a.readFully(rest);
+                        assertArrayEquals(new byte[] {
+                                // Original Size
+                                0, 0, 0, 0,
+                                // file name length
+                                1, 0,
+                                // extra field length
+                                12, 0,
+                                // comment length
+                                0, 0,
+                                // disk number
+                                0, 0,
+                                // attributes
+                                0, 0,
+                                0, 0, 0, 0,
+                                // offset
+                                (byte) 0xFF, (byte) 0xFF,
+                                (byte) 0xFF, (byte) 0xFF,
+                                // file name
+                                (byte) '2'
+                            }, rest);
+                        byte[] extra = new byte[4];
+                        a.readFully(extra);
+                        assertArrayEquals(new byte[] {
+                                // Header-ID
+                                1, 0,
+                                // size
+                                8, 0
+                            }, extra);
+
+                        // read offset of LFH
+                        byte[] offset = new byte[8];
+                        a.readFully(offset);
+                        // verify there is a LFH where the CD claims it
+                        a.seek(ZipEightByteInteger.getLongValue(offset));
+                        byte[] sig = new byte[4];
+                        a.readFully(sig);
+                        assertArrayEquals(new byte[] {
+                                (byte) 0x50, (byte) 0x4b, 3, 4,
+                            }, sig);
+                    } finally {
+                        a.close();
+                    }
+                }
+
+            });
+    }
+
     static interface ZipOutputTest {
         void test(File f, ZipArchiveOutputStream zos) throws IOException;
     }
@@ -215,6 +328,7 @@ public class Zip64SupportTest {
         } finally {
             zos.close();
         }
+        f.delete();
     }
 
     private static File getFile(String name) throws Throwable {
