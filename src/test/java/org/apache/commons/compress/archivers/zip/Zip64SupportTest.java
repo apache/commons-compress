@@ -20,6 +20,7 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Random;
@@ -102,9 +103,49 @@ public class Zip64SupportTest {
             if (zin != null) {
                 zin.close();
             }
-            if (fin != null) {
-                fin.close();
-            }
+            fin.close();
         }
+    }
+
+    @Test public void write100KFiles() throws Throwable {
+        withTemporaryArchive("write100KFiles", new ZipOutputTest() {
+                public void test(ZipArchiveOutputStream zos)
+                    throws IOException {
+                    for (int i = 0; i < ONE_HUNDRED_THOUSAND; i++) {
+                        ZipArchiveEntry zae =
+                            new ZipArchiveEntry(String.valueOf(i));
+                        zae.setSize(0);
+                        zos.putArchiveEntry(zae);
+                        zos.closeArchiveEntry();
+                    }
+                }
+            });
+    }
+
+    static interface ZipOutputTest {
+        void test(ZipArchiveOutputStream zos) throws IOException;
+    }
+
+    private static void withTemporaryArchive(String testName,
+                                             ZipOutputTest test)
+        throws Throwable {
+        File f = getTempFile(testName);
+        ZipArchiveOutputStream zos = new ZipArchiveOutputStream(f);
+        try {
+            test.test(zos);
+        } catch (IOException ex) {
+            System.err.println("Failed to write archive because of: "
+                               + ex.getMessage()
+                               + " - likely not enough disk space.");
+            assumeTrue(false);
+        } finally {
+            zos.close();
+        }
+    }
+
+    private static File getTempFile(String testName) throws Throwable {
+        File f = File.createTempFile("commons-compress-" + testName, ".zip");
+        f.deleteOnExit();
+        return f;
     }
 }
