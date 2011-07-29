@@ -33,22 +33,6 @@ import static org.junit.Assume.assumeTrue;
 
 public class Zip64SupportTest {
 
-    private static File getFile(String name) throws Throwable {
-        URL url = Zip64SupportTest.class.getResource(name);
-        assumeNotNull(url);
-        File file = new File(new URI(url.toString()));
-        assumeTrue(file.exists());
-        return file;
-    }
-
-    private static File get5GBZerosFile() throws Throwable {
-        return getFile("/5GB_of_Zeros.zip");
-    }
-
-    private static File get100KFileFile() throws Throwable {
-        return getFile("/100k_Files.zip");
-    }
-
     private static final long FIVE_BILLION = 5000000000l;
     private static final int ONE_HUNDRED_THOUSAND = 100000;
 
@@ -141,6 +125,22 @@ public class Zip64SupportTest {
         } finally {
             zos.close();
         }
+    }
+
+    private static File getFile(String name) throws Throwable {
+        URL url = Zip64SupportTest.class.getResource(name);
+        assumeNotNull(url);
+        File file = new File(new URI(url.toString()));
+        assumeTrue(file.exists());
+        return file;
+    }
+
+    private static File get5GBZerosFile() throws Throwable {
+        return getFile("/5GB_of_Zeros.zip");
+    }
+
+    private static File get100KFileFile() throws Throwable {
+        return getFile("/100k_Files.zip");
     }
 
     private static File getTempFile(String testName) throws Throwable {

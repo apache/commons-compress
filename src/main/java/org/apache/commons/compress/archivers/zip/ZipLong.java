@@ -60,7 +60,7 @@ public final class ZipLong implements Cloneable {
      * used.
      * @since Apache Commons Compress 1.3
      */
-    static final ZipLong ZIP64_MAGIC = new ZipLong(0xFFFFFFFFL);
+    static final ZipLong ZIP64_MAGIC = new ZipLong(ZipConstants.ZIP64_MAGIC);
 
     /**
      * Create instance from a number.
