@@ -47,7 +47,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * Compress can read but not write the GNU variant and doesn't support
  * the BSD variant at all.
  * 
- * @see http://www.freebsd.org/cgi/man.cgi?query=ar&sektion=5
+ * @see <a href="http://www.freebsd.org/cgi/man.cgi?query=ar&sektion=5">ar man page</a>
  *
  * @Immutable
  */
