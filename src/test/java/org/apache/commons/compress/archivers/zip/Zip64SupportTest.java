@@ -97,104 +97,104 @@ public class Zip64SupportTest {
 
     private static final ZipOutputTest write100KFiles =
         new ZipOutputTest() {
-                public void test(File f, ZipArchiveOutputStream zos)
-                    throws IOException {
-                    for (int i = 0; i < ONE_HUNDRED_THOUSAND; i++) {
-                        ZipArchiveEntry zae =
-                            new ZipArchiveEntry(String.valueOf(i));
-                        zae.setSize(0);
-                        zos.putArchiveEntry(zae);
-                        zos.closeArchiveEntry();
-                    }
-                    zos.close();
-                    RandomAccessFile a = new RandomAccessFile(f, "r");
-                    try {
-                        final long end = a.length();
-
-                        // validate "end of central directory" is at
-                        // the end of the file and contains the magic
-                        // value 0xFFFF as "number of entries".
-                        a.seek(end
-                               - 22 /* length of EOCD without file comment */);
-                        byte[] eocd = new byte[12];
-                        a.readFully(eocd);
-                        assertArrayEquals(new byte[] {
-                                // sig
-                                (byte) 0x50, (byte) 0x4b, 5, 6,
-                                // disk numbers
-                                0, 0, 0, 0,
-                                // entries
-                                (byte) 0xff, (byte) 0xff,
-                                (byte) 0xff, (byte) 0xff,
-                            }, eocd); 
-
-                        // validate "Zip64 end of central directory
-                        // locator" is right in front of the EOCD and
-                        // the location of the "Zip64 end of central
-                        // directory record" seems correct
-                        long expectedZ64EocdOffset = end - 22 /* eocd.length */
-                            - 20 /* z64 eocd locator.length */
-                            - 56 /* z64 eocd without extensible data sector */;
-                        byte[] loc =
-                            ZipEightByteInteger.getBytes(expectedZ64EocdOffset);
-                        a.seek(end - 22 - 20);
-                        byte[] z64EocdLoc = new byte[20];
-                        a.readFully(z64EocdLoc);
-                        assertArrayEquals(new byte[] {
-                                // sig
-                                (byte) 0x50, (byte) 0x4b, 6, 7,
-                                // disk numbers
-                                0, 0, 0, 0,
-                                // location of Zip64 EOCD,
-                                loc[0], loc[1], loc[2], loc[3],
-                                loc[4], loc[5], loc[6], loc[7],
-                                // total number of disks
-                                1, 0, 0, 0,
-                            }, z64EocdLoc);
-
-                        // validate "Zip64 end of central directory
-                        // record" is where it is supposed to be, the
-                        // known values are fine and read the location
-                        // of the central directory from it
-                        a.seek(expectedZ64EocdOffset);
-                        byte[] z64EocdStart = new byte[40];
-                        a.readFully(z64EocdStart);
-                        assertArrayEquals(new byte[] {
-                                // sig
-                                (byte) 0x50, (byte) 0x4b, 6, 6,
-                                // size of z64 EOCD
-                                44, 0, 0, 0,
-                                0, 0, 0, 0,
-                                // version made by
-                                45, 0,
-                                // version needed to extract
-                                45, 0,
-                                // disk numbers
-                                0, 0, 0, 0,
-                                0, 0, 0, 0,
-                                // number of entries 100k = 0x186A0
-                                (byte) 0xA0, (byte) 0x86, 1, 0,
-                                0, 0, 0, 0,
-                                (byte) 0xA0, (byte) 0x86, 1, 0,
-                                0, 0, 0, 0,
-                            }, z64EocdStart);
-                        a.seek(expectedZ64EocdOffset + 48 /* skip size */);
-                        byte[] cdOffset = new byte[8];
-                        a.readFully(cdOffset);
-                        long cdLoc = ZipEightByteInteger.getLongValue(cdOffset);
-
-                        // finally verify there really is a central
-                        // directory entry where the Zip64 EOCD claims
-                        a.seek(cdLoc);
-                        byte[] sig = new byte[4];
-                        a.readFully(sig);
-                        assertArrayEquals(new byte[] {
-                                (byte) 0x50, (byte) 0x4b, 1, 2,
-                            }, sig);
-                    } finally {
-                        a.close();
-                    }
+            public void test(File f, ZipArchiveOutputStream zos)
+                throws IOException {
+                for (int i = 0; i < ONE_HUNDRED_THOUSAND; i++) {
+                    ZipArchiveEntry zae =
+                        new ZipArchiveEntry(String.valueOf(i));
+                    zae.setSize(0);
+                    zos.putArchiveEntry(zae);
+                    zos.closeArchiveEntry();
                 }
+                zos.close();
+                RandomAccessFile a = new RandomAccessFile(f, "r");
+                try {
+                    final long end = a.length();
+
+                    // validate "end of central directory" is at
+                    // the end of the file and contains the magic
+                    // value 0xFFFF as "number of entries".
+                    a.seek(end
+                           - 22 /* length of EOCD without file comment */);
+                    byte[] eocd = new byte[12];
+                    a.readFully(eocd);
+                    assertArrayEquals(new byte[] {
+                            // sig
+                            (byte) 0x50, (byte) 0x4b, 5, 6,
+                            // disk numbers
+                            0, 0, 0, 0,
+                            // entries
+                            (byte) 0xff, (byte) 0xff,
+                            (byte) 0xff, (byte) 0xff,
+                        }, eocd); 
+
+                    // validate "Zip64 end of central directory
+                    // locator" is right in front of the EOCD and
+                    // the location of the "Zip64 end of central
+                    // directory record" seems correct
+                    long expectedZ64EocdOffset = end - 22 /* eocd.length */
+                        - 20 /* z64 eocd locator.length */
+                        - 56 /* z64 eocd without extensible data sector */;
+                    byte[] loc =
+                        ZipEightByteInteger.getBytes(expectedZ64EocdOffset);
+                    a.seek(end - 22 - 20);
+                    byte[] z64EocdLoc = new byte[20];
+                    a.readFully(z64EocdLoc);
+                    assertArrayEquals(new byte[] {
+                            // sig
+                            (byte) 0x50, (byte) 0x4b, 6, 7,
+                            // disk numbers
+                            0, 0, 0, 0,
+                            // location of Zip64 EOCD,
+                            loc[0], loc[1], loc[2], loc[3],
+                            loc[4], loc[5], loc[6], loc[7],
+                            // total number of disks
+                            1, 0, 0, 0,
+                        }, z64EocdLoc);
+
+                    // validate "Zip64 end of central directory
+                    // record" is where it is supposed to be, the
+                    // known values are fine and read the location
+                    // of the central directory from it
+                    a.seek(expectedZ64EocdOffset);
+                    byte[] z64EocdStart = new byte[40];
+                    a.readFully(z64EocdStart);
+                    assertArrayEquals(new byte[] {
+                            // sig
+                            (byte) 0x50, (byte) 0x4b, 6, 6,
+                            // size of z64 EOCD
+                            44, 0, 0, 0,
+                            0, 0, 0, 0,
+                            // version made by
+                            45, 0,
+                            // version needed to extract
+                            45, 0,
+                            // disk numbers
+                            0, 0, 0, 0,
+                            0, 0, 0, 0,
+                            // number of entries 100k = 0x186A0
+                            (byte) 0xA0, (byte) 0x86, 1, 0,
+                            0, 0, 0, 0,
+                            (byte) 0xA0, (byte) 0x86, 1, 0,
+                            0, 0, 0, 0,
+                        }, z64EocdStart);
+                    a.seek(expectedZ64EocdOffset + 48 /* skip size */);
+                    byte[] cdOffset = new byte[8];
+                    a.readFully(cdOffset);
+                    long cdLoc = ZipEightByteInteger.getLongValue(cdOffset);
+
+                    // finally verify there really is a central
+                    // directory entry where the Zip64 EOCD claims
+                    a.seek(cdLoc);
+                    byte[] sig = new byte[4];
+                    a.readFully(sig);
+                    assertArrayEquals(new byte[] {
+                            (byte) 0x50, (byte) 0x4b, 1, 2,
+                        }, sig);
+                } finally {
+                    a.close();
+                }
+            }
         };
 
     @Test public void write100KFilesFile() throws Throwable {
@@ -214,108 +214,108 @@ public class Zip64SupportTest {
      */
     private static final ZipOutputTest write3EntriesCreatingBigArchive =
         new ZipOutputTest() {
-                public void test(File f, ZipArchiveOutputStream zos)
-                    throws IOException {
-                    byte[] buf = new byte[1000 * 1000];
-                    ZipArchiveEntry zae = null;
-                    for (int i = 0; i < 2; i++) {
-                        zae = new ZipArchiveEntry(String.valueOf(i));
-                        zae.setSize(FIVE_BILLION / 2);
-                        zae.setMethod(ZipArchiveEntry.STORED);
-                        zae.setCrc(0x8a408f16L);
-                        zos.putArchiveEntry(zae);
-                        for (int j = 0; j < FIVE_BILLION / 2 / 1000 / 1000;
-                             j++) {
-                            zos.write(buf);
-                        }
-                        zos.closeArchiveEntry();
-                    }
-                    zae = new ZipArchiveEntry(String.valueOf(2));
-                    zae.setSize(0);
+            public void test(File f, ZipArchiveOutputStream zos)
+                throws IOException {
+                byte[] buf = new byte[1000 * 1000];
+                ZipArchiveEntry zae = null;
+                for (int i = 0; i < 2; i++) {
+                    zae = new ZipArchiveEntry(String.valueOf(i));
+                    zae.setSize(FIVE_BILLION / 2);
                     zae.setMethod(ZipArchiveEntry.STORED);
-                    zae.setCrc(0);
+                    zae.setCrc(0x8a408f16L);
                     zos.putArchiveEntry(zae);
-                    zos.write(new byte[0]);
-                    zos.closeArchiveEntry();
-                    zos.close();
-
-                    RandomAccessFile a = new RandomAccessFile(f, "r");
-                    try {
-                        final long end = a.length();
-                        long cdOffsetLoc = end - 22 /* eocd.length */
-                            - 20 /* z64 eocd locator.length */
-                            - 56 /* z64 eocd without extensible data sector */
-                            + 48 /* position in z64 eocd */;
-                        // seek to central directory
-                        a.seek(cdOffsetLoc);
-                        byte[] cdOffset = new byte[8];
-                        a.readFully(cdOffset);
-                        a.seek(ZipEightByteInteger.getLongValue(cdOffset));
-                        // skip first two entries
-                        a.skipBytes(2 * 47 /* CD entry of file with
-                                              file name length 1 and no
-                                              extra data */);
-
-                        // grab third entry, verify offset is
-                        // 0xFFFFFFFF and it has a ZIP64 extended
-                        // information extra field
-                        byte[] header = new byte[8];
-                        a.readFully(header);
-                        assertArrayEquals(new byte[] {
-                                // sig
-                                (byte) 0x50, (byte) 0x4b, 1, 2,
-                                // version made by
-                                45, 0,
-                                // version needed to extract
-                                45, 0,
-                            }, header);
-                        // ignore GPB, method, timestamp, CRC, compressed size
-                        a.skipBytes(16);
-                        byte[] rest = new byte[23];
-                        a.readFully(rest);
-                        assertArrayEquals(new byte[] {
-                                // Original Size
-                                0, 0, 0, 0,
-                                // file name length
-                                1, 0,
-                                // extra field length
-                                12, 0,
-                                // comment length
-                                0, 0,
-                                // disk number
-                                0, 0,
-                                // attributes
-                                0, 0,
-                                0, 0, 0, 0,
-                                // offset
-                                (byte) 0xFF, (byte) 0xFF,
-                                (byte) 0xFF, (byte) 0xFF,
-                                // file name
-                                (byte) '2'
-                            }, rest);
-                        byte[] extra = new byte[4];
-                        a.readFully(extra);
-                        assertArrayEquals(new byte[] {
-                                // Header-ID
-                                1, 0,
-                                // size
-                                8, 0
-                            }, extra);
-
-                        // read offset of LFH
-                        byte[] offset = new byte[8];
-                        a.readFully(offset);
-                        // verify there is a LFH where the CD claims it
-                        a.seek(ZipEightByteInteger.getLongValue(offset));
-                        byte[] sig = new byte[4];
-                        a.readFully(sig);
-                        assertArrayEquals(new byte[] {
-                                (byte) 0x50, (byte) 0x4b, 3, 4,
-                            }, sig);
-                    } finally {
-                        a.close();
+                    for (int j = 0; j < FIVE_BILLION / 2 / 1000 / 1000;
+                         j++) {
+                        zos.write(buf);
                     }
+                    zos.closeArchiveEntry();
                 }
+                zae = new ZipArchiveEntry(String.valueOf(2));
+                zae.setSize(0);
+                zae.setMethod(ZipArchiveEntry.STORED);
+                zae.setCrc(0);
+                zos.putArchiveEntry(zae);
+                zos.write(new byte[0]);
+                zos.closeArchiveEntry();
+                zos.close();
+
+                RandomAccessFile a = new RandomAccessFile(f, "r");
+                try {
+                    final long end = a.length();
+                    long cdOffsetLoc = end - 22 /* eocd.length */
+                        - 20 /* z64 eocd locator.length */
+                        - 56 /* z64 eocd without extensible data sector */
+                        + 48 /* position in z64 eocd */;
+                    // seek to central directory
+                    a.seek(cdOffsetLoc);
+                    byte[] cdOffset = new byte[8];
+                    a.readFully(cdOffset);
+                    a.seek(ZipEightByteInteger.getLongValue(cdOffset));
+                    // skip first two entries
+                    a.skipBytes(2 * 47 /* CD entry of file with
+                                          file name length 1 and no
+                                          extra data */);
+
+                    // grab third entry, verify offset is
+                    // 0xFFFFFFFF and it has a ZIP64 extended
+                    // information extra field
+                    byte[] header = new byte[8];
+                    a.readFully(header);
+                    assertArrayEquals(new byte[] {
+                            // sig
+                            (byte) 0x50, (byte) 0x4b, 1, 2,
+                            // version made by
+                            45, 0,
+                            // version needed to extract
+                            45, 0,
+                        }, header);
+                    // ignore GPB, method, timestamp, CRC, compressed size
+                    a.skipBytes(16);
+                    byte[] rest = new byte[23];
+                    a.readFully(rest);
+                    assertArrayEquals(new byte[] {
+                            // Original Size
+                            0, 0, 0, 0,
+                            // file name length
+                            1, 0,
+                            // extra field length
+                            12, 0,
+                            // comment length
+                            0, 0,
+                            // disk number
+                            0, 0,
+                            // attributes
+                            0, 0,
+                            0, 0, 0, 0,
+                            // offset
+                            (byte) 0xFF, (byte) 0xFF,
+                            (byte) 0xFF, (byte) 0xFF,
+                            // file name
+                            (byte) '2'
+                        }, rest);
+                    byte[] extra = new byte[4];
+                    a.readFully(extra);
+                    assertArrayEquals(new byte[] {
+                            // Header-ID
+                            1, 0,
+                            // size
+                            8, 0
+                        }, extra);
+
+                    // read offset of LFH
+                    byte[] offset = new byte[8];
+                    a.readFully(offset);
+                    // verify there is a LFH where the CD claims it
+                    a.seek(ZipEightByteInteger.getLongValue(offset));
+                    byte[] sig = new byte[4];
+                    a.readFully(sig);
+                    assertArrayEquals(new byte[] {
+                            (byte) 0x50, (byte) 0x4b, 3, 4,
+                        }, sig);
+                } finally {
+                    a.close();
+                }
+            }
 
         };
 
