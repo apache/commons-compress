@@ -28,6 +28,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Random;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -319,12 +320,14 @@ public class Zip64SupportTest {
 
         };
 
+    @Ignore
     @Test public void write3EntriesCreatingBigArchiveFile() throws Throwable {
         withTemporaryArchive("write3EntriesCreatingBigArchiveFile",
                              write3EntriesCreatingBigArchive,
                              true);
     }
 
+    @Ignore
     @Test public void write3EntriesCreatingBigArchiveStream() throws Throwable {
         withTemporaryArchive("write3EntriesCreatingBigArchiveStream",
                              write3EntriesCreatingBigArchive,
