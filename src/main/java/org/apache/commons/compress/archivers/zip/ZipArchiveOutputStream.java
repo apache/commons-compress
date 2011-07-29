@@ -778,16 +778,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         writeOut(CFH_SIG);
         written += WORD;
 
-        // version made by
-        // CheckStyle:MagicNumber OFF
-        writeOut(ZipShort.getBytes((ze.getPlatform() << 8) | 
-                                   (!hasUsedZip64 ? DEFLATE_MIN_VERSION
-                                                  : ZIP64_MIN_VERSION)));
-        written += SHORT;
-
-        final int zipMethod = ze.getMethod();
-        final boolean encodable = zipEncoding.canEncode(ze.getName());
-
         final long lfhOffset = offsets.get(ze).longValue();
         final boolean needsZip64Extra = ze.getCompressedSize() >= ZIP64_MAGIC
             || ze.getSize() >= ZIP64_MAGIC
@@ -815,6 +805,15 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             ze.setExtra();
         }
 
+        // version made by
+        // CheckStyle:MagicNumber OFF
+        writeOut(ZipShort.getBytes((ze.getPlatform() << 8) | 
+                                   (!hasUsedZip64 ? DEFLATE_MIN_VERSION
+                                                  : ZIP64_MIN_VERSION)));
+        written += SHORT;
+
+        final int zipMethod = ze.getMethod();
+        final boolean encodable = zipEncoding.canEncode(ze.getName());
         writeVersionNeededToExtractAndGeneralPurposeBits(zipMethod,
                                                          !encodable
                                                          && fallbackToUTF8,
