@@ -198,9 +198,16 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
         // can only hope things will get resolved by LFH data later
         // But there are some cases that can be detected
         // * all data is there
+        // * length == 24 -> both sizes and offset
         // * length % 8 == 4 -> at least we can identify the diskStart field
         if (length >= 3 * DWORD + WORD) {
             parseFromLocalFileData(buffer, offset, length);
+        } else if (length == 3 * DWORD) {
+            size = new ZipEightByteInteger(buffer, offset);
+            offset += DWORD;
+            compressedSize = new ZipEightByteInteger(buffer, offset);
+            offset += DWORD;
+            relativeHeaderOffset = new ZipEightByteInteger(buffer, offset);
         } else if (length % DWORD == WORD) {
             diskStart = new ZipLong(buffer, offset + length - WORD);
         }
