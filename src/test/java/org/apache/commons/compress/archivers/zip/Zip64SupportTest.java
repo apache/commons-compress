@@ -93,7 +93,7 @@ public class Zip64SupportTest {
 
     @Test public void write100KFiles() throws Throwable {
         withTemporaryArchive("write100KFiles", new ZipOutputTest() {
-                public void test(ZipArchiveOutputStream zos)
+                public void test(File f, ZipArchiveOutputStream zos)
                     throws IOException {
                     for (int i = 0; i < ONE_HUNDRED_THOUSAND; i++) {
                         ZipArchiveEntry zae =
@@ -107,7 +107,7 @@ public class Zip64SupportTest {
     }
 
     static interface ZipOutputTest {
-        void test(ZipArchiveOutputStream zos) throws IOException;
+        void test(File f, ZipArchiveOutputStream zos) throws IOException;
     }
 
     private static void withTemporaryArchive(String testName,
@@ -116,7 +116,7 @@ public class Zip64SupportTest {
         File f = getTempFile(testName);
         ZipArchiveOutputStream zos = new ZipArchiveOutputStream(f);
         try {
-            test.test(zos);
+            test.test(f, zos);
         } catch (IOException ex) {
             System.err.println("Failed to write archive because of: "
                                + ex.getMessage()
