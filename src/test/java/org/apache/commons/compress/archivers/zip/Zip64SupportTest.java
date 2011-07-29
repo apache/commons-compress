@@ -125,6 +125,70 @@ public class Zip64SupportTest {
                                 (byte) 0xff, (byte) 0xff,
                                 (byte) 0xff, (byte) 0xff,
                             }, eocd); 
+
+                        // validate "Zip64 end of central directory
+                        // locator" is right in front of the EOCD and
+                        // the location of the "Zip64 end of central
+                        // directory record" seems correct
+                        long expectedZ64EocdOffset = end - 22 /* eocd.length */
+                            - 20 /* z64 eocd locator.length */
+                            - 56 /* z64 eocd without extensible data sector */;
+                        byte[] loc =
+                            ZipEightByteInteger.getBytes(expectedZ64EocdOffset);
+                        a.seek(end - 22 - 20);
+                        byte[] z64EocdLoc = new byte[20];
+                        a.readFully(z64EocdLoc);
+                        assertArrayEquals(new byte[] {
+                                // sig
+                                (byte) 0x50, (byte) 0x4b, 6, 7,
+                                // disk numbers
+                                0, 0, 0, 0,
+                                // location of Zip64 EOCD,
+                                loc[0], loc[1], loc[2], loc[3],
+                                loc[4], loc[5], loc[6], loc[7],
+                                // total number of disks
+                                1, 0, 0, 0,
+                            }, z64EocdLoc);
+
+                        // validate "Zip64 end of central directory
+                        // record" is where it is supposed to be, the
+                        // known values are fine and read the location
+                        // of the central directory from it
+                        a.seek(expectedZ64EocdOffset);
+                        byte[] z64EocdStart = new byte[40];
+                        a.readFully(z64EocdStart);
+                        assertArrayEquals(new byte[] {
+                                // sig
+                                (byte) 0x50, (byte) 0x4b, 6, 6,
+                                // size of z64 EOCD
+                                44, 0, 0, 0,
+                                0, 0, 0, 0,
+                                // version made by
+                                45, 0,
+                                // version needed to extract
+                                45, 0,
+                                // disk numbers
+                                0, 0, 0, 0,
+                                0, 0, 0, 0,
+                                // number of entries 100k = 0x186A0
+                                (byte) 0xA0, (byte) 0x86, 1, 0,
+                                0, 0, 0, 0,
+                                (byte) 0xA0, (byte) 0x86, 1, 0,
+                                0, 0, 0, 0,
+                            }, z64EocdStart);
+                        a.seek(expectedZ64EocdOffset + 48 /* skip size */);
+                        byte[] cdOffset = new byte[8];
+                        a.readFully(cdOffset);
+                        long cdLoc = ZipEightByteInteger.getLongValue(cdOffset);
+
+                        // finally verify there really is a central
+                        // directory entry where the Zip64 EOCD claims
+                        a.seek(cdLoc);
+                        byte[] sig = new byte[4];
+                        a.readFully(sig);
+                        assertArrayEquals(new byte[] {
+                                (byte) 0x50, (byte) 0x4b, 1, 2,
+                            }, sig);
                     } finally {
                         a.close();
                     }
