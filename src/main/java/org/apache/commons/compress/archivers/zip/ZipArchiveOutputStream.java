@@ -702,7 +702,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
         writeVersionNeededToExtractAndGeneralPurposeBits(zipMethod,
                                                          !encodable
-                                                         && fallbackToUTF8);
+                                                         && fallbackToUTF8,
+                                                         false);
         written += WORD;
 
         // compression method
@@ -786,9 +787,38 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
         final int zipMethod = ze.getMethod();
         final boolean encodable = zipEncoding.canEncode(ze.getName());
+
+        final long lfhOffset = offsets.get(ze).longValue();
+        final boolean needsZip64Extra = ze.getCompressedSize() >= ZIP64_MAGIC
+            || ze.getSize() >= ZIP64_MAGIC
+            || lfhOffset >= ZIP64_MAGIC;
+
+        if (needsZip64Extra) {
+            hasUsedZip64 = true;
+            Zip64ExtendedInformationExtraField z64 =  
+                (Zip64ExtendedInformationExtraField)
+                ze.getExtraField(Zip64ExtendedInformationExtraField
+                                 .HEADER_ID);
+            if (z64 == null) {
+                z64 = new Zip64ExtendedInformationExtraField();
+                ze.addExtraField(z64);
+            }
+            if (ze.getCompressedSize() >= ZIP64_MAGIC) {
+                z64.setCompressedSize(new ZipEightByteInteger(ze.getCompressedSize()));
+            }
+            if (ze.getSize() >= ZIP64_MAGIC) {
+                z64.setSize(new ZipEightByteInteger(ze.getSize()));
+            }
+            if (lfhOffset >= ZIP64_MAGIC) {
+                z64.setRelativeHeaderOffset(new ZipEightByteInteger(lfhOffset));
+            }
+            ze.setExtra();
+        }
+
         writeVersionNeededToExtractAndGeneralPurposeBits(zipMethod,
                                                          !encodable
-                                                         && fallbackToUTF8);
+                                                         && fallbackToUTF8,
+                                                         needsZip64Extra);
         written += WORD;
 
         // compression method
@@ -803,8 +833,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         // compressed length
         // uncompressed length
         writeOut(ZipLong.getBytes(ze.getCrc()));
-        writeOut(ZipLong.getBytes(ze.getCompressedSize()));
-        writeOut(ZipLong.getBytes(ze.getSize()));
+        writeOut(ZipLong.getBytes(Math.min(ze.getCompressedSize(), ZIP64_MAGIC)));
+        writeOut(ZipLong.getBytes(Math.min(ze.getSize(), ZIP64_MAGIC)));
         // CheckStyle:MagicNumber OFF
         written += 12;
         // CheckStyle:MagicNumber ON
@@ -852,7 +882,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         written += WORD;
 
         // relative offset of LFH
-        writeOut(ZipLong.getBytes(offsets.get(ze).longValue()));
+        writeOut(ZipLong.getBytes(Math.min(lfhOffset, ZIP64_MAGIC)));
         written += WORD;
 
         // file name
@@ -996,7 +1026,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private void writeVersionNeededToExtractAndGeneralPurposeBits(final int
                                                                   zipMethod,
                                                                   final boolean
-                                                                  utfFallback)
+                                                                  utfFallback,
+                                                                  final boolean
+                                                                  zip64)
         throws IOException {
 
         // CheckStyle:MagicNumber OFF
@@ -1006,8 +1038,11 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         if (zipMethod == DEFLATED && raf == null) {
             // requires version 2 as we are going to store length info
             // in the data descriptor
-            versionNeededToExtract =  20;
+            versionNeededToExtract = DEFLATE_MIN_VERSION;
             b.useDataDescriptor(true);
+        }
+        if (zip64) {
+            versionNeededToExtract = ZIP64_MIN_VERSION;
         }
         // CheckStyle:MagicNumber ON
 
