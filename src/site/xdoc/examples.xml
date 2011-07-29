@@ -203,6 +203,14 @@ zipOutput.write(contentOfEntry);
 zipOutput.closeArchiveEntry();
 ]]></source>
 
+        <p><code>ZipArchiveOutputStream</code> can use some internal
+          optimizations exploiting <code>RandomAccessFile</code> if it
+          knows it is writing to a file rather than a non-seekable
+          stream.  If you are writing to a file, you should use the
+          constructor that accepts a <code>File</code> argument rather
+          than the one using an <code>OutputStream</code> or the
+          factory method in <code>ArchiveStreamFactory</code>.</p>
+
         <p>Reading entries from an zip archive:</p>
 <source><![CDATA[
 ZipArchiveEntry entry = zipInput.getNextZipEntry();
