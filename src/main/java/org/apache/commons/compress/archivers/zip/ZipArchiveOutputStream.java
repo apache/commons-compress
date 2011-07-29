@@ -180,6 +180,11 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private static final byte[] LZERO = {0, 0, 0, 0};
 
     /**
+     * Helper, a 0 as ZipEightByteInteger.
+     */
+    private static final byte[] DLZERO = {0, 0, 0, 0, 0, 0, 0, 0};
+
+    /**
      * Holds the offsets of the LFH starts for each entry.
      */
     private final Map<ZipArchiveEntry, Long> offsets =
@@ -467,7 +472,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
         // Size/CRC not required if RandomAccessFile is used
         if (entry.getMethod() == STORED && raf == null) {
-            if (entry.getSize() == -1) {
+            if (entry.getSize() == ArchiveEntry.SIZE_UNKNOWN) {
                 throw new ZipException("uncompressed size is required for"
                                        + " STORED method when not writing to a"
                                        + " file");
@@ -762,11 +767,16 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         }
         writeOut(DD_SIG);
         writeOut(ZipLong.getBytes(entry.getCrc()));
-        writeOut(ZipLong.getBytes(entry.getCompressedSize()));
-        writeOut(ZipLong.getBytes(entry.getSize()));
-        // CheckStyle:MagicNumber OFF
-        written += 16;
-        // CheckStyle:MagicNumber ON
+        int sizeFieldSize = WORD;
+        if (!hasZip64Extra(ze)) {
+            writeOut(ZipLong.getBytes(entry.getCompressedSize()));
+            writeOut(ZipLong.getBytes(entry.getSize()));
+        } else {
+            sizeFieldSize = DWORD;
+            writeOut(ZipEightByteInteger.getBytes(entry.getCompressedSize()));
+            writeOut(ZipEightByteInteger.getBytes(entry.getSize()));
+        }
+        written += 2 * WORD + 2 * sizeFieldSize;
     }
 
     /**
@@ -784,20 +794,18 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             || lfhOffset >= ZIP64_MAGIC;
 
         if (needsZip64Extra) {
-            hasUsedZip64 = true;
-            Zip64ExtendedInformationExtraField z64 =  
-                (Zip64ExtendedInformationExtraField)
-                ze.getExtraField(Zip64ExtendedInformationExtraField
-                                 .HEADER_ID);
-            if (z64 == null) {
-                z64 = new Zip64ExtendedInformationExtraField();
-                ze.addExtraField(z64);
-            }
-            if (ze.getCompressedSize() >= ZIP64_MAGIC) {
+            Zip64ExtendedInformationExtraField z64 = getZip64Extra(ze);
+            if (ze.getCompressedSize() >= ZIP64_MAGIC) { 
                 z64.setCompressedSize(new ZipEightByteInteger(ze.getCompressedSize()));
+            } else {
+                // reset value that may have been set for LFH
+                z64.setCompressedSize(null);
             }
             if (ze.getSize() >= ZIP64_MAGIC) {
                 z64.setSize(new ZipEightByteInteger(ze.getSize()));
+            } else {
+                // reset value that may have been set for LFH
+                z64.setSize(null);
             }
             if (lfhOffset >= ZIP64_MAGIC) {
                 z64.setRelativeHeaderOffset(new ZipEightByteInteger(lfhOffset));
@@ -1098,5 +1106,37 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             throw new IOException("Stream has already been finished");
         }
         return new ZipArchiveEntry(inputFile, entryName);
+    }
+
+    /**
+     * Get the existing ZIP64 extended information extra field or
+     * create a new one and add it to the entry.
+     *
+     * @since Apache Commons Compress 1.3
+     */
+    private Zip64ExtendedInformationExtraField
+        getZip64Extra(ZipArchiveEntry ze) {
+        hasUsedZip64 = true;
+        Zip64ExtendedInformationExtraField z64 =  
+            (Zip64ExtendedInformationExtraField)
+            ze.getExtraField(Zip64ExtendedInformationExtraField
+                             .HEADER_ID);
+        if (z64 == null) {
+            z64 = new Zip64ExtendedInformationExtraField();
+            ze.addExtraField(z64);
+        }
+        return z64;
+    }
+
+    /**
+     * Is there a ZIP64 extended information extra field for the
+     * entry?
+     *
+     * @since Apache Commons Compress 1.3
+     */
+    private boolean hasZip64Extra(ZipArchiveEntry ze) {
+        return ze.getExtraField(Zip64ExtendedInformationExtraField
+                                .HEADER_ID)
+            != null;
     }
 }
