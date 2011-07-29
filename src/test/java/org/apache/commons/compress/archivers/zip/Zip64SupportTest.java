@@ -18,8 +18,10 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.URI;
@@ -93,8 +95,8 @@ public class Zip64SupportTest {
         }
     }
 
-    @Test public void write100KFiles() throws Throwable {
-        withTemporaryArchive("write100KFiles", new ZipOutputTest() {
+    private static final ZipOutputTest write100KFiles =
+        new ZipOutputTest() {
                 public void test(File f, ZipArchiveOutputStream zos)
                     throws IOException {
                     for (int i = 0; i < ONE_HUNDRED_THOUSAND; i++) {
@@ -193,7 +195,14 @@ public class Zip64SupportTest {
                         a.close();
                     }
                 }
-            });
+        };
+
+    @Test public void write100KFilesFile() throws Throwable {
+        withTemporaryArchive("write100KFilesFile", write100KFiles, true);
+    }
+
+    @Test public void write100KFilesStream() throws Throwable {
+        withTemporaryArchive("write100KFilesStream", write100KFiles, false);
     }
 
     /*
@@ -202,10 +211,9 @@ public class Zip64SupportTest {
      * information is needed inside the central directory.
      *
      * Creates a temporary archive of approx 5GB in size
-     */ 
-    @Test public void write3EntriesCreatingBigArchive() throws Throwable {
-        withTemporaryArchive("write3EntriesCreatingBigArchive",
-                             new ZipOutputTest() {
+     */
+    private static final ZipOutputTest write3EntriesCreatingBigArchive =
+        new ZipOutputTest() {
                 public void test(File f, ZipArchiveOutputStream zos)
                     throws IOException {
                     byte[] buf = new byte[1000 * 1000];
@@ -214,7 +222,7 @@ public class Zip64SupportTest {
                         zae = new ZipArchiveEntry(String.valueOf(i));
                         zae.setSize(FIVE_BILLION / 2);
                         zae.setMethod(ZipArchiveEntry.STORED);
-                        zae.setCrc(0);
+                        zae.setCrc(0x8a408f16L);
                         zos.putArchiveEntry(zae);
                         for (int j = 0; j < FIVE_BILLION / 2 / 1000 / 1000;
                              j++) {
@@ -224,7 +232,10 @@ public class Zip64SupportTest {
                     }
                     zae = new ZipArchiveEntry(String.valueOf(2));
                     zae.setSize(0);
+                    zae.setMethod(ZipArchiveEntry.STORED);
+                    zae.setCrc(0);
                     zos.putArchiveEntry(zae);
+                    zos.write(new byte[0]);
                     zos.closeArchiveEntry();
                     zos.close();
 
@@ -306,7 +317,18 @@ public class Zip64SupportTest {
                     }
                 }
 
-            });
+        };
+
+    @Test public void write3EntriesCreatingBigArchiveFile() throws Throwable {
+        withTemporaryArchive("write3EntriesCreatingBigArchiveFile",
+                             write3EntriesCreatingBigArchive,
+                             true);
+    }
+
+    @Test public void write3EntriesCreatingBigArchiveStream() throws Throwable {
+        withTemporaryArchive("write3EntriesCreatingBigArchiveStream",
+                             write3EntriesCreatingBigArchive,
+                             false);
     }
 
     static interface ZipOutputTest {
@@ -314,10 +336,14 @@ public class Zip64SupportTest {
     }
 
     private static void withTemporaryArchive(String testName,
-                                             ZipOutputTest test)
+                                             ZipOutputTest test,
+                                             boolean useRandomAccessFile)
         throws Throwable {
         File f = getTempFile(testName);
-        ZipArchiveOutputStream zos = new ZipArchiveOutputStream(f);
+        BufferedOutputStream os = null;
+        ZipArchiveOutputStream zos = useRandomAccessFile
+            ? new ZipArchiveOutputStream(f)
+            : new ZipArchiveOutputStream(os = new BufferedOutputStream(new FileOutputStream(f)));
         try {
             test.test(f, zos);
         } catch (IOException ex) {
@@ -326,7 +352,13 @@ public class Zip64SupportTest {
                                + " - likely not enough disk space.");
             assumeTrue(false);
         } finally {
-            zos.close();
+            try {
+                zos.close();
+            } finally {
+                if (os != null) {
+                    os.close();
+                }
+            }
         }
         f.delete();
     }
