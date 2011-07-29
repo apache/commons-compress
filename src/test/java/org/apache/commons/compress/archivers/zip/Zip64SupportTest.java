@@ -21,11 +21,13 @@ package org.apache.commons.compress.archivers.zip;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.net.URI;
 import java.net.URL;
 import java.util.Random;
 
 import org.junit.Test;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assume.assumeNotNull;
@@ -101,6 +103,30 @@ public class Zip64SupportTest {
                         zae.setSize(0);
                         zos.putArchiveEntry(zae);
                         zos.closeArchiveEntry();
+                    }
+                    zos.close();
+                    RandomAccessFile a = new RandomAccessFile(f, "r");
+                    try {
+                        final long end = a.length();
+
+                        // validate "end of central directory" is at
+                        // the end of the file and contains the magic
+                        // value 0xFFFF as "number of entries".
+                        a.seek(end
+                               - 22 /* length of EOCD without file comment */);
+                        byte[] eocd = new byte[12];
+                        a.readFully(eocd);
+                        assertArrayEquals(new byte[] {
+                                // sig
+                                (byte) 0x50, (byte) 0x4b, 5, 6,
+                                // disk numbers
+                                0, 0, 0, 0,
+                                // entries
+                                (byte) 0xff, (byte) 0xff,
+                                (byte) 0xff, (byte) 0xff,
+                            }, eocd); 
+                    } finally {
+                        a.close();
                     }
                 }
             });
