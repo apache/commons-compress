@@ -27,7 +27,7 @@ import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
  * Holds size and other extended information for entries that use Zip64
  * features.
  *
- * <p>From {@link http://www.pkware.com/documents/casestudies/APPNOTE.TXT PKWARE's APPNOTE.TXT}
+ * <p>From {@link "http://www.pkware.com/documents/casestudies/APPNOTE.TXT PKWARE's APPNOTE.TXT"}
  * <pre>
  * Zip64 Extended Information Extra Field (0x0001):
  *
