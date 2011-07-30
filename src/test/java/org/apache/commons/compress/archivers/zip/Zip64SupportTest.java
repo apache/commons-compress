@@ -285,12 +285,14 @@ public class Zip64SupportTest {
             }
         };
 
+    @Ignore
     @Test public void write3EntriesCreatingBigArchiveFile() throws Throwable {
         withTemporaryArchive("write3EntriesCreatingBigArchiveFile",
                              write3EntriesCreatingBigArchive,
                              true);
     }
 
+    @Ignore
     @Test public void write3EntriesCreatingBigArchiveStream() throws Throwable {
         withTemporaryArchive("write3EntriesCreatingBigArchiveStream",
                              write3EntriesCreatingBigArchive,
@@ -299,26 +301,26 @@ public class Zip64SupportTest {
 
     /*
      * One entry of length 5 billion bytes, written without
-     * compression to a stream.
+     * compression.
      *
-     * No Compression + Stream => sizes must be known before data is
-     * written and are stored directly inside the LFH.  No Data
-     * Descriptor at all.
+     * No Compression => sizes are stored directly inside the LFH.  No
+     * Data Descriptor at all.
      *
      * Creates a temporary archive of approx 5GB in size
      */
-    @Test public void writeBigStoredEntryToStream() throws Throwable {
-        withTemporaryArchive("writeBigStoredEntryToStream",
-                             new ZipOutputTest() {
+    private static ZipOutputTest writeBigStoredEntry(final boolean knownSize) {
+        return new ZipOutputTest() {
                                  public void test(File f,
                                                   ZipArchiveOutputStream zos)
                                      throws IOException {
                                      byte[] buf = new byte[1000 * 1000];
                                      ZipArchiveEntry zae =
                                          new ZipArchiveEntry("0");
+                                     if (knownSize) {
                                      zae.setSize(FIVE_BILLION);
-                                     zae.setMethod(ZipArchiveEntry.STORED);
                                      zae.setCrc(0x5c316f50L);
+                                     }
+                                     zae.setMethod(ZipArchiveEntry.STORED);
                                      zos.putArchiveEntry(zae);
                                      for (int j = 0;
                                           j < FIVE_BILLION / 1000 / 1000;
@@ -451,8 +453,23 @@ public class Zip64SupportTest {
                                          a.close();
                                      }
                                  }
-                             },
+        };
+    }
+
+    /*
+     * No Compression + Stream => sizes must be known before data is
+     * written.
+     */
+    @Test public void writeBigStoredEntryToStream() throws Throwable {
+        withTemporaryArchive("writeBigStoredEntryToStream",
+                             writeBigStoredEntry(true),
                              false);
+    }
+
+    @Test public void writeBigStoredEntryKnownSizeToFile() throws Throwable {
+        withTemporaryArchive("writeBigStoredEntryKnownSizeToFile",
+                             writeBigStoredEntry(true),
+                             true);
     }
 
     /*
