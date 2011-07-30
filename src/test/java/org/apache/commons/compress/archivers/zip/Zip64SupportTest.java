@@ -447,12 +447,14 @@ public class Zip64SupportTest {
      * No Compression + Stream => sizes must be known before data is
      * written.
      */
+    @Ignore
     @Test public void writeBigStoredEntryToStream() throws Throwable {
         withTemporaryArchive("writeBigStoredEntryToStream",
                              writeBigStoredEntry(true),
                              false);
     }
 
+    @Ignore
     @Test public void writeBigStoredEntryKnownSizeToFile() throws Throwable {
         withTemporaryArchive("writeBigStoredEntryKnownSizeToFile",
                              writeBigStoredEntry(true),
@@ -632,6 +634,167 @@ public class Zip64SupportTest {
                                  }
                              },
                              false);
+    }
+
+    /*
+     * One entry of length 5 billion bytes, written with
+     * compression to a file.
+     *
+     * Writing to a file => sizes are stored directly inside the LFH.
+     * No Data Descriptor at all.
+     *
+     * Creates a temporary archive of approx 4MB in size
+     */
+    @Test public void writeBigDeflatedEntryKnownSizeToFile()
+        throws Throwable {
+        withTemporaryArchive("writeBigDeflatedEntryKnownSizeToFile",
+                             new ZipOutputTest() {
+                                 public void test(File f,
+                                                  ZipArchiveOutputStream zos)
+                                     throws IOException {
+                                     byte[] buf = new byte[1000 * 1000];
+                                     ZipArchiveEntry zae =
+                                         new ZipArchiveEntry("0");
+                                     zae.setSize(FIVE_BILLION);
+                                     zae.setMethod(ZipArchiveEntry.DEFLATED);
+                                     zos.putArchiveEntry(zae);
+                                     for (int j = 0;
+                                          j < FIVE_BILLION / 1000 / 1000;
+                                          j++) {
+                                         zos.write(buf);
+                                     }
+                                     zos.closeArchiveEntry();
+                                     zos.close();
+
+                                     RandomAccessFile a =
+                                         new RandomAccessFile(f, "r");
+                                     try {
+                                         final long end =
+                                             getLengthAndPositionAtCentralDirectory(a);
+
+                                         long cfhPos = a.getFilePointer();
+                                         // grab first entry, verify
+                                         // sizes are 0xFFFFFFFF and
+                                         // it has a ZIP64 extended
+                                         // information extra field
+                                         byte[] header = new byte[12];
+                                         a.readFully(header);
+                                         assertArrayEquals(new byte[] {
+                                                 // sig
+                                                 (byte) 0x50, (byte) 0x4b, 1, 2,
+                                                 // version made by
+                                                 45, 0,
+                                                 // version needed to extract
+                                                 45, 0,
+                                                 // GPB (EFS + *no* Data
+                                                 //            Descriptor)
+                                                 0, 8,
+                                                 // method
+                                                 8, 0,
+                                             }, header);
+                                         // ignore timestamp
+                                         a.skipBytes(4);
+                                         byte[] rest = new byte[31];
+                                         a.readFully(rest);
+                                         assertArrayEquals(new byte[] {
+                                                 // CRC
+                                                 (byte) 0x50, (byte) 0x6F,
+                                                 (byte) 0x31, (byte) 0x5c,
+                                                 // Compressed Size
+                                                 (byte) 0xFF, (byte) 0xFF,
+                                                 (byte) 0xFF, (byte) 0xFF,
+                                                 // Original Size
+                                                 (byte) 0xFF, (byte) 0xFF,
+                                                 (byte) 0xFF, (byte) 0xFF,
+                                                 // file name length
+                                                 1, 0,
+                                                 // extra field length
+                                                 20, 0,
+                                                 // comment length
+                                                 0, 0,
+                                                 // disk number
+                                                 0, 0,
+                                                 // attributes
+                                                 0, 0,
+                                                 0, 0, 0, 0,
+                                                 // offset
+                                                 0, 0, 0, 0,
+                                                 // file name
+                                                 (byte) '0'
+                                             }, rest);
+                                         byte[] extra = new byte[12];
+                                         a.readFully(extra);
+                                         // 5e9 == 0x12A05F200
+                                         assertArrayEquals(new byte[] {
+                                                 // Header-ID
+                                                 1, 0,
+                                                 // size of extra
+                                                 16, 0,
+                                                 // original size
+                                                 0, (byte) 0xF2, 5, (byte) 0x2A,
+                                                 1, 0, 0, 0,
+                                                 // don't know the
+                                                 // compressed size,
+                                                 // don't want to
+                                                 // hard-code it
+                                             }, extra);
+
+                                         // and now validate local file header
+                                         a.seek(0);
+                                         header = new byte[10];
+                                         a.readFully(header);
+                                         assertArrayEquals(new byte[] {
+                                                 // sig
+                                                 (byte) 0x50, (byte) 0x4b, 3, 4,
+                                                 // version needed to extract
+                                                 45, 0,
+                                                 // GPB (EFS bit, no DD)
+                                                 0, 8,
+                                                 // method
+                                                 8, 0,
+                                             }, header);
+                                         // ignore timestamp
+                                         a.skipBytes(4);
+                                         rest = new byte[17];
+                                         a.readFully(rest);
+                                         assertArrayEquals(new byte[] {
+                                                 // CRC
+                                                 (byte) 0x50, (byte) 0x6F,
+                                                 (byte) 0x31, (byte) 0x5c,
+                                                 // Compressed Size
+                                                 (byte) 0xFF, (byte) 0xFF,
+                                                 (byte) 0xFF, (byte) 0xFF,
+                                                 // Original Size
+                                                 (byte) 0xFF, (byte) 0xFF,
+                                                 (byte) 0xFF, (byte) 0xFF,
+                                                 // file name length
+                                                 1, 0,
+                                                 // extra field length
+                                                 20, 0,
+                                                 // file name
+                                                 (byte) '0'
+                                             }, rest);
+                                         extra = new byte[12];
+                                         a.readFully(extra);
+                                         assertArrayEquals(new byte[] {
+                                                 // Header-ID
+                                                 1, 0,
+                                                 // size of extra
+                                                 16, 0,
+                                                 // original size
+                                                 0, (byte) 0xF2, 5, (byte) 0x2A,
+                                                 1, 0, 0, 0,
+                                                 // don't know the
+                                                 // compressed size,
+                                                 // don't want to
+                                                 // hard-code it
+                                             }, extra);
+                                     } finally {
+                                         a.close();
+                                     }
+                                 }
+                             },
+                             true);
     }
 
     static interface ZipOutputTest {

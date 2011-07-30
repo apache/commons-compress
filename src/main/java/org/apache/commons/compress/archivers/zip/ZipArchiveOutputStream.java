@@ -450,10 +450,14 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             } else {
                 writeOut(ZipLong.ZIP64_MAGIC.getBytes());
                 writeOut(ZipLong.ZIP64_MAGIC.getBytes());
+
+                // seek to ZIP64 extra, skip header and size information
                 raf.seek(localDataStart + 3 * WORD + 2 * SHORT
                          + getName(entry).limit() + 2 * SHORT);
-                writeOut(ZipEightByteInteger.getBytes(entry.getCompressedSize()));
+                // inside the ZIP64 extra uncompressed size comes
+                // first, unlike the LFH, CD or data descriptor
                 writeOut(ZipEightByteInteger.getBytes(entry.getSize()));
+                writeOut(ZipEightByteInteger.getBytes(entry.getCompressedSize()));
             }
             raf.seek(save);
         }
