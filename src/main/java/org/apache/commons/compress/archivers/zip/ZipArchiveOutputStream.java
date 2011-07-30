@@ -444,8 +444,17 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
             raf.seek(localDataStart);
             writeOut(ZipLong.getBytes(entry.getCrc()));
+            if (!hasZip64Extra(entry)) {
             writeOut(ZipLong.getBytes(entry.getCompressedSize()));
             writeOut(ZipLong.getBytes(entry.getSize()));
+            } else {
+                writeOut(ZipLong.ZIP64_MAGIC.getBytes());
+                writeOut(ZipLong.ZIP64_MAGIC.getBytes());
+                raf.seek(localDataStart + 3 * WORD + 2 * SHORT
+                         + getName(entry).limit() + 2 * SHORT);
+                writeOut(ZipEightByteInteger.getBytes(entry.getCompressedSize()));
+                writeOut(ZipEightByteInteger.getBytes(entry.getSize()));
+            }
             raf.seek(save);
         }
 
@@ -689,16 +698,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     protected void writeLocalFileHeader(ZipArchiveEntry ze) throws IOException {
 
         boolean encodable = zipEncoding.canEncode(ze.getName());
-
-        final ZipEncoding entryEncoding;
-
-        if (!encodable && fallbackToUTF8) {
-            entryEncoding = ZipEncodingHelper.UTF8_ZIP_ENCODING;
-        } else {
-            entryEncoding = zipEncoding;
-        }
-
-        ByteBuffer name = entryEncoding.encode(ze.getName());
+        ByteBuffer name = getName(ze);
 
         if (createUnicodeExtraFields != UnicodeExtraFieldPolicy.NEVER) {
 
@@ -713,11 +713,11 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             String comm = ze.getComment();
             if (comm != null && !"".equals(comm)) {
 
-                boolean commentEncodable = this.zipEncoding.canEncode(comm);
+                boolean commentEncodable = zipEncoding.canEncode(comm);
 
                 if (createUnicodeExtraFields == UnicodeExtraFieldPolicy.ALWAYS
                     || !commentEncodable) {
-                    ByteBuffer commentB = entryEncoding.encode(comm);
+                    ByteBuffer commentB = getEntryEncoding(ze).encode(comm);
                     ze.addExtraField(new UnicodeCommentExtraField(comm,
                                                                   commentB.array(),
                                                                   commentB.arrayOffset(),
@@ -880,16 +880,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         written += 12;
         // CheckStyle:MagicNumber ON
 
-        // file name length
-        final ZipEncoding entryEncoding;
-
-        if (!encodable && fallbackToUTF8) {
-            entryEncoding = ZipEncodingHelper.UTF8_ZIP_ENCODING;
-        } else {
-            entryEncoding = zipEncoding;
-        }
-
-        ByteBuffer name = entryEncoding.encode(ze.getName());
+        ByteBuffer name = getName(ze);
 
         writeOut(ZipShort.getBytes(name.limit()));
         written += SHORT;
@@ -905,7 +896,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             comm = "";
         }
 
-        ByteBuffer commentB = entryEncoding.encode(comm);
+        ByteBuffer commentB = getEntryEncoding(ze).encode(comm);
 
         writeOut(ZipShort.getBytes(commentB.limit()));
         written += SHORT;
@@ -1163,8 +1154,11 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                                + ", raf: " + (raf != null));
             */
             z64 = new Zip64ExtendedInformationExtraField();
-            ze.addAsFirstExtraField(z64);
         }
+
+        // even if the field is there already, make sure it is the first one
+            ze.addAsFirstExtraField(z64);
+
         return z64;
     }
 
@@ -1178,5 +1172,15 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         return ze.getExtraField(Zip64ExtendedInformationExtraField
                                 .HEADER_ID)
             != null;
+    }
+
+    private ZipEncoding getEntryEncoding(ZipArchiveEntry ze) {
+        boolean encodable = zipEncoding.canEncode(ze.getName());
+        return !encodable && fallbackToUTF8
+            ? ZipEncodingHelper.UTF8_ZIP_ENCODING : zipEncoding;
+    }
+
+    private ByteBuffer getName(ZipArchiveEntry ze) throws IOException {
+        return getEntryEncoding(ze).encode(ze.getName());
     }
 }
