@@ -170,6 +170,14 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private long cdLength = 0;
 
     /**
+     * Number of bytes read for the current entry (can't rely on
+     * Deflater#getBytesRead) when using DEFLATED.
+     *
+     * @since Apache Commons Compress 1.3
+     */
+    private long bytesRead = 0;
+
+    /**
      * Helper, a 0 as ZipShort.
      */
     private static final byte[] ZERO = {0, 0};
@@ -393,7 +401,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                 deflate();
             }
 
+            /* It turns out def.getBytesRead() returns wrong values if
+             * the size exceeds 4 GB - no idea whether one can trust
+             * def.getBytesWritten()
             entry.setSize(def.getBytesRead());
+            */
+            entry.setSize(bytesRead);
             entry.setCompressedSize(def.getBytesWritten());
             entry.setCrc(realCrc);
 
@@ -438,6 +451,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
         writeDataDescriptor(entry);
         entry = null;
+        bytesRead = 0;
     }
 
     /**
@@ -569,6 +583,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         ZipUtil.checkRequestedFeatures(entry);
         if (entry.getMethod() == DEFLATED) {
             if (length > 0 && !def.finished()) {
+                bytesRead += length;
                 if (length <= DEFLATER_BLOCK_SIZE) {
                     def.setInput(b, offset, length);
                     deflateUntilInputIsNeeded();
@@ -782,15 +797,15 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             return;
         }
         writeOut(DD_SIG);
-        writeOut(ZipLong.getBytes(entry.getCrc()));
+        writeOut(ZipLong.getBytes(ze.getCrc()));
         int sizeFieldSize = WORD;
         if (!hasZip64Extra(ze)) {
-            writeOut(ZipLong.getBytes(entry.getCompressedSize()));
-            writeOut(ZipLong.getBytes(entry.getSize()));
+            writeOut(ZipLong.getBytes(ze.getCompressedSize()));
+            writeOut(ZipLong.getBytes(ze.getSize()));
         } else {
             sizeFieldSize = DWORD;
-            writeOut(ZipEightByteInteger.getBytes(entry.getCompressedSize()));
-            writeOut(ZipEightByteInteger.getBytes(entry.getSize()));
+            writeOut(ZipEightByteInteger.getBytes(ze.getCompressedSize()));
+            writeOut(ZipEightByteInteger.getBytes(ze.getSize()));
         }
         written += 2 * WORD + 2 * sizeFieldSize;
     }
@@ -811,16 +826,13 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
         if (needsZip64Extra) {
             Zip64ExtendedInformationExtraField z64 = getZip64Extra(ze);
-            if (ze.getCompressedSize() >= ZIP64_MAGIC) { 
+            if (ze.getCompressedSize() >= ZIP64_MAGIC
+                || ze.getSize() >= ZIP64_MAGIC) {
                 z64.setCompressedSize(new ZipEightByteInteger(ze.getCompressedSize()));
-            } else {
-                // reset value that may have been set for LFH
-                z64.setCompressedSize(null);
-            }
-            if (ze.getSize() >= ZIP64_MAGIC) {
                 z64.setSize(new ZipEightByteInteger(ze.getSize()));
             } else {
                 // reset value that may have been set for LFH
+                z64.setCompressedSize(null);
                 z64.setSize(null);
             }
             if (lfhOffset >= ZIP64_MAGIC) {
@@ -856,8 +868,14 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         // compressed length
         // uncompressed length
         writeOut(ZipLong.getBytes(ze.getCrc()));
-        writeOut(ZipLong.getBytes(Math.min(ze.getCompressedSize(), ZIP64_MAGIC)));
-        writeOut(ZipLong.getBytes(Math.min(ze.getSize(), ZIP64_MAGIC)));
+        if (ze.getCompressedSize() >= ZIP64_MAGIC
+            || ze.getSize() >= ZIP64_MAGIC) {
+            writeOut(ZipLong.ZIP64_MAGIC.getBytes());
+            writeOut(ZipLong.ZIP64_MAGIC.getBytes());
+        } else {
+            writeOut(ZipLong.getBytes(ze.getCompressedSize()));
+            writeOut(ZipLong.getBytes(ze.getSize()));
+        }
         // CheckStyle:MagicNumber OFF
         written += 12;
         // CheckStyle:MagicNumber ON
@@ -1133,7 +1151,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private Zip64ExtendedInformationExtraField
         getZip64Extra(ZipArchiveEntry ze) {
         hasUsedZip64 = true;
-        Zip64ExtendedInformationExtraField z64 =  
+        Zip64ExtendedInformationExtraField z64 =
             (Zip64ExtendedInformationExtraField)
             ze.getExtraField(Zip64ExtendedInformationExtraField
                              .HEADER_ID);

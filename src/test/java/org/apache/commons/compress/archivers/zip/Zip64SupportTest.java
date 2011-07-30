@@ -213,16 +213,7 @@ public class Zip64SupportTest {
 
                 RandomAccessFile a = new RandomAccessFile(f, "r");
                 try {
-                    final long end = a.length();
-                    long cdOffsetLoc = end - 22 /* eocd.length */
-                        - 20 /* z64 eocd locator.length */
-                        - 56 /* z64 eocd without extensible data sector */
-                        + 48 /* position in z64 eocd */;
-                    // seek to central directory
-                    a.seek(cdOffsetLoc);
-                    byte[] cdOffset = new byte[8];
-                    a.readFully(cdOffset);
-                    a.seek(ZipEightByteInteger.getLongValue(cdOffset));
+                    final long end = getLengthAndPositionAtCentralDirectory(a);
                     // skip first two entries
                     a.skipBytes(2 * 47 /* CD entry of file with
                                           file name length 1 and no
@@ -339,17 +330,8 @@ public class Zip64SupportTest {
                                      RandomAccessFile a =
                                          new RandomAccessFile(f, "r");
                                      try {
-                                         final long end = a.length();
-                                         long cdOffsetLoc = end - 22
-                                             - 20
-                                             - 56
-                                             + 48;
-                                         // seek to central directory
-                                         a.seek(cdOffsetLoc);
-                                         byte[] cdOffset = new byte[8];
-                                         a.readFully(cdOffset);
-                                         a.seek(ZipEightByteInteger
-                                                .getLongValue(cdOffset));
+                                         final long end =
+                                             getLengthAndPositionAtCentralDirectory(a);
 
                                          // grab first entry, verify
                                          // sizes are 0xFFFFFFFF and
@@ -473,7 +455,6 @@ public class Zip64SupportTest {
      *
      * Creates a temporary archive of approx 4MB in size
      */
-    @Ignore
     @Test public void writeBigDeflatedEntryKnownSizeToStream()
         throws Throwable {
         withTemporaryArchive("writeBigDeflatedEntryKnownSizeToStream",
@@ -498,18 +479,10 @@ public class Zip64SupportTest {
                                      RandomAccessFile a =
                                          new RandomAccessFile(f, "r");
                                      try {
-                                         final long end = a.length();
-                                         long cdOffsetLoc = end - 22
-                                             - 20
-                                             - 56
-                                             + 48;
-                                         // seek to central directory
-                                         a.seek(cdOffsetLoc);
-                                         byte[] cdOffset = new byte[8];
-                                         a.readFully(cdOffset);
-                                         a.seek(ZipEightByteInteger
-                                                .getLongValue(cdOffset));
+                                         final long end =
+                                             getLengthAndPositionAtCentralDirectory(a);
 
+                                         long cfhPos = a.getFilePointer();
                                          // grab first entry, verify
                                          // sizes are 0xFFFFFFFF and
                                          // it has a ZIP64 extended
@@ -523,35 +496,29 @@ public class Zip64SupportTest {
                                                  45, 0,
                                                  // version needed to extract
                                                  45, 0,
-                                                 // GPB
+                                                 // GPB (EFS + Data Descriptor)
                                                  8, 8,
                                                  // method
                                                  8, 0,
                                              }, header);
                                          // ignore timestamp
                                          a.skipBytes(4);
-                                         byte[] crc = new byte[4];
-                                         a.readFully(crc);
-                                         assertArrayEquals(new byte[] {
-                                                 (byte) 0x50, (byte) 0x6F,
-                                                 (byte) 0x31, (byte) 0x5c,
-                                             }, crc);
-                                         // ignore compressed size,
-                                         // check it is smaller than
-                                         // 4GB by validating it is
-                                         // not part of the ZIP64
-                                         // extra field
-                                         a.skipBytes(4);
-                                         byte[] rest = new byte[23];
+                                         byte[] rest = new byte[31];
                                          a.readFully(rest);
                                          assertArrayEquals(new byte[] {
+                                                 // CRC
+                                                 (byte) 0x50, (byte) 0x6F,
+                                                 (byte) 0x31, (byte) 0x5c,
+                                                 // Compressed Size
+                                                 (byte) 0xFF, (byte) 0xFF,
+                                                 (byte) 0xFF, (byte) 0xFF,
                                                  // Original Size
                                                  (byte) 0xFF, (byte) 0xFF,
                                                  (byte) 0xFF, (byte) 0xFF,
                                                  // file name length
                                                  1, 0,
                                                  // extra field length
-                                                 12, 0,
+                                                 20, 0,
                                                  // comment length
                                                  0, 0,
                                                  // disk number
@@ -571,11 +538,36 @@ public class Zip64SupportTest {
                                                  // Header-ID
                                                  1, 0,
                                                  // size of extra
-                                                 8, 0,
+                                                 16, 0,
                                                  // original size
                                                  0, (byte) 0xF2, 5, (byte) 0x2A,
                                                  1, 0, 0, 0,
+                                                 // don't know the
+                                                 // compressed size,
+                                                 // don't want to
+                                                 // hard-code it
                                              }, extra);
+
+                                         // validate data descriptor
+                                         a.seek(cfhPos - 24);
+                                         byte[] dd = new byte[8];
+                                         a.readFully(dd);
+                                         assertArrayEquals(new byte[] {
+                                                 // sig
+                                                 (byte) 0x50, (byte) 0x4b, 7, 8,
+                                                 // CRC
+                                                 (byte) 0x50, (byte) 0x6F,
+                                                 (byte) 0x31, (byte) 0x5c,
+                                             }, dd);
+                                         // skip uncompressed size
+                                         a.skipBytes(8);
+                                         dd = new byte[8];
+                                         a.readFully(dd);
+                                         assertArrayEquals(new byte[] {
+                                                 // original size
+                                                 0, (byte) 0xF2, 5, (byte) 0x2A,
+                                                 1, 0, 0, 0,
+                                             }, dd);
 
                                          // and now validate local file header
                                          a.seek(0);
@@ -623,8 +615,6 @@ public class Zip64SupportTest {
                                      } finally {
                                          a.close();
                                      }
-
-                                     read5GBOfZerosImpl(f, "0");
                                  }
                              },
                              false);
@@ -716,5 +706,17 @@ public class Zip64SupportTest {
                 fin.close();
             }
         }
+    }
+
+    private static long getLengthAndPositionAtCentralDirectory(RandomAccessFile a)
+        throws IOException {
+        final long end = a.length();
+        long cdOffsetLoc = end - 22 - 20 - 56 + 48;
+        // seek to central directory locator
+        a.seek(cdOffsetLoc);
+        byte[] cdOffset = new byte[8];
+        a.readFully(cdOffset);
+        a.seek(ZipEightByteInteger.getLongValue(cdOffset));
+        return end;
     }
 }
