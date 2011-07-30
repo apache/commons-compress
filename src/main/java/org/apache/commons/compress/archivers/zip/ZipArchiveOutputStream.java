@@ -445,8 +445,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             raf.seek(localDataStart);
             writeOut(ZipLong.getBytes(entry.getCrc()));
             if (!hasZip64Extra(entry)) {
-            writeOut(ZipLong.getBytes(entry.getCompressedSize()));
-            writeOut(ZipLong.getBytes(entry.getSize()));
+                writeOut(ZipLong.getBytes(entry.getCompressedSize()));
+                writeOut(ZipLong.getBytes(entry.getSize()));
             } else {
                 writeOut(ZipLong.ZIP64_MAGIC.getBytes());
                 writeOut(ZipLong.ZIP64_MAGIC.getBytes());
@@ -1157,7 +1157,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         }
 
         // even if the field is there already, make sure it is the first one
-            ze.addAsFirstExtraField(z64);
+        ze.addAsFirstExtraField(z64);
 
         return z64;
     }
