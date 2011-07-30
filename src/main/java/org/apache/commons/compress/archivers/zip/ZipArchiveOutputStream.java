@@ -180,11 +180,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private static final byte[] LZERO = {0, 0, 0, 0};
 
     /**
-     * Helper, a 0 as ZipEightByteInteger.
-     */
-    private static final byte[] DLZERO = {0, 0, 0, 0, 0, 0, 0, 0};
-
-    /**
      * Holds the offsets of the LFH starts for each entry.
      */
     private final Map<ZipArchiveEntry, Long> offsets =
@@ -484,6 +479,26 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             entry.setCompressedSize(entry.getSize());
         }
 
+        // add a ZIP64 extended information extra field if we already
+        // know it is going to be needed
+        if (entry.getSize() >= ZIP64_MAGIC
+            || entry.getCompressedSize() >= ZIP64_MAGIC) {
+
+            Zip64ExtendedInformationExtraField z64 = getZip64Extra(entry);
+            if (entry.getMethod() == STORED) {
+                ZipEightByteInteger size =
+                    new ZipEightByteInteger(entry.getSize());
+                z64.setSize(size);
+                z64.setCompressedSize(size);
+            } else {
+                // just a placeholder, real data will be in data
+                // descriptor or inserted later via RandomAccessFile
+                z64.setSize(ZipEightByteInteger.ZERO);
+                z64.setCompressedSize(ZipEightByteInteger.ZERO);
+            }
+            entry.setExtra();
+        }
+
         if (entry.getMethod() == DEFLATED && hasCompressionLevelChanged) {
             def.setLevel(level);
             hasCompressionLevelChanged = false;
@@ -708,7 +723,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         writeVersionNeededToExtractAndGeneralPurposeBits(zipMethod,
                                                          !encodable
                                                          && fallbackToUTF8,
-                                                         false);
+                                                         hasZip64Extra(ze));
         written += WORD;
 
         // compression method
@@ -729,8 +744,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             writeOut(LZERO);
         } else {
             writeOut(ZipLong.getBytes(ze.getCrc()));
-            writeOut(ZipLong.getBytes(ze.getSize()));
-            writeOut(ZipLong.getBytes(ze.getSize()));
+            byte[] size = ZipLong.getBytes(Math.min(ze.getSize(), ZIP64_MAGIC));
+            writeOut(size);
+            writeOut(size);
         }
         // CheckStyle:MagicNumber OFF
         written += 12;
@@ -1122,8 +1138,14 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             ze.getExtraField(Zip64ExtendedInformationExtraField
                              .HEADER_ID);
         if (z64 == null) {
+            /*
+            System.err.println("Adding z64 for " + ze.getName()
+                               + ", method: " + ze.getMethod()
+                               + " (" + (ze.getMethod() == STORED) + ")"
+                               + ", raf: " + (raf != null));
+            */
             z64 = new Zip64ExtendedInformationExtraField();
-            ze.addExtraField(z64);
+            ze.addAsFirstExtraField(z64);
         }
         return z64;
     }
