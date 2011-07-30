@@ -222,7 +222,7 @@ public class Zip64SupportTest {
                     // grab third entry, verify offset is
                     // 0xFFFFFFFF and it has a ZIP64 extended
                     // information extra field
-                    byte[] header = new byte[8];
+                    byte[] header = new byte[12];
                     a.readFully(header);
                     assertArrayEquals(new byte[] {
                             // sig
@@ -231,9 +231,13 @@ public class Zip64SupportTest {
                             45, 0,
                             // version needed to extract
                             45, 0,
+                            // GPB (EFS bit)
+                            0, 8,
+                            // method
+                            0, 0
                         }, header);
-                    // ignore GPB, method, timestamp, CRC, compressed size
-                    a.skipBytes(16);
+                    // ignore timestamp, CRC, compressed size
+                    a.skipBytes(12);
                     byte[] rest = new byte[23];
                     a.readFully(rest);
                     assertArrayEquals(new byte[] {
@@ -281,14 +285,12 @@ public class Zip64SupportTest {
             }
         };
 
-    @Ignore
     @Test public void write3EntriesCreatingBigArchiveFile() throws Throwable {
         withTemporaryArchive("write3EntriesCreatingBigArchiveFile",
                              write3EntriesCreatingBigArchive,
                              true);
     }
 
-    @Ignore
     @Test public void write3EntriesCreatingBigArchiveStream() throws Throwable {
         withTemporaryArchive("write3EntriesCreatingBigArchiveStream",
                              write3EntriesCreatingBigArchive,
@@ -305,7 +307,6 @@ public class Zip64SupportTest {
      *
      * Creates a temporary archive of approx 5GB in size
      */
-    @Ignore
     @Test public void writeBigStoredEntryToStream() throws Throwable {
         withTemporaryArchive("writeBigStoredEntryToStream",
                              new ZipOutputTest() {
@@ -337,7 +338,7 @@ public class Zip64SupportTest {
                                          // sizes are 0xFFFFFFFF and
                                          // it has a ZIP64 extended
                                          // information extra field
-                                         byte[] header = new byte[8];
+                                         byte[] header = new byte[12];
                                          a.readFully(header);
                                          assertArrayEquals(new byte[] {
                                                  // sig
@@ -346,9 +347,13 @@ public class Zip64SupportTest {
                                                  45, 0,
                                                  // version needed to extract
                                                  45, 0,
+                                                 // GPB (EFS bit)
+                                                 0, 8,
+                                                 // method
+                                                 0, 0
                                              }, header);
-                                         // ignore GPB, method, timestamp
-                                         a.skipBytes(8);
+                                         // ignore timestamp
+                                         a.skipBytes(4);
                                          byte[] rest = new byte[31];
                                          a.readFully(rest);
                                          assertArrayEquals(new byte[] {
@@ -395,16 +400,20 @@ public class Zip64SupportTest {
 
                                          // and now validate local file header
                                          a.seek(0);
-                                         header = new byte[6];
+                                         header = new byte[10];
                                          a.readFully(header);
                                          assertArrayEquals(new byte[] {
                                                  // sig
                                                  (byte) 0x50, (byte) 0x4b, 3, 4,
                                                  // version needed to extract
                                                  45, 0,
+                                                 // GPB (EFS bit)
+                                                 0, 8,
+                                                 // method
+                                                 0, 0
                                              }, header);
-                                         // ignore GPB, method, timestamp
-                                         a.skipBytes(8);
+                                         // ignore timestamp
+                                         a.skipBytes(4);
                                          rest = new byte[17];
                                          a.readFully(rest);
                                          assertArrayEquals(new byte[] {
@@ -455,6 +464,7 @@ public class Zip64SupportTest {
      *
      * Creates a temporary archive of approx 4MB in size
      */
+    @Ignore
     @Test public void writeBigDeflatedEntryKnownSizeToStream()
         throws Throwable {
         withTemporaryArchive("writeBigDeflatedEntryKnownSizeToStream",
@@ -578,7 +588,7 @@ public class Zip64SupportTest {
                                                  (byte) 0x50, (byte) 0x4b, 3, 4,
                                                  // version needed to extract
                                                  45, 0,
-                                                 // GPB
+                                                 // GPB (EFS + Data Descriptor)
                                                  8, 8,
                                                  // method
                                                  8, 0,
