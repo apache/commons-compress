@@ -461,6 +461,12 @@ public class Zip64SupportTest {
                              true);
     }
 
+    @Test public void writeBigStoredEntryUnnownSizeToFile() throws Throwable {
+        withTemporaryArchive("writeBigStoredEntryUnknownSizeToFile",
+                             writeBigStoredEntry(false),
+                             true);
+    }
+
     /*
      * One entry of length 5 billion bytes, written with
      * compression to a stream.
@@ -645,17 +651,17 @@ public class Zip64SupportTest {
      *
      * Creates a temporary archive of approx 4MB in size
      */
-    @Test public void writeBigDeflatedEntryKnownSizeToFile()
-        throws Throwable {
-        withTemporaryArchive("writeBigDeflatedEntryKnownSizeToFile",
-                             new ZipOutputTest() {
+    private static ZipOutputTest writeBigDeflatedEntryToFile(final boolean knownSize) {
+        return new ZipOutputTest() {
                                  public void test(File f,
                                                   ZipArchiveOutputStream zos)
                                      throws IOException {
                                      byte[] buf = new byte[1000 * 1000];
                                      ZipArchiveEntry zae =
                                          new ZipArchiveEntry("0");
+                                     if (knownSize) {
                                      zae.setSize(FIVE_BILLION);
+                                     }
                                      zae.setMethod(ZipArchiveEntry.DEFLATED);
                                      zos.putArchiveEntry(zae);
                                      for (int j = 0;
@@ -793,7 +799,21 @@ public class Zip64SupportTest {
                                          a.close();
                                      }
                                  }
-                             },
+        };
+    }
+
+    @Ignore
+    @Test public void writeBigDeflatedEntryKnownSizeToFile()
+        throws Throwable {
+        withTemporaryArchive("writeBigDeflatedEntryKnownSizeToFile",
+                             writeBigDeflatedEntryToFile(true),
+                             true);
+    }
+
+    @Test public void writeBigDeflatedEntryUnknownSizeToFile()
+        throws Throwable {
+        withTemporaryArchive("writeBigDeflatedEntryUnknownSizeToFile",
+                             writeBigDeflatedEntryToFile(false),
                              true);
     }
 

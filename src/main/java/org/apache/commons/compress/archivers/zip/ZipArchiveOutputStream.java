@@ -444,13 +444,17 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
             raf.seek(localDataStart);
             writeOut(ZipLong.getBytes(entry.getCrc()));
-            if (!hasZip64Extra(entry)) {
+            if (!hasZip64Extra(entry)
+                || (entry.getSize() < ZIP64_MAGIC
+                    && entry.getCompressedSize() < ZIP64_MAGIC)) {
                 writeOut(ZipLong.getBytes(entry.getCompressedSize()));
                 writeOut(ZipLong.getBytes(entry.getSize()));
             } else {
                 writeOut(ZipLong.ZIP64_MAGIC.getBytes());
                 writeOut(ZipLong.ZIP64_MAGIC.getBytes());
+            }
 
+            if (hasZip64Extra(entry)) {
                 // seek to ZIP64 extra, skip header and size information
                 raf.seek(localDataStart + 3 * WORD + 2 * SHORT
                          + getName(entry).limit() + 2 * SHORT);
@@ -507,12 +511,16 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         }
 
         // add a ZIP64 extended information extra field if we already
-        // know it is going to be needed
+        // know it is going to be needed or the size is unknown and we
+        // can ensure it won't hurt other implementations if we add it
+        // (i.e. we can erase its usage)
         if (entry.getSize() >= ZIP64_MAGIC
-            || entry.getCompressedSize() >= ZIP64_MAGIC) {
+            || entry.getCompressedSize() >= ZIP64_MAGIC
+            || (entry.getSize() == ArchiveEntry.SIZE_UNKNOWN && raf != null)) {
 
             Zip64ExtendedInformationExtraField z64 = getZip64Extra(entry);
-            if (entry.getMethod() == STORED) {
+            if (entry.getMethod() == STORED
+                && entry.getSize() != ArchiveEntry.SIZE_UNKNOWN) {
                 ZipEightByteInteger size =
                     new ZipEightByteInteger(entry.getSize());
                 z64.setSize(size);
