@@ -44,7 +44,10 @@ The <action> type attribute can be add,update,fix,remove.
     <title>commons-compress</title>
   </properties>
   <body>
-    <release version="1.2" date="as in SVN"
+    <release version="1.3" date="unreleased"
+             description="Release 1.3 - API compatible to 1.2 but requires Java5 at runtime">
+    </release>
+    <release version="1.2" date="2011-07-31"
              description="Release 1.2 - a bugfix release, the last release expected to be compatible with Java 1.4">
       <action issue="COMPRESS-129" type="fix" date="2011-07-26">
         ZipArchiveInputStream could fail with a "Truncated ZIP" error
