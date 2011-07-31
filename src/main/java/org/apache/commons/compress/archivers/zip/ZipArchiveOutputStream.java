@@ -35,8 +35,9 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 
 import static org.apache.commons.compress.archivers.zip.ZipConstants.BYTE_MASK;
-import static org.apache.commons.compress.archivers.zip.ZipConstants.DEFLATE_MIN_VERSION;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.DATA_DESCRIPTOR_MIN_VERSION;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.INITIAL_VERSION;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC;
@@ -254,6 +255,13 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private boolean hasUsedZip64 = false;
 
     /**
+     * Whether current entry was the first one using ZIP64 features.
+     *
+     * @since Apache Commons Compress 1.3
+     */
+    private boolean entryCausedUseOfZip64 = false;
+
+    /**
      * Creates a new ZIP OutputStream filtering the underlying stream.
      * @param out the outputstream to zip
      */
@@ -441,12 +449,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         // the correct CRC and compressed/uncompressed sizes
         if (raf != null) {
             long save = raf.getFilePointer();
+            boolean actuallyNeedsZip64 = entry.getSize() >= ZIP64_MAGIC
+                || entry.getCompressedSize() >= ZIP64_MAGIC;
 
             raf.seek(localDataStart);
             writeOut(ZipLong.getBytes(entry.getCrc()));
-            if (!hasZip64Extra(entry)
-                || (entry.getSize() < ZIP64_MAGIC
-                    && entry.getCompressedSize() < ZIP64_MAGIC)) {
+            if (!hasZip64Extra(entry) || !actuallyNeedsZip64) {
                 writeOut(ZipLong.getBytes(entry.getCompressedSize()));
                 writeOut(ZipLong.getBytes(entry.getSize()));
             } else {
@@ -462,6 +470,23 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                 // first, unlike the LFH, CD or data descriptor
                 writeOut(ZipEightByteInteger.getBytes(entry.getSize()));
                 writeOut(ZipEightByteInteger.getBytes(entry.getCompressedSize()));
+
+                if (!actuallyNeedsZip64) {
+                    // do some cleanup:
+                    // * rewrite version needed to extract
+                    raf.seek(localDataStart  - 5 * SHORT);
+                    writeOut(ZipShort.getBytes(INITIAL_VERSION));
+
+                    // * remove ZIP64 extra so it doesn't get written
+                    //   to the central directory
+                    entry.removeExtraField(Zip64ExtendedInformationExtraField
+                                           .HEADER_ID);
+                    entry.setExtra();
+
+                    // * reset hasUsedZip64 if it has been set because
+                    //   of this entry
+                    hasUsedZip64 &= !entryCausedUseOfZip64;
+                }
             }
             raf.seek(save);
         }
@@ -469,6 +494,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         writeDataDescriptor(entry);
         entry = null;
         bytesRead = 0;
+        entryCausedUseOfZip64 = false;
     }
 
     /**
@@ -856,7 +882,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         // version made by
         // CheckStyle:MagicNumber OFF
         writeOut(ZipShort.getBytes((ze.getPlatform() << 8) | 
-                                   (!hasUsedZip64 ? DEFLATE_MIN_VERSION
+                                   (!hasUsedZip64 ? DATA_DESCRIPTOR_MIN_VERSION
                                                   : ZIP64_MIN_VERSION)));
         written += SHORT;
 
@@ -1076,13 +1102,13 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         throws IOException {
 
         // CheckStyle:MagicNumber OFF
-        int versionNeededToExtract = 10;
+        int versionNeededToExtract = INITIAL_VERSION;
         GeneralPurposeBit b = new GeneralPurposeBit();
         b.useUTF8ForNames(useUTF8Flag || utfFallback);
         if (zipMethod == DEFLATED && raf == null) {
             // requires version 2 as we are going to store length info
             // in the data descriptor
-            versionNeededToExtract = DEFLATE_MIN_VERSION;
+            versionNeededToExtract = DATA_DESCRIPTOR_MIN_VERSION;
             b.useDataDescriptor(true);
         }
         if (zip64) {
@@ -1153,6 +1179,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     private Zip64ExtendedInformationExtraField
         getZip64Extra(ZipArchiveEntry ze) {
+        entryCausedUseOfZip64 = !hasUsedZip64;
         hasUsedZip64 = true;
         Zip64ExtendedInformationExtraField z64 =
             (Zip64ExtendedInformationExtraField)
