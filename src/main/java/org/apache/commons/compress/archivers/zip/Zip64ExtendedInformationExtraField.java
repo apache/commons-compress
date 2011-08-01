@@ -20,6 +20,9 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.util.zip.ZipException;
 
+import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
+
 /**
  * Holds size and other extended information for entries that use Zip64
  * features.
@@ -71,15 +74,12 @@ import java.util.zip.ZipException;
  * @NotThreadSafe
  */
 public class Zip64ExtendedInformationExtraField implements ZipExtraField {
-    // TODO: the LFH should probably not contain relativeHeaderOffset
-    // and diskStart but then ZipArchivePOutputStream won't write it to
-    // the CD either - need to test interop with other implementations
-    // to see whether they do have a problem with the extraneous
-    // information inside the LFH
 
-    private static final ZipShort HEADER_ID = new ZipShort(0x0001);
+    static final ZipShort HEADER_ID = new ZipShort(0x0001);
 
-    private static final int WORD = 4, DWORD = 8;
+    private static final String LFH_MUST_HAVE_BOTH_SIZES_MSG =
+        "Zip64 extended information must contain"
+        + " both size values in the local file header.";
 
     private ZipEightByteInteger size, compressedSize, relativeHeaderOffset;
     private ZipLong diskStart;
@@ -115,12 +115,6 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
                                               ZipEightByteInteger compressedSize,
                                               ZipEightByteInteger relativeHeaderOffset,
                                               ZipLong diskStart) {
-        if (size == null) {
-            throw new IllegalArgumentException("size must not be null");
-        }
-        if (compressedSize == null) {
-            throw new IllegalArgumentException("compressedSize must not be null");
-        }
         this.size = size;
         this.compressedSize = compressedSize;
         this.relativeHeaderOffset = relativeHeaderOffset;
@@ -134,26 +128,34 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
 
     /** {@inheritDoc} */
     public ZipShort getLocalFileDataLength() {
-        return getCentralDirectoryLength();
+        return new ZipShort(size != null ? 2 * DWORD : 0);
     }
 
     /** {@inheritDoc} */
     public ZipShort getCentralDirectoryLength() {
-        return new ZipShort(2 * DWORD  // both size fields
+        return new ZipShort((size != null ? DWORD : 0)
+                            + (compressedSize != null ? DWORD : 0)
                             + (relativeHeaderOffset != null ? DWORD : 0)
                             + (diskStart != null ? WORD : 0));
     }
 
     /** {@inheritDoc} */
     public byte[] getLocalFileDataData() {
-        return getCentralDirectoryData();
+        if (size != null || compressedSize != null) {
+            if (size == null || compressedSize == null) {
+                throw new IllegalArgumentException(LFH_MUST_HAVE_BOTH_SIZES_MSG);
+            }
+            byte[] data = new byte[2 * DWORD];
+            addSizes(data);
+            return data;
+        }
+        return new byte[0];
     }
 
     /** {@inheritDoc} */
     public byte[] getCentralDirectoryData() {
         byte[] data = new byte[getCentralDirectoryLength().getValue()];
-        addSizes(data);
-        int off = 2 * DWORD;
+        int off = addSizes(data);
         if (relativeHeaderOffset != null) {
             System.arraycopy(relativeHeaderOffset.getBytes(), 0, data, off, DWORD);
             off += DWORD;
@@ -169,9 +171,7 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
     public void parseFromLocalFileData(byte[] buffer, int offset, int length)
         throws ZipException {
         if (length < 2 * DWORD) {
-            throw new ZipException("Zip64 extended information must contain"
-                                   + " both size values in the local file"
-                                   + " header.");
+            throw new ZipException(LFH_MUST_HAVE_BOTH_SIZES_MSG);
         }
         size = new ZipEightByteInteger(buffer, offset);
         offset += DWORD;
@@ -198,9 +198,16 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
         // can only hope things will get resolved by LFH data later
         // But there are some cases that can be detected
         // * all data is there
+        // * length == 24 -> both sizes and offset
         // * length % 8 == 4 -> at least we can identify the diskStart field
         if (length >= 3 * DWORD + WORD) {
             parseFromLocalFileData(buffer, offset, length);
+        } else if (length == 3 * DWORD) {
+            size = new ZipEightByteInteger(buffer, offset);
+            offset += DWORD;
+            compressedSize = new ZipEightByteInteger(buffer, offset);
+            offset += DWORD;
+            relativeHeaderOffset = new ZipEightByteInteger(buffer, offset);
         } else if (length % DWORD == WORD) {
             diskStart = new ZipLong(buffer, offset + length - WORD);
         }
@@ -214,10 +221,24 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
     }
 
     /**
+     * The uncompressed size stored in this extra field.
+     */
+    public void setSize(ZipEightByteInteger size) {
+        this.size = size;
+    }
+
+    /**
      * The compressed size stored in this extra field.
      */
     public ZipEightByteInteger getCompressedSize() {
         return compressedSize;
+    }
+
+    /**
+     * The uncompressed size stored in this extra field.
+     */
+    public void setCompressedSize(ZipEightByteInteger compressedSize) {
+        this.compressedSize = compressedSize;
     }
 
     /**
@@ -228,14 +249,36 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
     }
 
     /**
+     * The relative header offset stored in this extra field.
+     */
+    public void setRelativeHeaderOffset(ZipEightByteInteger rho) {
+        relativeHeaderOffset = rho;
+    }
+
+    /**
      * The disk start number stored in this extra field.
      */
     public ZipLong getDiskStartNumber() {
         return diskStart;
     }
 
-    private void addSizes(byte[] data) {
-        System.arraycopy(size.getBytes(), 0, data, 0, DWORD);
-        System.arraycopy(compressedSize.getBytes(), 0, data, DWORD, DWORD);
+    /**
+     * The disk start number stored in this extra field.
+     */
+    public void setDiskStartNumber(ZipLong ds) {
+        diskStart = ds;
+    }
+
+    private int addSizes(byte[] data) {
+        int off = 0;
+        if (size != null) {
+            System.arraycopy(size.getBytes(), 0, data, 0, DWORD);
+            off += DWORD;
+        }
+        if (compressedSize != null) {
+            System.arraycopy(compressedSize.getBytes(), 0, data, off, DWORD);
+            off += DWORD;
+        }
+        return off;
     }
 }

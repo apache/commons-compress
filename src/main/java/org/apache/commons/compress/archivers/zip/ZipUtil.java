@@ -69,6 +69,10 @@ public abstract class ZipUtil {
     /**
      * Assumes a negative integer really is a positive integer that
      * has wrapped around and re-creates the original value.
+     *
+     * <p>This methods is no longer used as of Apache Commons Compress
+     * 1.3</p>
+     *
      * @param i the value to treat as unsigned int.
      * @return the unsigned int as a long.
      */
