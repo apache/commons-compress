@@ -110,7 +110,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Current entry.
      */
-    private ZipArchiveEntry entry;
+    private CurrentEntry entry;
 
     /**
      * The file comment.
@@ -150,17 +150,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private long written = 0;
 
     /**
-     * Data for local header data
-     */
-    private long dataStart = 0;
-
-    /**
-     * Offset for CRC entry in the local file header data for the
-     * current entry starts here.
-     */
-    private long localDataStart = 0;
-
-    /**
      * Start of central directory.
      */
     private long cdOffset = 0;
@@ -169,14 +158,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * Length of central directory.
      */
     private long cdLength = 0;
-
-    /**
-     * Number of bytes read for the current entry (can't rely on
-     * Deflater#getBytesRead) when using DEFLATED.
-     *
-     * @since Apache Commons Compress 1.3
-     */
-    private long bytesRead = 0;
 
     /**
      * Helper, a 0 as ZipShort.
@@ -253,13 +234,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @since Apache Commons Compress 1.3
      */
     private boolean hasUsedZip64 = false;
-
-    /**
-     * Whether current entry was the first one using ZIP64 features.
-     *
-     * @since Apache Commons Compress 1.3
-     */
-    private boolean entryCausedUseOfZip64 = false;
 
     /**
      * Creates a new ZIP OutputStream filtering the underlying stream.
@@ -403,7 +377,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         long realCrc = crc.getValue();
         crc.reset();
 
-        if (entry.getMethod() == DEFLATED) {
+        if (entry.entry.getMethod() == DEFLATED) {
             def.finish();
             while (!def.finished()) {
                 deflate();
@@ -412,89 +386,87 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             /* It turns out def.getBytesRead() returns wrong values if
              * the size exceeds 4 GB - no idea whether one can trust
              * def.getBytesWritten()
-            entry.setSize(def.getBytesRead());
+            entry.entry.setSize(def.getBytesRead());
             */
-            entry.setSize(bytesRead);
-            entry.setCompressedSize(def.getBytesWritten());
-            entry.setCrc(realCrc);
+            entry.entry.setSize(entry.bytesRead);
+            entry.entry.setCompressedSize(def.getBytesWritten());
+            entry.entry.setCrc(realCrc);
 
             def.reset();
 
-            written += entry.getCompressedSize();
+            written += entry.entry.getCompressedSize();
         } else if (raf == null) {
-            if (entry.getCrc() != realCrc) {
+            if (entry.entry.getCrc() != realCrc) {
                 throw new ZipException("bad CRC checksum for entry "
-                                       + entry.getName() + ": "
-                                       + Long.toHexString(entry.getCrc())
+                                       + entry.entry.getName() + ": "
+                                       + Long.toHexString(entry.entry.getCrc())
                                        + " instead of "
                                        + Long.toHexString(realCrc));
             }
 
-            if (entry.getSize() != written - dataStart) {
+            if (entry.entry.getSize() != written - entry.dataStart) {
                 throw new ZipException("bad size for entry "
-                                       + entry.getName() + ": "
-                                       + entry.getSize()
+                                       + entry.entry.getName() + ": "
+                                       + entry.entry.getSize()
                                        + " instead of "
-                                       + (written - dataStart));
+                                       + (written - entry.dataStart));
             }
         } else { /* method is STORED and we used RandomAccessFile */
-            long size = written - dataStart;
+            long size = written - entry.dataStart;
 
-            entry.setSize(size);
-            entry.setCompressedSize(size);
-            entry.setCrc(realCrc);
+            entry.entry.setSize(size);
+            entry.entry.setCompressedSize(size);
+            entry.entry.setCrc(realCrc);
         }
 
         // If random access output, write the local file header containing
         // the correct CRC and compressed/uncompressed sizes
         if (raf != null) {
             long save = raf.getFilePointer();
-            boolean actuallyNeedsZip64 = entry.getSize() >= ZIP64_MAGIC
-                || entry.getCompressedSize() >= ZIP64_MAGIC;
+            boolean actuallyNeedsZip64 = entry.entry.getSize() >= ZIP64_MAGIC
+                || entry.entry.getCompressedSize() >= ZIP64_MAGIC;
 
-            raf.seek(localDataStart);
-            writeOut(ZipLong.getBytes(entry.getCrc()));
-            if (!hasZip64Extra(entry) || !actuallyNeedsZip64) {
-                writeOut(ZipLong.getBytes(entry.getCompressedSize()));
-                writeOut(ZipLong.getBytes(entry.getSize()));
+            raf.seek(entry.localDataStart);
+            writeOut(ZipLong.getBytes(entry.entry.getCrc()));
+            if (!hasZip64Extra(entry.entry) || !actuallyNeedsZip64) {
+                writeOut(ZipLong.getBytes(entry.entry.getCompressedSize()));
+                writeOut(ZipLong.getBytes(entry.entry.getSize()));
             } else {
                 writeOut(ZipLong.ZIP64_MAGIC.getBytes());
                 writeOut(ZipLong.ZIP64_MAGIC.getBytes());
             }
 
-            if (hasZip64Extra(entry)) {
+            if (hasZip64Extra(entry.entry)) {
                 // seek to ZIP64 extra, skip header and size information
-                raf.seek(localDataStart + 3 * WORD + 2 * SHORT
-                         + getName(entry).limit() + 2 * SHORT);
+                raf.seek(entry.localDataStart + 3 * WORD + 2 * SHORT
+                         + getName(entry.entry).limit() + 2 * SHORT);
                 // inside the ZIP64 extra uncompressed size comes
                 // first, unlike the LFH, CD or data descriptor
-                writeOut(ZipEightByteInteger.getBytes(entry.getSize()));
-                writeOut(ZipEightByteInteger.getBytes(entry.getCompressedSize()));
+                writeOut(ZipEightByteInteger.getBytes(entry.entry.getSize()));
+                writeOut(ZipEightByteInteger.getBytes(entry.entry.getCompressedSize()));
 
                 if (!actuallyNeedsZip64) {
                     // do some cleanup:
                     // * rewrite version needed to extract
-                    raf.seek(localDataStart  - 5 * SHORT);
+                    raf.seek(entry.localDataStart  - 5 * SHORT);
                     writeOut(ZipShort.getBytes(INITIAL_VERSION));
 
                     // * remove ZIP64 extra so it doesn't get written
                     //   to the central directory
-                    entry.removeExtraField(Zip64ExtendedInformationExtraField
-                                           .HEADER_ID);
-                    entry.setExtra();
+                    entry.entry.removeExtraField(Zip64ExtendedInformationExtraField
+                                                 .HEADER_ID);
+                    entry.entry.setExtra();
 
                     // * reset hasUsedZip64 if it has been set because
                     //   of this entry
-                    hasUsedZip64 &= !entryCausedUseOfZip64;
+                    hasUsedZip64 &= !entry.causedUseOfZip64;
                 }
             }
             raf.seek(save);
         }
 
-        writeDataDescriptor(entry);
+        writeDataDescriptor(entry.entry);
         entry = null;
-        bytesRead = 0;
-        entryCausedUseOfZip64 = false;
     }
 
     /**
@@ -511,44 +483,45 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             closeArchiveEntry();
         }
 
-        entry = ((ZipArchiveEntry) archiveEntry);
-        entries.add(entry);
+        entry = new CurrentEntry((ZipArchiveEntry) archiveEntry);
+        entries.add(entry.entry);
 
-        if (entry.getMethod() == -1) { // not specified
-            entry.setMethod(method);
+        if (entry.entry.getMethod() == -1) { // not specified
+            entry.entry.setMethod(method);
         }
 
-        if (entry.getTime() == -1) { // not specified
-            entry.setTime(System.currentTimeMillis());
+        if (entry.entry.getTime() == -1) { // not specified
+            entry.entry.setTime(System.currentTimeMillis());
         }
 
         // Size/CRC not required if RandomAccessFile is used
-        if (entry.getMethod() == STORED && raf == null) {
-            if (entry.getSize() == ArchiveEntry.SIZE_UNKNOWN) {
+        if (entry.entry.getMethod() == STORED && raf == null) {
+            if (entry.entry.getSize() == ArchiveEntry.SIZE_UNKNOWN) {
                 throw new ZipException("uncompressed size is required for"
                                        + " STORED method when not writing to a"
                                        + " file");
             }
-            if (entry.getCrc() == -1) {
+            if (entry.entry.getCrc() == -1) {
                 throw new ZipException("crc checksum is required for STORED"
                                        + " method when not writing to a file");
             }
-            entry.setCompressedSize(entry.getSize());
+            entry.entry.setCompressedSize(entry.entry.getSize());
         }
 
         // add a ZIP64 extended information extra field if we already
         // know it is going to be needed or the size is unknown and we
         // can ensure it won't hurt other implementations if we add it
         // (i.e. we can erase its usage)
-        if (entry.getSize() >= ZIP64_MAGIC
-            || entry.getCompressedSize() >= ZIP64_MAGIC
-            || (entry.getSize() == ArchiveEntry.SIZE_UNKNOWN && raf != null)) {
+        if (entry.entry.getSize() >= ZIP64_MAGIC
+            || entry.entry.getCompressedSize() >= ZIP64_MAGIC
+            || (entry.entry.getSize() == ArchiveEntry.SIZE_UNKNOWN
+                && raf != null)) {
 
-            Zip64ExtendedInformationExtraField z64 = getZip64Extra(entry);
-            if (entry.getMethod() == STORED
-                && entry.getSize() != ArchiveEntry.SIZE_UNKNOWN) {
+            Zip64ExtendedInformationExtraField z64 = getZip64Extra(entry.entry);
+            if (entry.entry.getMethod() == STORED
+                && entry.entry.getSize() != ArchiveEntry.SIZE_UNKNOWN) {
                 ZipEightByteInteger size =
-                    new ZipEightByteInteger(entry.getSize());
+                    new ZipEightByteInteger(entry.entry.getSize());
                 z64.setSize(size);
                 z64.setCompressedSize(size);
             } else {
@@ -557,14 +530,14 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                 z64.setSize(ZipEightByteInteger.ZERO);
                 z64.setCompressedSize(ZipEightByteInteger.ZERO);
             }
-            entry.setExtra();
+            entry.entry.setExtra();
         }
 
-        if (entry.getMethod() == DEFLATED && hasCompressionLevelChanged) {
+        if (entry.entry.getMethod() == DEFLATED && hasCompressionLevelChanged) {
             def.setLevel(level);
             hasCompressionLevelChanged = false;
         }
-        writeLocalFileHeader(entry);
+        writeLocalFileHeader(entry.entry);
     }
 
     /**
@@ -627,10 +600,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     @Override
     public void write(byte[] b, int offset, int length) throws IOException {
-        ZipUtil.checkRequestedFeatures(entry);
-        if (entry.getMethod() == DEFLATED) {
+        ZipUtil.checkRequestedFeatures(entry.entry);
+        if (entry.entry.getMethod() == DEFLATED) {
             if (length > 0 && !def.finished()) {
-                bytesRead += length;
+                entry.bytesRead += length;
                 if (length <= DEFLATER_BLOCK_SIZE) {
                     def.setInput(b, offset, length);
                     deflateUntilInputIsNeeded();
@@ -790,7 +763,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         // CRC
         // compressed length
         // uncompressed length
-        localDataStart = written;
+        entry.localDataStart = written;
         if (zipMethod == DEFLATED || raf != null) {
             writeOut(LZERO);
             writeOut(LZERO);
@@ -822,7 +795,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         writeOut(extra);
         written += extra.length;
 
-        dataStart = written;
+        entry.dataStart = written;
     }
 
     /**
@@ -1123,35 +1096,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * enum that represents the possible policies for creating Unicode
-     * extra fields.
-     */
-    public static final class UnicodeExtraFieldPolicy {
-        /**
-         * Always create Unicode extra fields.
-         */
-        public static final UnicodeExtraFieldPolicy ALWAYS = new UnicodeExtraFieldPolicy("always");
-        /**
-         * Never create Unicode extra fields.
-         */
-        public static final UnicodeExtraFieldPolicy NEVER = new UnicodeExtraFieldPolicy("never");
-        /**
-         * Create Unicode extra fields for filenames that cannot be
-         * encoded using the specified encoding.
-         */
-        public static final UnicodeExtraFieldPolicy NOT_ENCODEABLE =
-            new UnicodeExtraFieldPolicy("not encodeable");
-
-        private final String name;
-        private UnicodeExtraFieldPolicy(String n) {
-            name = n;
-        }
-        public String toString() {
-            return name;
-        }
-    }
-
-    /**
      * Creates a new zip entry taking some information from the given
      * file and using the provided name.
      *
@@ -1179,7 +1123,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     private Zip64ExtendedInformationExtraField
         getZip64Extra(ZipArchiveEntry ze) {
-        entryCausedUseOfZip64 = !hasUsedZip64;
+        if (entry != null) {
+            entry.causedUseOfZip64 = !hasUsedZip64;
+        }
         hasUsedZip64 = true;
         Zip64ExtendedInformationExtraField z64 =
             (Zip64ExtendedInformationExtraField)
@@ -1222,4 +1168,66 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private ByteBuffer getName(ZipArchiveEntry ze) throws IOException {
         return getEntryEncoding(ze).encode(ze.getName());
     }
+
+    /**
+     * enum that represents the possible policies for creating Unicode
+     * extra fields.
+     */
+    public static final class UnicodeExtraFieldPolicy {
+        /**
+         * Always create Unicode extra fields.
+         */
+        public static final UnicodeExtraFieldPolicy ALWAYS = new UnicodeExtraFieldPolicy("always");
+        /**
+         * Never create Unicode extra fields.
+         */
+        public static final UnicodeExtraFieldPolicy NEVER = new UnicodeExtraFieldPolicy("never");
+        /**
+         * Create Unicode extra fields for filenames that cannot be
+         * encoded using the specified encoding.
+         */
+        public static final UnicodeExtraFieldPolicy NOT_ENCODEABLE =
+            new UnicodeExtraFieldPolicy("not encodeable");
+
+        private final String name;
+        private UnicodeExtraFieldPolicy(String n) {
+            name = n;
+        }
+        public String toString() {
+            return name;
+        }
+    }
+
+    /**
+     * Structure collecting information for the entry that is
+     * currently being written.
+     */
+    private static final class CurrentEntry {
+        private CurrentEntry(ZipArchiveEntry entry) {
+            this.entry = entry;
+        }
+        /**
+         * Current ZIP entry.
+         */
+        private final ZipArchiveEntry entry;
+        /**
+         * Offset for CRC entry in the local file header data for the
+         * current entry starts here.
+         */
+        private long localDataStart = 0;
+        /**
+         * Data for local header data
+         */
+        private long dataStart = 0;
+        /**
+         * Number of bytes read for the current entry (can't rely on
+         * Deflater#getBytesRead) when using DEFLATED.
+         */
+        private long bytesRead = 0;
+        /**
+         * Whether current entry was the first one using ZIP64 features.
+         */
+        private boolean causedUseOfZip64 = false;
+    }
+
 }
