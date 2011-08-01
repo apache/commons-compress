@@ -53,7 +53,11 @@ public class Zip64SupportTest {
 
     @Test public void read5GBOfZerosGeneratedByJava7JarUsingInputStream()
         throws Throwable {
-        read5GBOfZerosImpl(get5GBZerosFileGeneratedByJava7Jar(), "5GB_of_Zeros");
+        // don't check the size in jar case as jar uses 8-Byte values
+        // inside the data descriptor without adding a ZIP64 extra
+        // field, violating the "spec".
+        read5GBOfZerosImpl(get5GBZerosFileGeneratedByJava7Jar(), "5GB_of_Zeros",
+                           false);
     }
 
     @Test public void read100KFilesUsingInputStream() throws Throwable {
@@ -1329,6 +1333,12 @@ public class Zip64SupportTest {
 
     private static void read5GBOfZerosImpl(File f, String expectedName)
         throws IOException {
+        read5GBOfZerosImpl(f, expectedName, true);
+    }
+
+    private static void read5GBOfZerosImpl(File f, String expectedName,
+                                           boolean checkSize)
+        throws IOException {
         FileInputStream fin = new FileInputStream(f);
         ZipArchiveInputStream zin = null;
         try {
@@ -1349,8 +1359,10 @@ public class Zip64SupportTest {
                 read += readNow;
             }
             assertEquals(FIVE_BILLION, read);
-            assertEquals(FIVE_BILLION, zae.getSize());
             assertNull(zin.getNextZipEntry());
+            if (checkSize) {
+                assertEquals(FIVE_BILLION, zae.getSize());
+            }
         } finally {
             if (zin != null) {
                 zin.close();
