@@ -46,6 +46,16 @@ public class Zip64SupportTest {
         read5GBOfZerosImpl(get5GBZerosFile(), "5GB_of_Zeros");
     }
 
+    @Test public void read5GBOfZerosGeneratedBy7ZIPUsingInputStream()
+        throws Throwable {
+        read5GBOfZerosImpl(get5GBZerosFileGeneratedBy7ZIP(), "5GB_of_Zeros");
+    }
+
+    @Test public void read5GBOfZerosGeneratedByJava7JarUsingInputStream()
+        throws Throwable {
+        read5GBOfZerosImpl(get5GBZerosFileGeneratedByJava7Jar(), "5GB_of_Zeros");
+    }
+
     @Test public void read100KFilesUsingInputStream() throws Throwable {
         FileInputStream fin = new FileInputStream(get100KFileFile());
         ZipArchiveInputStream zin = null;
@@ -1297,6 +1307,14 @@ public class Zip64SupportTest {
 
     private static File get5GBZerosFile() throws Throwable {
         return getFile("/5GB_of_Zeros.zip");
+    }
+
+    private static File get5GBZerosFileGeneratedBy7ZIP() throws Throwable {
+        return getFile("/5GB_of_Zeros_7ZIP.zip");
+    }
+
+    private static File get5GBZerosFileGeneratedByJava7Jar() throws Throwable {
+        return getFile("/5GB_of_Zeros_jar.zip");
     }
 
     private static File get100KFileFile() throws Throwable {
