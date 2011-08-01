@@ -32,6 +32,10 @@ import java.util.zip.ZipException;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 
+import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
+
 /**
  * Implements an input stream that can read Zip archives.
  * <p>
@@ -44,9 +48,6 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
  * @NotThreadSafe
  */
 public class ZipArchiveInputStream extends ArchiveInputStream {
-
-    private static final int SHORT = 2;
-    private static final int WORD = 4;
 
     /**
      * The zip encoding to use for filenames and the file comment.
@@ -72,6 +73,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     private long readBytesOfEntry = 0, bytesReadFromStream = 0;
     private int lengthOfLastRead = 0;
     private boolean hasDataDescriptor = false;
+    private boolean usesZip64 = false;
     private ByteArrayInputStream lastStoredEntry = null;
 
     private boolean allowStoredEntriesWithDataDescriptor = false;
@@ -173,14 +175,15 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         current.setTime(time);
         off += WORD;
 
+        ZipLong size = null, cSize = null;
         if (!hasDataDescriptor) {
             current.setCrc(ZipLong.getValue(lfh, off));
             off += WORD;
 
-            current.setCompressedSize(ZipLong.getValue(lfh, off));
+            cSize = new ZipLong(lfh, off);
             off += WORD;
 
-            current.setSize(ZipLong.getValue(lfh, off));
+            size = new ZipLong(lfh, off);
             off += WORD;
         } else {
             off += 3 * WORD;
@@ -204,10 +207,29 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         if (!hasUTF8Flag && useUnicodeExtraFields) {
             ZipUtil.setNameAndCommentFromExtraFields(current, fileName, null);
         }
+
+        Zip64ExtendedInformationExtraField z64 =  
+            (Zip64ExtendedInformationExtraField)
+            current.getExtraField(Zip64ExtendedInformationExtraField
+                                  .HEADER_ID);
+        usesZip64 = z64 != null;
+        if (!hasDataDescriptor) {
+            if (usesZip64 && (cSize.equals(ZipLong.ZIP64_MAGIC)
+                              || size.equals(ZipLong.ZIP64_MAGIC))
+                ) {
+                current.setCompressedSize(z64.getCompressedSize()
+                                          .getLongValue());
+                current.setSize(z64.getSize().getLongValue());
+            } else {
+                current.setCompressedSize(cSize.getValue());
+                current.setSize(size.getValue());
+            }
+        }
         return current;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ArchiveEntry getNextEntry() throws IOException {
         return getNextZipEntry();
     }
@@ -219,6 +241,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
      * compression method that hasn't been implemented yet.</p>
      * @since Apache Commons Compress 1.1
      */
+    @Override
     public boolean canReadEntryData(ArchiveEntry ae) {
         if (ae instanceof ZipArchiveEntry) {
             ZipArchiveEntry ze = (ZipArchiveEntry) ae;
@@ -229,6 +252,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         return false;
     }
 
+    @Override
     public int read(byte[] buffer, int start, int length) throws IOException {
         if (closed) {
             throw new IOException("The stream is closed");
@@ -307,6 +331,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         throw new ArrayIndexOutOfBoundsException();
     }
 
+    @Override
     public void close() throws IOException {
         if (!closed) {
             closed = true;
@@ -329,6 +354,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
      * @throws IOException - if an I/O error occurs.
      * @throws IllegalArgumentException - if value is negative.
      */
+    @Override
     public long skip(long value) throws IOException {
         if (value >= 0) {
             long skipped = 0;
@@ -420,7 +446,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
 
             long inB;
             if (current.getMethod() == ZipArchiveOutputStream.DEFLATED) {
-                inB = ZipUtil.adjustToLong(inf.getTotalIn());
+                inB = inf.getBytesRead();
             } else {
                 inB = readBytesOfEntry;
             }
@@ -480,10 +506,18 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             val = new ZipLong(b);
         }
         current.setCrc(val.getValue());
-        readFully(b);
-        current.setCompressedSize(new ZipLong(b).getValue());
-        readFully(b);
-        current.setSize(new ZipLong(b).getValue());
+        if (!usesZip64) {
+            readFully(b);
+            current.setCompressedSize(ZipLong.getValue(b));
+            readFully(b);
+            current.setSize(ZipLong.getValue(b));
+        } else {
+            byte[] b8 = new byte[DWORD];
+            readFully(b8);
+            current.setCompressedSize(ZipEightByteInteger.getLongValue(b8));
+            readFully(b8);
+            current.setSize(ZipEightByteInteger.getLongValue(b8));
+        }
     }
 
     /**
@@ -524,6 +558,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         int off = 0;
         boolean done = false;
 
+        // length of DD without signature
+        int ddLen = usesZip64 ? WORD + 2 * DWORD : 3 * WORD;
+
         while (!done) {
             int r = in.read(buf, off, ZipArchiveOutputStream.BUFFER_SIZE - off);
             if (r <= 0) {
@@ -543,7 +580,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                     if ((buf[i + 2] == LFH[2] && buf[i + 3] == LFH[3])
                         || (buf[i] == CFH[2] && buf[i + 3] == CFH[3])) {
                         // found a LFH or CFH:
-                        readTooMuch = off + r - i - 12 /* dd without signature */;
+                        readTooMuch = off + r - i - ddLen;
                         done = true;
                     }
                     else if (buf[i + 2] == DD[2] && buf[i + 3] == DD[3]) {
@@ -564,14 +601,15 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             }
             if (!done) {
                 // worst case we've read a data descriptor without a
-                // signature (12 bytes) plus the first three bytes of
+                // signature (up to 20 bytes) plus the first three bytes of
                 // a LFH or CFH signature
-                // save the last 15 bytes in the buffer, cache
+                // save the last ddLen + 3 bytes in the buffer, cache
                 // anything in front of that, read on
-                if (off + r > 15) {
-                    bos.write(buf, 0, off + r - 15);
-                    System.arraycopy(buf, off + r - 15, buf, 0, 15);
-                    off = 15;
+                if (off + r > ddLen + 3) {
+                    bos.write(buf, 0, off + r - ddLen - 3);
+                    System.arraycopy(buf, off + r - ddLen - 3, buf, 0,
+                                     ddLen + 3);
+                    off = ddLen + 3;
                 } else {
                     off += r;
                 }
