@@ -61,25 +61,19 @@ public class Zip64SupportTest {
     }
 
     @Test public void read100KFilesUsingInputStream() throws Throwable {
-        FileInputStream fin = new FileInputStream(get100KFileFile());
-        ZipArchiveInputStream zin = null;
-        try {
-            zin = new ZipArchiveInputStream(fin);
-            int files = 0;
-            ZipArchiveEntry zae = null;
-            while ((zae = zin.getNextZipEntry()) != null) {
-                if (!zae.isDirectory()) {
-                    files++;
-                    assertEquals(0, zae.getSize());
-                }
-            }
-            assertEquals(ONE_HUNDRED_THOUSAND, files);
-        } finally {
-            if (zin != null) {
-                zin.close();
-            }
-            fin.close();
-        }
+        read100KFilesImpl(get100KFileFile());
+    }
+
+    @Test public void read100KFilesGeneratedBy7ZIPUsingInputStream() throws Throwable {
+        read100KFilesImpl(get100KFileFileGeneratedBy7ZIP());
+    }
+
+    @Test public void read100KFilesGeneratedByWinCFUsingInputStream() throws Throwable {
+        read100KFilesImpl(get100KFileFileGeneratedByWinCF());
+    }
+
+    @Test public void read100KFilesGeneratedByJava7JarUsingInputStream() throws Throwable {
+        read100KFilesImpl(get100KFileFileGeneratedByJava7Jar());
     }
 
     private static final ZipOutputTest write100KFiles =
@@ -1325,6 +1319,18 @@ public class Zip64SupportTest {
         return getFile("/100k_Files.zip");
     }
 
+    private static File get100KFileFileGeneratedBy7ZIP() throws Throwable {
+        return getFile("/100k_Files_7ZIP.zip");
+    }
+
+    private static File get100KFileFileGeneratedByWinCF() throws Throwable {
+        return getFile("/100k_Files_WindowsCompressedFolders.zip");
+    }
+
+    private static File get100KFileFileGeneratedByJava7Jar() throws Throwable {
+        return getFile("/100k_Files_jar.zip");
+    }
+
     private static File getTempFile(String testName) throws Throwable {
         File f = File.createTempFile("commons-compress-" + testName, ".zip");
         f.deleteOnExit();
@@ -1370,6 +1376,28 @@ public class Zip64SupportTest {
             if (fin != null) {
                 fin.close();
             }
+        }
+    }
+
+    private static void read100KFilesImpl(File f) throws IOException {
+        FileInputStream fin = new FileInputStream(f);
+        ZipArchiveInputStream zin = null;
+        try {
+            zin = new ZipArchiveInputStream(fin);
+            int files = 0;
+            ZipArchiveEntry zae = null;
+            while ((zae = zin.getNextZipEntry()) != null) {
+                if (!zae.isDirectory()) {
+                    files++;
+                    assertEquals(0, zae.getSize());
+                }
+            }
+            assertEquals(ONE_HUNDRED_THOUSAND, files);
+        } finally {
+            if (zin != null) {
+                zin.close();
+            }
+            fin.close();
         }
     }
 
