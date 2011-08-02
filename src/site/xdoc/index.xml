@@ -23,10 +23,10 @@
         <author email="dev@commons.apache.org">Commons Documentation Team</author>
     </properties>
     <body>
-        <section name="Commons Compress">
+        <section name="Apache Commons Compress&#x2122;">
             <p>
-                Commons Compress defines an API for working with ar,
-                cpio, tar, zip, gzip and bzip2 files.
+                The Apache Commons Compress library defines an API for
+                working with ar, cpio, tar, zip, gzip and bzip2 files.
             </p>
             <p>
                 The code in this component has many origins:
