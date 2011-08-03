@@ -486,7 +486,6 @@ public class Zip64SupportTest {
      *
      * Creates a temporary archive of approx 4MB in size
      */
-    @Ignore
     @Test public void writeBigDeflatedEntryKnownSizeToStream()
         throws Throwable {
         withTemporaryArchive("writeBigDeflatedEntryKnownSizeToStream",
@@ -563,7 +562,7 @@ public class Zip64SupportTest {
                                                  // file name
                                                  (byte) '0'
                                              }, rest);
-                                         byte[] extra = new byte[12];
+                                         byte[] extra = new byte[20];
                                          a.readFully(extra);
                                          // 5e9 == 0x12A05F200
                                          assertArrayEquals(new byte[] {
@@ -574,10 +573,10 @@ public class Zip64SupportTest {
                                                  // original size
                                                  0, (byte) 0xF2, 5, (byte) 0x2A,
                                                  1, 0, 0, 0,
-                                                 // don't know the
-                                                 // compressed size,
-                                                 // don't want to
-                                                 // hard-code it
+                                                 // compressed size
+                                                 (byte) 0x68, (byte) 0x27,
+                                                 (byte) 0x4A, 0,
+                                                 0, 0, 0, 0,
                                              }, extra);
 
                                          // validate data descriptor
@@ -591,11 +590,13 @@ public class Zip64SupportTest {
                                                  (byte) 0x50, (byte) 0x6F,
                                                  (byte) 0x31, (byte) 0x5c,
                                              }, dd);
-                                         // skip uncompressed size
-                                         a.skipBytes(8);
-                                         dd = new byte[8];
+                                         dd = new byte[16];
                                          a.readFully(dd);
                                          assertArrayEquals(new byte[] {
+                                                 // compressed size
+                                                 (byte) 0x68, (byte) 0x27,
+                                                 (byte) 0x4A, 0,
+                                                 0, 0, 0, 0,
                                                  // original size
                                                  0, (byte) 0xF2, 5, (byte) 0x2A,
                                                  1, 0, 0, 0,
@@ -641,7 +642,9 @@ public class Zip64SupportTest {
                                                  16, 0,
                                                  // original size
                                                  0, 0, 0, 0,
+                                                 0, 0, 0, 0,
                                                  // compressed size
+                                                 0, 0, 0, 0,
                                                  0, 0, 0, 0,
                                              }, extra);
                                      } finally {
@@ -730,7 +733,7 @@ public class Zip64SupportTest {
                             // file name
                             (byte) '0'
                         }, rest);
-                    byte[] extra = new byte[12];
+                    byte[] extra = new byte[20];
                     a.readFully(extra);
                     // 5e9 == 0x12A05F200
                     assertArrayEquals(new byte[] {
@@ -741,10 +744,9 @@ public class Zip64SupportTest {
                             // original size
                             0, (byte) 0xF2, 5, (byte) 0x2A,
                             1, 0, 0, 0,
-                            // don't know the
-                            // compressed size,
-                            // don't want to
-                            // hard-code it
+                            // compressed size
+                            (byte) 0x68, (byte) 0x27, (byte) 0x4A, 0,
+                            0, 0, 0, 0,
                         }, extra);
 
                     // and now validate local file header
@@ -779,7 +781,7 @@ public class Zip64SupportTest {
                             // file name
                             (byte) '0'
                         }, rest);
-                    extra = new byte[12];
+                    extra = new byte[20];
                     a.readFully(extra);
                     assertArrayEquals(new byte[] {
                             // Header-ID
@@ -789,10 +791,9 @@ public class Zip64SupportTest {
                             // original size
                             0, (byte) 0xF2, 5, (byte) 0x2A,
                             1, 0, 0, 0,
-                            // don't know the
-                            // compressed size,
-                            // don't want to
-                            // hard-code it
+                            // compressed size
+                            (byte) 0x68, (byte) 0x27, (byte) 0x4A, 0,
+                            0, 0, 0, 0,
                         }, extra);
                 } finally {
                     a.close();
