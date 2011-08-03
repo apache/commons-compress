@@ -364,6 +364,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         if (!closed) {
             closed = true;
             in.close();
+            inf.end();
         }
     }
 
