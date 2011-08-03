@@ -46,6 +46,10 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.3" date="unreleased"
              description="Release 1.3 - API compatible to 1.2 but requires Java5 at runtime">
+      <action issue="COMPRESS-152" type="fix" date="2011-08-03">
+        ZipArchiveInputStream and ZipArchiveOutputStream could leak
+        resources on some JDKs.
+      </action> 
     </release>
     <release version="1.2" date="2011-07-31"
              description="Release 1.2 - a bugfix release, the last release expected to be compatible with Java 1.4">

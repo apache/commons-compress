@@ -357,6 +357,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         writeCentralDirectoryEnd();
         offsets.clear();
         entries.clear();
+        def.end();
         finished = true;
     }
 
