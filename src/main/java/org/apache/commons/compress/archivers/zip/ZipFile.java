@@ -32,6 +32,9 @@ import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipException;
 
+import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
+
 /**
  * Replacement for <code>java.util.ZipFile</code>.
  *
@@ -62,8 +65,6 @@ import java.util.zip.ZipException;
  */
 public class ZipFile {
     private static final int HASH_SIZE = 509;
-    private static final int SHORT     =   2;
-    private static final int WORD      =   4;
     static final int NIBLET_MASK = 0x0f;
     static final int BYTE_SHIFT = 8;
     private static final int POS_0 = 0;
@@ -72,15 +73,17 @@ public class ZipFile {
     private static final int POS_3 = 3;
 
     /**
-     * Maps ZipArchiveEntrys to Longs, recording the offsets of the local
-     * file headers.
+     * Maps ZipArchiveEntrys to two longs, recording the offsets of
+     * the local file headers and the start of entry data.
      */
-    private final Map entries = new LinkedHashMap(HASH_SIZE);
+    private final Map<ZipArchiveEntry, OffsetEntry> entries =
+        new LinkedHashMap<ZipArchiveEntry, OffsetEntry>(HASH_SIZE);
 
     /**
      * Maps String to ZipArchiveEntrys, name -> actual entry.
      */
-    private final Map nameMap = new HashMap(HASH_SIZE);
+    private final Map<String, ZipArchiveEntry> nameMap =
+        new HashMap<String, ZipArchiveEntry>(HASH_SIZE);
 
     private static final class OffsetEntry {
         private long headerOffset = -1;
@@ -192,7 +195,8 @@ public class ZipFile {
         archive = new RandomAccessFile(f, "r");
         boolean success = false;
         try {
-            Map entriesWithoutUTF8Flag = populateFromCentralDirectory();
+            Map<ZipArchiveEntry, NameAndComment> entriesWithoutUTF8Flag =
+                populateFromCentralDirectory();
             resolveLocalFileHeaderData(entriesWithoutUTF8Flag);
             success = true;
         } finally {
@@ -267,7 +271,8 @@ public class ZipFile {
      * @since Commons Compress 1.1
      */
     public Enumeration getEntriesInPhysicalOrder() {
-        Object[] allEntries = entries.keySet().toArray();
+        ZipArchiveEntry[] allEntries =
+            entries.keySet().toArray(new ZipArchiveEntry[0]);
         Arrays.sort(allEntries, OFFSET_COMPARATOR);
         return Collections.enumeration(Arrays.asList(allEntries));
     }
@@ -280,7 +285,7 @@ public class ZipFile {
      * <code>null</code> if not present.
      */
     public ZipArchiveEntry getEntry(String name) {
-        return (ZipArchiveEntry) nameMap.get(name);
+        return nameMap.get(name);
     }
 
     /**
@@ -304,7 +309,7 @@ public class ZipFile {
      */
     public InputStream getInputStream(ZipArchiveEntry ze)
         throws IOException, ZipException {
-        OffsetEntry offsetEntry = (OffsetEntry) entries.get(ze);
+        OffsetEntry offsetEntry = entries.get(ze);
         if (offsetEntry == null) {
             return null;
         }
@@ -373,13 +378,13 @@ public class ZipFile {
      * the central directory alone, but not the data that requires the
      * local file header or additional data to be read.</p>
      *
-     * @return a Map&lt;ZipArchiveEntry, NameAndComment>&gt; of
-     * zipentries that didn't have the language encoding flag set when
-     * read.
+     * @return a map of zipentries that didn't have the language
+     * encoding flag set when read.
      */
-    private Map populateFromCentralDirectory()
+    private Map<ZipArchiveEntry, NameAndComment> populateFromCentralDirectory()
         throws IOException {
-        HashMap noUTF8Flag = new HashMap();
+        HashMap<ZipArchiveEntry, NameAndComment> noUTF8Flag =
+            new HashMap<ZipArchiveEntry, NameAndComment>();
 
         positionAtCentralDirectory();
 
@@ -570,12 +575,11 @@ public class ZipFile {
      * <p>Also records the offsets for the data to read from the
      * entries.</p>
      */
-    private void resolveLocalFileHeaderData(Map entriesWithoutUTF8Flag)
+    private void resolveLocalFileHeaderData(Map<ZipArchiveEntry, NameAndComment>
+                                            entriesWithoutUTF8Flag)
         throws IOException {
-        Enumeration e = getEntries();
-        while (e.hasMoreElements()) {
-            ZipArchiveEntry ze = (ZipArchiveEntry) e.nextElement();
-            OffsetEntry offsetEntry = (OffsetEntry) entries.get(ze);
+        for (ZipArchiveEntry ze : entries.keySet()) {
+            OffsetEntry offsetEntry = entries.get(ze);
             long offset = offsetEntry.headerOffset;
             archive.seek(offset + LFH_OFFSET_FOR_FILENAME_LENGTH);
             byte[] b = new byte[SHORT];
@@ -595,16 +599,12 @@ public class ZipFile {
             byte[] localExtraData = new byte[extraFieldLen];
             archive.readFully(localExtraData);
             ze.setExtra(localExtraData);
-            /*dataOffsets.put(ze,
-                            new Long(offset + LFH_OFFSET_FOR_FILENAME_LENGTH
-                                     + SHORT + SHORT + fileNameLen + extraFieldLen));
-            */
             offsetEntry.dataOffset = offset + LFH_OFFSET_FOR_FILENAME_LENGTH
                 + SHORT + SHORT + fileNameLen + extraFieldLen;
 
             if (entriesWithoutUTF8Flag.containsKey(ze)) {
                 String orig = ze.getName();
-                NameAndComment nc = (NameAndComment) entriesWithoutUTF8Flag.get(ze);
+                NameAndComment nc = entriesWithoutUTF8Flag.get(ze);
                 ZipUtil.setNameAndCommentFromExtraFields(ze, nc.name,
                                                          nc.comment);
                 if (!orig.equals(ze.getName())) {
@@ -715,17 +715,14 @@ public class ZipFile {
      *
      * @since Commons Compress 1.1
      */
-    private final Comparator OFFSET_COMPARATOR =
-        new Comparator() {
-            public int compare(Object o1, Object o2) {
-                if (o1 == o2)
+    private final Comparator<ZipArchiveEntry> OFFSET_COMPARATOR =
+        new Comparator<ZipArchiveEntry>() {
+            public int compare(ZipArchiveEntry e1, ZipArchiveEntry e2) {
+                if (e1 == e2)
                     return 0;
 
-                ZipArchiveEntry e1 = (ZipArchiveEntry) o1;
-                ZipArchiveEntry e2 = (ZipArchiveEntry) o2;
-
-                OffsetEntry off1 = (OffsetEntry) entries.get(e1);
-                OffsetEntry off2 = (OffsetEntry) entries.get(e2);
+                OffsetEntry off1 = entries.get(e1);
+                OffsetEntry off2 = entries.get(e2);
                 if (off1 == null) {
                     return 1;
                 }
