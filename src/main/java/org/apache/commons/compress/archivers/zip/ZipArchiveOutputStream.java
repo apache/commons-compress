@@ -374,27 +374,27 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             throw new IOException("No current entry to close");
         }
 
-        long realCrc = crc.getValue();
-        crc.reset();
-
         if (entry.entry.getMethod() == DEFLATED) {
             def.finish();
             while (!def.finished()) {
                 deflate();
             }
+        }
 
+        long bytesWritten = written - entry.dataStart;
+        long realCrc = crc.getValue();
+        crc.reset();
+
+        if (entry.entry.getMethod() == DEFLATED) {
             /* It turns out def.getBytesRead() returns wrong values if
-             * the size exceeds 4 GB - no idea whether one can trust
-             * def.getBytesWritten()
+             * the size exceeds 4 GB on Java < Java7
             entry.entry.setSize(def.getBytesRead());
             */
             entry.entry.setSize(entry.bytesRead);
-            entry.entry.setCompressedSize(def.getBytesWritten());
+            entry.entry.setCompressedSize(bytesWritten);
             entry.entry.setCrc(realCrc);
 
             def.reset();
-
-            written += entry.entry.getCompressedSize();
         } else if (raf == null) {
             if (entry.entry.getCrc() != realCrc) {
                 throw new ZipException("bad CRC checksum for entry "
@@ -404,18 +404,16 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                                        + Long.toHexString(realCrc));
             }
 
-            if (entry.entry.getSize() != written - entry.dataStart) {
+            if (entry.entry.getSize() != bytesWritten) {
                 throw new ZipException("bad size for entry "
                                        + entry.entry.getName() + ": "
                                        + entry.entry.getSize()
                                        + " instead of "
-                                       + (written - entry.dataStart));
+                                       + bytesWritten);
             }
         } else { /* method is STORED and we used RandomAccessFile */
-            long size = written - entry.dataStart;
-
-            entry.entry.setSize(size);
-            entry.entry.setCompressedSize(size);
+            entry.entry.setSize(bytesWritten);
+            entry.entry.setCompressedSize(bytesWritten);
             entry.entry.setCrc(realCrc);
         }
 
@@ -698,6 +696,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         int len = def.deflate(buf, 0, buf.length);
         if (len > 0) {
             writeOut(buf, 0, len);
+            written += len;
         }
     }
 
