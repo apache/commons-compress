@@ -34,6 +34,8 @@ import java.util.zip.ZipException;
 
 import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC_SHORT;
 
 /**
  * Replacement for <code>java.util.ZipFile</code>.
@@ -499,7 +501,7 @@ public class ZipFile {
         /* zipfile comment length          */ + SHORT;
 
     private static final int MAX_EOCD_SIZE = MIN_EOCD_SIZE
-        /* maximum length of zipfile comment */ + 0xFFFF;
+        /* maximum length of zipfile comment */ + ZIP64_MAGIC_SHORT;
 
     private static final int CFD_LOCATOR_OFFSET =
         /* end of central dir signature    */ WORD
@@ -519,12 +521,30 @@ public class ZipFile {
      */
     private void positionAtCentralDirectory()
         throws IOException {
+        boolean found = tryToLocateSignature(MIN_EOCD_SIZE, MAX_EOCD_SIZE,
+                                             ZipArchiveOutputStream.EOCD_SIG);
+        if (!found) {
+            throw new ZipException("archive is not a ZIP archive");
+        }
+        archive.skipBytes(CFD_LOCATOR_OFFSET);
+        byte[] cfdOffset = new byte[WORD];
+        archive.readFully(cfdOffset);
+        archive.seek(ZipLong.getValue(cfdOffset));
+    }
+
+    /**
+     * Searches the archive backwards from minDistance to maxDistance
+     * for the given signature, positions the RandomaccessFile right
+     * at the signature if it has been found.
+     */
+    private boolean tryToLocateSignature(long minDistanceFromEnd,
+                                         long maxDistanceFromEnd,
+                                         byte[] sig) throws IOException {
         boolean found = false;
-        long off = archive.length() - MIN_EOCD_SIZE;
-        long stopSearching = Math.max(0L, archive.length() - MAX_EOCD_SIZE);
+        long off = archive.length() - minDistanceFromEnd;
+        long stopSearching = Math.max(0L, archive.length() - maxDistanceFromEnd);
         if (off >= 0) {
             archive.seek(off);
-            byte[] sig = ZipArchiveOutputStream.EOCD_SIG;
             int curr = archive.read();
             while (off >= stopSearching && curr != -1) {
                 if (curr == sig[POS_0]) {
@@ -544,13 +564,10 @@ public class ZipFile {
                 curr = archive.read();
             }
         }
-        if (!found) {
-            throw new ZipException("archive is not a ZIP archive");
+        if (found) {
+            archive.seek(off);
         }
-        archive.seek(off + CFD_LOCATOR_OFFSET);
-        byte[] cfdOffset = new byte[WORD];
-        archive.readFully(cfdOffset);
-        archive.seek(ZipLong.getValue(cfdOffset));
+        return found;
     }
 
     /**
