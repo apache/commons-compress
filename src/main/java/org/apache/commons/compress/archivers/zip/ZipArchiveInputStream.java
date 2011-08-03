@@ -35,6 +35,7 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC;
 
 /**
  * Implements an input stream that can read Zip archives.
@@ -118,6 +119,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
       file name length                2 bytes
       extra field length              2 bytes
     */
+
+    private static final long TWO_EXP_32 = ZIP64_MAGIC + 1;
 
     public ZipArchiveInputStream(InputStream inputStream) {
         this(inputStream, ZipEncodingHelper.UTF8, true);
@@ -478,6 +481,25 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             long inB;
             if (current.entry.getMethod() == ZipArchiveOutputStream.DEFLATED) {
                 inB = inf.getBytesRead();
+                /* for Java < Java7 the getBytes* methods in
+                 * Inflater/Deflater seem to return unsigned ints
+                 * rather than longs that start over with 0 at 2^32.
+                 *
+                 * The stream knows how many bytes it has read, but
+                 * not how many the Inflater actually consumed - it
+                 * should be between the total number of bytes read
+                 * for the entry and the total number minus the last
+                 * read operation.  Here we just try to make the value
+                 * close enough to the bytes we've read by assuming
+                 * the number of bytes consumed must be smaller than
+                 * (or equal to) the number of bytes read but not
+                 * smaller by more than 2^32.
+                 */
+                if (current.bytesReadFromStream >= TWO_EXP_32) {
+                    while (inB + TWO_EXP_32 <= current.bytesReadFromStream) {
+                        inB += TWO_EXP_32;
+                    }
+                }
             } else {
                 inB = current.bytesRead;
             }
