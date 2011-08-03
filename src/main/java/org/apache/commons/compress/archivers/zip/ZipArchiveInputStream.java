@@ -457,9 +457,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
 
             // Pushback any required bytes
             if (diff > 0) {
-                ((PushbackInputStream) in).unread(
-                        buf,  lengthOfLastRead - diff, diff);
-                pushedBackBytes(diff);
+                pushback(buf, lengthOfLastRead - diff, diff);
             }
         }
 
@@ -506,17 +504,29 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             val = new ZipLong(b);
         }
         current.setCrc(val.getValue());
-        if (!usesZip64) {
-            readFully(b);
+
+        // if there is a ZIP64 extra field, sizes are eight bytes
+        // each, otherwise four bytes each.  Unfortunately some
+        // implementations - namely Java7 - use eight bytes without
+        // using a ZIP64 extra field -
+        // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7073588
+
+        // just read 16 bytes and check whether bytes nine to twelve
+        // look like one of the signatures of what could follow a data
+        // descriptor (ignoring archive decryption headers for now).
+        // If so, push back eight bytes and assume sizes are four
+        // bytes, otherwise sizes are eight bytes each.
+        b = new byte[2 * DWORD];
+        readFully(b);
+        ZipLong potentialSig = new ZipLong(b, DWORD);
+        if (potentialSig.equals(ZipLong.CFH_SIG)
+            || potentialSig.equals(ZipLong.LFH_SIG)) {
+            pushback(b, DWORD, DWORD);
             current.setCompressedSize(ZipLong.getValue(b));
-            readFully(b);
-            current.setSize(ZipLong.getValue(b));
+            current.setSize(ZipLong.getValue(b, WORD));
         } else {
-            byte[] b8 = new byte[DWORD];
-            readFully(b8);
-            current.setCompressedSize(ZipEightByteInteger.getLongValue(b8));
-            readFully(b8);
-            current.setSize(ZipEightByteInteger.getLongValue(b8));
+            current.setCompressedSize(ZipEightByteInteger.getLongValue(b));
+            current.setSize(ZipEightByteInteger.getLongValue(b, DWORD));
         }
     }
 
@@ -593,7 +603,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                         //   descriptor
                         // * copy the remaining bytes to cache
                         // * read data descriptor
-                        ((PushbackInputStream) in).unread(buf, off + r - readTooMuch, readTooMuch);
+                        pushback(buf, off + r - readTooMuch, readTooMuch);
                         bos.write(buf, 0, i);
                         readDataDescriptor();
                     }
@@ -618,5 +628,11 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
 
         byte[] b = bos.toByteArray();
         lastStoredEntry = new ByteArrayInputStream(b);
+    }
+
+    private void pushback(byte[] buf, int offset, int length)
+        throws IOException {
+        ((PushbackInputStream) in).unread(buf, offset, length);
+        pushedBackBytes(length);
     }
 }
