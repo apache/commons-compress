@@ -34,8 +34,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeNotNull;
 import static org.junit.Assume.assumeTrue;
 
@@ -82,6 +84,24 @@ public class Zip64SupportTest {
         read100KFilesImpl(get100KFileFileGeneratedByJava7Jar());
     }
 
+    @Test public void read5GBOfZerosUsingZipFile() throws Throwable {
+        read5GBOfZerosUsingZipFileImpl(get5GBZerosFile(), "5GB_of_Zeros");
+    }
+
+    @Test public void read5GBOfZerosGeneratedBy7ZIPUsingZipFile()
+        throws Throwable {
+        read5GBOfZerosUsingZipFileImpl(get5GBZerosFileGeneratedBy7ZIP(),
+                                       "5GB_of_Zeros");
+    }
+
+    @Ignore
+    @Test public void read5GBOfZerosGeneratedByJava7JarUsingZipFile()
+        throws Throwable {
+        read5GBOfZerosUsingZipFileImpl(get5GBZerosFileGeneratedByJava7Jar(),
+                                       "5GB_of_Zeros");
+    }
+
+    @Ignore
     @Test public void read100KFilesUsingZipFile() throws Throwable {
         read100KFilesUsingZipFileImpl(get100KFileFile());
     }
@@ -1426,6 +1446,42 @@ public class Zip64SupportTest {
             if (fin != null) {
                 fin.close();
             }
+        }
+    }
+
+    private static void read5GBOfZerosUsingZipFileImpl(File f,
+                                                       String expectedName)
+        throws IOException {
+        ZipFile zf = null;
+        try {
+            zf = new ZipFile(f);
+            Enumeration e = zf.getEntries();
+            assertTrue(e.hasMoreElements());
+            ZipArchiveEntry zae = (ZipArchiveEntry) e.nextElement();
+            assertEquals(expectedName, zae.getName());
+            assertEquals(FIVE_BILLION, zae.getSize());
+            byte[] buf = new byte[1024 * 1024];
+            long read = 0;
+            Random r = new Random(System.currentTimeMillis());
+            int readNow;
+            InputStream zin = zf.getInputStream(zae);
+            try {
+                while ((readNow = zin.read(buf, 0, buf.length)) > 0) {
+                    // testing all bytes for a value of 0 is going to take
+                    // too long, just pick a few ones randomly
+                    for (int i = 0; i < 1024; i++) {
+                        int idx = r.nextInt(readNow);
+                        assertEquals("testing byte " + (read + idx), 0, buf[idx]);
+                    }
+                    read += readNow;
+                }
+            } finally {
+                zin.close();
+            }
+            assertEquals(FIVE_BILLION, read);
+            assertFalse(e.hasMoreElements());
+        } finally {
+            ZipFile.closeQuietly(zf);
         }
     }
 
