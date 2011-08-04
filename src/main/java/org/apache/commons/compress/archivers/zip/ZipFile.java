@@ -482,20 +482,34 @@ public class ZipFile {
                 ze.getExtraField(Zip64ExtendedInformationExtraField
                                  .HEADER_ID);
             if (z64 != null) {
-                z64.reparseCentralDirectoryData(ze.getSize() == ZIP64_MAGIC,
-                                                ze.getCompressedSize()
-                                                == ZIP64_MAGIC,
-                                                offset.headerOffset
-                                                == ZIP64_MAGIC,
+                boolean hasUncompressedSize = ze.getSize() == ZIP64_MAGIC;
+                boolean hasCompressedSize =
+                    ze.getCompressedSize() == ZIP64_MAGIC;
+                boolean hasRelativeHeaderOffset = 
+                    offset.headerOffset == ZIP64_MAGIC;
+                z64.reparseCentralDirectoryData(hasUncompressedSize,
+                                                hasCompressedSize,
+                                                hasRelativeHeaderOffset,
                                                 diskStart == ZIP64_MAGIC_SHORT);
-                if (ze.getSize() == ZIP64_MAGIC) {
+
+                // read ZIP64 values into entry.
+                // ensure ZIP64 field either knows no or both size
+                // values so it can create valid local header extra data
+
+                if (hasUncompressedSize) {
                     ze.setSize(z64.getSize().getLongValue());
+                } else if (hasCompressedSize) {
+                    z64.setSize(new ZipEightByteInteger(ze.getSize()));
                 }
-                if (ze.getCompressedSize() == ZIP64_MAGIC) {
+
+                if (hasCompressedSize) {
                     ze.setCompressedSize(z64.getCompressedSize()
                                          .getLongValue());
+                } else if (hasUncompressedSize) {
+                    z64.setCompressedSize(new ZipEightByteInteger(ze.getCompressedSize()));
                 }
-                if (offset.headerOffset == ZIP64_MAGIC) {
+
+                if (hasRelativeHeaderOffset) {
                     offset.headerOffset =
                         z64.getRelativeHeaderOffset().getLongValue();
                 }
