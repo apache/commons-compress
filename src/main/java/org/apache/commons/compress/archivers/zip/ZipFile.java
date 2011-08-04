@@ -542,11 +542,15 @@ public class ZipFile {
                                          byte[] sig) throws IOException {
         boolean found = false;
         long off = archive.length() - minDistanceFromEnd;
-        long stopSearching = Math.max(0L, archive.length() - maxDistanceFromEnd);
+        final long stopSearching =
+            Math.max(0L, archive.length() - maxDistanceFromEnd);
         if (off >= 0) {
-            archive.seek(off);
-            int curr = archive.read();
-            while (off >= stopSearching && curr != -1) {
+            for (; off >= stopSearching; off--) {
+                archive.seek(off);
+                int curr = archive.read();
+                if (curr == -1) {
+                    break;
+                }
                 if (curr == sig[POS_0]) {
                     curr = archive.read();
                     if (curr == sig[POS_1]) {
@@ -560,8 +564,6 @@ public class ZipFile {
                         }
                     }
                 }
-                archive.seek(--off);
-                curr = archive.read();
             }
         }
         if (found) {
