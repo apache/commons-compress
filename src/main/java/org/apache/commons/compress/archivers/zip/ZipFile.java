@@ -452,7 +452,8 @@ public class ZipFile {
             int commentLen = ZipShort.getValue(cfh, off);
             off += SHORT;
 
-            off += SHORT; // disk number
+            int diskStart = ZipShort.getValue(cfh, off);
+            off += SHORT;
 
             ze.setInternalAttributes(ZipShort.getValue(cfh, off));
             off += SHORT;
@@ -475,6 +476,30 @@ public class ZipFile {
             byte[] cdExtraData = new byte[extraLen];
             archive.readFully(cdExtraData);
             ze.setCentralDirectoryExtra(cdExtraData);
+
+            Zip64ExtendedInformationExtraField z64 =
+                (Zip64ExtendedInformationExtraField)
+                ze.getExtraField(Zip64ExtendedInformationExtraField
+                                 .HEADER_ID);
+            if (z64 != null) {
+                z64.reparseCentralDirectoryData(ze.getSize() == ZIP64_MAGIC,
+                                                ze.getCompressedSize()
+                                                == ZIP64_MAGIC,
+                                                offset.headerOffset
+                                                == ZIP64_MAGIC,
+                                                diskStart == ZIP64_MAGIC_SHORT);
+                if (ze.getSize() == ZIP64_MAGIC) {
+                    ze.setSize(z64.getSize().getLongValue());
+                }
+                if (ze.getCompressedSize() == ZIP64_MAGIC) {
+                    ze.setCompressedSize(z64.getCompressedSize()
+                                         .getLongValue());
+                }
+                if (offset.headerOffset == ZIP64_MAGIC) {
+                    offset.headerOffset =
+                        z64.getRelativeHeaderOffset().getLongValue();
+                }
+            }
 
             byte[] comment = new byte[commentLen];
             archive.readFully(comment);

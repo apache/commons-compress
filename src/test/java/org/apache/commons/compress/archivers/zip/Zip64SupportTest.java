@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.URI;
 import java.net.URL;
@@ -33,6 +34,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assume.assumeNotNull;
 import static org.junit.Assume.assumeTrue;
@@ -43,32 +45,39 @@ public class Zip64SupportTest {
     private static final int ONE_MILLION = 1000000;
     private static final int ONE_HUNDRED_THOUSAND = 100000;
 
+    @Ignore
     @Test public void read5GBOfZerosUsingInputStream() throws Throwable {
         read5GBOfZerosImpl(get5GBZerosFile(), "5GB_of_Zeros");
     }
 
+    @Ignore
     @Test public void read5GBOfZerosGeneratedBy7ZIPUsingInputStream()
         throws Throwable {
         read5GBOfZerosImpl(get5GBZerosFileGeneratedBy7ZIP(), "5GB_of_Zeros");
     }
 
+    @Ignore
     @Test public void read5GBOfZerosGeneratedByJava7JarUsingInputStream()
         throws Throwable {
         read5GBOfZerosImpl(get5GBZerosFileGeneratedByJava7Jar(), "5GB_of_Zeros");
     }
 
+    @Ignore
     @Test public void read100KFilesUsingInputStream() throws Throwable {
         read100KFilesImpl(get100KFileFile());
     }
 
+    @Ignore
     @Test public void read100KFilesGeneratedBy7ZIPUsingInputStream() throws Throwable {
         read100KFilesImpl(get100KFileFileGeneratedBy7ZIP());
     }
 
+    @Ignore
     @Test public void read100KFilesGeneratedByWinCFUsingInputStream() throws Throwable {
         read100KFilesImpl(get100KFileFileGeneratedByWinCF());
     }
 
+    @Ignore
     @Test public void read100KFilesGeneratedByJava7JarUsingInputStream() throws Throwable {
         read100KFilesImpl(get100KFileFileGeneratedByJava7Jar());
     }
@@ -77,14 +86,17 @@ public class Zip64SupportTest {
         read100KFilesUsingZipFileImpl(get100KFileFile());
     }
 
+    @Ignore
     @Test public void read100KFilesGeneratedBy7ZIPUsingZipFile() throws Throwable {
         read100KFilesUsingZipFileImpl(get100KFileFileGeneratedBy7ZIP());
     }
 
+    @Ignore
     @Test public void read100KFilesGeneratedByWinCFUsingZipFile() throws Throwable {
         read100KFilesUsingZipFileImpl(get100KFileFileGeneratedByWinCF());
     }
 
+    @Ignore
     @Test public void read100KFilesGeneratedByJava7JarUsingZipFile() throws Throwable {
         read100KFilesUsingZipFileImpl(get100KFileFileGeneratedByJava7Jar());
     }
@@ -184,10 +196,12 @@ public class Zip64SupportTest {
             }
         };
 
+    @Ignore
     @Test public void write100KFilesFile() throws Throwable {
         withTemporaryArchive("write100KFilesFile", write100KFiles, true);
     }
 
+    @Ignore
     @Test public void write100KFilesStream() throws Throwable {
         withTemporaryArchive("write100KFilesStream", write100KFiles, false);
     }
@@ -217,28 +231,7 @@ public class Zip64SupportTest {
         new ZipOutputTest() {
             public void test(File f, ZipArchiveOutputStream zos)
                 throws IOException {
-                byte[] buf = new byte[ONE_MILLION];
-                ZipArchiveEntry zae = null;
-                for (int i = 0; i < 2; i++) {
-                    zae = new ZipArchiveEntry(String.valueOf(i));
-                    zae.setSize(FIVE_BILLION / 2);
-                    zae.setMethod(ZipArchiveEntry.STORED);
-                    zae.setCrc(0x8a408f16L);
-                    zos.putArchiveEntry(zae);
-                    for (int j = 0; j < FIVE_BILLION / 2 / 1000 / 1000;
-                         j++) {
-                        zos.write(buf);
-                    }
-                    zos.closeArchiveEntry();
-                }
-                zae = new ZipArchiveEntry(String.valueOf(2));
-                zae.setSize(0);
-                zae.setMethod(ZipArchiveEntry.STORED);
-                zae.setCrc(0);
-                zos.putArchiveEntry(zae);
-                zos.write(new byte[0]);
-                zos.closeArchiveEntry();
-                zos.close();
+                write3EntriesCreatingBigArchiveToStream(zos);
 
                 RandomAccessFile a = new RandomAccessFile(f, "r");
                 try {
@@ -271,7 +264,7 @@ public class Zip64SupportTest {
                     a.readFully(rest);
                     assertArrayEquals(new byte[] {
                             // Original Size
-                            0, 0, 0, 0,
+                            1, 0, 0, 0,
                             // file name length
                             1, 0,
                             // extra field length
@@ -321,11 +314,54 @@ public class Zip64SupportTest {
                              true);
     }
 
-    @Ignore
     @Test public void write3EntriesCreatingBigArchiveStream() throws Throwable {
         withTemporaryArchive("write3EntriesCreatingBigArchiveStream",
                              write3EntriesCreatingBigArchive,
                              false);
+    }
+
+    @Test public void read3EntriesCreatingBigArchiveFileUsingZipFile()
+        throws Throwable {
+        withTemporaryArchive("read3EntriesCreatingBigArchiveFileUsingZipFile",
+                             new ZipOutputTest() {
+                                 public void test(File f,
+                                                  ZipArchiveOutputStream zos)
+                                     throws IOException {
+                                     write3EntriesCreatingBigArchiveToStream(zos);
+                                     ZipFile zf = null;
+                                     try {
+                                         zf = new ZipFile(f);
+                                         int idx = 0;
+                                         for (Enumeration e =
+                                                  zf.getEntriesInPhysicalOrder();
+                                              e.hasMoreElements(); ) {
+                                             ZipArchiveEntry zae =
+                                                 (ZipArchiveEntry)
+                                                 e.nextElement();
+                                             assertEquals(String.valueOf(idx),
+                                                          zae.getName());
+                                             if (idx++ < 2) {
+                                                 assertEquals(FIVE_BILLION / 2,
+                                                              zae.getSize());
+                                             } else {
+                                                 assertEquals(1,
+                                                              zae.getSize());
+                                                 InputStream i =
+                                                     zf.getInputStream(zae);
+                                                 try {
+                                                     assertNotNull(i);
+                                                     assertEquals(42, i.read());
+                                                 } finally {
+                                                     i.close();
+                                                 }
+                                             }
+                                         }
+                                     } finally {
+                                         ZipFile.closeQuietly(zf);
+                                     }
+                                 }
+                             },
+                             true);
     }
 
     /*
@@ -506,6 +542,7 @@ public class Zip64SupportTest {
      *
      * Creates a temporary archive of approx 4MB in size
      */
+    @Ignore
     @Test public void writeBigDeflatedEntryKnownSizeToStream()
         throws Throwable {
         withTemporaryArchive("writeBigDeflatedEntryKnownSizeToStream",
@@ -1312,8 +1349,8 @@ public class Zip64SupportTest {
                     os.close();
                 }
             }
+            f.delete();
         }
-        f.delete();
     }
 
     private static File getFile(String name) throws Throwable {
@@ -1471,6 +1508,33 @@ public class Zip64SupportTest {
             zos.putArchiveEntry(zae);
             zos.closeArchiveEntry();
         }
+        zos.close();
+    }
+
+    private static void
+        write3EntriesCreatingBigArchiveToStream(ZipArchiveOutputStream zos)
+        throws IOException {
+        byte[] buf = new byte[ONE_MILLION];
+        ZipArchiveEntry zae = null;
+        for (int i = 0; i < 2; i++) {
+            zae = new ZipArchiveEntry(String.valueOf(i));
+            zae.setSize(FIVE_BILLION / 2);
+            zae.setMethod(ZipArchiveEntry.STORED);
+            zae.setCrc(0x8a408f16L);
+            zos.putArchiveEntry(zae);
+            for (int j = 0; j < FIVE_BILLION / 2 / 1000 / 1000;
+                 j++) {
+                zos.write(buf);
+            }
+            zos.closeArchiveEntry();
+        }
+        zae = new ZipArchiveEntry(String.valueOf(2));
+        zae.setSize(1);
+        zae.setMethod(ZipArchiveEntry.STORED);
+        zae.setCrc(0x9b9265bL);
+        zos.putArchiveEntry(zae);
+        zos.write(new byte[] { 42 });
+        zos.closeArchiveEntry();
         zos.close();
     }
 }
