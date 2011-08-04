@@ -84,10 +84,12 @@ public class Zip64SupportTest {
         read100KFilesImpl(get100KFileFileGeneratedByJava7Jar());
     }
 
+    @Ignore
     @Test public void read5GBOfZerosUsingZipFile() throws Throwable {
         read5GBOfZerosUsingZipFileImpl(get5GBZerosFile(), "5GB_of_Zeros");
     }
 
+    @Ignore
     @Test public void read5GBOfZerosGeneratedBy7ZIPUsingZipFile()
         throws Throwable {
         read5GBOfZerosUsingZipFileImpl(get5GBZerosFileGeneratedBy7ZIP(),
@@ -221,11 +223,11 @@ public class Zip64SupportTest {
         withTemporaryArchive("write100KFilesFile", write100KFiles, true);
     }
 
-    @Ignore
     @Test public void write100KFilesStream() throws Throwable {
         withTemporaryArchive("write100KFilesStream", write100KFiles, false);
     }
 
+    @Ignore
     @Test public void readSelfGenerated100KFilesUsingZipFile()
         throws Throwable {
         withTemporaryArchive("readSelfGenerated100KFilesUsingZipFile()",
@@ -334,12 +336,14 @@ public class Zip64SupportTest {
                              true);
     }
 
+    @Ignore
     @Test public void write3EntriesCreatingBigArchiveStream() throws Throwable {
         withTemporaryArchive("write3EntriesCreatingBigArchiveStream",
                              write3EntriesCreatingBigArchive,
                              false);
     }
 
+    @Ignore
     @Test public void read3EntriesCreatingBigArchiveFileUsingZipFile()
         throws Throwable {
         withTemporaryArchive("read3EntriesCreatingBigArchiveFileUsingZipFile",
