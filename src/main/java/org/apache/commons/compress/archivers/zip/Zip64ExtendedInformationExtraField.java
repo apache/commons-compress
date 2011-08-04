@@ -182,6 +182,13 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
     /** {@inheritDoc} */
     public void parseFromLocalFileData(byte[] buffer, int offset, int length)
         throws ZipException {
+        if (length == 0) {
+            // no local file data at all, may happen if an archive
+            // only holds a ZIP64 extended information extra field
+            // inside the central directory but not inside the local
+            // file header
+            return;
+        }
         if (length < 2 * DWORD) {
             throw new ZipException(LFH_MUST_HAVE_BOTH_SIZES_MSG);
         }

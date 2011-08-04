@@ -96,7 +96,6 @@ public class Zip64SupportTest {
                                        "5GB_of_Zeros");
     }
 
-    @Ignore
     @Test public void read5GBOfZerosGeneratedByJava7JarUsingZipFile()
         throws Throwable {
         read5GBOfZerosUsingZipFileImpl(get5GBZerosFileGeneratedByJava7Jar(),
@@ -223,6 +222,7 @@ public class Zip64SupportTest {
         withTemporaryArchive("write100KFilesFile", write100KFiles, true);
     }
 
+    @Ignore
     @Test public void write100KFilesStream() throws Throwable {
         withTemporaryArchive("write100KFilesStream", write100KFiles, false);
     }
