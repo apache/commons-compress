@@ -375,6 +375,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             throw new IOException("No current entry to close");
         }
 
+        if (!entry.hasWritten) {
+            write(new byte[0], 0, 0);
+        }
+
         if (entry.entry.getMethod() == DEFLATED) {
             def.finish();
             while (!def.finished()) {
@@ -600,6 +604,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     @Override
     public void write(byte[] b, int offset, int length) throws IOException {
         ZipUtil.checkRequestedFeatures(entry.entry);
+        entry.hasWritten = true;
         if (entry.entry.getMethod() == DEFLATED) {
             if (length > 0 && !def.finished()) {
                 entry.bytesRead += length;
@@ -1228,6 +1233,15 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
          * Whether current entry was the first one using ZIP64 features.
          */
         private boolean causedUseOfZip64 = false;
+        /**
+         * Whether write() has been called at all.
+         *
+         * <p>In order to create a valid archive {@link
+         * #closeArchiveEntry closeArchiveEntry} will write an empty
+         * array to get the CRC right if nothing has been written to
+         * the stream at all.</p>
+         */
+        private boolean hasWritten;
     }
 
 }
