@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.URI;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.Random;
 
 import org.junit.Ignore;
@@ -72,18 +73,27 @@ public class Zip64SupportTest {
         read100KFilesImpl(get100KFileFileGeneratedByJava7Jar());
     }
 
+    @Test public void read100KFilesUsingZipFile() throws Throwable {
+        read100KFilesUsingZipFileImpl(get100KFileFile());
+    }
+
+    @Test public void read100KFilesGeneratedBy7ZIPUsingZipFile() throws Throwable {
+        read100KFilesUsingZipFileImpl(get100KFileFileGeneratedBy7ZIP());
+    }
+
+    @Test public void read100KFilesGeneratedByWinCFUsingZipFile() throws Throwable {
+        read100KFilesUsingZipFileImpl(get100KFileFileGeneratedByWinCF());
+    }
+
+    @Test public void read100KFilesGeneratedByJava7JarUsingZipFile() throws Throwable {
+        read100KFilesUsingZipFileImpl(get100KFileFileGeneratedByJava7Jar());
+    }
+
     private static final ZipOutputTest write100KFiles =
         new ZipOutputTest() {
             public void test(File f, ZipArchiveOutputStream zos)
                 throws IOException {
-                for (int i = 0; i < ONE_HUNDRED_THOUSAND; i++) {
-                    ZipArchiveEntry zae =
-                        new ZipArchiveEntry(String.valueOf(i));
-                    zae.setSize(0);
-                    zos.putArchiveEntry(zae);
-                    zos.closeArchiveEntry();
-                }
-                zos.close();
+                write100KFilesToStream(zos);
                 RandomAccessFile a = new RandomAccessFile(f, "r");
                 try {
                     final long end = a.length();
@@ -180,6 +190,20 @@ public class Zip64SupportTest {
 
     @Test public void write100KFilesStream() throws Throwable {
         withTemporaryArchive("write100KFilesStream", write100KFiles, false);
+    }
+
+    @Test public void readSelfGenerated100KFilesUsingZipFile()
+        throws Throwable {
+        withTemporaryArchive("readSelfGenerated100KFilesUsingZipFile()",
+                             new ZipOutputTest() {
+                                 public void test(File f,
+                                                  ZipArchiveOutputStream zos)
+                                     throws IOException {
+                                     write100KFilesToStream(zos);
+                                     read100KFilesUsingZipFileImpl(f);
+                                 }
+                             },
+                             true);
     }
 
     /*
@@ -1390,6 +1414,25 @@ public class Zip64SupportTest {
         }
     }
 
+    private static void read100KFilesUsingZipFileImpl(File f)
+        throws IOException {
+        ZipFile zf = null;
+        try {
+            zf = new ZipFile(f);
+            int files = 0;
+            for (Enumeration e = zf.getEntries(); e.hasMoreElements(); ) {
+                ZipArchiveEntry zae = (ZipArchiveEntry) e.nextElement();
+                if (!zae.isDirectory()) {
+                    files++;
+                    assertEquals(0, zae.getSize());
+                }
+            }
+            assertEquals(ONE_HUNDRED_THOUSAND, files);
+        } finally {
+            ZipFile.closeQuietly(zf);
+        }
+    }
+
     private static long getLengthAndPositionAtCentralDirectory(RandomAccessFile a)
         throws IOException {
         final long end = a.length();
@@ -1418,5 +1461,16 @@ public class Zip64SupportTest {
         a.readFully(cdOffset);
         a.seek(ZipLong.getValue(cdOffset));
         return end;
+    }
+
+    private static void write100KFilesToStream(ZipArchiveOutputStream zos)
+        throws IOException {
+        for (int i = 0; i < ONE_HUNDRED_THOUSAND; i++) {
+            ZipArchiveEntry zae = new ZipArchiveEntry(String.valueOf(i));
+            zae.setSize(0);
+            zos.putArchiveEntry(zae);
+            zos.closeArchiveEntry();
+        }
+        zos.close();
     }
 }

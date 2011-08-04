@@ -32,6 +32,7 @@ import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipException;
 
+import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC;
@@ -354,6 +355,10 @@ public class ZipFile {
         }
     }
 
+    /**
+     * Length of a "central directory" entry structure without file
+     * name, extra fields or comment.
+     */
     private static final int CFH_LEN =
         /* version made by                 */ SHORT
         /* version needed to extract       */ + SHORT
@@ -485,6 +490,11 @@ public class ZipFile {
         return noUTF8Flag;
     }
 
+    /**
+     * Length of the "End of central directory record" - which is
+     * supposed to be the last structure of the archive - without file
+     * comment.
+     */
     private static final int MIN_EOCD_SIZE =
         /* end of central dir signature    */ WORD
         /* number of this disk             */ + SHORT
@@ -500,9 +510,19 @@ public class ZipFile {
         /* the starting disk number        */ + WORD
         /* zipfile comment length          */ + SHORT;
 
+    /**
+     * Maximum length of the "End of central directory record" with a
+     * file comment.
+     */
     private static final int MAX_EOCD_SIZE = MIN_EOCD_SIZE
         /* maximum length of zipfile comment */ + ZIP64_MAGIC_SHORT;
 
+    /**
+     * Offset of the field that holds the location of the first
+     * central directory entry inside the "End of central directory
+     * record" relative to the start of the "End of central directory
+     * record".
+     */
     private static final int CFD_LOCATOR_OFFSET =
         /* end of central dir signature    */ WORD
         /* number of this disk             */ + SHORT
@@ -515,11 +535,97 @@ public class ZipFile {
         /* size of the central directory   */ + WORD;
 
     /**
-     * Searches for the &quot;End of central dir record&quot;, parses
+     * Length of the "Zip64 end of central directory locator" - which
+     * should be right in front of the "end of central directory
+     * record" if one is present at all.
+     */
+    private static final int ZIP64_EOCDL_LENGTH =
+        /* zip64 end of central dir locator sig */ WORD
+        /* number of the disk with the start    */
+        /* start of the zip64 end of            */
+        /* central directory                    */ + WORD
+        /* relative offset of the zip64         */
+        /* end of central directory record      */ + DWORD
+        /* total number of disks                */ + WORD;
+
+    /**
+     * Offset of the field that holds the location of the "Zip64 end
+     * of central directory record" inside the "Zip64 end of central
+     * directory locator" relative to the start of the "Zip64 end of
+     * central directory locator".
+     */
+    private static final int ZIP64_EOCDL_LOCATOR_OFFSET =
+        /* zip64 end of central dir locator sig */ WORD
+        /* number of the disk with the start    */
+        /* start of the zip64 end of            */
+        /* central directory                    */ + WORD;
+
+    /**
+     * Offset of the field that holds the location of the first
+     * central directory entry inside the "Zip64 end of central
+     * directory record" relative to the start of the "Zip64 end of
+     * central directory record".
+     */
+    private static final int ZIP64_EOCD_CFD_LOCATOR_OFFSET =
+        /* zip64 end of central dir        */
+        /* signature                       */ WORD
+        /* size of zip64 end of central    */
+        /* directory record                */ + DWORD
+        /* version made by                 */ + SHORT
+        /* version needed to extract       */ + SHORT
+        /* number of this disk             */ + WORD
+        /* number of the disk with the     */
+        /* start of the central directory  */ + WORD
+        /* total number of entries in the  */
+        /* central directory on this disk  */ + DWORD
+        /* total number of entries in the  */
+        /* central directory               */ + DWORD
+        /* size of the central directory   */ + DWORD;
+
+    /**
+     * Searches for either the &quot;Zip64 end of central directory
+     * locator&quot; or the &quot;End of central dir record&quot;, parses
      * it and positions the stream at the first central directory
      * record.
      */
     private void positionAtCentralDirectory()
+        throws IOException {
+        boolean found = tryToLocateSignature(MIN_EOCD_SIZE + ZIP64_EOCDL_LENGTH,
+                                             MAX_EOCD_SIZE + ZIP64_EOCDL_LENGTH,
+                                             ZipArchiveOutputStream
+                                             .ZIP64_EOCD_LOC_SIG);
+        if (!found) {
+            // not a ZIP64 archive
+            positionAtCentralDirectory32();
+        } else {
+            archive.skipBytes(ZIP64_EOCDL_LOCATOR_OFFSET);
+            byte[] zip64EocdOffset = new byte[DWORD];
+            archive.readFully(zip64EocdOffset);
+            archive.seek(ZipEightByteInteger.getLongValue(zip64EocdOffset));
+            byte[] sig = new byte[WORD];
+            archive.readFully(sig);
+            if (sig[POS_0] != ZipArchiveOutputStream.ZIP64_EOCD_SIG[POS_0]
+                || sig[POS_1] != ZipArchiveOutputStream.ZIP64_EOCD_SIG[POS_1]
+                || sig[POS_2] != ZipArchiveOutputStream.ZIP64_EOCD_SIG[POS_2]
+                || sig[POS_3] != ZipArchiveOutputStream.ZIP64_EOCD_SIG[POS_3]
+                ) {
+                throw new ZipException("archive's ZIP64 end of central "
+                                       + "directory locator is corrupt.");
+            }
+            archive.skipBytes(ZIP64_EOCD_CFD_LOCATOR_OFFSET
+                              - WORD /* signature has already been read */);
+            byte[] cfdOffset = new byte[DWORD];
+            archive.readFully(cfdOffset);
+            archive.seek(ZipEightByteInteger.getLongValue(cfdOffset));
+        }
+    }
+
+    /**
+     * Searches for the &quot;End of central dir record&quot;, parses
+     * it and positions the stream at the first central directory
+     * record.
+     */
+    private void positionAtCentralDirectory32()
         throws IOException {
         boolean found = tryToLocateSignature(MIN_EOCD_SIZE, MAX_EOCD_SIZE,
                                              ZipArchiveOutputStream.EOCD_SIG);
