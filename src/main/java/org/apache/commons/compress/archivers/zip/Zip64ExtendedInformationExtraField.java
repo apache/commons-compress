@@ -85,6 +85,18 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
     private ZipLong diskStart;
 
     /**
+     * Stored in {@link #parseFromCentralDirectoryData
+     * parseFromCentralDirectoryData} so it can be reused when ZipFile
+     * calls {@link #reparseCentralDirectoryData
+     * reparseCentralDirectoryData}.
+     *
+     * <p>Not used for anything else</p>
+     *
+     * @since Apache Commons Compress 1.3
+     */
+    private byte[] rawCentralDirectoryData;
+
+    /**
      * This constructor should only be used by the code that reads
      * archives inside of Commons Compress.
      */
@@ -194,6 +206,10 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
     public void parseFromCentralDirectoryData(byte[] buffer, int offset,
                                               int length)
         throws ZipException {
+        // store for processing in reparseCentralDirectoryData
+        rawCentralDirectoryData = new byte[length];
+        System.arraycopy(buffer, offset, rawCentralDirectoryData, 0, length);
+
         // if there is no size information in here, we are screwed and
         // can only hope things will get resolved by LFH data later
         // But there are some cases that can be detected
@@ -210,6 +226,55 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
             relativeHeaderOffset = new ZipEightByteInteger(buffer, offset);
         } else if (length % DWORD == WORD) {
             diskStart = new ZipLong(buffer, offset + length - WORD);
+        }
+    }
+
+    /**
+     * Parses the raw bytes read from the central directory extra
+     * field with knowledge which fields are expected to be there.
+     *
+     * <p>All four fields inside the zip64 extended information extra
+     * field are optional and only present if their corresponding
+     * entry inside the central directory contains the correct magic
+     * value.</p>
+     */
+    public void reparseCentralDirectoryData(boolean hasUncompressedSize,
+                                            boolean hasCompressedSize,
+                                            boolean hasRelativeHeaderOffset,
+                                            boolean hasDiskStart)
+        throws ZipException {
+        if (rawCentralDirectoryData != null) {
+            int expectedLength = (hasUncompressedSize ? DWORD : 0)
+                + (hasCompressedSize ? DWORD : 0)
+                + (hasRelativeHeaderOffset ? DWORD : 0)
+                + (hasDiskStart ? WORD : 0);
+            if (rawCentralDirectoryData.length != expectedLength) {
+                throw new ZipException("central directory zip64 extended"
+                                       + " information extra field's length"
+                                       + " doesn't match central directory"
+                                       + " data.  Expected length "
+                                       + expectedLength + " but is "
+                                       + rawCentralDirectoryData.length);
+            }
+            int offset = 0;
+            if (hasUncompressedSize) {
+                size = new ZipEightByteInteger(rawCentralDirectoryData, offset);
+                offset += DWORD;
+            }
+            if (hasCompressedSize) {
+                compressedSize = new ZipEightByteInteger(rawCentralDirectoryData,
+                                                         offset);
+                offset += DWORD;
+            }
+            if (hasRelativeHeaderOffset) {
+                relativeHeaderOffset =
+                    new ZipEightByteInteger(rawCentralDirectoryData, offset);
+                offset += DWORD;
+            }
+            if (hasDiskStart) {
+                diskStart = new ZipLong(rawCentralDirectoryData, offset);
+                offset += WORD;
+            }
         }
     }
 

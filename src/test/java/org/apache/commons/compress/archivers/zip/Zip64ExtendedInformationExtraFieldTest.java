@@ -175,6 +175,31 @@ public class Zip64ExtendedInformationExtraFieldTest extends TestCase {
         assertEquals(DISK, f.getDiskStartNumber());
     }
 
+    public void testReparseCDSingleEightByteData() throws ZipException {
+        Zip64ExtendedInformationExtraField f =
+            new Zip64ExtendedInformationExtraField();
+        byte[] b = new byte[8];
+        System.arraycopy(SIZE.getBytes(), 0, b, 0, 8);
+        f.parseFromCentralDirectoryData(b, 0, b.length);
+        f.reparseCentralDirectoryData(true, false, false, false);
+        assertEquals(SIZE, f.getSize());
+        assertNull(f.getCompressedSize());
+        assertNull(f.getRelativeHeaderOffset());
+        assertNull(f.getDiskStartNumber());
+        f.setSize(null);
+        f.reparseCentralDirectoryData(false, true, false, false);
+        assertNull(f.getSize());
+        assertEquals(SIZE, f.getCompressedSize());
+        assertNull(f.getRelativeHeaderOffset());
+        assertNull(f.getDiskStartNumber());
+        f.setCompressedSize(null);
+        f.reparseCentralDirectoryData(false, false, true, false);
+        assertNull(f.getSize());
+        assertNull(f.getCompressedSize());
+        assertEquals(SIZE, f.getRelativeHeaderOffset());
+        assertNull(f.getDiskStartNumber());
+    }
+
     private static void checkSizes(byte[] b) {
         assertEquals(0x78, b[0]);
         assertEquals(0x56, b[1]);
