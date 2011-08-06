@@ -675,7 +675,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                 ais.close();
         }
 
-        List expected = new ArrayList();
+        List<String> expected = new ArrayList<String>();
         expected.add("test1.xml");
 
         this.checkArchiveContent(temp, expected);
@@ -711,7 +711,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             if (ais != null)
                 ais.close();
         }
-        List expected = new ArrayList();
+        List<String> expected = new ArrayList<String>();
         expected.add("test1.xml");
         this.checkArchiveContent(temp, expected);
     }
@@ -749,7 +749,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             if (ais != null)
                 ais.close();
         }
-        List expected = new ArrayList();
+        List<String> expected = new ArrayList<String>();
         expected.add("test1.xml");
         this.checkArchiveContent(temp, expected);
     }
@@ -793,7 +793,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             if (ais != null)
                 ais.close();
         }
-        List expected = new ArrayList();
+        List<String> expected = new ArrayList<String>();
         expected.add("test1.xml");
         expected.add("testdata/test.txt");
         final ArchiveInputStream in = factory.createArchiveInputStream("tar", new FileInputStream(temp));
@@ -837,7 +837,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             if (ais != null)
                 ais.close();
         }
-        List expected = new ArrayList();
+        List<String> expected = new ArrayList<String>();
         expected.add("test1.xml");
         expected.add("testdata/test.txt");
         this.checkArchiveContent(temp, expected);
@@ -874,7 +874,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                 ais.close();
         }
 
-        List expected = new ArrayList();
+        List<String> expected = new ArrayList<String>();
         expected.add("test1.xml");
         this.checkArchiveContent(temp, expected);
     }
@@ -916,7 +916,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             if (ais != null)
                 ais.close();
         }
-        List expected = new ArrayList();
+        List<String> expected = new ArrayList<String>();
         expected.add("test1.xml");
         expected.add("test.txt");
         this.checkArchiveContent(temp, expected);

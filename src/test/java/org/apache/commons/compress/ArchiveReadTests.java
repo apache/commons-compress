@@ -46,7 +46,7 @@ public class ArchiveReadTests extends AbstractTestCase {
     final static ClassLoader classLoader = ArchiveReadTests.class.getClassLoader();
 
     private File file;
-    private static final ArrayList fileList = new ArrayList();
+    private static final ArrayList<String> fileList = new ArrayList<String>();
     
     public ArchiveReadTests(String name) {
         super(name);
@@ -93,7 +93,8 @@ public class ArchiveReadTests extends AbstractTestCase {
     }
 
     public void testArchive() throws Exception{
-        ArrayList expected=(ArrayList) fileList.clone();
+        @SuppressWarnings("unchecked")
+        ArrayList<String> expected= (ArrayList<String>) fileList.clone();
         try {
            checkArchiveContent(file, expected);
         } catch (ArchiveException e) {

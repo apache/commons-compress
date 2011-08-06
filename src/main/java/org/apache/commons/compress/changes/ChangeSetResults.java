@@ -25,9 +25,9 @@ import java.util.List;
  * Stores the results of an performed ChangeSet operation.
  */
 public class ChangeSetResults {
-    private final List addedFromChangeSet = new ArrayList();
-    private final List addedFromStream = new ArrayList();
-    private final List deleted = new ArrayList();
+    private final List<String> addedFromChangeSet = new ArrayList<String>();
+    private final List<String> addedFromStream = new ArrayList<String>();
+    private final List<String> deleted = new ArrayList<String>();
     
     /**
      * Adds the filename of a recently deleted file to the result list.

@@ -44,7 +44,7 @@ public abstract class AbstractTestCase extends TestCase {
     protected File resultDir;
 
     private File archive; // used to delete the archive in tearDown
-    protected List archiveList; // Lists the content of the archive as originally created
+    protected List<String> archiveList; // Lists the content of the archive as originally created
     
     protected ArchiveStreamFactory factory = new ArchiveStreamFactory();
 
@@ -139,7 +139,7 @@ public abstract class AbstractTestCase extends TestCase {
         OutputStream stream = null;
         try {
             archive = File.createTempFile("test", "." + archivename);
-            archiveList = new ArrayList();
+            archiveList = new ArrayList<String>();
 
             stream = new FileOutputStream(archive);
             out = factory.createArchiveOutputStream(archivename, stream);
@@ -198,7 +198,7 @@ public abstract class AbstractTestCase extends TestCase {
     protected File createEmptyArchive(String archivename) throws Exception {
         ArchiveOutputStream out = null;
         OutputStream stream = null;
-        archiveList = new ArrayList();
+        archiveList = new ArrayList<String>();
         try {
             archive = File.createTempFile("empty", "." + archivename);
             stream = new FileOutputStream(archive);
@@ -224,7 +224,7 @@ public abstract class AbstractTestCase extends TestCase {
     protected File createSingleEntryArchive(String archivename) throws Exception {
         ArchiveOutputStream out = null;
         OutputStream stream = null;
-        archiveList = new ArrayList();
+        archiveList = new ArrayList<String>();
         try {
             archive = File.createTempFile("empty", "." + archivename);
             stream = new FileOutputStream(archive);
@@ -251,7 +251,7 @@ public abstract class AbstractTestCase extends TestCase {
      *            a list with expected string filenames
      * @throws Exception
      */
-    protected void checkArchiveContent(File archive, List expected)
+    protected void checkArchiveContent(File archive, List<String> expected)
             throws Exception {
         final InputStream is = new FileInputStream(archive);
         try {
@@ -270,7 +270,7 @@ public abstract class AbstractTestCase extends TestCase {
      * @param expected list of expected entries or <code>null</code> if no check of names desired
      * @throws Exception
      */
-    protected void checkArchiveContent(ArchiveInputStream in, List expected)
+    protected void checkArchiveContent(ArchiveInputStream in, List<String> expected)
             throws Exception {
         checkArchiveContent(in, expected, true);
     }
@@ -284,7 +284,7 @@ public abstract class AbstractTestCase extends TestCase {
      * @return returns the created result file if cleanUp = false, or null otherwise 
      * @throws Exception
      */
-    protected File checkArchiveContent(ArchiveInputStream in, List expected, boolean cleanUp)
+    protected File checkArchiveContent(ArchiveInputStream in, List<String> expected, boolean cleanUp)
             throws Exception {
         File result = File.createTempFile("dir-result", "");
         result.delete();

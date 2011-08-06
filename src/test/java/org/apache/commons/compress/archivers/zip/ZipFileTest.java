@@ -34,7 +34,8 @@ public class ZipFileTest extends TestCase {
 
     public void testCDOrder() throws Exception {
         readOrderTest();
-        ArrayList l = Collections.list(zf.getEntries());
+        @SuppressWarnings("unchecked")
+        ArrayList<ZipArchiveEntry> l = Collections.list(zf.getEntries());
         assertEntryName(l, 0, "AbstractUnicodeExtraField");
         assertEntryName(l, 1, "AsiExtraField");
         assertEntryName(l, 2, "ExtraFieldUtils");
@@ -62,7 +63,8 @@ public class ZipFileTest extends TestCase {
 
     public void testPhysicalOrder() throws Exception {
         readOrderTest();
-        ArrayList l = Collections.list(zf.getEntriesInPhysicalOrder());
+        @SuppressWarnings("unchecked")
+        ArrayList<ZipArchiveEntry> l = Collections.list(zf.getEntriesInPhysicalOrder());
         assertEntryName(l, 0, "AbstractUnicodeExtraField");
         assertEntryName(l, 1, "AsiExtraField");
         assertEntryName(l, 2, "ExtraFieldUtils");
@@ -114,7 +116,8 @@ public class ZipFileTest extends TestCase {
         zf = new ZipFile(archive);
     }
 
-    private static void assertEntryName(ArrayList entries, int index,
+    private static void assertEntryName(ArrayList<ZipArchiveEntry> entries,
+                                        int index,
                                         String expectedName) {
         ZipArchiveEntry ze = (ZipArchiveEntry) entries.get(index);
         assertEquals("src/main/java/org/apache/commons/compress/archivers/zip/"

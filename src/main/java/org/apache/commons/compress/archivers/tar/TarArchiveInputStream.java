@@ -259,7 +259,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
 
     private void paxHeaders() throws IOException{
         BufferedReader br = new BufferedReader(new InputStreamReader(this, "UTF-8"));
-        Map headers = new HashMap();
+        Map<String, String> headers = new HashMap<String, String>();
         // Format is "length keyword=value\n";
         while(true){ // get length
             int ch;

@@ -24,7 +24,7 @@ import org.apache.commons.compress.AbstractTestCase;
 public class ArArchiveInputStreamTest extends AbstractTestCase {
 
     public void testReadLongNamesGNU() throws Exception {
-        ArrayList l = new ArrayList();
+        ArrayList<String> l = new ArrayList<String>();
         l.add("this_is_a_long_file_name.txt");
         checkArchiveContent(getFile("longfile_gnu.ar"), l);
     }

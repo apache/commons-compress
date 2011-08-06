@@ -50,7 +50,7 @@ class Simple8BitZipEncoding implements ZipEncoding {
      * A character entity, which is put to the reverse mapping table
      * of a simple encoding.
      */
-    private static final class Simple8BitChar implements Comparable {
+    private static final class Simple8BitChar implements Comparable<Simple8BitChar> {
         public final char unicode;
         public final byte code;
 
@@ -59,9 +59,7 @@ class Simple8BitZipEncoding implements ZipEncoding {
             this.unicode = unicode;
         }
 
-        public int compareTo(Object o) {
-            Simple8BitChar a = (Simple8BitChar) o;
-
+        public int compareTo(Simple8BitChar a) {
             return this.unicode - a.unicode;
         }
 
@@ -90,7 +88,8 @@ class Simple8BitZipEncoding implements ZipEncoding {
      */
     public Simple8BitZipEncoding(char[] highChars) {
         this.highChars = (char[]) highChars.clone();
-        List temp = new ArrayList<Simple8BitChar>(this.highChars.length);
+        List<Simple8BitChar> temp =
+            new ArrayList<Simple8BitChar>(this.highChars.length);
 
         byte code = 127;
 
