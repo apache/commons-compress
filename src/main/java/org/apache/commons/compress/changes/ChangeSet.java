@@ -97,8 +97,8 @@ public final class ChangeSet {
         }
 
         if (!changes.isEmpty()) {
-            for (Iterator it = changes.iterator(); it.hasNext();) {
-                Change change = (Change) it.next();
+            for (Iterator<Change> it = changes.iterator(); it.hasNext();) {
+                Change change = it.next();
                 if (change.type() == Change.TYPE_ADD
                         && change.getEntry() != null) {
                     ArchiveEntry entry = change.getEntry();
@@ -134,8 +134,8 @@ public final class ChangeSet {
         String source = pChange.targetFile();
 
         if (!changes.isEmpty()) {
-            for (Iterator it = changes.iterator(); it.hasNext();) {
-                Change change = (Change) it.next();
+            for (Iterator<Change> it = changes.iterator(); it.hasNext();) {
+                Change change = it.next();
                 if (change.type() == Change.TYPE_ADD
                         && change.getEntry() != null) {
                     String target = change.getEntry().getName();

@@ -84,8 +84,8 @@ public class ChangeSetPerformer {
         while ((entry = in.getNextEntry()) != null) {
             boolean copy = true;
 
-            for (Iterator it = workingSet.iterator(); it.hasNext();) {
-                Change change = (Change) it.next();
+            for (Iterator<Change> it = workingSet.iterator(); it.hasNext();) {
+                Change change = it.next();
 
                 final int type = change.type();
                 final String name = entry.getName();
@@ -115,8 +115,8 @@ public class ChangeSetPerformer {
         }
         
         // Adds files which hasn't been added from the original and do not have replace mode on
-        for (Iterator it = workingSet.iterator(); it.hasNext();) {
-            Change change = (Change) it.next();
+        for (Iterator<Change> it = workingSet.iterator(); it.hasNext();) {
+            Change change = it.next();
 
             if (change.type() == Change.TYPE_ADD && 
                 !change.isReplaceMode() && 
@@ -139,12 +139,11 @@ public class ChangeSetPerformer {
      *            the entry to check
      * @return true, if this entry has an deletion change later, false otherwise
      */
-    private boolean isDeletedLater(Set workingSet, ArchiveEntry entry) {
+    private boolean isDeletedLater(Set<Change> workingSet, ArchiveEntry entry) {
         String source = entry.getName();
 
         if (!workingSet.isEmpty()) {
-            for (Iterator it = workingSet.iterator(); it.hasNext();) {
-                Change change = (Change) it.next();
+            for (Change change : workingSet) {
                 final int type = change.type();
                 String target = change.targetFile();
                 if (type == Change.TYPE_DELETE && source.equals(target)) {
