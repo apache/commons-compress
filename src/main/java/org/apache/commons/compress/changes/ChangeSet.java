@@ -34,7 +34,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  */
 public final class ChangeSet {
 
-    private final Set changes = new LinkedHashSet();
+    private final Set<Change> changes = new LinkedHashSet<Change>();
 
     /**
      * Deletes the file with the filename from the archive. 
@@ -157,7 +157,7 @@ public final class ChangeSet {
      * are not reflected on this ChangeSet and vice versa.
      * @return the changes as a copy
      */
-    Set getChanges() {
-        return new LinkedHashSet(changes);
+    Set<Change> getChanges() {
+        return new LinkedHashSet<Change>(changes);
     }
 }

@@ -360,7 +360,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         if (ze instanceof UnparseableExtraFieldData) {
             unparseableExtra = (UnparseableExtraFieldData) ze;
         } else {
-            LinkedHashMap copy = extraFields;
+            LinkedHashMap<ZipShort, ZipExtraField> copy = extraFields;
             extraFields = new LinkedHashMap<ZipShort, ZipExtraField>();
             extraFields.put(ze.getHeaderId(), ze);
             if (copy != null) {

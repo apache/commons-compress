@@ -87,7 +87,7 @@ public final class CpioTestCase extends AbstractTestCase {
         final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("cpio", is);
 
 
-        Map result = new HashMap();
+        Map<String, File> result = new HashMap<String, File>();
         ArchiveEntry entry = null;
         while ((entry = in.getNextEntry()) != null) {
             File cpioget = new File(dir, entry.getName());
@@ -99,11 +99,11 @@ public final class CpioTestCase extends AbstractTestCase {
         in.close();
         is.close();
 
-        File t = (File)result.get("test1.xml");
+        File t = result.get("test1.xml");
         assertTrue("Expected " + t.getAbsolutePath() + " to exist", t.exists());
         assertEquals("length of " + t.getAbsolutePath(), file1Length, t.length());
 
-        t = (File)result.get("test2.xml");
+        t = result.get("test2.xml");
         assertTrue("Expected " + t.getAbsolutePath() + " to exist", t.exists());
         assertEquals("length of " + t.getAbsolutePath(), file2Length, t.length());
     }

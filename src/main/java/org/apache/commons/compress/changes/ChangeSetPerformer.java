@@ -39,7 +39,7 @@ import org.apache.commons.compress.utils.IOUtils;
  * @Immutable
  */
 public class ChangeSetPerformer {
-    private final Set changes;
+    private final Set<Change> changes;
     
     /**
      * Constructs a ChangeSetPerformer with the changes from this ChangeSet
@@ -68,10 +68,10 @@ public class ChangeSetPerformer {
             throws IOException {
         ChangeSetResults results = new ChangeSetResults();
         
-        Set workingSet = new LinkedHashSet(changes);
+        Set<Change> workingSet = new LinkedHashSet<Change>(changes);
         
-        for (Iterator it = workingSet.iterator(); it.hasNext();) {
-            Change change = (Change) it.next();
+        for (Iterator<Change> it = workingSet.iterator(); it.hasNext();) {
+            Change change = it.next();
 
             if (change.type() == Change.TYPE_ADD && change.isReplaceMode()) {
                 copyStream(change.getInput(), out, change.getEntry());

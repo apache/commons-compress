@@ -66,7 +66,7 @@ public final class ZipTestCase extends AbstractTestCase {
         out.close();
 
         // Unarchive the same
-        List results = new ArrayList();
+        List<File> results = new ArrayList<File>();
 
         final InputStream is = new FileInputStream(output);
         ArchiveInputStream in = null;
@@ -94,9 +94,9 @@ public final class ZipTestCase extends AbstractTestCase {
         is.close();
 
         assertEquals(results.size(), 2);
-        File result = (File)results.get(0);
+        File result = results.get(0);
         assertEquals(file1.length(), result.length());
-        result = (File)results.get(1);
+        result = results.get(1);
         assertEquals(file2.length(), result.length());
     }
 
@@ -168,7 +168,7 @@ public final class ZipTestCase extends AbstractTestCase {
     public void testListAllFilesWithNestedArchive() throws Exception {
         final File input = getFile("OSX_ArchiveWithNestedArchive.zip");
        
-        List results = new ArrayList();
+        List<String> results = new ArrayList<String>();
 
         final InputStream is = new FileInputStream(input);
         ArchiveInputStream in = null;

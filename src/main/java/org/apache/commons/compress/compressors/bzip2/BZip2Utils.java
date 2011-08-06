@@ -37,7 +37,8 @@ public abstract class BZip2Utils {
      * suffixes are mapped to the empty string, as they should simply be
      * removed from the filename when the file is uncompressed.
      */
-    private static final Map uncompressSuffix = new HashMap();
+    private static final Map<String, String> uncompressSuffix =
+        new HashMap<String, String>();
 
     static {
         uncompressSuffix.put(".tbz2", ".tar");

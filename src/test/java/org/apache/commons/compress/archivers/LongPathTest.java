@@ -48,7 +48,7 @@ public class LongPathTest extends AbstractTestCase {
 
     private File file;
 
-    private static final ArrayList fileList = new ArrayList();
+    private static final ArrayList<String> fileList = new ArrayList<String>();
 
     private final ArchiveStreamFactory factory = new ArchiveStreamFactory();
     
@@ -92,7 +92,8 @@ public class LongPathTest extends AbstractTestCase {
     }
     
     public void testArchive() throws Exception {
-        ArrayList expected=(ArrayList) fileList.clone();
+        @SuppressWarnings("unchecked")
+        ArrayList<String> expected = (ArrayList<String>) fileList.clone();
         String name = file.getName();
         if ("minotaur.jar".equals(name) || "minotaur-0.jar".equals(name)){
             expected.add("META-INF/");
@@ -118,7 +119,7 @@ public class LongPathTest extends AbstractTestCase {
             // CPIO does not store directories or directory names
             expected.clear();
             for(int i=0; i < fileList.size(); i++){
-                String ent = (String) fileList.get(i);
+                String ent = fileList.get(i);
                 if (!ent.endsWith("/")){// not a directory
                     final int lastSlash = ent.lastIndexOf('/');
                     if (lastSlash >= 0) { // extract path name
