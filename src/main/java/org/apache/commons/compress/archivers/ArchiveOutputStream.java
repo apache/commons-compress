@@ -141,6 +141,7 @@ public abstract class ArchiveOutputStream extends OutputStream {
      * @deprecated this method may yield wrong results for large
      * archives, use #getBytesWritten instead
      */
+    @Deprecated
     public int getCount() {
         return (int) bytesWritten;
     }

@@ -105,6 +105,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * written in utf-8.
      * @deprecated use {@link GeneralPurposeBit#UFT8_NAMES_FLAG} instead
      */
+    @Deprecated
     public static final int EFS_FLAG = GeneralPurposeBit.UFT8_NAMES_FLAG;
 
     /**

@@ -29,6 +29,7 @@ public class UnsupportedZipFeatureException extends ZipException {
 
     private final Feature reason;
     private final ZipArchiveEntry entry;
+    private static final long serialVersionUID = 4430521921766595597L;
 
     /**
      * Creates an exception.

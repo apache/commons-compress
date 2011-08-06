@@ -53,6 +53,7 @@ public abstract class CompressorInputStream extends InputStream {
      * @deprecated this method may yield wrong results for large
      * archives, use #getBytesRead instead
      */
+    @Deprecated
     public int getCount() {
         return (int) bytesRead;
     }

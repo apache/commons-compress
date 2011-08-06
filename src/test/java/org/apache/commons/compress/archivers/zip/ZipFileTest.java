@@ -119,7 +119,7 @@ public class ZipFileTest extends TestCase {
     private static void assertEntryName(ArrayList<ZipArchiveEntry> entries,
                                         int index,
                                         String expectedName) {
-        ZipArchiveEntry ze = (ZipArchiveEntry) entries.get(index);
+        ZipArchiveEntry ze = entries.get(index);
         assertEquals("src/main/java/org/apache/commons/compress/archivers/zip/"
                      + expectedName + ".java",
                      ze.getName());

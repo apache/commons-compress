@@ -124,6 +124,7 @@ public class ExtraFieldUtils {
      *
      * @since Apache Commons Compress 1.1
      */
+    @SuppressWarnings("fallthrough")
     public static ZipExtraField[] parse(byte[] data, boolean local,
                                         UnparseableExtraField onUnparseableData)
         throws ZipException {
