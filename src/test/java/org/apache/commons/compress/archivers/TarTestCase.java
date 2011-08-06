@@ -119,9 +119,9 @@ public final class TarTestCase extends AbstractTestCase {
         final InputStream is = new FileInputStream(input);
         final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("tar", is);
         TarArchiveEntry entry = (TarArchiveEntry)in.getNextEntry();
-        assertEquals("3北盕06盬2345盳B眑a北北北北BLA", entry.getName());
+        assertEquals("3\u00b1\u00b1\u00b1F06\u00b1W2345\u00b1ZB\u00b1la\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1BLA", entry.getName());
         entry = (TarArchiveEntry)in.getNextEntry();
-        assertEquals("0302-0601-3北盕06盬2345盳B眑a北北北北BLA",entry.getName());
+        assertEquals("0302-0601-3\u00b1\u00b1\u00b1F06\u00b1W2345\u00b1ZB\u00b1la\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1BLA",entry.getName());
         in.close();
     }
 
