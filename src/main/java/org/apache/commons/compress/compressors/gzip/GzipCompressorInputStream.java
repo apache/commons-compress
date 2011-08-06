@@ -44,6 +44,7 @@ public class GzipCompressorInputStream extends CompressorInputStream {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int read() throws IOException {
         int read = in.read();
         this.count(read < 0 ? -1 : 1);
@@ -55,6 +56,7 @@ public class GzipCompressorInputStream extends CompressorInputStream {
      * 
      * @since Apache Commons Compress 1.1
      */
+    @Override
     public int read(byte[] b) throws IOException {
         int read = in.read(b);
         this.count(read);
@@ -66,6 +68,7 @@ public class GzipCompressorInputStream extends CompressorInputStream {
      * 
      * @since Apache Commons Compress 1.1
      */
+    @Override
     public int read(byte[] b, int from, int length) throws IOException {
         int read = in.read(b, from, length);
         this.count(read);
@@ -105,6 +108,7 @@ public class GzipCompressorInputStream extends CompressorInputStream {
      * 
      * @since 1.2
      */
+    @Override
     public void close() throws IOException {
         if (this.in != System.in) {
             this.in.close();

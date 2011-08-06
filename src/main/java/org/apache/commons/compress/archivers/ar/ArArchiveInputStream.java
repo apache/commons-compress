@@ -216,6 +216,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      * @see
      * org.apache.commons.compress.archivers.ArchiveInputStream#getNextEntry()
      */
+    @Override
     public ArchiveEntry getNextEntry() throws IOException {
         return getNextArEntry();
     }
@@ -225,6 +226,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      * 
      * @see java.io.InputStream#close()
      */
+    @Override
     public void close() throws IOException {
         if (!closed) {
             closed = true;
@@ -238,6 +240,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      * 
      * @see java.io.InputStream#read(byte[], int, int)
      */
+    @Override
     public int read(byte[] b, final int off, final int len) throws IOException {
         int toRead = len;
         if (currentEntry != null) {

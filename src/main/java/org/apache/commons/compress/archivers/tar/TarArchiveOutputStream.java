@@ -113,6 +113,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * 
      * @throws IOException on error
      */
+    @Override
     public void finish() throws IOException {
         if (finished) {
             throw new IOException("This archive has already been finished");
@@ -131,6 +132,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * Closes the underlying OutputStream.
      * @throws IOException on error
      */
+    @Override
     public void close() throws IOException {
         if(!finished) {
             finish();
@@ -165,6 +167,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * @throws IOException on error
      * @throws ClassCastException if archiveEntry is not an instance of TarArchiveEntry
      */
+    @Override
     public void putArchiveEntry(ArchiveEntry archiveEntry) throws IOException {
         if(finished) {
             throw new IOException("Stream has already been finished");
@@ -215,6 +218,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * next entry written.
      * @throws IOException on error
      */
+    @Override
     public void closeArchiveEntry() throws IOException {
         if(finished) {
             throw new IOException("Stream has already been finished");
@@ -256,6 +260,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * @param numToWrite The number of bytes to write.
      * @throws IOException on error
      */
+    @Override
     public void write(byte[] wBuf, int wOffset, int numToWrite) throws IOException {
         if ((currBytes + numToWrite) > currSize) {
             throw new IOException("request to write '" + numToWrite
@@ -335,12 +340,13 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         buffer.writeRecord(recordBuf);
     }
 
-    // used to be implemented via FilterOutputStream
+    @Override
     public void flush() throws IOException {
         out.flush();
     }
 
     /** {@inheritDoc} */
+    @Override
     public ArchiveEntry createArchiveEntry(File inputFile, String entryName)
             throws IOException {
         if(finished) {

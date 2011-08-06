@@ -99,6 +99,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
      *             if an I/O error has occurred or if a CPIO file error has
      *             occurred
      */
+    @Override
     public int available() throws IOException {
         ensureOpen();
         if (this.entryEOF) {
@@ -113,6 +114,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
      * @throws IOException
      *             if an I/O error has occurred
      */
+    @Override
     public void close() throws IOException {
         if (!this.closed) {
             in.close();
@@ -222,6 +224,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
      *             if an I/O error has occurred or if a CPIO file error has
      *             occurred
      */
+    @Override
     public int read(final byte[] b, final int off, final int len)
             throws IOException {
         ensureOpen();
@@ -396,6 +399,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
      * @throws IllegalArgumentException
      *             if n < 0
      */
+    @Override
     public long skip(final long n) throws IOException {
         if (n < 0) {
             throw new IllegalArgumentException("negative skip length");
@@ -420,6 +424,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
     }
 
     /** {@inheritDoc} */
+    @Override
     public ArchiveEntry getNextEntry() throws IOException {
         return getNextCPIOEntry();
     }

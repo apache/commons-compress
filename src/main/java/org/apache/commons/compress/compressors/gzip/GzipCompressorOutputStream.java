@@ -33,6 +33,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void write(int b) throws IOException {
         out.write(b);
     }
@@ -42,6 +43,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
      * 
      * @since Apache Commons Compress 1.1
      */
+    @Override
     public void write(byte[] b) throws IOException {
         out.write(b);
     }
@@ -51,10 +53,12 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
      * 
      * @since Apache Commons Compress 1.1
      */
+    @Override
     public void write(byte[] b, int from, int length) throws IOException {
         out.write(b, from, length);
     }
 
+    @Override
     public void close() throws IOException {
         out.close();
     }
