@@ -88,7 +88,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             changes.add(e2, in2);
             
             assertEquals(1, changes.getChanges().size());
-            Change c = (Change)changes.getChanges().iterator().next();
+            Change c = changes.getChanges().iterator().next();
             assertEquals(in2, c.getInput());
         } finally {
             if (in != null)
@@ -120,7 +120,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             changes.add(e2, in2, false);
             
             assertEquals(1, changes.getChanges().size());
-            Change c = (Change)changes.getChanges().iterator().next();
+            Change c = changes.getChanges().iterator().next();
             assertEquals(in, c.getInput());
         } finally {
             if (in != null)

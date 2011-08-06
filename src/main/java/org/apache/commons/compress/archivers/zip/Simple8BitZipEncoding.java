@@ -87,7 +87,7 @@ class Simple8BitZipEncoding implements ZipEncoding {
      * stored as an array of 128 chars.
      */
     public Simple8BitZipEncoding(char[] highChars) {
-        this.highChars = (char[]) highChars.clone();
+        this.highChars = highChars.clone();
         List<Simple8BitChar> temp =
             new ArrayList<Simple8BitChar>(this.highChars.length);
 
