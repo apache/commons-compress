@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -305,11 +304,9 @@ public class TarArchiveInputStream extends ArchiveInputStream {
          * size
          * uid,uname
          */
-        Iterator hdrs = headers.entrySet().iterator();
-        while(hdrs.hasNext()){
-            Entry ent = (Entry) hdrs.next();
-            String key = (String) ent.getKey();
-            String val = (String) ent.getValue();
+        for (Entry<String, String> ent : headers.entrySet()){
+            String key = ent.getKey();
+            String val = ent.getValue();
             if ("path".equals(key)){
                 currEntry.setName(val);
             } else if ("linkpath".equals(key)){
