@@ -771,8 +771,16 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         entry.localDataStart = written;
         if (zipMethod == DEFLATED || raf != null) {
             writeOut(LZERO);
-            writeOut(LZERO);
-            writeOut(LZERO);
+            if (zipMethod == DEFLATED && hasZip64Extra(entry.entry)) {
+                // point to ZIP64 extended information extra field for
+                // sizes, may get rewritten once sizes are known if
+                // stream is seekable
+                writeOut(ZipLong.ZIP64_MAGIC.getBytes());
+                writeOut(ZipLong.ZIP64_MAGIC.getBytes());
+            } else {
+                writeOut(LZERO);
+                writeOut(LZERO);
+            }
         } else {
             writeOut(ZipLong.getBytes(ze.getCrc()));
             byte[] size = ZipLong.getBytes(Math.min(ze.getSize(), ZIP64_MAGIC));

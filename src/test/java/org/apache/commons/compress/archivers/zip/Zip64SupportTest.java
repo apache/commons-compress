@@ -96,6 +96,7 @@ public class Zip64SupportTest {
                                        "5GB_of_Zeros");
     }
 
+    @Ignore
     @Test public void read5GBOfZerosGeneratedByJava7JarUsingZipFile()
         throws Throwable {
         read5GBOfZerosUsingZipFileImpl(get5GBZerosFileGeneratedByJava7Jar(),
@@ -566,7 +567,6 @@ public class Zip64SupportTest {
      *
      * Creates a temporary archive of approx 4MB in size
      */
-    @Ignore
     @Test public void writeBigDeflatedEntryKnownSizeToStream()
         throws Throwable {
         withTemporaryArchive("writeBigDeflatedEntryKnownSizeToStream",
@@ -705,9 +705,11 @@ public class Zip64SupportTest {
                                                  // CRC
                                                  0, 0, 0, 0,
                                                  // Compressed Size
-                                                 0, 0, 0, 0,
+                                                 (byte) 0xFF, (byte) 0xFF,
+                                                 (byte) 0xFF, (byte) 0xFF,
                                                  // Original Size
-                                                 0, 0, 0, 0,
+                                                 (byte) 0xFF, (byte) 0xFF,
+                                                 (byte) 0xFF, (byte) 0xFF,
                                                  // file name length
                                                  1, 0,
                                                  // extra field length
@@ -883,7 +885,6 @@ public class Zip64SupportTest {
         };
     }
 
-    @Ignore
     @Test public void writeBigDeflatedEntryKnownSizeToFile()
         throws Throwable {
         withTemporaryArchive("writeBigDeflatedEntryKnownSizeToFile",
@@ -891,7 +892,6 @@ public class Zip64SupportTest {
                              true);
     }
 
-    @Ignore
     @Test public void writeBigDeflatedEntryUnknownSizeToFile()
         throws Throwable {
         withTemporaryArchive("writeBigDeflatedEntryUnknownSizeToFile",
