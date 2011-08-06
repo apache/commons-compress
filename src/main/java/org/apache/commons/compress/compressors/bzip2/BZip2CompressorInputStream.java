@@ -113,6 +113,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     }
 
     /** {@inheritDoc} */
+    @Override
     public int read() throws IOException {
         if (this.in != null) {
             return read0();
@@ -126,6 +127,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      * 
      * @see java.io.InputStream#read(byte[], int, int)
      */
+    @Override
     public int read(final byte[] dest, final int offs, final int len)
         throws IOException {
         if (offs < 0) {
@@ -303,6 +305,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         }
     }
 
+    @Override
     public void close() throws IOException {
         InputStream inShadow = this.in;
         if (inShadow != null) {

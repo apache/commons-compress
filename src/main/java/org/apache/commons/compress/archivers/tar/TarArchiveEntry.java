@@ -326,6 +326,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @param it Entry to be checked for equality.
      * @return True if the entries are equal.
      */
+    @Override
     public boolean equals(Object it) {
         if (it == null || getClass() != it.getClass()) {
             return false;
@@ -338,6 +339,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      *
      * @return the entry hashcode
      */
+    @Override
     public int hashCode() {
         return getName().hashCode();
     }
@@ -359,6 +361,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      *
      * @return This entry's name.
      */
+    @Override
     public String getName() {
         return name.toString();
     }
@@ -524,6 +527,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Date getLastModifiedDate() {
         return getModTime();
     }
@@ -551,6 +555,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      *
      * @return This entry's file size.
      */
+    @Override
     public long getSize() {
         return size;
     }
@@ -635,6 +640,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      *
      * @return True if this entry is a directory.
      */
+    @Override
     public boolean isDirectory() {
         if (file != null) {
             return file.isDirectory();

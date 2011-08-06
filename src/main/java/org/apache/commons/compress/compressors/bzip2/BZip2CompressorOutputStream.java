@@ -432,6 +432,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     }
 
     /** {@inheritDoc} */
+    @Override
     public void write(final int b) throws IOException {
         if (this.out != null) {
             write0(b);
@@ -497,6 +498,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     /**
      * Overriden to close the stream.
      */
+    @Override
     protected void finalize() throws Throwable {
         finish();
         super.finalize();
@@ -519,6 +521,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         }
     }
 
+    @Override
     public void close() throws IOException {
         if (out != null) {
             OutputStream outShadow = this.out;
@@ -527,6 +530,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         }
     }
 
+    @Override
     public void flush() throws IOException {
         OutputStream outShadow = this.out;
         if (outShadow != null) {
@@ -639,6 +643,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         return this.blockSize100k;
     }
 
+    @Override
     public void write(final byte[] buf, int offs, final int len)
         throws IOException {
         if (offs < 0) {

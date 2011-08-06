@@ -165,6 +165,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      *             occurred
      * @throws ClassCastException if entry is not an instance of CpioArchiveEntry
      */
+    @Override
     public void putArchiveEntry(ArchiveEntry entry) throws IOException {
         if(finished) {
             throw new IOException("Stream has already been finished");
@@ -318,6 +319,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      * org.apache.commons.compress.archivers.ArchiveOutputStream#closeArchiveEntry
      * ()
      */
+    @Override
     public void closeArchiveEntry() throws IOException {
         if(finished) {
             throw new IOException("Stream has already been finished");
@@ -358,6 +360,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      *             if an I/O error has occurred or if a CPIO file error has
      *             occurred
      */
+    @Override
     public void write(final byte[] b, final int off, final int len)
             throws IOException {
         ensureOpen();
@@ -392,6 +395,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      *             if an I/O exception has occurred or if a CPIO file error has
      *             occurred
      */
+    @Override
     public void finish() throws IOException {
         ensureOpen();
         if (finished) {
@@ -422,6 +426,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      *             if an I/O error has occurred or if a CPIO file error has
      *             occurred
      */
+    @Override
     public void close() throws IOException {
         if(!finished) {
             finish();
@@ -491,6 +496,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      * 
      * @see org.apache.commons.compress.archivers.ArchiveOutputStream#createArchiveEntry(java.io.File, java.lang.String)
      */
+    @Override
     public ArchiveEntry createArchiveEntry(File inputFile, String entryName)
             throws IOException {
         if(finished) {
