@@ -63,9 +63,24 @@ class Simple8BitZipEncoding implements ZipEncoding {
             return this.unicode - a.unicode;
         }
 
+        @Override
         public String toString() {
             return "0x" + Integer.toHexString(0xffff & unicode)
                 + "->0x" + Integer.toHexString(0xff & code);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o instanceof Simple8BitChar) {
+                Simple8BitChar other = (Simple8BitChar) o;
+                return unicode == other.unicode && code == other.code;
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return unicode;
         }
     }
 

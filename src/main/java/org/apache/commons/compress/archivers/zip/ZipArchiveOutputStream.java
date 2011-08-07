@@ -297,7 +297,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     public void setEncoding(final String encoding) {
         this.encoding = encoding;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
-        useUTF8Flag &= ZipEncodingHelper.isUTF8(encoding);
+        if (useUTF8Flag && !ZipEncodingHelper.isUTF8(encoding)) {
+            useUTF8Flag = false;
+        }
     }
 
     /**
@@ -463,7 +465,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
                     // * reset hasUsedZip64 if it has been set because
                     //   of this entry
-                    hasUsedZip64 &= !entry.causedUseOfZip64;
+                    if (entry.causedUseOfZip64) {
+                        hasUsedZip64 = false;
+                    }
                 }
             }
             raf.seek(save);
