@@ -567,6 +567,7 @@ public class Zip64SupportTest {
      *
      * Creates a temporary archive of approx 4MB in size
      */
+    @Ignore
     @Test public void writeBigDeflatedEntryKnownSizeToStream()
         throws Throwable {
         withTemporaryArchive("writeBigDeflatedEntryKnownSizeToStream",
@@ -885,6 +886,7 @@ public class Zip64SupportTest {
         };
     }
 
+    @Ignore
     @Test public void writeBigDeflatedEntryKnownSizeToFile()
         throws Throwable {
         withTemporaryArchive("writeBigDeflatedEntryKnownSizeToFile",
@@ -892,6 +894,7 @@ public class Zip64SupportTest {
                              true);
     }
 
+    @Ignore
     @Test public void writeBigDeflatedEntryUnknownSizeToFile()
         throws Throwable {
         withTemporaryArchive("writeBigDeflatedEntryUnknownSizeToFile",
