@@ -63,7 +63,7 @@ public final class ZipEightByteInteger {
 
     private final BigInteger value;
 
-    public static ZipEightByteInteger ZERO = new ZipEightByteInteger(0);
+    public static final ZipEightByteInteger ZERO = new ZipEightByteInteger(0);
 
     /**
      * Create instance from a number.
