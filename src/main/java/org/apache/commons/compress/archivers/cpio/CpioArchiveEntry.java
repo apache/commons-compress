@@ -421,7 +421,6 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @return Returns the filesize.
      * @see org.apache.commons.compress.archivers.ArchiveEntry#getSize()
      */
-    @Override
     public long getSize() {
         return this.filesize;
     }
@@ -515,7 +514,6 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * 
      * @return Returns the name.
      */
-    @Override
     public String getName() {
         return this.name;
     }
@@ -580,7 +578,6 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /** {@inheritDoc} */
-    @Override
     public Date getLastModifiedDate() {
         return new Date(1000 * getTime());
     }
@@ -617,7 +614,6 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * 
      * @return TRUE if this entry is a directory.
      */
-    @Override
     public boolean isDirectory() {
         return (this.mode & S_IFMT) == C_ISDIR;
     }

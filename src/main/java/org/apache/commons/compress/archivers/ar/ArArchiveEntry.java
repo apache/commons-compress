@@ -116,13 +116,11 @@ public class ArArchiveEntry implements ArchiveEntry {
     }
 
     /** {@inheritDoc} */
-    @Override
     public long getSize() {
         return this.getLength();
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getName() {
         return name;
     }
@@ -147,7 +145,6 @@ public class ArArchiveEntry implements ArchiveEntry {
     }
 
     /** {@inheritDoc} */
-    @Override
     public Date getLastModifiedDate() {
         return new Date(1000 * getLastModified());
     }
@@ -157,7 +154,6 @@ public class ArArchiveEntry implements ArchiveEntry {
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean isDirectory() {
         return false;
     }
