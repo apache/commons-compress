@@ -98,10 +98,11 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
         <p>Traditionally the AR format doesn't allow file names longer
           than 16 characters.  There are two variants that circumvent
           this limitation in different ways, the GNU/SRV4 and the BSD
-          variant.  Currently Commons Compress can only read archives
-          using the GNU/SRV4 variant, it doesn't support writing
-          archives with file names longer than 16 characters at
-          all.</p>
+          variant.  Commons Compress 1.0 to 1.2 can only read archives
+          using the GNU/SRV4 variant, support for the BSD variant has
+          been added in Commons Compress 1.3.  It doesn't support
+          writing archives with file names longer than 16 characters
+          at all.</p>
 
       </subsection>
 
