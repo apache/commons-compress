@@ -116,7 +116,9 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     @Override
     public int read() throws IOException {
         if (this.in != null) {
-            return read0();
+            int r = read0();
+            count(r < 0 ? -1 : 1);
+            return r;
         } else {
             throw new IOException("stream closed");
         }
@@ -150,7 +152,9 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             dest[destOffs++] = (byte) b;
         }
 
-        return (destOffs == offs) ? -1 : (destOffs - offs);
+        int c = (destOffs == offs) ? -1 : (destOffs - offs);
+        count(c);
+        return c;
     }
 
     private void makeMaps() {
