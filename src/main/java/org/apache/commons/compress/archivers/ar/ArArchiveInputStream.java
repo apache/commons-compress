@@ -138,26 +138,18 @@ public class ArArchiveInputStream extends ArchiveInputStream {
 
         entryOffset = offset;
 
-//        GNU ar stores multiple extended filenames in the data section of a file with the name "//", this record is referred to by future headers. A header references an extended filename by storing a "/" followed by a decimal offset to the start of the filename in the extended filename data section. The format of this "//" file itself is simply a list of the long filenames, each separated by one or more LF characters. Note that the decimal offsets are number of characters, not line or string number within the "//" file.
-//
 //        GNU ar uses a '/' to mark the end of the filename; this allows for the use of spaces without the use of an extended filename.
 
         // entry name is stored as ASCII string
         String temp = ArchiveUtils.toAsciiString(name).trim();
         long len = asLong(length);
 
-        if (temp.equals("//")){ // GNU extended filenames entry
-            int bufflen = asInt(length); // Assume length will fit in an int
-            namebuffer = new byte[bufflen];
-            int read = read(namebuffer, 0, bufflen);
-            if (read != bufflen){
-                throw new IOException("Failed to read complete // record: expected="+bufflen+" read="+read);
-            }
-            currentEntry = new ArArchiveEntry(temp, bufflen);
+        if (isGNUStringTable(temp)) { // GNU extended filenames entry
+            currentEntry = readGNUStringTable(length);
             return getNextArEntry();
         } else if (temp.endsWith("/")) { // GNU terminator
             temp = temp.substring(0, temp.length() - 1);
-        } else if (temp.matches("^/\\d+")) {// GNU long filename ref.
+        } else if (isGNULongName(temp)) {
             int offset = Integer.parseInt(temp.substring(1));// get the offset
             temp = getExtendedName(offset); // convert to the long name
         } else if (isBSDLongName(temp)) {
@@ -315,6 +307,8 @@ public class ArArchiveInputStream extends ArchiveInputStream {
     private static final String BSD_LONGNAME_PREFIX = "#1/";
     private static final int BSD_LONGNAME_PREFIX_LEN =
         BSD_LONGNAME_PREFIX.length();
+    private static final String BSD_LONGNAME_PATTERN =
+        "^" + BSD_LONGNAME_PREFIX + "\\d+";
 
     /**
      * Does the name look like it is a long name (or a name containing
@@ -339,8 +333,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      * @since Apache Commons Compress 1.3
      */
     private static boolean isBSDLongName(String name) {
-        return name.startsWith(BSD_LONGNAME_PREFIX)
-            && name.length() > BSD_LONGNAME_PREFIX_LEN;
+        return name != null && name.matches(BSD_LONGNAME_PATTERN);
     }
 
     /**
@@ -348,6 +341,8 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      * first bytes to be read are the real file name.
      *
      * @see #isBSDLongName
+     *
+     * @since Apache Commons Compress 1.3
      */
     private String getBSDLongName(String bsdLongName) throws IOException {
         int nameLen =
@@ -365,5 +360,56 @@ public class ArArchiveInputStream extends ArchiveInputStream {
             throw new EOFException();
         }
         return ArchiveUtils.toAsciiString(name);
+    }
+
+    private static final String GNU_STRING_TABLE_NAME = "//";
+
+    /**
+     * Is this the name of the "Archive String Table" as used by
+     * SVR4/GNU to store long file names?
+     *
+     * <p>GNU ar stores multiple extended filenames in the data section
+     * of a file with the name "//", this record is referred to by
+     * future headers.</p>
+     *
+     * <p>A header references an extended filename by storing a "/"
+     * followed by a decimal offset to the start of the filename in
+     * the extended filename data section.</p>
+     * 
+     * <p>The format of the "//" file itself is simply a list of the
+     * long filenames, each separated by one or more LF
+     * characters. Note that the decimal offsets are number of
+     * characters, not line or string number within the "//" file.</p>
+     */
+    private static boolean isGNUStringTable(String name) {
+        return GNU_STRING_TABLE_NAME.equals(name);
+    }
+
+    /**
+     * Reads the GNU archive String Table.
+     *
+     * @see #isGNUStringTable
+     */
+    private ArArchiveEntry readGNUStringTable(byte[] length) throws IOException {
+        int bufflen = asInt(length); // Assume length will fit in an int
+        namebuffer = new byte[bufflen];
+        int read = read(namebuffer, 0, bufflen);
+        if (read != bufflen){
+            throw new IOException("Failed to read complete // record: expected="
+                                  + bufflen + " read=" + read);
+        }
+        return new ArArchiveEntry(GNU_STRING_TABLE_NAME, bufflen);
+    }
+
+    private static final String GNU_LONGNAME_PATTERN = "^/\\d+";
+
+    /**
+     * Does the name look like it is a long name (or a name containing
+     * spaces) as encoded by SVR4/GNU ar?
+     *
+     * @see #isGNUStringTable
+     */
+    private boolean isGNULongName(String name) {
+        return name != null && name.matches(GNU_LONGNAME_PATTERN);
     }
 }
