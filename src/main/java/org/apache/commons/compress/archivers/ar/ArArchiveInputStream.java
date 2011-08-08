@@ -304,7 +304,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         return true;
     }
 
-    private static final String BSD_LONGNAME_PREFIX = "#1/";
+    static final String BSD_LONGNAME_PREFIX = "#1/";
     private static final int BSD_LONGNAME_PREFIX_LEN =
         BSD_LONGNAME_PREFIX.length();
     private static final String BSD_LONGNAME_PATTERN =

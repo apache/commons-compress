@@ -32,18 +32,36 @@ import org.apache.commons.compress.utils.ArchiveUtils;
  * @NotThreadSafe
  */
 public class ArArchiveOutputStream extends ArchiveOutputStream {
+    /** Fail if a long file name is required in the archive. */
+    public static final int LONGFILE_ERROR = 0;
+
+    /** BSD ar extensions are used to store long file names in the archive. */
+    public static final int LONGFILE_BSD = 1;
 
     private final OutputStream out;
     private long archiveOffset = 0;
     private long entryOffset = 0;
     private ArArchiveEntry prevEntry;
     private boolean haveUnclosedEntry = false;
-    
+    private int longFileMode = LONGFILE_ERROR;
+
     /** indicates if this archive is finished */
     private boolean finished = false;
 
     public ArArchiveOutputStream( final OutputStream pOut ) {
         this.out = pOut;
+    }
+
+    /**
+     * Set the long file mode.
+     * This can be LONGFILE_ERROR(0) or LONGFILE_BSD(1).
+     * This specifies the treatment of long file names (names >= 16).
+     * Default is LONGFILE_ERROR.
+     * @param longFileMode the mode to use
+     * @since Apache Commons Compress 1.3
+     */
+    public void setLongFileMode(int longFileMode) {
+        this.longFileMode = longFileMode;
     }
 
     private long writeArchiveHeader() throws IOException {
@@ -74,7 +92,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         if(finished) {
             throw new IOException("Stream has already been finished");
         }
-        
+
         ArArchiveEntry pArEntry = (ArArchiveEntry)pEntry;
         if (prevEntry == null) {
             archiveOffset += writeArchiveHeader();
@@ -117,12 +135,20 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     private long writeEntryHeader( final ArArchiveEntry pEntry ) throws IOException {
 
         long offset = 0;
+        boolean mustAppendName = false;
 
         final String n = pEntry.getName();
-        if (n.length() > 16) {
+        if (LONGFILE_ERROR == longFileMode && n.length() > 16) {
             throw new IOException("filename too long, > 16 chars: "+n);
         }
-        offset += write(n);
+        if (LONGFILE_BSD == longFileMode && 
+            (n.length() > 16 || n.indexOf(" ") > -1)) {
+            mustAppendName = true;
+            offset += write(ArArchiveInputStream.BSD_LONGNAME_PREFIX
+                            + String.valueOf(n.length()));
+        } else {
+            offset += write(n);
+        }
 
         offset = fill(offset, 16, ' ');
         final String m = "" + (pEntry.getLastModified());
@@ -153,7 +179,9 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         offset += write(fm);
 
         offset = fill(offset, 48, ' ');
-        final String s = "" + pEntry.getLength();
+        final String s =
+            String.valueOf(pEntry.getLength()
+                           + (mustAppendName ? n.length() : 0));
         if (s.length() > 10) {
             throw new IOException("size too long");
         }
@@ -162,6 +190,10 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         offset = fill(offset, 58, ' ');
 
         offset += write(ArArchiveEntry.TRAILER);
+
+        if (mustAppendName) {
+            offset += write(n);
+        }
 
         return offset;
     }
