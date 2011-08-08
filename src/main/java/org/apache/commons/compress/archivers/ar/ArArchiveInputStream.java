@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress.archivers.ar;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -143,6 +144,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
 
         // entry name is stored as ASCII string
         String temp = ArchiveUtils.toAsciiString(name).trim();
+        long len = asLong(length);
 
         if (temp.equals("//")){ // GNU extended filenames entry
             int bufflen = asInt(length); // Assume length will fit in an int
@@ -158,8 +160,17 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         } else if (temp.matches("^/\\d+")) {// GNU long filename ref.
             int offset = Integer.parseInt(temp.substring(1));// get the offset
             temp = getExtendedName(offset); // convert to the long name
+        } else if (isBSDLongName(temp)) {
+            temp = getBSDLongName(temp);
+            // entry length contained the length of the file name in
+            // addition to the real length of the entry.
+            // assume file name was ASCII, there is no "standard" otherwise
+            int nameLen = temp.length();
+            len -= nameLen;
+            entryOffset += nameLen;
         }
-        currentEntry = new ArArchiveEntry(temp, asLong(length), asInt(userid, true),
+
+        currentEntry = new ArArchiveEntry(temp, len, asInt(userid, true),
                                           asInt(groupid, true), asInt(filemode, 8),
                                           asLong(lastmodified));
         return currentEntry;
@@ -301,4 +312,58 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         return true;
     }
 
+    private static final String BSD_LONGNAME_PREFIX = "#1/";
+    private static final int BSD_LONGNAME_PREFIX_LEN =
+        BSD_LONGNAME_PREFIX.length();
+
+    /**
+     * Does the name look like it is a long name (or a name containing
+     * spaces) as encoded by BSD ar?
+     *
+     * <p>From the FreeBSD ar(5) man page:</p>
+     * <pre>
+     * BSD   In the BSD variant, names that are shorter than 16
+     *	     characters and without embedded spaces are stored
+     *	     directly in this field.  If a name has an embedded
+     *	     space, or if it is longer than 16 characters, then
+     *	     the string "#1/" followed by the decimal represen-
+     *	     tation of the length of the file name is placed in
+     *	     this field.	The actual file name is stored immedi-
+     *	     ately after the archive header.  The content of the
+     *	     archive member follows the file name.  The ar_size
+     *	     field of the header (see below) will then hold the
+     *	     sum of the size of the file name and the size of
+     *	     the member.
+     * </pre>
+     *
+     * @since Apache Commons Compress 1.3
+     */
+    private static boolean isBSDLongName(String name) {
+        return name.startsWith(BSD_LONGNAME_PREFIX)
+            && name.length() > BSD_LONGNAME_PREFIX_LEN;
+    }
+
+    /**
+     * Reads the real name from the current stream assuming the very
+     * first bytes to be read are the real file name.
+     *
+     * @see #isBSDLongName
+     */
+    private String getBSDLongName(String bsdLongName) throws IOException {
+        int nameLen =
+            Integer.parseInt(bsdLongName.substring(BSD_LONGNAME_PREFIX_LEN));
+        byte[] name = new byte[nameLen];
+        int read = 0, readNow = 0;
+        while ((readNow = input.read(name, read, nameLen - read)) >= 0) {
+            read += readNow;
+            count(readNow);
+            if (read == nameLen) {
+                break;
+            }
+        }
+        if (read != nameLen) {
+            throw new EOFException();
+        }
+        return ArchiveUtils.toAsciiString(name);
+    }
 }
