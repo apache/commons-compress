@@ -236,6 +236,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     private boolean hasUsedZip64 = false;
 
+    private Zip64Mode zip64Mode = Zip64Mode.AsNeeded;
+
     /**
      * Creates a new ZIP OutputStream filtering the underlying stream.
      * @param out the outputstream to zip
@@ -338,6 +340,54 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     public void setFallbackToUTF8(boolean b) {
         fallbackToUTF8 = b;
+    }
+
+    /**
+     * Whether Zip64 extensions will be used.
+     *
+     * <p>When setting the mode to {@link Zip64Mode#Never Never},
+     * {@link #putArchiveEntry}, {@link #closeArchiveEntry}, {@link
+     * #finish} or {@link #close} may throw a {@link
+     * Zip64RequiredException} if the entry's size or the total size
+     * of the archive exceeds 4GB or there are more than 65536 entries
+     * inside the archive.  Any archive created in this mode will be
+     * readable by implementations that don't support Zip64.</p>
+     *
+     * <p>When setting the mode to {@link Zip64Mode#Always Always},
+     * Zip64 extensions will be used for all entries.  Any archive
+     * created in this mode may be unreadable by implementations that
+     * don't support Zip64 even if all its contents would be.</p>
+     *
+     * <p>When setting the mode to {@link Zip64Mode#AsNeeded
+     * AsNeeded}, Zip64 extensions will transparently be used for
+     * those entries that require them.  This mode can only be used if
+     * the uncompressed size of the {@link ZipArchiveEntry} is known
+     * when calling {@link #putArchiveEntry} or the archive is written
+     * to a seekable output (i.e. you have used the {@link
+     * #ZipArchiveOutputStream(java.io.File) File-arg constructor}) -
+     * this mode is not valid when the output stream is not seekable
+     * and the uncompressed size is unknown when {@link
+     * #putArchiveEntry} is called.</p>
+     * 
+     * <p>If no entry inside the resulting archive requires Zip64
+     * extensions then {@link Zip64Mode#Never Never} will create the
+     * smallest archive.  {@link Zip64Mode#AsNeeded AsNeeded} will
+     * create a slightly bigger archive if the uncompressed size of
+     * any entry has initially been unknown and create an archive
+     * identical to {@link Zip64Mode#Never Never} otherwise.  {@link
+     * Zip64Mode#Always Always} will create an archive that is at
+     * least 20 bytes per entry bigger than the one {@link
+     * Zip64Mode#Never Never} would create.</p>
+     *
+     * <p>Defaults to {@link Zip64Mode#AsNeeded AsNeeded} unless
+     * {@link #putArchiveEntry} is called with an entry of unknown
+     * size and data is written to a non-seekable stream - in this
+     * case the default is {@link Zip64Mode#Never Never}.</p>
+     *
+     * @since Apache Commons Compress 1.3
+     */
+    public void setUseZip64(Zip64Mode mode) {
+        zip64Mode = mode;
     }
 
     /** {@inheritDoc} */
