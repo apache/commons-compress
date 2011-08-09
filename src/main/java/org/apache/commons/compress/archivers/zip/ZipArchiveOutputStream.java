@@ -390,7 +390,11 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         zip64Mode = mode;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * @throws Zip64RequiredException if the archive's size exceeds 4
+     * GByte or there are more than 65535 entries inside the archive
+     */
     @Override
     public void finish() throws IOException {
         if (finished) {
@@ -417,6 +421,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Writes all necessary data for this entry.
      * @throws IOException on error
+     * @throws Zip64RequiredException if the entry's uncompressed or
+     * compressed size exceeds 4 GByte
      */
     @Override
     public void closeArchiveEntry() throws IOException {
@@ -475,12 +481,17 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             entry.entry.setCrc(realCrc);
         }
 
+        boolean actuallyNeedsZip64 = entry.entry.getSize() >= ZIP64_MAGIC
+            || entry.entry.getCompressedSize() >= ZIP64_MAGIC;
+        if (actuallyNeedsZip64 && zip64Mode == Zip64Mode.Never) {
+            throw new Zip64RequiredException(Zip64RequiredException
+                                             .getEntryTooBigMessage(entry.entry));
+        }
+
         // If random access output, write the local file header containing
         // the correct CRC and compressed/uncompressed sizes
         if (raf != null) {
             long save = raf.getFilePointer();
-            boolean actuallyNeedsZip64 = entry.entry.getSize() >= ZIP64_MAGIC
-                || entry.entry.getCompressedSize() >= ZIP64_MAGIC;
 
             raf.seek(entry.localDataStart);
             writeOut(ZipLong.getBytes(entry.entry.getCrc()));
@@ -530,6 +541,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * {@inheritDoc} 
      * @throws ClassCastException if entry is not an instance of ZipArchiveEntry
+     * @throws Zip64RequiredException if the entry's uncompressed or
+     * compressed size is known to exceed 4 GByte
      */
     @Override
     public void putArchiveEntry(ArchiveEntry archiveEntry) throws IOException {
@@ -564,6 +577,13 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                                        + " method when not writing to a file");
             }
             entry.entry.setCompressedSize(entry.entry.getSize());
+        }
+
+        if ((entry.entry.getSize() >= ZIP64_MAGIC
+             || entry.entry.getCompressedSize() >= ZIP64_MAGIC)
+            && zip64Mode == Zip64Mode.Never) {
+            throw new Zip64RequiredException(Zip64RequiredException
+                                             .getEntryTooBigMessage(entry.entry));
         }
 
         // add a ZIP64 extended information extra field if we already
@@ -693,6 +713,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * associated with the stream.
      *
      * @exception  IOException  if an I/O error occurs.
+     * @throws Zip64RequiredException if the archive's size exceeds 4
+     * GByte or there are more than 65535 entries inside the archive
      */
     @Override
     public void close() throws IOException {
@@ -893,6 +915,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * Writes the central file header entry.
      * @param ze the entry to write
      * @throws IOException on error
+     * @throws Zip64RequiredException if the archive's size exceeds 4
+     * GByte
      */
     protected void writeCentralFileHeader(ZipArchiveEntry ze) throws IOException {
         writeOut(CFH_SIG);
@@ -902,6 +926,14 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         final boolean needsZip64Extra = ze.getCompressedSize() >= ZIP64_MAGIC
             || ze.getSize() >= ZIP64_MAGIC
             || lfhOffset >= ZIP64_MAGIC;
+
+        if (needsZip64Extra && zip64Mode == Zip64Mode.Never) {
+            // must be the offset that is too big, otherwise an
+            // exception would have been throw in putArchiveEntry or
+            // closeArchiveEntry
+            throw new Zip64RequiredException(Zip64RequiredException
+                                             .ARCHIVE_TOO_BIG_MESSAGE);
+        }
 
         if (needsZip64Extra) {
             Zip64ExtendedInformationExtraField z64 = getZip64Extra(ze);
@@ -1012,6 +1044,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Writes the &quot;End of central dir record&quot;.
      * @throws IOException on error
+     * @throws Zip64RequiredException if the archive's size exceeds 4
+     * GByte or there are more than 65535 entries inside the archive
      */
     protected void writeCentralDirectoryEnd() throws IOException {
         writeOut(EOCD_SIG);
@@ -1021,7 +1055,18 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         writeOut(ZERO);
 
         // number of entries
-        byte[] num = ZipShort.getBytes(Math.min(entries.size(),
+        int numberOfEntries = entries.size();
+        if (numberOfEntries > ZIP64_MAGIC_SHORT
+            && zip64Mode == Zip64Mode.Never) {
+            throw new Zip64RequiredException(Zip64RequiredException
+                                             .TOO_MANY_ENTRIES_MESSAGE);
+        }
+        if (cdOffset > ZIP64_MAGIC && zip64Mode == Zip64Mode.Never) {
+            throw new Zip64RequiredException(Zip64RequiredException
+                                             .ARCHIVE_TOO_BIG_MESSAGE);
+        }
+
+        byte[] num = ZipShort.getBytes(Math.min(numberOfEntries,
                                                 ZIP64_MAGIC_SHORT));
         writeOut(num);
         writeOut(num);
@@ -1045,6 +1090,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @since Apache Commons Compress 1.3
      */
     protected void writeZip64CentralDirectory() throws IOException {
+        if (zip64Mode == Zip64Mode.Never) {
+            return;
+        }
+
         if (!hasUsedZip64) {
             if (cdOffset >= ZIP64_MAGIC || cdLength >= ZIP64_MAGIC
                 || entries.size() >= ZIP64_MAGIC_SHORT) {
@@ -1235,6 +1284,22 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
     private ByteBuffer getName(ZipArchiveEntry ze) throws IOException {
         return getEntryEncoding(ze).encode(ze.getName());
+    }
+
+    /**
+     * Closes the underlying stream/file without finishing the
+     * archive, the result will likely be a corrupt archive.
+     *
+     * <p>This method only exists to support tests that generate
+     * corrupt archives so they can clean up any temporary files.</p>
+     */
+    void destroy() throws IOException {
+        if (raf != null) {
+            raf.close();
+        }
+        if (out != null) {
+            out.close();
+        }
     }
 
     /**

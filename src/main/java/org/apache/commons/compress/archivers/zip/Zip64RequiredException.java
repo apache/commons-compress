@@ -30,6 +30,19 @@ public class Zip64RequiredException extends ZipException {
 
     private static final long serialVersionUID = 20110809L;
 
+    /**
+     * Helper to format "entry too big" messages.
+     */
+    static String getEntryTooBigMessage(ZipArchiveEntry ze) {
+        return ze.getName() + "'s size exceeds the limit of 4GByte.";
+    }
+
+    static final String ARCHIVE_TOO_BIG_MESSAGE =
+        "archive's size exceeds the limit of 4GByte.";
+
+    static final String TOO_MANY_ENTRIES_MESSAGE =
+        "archive contains more than 65535 entries.";
+
     public Zip64RequiredException(String reason) {
         super(reason);
     }
