@@ -226,7 +226,7 @@ public abstract class AbstractTestCase extends TestCase {
         OutputStream stream = null;
         archiveList = new ArrayList<String>();
         try {
-            archive =File.createTempFile("empty", "." + archivename);
+            archive = File.createTempFile("empty", "." + archivename);
             stream = new FileOutputStream(archive);
             out = factory.createArchiveOutputStream(archivename, stream);
             // Use short file name so does not cause problems for ar
