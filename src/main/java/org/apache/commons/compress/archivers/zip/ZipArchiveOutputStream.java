@@ -593,7 +593,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         if (entry.entry.getSize() >= ZIP64_MAGIC
             || entry.entry.getCompressedSize() >= ZIP64_MAGIC
             || (entry.entry.getSize() == ArchiveEntry.SIZE_UNKNOWN
-                && raf != null)) {
+                && raf != null
+                && zip64Mode != Zip64Mode.Never)) {
 
             Zip64ExtendedInformationExtraField z64 = getZip64Extra(entry.entry);
             if (entry.entry.getMethod() == STORED

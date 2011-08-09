@@ -647,7 +647,7 @@ public class Zip64SupportTest {
 
     @Test public void writeBigStoredEntryUnnownSizeToFileModeNever()
         throws Throwable {
-        withTemporaryArchive("writeBigStoredEntryUnknownSizeToFile",
+        withTemporaryArchive("writeBigStoredEntryUnknownSizeToFileModeNever",
                              writeBigStoredEntryModeNever(false),
                              true);
     }
@@ -1079,9 +1079,17 @@ public class Zip64SupportTest {
      * Creates a temporary archive of approx 1MB in size
      */
     private static ZipOutputTest writeSmallStoredEntry(final boolean knownSize) {
+        return writeSmallStoredEntry(knownSize, Zip64Mode.AsNeeded);
+    }
+
+    private static ZipOutputTest writeSmallStoredEntry(final boolean knownSize,
+                                                       final Zip64Mode mode) {
         return new ZipOutputTest() {
             public void test(File f, ZipArchiveOutputStream zos)
                 throws IOException {
+                if (mode != Zip64Mode.AsNeeded) {
+                    zos.setUseZip64(mode);
+                }
                 byte[] buf = new byte[ONE_MILLION];
                 ZipArchiveEntry zae = new ZipArchiveEntry("0");
                 if (knownSize) {
@@ -1146,7 +1154,10 @@ public class Zip64SupportTest {
 
                     // and now validate local file header: this one
                     // has a ZIP64 extra field if and only if size was
-                    // unknown
+                    // unknown and mode was not Never or the mode was
+                    // Always (regardless of size)
+                    boolean hasExtra = mode == Zip64Mode.Always
+                        || (mode == Zip64Mode.AsNeeded && !knownSize);
                     a.seek(0);
                     header = new byte[10];
                     a.readFully(header);
@@ -1175,11 +1186,11 @@ public class Zip64SupportTest {
                             // file name length
                             1, 0,
                             // extra field length
-                            (byte) (knownSize ? 0 : 20), 0,
+                            (byte) (!hasExtra ? 0 : 20), 0,
                             // file name
                             (byte) '0'
                         }, rest);
-                    if (!knownSize) {
+                    if (hasExtra) {
                         byte[] extra = new byte[20];
                         a.readFully(extra);
                         assertArrayEquals(new byte[] {
@@ -1220,20 +1231,35 @@ public class Zip64SupportTest {
                              true);
     }
 
-    /*
-     * One entry of length 1 million bytes, written with compression
-     * to a stream.
-     *
-     * Compression + Stream => sizes are set to 0 in LFH, real values
-     * are inside the data descriptor.  No ZIP64 extra field at all.
-     */
-    @Test public void writeSmallDeflatedEntryKnownSizeToStream()
+    @Test public void writeSmallStoredEntryToStreamModeNever() throws Throwable {
+        withTemporaryArchive("writeSmallStoredEntryToStreamModeNever",
+                             writeSmallStoredEntry(true, Zip64Mode.Never),
+                             false);
+    }
+
+    @Test public void writeSmallStoredEntryKnownSizeToFileModeNever()
         throws Throwable {
-        withTemporaryArchive("writeSmallDeflatedEntryKnownSizeToStream",
-                             new ZipOutputTest() {
+        withTemporaryArchive("writeSmallStoredEntryKnownSizeToFileModeNever",
+                             writeSmallStoredEntry(true, Zip64Mode.Never),
+                             true);
+    }
+
+    @Test public void writeSmallStoredEntryUnnownSizeToFileModeNever()
+        throws Throwable {
+        withTemporaryArchive("writeSmallStoredEntryUnknownSizeToFileModeNever",
+                             writeSmallStoredEntry(false, Zip64Mode.Never),
+                             true);
+    }
+
+    private static ZipOutputTest
+        writeSmallDeflatedEntryKnownSizeToStream(final Zip64Mode mode) {
+        return new ZipOutputTest() {
                                  public void test(File f,
                                                   ZipArchiveOutputStream zos)
                                      throws IOException {
+                if (mode != Zip64Mode.AsNeeded) {
+                    zos.setUseZip64(mode);
+                }
                                      byte[] buf = new byte[ONE_MILLION];
                                      ZipArchiveEntry zae =
                                          new ZipArchiveEntry("0");
@@ -1352,15 +1378,57 @@ public class Zip64SupportTest {
                                                  // file name length
                                                  1, 0,
                                                  // extra field length
-                                                 0, 0,
+                                                 mode == Zip64Mode.Always
+                                                 ? (byte) 20 : 0,
+                                                 0,
                                                  // file name
                                                  (byte) '0'
                                              }, rest);
+                    if (mode == Zip64Mode.Always) {
+                        byte[] extra = new byte[20];
+                        a.readFully(extra);
+                        assertArrayEquals(new byte[] {
+                                // Header-ID
+                                1, 0,
+                                // size of extra
+                                16, 0,
+                                // original size
+                                (byte) 0x40, (byte) 0x42, (byte) 0x0F, 0,
+                                0, 0, 0, 0,
+                                // compressed size
+                                (byte) 0x40, (byte) 0x42, (byte) 0x0F, 0,
+                                0, 0, 0, 0,
+                            }, extra);
+                    }
+
                                      } finally {
                                          a.close();
                                      }
                                  }
-                             },
+        };
+
+    }
+
+    /*
+     * One entry of length 1 million bytes, written with compression
+     * to a stream.
+     *
+     * Compression + Stream => sizes are set to 0 in LFH, real values
+     * are inside the data descriptor.  No ZIP64 extra field at all.
+     */
+    @Test public void writeSmallDeflatedEntryKnownSizeToStream()
+        throws Throwable {
+        withTemporaryArchive("writeSmallDeflatedEntryKnownSizeToStream",
+                             writeSmallDeflatedEntryKnownSizeToStream(Zip64Mode
+                                                                      .AsNeeded),
+                             false);
+    }
+
+    @Test public void writeSmallDeflatedEntryKnownSizeToStreamModeNever()
+        throws Throwable {
+        withTemporaryArchive("writeSmallDeflatedEntryKnownSizeToStreamModeNever",
+                             writeSmallDeflatedEntryKnownSizeToStream(Zip64Mode
+                                                                      .Never),
                              false);
     }
 
@@ -1373,9 +1441,18 @@ public class Zip64SupportTest {
      * field if size was known.
      */
     private static ZipOutputTest writeSmallDeflatedEntryToFile(final boolean knownSize) {
+        return writeSmallDeflatedEntryToFile(knownSize, Zip64Mode.AsNeeded);
+    }
+
+    private static ZipOutputTest
+        writeSmallDeflatedEntryToFile(final boolean knownSize,
+                                      final Zip64Mode mode) {
         return new ZipOutputTest() {
             public void test(File f, ZipArchiveOutputStream zos)
                 throws IOException {
+                if (mode != Zip64Mode.AsNeeded) {
+                    zos.setUseZip64(mode);
+                }
                 byte[] buf = new byte[ONE_MILLION];
                 ZipArchiveEntry zae = new ZipArchiveEntry("0");
                 if (knownSize) {
@@ -1467,17 +1544,21 @@ public class Zip64SupportTest {
                     a.skipBytes(4);
                     rest = new byte[9];
                     a.readFully(rest);
+
+                    boolean hasExtra = mode == Zip64Mode.Always
+                        || (mode == Zip64Mode.AsNeeded && !knownSize);
+
                     assertArrayEquals(new byte[] {
                             // Original Size
                             (byte) 0x40, (byte) 0x42, (byte) 0x0F, 0,
                             // file name length
                             1, 0,
                             // extra field length
-                            (byte) (knownSize ? 0 : 20), 0,
+                            (byte) (!hasExtra ? 0 : 20), 0,
                             // file name
                             (byte) '0'
                         }, rest);
-                    if (!knownSize) {
+                    if (hasExtra) {
                         byte[] extra = new byte[12];
                         a.readFully(extra);
                         assertArrayEquals(new byte[] {
@@ -1512,6 +1593,22 @@ public class Zip64SupportTest {
         throws Throwable {
         withTemporaryArchive("writeSmallDeflatedEntryUnknownSizeToFile",
                              writeSmallDeflatedEntryToFile(false),
+                             true);
+    }
+
+    @Test public void writeSmallDeflatedEntryKnownSizeToFileModeNever()
+        throws Throwable {
+        withTemporaryArchive("writeSmallDeflatedEntryKnownSizeToFileModeNever",
+                             writeSmallDeflatedEntryToFile(true,
+                                                           Zip64Mode.Never),
+                             true);
+    }
+
+    @Test public void writeSmallDeflatedEntryUnknownSizeToFileModeNever()
+        throws Throwable {
+        withTemporaryArchive("writeSmallDeflatedEntryUnknownSizeToFileModeNever",
+                             writeSmallDeflatedEntryToFile(false,
+                                                           Zip64Mode.Never),
                              true);
     }
 
