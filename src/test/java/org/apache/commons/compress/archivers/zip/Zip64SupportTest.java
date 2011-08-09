@@ -38,6 +38,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeNotNull;
 import static org.junit.Assume.assumeTrue;
 
@@ -218,14 +219,37 @@ public class Zip64SupportTest {
             }
         };
 
-    @Ignore
     @Test public void write100KFilesFile() throws Throwable {
         withTemporaryArchive("write100KFilesFile", write100KFiles, true);
     }
 
-    @Ignore
     @Test public void write100KFilesStream() throws Throwable {
         withTemporaryArchive("write100KFilesStream", write100KFiles, false);
+    }
+
+    private static final ZipOutputTest write100KFilesModeNever =
+        new ZipOutputTest() {
+            public void test(File f, ZipArchiveOutputStream zos)
+                throws IOException {
+                zos.setUseZip64(Zip64Mode.Never);
+                try {
+                    write100KFilesToStream(zos);
+                    fail("expected a Zip64RequiredException");
+                } catch (Zip64RequiredException ex) {
+                    assertEquals(Zip64RequiredException.TOO_MANY_ENTRIES_MESSAGE,
+                                 ex.getMessage());
+                }
+            }
+        };
+
+    @Test public void write100KFilesFileModeNever() throws Throwable {
+        withTemporaryArchive("write100KFilesFileModeNever",
+                             write100KFilesModeNever, true);
+    }
+
+    @Test public void write100KFilesStreamModeNever() throws Throwable {
+        withTemporaryArchive("write100KFilesStreamModeNever",
+                             write100KFilesModeNever, false);
     }
 
     @Ignore
@@ -330,17 +354,44 @@ public class Zip64SupportTest {
             }
         };
 
-    @Ignore
     @Test public void write3EntriesCreatingBigArchiveFile() throws Throwable {
         withTemporaryArchive("write3EntriesCreatingBigArchiveFile",
                              write3EntriesCreatingBigArchive,
                              true);
     }
 
-    @Ignore
     @Test public void write3EntriesCreatingBigArchiveStream() throws Throwable {
         withTemporaryArchive("write3EntriesCreatingBigArchiveStream",
                              write3EntriesCreatingBigArchive,
+                             false);
+    }
+
+    private static final ZipOutputTest write3EntriesCreatingBigArchiveModeNever =
+        new ZipOutputTest() {
+            public void test(File f, ZipArchiveOutputStream zos)
+                throws IOException {
+                zos.setUseZip64(Zip64Mode.Never);
+                try {
+                    write3EntriesCreatingBigArchiveToStream(zos);
+                    fail("expected a Zip64RequiredException");
+                } catch (Zip64RequiredException ex) {
+                    assertEquals(Zip64RequiredException.ARCHIVE_TOO_BIG_MESSAGE,
+                                 ex.getMessage());
+                }
+            }
+        };
+
+    @Test public void write3EntriesCreatingBigArchiveFileModeNever()
+        throws Throwable {
+        withTemporaryArchive("write3EntriesCreatingBigArchiveFileModeNever",
+                             write3EntriesCreatingBigArchiveModeNever,
+                             true);
+    }
+
+    @Test public void write3EntriesCreatingBigArchiveStreamModeNever()
+        throws Throwable {
+        withTemporaryArchive("write3EntriesCreatingBigArchiveStreamModeNever",
+                             write3EntriesCreatingBigArchiveModeNever,
                              false);
     }
 
@@ -537,24 +588,67 @@ public class Zip64SupportTest {
      * No Compression + Stream => sizes must be known before data is
      * written.
      */
-    @Ignore
     @Test public void writeBigStoredEntryToStream() throws Throwable {
         withTemporaryArchive("writeBigStoredEntryToStream",
                              writeBigStoredEntry(true),
                              false);
     }
 
-    @Ignore
     @Test public void writeBigStoredEntryKnownSizeToFile() throws Throwable {
         withTemporaryArchive("writeBigStoredEntryKnownSizeToFile",
                              writeBigStoredEntry(true),
                              true);
     }
 
-    @Ignore
     @Test public void writeBigStoredEntryUnnownSizeToFile() throws Throwable {
         withTemporaryArchive("writeBigStoredEntryUnknownSizeToFile",
                              writeBigStoredEntry(false),
+                             true);
+    }
+
+    private static ZipOutputTest writeBigStoredEntryModeNever(final boolean knownSize) {
+        return new ZipOutputTest() {
+            public void test(File f, ZipArchiveOutputStream zos)
+                throws IOException {
+                zos.setUseZip64(Zip64Mode.Never);
+                try {
+                    byte[] buf = new byte[ONE_MILLION];
+                    ZipArchiveEntry zae = new ZipArchiveEntry("0");
+                    if (knownSize) {
+                        zae.setSize(FIVE_BILLION);
+                        zae.setCrc(0x5c316f50L);
+                    }
+                    zae.setMethod(ZipArchiveEntry.STORED);
+                    zos.putArchiveEntry(zae);
+                    for (int j = 0; j < FIVE_BILLION / 1000 / 1000; j++) {
+                        zos.write(buf);
+                    }
+                    zos.closeArchiveEntry();
+                    fail("expected a Zip64RequiredException");
+                } catch (Zip64RequiredException ex) {
+                    assertTrue(ex.getMessage().startsWith("0's size"));
+                }
+            }
+        };
+    }
+
+    @Test public void writeBigStoredEntryToStreamModeNever() throws Throwable {
+        withTemporaryArchive("writeBigStoredEntryToStreamModeNever",
+                             writeBigStoredEntryModeNever(true),
+                             false);
+    }
+
+    @Test public void writeBigStoredEntryKnownSizeToFileModeNever()
+        throws Throwable {
+        withTemporaryArchive("writeBigStoredEntryKnownSizeToFileModeNever",
+                             writeBigStoredEntryModeNever(true),
+                             true);
+    }
+
+    @Test public void writeBigStoredEntryUnnownSizeToFileModeNever()
+        throws Throwable {
+        withTemporaryArchive("writeBigStoredEntryUnknownSizeToFile",
+                             writeBigStoredEntryModeNever(false),
                              true);
     }
 
@@ -567,7 +661,6 @@ public class Zip64SupportTest {
      *
      * Creates a temporary archive of approx 4MB in size
      */
-    @Ignore
     @Test public void writeBigDeflatedEntryKnownSizeToStream()
         throws Throwable {
         withTemporaryArchive("writeBigDeflatedEntryKnownSizeToStream",
@@ -886,7 +979,6 @@ public class Zip64SupportTest {
         };
     }
 
-    @Ignore
     @Test public void writeBigDeflatedEntryKnownSizeToFile()
         throws Throwable {
         withTemporaryArchive("writeBigDeflatedEntryKnownSizeToFile",
@@ -894,11 +986,86 @@ public class Zip64SupportTest {
                              true);
     }
 
-    @Ignore
     @Test public void writeBigDeflatedEntryUnknownSizeToFile()
         throws Throwable {
         withTemporaryArchive("writeBigDeflatedEntryUnknownSizeToFile",
                              writeBigDeflatedEntryToFile(false),
+                             true);
+    }
+
+    @Test public void writeBigDeflatedEntryKnownSizeToStreamModeNever()
+        throws Throwable {
+        withTemporaryArchive("writeBigDeflatedEntryKnownSizeToStreamModeNever",
+                             new ZipOutputTest() {
+                                 public void test(File f,
+                                                  ZipArchiveOutputStream zos)
+                                     throws IOException {
+                                     zos.setUseZip64(Zip64Mode.Never);
+                                     try {
+                                         byte[] buf = new byte[ONE_MILLION];
+                                         ZipArchiveEntry zae =
+                                             new ZipArchiveEntry("0");
+                                         zae.setSize(FIVE_BILLION);
+                                         zae.setMethod(ZipArchiveEntry.DEFLATED);
+                                         zos.putArchiveEntry(zae);
+                                         fail("expected a"
+                                              + " Zip64RequiredException");
+                                     } catch (Zip64RequiredException ex) {
+                                         assertTrue(ex.getMessage()
+                                                    .startsWith("0's size"));
+                                     }
+                                 }
+                             },
+                             false);
+    }
+
+    /*
+     * One entry of length 5 billion bytes, written with
+     * compression to a file.
+     *
+     * Writing to a file => sizes are stored directly inside the LFH.
+     * No Data Descriptor at all.
+     *
+     * Creates a temporary archive of approx 4MB in size
+     */
+    private static ZipOutputTest writeBigDeflatedEntryToFileModeNever(final boolean knownSize) {
+        return new ZipOutputTest() {
+            public void test(File f, ZipArchiveOutputStream zos)
+                throws IOException {
+                zos.setUseZip64(Zip64Mode.Never);
+                try {
+                    byte[] buf = new byte[ONE_MILLION];
+                    ZipArchiveEntry zae = new ZipArchiveEntry("0");
+                    if (knownSize) {
+                        zae.setSize(FIVE_BILLION);
+                    }
+                    zae.setMethod(ZipArchiveEntry.DEFLATED);
+                    zos.putArchiveEntry(zae);
+                    for (int j = 0;
+                         j < FIVE_BILLION / 1000 / 1000;
+                         j++) {
+                        zos.write(buf);
+                    }
+                    zos.closeArchiveEntry();
+                    fail("expected a Zip64RequiredException");
+                } catch (Zip64RequiredException ex) {
+                    assertTrue(ex.getMessage().startsWith("0's size"));
+                }
+            }
+        };
+    }
+
+    @Test public void writeBigDeflatedEntryKnownSizeToFileModeNever()
+        throws Throwable {
+        withTemporaryArchive("writeBigDeflatedEntryKnownSizeToFileModeNever",
+                             writeBigDeflatedEntryToFileModeNever(true),
+                             true);
+    }
+
+    @Test public void writeBigDeflatedEntryUnknownSizeToFileModeNever()
+        throws Throwable {
+        withTemporaryArchive("writeBigDeflatedEntryUnknownSizeToFileModeNever",
+                             writeBigDeflatedEntryToFileModeNever(false),
                              true);
     }
 
@@ -1370,13 +1537,13 @@ public class Zip64SupportTest {
             assumeTrue(false);
         } finally {
             try {
-                zos.close();
+                zos.destroy();
             } finally {
                 if (os != null) {
                     os.close();
                 }
+                f.delete();
             }
-            f.delete();
         }
     }
 
