@@ -481,7 +481,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             entry.entry.setCrc(realCrc);
         }
 
-        boolean actuallyNeedsZip64 = entry.entry.getSize() >= ZIP64_MAGIC
+        boolean actuallyNeedsZip64 = zip64Mode == Zip64Mode.Always
+            || entry.entry.getSize() >= ZIP64_MAGIC
             || entry.entry.getCompressedSize() >= ZIP64_MAGIC;
         if (actuallyNeedsZip64 && zip64Mode == Zip64Mode.Never) {
             throw new Zip64RequiredException(Zip64RequiredException
@@ -586,11 +587,14 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                                              .getEntryTooBigMessage(entry.entry));
         }
 
-        // add a ZIP64 extended information extra field if we already
-        // know it is going to be needed or the size is unknown and we
-        // can ensure it won't hurt other implementations if we add it
-        // (i.e. we can erase its usage)
-        if (entry.entry.getSize() >= ZIP64_MAGIC
+        // add a ZIP64 extended information extra field if
+        // * mode is Always
+        // * or we already know it is going to be needed
+        // * or the size is unknown and we can ensure it won't hurt
+        //   other implementations if we add it (i.e. we can erase its
+        //   usage)
+        if (zip64Mode == Zip64Mode.Always
+            || entry.entry.getSize() >= ZIP64_MAGIC
             || entry.entry.getCompressedSize() >= ZIP64_MAGIC
             || (entry.entry.getSize() == ArchiveEntry.SIZE_UNKNOWN
                 && raf != null
@@ -849,7 +853,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         entry.localDataStart = written;
         if (zipMethod == DEFLATED || raf != null) {
             writeOut(LZERO);
-            if (zipMethod == DEFLATED && hasZip64Extra(entry.entry)) {
+            if (hasZip64Extra(entry.entry)) {
                 // point to ZIP64 extended information extra field for
                 // sizes, may get rewritten once sizes are known if
                 // stream is seekable
@@ -861,7 +865,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             }
         } else {
             writeOut(ZipLong.getBytes(ze.getCrc()));
-            byte[] size = ZipLong.getBytes(Math.min(ze.getSize(), ZIP64_MAGIC));
+            byte[] size = ZipLong.ZIP64_MAGIC.getBytes();
+            if (!hasZip64Extra(ze)) {
+                size = ZipLong.getBytes(ze.getSize());
+            }
             writeOut(size);
             writeOut(size);
         }
@@ -950,6 +957,11 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             if (lfhOffset >= ZIP64_MAGIC) {
                 z64.setRelativeHeaderOffset(new ZipEightByteInteger(lfhOffset));
             }
+            ze.setExtra();
+        } else if (hasZip64Extra(ze)) {
+            // added to LFH but not really needed, probably because of
+            // Zip64Mode.Always
+            ze.removeExtraField(Zip64ExtendedInformationExtraField.HEADER_ID);
             ze.setExtra();
         }
 
