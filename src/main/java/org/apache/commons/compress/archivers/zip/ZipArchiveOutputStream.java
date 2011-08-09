@@ -445,6 +445,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             }
         }
 
+        final Zip64Mode effectiveMode = getEffectiveZip64Mode(entry.entry);
         long bytesWritten = written - entry.dataStart;
         long realCrc = crc.getValue();
         crc.reset();
@@ -481,10 +482,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             entry.entry.setCrc(realCrc);
         }
 
-        boolean actuallyNeedsZip64 = zip64Mode == Zip64Mode.Always
+        final boolean actuallyNeedsZip64 = effectiveMode == Zip64Mode.Always
             || entry.entry.getSize() >= ZIP64_MAGIC
             || entry.entry.getCompressedSize() >= ZIP64_MAGIC;
-        if (actuallyNeedsZip64 && zip64Mode == Zip64Mode.Never) {
+        if (actuallyNeedsZip64 && effectiveMode == Zip64Mode.Never) {
             throw new Zip64RequiredException(Zip64RequiredException
                                              .getEntryTooBigMessage(entry.entry));
         }
@@ -580,9 +581,11 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             entry.entry.setCompressedSize(entry.entry.getSize());
         }
 
+        final Zip64Mode effectiveMode = getEffectiveZip64Mode(entry.entry);
+
         if ((entry.entry.getSize() >= ZIP64_MAGIC
              || entry.entry.getCompressedSize() >= ZIP64_MAGIC)
-            && zip64Mode == Zip64Mode.Never) {
+            && effectiveMode == Zip64Mode.Never) {
             throw new Zip64RequiredException(Zip64RequiredException
                                              .getEntryTooBigMessage(entry.entry));
         }
@@ -593,12 +596,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         // * or the size is unknown and we can ensure it won't hurt
         //   other implementations if we add it (i.e. we can erase its
         //   usage)
-        if (zip64Mode == Zip64Mode.Always
+        if (effectiveMode == Zip64Mode.Always
             || entry.entry.getSize() >= ZIP64_MAGIC
             || entry.entry.getCompressedSize() >= ZIP64_MAGIC
             || (entry.entry.getSize() == ArchiveEntry.SIZE_UNKNOWN
                 && raf != null
-                && zip64Mode != Zip64Mode.Never)) {
+                && effectiveMode != Zip64Mode.Never)) {
 
             Zip64ExtendedInformationExtraField z64 = getZip64Extra(entry.entry);
             if (entry.entry.getMethod() == STORED
@@ -1287,6 +1290,23 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         return ze.getExtraField(Zip64ExtendedInformationExtraField
                                 .HEADER_ID)
             != null;
+    }
+
+    /**
+     * If the mode is AsNeeded and the entry is a compressed entry of
+     * unknown size that gets written to a non-seekable stream the
+     * change the default to Never.
+     *
+     * @since Apache Commons Compress 1.3
+     */
+    private Zip64Mode getEffectiveZip64Mode(ZipArchiveEntry ze) {
+        if (zip64Mode != Zip64Mode.AsNeeded
+            || raf != null
+            || ze.getMethod() != DEFLATED
+            || ze.getSize() != ArchiveEntry.SIZE_UNKNOWN) {
+            return zip64Mode;
+        }
+        return Zip64Mode.Never;
     }
 
     private ZipEncoding getEntryEncoding(ZipArchiveEntry ze) {
