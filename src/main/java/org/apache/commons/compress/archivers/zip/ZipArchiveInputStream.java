@@ -329,38 +329,40 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
      */
     private int readStored(byte[] buffer, int start, int length)
         throws IOException {
-                if (current.hasDataDescriptor) {
-                    if (lastStoredEntry == null) {
-                        readStoredEntry();
-                    }
-                    return lastStoredEntry.read(buffer, start, length);
-                }
 
-                long csize = current.entry.getSize();
-                if (current.bytesRead >= csize) {
-                    return -1;
-                }
-                if (buf.offsetInBuffer >= buf.lengthOfLastRead) {
-                    buf.offsetInBuffer = 0;
-                    if ((buf.lengthOfLastRead = in.read(buf.buf)) == -1) {
-                        return -1;
-                    }
-                    count(buf.lengthOfLastRead);
-                    current.bytesReadFromStream += buf.lengthOfLastRead;
-                }
-                int toRead = length > buf.lengthOfLastRead
-                    ? buf.lengthOfLastRead - buf.offsetInBuffer
-                    : length;
-                if ((csize - current.bytesRead) < toRead) {
-                    // if it is smaller than toRead then it fits into an int
-                    toRead = (int) (csize - current.bytesRead);
-                }
-                System.arraycopy(buf.buf, buf.offsetInBuffer, buffer, start,
-                                 toRead);
-                buf.offsetInBuffer += toRead;
-                current.bytesRead += toRead;
-                crc.update(buffer, start, toRead);
-                return toRead;
+        if (current.hasDataDescriptor) {
+            if (lastStoredEntry == null) {
+                readStoredEntry();
+            }
+            return lastStoredEntry.read(buffer, start, length);
+        }
+
+        long csize = current.entry.getSize();
+        if (current.bytesRead >= csize) {
+            return -1;
+        }
+
+        if (buf.offsetInBuffer >= buf.lengthOfLastRead) {
+            buf.offsetInBuffer = 0;
+            if ((buf.lengthOfLastRead = in.read(buf.buf)) == -1) {
+                return -1;
+            }
+            count(buf.lengthOfLastRead);
+            current.bytesReadFromStream += buf.lengthOfLastRead;
+        }
+
+        int toRead = length > buf.lengthOfLastRead
+            ? buf.lengthOfLastRead - buf.offsetInBuffer
+            : length;
+        if ((csize - current.bytesRead) < toRead) {
+            // if it is smaller than toRead then it fits into an int
+            toRead = (int) (csize - current.bytesRead);
+        }
+        System.arraycopy(buf.buf, buf.offsetInBuffer, buffer, start, toRead);
+        buf.offsetInBuffer += toRead;
+        current.bytesRead += toRead;
+        crc.update(buffer, start, toRead);
+        return toRead;
     }
 
     /**
@@ -368,27 +370,27 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
      */
     private int readDeflated(byte[] buffer, int start, int length)
         throws IOException {
-            if (inf.needsInput()) {
-                fill();
-                if (buf.lengthOfLastRead > 0) {
-                    current.bytesReadFromStream += buf.lengthOfLastRead;
-                }
+        if (inf.needsInput()) {
+            fill();
+            if (buf.lengthOfLastRead > 0) {
+                current.bytesReadFromStream += buf.lengthOfLastRead;
             }
-            int read = 0;
-            try {
-                read = inf.inflate(buffer, start, length);
-            } catch (DataFormatException e) {
-                throw new ZipException(e.getMessage());
+        }
+        int read = 0;
+        try {
+            read = inf.inflate(buffer, start, length);
+        } catch (DataFormatException e) {
+            throw new ZipException(e.getMessage());
+        }
+        if (read == 0) {
+            if (inf.finished()) {
+                return -1;
+            } else if (buf.lengthOfLastRead == -1) {
+                throw new IOException("Truncated ZIP file");
             }
-            if (read == 0) {
-                if (inf.finished()) {
-                    return -1;
-                } else if (buf.lengthOfLastRead == -1) {
-                    throw new IOException("Truncated ZIP file");
-                }
-            }
-            crc.update(buffer, start, read);
-            return read;
+        }
+        crc.update(buffer, start, read);
+        return read;
     }
 
     @Override
@@ -490,7 +492,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
 
         // Ensure all entry bytes are read
         if (current.bytesReadFromStream <= current.entry.getCompressedSize()
-                && !current.hasDataDescriptor) {
+            && !current.hasDataDescriptor) {
             drainCurrentEntryData();
         } else {
             skip(Long.MAX_VALUE);
@@ -525,19 +527,19 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
      * that hasn't been read, yet.
      */
     private void drainCurrentEntryData() throws IOException {
-            long remaining = current.entry.getCompressedSize()
-                - current.bytesReadFromStream;
-            while (remaining > 0) {
-                long n = in.read(buf.buf, 0, (int) Math.min(buf.buf.length,
-                                                            remaining));
-                if (n < 0) {
-                    throw new EOFException(
-                            "Truncated ZIP entry: " + current.entry.getName());
-                } else {
-                    count(n);
-                    remaining -= n;
-                }
+        long remaining = current.entry.getCompressedSize()
+            - current.bytesReadFromStream;
+        while (remaining > 0) {
+            long n = in.read(buf.buf, 0, (int) Math.min(buf.buf.length,
+                                                        remaining));
+            if (n < 0) {
+                throw new EOFException(
+                                       "Truncated ZIP entry: " + current.entry.getName());
+            } else {
+                count(n);
+                remaining -= n;
             }
+        }
     }
 
     /**
@@ -698,34 +700,36 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
      * and positions the stream right after the data descriptor.</p>
      */
     private boolean bufferContainsSignature(ByteArrayOutputStream bos,
-                                            int off, int r, int ddLen)
+                                            int offset, int lastRead,
+                                            int expectedDDLen)
         throws IOException {
         boolean done = false;
-            int readTooMuch = 0;
-            for (int i = 0; !done && i < r - 4; i++) {
-                if (buf.buf[i] == LFH[0] && buf.buf[i + 1] == LFH[1]) {
-                    if ((buf.buf[i + 2] == LFH[2] && buf.buf[i + 3] == LFH[3])
-                        || (buf.buf[i] == CFH[2] && buf.buf[i + 3] == CFH[3])) {
-                        // found a LFH or CFH:
-                        readTooMuch = off + r - i - ddLen;
-                        done = true;
-                    }
-                    else if (buf.buf[i + 2] == DD[2] && buf.buf[i + 3] == DD[3]) {
-                        // found DD:
-                        readTooMuch = off + r - i;
-                        done = true;
-                    }
-                    if (done) {
-                        // * push back bytes read in excess as well as the data
-                        //   descriptor
-                        // * copy the remaining bytes to cache
-                        // * read data descriptor
-                        pushback(buf.buf, off + r - readTooMuch, readTooMuch);
-                        bos.write(buf.buf, 0, i);
-                        readDataDescriptor();
-                    }
+        int readTooMuch = 0;
+        for (int i = 0; !done && i < lastRead - 4; i++) {
+            if (buf.buf[i] == LFH[0] && buf.buf[i + 1] == LFH[1]) {
+                if ((buf.buf[i + 2] == LFH[2] && buf.buf[i + 3] == LFH[3])
+                    || (buf.buf[i] == CFH[2] && buf.buf[i + 3] == CFH[3])) {
+                    // found a LFH or CFH:
+                    readTooMuch = offset + lastRead - i - expectedDDLen;
+                    done = true;
+                }
+                else if (buf.buf[i + 2] == DD[2] && buf.buf[i + 3] == DD[3]) {
+                    // found DD:
+                    readTooMuch = offset + lastRead - i;
+                    done = true;
+                }
+                if (done) {
+                    // * push back bytes read in excess as well as the data
+                    //   descriptor
+                    // * copy the remaining bytes to cache
+                    // * read data descriptor
+                    pushback(buf.buf, offset + lastRead - readTooMuch,
+                             readTooMuch);
+                    bos.write(buf.buf, 0, i);
+                    readDataDescriptor();
                 }
             }
+        }
         return done;
     }
 
