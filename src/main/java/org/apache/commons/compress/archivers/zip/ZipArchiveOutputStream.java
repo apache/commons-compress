@@ -536,47 +536,47 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     private void rewriteSizesAndCrc(boolean actuallyNeedsZip64)
         throws IOException {
-            long save = raf.getFilePointer();
+        long save = raf.getFilePointer();
 
-            raf.seek(entry.localDataStart);
-            writeOut(ZipLong.getBytes(entry.entry.getCrc()));
-            if (!hasZip64Extra(entry.entry) || !actuallyNeedsZip64) {
-                writeOut(ZipLong.getBytes(entry.entry.getCompressedSize()));
-                writeOut(ZipLong.getBytes(entry.entry.getSize()));
-            } else {
-                writeOut(ZipLong.ZIP64_MAGIC.getBytes());
-                writeOut(ZipLong.ZIP64_MAGIC.getBytes());
-            }
+        raf.seek(entry.localDataStart);
+        writeOut(ZipLong.getBytes(entry.entry.getCrc()));
+        if (!hasZip64Extra(entry.entry) || !actuallyNeedsZip64) {
+            writeOut(ZipLong.getBytes(entry.entry.getCompressedSize()));
+            writeOut(ZipLong.getBytes(entry.entry.getSize()));
+        } else {
+            writeOut(ZipLong.ZIP64_MAGIC.getBytes());
+            writeOut(ZipLong.ZIP64_MAGIC.getBytes());
+        }
 
-            if (hasZip64Extra(entry.entry)) {
-                // seek to ZIP64 extra, skip header and size information
-                raf.seek(entry.localDataStart + 3 * WORD + 2 * SHORT
-                         + getName(entry.entry).limit() + 2 * SHORT);
-                // inside the ZIP64 extra uncompressed size comes
-                // first, unlike the LFH, CD or data descriptor
-                writeOut(ZipEightByteInteger.getBytes(entry.entry.getSize()));
-                writeOut(ZipEightByteInteger.getBytes(entry.entry.getCompressedSize()));
+        if (hasZip64Extra(entry.entry)) {
+            // seek to ZIP64 extra, skip header and size information
+            raf.seek(entry.localDataStart + 3 * WORD + 2 * SHORT
+                     + getName(entry.entry).limit() + 2 * SHORT);
+            // inside the ZIP64 extra uncompressed size comes
+            // first, unlike the LFH, CD or data descriptor
+            writeOut(ZipEightByteInteger.getBytes(entry.entry.getSize()));
+            writeOut(ZipEightByteInteger.getBytes(entry.entry.getCompressedSize()));
 
-                if (!actuallyNeedsZip64) {
-                    // do some cleanup:
-                    // * rewrite version needed to extract
-                    raf.seek(entry.localDataStart  - 5 * SHORT);
-                    writeOut(ZipShort.getBytes(INITIAL_VERSION));
+            if (!actuallyNeedsZip64) {
+                // do some cleanup:
+                // * rewrite version needed to extract
+                raf.seek(entry.localDataStart  - 5 * SHORT);
+                writeOut(ZipShort.getBytes(INITIAL_VERSION));
 
-                    // * remove ZIP64 extra so it doesn't get written
-                    //   to the central directory
-                    entry.entry.removeExtraField(Zip64ExtendedInformationExtraField
-                                                 .HEADER_ID);
-                    entry.entry.setExtra();
+                // * remove ZIP64 extra so it doesn't get written
+                //   to the central directory
+                entry.entry.removeExtraField(Zip64ExtendedInformationExtraField
+                                             .HEADER_ID);
+                entry.entry.setExtra();
 
-                    // * reset hasUsedZip64 if it has been set because
-                    //   of this entry
-                    if (entry.causedUseOfZip64) {
-                        hasUsedZip64 = false;
-                    }
+                // * reset hasUsedZip64 if it has been set because
+                //   of this entry
+                if (entry.causedUseOfZip64) {
+                    hasUsedZip64 = false;
                 }
             }
-            raf.seek(save);
+        }
+        raf.seek(save);
     }
 
     /**
@@ -616,8 +616,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                 // actually, we already know the sizes
                 size = new ZipEightByteInteger(entry.entry.getSize());
             }
-                z64.setSize(size);
-                z64.setCompressedSize(size);
+            z64.setSize(size);
+            z64.setCompressedSize(size);
             entry.entry.setExtra();
         }
 
@@ -771,25 +771,25 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     private void writeDeflated(byte[]b, int offset, int length)
         throws IOException {
-            if (length > 0 && !def.finished()) {
-                entry.bytesRead += length;
-                if (length <= DEFLATER_BLOCK_SIZE) {
-                    def.setInput(b, offset, length);
+        if (length > 0 && !def.finished()) {
+            entry.bytesRead += length;
+            if (length <= DEFLATER_BLOCK_SIZE) {
+                def.setInput(b, offset, length);
+                deflateUntilInputIsNeeded();
+            } else {
+                final int fullblocks = length / DEFLATER_BLOCK_SIZE;
+                for (int i = 0; i < fullblocks; i++) {
+                    def.setInput(b, offset + i * DEFLATER_BLOCK_SIZE,
+                                 DEFLATER_BLOCK_SIZE);
                     deflateUntilInputIsNeeded();
-                } else {
-                    final int fullblocks = length / DEFLATER_BLOCK_SIZE;
-                    for (int i = 0; i < fullblocks; i++) {
-                        def.setInput(b, offset + i * DEFLATER_BLOCK_SIZE,
-                                     DEFLATER_BLOCK_SIZE);
-                        deflateUntilInputIsNeeded();
-                    }
-                    final int done = fullblocks * DEFLATER_BLOCK_SIZE;
-                    if (done < length) {
-                        def.setInput(b, offset + done, length - done);
-                        deflateUntilInputIsNeeded();
-                    }
+                }
+                final int done = fullblocks * DEFLATER_BLOCK_SIZE;
+                if (done < length) {
+                    def.setInput(b, offset + done, length - done);
+                    deflateUntilInputIsNeeded();
                 }
             }
+        }
     }
 
     /**
@@ -955,29 +955,29 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private void addUnicodeExtraFields(ZipArchiveEntry ze, boolean encodable,
                                        ByteBuffer name)
         throws IOException {
+        if (createUnicodeExtraFields == UnicodeExtraFieldPolicy.ALWAYS
+            || !encodable) {
+            ze.addExtraField(new UnicodePathExtraField(ze.getName(),
+                                                       name.array(),
+                                                       name.arrayOffset(),
+                                                       name.limit()));
+        }
+
+        String comm = ze.getComment();
+        if (comm != null && !"".equals(comm)) {
+
+            boolean commentEncodable = zipEncoding.canEncode(comm);
+
             if (createUnicodeExtraFields == UnicodeExtraFieldPolicy.ALWAYS
-                || !encodable) {
-                ze.addExtraField(new UnicodePathExtraField(ze.getName(),
-                                                           name.array(),
-                                                           name.arrayOffset(),
-                                                           name.limit()));
+                || !commentEncodable) {
+                ByteBuffer commentB = getEntryEncoding(ze).encode(comm);
+                ze.addExtraField(new UnicodeCommentExtraField(comm,
+                                                              commentB.array(),
+                                                              commentB.arrayOffset(),
+                                                              commentB.limit())
+                                 );
             }
-
-            String comm = ze.getComment();
-            if (comm != null && !"".equals(comm)) {
-
-                boolean commentEncodable = zipEncoding.canEncode(comm);
-
-                if (createUnicodeExtraFields == UnicodeExtraFieldPolicy.ALWAYS
-                    || !commentEncodable) {
-                    ByteBuffer commentB = getEntryEncoding(ze).encode(comm);
-                    ze.addExtraField(new UnicodeCommentExtraField(comm,
-                                                                  commentB.array(),
-                                                                  commentB.arrayOffset(),
-                                                                  commentB.limit())
-                                     );
-                }
-            }
+        }
     }
 
     /**
@@ -1334,7 +1334,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     @Override
     public ArchiveEntry createArchiveEntry(File inputFile, String entryName)
-            throws IOException {
+        throws IOException {
         if (finished) {
             throw new IOException("Stream has already been finished");
         }
@@ -1359,10 +1359,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                              .HEADER_ID);
         if (z64 == null) {
             /*
-            System.err.println("Adding z64 for " + ze.getName()
-                               + ", method: " + ze.getMethod()
-                               + " (" + (ze.getMethod() == STORED) + ")"
-                               + ", raf: " + (raf != null));
+              System.err.println("Adding z64 for " + ze.getName()
+              + ", method: " + ze.getMethod()
+              + " (" + (ze.getMethod() == STORED) + ")"
+              + ", raf: " + (raf != null));
             */
             z64 = new Zip64ExtendedInformationExtraField();
         }
