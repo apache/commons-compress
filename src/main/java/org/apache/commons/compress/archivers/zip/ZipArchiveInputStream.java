@@ -39,12 +39,17 @@ import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC
 
 /**
  * Implements an input stream that can read Zip archives.
- * <p>
- * Note that {@link ZipArchiveEntry#getSize()} may return -1 if the DEFLATE algorithm is used, as the size information
- * is not available from the header.
- * <p>
- * The {@link ZipFile} class is preferred when reading from files.
- *  
+ *
+ * <p>Note that {@link ZipArchiveEntry#getSize()} may return -1 if the
+ * DEFLATE algorithm is used, as the size information is not available
+ * from the header.</p>
+ *
+ * <p>The {@link ZipFile} class is preferred when reading from files.</p>
+ *
+ * <p>As of Apache Commons Compress it transparently supports Zip64
+ * extensions and thus individual entries and archives larger than 4
+ * GB or with more than 65536 entries.</p>
+ *
  * @see ZipFile
  * @NotThreadSafe
  */
@@ -238,7 +243,17 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                                                      null);
         }
 
-        Zip64ExtendedInformationExtraField z64 =  
+        processZip64Extra(size, cSize);
+        return current.entry;
+    }
+
+    /**
+     * Records whether a Zip64 extra is present and sets the size
+     * information from it if sizes are 0xFFFFFFFF and the entry
+     * doesn't use a data descriptor.
+     */
+    private void processZip64Extra(ZipLong size, ZipLong cSize) {
+        Zip64ExtendedInformationExtraField z64 =
             (Zip64ExtendedInformationExtraField)
             current.entry.getExtraField(Zip64ExtendedInformationExtraField
                                         .HEADER_ID);
@@ -255,7 +270,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                 current.entry.setSize(size.getValue());
             }
         }
-        return current.entry;
     }
 
     /** {@inheritDoc} */
@@ -303,6 +317,18 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             }
 
             if (current.entry.getMethod() == ZipArchiveOutputStream.STORED) {
+                return readStored(buffer, start, length);
+            }
+            return readDeflated(buffer, start, length);
+        }
+        throw new ArrayIndexOutOfBoundsException();
+    }
+
+    /**
+     * Implementation of read for STORED entries.
+     */
+    private int readStored(byte[] buffer, int start, int length)
+        throws IOException {
                 if (current.hasDataDescriptor) {
                     if (lastStoredEntry == null) {
                         readStoredEntry();
@@ -335,8 +361,13 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                 current.bytesRead += toRead;
                 crc.update(buffer, start, toRead);
                 return toRead;
-            }
+    }
 
+    /**
+     * Implementation of read for DEFLATED entries.
+     */
+    private int readDeflated(byte[] buffer, int start, int length)
+        throws IOException {
             if (inf.needsInput()) {
                 fill();
                 if (buf.lengthOfLastRead > 0) {
@@ -358,8 +389,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             }
             crc.update(buffer, start, read);
             return read;
-        }
-        throw new ArrayIndexOutOfBoundsException();
     }
 
     @Override
@@ -376,7 +405,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
      * stream.
      *
      * <p>This implementation may end up skipping over some smaller
-     * number of bytes, possibly 0, if an only if it reaches the end
+     * number of bytes, possibly 0, if and only if it reaches the end
      * of the underlying stream.</p>
      *
      * <p>The actual number of bytes skipped is returned.</p>
@@ -430,7 +459,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                 return false;
             }
         }
-        return true;        
+        return true;
     }
 
     /**
@@ -462,47 +491,13 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         // Ensure all entry bytes are read
         if (current.bytesReadFromStream <= current.entry.getCompressedSize()
                 && !current.hasDataDescriptor) {
-            long remaining = current.entry.getCompressedSize()
-                - current.bytesReadFromStream;
-            while (remaining > 0) {
-                long n = in.read(buf.buf, 0, (int) Math.min(buf.buf.length,
-                                                            remaining));
-                if (n < 0) {
-                    throw new EOFException(
-                            "Truncated ZIP entry: " + current.entry.getName());
-                } else {
-                    count(n);
-                    remaining -= n;
-                }
-            }
+            drainCurrentEntryData();
         } else {
             skip(Long.MAX_VALUE);
 
-            long inB;
-            if (current.entry.getMethod() == ZipArchiveOutputStream.DEFLATED) {
-                inB = inf.getBytesRead();
-                /* for Java < Java7 the getBytes* methods in
-                 * Inflater/Deflater seem to return unsigned ints
-                 * rather than longs that start over with 0 at 2^32.
-                 *
-                 * The stream knows how many bytes it has read, but
-                 * not how many the Inflater actually consumed - it
-                 * should be between the total number of bytes read
-                 * for the entry and the total number minus the last
-                 * read operation.  Here we just try to make the value
-                 * close enough to the bytes we've read by assuming
-                 * the number of bytes consumed must be smaller than
-                 * (or equal to) the number of bytes read but not
-                 * smaller by more than 2^32.
-                 */
-                if (current.bytesReadFromStream >= TWO_EXP_32) {
-                    while (inB + TWO_EXP_32 <= current.bytesReadFromStream) {
-                        inB += TWO_EXP_32;
-                    }
-                }
-            } else {
-                inB = current.bytesRead;
-            }
+            long inB = 
+                current.entry.getMethod() == ZipArchiveOutputStream.DEFLATED
+                ? getBytesInflated() : current.bytesRead;
 
             // this is at most a single read() operation and can't
             // exceed the range of int
@@ -523,6 +518,51 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         crc.reset();
         current = null;
         lastStoredEntry = null;
+    }
+
+    /**
+     * Read all data of the current entry from the underlying stream
+     * that hasn't been read, yet.
+     */
+    private void drainCurrentEntryData() throws IOException {
+            long remaining = current.entry.getCompressedSize()
+                - current.bytesReadFromStream;
+            while (remaining > 0) {
+                long n = in.read(buf.buf, 0, (int) Math.min(buf.buf.length,
+                                                            remaining));
+                if (n < 0) {
+                    throw new EOFException(
+                            "Truncated ZIP entry: " + current.entry.getName());
+                } else {
+                    count(n);
+                    remaining -= n;
+                }
+            }
+    }
+
+    /**
+     * Get the number of bytes Inflater has actually processed.
+     *
+     * <p>for Java &lt; Java7 the getBytes* methods in
+     * Inflater/Deflater seem to return unsigned ints rather than
+     * longs that start over with 0 at 2^32.</p>
+     *
+     * <p>The stream knows how many bytes it has read, but not how
+     * many the Inflater actually consumed - it should be between the
+     * total number of bytes read for the entry and the total number
+     * minus the last read operation.  Here we just try to make the
+     * value close enough to the bytes we've read by assuming the
+     * number of bytes consumed must be smaller than (or equal to) the
+     * number of bytes read but not smaller by more than 2^32.</p>
+     */
+    private long getBytesInflated() {
+        long inB = inf.getBytesRead();
+        if (current.bytesReadFromStream >= TWO_EXP_32) {
+            while (inB + TWO_EXP_32 <= current.bytesReadFromStream) {
+                inB += TWO_EXP_32;
+            }
+        }
+        return inB;
     }
 
     private void fill() throws IOException {
@@ -615,9 +655,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
      */
     private void readStoredEntry() throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        byte[] LFH = ZipLong.LFH_SIG.getBytes();
-        byte[] CFH = ZipLong.CFH_SIG.getBytes();
-        byte[] DD = ZipLong.DD_SIG.getBytes();
         int off = 0;
         boolean done = false;
 
@@ -638,6 +675,32 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                 continue;
             }
 
+            done = bufferContainsSignature(bos, off, r, ddLen);
+            if (!done) {
+                off = cacheBytesRead(bos, off, r, ddLen);
+            }
+        }
+
+        byte[] b = bos.toByteArray();
+        lastStoredEntry = new ByteArrayInputStream(b);
+    }
+
+    private static final byte[] LFH = ZipLong.LFH_SIG.getBytes();
+    private static final byte[] CFH = ZipLong.CFH_SIG.getBytes();
+    private static final byte[] DD = ZipLong.DD_SIG.getBytes();
+
+    /**
+     * Checks whether the current buffer contains the signature of a
+     * &quot;data decsriptor&quot;, &quot;local file header&quot; or
+     * &quot;central directory entry&quot;.
+     *
+     * <p>If it contains such a signature, reads the data descriptor
+     * and positions the stream right after the data descriptor.</p>
+     */
+    private boolean bufferContainsSignature(ByteArrayOutputStream bos,
+                                            int off, int r, int ddLen)
+        throws IOException {
+        boolean done = false;
             int readTooMuch = 0;
             for (int i = 0; !done && i < r - 4; i++) {
                 if (buf.buf[i] == LFH[0] && buf.buf[i + 1] == LFH[1]) {
@@ -663,25 +726,31 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                     }
                 }
             }
-            if (!done) {
-                // worst case we've read a data descriptor without a
-                // signature (up to 20 bytes) plus the first three bytes of
-                // a LFH or CFH signature
-                // save the last ddLen + 3 bytes in the buffer, cache
-                // anything in front of that, read on
-                if (off + r > ddLen + 3) {
-                    bos.write(buf.buf, 0, off + r - ddLen - 3);
-                    System.arraycopy(buf.buf, off + r - ddLen - 3, buf.buf, 0,
-                                     ddLen + 3);
-                    off = ddLen + 3;
-                } else {
-                    off += r;
-                }
-            }
-        }
+        return done;
+    }
 
-        byte[] b = bos.toByteArray();
-        lastStoredEntry = new ByteArrayInputStream(b);
+    /**
+     * If the last read bytes could hold a data descriptor and an
+     * incomplete signature then save the last bytes to the front of
+     * the buffer and cache everything in front of the potential data
+     * descriptor into the given ByteArrayOutputStream.
+     *
+     * <p>Data descriptor plus incomplete signature (3 bytes in the
+     * worst case) can be 20 bytes max.</p>
+     */
+    private int cacheBytesRead(ByteArrayOutputStream bos, int offset,
+                               int lastRead, int expecteDDLen)
+        throws IOException {
+        final int cacheable = offset + lastRead - expecteDDLen - 3;
+        if (cacheable > 0) {
+            bos.write(buf.buf, 0, cacheable);
+            System.arraycopy(buf.buf, cacheable, buf.buf, 0,
+                             expecteDDLen + 3);
+            offset = expecteDDLen + 3;
+        } else {
+            offset += lastRead;
+        }
+        return offset;
     }
 
     private void pushback(byte[] buf, int offset, int length)

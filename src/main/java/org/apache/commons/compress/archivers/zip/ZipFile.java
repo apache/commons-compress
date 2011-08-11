@@ -51,7 +51,9 @@ import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC
  * <p>It doesn't extend <code>java.util.zip.ZipFile</code> as it would
  * have to reimplement all methods anyway.  Like
  * <code>java.util.ZipFile</code>, it uses RandomAccessFile under the
- * covers and supports compressed and uncompressed entries.</p>
+ * covers and supports compressed and uncompressed entries.  It also
+ * transparently supports Zip64 extensions and thus individual entries
+ * and archives larger than 4 GB or with more than 65536 entries.</p>
  *
  * <p>The method signatures mimic the ones of
  * <code>java.util.zip.ZipFile</code>, with a couple of exceptions:
@@ -377,6 +379,9 @@ public class ZipFile {
         /* external file attributes        */ + WORD
         /* relative offset of local header */ + WORD;
 
+    private static final long CFH_SIG =
+        ZipLong.getValue(ZipArchiveOutputStream.CFH_SIG);
+
     /**
      * Reads the central directory of the given archive and populates
      * the internal tables with ZipArchiveEntry instances.
@@ -395,17 +400,36 @@ public class ZipFile {
 
         positionAtCentralDirectory();
 
-        byte[] cfh = new byte[CFH_LEN];
-
         byte[] signatureBytes = new byte[WORD];
         archive.readFully(signatureBytes);
         long sig = ZipLong.getValue(signatureBytes);
-        final long cfhSig = ZipLong.getValue(ZipArchiveOutputStream.CFH_SIG);
-        if (sig != cfhSig && startsWithLocalFileHeader()) {
+
+        if (sig != CFH_SIG && startsWithLocalFileHeader()) {
             throw new IOException("central directory is empty, can't expand"
                                   + " corrupt archive.");
         }
-        while (sig == cfhSig) {
+
+        while (sig == CFH_SIG) {
+            readCentralDirectoryEntry(noUTF8Flag);
+            archive.readFully(signatureBytes);
+            sig = ZipLong.getValue(signatureBytes);
+        }
+        return noUTF8Flag;
+    }
+
+    /**
+     * Reads an individual entry of the central directory, creats an
+     * ZipArchiveEntry from it and adds it to the global maps.
+     *
+     * @param noUTF8Flag map used to collect entries that don't have
+     * their UTF-8 flag set and whose name will be set by data read
+     * from the local file header later.  The current entry may be
+     * added to this map.
+     */
+    private void
+        readCentralDirectoryEntry(Map<ZipArchiveEntry, NameAndComment> noUTF8Flag) throws IOException {
+        byte[] cfh = new byte[CFH_LEN];
+
             archive.readFully(cfh);
             int off = 0;
             ZipArchiveEntry ze = new ZipArchiveEntry();
@@ -427,9 +451,6 @@ public class ZipFile {
             ze.setMethod(ZipShort.getValue(cfh, off));
             off += SHORT;
 
-            // FIXME this is actually not very cpu cycles friendly as we are converting from
-            // dos to java while the underlying Sun implementation will convert
-            // from java to dos time for internal storage...
             long time = ZipUtil.dosToJavaTime(ZipLong.getValue(cfh, off));
             ze.setTime(time);
             off += WORD;
@@ -477,6 +498,33 @@ public class ZipFile {
             archive.readFully(cdExtraData);
             ze.setCentralDirectoryExtra(cdExtraData);
 
+            setSizesAndOffsetFromZip64Extra(ze, offset, diskStart);
+
+            byte[] comment = new byte[commentLen];
+            archive.readFully(comment);
+            ze.setComment(entryEncoding.decode(comment));
+
+            if (!hasUTF8Flag && useUnicodeExtraFields) {
+                noUTF8Flag.put(ze, new NameAndComment(fileName, comment));
+            }
+    }
+
+    /**
+     * If the entry holds a Zip64 extended information extra field,
+     * read sizes from there if the entry's sizes are set to
+     * 0xFFFFFFFFF, do the same for the offset of the local file
+     * header.
+     *
+     * <p>Ensures the Zip64 extra either knows both compressed and
+     * uncompressed size or neither of both as the internal logic in
+     * ExtraFieldUtils forces the field to create local header data
+     * even if they are never used - and here a field with only one
+     * size would be invalid.</p>
+     */
+    private void setSizesAndOffsetFromZip64Extra(ZipArchiveEntry ze,
+                                                 OffsetEntry offset,
+                                                 int diskStart)
+        throws IOException {
             Zip64ExtendedInformationExtraField z64 =
                 (Zip64ExtendedInformationExtraField)
                 ze.getExtraField(Zip64ExtendedInformationExtraField
@@ -491,10 +539,6 @@ public class ZipFile {
                                                 hasCompressedSize,
                                                 hasRelativeHeaderOffset,
                                                 diskStart == ZIP64_MAGIC_SHORT);
-
-                // read ZIP64 values into entry.
-                // ensure ZIP64 field either knows no or both size
-                // values so it can create valid local header extra data
 
                 if (hasUncompressedSize) {
                     ze.setSize(z64.getSize().getLongValue());
@@ -514,19 +558,6 @@ public class ZipFile {
                         z64.getRelativeHeaderOffset().getLongValue();
                 }
             }
-
-            byte[] comment = new byte[commentLen];
-            archive.readFully(comment);
-            ze.setComment(entryEncoding.decode(comment));
-
-            archive.readFully(signatureBytes);
-            sig = ZipLong.getValue(signatureBytes);
-
-            if (!hasUTF8Flag && useUnicodeExtraFields) {
-                noUTF8Flag.put(ze, new NameAndComment(fileName, comment));
-            }
-        }
-        return noUTF8Flag;
     }
 
     /**
@@ -637,6 +668,18 @@ public class ZipFile {
             // not a ZIP64 archive
             positionAtCentralDirectory32();
         } else {
+            positionAtCentralDirectory64();
+        }
+    }
+
+    /**
+     * Parses the &quot;Zip64 end of central directory locator&quot;,
+     * finds the &quot;Zip64 end of central directory record&quot; using the
+     * parsed information, parses that and positions the stream at the
+     * first central directory record.
+     */
+    private void positionAtCentralDirectory64()
+        throws IOException {
             archive.skipBytes(ZIP64_EOCDL_LOCATOR_OFFSET);
             byte[] zip64EocdOffset = new byte[DWORD];
             archive.readFully(zip64EocdOffset);
@@ -656,7 +699,6 @@ public class ZipFile {
             byte[] cfdOffset = new byte[DWORD];
             archive.readFully(cfdOffset);
             archive.seek(ZipEightByteInteger.getLongValue(cfdOffset));
-        }
     }
 
     /**
