@@ -30,6 +30,8 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.Random;
 
+import org.apache.commons.compress.AbstractTestCase;
+
 import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.assertArrayEquals;
@@ -2270,7 +2272,7 @@ public class Zip64SupportIT {
                 if (os != null) {
                     os.close();
                 }
-                f.delete();
+                AbstractTestCase.tryHardToDelete(f);
             }
         }
     }

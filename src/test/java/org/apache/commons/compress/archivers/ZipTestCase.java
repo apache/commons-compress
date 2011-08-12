@@ -228,11 +228,9 @@ public final class ZipTestCase extends AbstractTestCase {
             if (zos != null) {
                 zos.close();
             }
-            if (archive != null) {
-                archive.delete();
-            }
-            tmp[1].delete();
-            tmp[0].delete();
+            tryHardToDelete(archive);
+            tryHardToDelete(tmp[1]);
+            rmdir(tmp[0]);
         }
     }
 
@@ -265,11 +263,9 @@ public final class ZipTestCase extends AbstractTestCase {
             if (zos != null) {
                 zos.close();
             }
-            if (archive != null) {
-                archive.delete();
-            }
-            tmp[1].delete();
-            tmp[0].delete();
+            tryHardToDelete(archive);
+            tryHardToDelete(tmp[1]);
+            rmdir(tmp[0]);
         }
     }
 
@@ -308,14 +304,12 @@ public final class ZipTestCase extends AbstractTestCase {
             if (zos != null) {
                 zos.close();
             }
-            if (archive != null) {
-                archive.delete();
-            }
+            tryHardToDelete(archive);
             if (fis != null) {
                 fis.close();
             }
-            tmp[1].delete();
-            tmp[0].delete();
+            tryHardToDelete(tmp[1]);
+            rmdir(tmp[0]);
         }
     }
 
@@ -356,14 +350,12 @@ public final class ZipTestCase extends AbstractTestCase {
             if (zos != null) {
                 zos.close();
             }
-            if (archive != null) {
-                archive.delete();
-            }
+            tryHardToDelete(archive);
             if (fis != null) {
                 fis.close();
             }
-            tmp[1].delete();
-            tmp[0].delete();
+            tryHardToDelete(tmp[1]);
+            rmdir(tmp[0]);
         }
     }
 }
