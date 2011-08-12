@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.util.Locale;
 import junit.framework.TestCase;
 
+import org.apache.commons.compress.AbstractTestCase;
+
 public class TarArchiveEntryTest extends TestCase {
 
     private static final String OS =
@@ -93,6 +95,7 @@ public class TarArchiveEntryTest extends TestCase {
             if (tout != null) {
                 tout.close();
             }
+            AbstractTestCase.tryHardToDelete(f);
         }
     }
     

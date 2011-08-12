@@ -136,6 +136,8 @@ public class LongPathTest extends AbstractTestCase {
             checkArchiveContent(ais, expected);
         } catch (AssertionFailedError e) {
             fail("Error processing "+file.getName()+" "+e);
+        } finally {
+            ais.close();
         }
     }
 }

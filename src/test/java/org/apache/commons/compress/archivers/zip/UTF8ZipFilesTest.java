@@ -156,6 +156,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
 
     public void testZipFileReadsUnicodeFields() throws IOException {
         File file = File.createTempFile("unicode-test", ".zip");
+        file.deleteOnExit();
         ZipArchiveInputStream zi = null;
         try {
             createTestFile(file, US_ASCII, false, true);
@@ -168,15 +169,14 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
             if (zi != null) {
                 zi.close();
             }
-            if (file.exists()) {
-                file.delete();
-            }
+            tryHardToDelete(file);
         }
     }
 
     public void testZipArchiveInputStreamReadsUnicodeFields()
         throws IOException {
         File file = File.createTempFile("unicode-test", ".zip");
+        file.deleteOnExit();
         ZipFile zf = null;
         try {
             createTestFile(file, US_ASCII, false, true);
@@ -186,9 +186,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
             assertNotNull(zf.getEntry(OIL_BARREL_TXT));
         } finally {
             ZipFile.closeQuietly(zf);
-            if (file.exists()) {
-                file.delete();
-            }
+            tryHardToDelete(file);
         }
     }
 
@@ -226,13 +224,12 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         throws IOException {
 
         File file = File.createTempFile(encoding + "-test", ".zip");
+        file.deleteOnExit();
         try {
             createTestFile(file, encoding, withEFS, withExplicitUnicodeExtra);
             testFile(file, encoding);
         } finally {
-            if (file.exists()) {
-                file.delete();
-            }
+            tryHardToDelete(file);
         }
     }
 

@@ -29,6 +29,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import junit.framework.TestCase;
 
@@ -77,20 +78,13 @@ public abstract class AbstractTestCase extends TestCase {
         rmdir(dir);
         rmdir(resultDir);
         dir = resultDir = null;
-        if (archive != null && archive.exists()) {
-            if (!archive.delete()){
-                // Note: this exception won't be shown if the test has already failed
-                throw new Exception("Could not delete "+archive.getPath());
-            }
+        if (!tryHardToDelete(archive)) {
+            // Note: this exception won't be shown if the test has already failed
+            throw new Exception("Could not delete "+archive.getPath());
         }
     }
 
     protected static void rmdir(File f) {
-        // Sometimes fails without a pause - perhaps file close is partially asynchronous?
-        try {
-            Thread.sleep(20);
-        } catch (InterruptedException e) {
-        }
         String[] s = f.list();
         if (s != null) {
             for (int i = 0; i < s.length; i++) {
@@ -98,16 +92,43 @@ public abstract class AbstractTestCase extends TestCase {
                 if (file.isDirectory()){
                     rmdir(file);
                 }
-                boolean ok = file.delete();
+                boolean ok = tryHardToDelete(file);
                 if (!ok && file.exists()){
                     System.out.println("Failed to delete "+s[i]+" in "+f.getPath());
                 }
             }
         }
-        f.delete(); // safer to delete and check
+        tryHardToDelete(f); // safer to delete and check
         if (f.exists()){
             throw new Error("Failed to delete "+f.getPath());
         }
+    }
+
+    private static final boolean ON_WINDOWS =
+        System.getProperty("os.name").toLowerCase(Locale.ENGLISH)
+        .indexOf("windows") > -1;
+
+    /**
+     * Accommodate Windows bug encountered in both Sun and IBM JDKs.
+     * Others possible. If the delete does not work, call System.gc(),
+     * wait a little and try again.
+     *
+     * @return whether deletion was successful
+     * @since Stolen from FileUtils in Ant 1.8.0
+     */
+    public static boolean tryHardToDelete(File f) {
+        if (f != null && f.exists() && !f.delete()) {
+            if (ON_WINDOWS) {
+                System.gc();
+            }
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ex) {
+                // Ignore Exception
+            }
+            return f.delete();
+        }
+        return true;
     }
 
     /**
@@ -139,6 +160,7 @@ public abstract class AbstractTestCase extends TestCase {
         OutputStream stream = null;
         try {
             archive = File.createTempFile("test", "." + archivename);
+            archive.deleteOnExit();
             archiveList = new ArrayList<String>();
 
             stream = new FileOutputStream(archive);
@@ -201,6 +223,7 @@ public abstract class AbstractTestCase extends TestCase {
         archiveList = new ArrayList<String>();
         try {
             archive = File.createTempFile("empty", "." + archivename);
+            archive.deleteOnExit();
             stream = new FileOutputStream(archive);
             out = factory.createArchiveOutputStream(archivename, stream);
             out.finish();
@@ -227,6 +250,7 @@ public abstract class AbstractTestCase extends TestCase {
         archiveList = new ArrayList<String>();
         try {
             archive = File.createTempFile("empty", "." + archivename);
+            archive.deleteOnExit();
             stream = new FileOutputStream(archive);
             out = factory.createArchiveOutputStream(archivename, stream);
             // Use short file name so does not cause problems for ar
@@ -286,9 +310,8 @@ public abstract class AbstractTestCase extends TestCase {
      */
     protected File checkArchiveContent(ArchiveInputStream in, List<String> expected, boolean cleanUp)
             throws Exception {
-        File result = File.createTempFile("dir-result", "");
-        result.delete();
-        result.mkdir();
+        File result = mkdir("dir-result");
+        result.deleteOnExit();
 
         try {
             ArchiveEntry entry = null;
@@ -354,9 +377,7 @@ public abstract class AbstractTestCase extends TestCase {
      * element of the two element array).
      */
     protected File[] createTempDirAndFile() throws IOException {
-        File tmpDir = File.createTempFile("testdir", "");
-        tmpDir.delete();
-        tmpDir.mkdir();
+        File tmpDir = mkdir("testdir");
         tmpDir.deleteOnExit();
         File tmpFile = File.createTempFile("testfile", "", tmpDir);
         tmpFile.deleteOnExit();
