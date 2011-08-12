@@ -62,6 +62,11 @@ public class Zip64SupportIT {
         read5GBOfZerosImpl(get5GBZerosFileGeneratedByJava7Jar(), "5GB_of_Zeros");
     }
 
+    @Test public void read5GBOfZerosGeneratedByWinZIPUsingInputStream()
+        throws Throwable {
+        read5GBOfZerosImpl(get5GBZerosFileGeneratedByWinZIP(), "5GB_of_Zeros");
+    }
+
     @Test public void read100KFilesUsingInputStream() throws Throwable {
         read100KFilesImpl(get100KFileFile());
     }
@@ -81,6 +86,11 @@ public class Zip64SupportIT {
         read100KFilesImpl(get100KFileFileGeneratedByJava7Jar());
     }
 
+    @Test public void read100KFilesGeneratedByWinZIPUsingInputStream()
+        throws Throwable {
+        read100KFilesImpl(get100KFileFileGeneratedByWinZIP());
+    }
+
     @Test public void read5GBOfZerosUsingZipFile() throws Throwable {
         read5GBOfZerosUsingZipFileImpl(get5GBZerosFile(), "5GB_of_Zeros");
     }
@@ -94,6 +104,12 @@ public class Zip64SupportIT {
     @Test public void read5GBOfZerosGeneratedByJava7JarUsingZipFile()
         throws Throwable {
         read5GBOfZerosUsingZipFileImpl(get5GBZerosFileGeneratedByJava7Jar(),
+                                       "5GB_of_Zeros");
+    }
+
+    @Test public void read5GBOfZerosGeneratedByWinZIPUsingZipFile()
+        throws Throwable {
+        read5GBOfZerosUsingZipFileImpl(get5GBZerosFileGeneratedByWinZIP(),
                                        "5GB_of_Zeros");
     }
 
@@ -114,6 +130,11 @@ public class Zip64SupportIT {
     @Test public void read100KFilesGeneratedByJava7JarUsingZipFile()
         throws Throwable {
         read100KFilesUsingZipFileImpl(get100KFileFileGeneratedByJava7Jar());
+    }
+
+    @Test public void read100KFilesGeneratedByWinZIPUsingZipFile()
+        throws Throwable {
+        read100KFilesUsingZipFileImpl(get100KFileFileGeneratedByWinZIP());
     }
 
     private static ZipOutputTest write100KFiles() {
@@ -2274,6 +2295,10 @@ public class Zip64SupportIT {
         return getFile("/5GB_of_Zeros_jar.zip");
     }
 
+    private static File get5GBZerosFileGeneratedByWinZIP() throws Throwable {
+        return getFile("/5GB_of_Zeros_7ZIP.zip");
+    }
+
     private static File get100KFileFile() throws Throwable {
         return getFile("/100k_Files.zip");
     }
@@ -2288,6 +2313,10 @@ public class Zip64SupportIT {
 
     private static File get100KFileFileGeneratedByJava7Jar() throws Throwable {
         return getFile("/100k_Files_jar.zip");
+    }
+
+    private static File get100KFileFileGeneratedByWinZIP() throws Throwable {
+        return getFile("/100k_Files_WinZIP.zip");
     }
 
     private static File getTempFile(String testName) throws Throwable {
