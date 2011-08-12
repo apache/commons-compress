@@ -279,6 +279,23 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>run-it</id>
+      <!-- Add long running tests as **/*IT.java -->
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <includes>
+                <include>**/*Test.java</include>
+                <include>**/*IT.java</include>
+              </includes>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 
 </project>

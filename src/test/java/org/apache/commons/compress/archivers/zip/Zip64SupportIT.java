@@ -42,8 +42,7 @@ import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeNotNull;
 import static org.junit.Assume.assumeTrue;
 
-@Ignore
-public class Zip64SupportTest {
+public class Zip64SupportIT {
 
     private static final long FIVE_BILLION = 5000000000l;
     private static final int ONE_MILLION = 1000000;
@@ -2256,7 +2255,7 @@ public class Zip64SupportTest {
     }
 
     private static File getFile(String name) throws Throwable {
-        URL url = Zip64SupportTest.class.getResource(name);
+        URL url = Zip64SupportIT.class.getResource(name);
         assumeNotNull(url);
         File file = new File(new URI(url.toString()));
         assumeTrue(file.exists());
