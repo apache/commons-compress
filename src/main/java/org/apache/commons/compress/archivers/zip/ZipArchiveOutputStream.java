@@ -384,7 +384,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * any entry has initially been unknown and create an archive
      * identical to {@link Zip64Mode#Never Never} otherwise.  {@link
      * Zip64Mode#Always Always} will create an archive that is at
-     * least 20 bytes per entry bigger than the one {@link
+     * least 24 bytes per entry bigger than the one {@link
      * Zip64Mode#Never Never} would create.</p>
      *
      * <p>Defaults to {@link Zip64Mode#AsNeeded AsNeeded} unless
@@ -1016,7 +1016,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         written += WORD;
 
         final long lfhOffset = offsets.get(ze).longValue();
-        final boolean needsZip64Extra = ze.getCompressedSize() >= ZIP64_MAGIC
+        final boolean needsZip64Extra = hasZip64Extra(ze)
+            || ze.getCompressedSize() >= ZIP64_MAGIC
             || ze.getSize() >= ZIP64_MAGIC
             || lfhOffset >= ZIP64_MAGIC;
 
@@ -1121,8 +1122,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
     /**
      * If the entry needs Zip64 extra information inside the central
-     * director then configure its data, otherwise remove it if one is
-     * present.
+     * directory then configure its data.
      */
     private void handleZip64Extra(ZipArchiveEntry ze, long lfhOffset,
                                   boolean needsZip64Extra) {
@@ -1140,11 +1140,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             if (lfhOffset >= ZIP64_MAGIC) {
                 z64.setRelativeHeaderOffset(new ZipEightByteInteger(lfhOffset));
             }
-            ze.setExtra();
-        } else if (hasZip64Extra(ze)) {
-            // added to LFH but not really needed, probably because of
-            // Zip64Mode.Always
-            ze.removeExtraField(Zip64ExtendedInformationExtraField.HEADER_ID);
             ze.setExtra();
         }
     }
