@@ -326,7 +326,10 @@ public class Zip64SupportIT {
                     // skip first two entries
                     a.skipBytes(2 * 47 /* CD entry of file with
                                           file name length 1 and no
-                                          extra data */);
+                                          extra data */
+                                + 2 * (mode == Zip64Mode.Always ? 4 : 0)
+                                /* empty ZIP64 extra fields if mode is Always */
+                                );
 
                     // grab third entry, verify offset is
                     // 0xFFFFFFFF and it has a ZIP64 extended
@@ -1449,8 +1452,7 @@ public class Zip64SupportIT {
                     final long end = getLengthAndPositionAtCentralDirectory(a);
 
                     // grab first CF entry, verify sizes are 1e6 and it
-                    // has no ZIP64 extended information extra field
-                    // at all
+                    // has an empty ZIP64 extended information extra field
                     byte[] header = new byte[12];
                     a.readFully(header);
                     assertArrayEquals(new byte[] {
@@ -1459,7 +1461,7 @@ public class Zip64SupportIT {
                             // version made by
                             45, 0,
                             // version needed to extract
-                            10, 0,
+                            45, 0,
                             // GPB (EFS bit)
                             0, 8,
                             // method
@@ -1480,7 +1482,7 @@ public class Zip64SupportIT {
                             // file name length
                             1, 0,
                             // extra field length
-                            0, 0,
+                            4, 0,
                             // comment length
                             0, 0,
                             // disk number
@@ -1493,6 +1495,15 @@ public class Zip64SupportIT {
                             // file name
                             (byte) '0'
                         }, rest);
+
+                    byte[] extra = new byte[4];
+                    a.readFully(extra);
+                    assertArrayEquals(new byte[] {
+                            // Header-ID
+                            1, 0,
+                            // size of extra
+                            0, 0,
+                        }, extra);
 
                     // and now validate local file header: this one
                     // has a ZIP64 extra field as the mode was
@@ -1530,7 +1541,7 @@ public class Zip64SupportIT {
                             (byte) '0'
                         }, rest);
 
-                    byte[] extra = new byte[20];
+                    extra = new byte[20];
                     a.readFully(extra);
                     assertArrayEquals(new byte[] {
                             // Header-ID
@@ -1775,7 +1786,7 @@ public class Zip64SupportIT {
 
                     long cfhPos = a.getFilePointer();
                     // grab first entry, verify sizes are not
-                    // 0xFFFFFFF and it has no ZIP64 extended
+                    // 0xFFFFFFF and it has an empty ZIP64 extended
                     // information extra field
                     byte[] header = new byte[12];
                     a.readFully(header);
@@ -1785,7 +1796,7 @@ public class Zip64SupportIT {
                             // version made by
                             45, 0,
                             // version needed to extract
-                            20, 0,
+                            45, 0,
                             // GPB (EFS + Data Descriptor)
                             8, 8,
                             // method
@@ -1810,7 +1821,7 @@ public class Zip64SupportIT {
                             // file name length
                             1, 0,
                             // extra field length
-                            0, 0,
+                            4, 0,
                             // comment length
                             0, 0,
                             // disk number
@@ -1823,6 +1834,14 @@ public class Zip64SupportIT {
                             // file name
                             (byte) '0'
                         }, rest);
+                    byte[] extra = new byte[4];
+                    a.readFully(extra);
+                    assertArrayEquals(new byte[] {
+                            // Header-ID
+                            1, 0,
+                            // size of extra
+                            0, 0,
+                        }, extra);
 
                     // validate data descriptor
                     a.seek(cfhPos - 24);
@@ -1877,7 +1896,7 @@ public class Zip64SupportIT {
                             (byte) '0'
                         }, rest);
 
-                    byte[] extra = new byte[20];
+                    extra = new byte[20];
                     a.readFully(extra);
                     assertArrayEquals(new byte[] {
                             // Header-ID
@@ -2124,7 +2143,7 @@ public class Zip64SupportIT {
 
                     long cfhPos = a.getFilePointer();
                     // grab first CD entry, verify sizes are not
-                    // 0xFFFFFFFF and it has a no ZIP64 extended
+                    // 0xFFFFFFFF and it has a an empty ZIP64 extended
                     // information extra field
                     byte[] header = new byte[12];
                     a.readFully(header);
@@ -2134,7 +2153,7 @@ public class Zip64SupportIT {
                             // version made by
                             45, 0,
                             // version needed to extract
-                            10, 0,
+                            45, 0,
                             // GPB (EFS + *no* Data Descriptor)
                             0, 8,
                             // method
@@ -2157,7 +2176,7 @@ public class Zip64SupportIT {
                             // file name length
                             1, 0,
                             // extra field length
-                            0, 0,
+                            4, 0,
                             // comment length
                             0, 0,
                             // disk number
@@ -2170,6 +2189,14 @@ public class Zip64SupportIT {
                             // file name
                             (byte) '0'
                         }, rest);
+                    byte[] extra = new byte[4];
+                    a.readFully(extra);
+                    assertArrayEquals(new byte[] {
+                            // Header-ID
+                            1, 0,
+                            // size of extra
+                            0, 0,
+                        }, extra);
 
                     // and now validate local file header
                     a.seek(0);
@@ -2209,7 +2236,7 @@ public class Zip64SupportIT {
                             (byte) '0'
                         }, rest);
 
-                    byte[] extra = new byte[12];
+                    extra = new byte[12];
                     a.readFully(extra);
                     assertArrayEquals(new byte[] {
                             // Header-ID
