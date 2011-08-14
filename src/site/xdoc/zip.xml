@@ -103,6 +103,27 @@
 
       </subsection>
 
+      <subsection name="ZipArchiveOutputStream">
+        <p><code>ZipArchiveOutputStream</code> has two constructors,
+          one of them uses a <code>File</code> argument, the other
+          uses an <code>OutputStream</code>.  The <code>File</code>
+          version will try to use <code>RandomAccessFile</code> and
+          fall back to using a <code>FileOutputStream</code>
+          internally if that fails.</p>
+
+        <p>If <code>ZipArchiveOutputStream</code> can
+          use <code>RandomAccessFile</code> it can employ some
+          optimizations that lead to smaller archives.  It also makes
+          it possible to add uncompressed (<code>setMethod</code> used
+          with <code>STORED</code>) entries of unknown size when
+          calling <code>putArchiveEntry</code> - this is not allowed
+          if <code>ZipArchiveOutputStream</code> has to use
+          an <code>OutputStream</code>.</p>
+
+        <p>If you know you are writing to a file, you should always
+          prefer the <code>File</code>-arg constructor.</p>
+      </subsection>
+
       <subsection name="Extra Fields">
 
         <p>Inside a ZIP archive, additional data can be attached to
