@@ -1200,8 +1200,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         if (!hasUsedZip64
             && (cdOffset >= ZIP64_MAGIC || cdLength >= ZIP64_MAGIC
                 || entries.size() >= ZIP64_MAGIC_SHORT)) {
-                // actually "will use"
-                hasUsedZip64 = true;
+            // actually "will use"
+            hasUsedZip64 = true;
         }
 
         if (!hasUsedZip64) {

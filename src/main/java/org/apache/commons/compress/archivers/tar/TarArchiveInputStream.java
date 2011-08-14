@@ -269,40 +269,46 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         Map<String, String> headers = new HashMap<String, String>();
         // Format is "length keyword=value\n";
         try {
-        while(true){ // get length
-            int ch;
-            int len=0;
-            int read=0;
-            while((ch = br.read()) != -1){
-                read++;
-                if (ch == ' '){ // End of length string
-                    // Get keyword
-                    StringBuffer sb = new StringBuffer();
-                    while((ch = br.read()) != -1){
-                        read++;
-                        if (ch == '='){ // end of keyword
-                            String keyword = sb.toString();
-                            // Get rest of entry
-                            char[] cbuf = new char[len-read];
-                            int got = br.read(cbuf);
-                            if (got != len-read){
-                                throw new IOException("Failed to read Paxheader. Expected "+(len-read)+" chars, read "+got);
+            while(true){ // get length
+                int ch;
+                int len = 0;
+                int read = 0;
+                while((ch = br.read()) != -1){
+                    read++;
+                    if (ch == ' '){ // End of length string
+                        // Get keyword
+                        StringBuffer sb = new StringBuffer();
+                        while((ch = br.read()) != -1){
+                            read++;
+                            if (ch == '='){ // end of keyword
+                                String keyword = sb.toString();
+                                // Get rest of entry
+                                char[] cbuf = new char[len-read];
+                                int got = br.read(cbuf);
+                                if (got != len - read){
+                                    throw new IOException("Failed to read "
+                                                          + "Paxheader. Expected "
+                                                          + (len - read)
+                                                          + " chars, read "
+                                                          + got);
+                                }
+                                // Drop trailing NL
+                                String value = new String(cbuf, 0,
+                                                          len - read - 1);
+                                headers.put(keyword, value);
+                                break;
                             }
-                            String value = new String(cbuf, 0 , len-read-1); // Drop trailing NL
-                            headers.put(keyword, value);
-                            break;
+                            sb.append((char) ch);
                         }
-                        sb.append((char)ch);
+                        break; // Processed single header
                     }
-                    break; // Processed single header
+                    len *= 10;
+                    len += ch - '0';
                 }
-                len *= 10;
-                len += ch - '0';
+                if (ch == -1){ // EOF
+                    break;
+                }
             }
-            if (ch == -1){ // EOF
-                break;
-            }
-        }
         } finally {
             // NO-OP but makes FindBugs happy
             br.close();
