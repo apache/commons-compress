@@ -23,10 +23,10 @@
 
 package org.apache.commons.compress.archivers.tar;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -261,9 +261,14 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     }
 
     private void paxHeaders() throws IOException{
-        BufferedReader br = new BufferedReader(new InputStreamReader(this, "UTF-8"));
+        Reader br = new InputStreamReader(this, "UTF-8") {
+                public void close() {
+                    // make sure GC doesn't close "this" before we are done
+                }
+            };
         Map<String, String> headers = new HashMap<String, String>();
         // Format is "length keyword=value\n";
+        try {
         while(true){ // get length
             int ch;
             int len=0;
@@ -298,6 +303,11 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                 break;
             }
         }
+        } finally {
+            // NO-OP but makes FindBugs happy
+            br.close();
+        }
+
         getNextEntry(); // Get the actual file entry
         /*
          * The following headers are defined for Pax.

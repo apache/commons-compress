@@ -17,6 +17,7 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -679,7 +680,7 @@ public class ZipFile {
      */
     private void positionAtCentralDirectory64()
         throws IOException {
-        archive.skipBytes(ZIP64_EOCDL_LOCATOR_OFFSET);
+        skipBytes(ZIP64_EOCDL_LOCATOR_OFFSET);
         byte[] zip64EocdOffset = new byte[DWORD];
         archive.readFully(zip64EocdOffset);
         archive.seek(ZipEightByteInteger.getLongValue(zip64EocdOffset));
@@ -693,8 +694,8 @@ public class ZipFile {
             throw new ZipException("archive's ZIP64 end of central "
                                    + "directory locator is corrupt.");
         }
-        archive.skipBytes(ZIP64_EOCD_CFD_LOCATOR_OFFSET
-                          - WORD /* signature has already been read */);
+        skipBytes(ZIP64_EOCD_CFD_LOCATOR_OFFSET
+                  - WORD /* signature has already been read */);
         byte[] cfdOffset = new byte[DWORD];
         archive.readFully(cfdOffset);
         archive.seek(ZipEightByteInteger.getLongValue(cfdOffset));
@@ -712,7 +713,7 @@ public class ZipFile {
         if (!found) {
             throw new ZipException("archive is not a ZIP archive");
         }
-        archive.skipBytes(CFD_LOCATOR_OFFSET);
+        skipBytes(CFD_LOCATOR_OFFSET);
         byte[] cfdOffset = new byte[WORD];
         archive.readFully(cfdOffset);
         archive.seek(ZipLong.getValue(cfdOffset));
@@ -756,6 +757,21 @@ public class ZipFile {
             archive.seek(off);
         }
         return found;
+    }
+
+    /**
+     * Skips the given number of bytes or throws an EOFException if
+     * skipping failed.
+     */ 
+    private void skipBytes(final int count) throws IOException {
+        int totalSkipped = 0;
+        while (totalSkipped < count) {
+            int skippedNow = archive.skipBytes(count - totalSkipped);
+            if (skippedNow <= 0) {
+                throw new EOFException();
+            }
+            totalSkipped += skippedNow;
+        }
     }
 
     /**

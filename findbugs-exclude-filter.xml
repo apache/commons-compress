@@ -62,4 +62,13 @@
     <Bug pattern="DE_MIGHT_IGNORE" />
   </Match>
 
+  <!-- Reason: skip(Long.MAX_VALUE) called to drain stream completely,
+       the class overrides skip to ensure it reads the full amount
+       until EOF is reached -->
+  <Match>
+    <Class name="org.apache.commons.compress.archivers.zip.ZipArchiveInputStream" />
+    <Method name="closeEntry" />
+    <Bug pattern="SR_NOT_CHECKED" />
+  </Match>
+
 </FindBugsFilter>
