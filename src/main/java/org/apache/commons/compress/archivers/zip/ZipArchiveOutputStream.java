@@ -34,7 +34,6 @@ import java.util.zip.ZipException;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 
-import static org.apache.commons.compress.archivers.zip.ZipConstants.BYTE_MASK;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.DATA_DESCRIPTOR_MIN_VERSION;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.INITIAL_VERSION;
@@ -271,7 +270,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             if (_raf != null) {
                 try {
                     _raf.close();
-                } catch (IOException inner) {
+                } catch (IOException inner) { // NOPMD
                     // ignore
                 }
                 _raf = null;
@@ -1198,12 +1197,11 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             return;
         }
 
-        if (!hasUsedZip64) {
-            if (cdOffset >= ZIP64_MAGIC || cdLength >= ZIP64_MAGIC
-                || entries.size() >= ZIP64_MAGIC_SHORT) {
+        if (!hasUsedZip64
+            && (cdOffset >= ZIP64_MAGIC || cdLength >= ZIP64_MAGIC
+                || entries.size() >= ZIP64_MAGIC_SHORT)) {
                 // actually "will use"
                 hasUsedZip64 = true;
-            }
         }
 
         if (!hasUsedZip64) {
