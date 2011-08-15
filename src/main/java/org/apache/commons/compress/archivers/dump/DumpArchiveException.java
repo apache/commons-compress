@@ -35,10 +35,12 @@ public class DumpArchiveException extends IOException {
     }
 
     public DumpArchiveException(Throwable cause) {
-        super(cause);
+        super();
+        initCause(cause);
     }
 
     public DumpArchiveException(String msg, Throwable cause) {
-        super(msg, cause);
+        super(msg);
+        initCause(cause);
     }
 }
