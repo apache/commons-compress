@@ -85,7 +85,7 @@ public class DumpArchiveUtil {
      *
      * @param buffer
      * @param offset
-     * @return
+     * @return the 8-byte entry as a long
      */
     public static final long convert64(byte[] buffer, int offset) {
         long i = 0;
@@ -106,7 +106,7 @@ public class DumpArchiveUtil {
      *
      * @param buffer
      * @param offset
-     * @return
+     * @return the 4-byte entry as an int
      */
     public static final int convert32(byte[] buffer, int offset) {
         int i = 0;
@@ -123,7 +123,7 @@ public class DumpArchiveUtil {
      *
      * @param buffer
      * @param offset
-     * @return
+     * @return the 2-byte entry as an int
      */
     public static final int convert16(byte[] buffer, int offset) {
         int i = 0;

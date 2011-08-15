@@ -348,7 +348,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      * Get full path for specified archive entry, or null if there's a gap.
      *
      * @param entry
-     * @return
+     * @return  full path for specified archive entry, or null if there's a gap.
      */
     public String getPath(DumpArchiveEntry entry) {
         // build the stack of elements. It's possible that we're 

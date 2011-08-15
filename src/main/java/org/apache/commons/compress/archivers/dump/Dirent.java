@@ -45,7 +45,7 @@ public class Dirent {
 
     /**
      * Get ino.
-     * @return
+     * @return the i-node
      */
     public int getIno() {
         return ino;
@@ -53,7 +53,7 @@ public class Dirent {
 
     /**
      * Get ino of parent directory.
-     * @return
+     * @return the parent i-node
      */
     public int getParentIno() {
         return parentIno;
@@ -61,7 +61,7 @@ public class Dirent {
 
     /**
      * Get entry type.
-     * @return
+     * @return the entry type
      */
     public int getType() {
         return type;
@@ -69,7 +69,7 @@ public class Dirent {
 
     /**
      * Get name of directory entry.
-     * @return
+     * @return the directory name
      */
     public String getName() {
         return name;
