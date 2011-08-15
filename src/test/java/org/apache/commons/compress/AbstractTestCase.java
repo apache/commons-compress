@@ -346,8 +346,8 @@ public abstract class AbstractTestCase extends TestCase {
             }
             in.close();
             if (expected != null && expected.size() > 0) {
-                for (Iterator iterator = expected.iterator(); iterator.hasNext();) {
-                    String name = (String) iterator.next();
+                for (Iterator<String> iterator = expected.iterator(); iterator.hasNext();) {
+                    String name = iterator.next();
                     fail("Expected entry: " + name);
                 }
             }
