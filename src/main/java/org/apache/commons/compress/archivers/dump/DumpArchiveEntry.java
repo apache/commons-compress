@@ -242,7 +242,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Returns the path of the entry.
-     * @return
+     * @return the path of the entry.
      */
     public String getSimpleName() {
         return simpleName;
@@ -250,7 +250,6 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Sets the path of the entry.
-     * @return
      */
     protected void setSimpleName(String simpleName) {
         this.simpleName = simpleName;
@@ -551,7 +550,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Returns the name of the entry.
-     * @return
+     * @return the name of the entry.
      */
     public String getName() {
         return name;
@@ -559,7 +558,6 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Sets the name of the entry.
-     * @return
      */
     public void setName(String name) {
         this.name = name;
