@@ -21,6 +21,7 @@ package org.apache.commons.compress.archivers.dump;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -71,7 +72,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      * @throws Exception
      */
     public DumpArchiveInputStream(InputStream is) throws ArchiveException {
-        this.raw = new TapeInputStream(is);
+        this.raw = new TapeInputStream(new CountingStream(is));
         this.hasHitEOF = false;
 
         try {
@@ -481,5 +482,31 @@ outer:
         // this will work in a pinch.
         return DumpArchiveConstants.NFS_MAGIC == DumpArchiveUtil.convert32(buffer,
             7);
+    }
+
+    private class CountingStream extends FilterInputStream {
+        private CountingStream(final InputStream in) {
+            super(in);
+        }
+        @Override
+        public int read() throws IOException {
+            int r = in.read();
+            if (r >= 0) {
+                count(1);
+            }
+            return r;
+        }
+        @Override
+        public int read(byte[] b) throws IOException {
+            return read(b, 0, b.length);
+        }
+        @Override
+        public int read(byte[] b, int off, int len) throws IOException {
+            int r = in.read(b, off, len);
+            if (r >= 0) {
+                count(r);
+            }
+            return r;
+        }
     }
 }
