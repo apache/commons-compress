@@ -35,6 +35,7 @@ public class ZipUtilTest extends TestCase {
         super(name);
     }
 
+    @Override
     protected void setUp() throws Exception {
         time = new Date();
         Calendar cal = Calendar.getInstance();
@@ -56,6 +57,7 @@ public class ZipUtilTest extends TestCase {
         zl = new ZipLong(result);
     }
 
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
     }

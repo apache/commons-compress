@@ -41,6 +41,7 @@ public final class MemoryArchiveInputStream extends ArchiveInputStream {
         p = 0;
     }
 
+    @Override
     public ArchiveEntry getNextEntry() throws IOException {
         if (p >= filenames.length) {
             return null;
@@ -53,6 +54,7 @@ public final class MemoryArchiveInputStream extends ArchiveInputStream {
         return content[p++];
     }
 
+    @Override
     public int read() throws IOException {
         return 0;
     }

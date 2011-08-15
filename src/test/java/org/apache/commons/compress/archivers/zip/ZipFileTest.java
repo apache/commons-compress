@@ -28,6 +28,7 @@ import junit.framework.TestCase;
 public class ZipFileTest extends TestCase {
     private ZipFile zf = null;
 
+    @Override
     public void tearDown() {
         ZipFile.closeQuietly(zf);
     }

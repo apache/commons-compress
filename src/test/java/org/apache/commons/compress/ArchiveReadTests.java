@@ -88,6 +88,7 @@ public class ArchiveReadTests extends AbstractTestCase {
     }
     
     // files.txt contains size and filename
+    @Override
     protected String getExpectedString(ArchiveEntry entry) {
         return entry.getSize() + " " + entry.getName();
     }

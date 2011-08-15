@@ -57,6 +57,7 @@ public abstract class AbstractTestCase extends TestCase {
         super(name);
     }
 
+    @Override
     protected void setUp() throws Exception {
         dir = mkdir("dir");
         resultDir = mkdir("dir-result");
@@ -74,6 +75,7 @@ public abstract class AbstractTestCase extends TestCase {
         return new File("src/test/resources", path);
     }
 
+    @Override
     protected void tearDown() throws Exception {
         rmdir(dir);
         rmdir(resultDir);

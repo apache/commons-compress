@@ -42,6 +42,7 @@ public class ExtraFieldUtilsTest extends TestCase implements UnixStat {
     private byte[] data;
     private byte[] aLocal;
 
+    @Override
     public void setUp() {
         a = new AsiExtraField();
         a.setMode(0755);

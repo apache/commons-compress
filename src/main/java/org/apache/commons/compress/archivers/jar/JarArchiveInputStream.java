@@ -41,6 +41,7 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
         return entry == null ? null : new JarArchiveEntry(entry);
     }
 
+    @Override
     public ArchiveEntry getNextEntry() throws IOException {
         return getNextJarEntry();
     }

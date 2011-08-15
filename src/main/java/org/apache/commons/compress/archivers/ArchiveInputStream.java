@@ -76,6 +76,7 @@ public abstract class ArchiveInputStream extends InputStream {
      * @throws IOException
      *             if an I/O error has occurred
      */
+    @Override
     public int read() throws IOException {
         int num = read(SINGLE, 0, 1);
         return num == -1 ? -1 : SINGLE[0] & BYTE_MASK;
