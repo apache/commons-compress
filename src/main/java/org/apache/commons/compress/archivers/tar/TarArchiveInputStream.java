@@ -262,6 +262,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
 
     private void paxHeaders() throws IOException{
         Reader br = new InputStreamReader(this, "UTF-8") {
+                @Override
                 public void close() {
                     // make sure GC doesn't close "this" before we are done
                 }
