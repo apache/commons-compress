@@ -54,8 +54,8 @@ public class TapeInputStream extends FilterInputStream {
      * dump archive's actual block size since compression is handled at the
      * block level.
      *
-     * @param blockSize
-     *            actual blockSize according to dump archive
+     * @param recsPerBlock
+     *            records per block
      * @param isCompressed
      *            true if the archive is compressed
      * @throws IOException
@@ -82,7 +82,7 @@ public class TapeInputStream extends FilterInputStream {
     }
 
     /**
-     * {@see java.io.InputStream#available}
+     * @see java.io.InputStream#available
      */
     @Override
     public int available() throws IOException {
@@ -94,7 +94,7 @@ public class TapeInputStream extends FilterInputStream {
     }
 
     /**
-     * {@see java.io.InputStream#read()
+     * @see java.io.InputStream#read()
      */
     @Override
     public int read() throws IOException {
@@ -104,7 +104,7 @@ public class TapeInputStream extends FilterInputStream {
     }
 
     /**
-     * {@see java.io.InputStream#read(byte[], int, int) }
+     * @see java.io.InputStream#read(byte[], int, int)
      */
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
@@ -146,7 +146,7 @@ public class TapeInputStream extends FilterInputStream {
 
     /**
      * Skip bytes. Same as read but without the arraycopy.
-     * {@see java.io.InputStream#read(byte[], int, int) }
+     * @see java.io.InputStream#read(byte[], int, int)
      */
     @Override
     public long skip(long len) throws IOException {
