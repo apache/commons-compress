@@ -107,6 +107,7 @@ public abstract class ArchiveOutputStream extends OutputStream {
      * @param b The byte to be written.
      * @throws IOException on error
      */
+    @Override
     public void write(int b) throws IOException {
         oneByte[0] = (byte) (b & BYTE_MASK);
         write(oneByte, 0, 1);

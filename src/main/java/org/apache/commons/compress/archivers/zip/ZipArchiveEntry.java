@@ -186,6 +186,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      *
      * @since Apache Commons Compress 1.1
      */
+    @Override
     public int getMethod() {
         return method;
     }
@@ -197,6 +198,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      *
      * @since Apache Commons Compress 1.1
      */
+    @Override
     public void setMethod(int method) {
         if (method < 0) {
             throw new IllegalArgumentException(
@@ -497,6 +499,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * Is this entry a directory?
      * @return true if the entry is a directory
      */
+    @Override
     public boolean isDirectory() {
         return getName().endsWith("/");
     }

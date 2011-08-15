@@ -42,6 +42,7 @@ public class JarArchiveOutputStream extends ZipArchiveOutputStream {
     }
 
     // @throws ClassCastException if entry is not an instance of ZipArchiveEntry
+    @Override
     public void putArchiveEntry(ArchiveEntry ze) throws IOException {
         if (!jarMarkerAdded) {
             ((ZipArchiveEntry)ze).addAsFirstExtraField(JarMarker.getInstance());

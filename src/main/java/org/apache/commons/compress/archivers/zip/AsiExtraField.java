@@ -317,6 +317,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
         return type | (mode & PERM_MASK);
     }
 
+    @Override
     public Object clone() {
         try {
             AsiExtraField cloned = (AsiExtraField) super.clone();

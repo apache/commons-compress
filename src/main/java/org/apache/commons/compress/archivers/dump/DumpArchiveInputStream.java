@@ -169,6 +169,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     /**
      * Read the next entry.
      */
+    @Override
     public DumpArchiveEntry getNextEntry() throws IOException {
         DumpArchiveEntry entry = null;
         String path = null;
@@ -403,6 +404,7 @@ outer:
      * @return The number of bytes read, or -1 at EOF.
      * @throws IOException on error
      */
+    @Override
     public int read(byte[] buf, int off, int len) throws IOException {
         int totalRead = 0;
 

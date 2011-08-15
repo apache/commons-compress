@@ -331,6 +331,7 @@ public class ZipFile {
                 bis.addDummy();
                 final Inflater inflater = new Inflater(true);
                 return new InflaterInputStream(bis, inflater) {
+                    @Override
                     public void close() throws IOException {
                         super.close();
                         inflater.end();
@@ -347,6 +348,7 @@ public class ZipFile {
      * there are no more references to it.
      * @see #close()
      */
+    @Override
     protected void finalize() throws Throwable {
         try {
             if (!closed) {
@@ -867,6 +869,7 @@ public class ZipFile {
             loc = start;
         }
 
+        @Override
         public int read() throws IOException {
             if (remaining-- <= 0) {
                 if (addDummyByte) {
@@ -881,6 +884,7 @@ public class ZipFile {
             }
         }
 
+        @Override
         public int read(byte[] b, int off, int len) throws IOException {
             if (remaining <= 0) {
                 if (addDummyByte) {
