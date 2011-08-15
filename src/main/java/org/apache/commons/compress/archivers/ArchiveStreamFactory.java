@@ -27,6 +27,7 @@ import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
 import org.apache.commons.compress.archivers.ar.ArArchiveOutputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveOutputStream;
+import org.apache.commons.compress.archivers.dump.DumpArchiveInputStream;
 import org.apache.commons.compress.archivers.jar.JarArchiveInputStream;
 import org.apache.commons.compress.archivers.jar.JarArchiveOutputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -83,6 +84,11 @@ public class ArchiveStreamFactory {
      */
     public static final String CPIO = "cpio";
     /**
+     * Constant used to identify the Unix DUMP archive format.
+     * @since Commons Compress 1.3
+     */
+    public static final String DUMP = "dump";
+    /**
      * Constant used to identify the JAR archive format.
      * @since Commons Compress 1.1
      */
@@ -101,7 +107,7 @@ public class ArchiveStreamFactory {
     /**
      * Create an archive input stream from an archiver name and an input stream.
      * 
-     * @param archiverName the archive name, i.e. "ar", "zip", "tar", "jar" or "cpio"
+     * @param archiverName the archive name, i.e. "ar", "zip", "tar", "jar", "dump" or "cpio"
      * @param in the input stream
      * @return the archive input stream
      * @throws ArchiveException if the archiver name is not known
@@ -133,6 +139,9 @@ public class ArchiveStreamFactory {
         }
         if (CPIO.equalsIgnoreCase(archiverName)) {
             return new CpioArchiveInputStream(in);
+        }
+        if (DUMP.equalsIgnoreCase(archiverName)) {
+            return new DumpArchiveInputStream(in);
         }
         
         throw new ArchiveException("Archiver: " + archiverName + " not found.");
@@ -209,7 +218,17 @@ public class ArchiveStreamFactory {
             } else if (CpioArchiveInputStream.matches(signature, signatureLength)) {
                 return new CpioArchiveInputStream(in);
             }
-            // Tar needs a bigger buffer to check the signature; read the first block
+
+            // Dump needs a bigger buffer to check the signature;
+            final byte[] dumpsig = new byte[32];
+            in.mark(dumpsig.length);
+            signatureLength = in.read(dumpsig);
+            in.reset();
+            if (DumpArchiveInputStream.matches(dumpsig, signatureLength)) {
+                return new DumpArchiveInputStream(in);
+            }
+
+            // Tar needs an even bigger buffer to check the signature; read the first block
             final byte[] tarheader = new byte[512];
             in.mark(tarheader.length);
             signatureLength = in.read(tarheader);
