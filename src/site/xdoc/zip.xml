@@ -103,7 +103,7 @@
 
       </subsection>
 
-      <subsection name="ZipArchiveOutputStream">
+      <subsection name="ZipArchiveOutputStream" id="ZipArchiveOutputStream">
         <p><code>ZipArchiveOutputStream</code> has two constructors,
           one of them uses a <code>File</code> argument, the other
           uses an <code>OutputStream</code>.  The <code>File</code>
@@ -295,6 +295,143 @@
         mechanism.  Using this method it is possible to at least
         detect and skip the entries that can not be extracted.</p>
 
+      </subsection>
+
+      <subsection name="Zip64 Support" id="zip64">
+        <p>The traditional ZIP format is limited to archive sizes of
+          four gibibyte (actually 2<sup>32</sup> - 1 bytes &#x2248;
+          4.3 GB) and 65635 entries, where each individual entry is
+          limited to four gibibyte as well.  These limits seemed
+          excessive in the 1980s.</p>
+
+        <p>Version 4.5 of the ZIP specification introduced the so
+          called "Zip64 extensions" to push those limitations for
+          compressed or uncompressed sizes of up to 16 exbibyte
+          (actually 2<sup>64</sup> - 1 bytes &#x2248; 18.5 EB, i.e
+          18.5 x 10<sup>18</sup> bytes) in archives that themselves
+          can take up to 16 exbibyte containing more than
+          18 x 10<sup>18</sup> entries.</p>
+
+        <p>Apache Commons Compress 1.2 and earlier do not support
+          Zip64 extensions at all.</p>
+
+        <p>Starting with Apache Commons Compress
+          1.3 <code>ZipArchiveInputStream</code>
+          and <code>ZipFile</code> transparently support Zip64
+          extensions.  By default <code>ZipArchiveOutputStream</code>
+          supports them transparently as well (i.e. it adds Zip64
+          extensions if needed and doesn't use them for
+          entries/archives that don't need them) if the compressed and
+          uncompressed sizes of the entry are known
+          when <code>putArchiveEntry</code> is called
+          or <code>ZipArchiveOutputStream</code>
+          uses <code>RandomAccessFile</code>
+          (see <a href="#ZipArchiveOutputStream">above</a>).  If only
+          the uncompressed size is
+          known <code>ZipArchiveOutputStream</code> will assume the
+          compressed size will not be bigger that the compressed
+          size.</p>
+
+        <p>If <code>ZipArchiveOutputStream</code> is writing to a
+          non-seekable stream it has to decide whether to use Zip64
+          extensions or not before it starts wrtiting the entry data.
+          This means that if the size of the entry is unknown
+          when <code>putArchiveEntry</code> is called it doesn't have
+          anything to base the decision on.  By default it will not
+          use Zip64 extensions in order to create archives that can be
+          extracted by older archivers (it will later throw an
+          exception in <code>closeEntry</code> if it detects Zip64
+          extensions had been needed).  It is possible to
+          instruct <code>ZipArchiveOutputStream</code> to always
+          create Zip64 extensions by using
+          the <code>setUseZip64</code> with an argument
+          of <code>Zip64Mode.Always</code>; use this if you are
+          writing entries of unknown size to a stream and expect some
+          of them to be too big to fit into the traditional
+          limits.</p>
+
+        <p><code>ZipArchiveOutputStream</code>'s <code>setUseZip64</code>
+          can be used to control the change the default
+          behavior.  <code>Zip64Mode.AsNeeded</code> is the default
+          behavior described in the previous paragraph.</p>
+
+        <p><code>Zip64Mode.Always</code> creates archives that use
+          Zip64 extensions for all entries, even those that don't
+          require them.  Such archives will be slightly bigger than
+          archives created with one of the other modes and not be
+          readable by unarchivers that don't support Zip64
+          extensions.</p>
+
+        <p><code>Zip64Mode.Never</code> will not use any Zip64
+          extensions at all and may lead to
+          a <code>Zip64RequiredException</code> to be thrown
+          if <code>ZipArchiveOutputStream</code> detects that one of
+          the format's limits is exceeded.  Archives created in this
+          mode will be readable by all unarchivers; they may be
+          slightly smaller than archives created
+          with <code>RandomAccessFile</code>
+          in <code>Zip64Mode.AsNeeded</code> mode if some of the
+          entries had unknown sizes.</p>
+
+        <h4>Known Limitations</h4>
+
+        <p>Some of the theoretical limits of the format are not
+          reached because Apache Commons Compress' own API
+          (<code>ArchiveEntry</code>'s size information uses
+          a <code>long</code>) or its usage of Java collections
+          or <code>RandomAccessFile</code> internally.  The table
+          below shows the theoretical limits supported by Apache
+          Commons Compress.  In practice it is very likely that you'd
+          run out of memory or your file system won't allow files that
+          big long before you reach either limit.</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th/>
+              <th>Max. Size of Archive</th>
+              <th>Max. Compressed/Uncompressed Size of Entry</th>
+              <th>Max. Number of Entries</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>ZIP Format Without Zip 64 Extensions</td>
+              <td>2<sup>32</sup> - 1 bytes &#x2248; 4.3 GB</td>
+              <td>2<sup>32</sup> - 1 bytes &#x2248; 4.3 GB</td>
+              <td>65535</td>
+            </tr>
+            <tr>
+              <td>ZIP Format using Zip 64 Extensions</td>
+              <td>2<sup>64</sup> - 1 bytes &#x2248; 18.5 EB</td>
+              <td>2<sup>64</sup> - 1 bytes &#x2248; 18.5 EB</td>
+              <td>2<sup>64</sup> - 1 &#x2248; 18.5 x 10<sup>18</sup></td>
+            </tr>
+            <tr>
+              <td>Commons Compress 1.2 and earlier</td>
+              <td>unlimited in <code>ZipArchiveInputStream</code>
+                and <code>ZipArchiveOutputStream</code> and
+                2<sup>32</sup> - 1 bytes &#x2248; 4.3 GB
+                in <code>ZipFile</code>.</td>
+              <td>2<sup>32</sup> - 1 bytes &#x2248; 4.3 GB</td>
+              <td>unlimited in <code>ZipArchiveInputStream</code>,
+                65535 in <code>ZipArchiveOutputStream</code>
+                and <code>ZipFile</code>.</td>
+            </tr>
+            <tr>
+              <td>Commons Compress 1.3 and later</td>
+              <td>unlimited in <code>ZipArchiveInputStream</code>
+                and <code>ZipArchiveOutputStream</code> and
+                2<sup>63</sup> - 1 bytes &#x2248; 9.2 EB
+                in <code>ZipFile</code>.</td>
+              <td>2<sup>63</sup> - 1 bytes &#x2248; 9.2 EB</td>
+              <td>unlimited in <code>ZipArchiveInputStream</code>,
+                2<sup>31</sup> - 1 &#x2248; 2.1 billion
+                in <code>ZipArchiveOutputStream</code>
+                and <code>ZipFile</code>.</td>
+            </tr>
+          </tbody>
+        </table>
       </subsection>
     </section>
   </body>
