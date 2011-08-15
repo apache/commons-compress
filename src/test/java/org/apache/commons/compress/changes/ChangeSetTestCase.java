@@ -436,7 +436,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
             // Checks
             assertEquals(1,results.getAddedFromChangeSet().size());
-            assertEquals("bla/test.txt",(String)results.getAddedFromChangeSet().iterator().next());
+            assertEquals("bla/test.txt",results.getAddedFromChangeSet().iterator().next());
             assertEquals(3,results.getDeleted().size());
             assertTrue(results.getDeleted().contains("bla/test4.xml"));
             assertTrue(results.getDeleted().contains("bla/test5.xml"));
