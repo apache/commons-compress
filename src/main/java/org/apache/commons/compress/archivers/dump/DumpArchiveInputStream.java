@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress.archivers.dump;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 
 import java.io.IOException;
@@ -69,10 +70,11 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      * @param is
      * @throws Exception
      */
-    public DumpArchiveInputStream(InputStream is) throws IOException {
+    public DumpArchiveInputStream(InputStream is) throws ArchiveException {
         this.raw = new TapeInputStream(is);
         this.hasHitEOF = false;
 
+        try {
         // read header, verify it's a dump archive.
         byte[] headerBytes = raw.readRecord();
 
@@ -92,6 +94,9 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         // skip past CLRI and BITS segments since we don't handle them yet.
         readCLRI();
         readBITS();
+        } catch (IOException ex) {
+            throw new ArchiveException(ex.getMessage(), ex);
+        }
 
         // put in a dummy record for the root node.
         Dirent root = new Dirent(2, 2, 4, ".");
