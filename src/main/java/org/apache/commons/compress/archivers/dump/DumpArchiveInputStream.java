@@ -76,25 +76,25 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         this.hasHitEOF = false;
 
         try {
-        // read header, verify it's a dump archive.
-        byte[] headerBytes = raw.readRecord();
+            // read header, verify it's a dump archive.
+            byte[] headerBytes = raw.readRecord();
 
-        if (!DumpArchiveUtil.verify(headerBytes)) {
-            throw new UnrecognizedFormatException();
-        }
+            if (!DumpArchiveUtil.verify(headerBytes)) {
+                throw new UnrecognizedFormatException();
+            }
 
-        // get summary information
-        summary = new DumpArchiveSummary(headerBytes);
+            // get summary information
+            summary = new DumpArchiveSummary(headerBytes);
 
-        // reset buffer with actual block size.
-        raw.resetBlockSize(summary.getNTRec(), summary.isCompressed());
+            // reset buffer with actual block size.
+            raw.resetBlockSize(summary.getNTRec(), summary.isCompressed());
 
-        // allocate our read buffer.
-        blockBuffer = new byte[4 * DumpArchiveConstants.TP_SIZE];
+            // allocate our read buffer.
+            blockBuffer = new byte[4 * DumpArchiveConstants.TP_SIZE];
 
-        // skip past CLRI and BITS segments since we don't handle them yet.
-        readCLRI();
-        readBITS();
+            // skip past CLRI and BITS segments since we don't handle them yet.
+            readCLRI();
+            readBITS();
         } catch (IOException ex) {
             throw new ArchiveException(ex.getMessage(), ex);
         }
