@@ -307,10 +307,12 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
                 Dirent d = new Dirent(ino, entry.getIno(), type, name);
 
+                /*
                 if ((type == 4) && names.containsKey(ino)) {
-                    //System.out.println("we already have ino: " +
-                    //    names.get(ino));
+                    System.out.println("we already have ino: " +
+                                       names.get(ino));
                 }
+                */
 
                 names.put(ino, d);
 
