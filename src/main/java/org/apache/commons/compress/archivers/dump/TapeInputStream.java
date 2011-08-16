@@ -193,10 +193,8 @@ class TapeInputStream extends FilterInputStream {
      */
     @Override
     public void close() throws IOException {
-        if (in != null) {
-            if (in != System.in) {
-                in.close();
-            }
+        if (in != null && in != System.in) {
+            in.close();
         }
     }
 
