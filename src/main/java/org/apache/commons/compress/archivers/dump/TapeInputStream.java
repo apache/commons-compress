@@ -33,7 +33,7 @@ import java.util.zip.Inflater;
  *
  * @NotThreadSafe
  */
-public class TapeInputStream extends FilterInputStream {
+class TapeInputStream extends FilterInputStream {
     private byte[] blockBuffer = new byte[DumpArchiveConstants.TP_SIZE];
     private int currBlkIdx = -1;
     private int blockSize = DumpArchiveConstants.TP_SIZE;

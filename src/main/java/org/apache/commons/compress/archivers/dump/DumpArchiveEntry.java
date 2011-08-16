@@ -425,7 +425,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
      * @param buffer
      * @throws Exception
      */
-    public static DumpArchiveEntry parse(byte[] buffer) {
+    static DumpArchiveEntry parse(byte[] buffer) {
         DumpArchiveEntry entry = new DumpArchiveEntry();
         TapeSegmentHeader header = entry.header;
 
@@ -492,7 +492,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Update entry with information from next tape segment header.
      */
-    public void update(byte[] buffer) {
+    void update(byte[] buffer) {
         header.volume = DumpArchiveUtil.convert32(buffer, 16);
         header.count = DumpArchiveUtil.convert32(buffer, 160);
 
@@ -511,7 +511,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
      * Archive entry as stored on tape. There is one TSH for (at most)
      * every 512k in the file.
      */
-    public static class TapeSegmentHeader {
+    static class TapeSegmentHeader {
         private DumpArchiveConstants.SEGMENT_TYPE type;
         private int volume;
         private int ino;

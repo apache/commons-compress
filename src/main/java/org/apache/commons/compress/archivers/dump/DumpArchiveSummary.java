@@ -41,7 +41,7 @@ public class DumpArchiveSummary {
     private int firstrec;
     private int ntrec;
 
-    public DumpArchiveSummary(byte[] buffer) {
+    DumpArchiveSummary(byte[] buffer) {
         dumpDate = new Date(1000L * DumpArchiveUtil.convert32(buffer, 4));
         previousDumpDate = new Date(1000L * DumpArchiveUtil.convert32(buffer, 8));
         volume = DumpArchiveUtil.convert32(buffer, 12);
@@ -311,7 +311,7 @@ public class DumpArchiveSummary {
             return true;
         }
 
-        if (!(o instanceof DumpArchiveSummary)) {
+        if (!o.getClass().equals(getClass())) {
             return false;
         }
 
