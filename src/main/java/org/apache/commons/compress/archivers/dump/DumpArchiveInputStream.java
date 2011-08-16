@@ -21,6 +21,7 @@ package org.apache.commons.compress.archivers.dump;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 
+import java.io.EOFException;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -141,7 +142,10 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         }
 
         // we don't do anything with this yet.
-        raw.skip(DumpArchiveConstants.TP_SIZE * active.getHeaderCount());
+        if (raw.skip(DumpArchiveConstants.TP_SIZE * active.getHeaderCount())
+            == -1) {
+            throw new EOFException();
+        }
         readIdx = active.getHeaderCount();
     }
 
@@ -162,7 +166,10 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         }
 
         // we don't do anything with this yet.
-        raw.skip(DumpArchiveConstants.TP_SIZE * active.getHeaderCount());
+        if (raw.skip(DumpArchiveConstants.TP_SIZE * active.getHeaderCount())
+            == -1) {
+            throw new EOFException();
+        }
         readIdx = active.getHeaderCount();
     }
 
@@ -189,8 +196,9 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
             // block by block. We may want to revisit this if
             // the unnecessary decompression time adds up.
             while (readIdx < active.getHeaderCount()) {
-                if (!active.isSparseRecord(readIdx++)) {
-                    raw.skip(DumpArchiveConstants.TP_SIZE);
+                if (!active.isSparseRecord(readIdx++)
+                    && raw.skip(DumpArchiveConstants.TP_SIZE) == -1) {
+                    throw new EOFException();
                 }
             }
 
@@ -207,8 +215,11 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
             // skip any remaining segments for prior file.
             while (DumpArchiveConstants.SEGMENT_TYPE.ADDR == active.getHeaderType()) {
-                raw.skip(DumpArchiveConstants.TP_SIZE * (active.getHeaderCount() -
-                    active.getHeaderHoles()));
+                if (raw.skip(DumpArchiveConstants.TP_SIZE
+                             * (active.getHeaderCount()
+                                - active.getHeaderHoles())) == -1) {
+                    throw new EOFException();
+                }
 
                 filepos = raw.getBytesRead();
                 headerBytes = raw.readRecord();
@@ -287,7 +298,9 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
                 blockBuffer = new byte[datalen];
             }
 
-            raw.read(blockBuffer, 0, datalen);
+            if (raw.read(blockBuffer, 0, datalen) != datalen) {
+                throw new EOFException();
+            }
 
             int reclen = 0;
 
@@ -445,7 +458,10 @@ outer:
                 }
 
                 if (!active.isSparseRecord(readIdx++)) {
-                    raw.read(readBuf, 0, readBuf.length);
+                    int r = raw.read(readBuf, 0, readBuf.length);
+                    if (r != readBuf.length) {
+                        throw new EOFException();
+                    }
                 } else {
                     Arrays.fill(readBuf, (byte) 0);
                 }

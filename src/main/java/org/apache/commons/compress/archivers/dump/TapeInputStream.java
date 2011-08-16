@@ -104,7 +104,12 @@ class TapeInputStream extends FilterInputStream {
     }
 
     /**
-     * @see java.io.InputStream#read(byte[], int, int)
+     * {@inheritDoc}
+     *
+     * <p>reads the full given length unless EOF is reached.</p> 
+     *
+     * @param len length to read, must be a multiple of the stream's
+     * record size
      */
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
@@ -146,7 +151,11 @@ class TapeInputStream extends FilterInputStream {
 
     /**
      * Skip bytes. Same as read but without the arraycopy.
-     * @see java.io.InputStream#read(byte[], int, int)
+     *
+     * <p>skips the full given length unless EOF is reached.</p> 
+     *
+     * @param len length to read, must be a multiple of the stream's
+     * record size
      */
     @Override
     public long skip(long len) throws IOException {
@@ -254,7 +263,9 @@ class TapeInputStream extends FilterInputStream {
             success = readFully(blockBuffer, 0, blockSize);
             bytesRead += blockSize;
         } else {
-            in.read(blockBuffer, 0, 4);
+            if (!readFully(blockBuffer, 0, 4)) {
+                return false;
+            }
             bytesRead += 4;
 
             int h = DumpArchiveUtil.convert32(blockBuffer, 0);

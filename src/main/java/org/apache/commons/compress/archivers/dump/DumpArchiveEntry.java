@@ -182,11 +182,14 @@ public class DumpArchiveEntry implements ArchiveEntry {
     private int mode;
     private Set<PERMISSION> permissions = Collections.emptySet();
     private long size;
-    private Date atime;
-    private Date mtime;
+    private long atime;
+    private long mtime;
     private int uid;
     private int gid;
 
+    /**
+     * Currently unused
+     */
     private DumpArchiveSummary summary = null;
 
     // this information is available from standard index.
@@ -198,7 +201,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     private long offset;
     private int ino;
     private int nlink;
-    private Date ctime;
+    private long ctime;
     private int generation;
     private boolean isDeleted;
 
@@ -280,14 +283,14 @@ public class DumpArchiveEntry implements ArchiveEntry {
      * Get file creation time.
      */
     public Date getCreationTime() {
-        return ctime;
+        return new Date(ctime);
     }
 
     /**
      * Set the file creation time.
      */
     public void setCreationTime(Date ctime) {
-        this.ctime = ctime;
+        this.ctime = ctime.getTime();
     }
 
     /**
@@ -389,7 +392,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     public boolean equals(Object o) {
         if (o == this) {
             return true;
-        } else if (!o.getClass().equals(getClass())) {
+        } else if (o == null || !o.getClass().equals(getClass())) {
             return false;
         }
 
@@ -403,7 +406,8 @@ public class DumpArchiveEntry implements ArchiveEntry {
             return false;
         }
 
-        if ((summary != null) || summary.equals(rhs.summary)) {
+        if ((summary == null && rhs.summary != null)
+            || (summary != null && !summary.equals(rhs.summary))) {
             return false;
         }
 
@@ -461,7 +465,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
         entry.setLastModifiedDate(new Date(t));
         t = (1000L * DumpArchiveUtil.convert32(buffer, 64)) +
             (DumpArchiveUtil.convert32(buffer, 68) / 1000);
-        entry.ctime = new Date(t);
+        entry.ctime = t;
 
         // db: 72-119 - direct blocks
         // id: 120-131 - indirect blocks
@@ -565,7 +569,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /** {@inheritDoc} */
     public Date getLastModifiedDate() {
-        return mtime;
+        return new Date(mtime);
     }
 
     /**
@@ -664,21 +668,21 @@ public class DumpArchiveEntry implements ArchiveEntry {
      * Set the time the file was last modified.
      */
     public void setLastModifiedDate(Date mtime) {
-        this.mtime = mtime;
+        this.mtime = mtime.getTime();
     }
 
     /**
      * Returns the time the file was last accessed.
      */
     public Date getAccessTime() {
-        return atime;
+        return new Date(atime);
     }
 
     /**
      * Set the time the file was last accessed.
      */
     public void setAccessTime(Date atime) {
-        this.atime = atime;
+        this.atime = atime.getTime();
     }
 
     /**
