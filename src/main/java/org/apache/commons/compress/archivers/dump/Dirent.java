@@ -18,11 +18,10 @@
  */
 package org.apache.commons.compress.archivers.dump;
 
-
 /**
  * Directory entry.
  */
-public class Dirent {
+class Dirent {
     private int ino;
     private int parentIno;
     private int type;
@@ -36,7 +35,7 @@ public class Dirent {
      * @param type
      * @param name
      */
-    public Dirent(int ino, int parentIno, int type, String name) {
+    Dirent(int ino, int parentIno, int type, String name) {
         this.ino = ino;
         this.parentIno = parentIno;
         this.type = type;
@@ -47,7 +46,7 @@ public class Dirent {
      * Get ino.
      * @return the i-node
      */
-    public int getIno() {
+    int getIno() {
         return ino;
     }
 
@@ -55,7 +54,7 @@ public class Dirent {
      * Get ino of parent directory.
      * @return the parent i-node
      */
-    public int getParentIno() {
+    int getParentIno() {
         return parentIno;
     }
 
@@ -63,7 +62,7 @@ public class Dirent {
      * Get entry type.
      * @return the entry type
      */
-    public int getType() {
+    int getType() {
         return type;
     }
 
@@ -71,7 +70,7 @@ public class Dirent {
      * Get name of directory entry.
      * @return the directory name
      */
-    public String getName() {
+    String getName() {
         return name;
     }
 

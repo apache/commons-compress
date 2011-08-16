@@ -22,7 +22,7 @@ package org.apache.commons.compress.archivers.dump;
 /**
  * Various utilities for dump archives.
  */
-public class DumpArchiveUtil {
+class DumpArchiveUtil {
     /**
      * Private constructor to prevent instantiation.
      */

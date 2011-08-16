@@ -127,7 +127,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     /**
      * Read CLRI (deleted inode) segment.
      */
-    public void readCLRI() throws IOException {
+    private void readCLRI() throws IOException {
         byte[] readBuf = raw.readRecord();
 
         if (!DumpArchiveUtil.verify(readBuf)) {
@@ -148,7 +148,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     /**
      * Read BITS segment.
      */
-    public void readBITS() throws IOException {
+    private void readBITS() throws IOException {
         byte[] readBuf = raw.readRecord();
 
         if (!DumpArchiveUtil.verify(readBuf)) {
@@ -264,7 +264,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     /**
      * Read directory entry.
      */
-    public void readDirectoryEntry(DumpArchiveEntry entry)
+    private void readDirectoryEntry(DumpArchiveEntry entry)
         throws IOException {
         long size = entry.getSize();
         boolean first = true;
@@ -351,7 +351,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      * @param entry
      * @return  full path for specified archive entry, or null if there's a gap.
      */
-    public String getPath(DumpArchiveEntry entry) {
+    private String getPath(DumpArchiveEntry entry) {
         // build the stack of elements. It's possible that we're 
         // still missing an intermediate value and if so we
         Stack<String> elements = new Stack<String>();
