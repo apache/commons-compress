@@ -29,8 +29,8 @@ import java.util.Date;
  * For the corresponding C structure see the header of {@link DumpArchiveEntry}.
  */
 public class DumpArchiveSummary {
-    private Date dumpDate;
-    private Date previousDumpDate;
+    private long dumpDate;
+    private long previousDumpDate;
     private int volume;
     private String label;
     private int level;
@@ -42,8 +42,8 @@ public class DumpArchiveSummary {
     private int ntrec;
 
     DumpArchiveSummary(byte[] buffer) {
-        dumpDate = new Date(1000L * DumpArchiveUtil.convert32(buffer, 4));
-        previousDumpDate = new Date(1000L * DumpArchiveUtil.convert32(buffer, 8));
+        dumpDate = 1000L * DumpArchiveUtil.convert32(buffer, 4);
+        previousDumpDate = 1000L * DumpArchiveUtil.convert32(buffer, 8);
         volume = DumpArchiveUtil.convert32(buffer, 12);
         label = new String(buffer, 676, DumpArchiveConstants.LBLSIZE).trim();
         level = DumpArchiveUtil.convert32(buffer, 692);
@@ -62,14 +62,14 @@ public class DumpArchiveSummary {
      * @return the date of this dump.
      */
     public Date getDumpDate() {
-        return dumpDate;
+        return new Date(dumpDate);
     }
 
     /**
      * Set dump date.
      */
     public void setDumpDate(Date dumpDate) {
-        this.dumpDate = dumpDate;
+        this.dumpDate = dumpDate.getTime();
     }
 
     /**
@@ -77,14 +77,14 @@ public class DumpArchiveSummary {
      * @return dumpdate may be null
      */
     public Date getPreviousDumpDate() {
-        return previousDumpDate;
+        return new Date(previousDumpDate);
     }
 
     /**
      * Set previous dump date.
      */
     public void setPreviousDumpDate(Date previousDumpDate) {
-        this.previousDumpDate = previousDumpDate;
+        this.previousDumpDate = previousDumpDate.getTime();
     }
 
     /**
@@ -287,9 +287,7 @@ public class DumpArchiveSummary {
             hash = label.hashCode();
         }
 
-        if (dumpDate != null) {
-            hash = (31 * dumpDate.hashCode()) + 17;
-        }
+        hash += 31 * dumpDate;
 
         if (hostname != null) {
             hash = (31 * hostname.hashCode()) + 17;
@@ -311,13 +309,13 @@ public class DumpArchiveSummary {
             return true;
         }
 
-        if (!o.getClass().equals(getClass())) {
+        if (o == null || !o.getClass().equals(getClass())) {
             return false;
         }
 
         DumpArchiveSummary rhs = (DumpArchiveSummary) o;
 
-        if ((dumpDate == null) || !dumpDate.equals(rhs.dumpDate)) {
+        if (dumpDate != rhs.dumpDate) {
             return false;
         }
 

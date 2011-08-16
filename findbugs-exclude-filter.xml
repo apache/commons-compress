@@ -37,6 +37,11 @@
     <Method name="finalize" />
     <Bug pattern="NP_ALWAYS_NULL" />
   </Match>
+  <Match>
+    <Class name="org.apache.commons.compress.archivers.dump.DumpArchiveUtil" />
+    <Method name="dumpBlock" />
+    <Bug pattern="NP_ALWAYS_NULL" />
+  </Match>
 
   <!-- Reason: fallthrough is intended -->
   <Match>
@@ -52,6 +57,11 @@
       <Field name="certificates"/>
       <Field name="manifestAttributes"/>
     </Or>
+    <Bug pattern="UWF_NULL_FIELD" />
+  </Match>
+  <Match>
+    <Class name="org.apache.commons.compress.archivers.dump.DumpArchiveEntry" />
+    <Field name="summary"/>
     <Bug pattern="UWF_NULL_FIELD" />
   </Match>
 
