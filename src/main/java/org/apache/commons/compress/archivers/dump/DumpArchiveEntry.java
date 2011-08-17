@@ -195,6 +195,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     // this information is available from standard index.
     private TapeSegmentHeader header = new TapeSegmentHeader();
     private String simpleName;
+    private String originalName;
 
     // this information is available from QFA index
     private int volume;
@@ -217,7 +218,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
      * @param simpleName actual filename.
      */
     public DumpArchiveEntry(String name, String simpleName) {
-        this.name = name;
+        setName(name);
         this.simpleName = simpleName;
     }
 
@@ -561,9 +562,26 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
+     * Returns the unmodified name of the entry.
+     * @return the name of the entry.
+     */
+    String getOriginalName() {
+        return originalName;
+    }
+
+    /**
      * Sets the name of the entry.
      */
-    public void setName(String name) {
+    public final void setName(String name) {
+        this.originalName = name;
+        if (name != null) {
+            if (".".equals(name) || name.startsWith("./")) {
+                name = name.substring(1);
+            }
+            if (isDirectory() && !name.endsWith("/")) {
+                name += "/";
+            }
+        }
         this.name = name;
     }
 
