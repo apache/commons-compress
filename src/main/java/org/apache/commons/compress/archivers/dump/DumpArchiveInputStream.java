@@ -109,11 +109,11 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         queue = new PriorityQueue<DumpArchiveEntry>(10,
                 new Comparator<DumpArchiveEntry>() {
                     public int compare(DumpArchiveEntry p, DumpArchiveEntry q) {
-                        if ((p.getName() == null) || (q.getName() == null)) {
+                        if ((p.getOriginalName() == null) || (q.getOriginalName() == null)) {
                             return Integer.MAX_VALUE;
                         }
 
-                        return p.getName().compareTo(q.getName());
+                        return p.getOriginalName().compareTo(q.getOriginalName());
                     }
                 });
     }
