@@ -654,6 +654,13 @@ public class DumpArchiveEntry implements ArchiveEntry {
      * Returns the size of the entry.
      */
     public long getSize() {
+        return isDirectory() ? SIZE_UNKNOWN : size;
+    }
+
+    /**
+     * Returns the size of the entry as read from the archive.
+     */
+    long getEntrySize() {
         return size;
     }
 
