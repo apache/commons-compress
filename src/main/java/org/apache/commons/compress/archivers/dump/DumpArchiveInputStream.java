@@ -372,12 +372,10 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         Stack<String> elements = new Stack<String>();
         Dirent dirent = null;
 
-outer: 
         for (int i = entry.getIno();; i = dirent.getParentIno()) {
             if (!names.containsKey(i)) {
                 elements.clear();
-
-                break outer;
+                break;
             }
 
             dirent = names.get(i);
