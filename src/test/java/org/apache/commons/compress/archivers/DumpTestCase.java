@@ -94,11 +94,11 @@ public final class DumpTestCase extends AbstractTestCase {
         }
     }
 
-    public void XtestCheckArchive() throws Exception {
+    public void testCheckArchive() throws Exception {
         checkDumpArchive(getFile("bla.dump"));
     }
 
-    public void XtestCheckCompressedArchive() throws Exception {
+    public void testCheckCompressedArchive() throws Exception {
         checkDumpArchive(getFile("bla.z.dump"));
     }
 

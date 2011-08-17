@@ -250,7 +250,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
                 readIdx = active.getHeaderCount();
             } else {
                 entryOffset = 0;
-                entrySize = active.getSize();
+                entrySize = active.getEntrySize();
                 readIdx = 0;
             }
 
@@ -277,7 +277,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      */
     private void readDirectoryEntry(DumpArchiveEntry entry)
         throws IOException {
-        long size = entry.getSize();
+        long size = entry.getEntrySize();
         boolean first = true;
 
         while (first ||
