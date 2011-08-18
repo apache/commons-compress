@@ -575,11 +575,11 @@ public class DumpArchiveEntry implements ArchiveEntry {
     public final void setName(String name) {
         this.originalName = name;
         if (name != null) {
-            if (".".equals(name) || name.startsWith("./")) {
-                name = name.substring(1);
-            }
             if (isDirectory() && !name.endsWith("/")) {
                 name += "/";
+            }
+            if (name.startsWith("./")) {
+                name = name.substring(2);
             }
         }
         this.name = name;
