@@ -104,10 +104,10 @@ public final class DumpTestCase extends AbstractTestCase {
 
     private void checkDumpArchive(final File f) throws Exception {
         ArrayList<String> expected = new ArrayList<String>();
-        expected.add("/");
-        expected.add("/lost+found/");
-        expected.add("/test1.xml");
-        expected.add("/test2.xml");
+        expected.add("");
+        expected.add("lost+found/");
+        expected.add("test1.xml");
+        expected.add("test2.xml");
         final InputStream is = new FileInputStream(f);
         try {
             checkArchiveContent(new DumpArchiveInputStream(is),
