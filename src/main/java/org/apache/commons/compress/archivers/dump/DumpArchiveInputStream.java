@@ -234,6 +234,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
             // check if this is an end-of-volume marker.
             if (DumpArchiveConstants.SEGMENT_TYPE.END == active.getHeaderType()) {
                 hasHitEOF = true;
+                isClosed = true;
                 raw.close();
 
                 return null;
@@ -266,8 +267,6 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         entry.setName(path);
         entry.setSimpleName(names.get(entry.getIno()).getName());
         entry.setOffset(filepos);
-
-        isClosed = false;
 
         return entry;
     }
@@ -478,7 +477,10 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      */
     @Override
     public void close() throws IOException {
-        isClosed = true;
+        if (!isClosed) {
+            isClosed = true;
+            raw.close();
+        }
     }
 
     /**
