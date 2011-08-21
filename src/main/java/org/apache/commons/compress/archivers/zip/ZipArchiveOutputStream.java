@@ -65,7 +65,7 @@ import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MIN_V
  * <p>As of Apache Commons Compress it transparently supports Zip64
  * extensions and thus individual entries and archives larger than 4
  * GB or with more than 65536 entries in most cases but explicit
- * control is provided via {@link setUseZip64}.  If the stream can not
+ * control is provided via {@link #setUseZip64}.  If the stream can not
  * user RandomAccessFile and you try to write a ZipArchiveEntry of
  * unknown size then Zip64 extensions will be disabled by default.</p>
  *
@@ -401,7 +401,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * {@inheritDoc}
      * @throws Zip64RequiredException if the archive's size exceeds 4
      * GByte or there are more than 65535 entries inside the archive
-     * and {@link Zip64Mode #setUseZip64} is {@link Zip64Mode#Never}.
+     * and {@link #setUseZip64} is {@link Zip64Mode#Never}.
      */
     @Override
     public void finish() throws IOException {
@@ -430,8 +430,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * Writes all necessary data for this entry.
      * @throws IOException on error
      * @throws Zip64RequiredException if the entry's uncompressed or
-     * compressed size exceeds 4 GByte and {@link Zip64Mode
-     * #setUseZip64} is {@link Zip64Mode#Never}.
+     * compressed size exceeds 4 GByte and {@link #setUseZip64} 
+     * is {@link Zip64Mode#Never}.
      */
     @Override
     public void closeArchiveEntry() throws IOException {
@@ -582,8 +582,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * {@inheritDoc} 
      * @throws ClassCastException if entry is not an instance of ZipArchiveEntry
      * @throws Zip64RequiredException if the entry's uncompressed or
-     * compressed size is known to exceed 4 GByte and {@link Zip64Mode
-     * #setUseZip64} is {@link Zip64Mode#Never}.
+     * compressed size is known to exceed 4 GByte and {@link #setUseZip64} 
+     * is {@link Zip64Mode#Never}.
      */
     @Override
     public void putArchiveEntry(ArchiveEntry archiveEntry) throws IOException {
@@ -798,7 +798,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @exception  IOException  if an I/O error occurs.
      * @throws Zip64RequiredException if the archive's size exceeds 4
      * GByte or there are more than 65535 entries inside the archive
-     * and {@link Zip64Mode #setUseZip64} is {@link Zip64Mode#Never}.
+     * and {@link #setUseZip64} is {@link Zip64Mode#Never}.
      */
     @Override
     public void close() throws IOException {
