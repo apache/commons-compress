@@ -51,8 +51,6 @@ public class LongPathTest extends AbstractTestCase {
 
     private static final ArrayList<String> fileList = new ArrayList<String>();
 
-    private final ArchiveStreamFactory factory = new ArchiveStreamFactory();
-    
     public LongPathTest(String name) {
         super(name);
     }
