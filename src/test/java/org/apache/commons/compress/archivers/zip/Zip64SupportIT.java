@@ -2379,9 +2379,7 @@ public class Zip64SupportIT {
             if (zin != null) {
                 zin.close();
             }
-            if (fin != null) {
-                fin.close();
-            }
+            fin.close(); // fin cannot be null here
         }
     }
 
