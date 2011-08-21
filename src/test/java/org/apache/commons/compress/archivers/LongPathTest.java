@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 
 import junit.framework.AssertionFailedError;
@@ -63,7 +64,9 @@ public class LongPathTest extends AbstractTestCase {
     
     public static TestSuite suite() throws IOException{
         TestSuite suite = new TestSuite("LongPathTests");
-        File arcdir =new File(classLoader.getResource("longpath").getFile());
+        URL resource = classLoader.getResource("longpath");
+        assertNotNull("Cannot find 'longpath' resource",resource);
+        File arcdir =new File(resource.getFile());
         assertTrue(arcdir.exists());
         File listing= new File(arcdir,"files.txt");
         assertTrue("File listing is readable",listing.canRead());
