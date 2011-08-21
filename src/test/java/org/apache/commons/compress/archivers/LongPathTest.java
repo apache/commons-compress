@@ -93,7 +93,7 @@ public class LongPathTest extends AbstractTestCase {
     }
     
     public void testArchive() throws Exception {
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings("unchecked") // fileList is of correct type
         ArrayList<String> expected = (ArrayList<String>) fileList.clone();
         String name = file.getName();
         if ("minotaur.jar".equals(name) || "minotaur-0.jar".equals(name)){

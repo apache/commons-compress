@@ -35,7 +35,6 @@ public class ZipFileTest extends TestCase {
 
     public void testCDOrder() throws Exception {
         readOrderTest();
-        @SuppressWarnings("unchecked")
         ArrayList<ZipArchiveEntry> l = Collections.list(zf.getEntries());
         assertEntryName(l, 0, "AbstractUnicodeExtraField");
         assertEntryName(l, 1, "AsiExtraField");
@@ -64,7 +63,6 @@ public class ZipFileTest extends TestCase {
 
     public void testPhysicalOrder() throws Exception {
         readOrderTest();
-        @SuppressWarnings("unchecked")
         ArrayList<ZipArchiveEntry> l = Collections.list(zf.getEntriesInPhysicalOrder());
         assertEntryName(l, 0, "AbstractUnicodeExtraField");
         assertEntryName(l, 1, "AsiExtraField");

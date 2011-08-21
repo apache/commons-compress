@@ -94,7 +94,7 @@ public class ArchiveReadTests extends AbstractTestCase {
     }
 
     public void testArchive() throws Exception{
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings("unchecked") // fileList is correct type already
         ArrayList<String> expected= (ArrayList<String>) fileList.clone();
         try {
            checkArchiveContent(file, expected);
