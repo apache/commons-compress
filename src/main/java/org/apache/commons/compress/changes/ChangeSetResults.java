@@ -59,7 +59,7 @@ public class ChangeSetResults {
      * Returns a list of filenames which has been added from the changeset
      * @return the list of filenames
      */
-    public List getAddedFromChangeSet() {
+    public List<String> getAddedFromChangeSet() {
         return addedFromChangeSet;
     }
 
@@ -67,7 +67,7 @@ public class ChangeSetResults {
      * Returns a list of filenames which has been added from the original stream
      * @return the list of filenames
      */
-    public List getAddedFromStream() {
+    public List<String> getAddedFromStream() {
         return addedFromStream;
     }
 
@@ -75,7 +75,7 @@ public class ChangeSetResults {
      * Returns a list of filenames which has been deleted
      * @return the list of filenames
      */
-    public List getDeleted() {
+    public List<String> getDeleted() {
         return deleted;
     }
     

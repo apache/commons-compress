@@ -74,9 +74,9 @@ public final class Lister {
         } else {
             ZipFile zf = new ZipFile(f, cl.encoding);
             try {
-                for (Enumeration entries = zf.getEntries();
+                for (Enumeration<ZipArchiveEntry> entries = zf.getEntries();
                      entries.hasMoreElements(); ) {
-                    ZipArchiveEntry ze = (ZipArchiveEntry) entries.nextElement();
+                    ZipArchiveEntry ze = entries.nextElement();
                     list(ze);
                     if (cl.dir != null) {
                         InputStream is = zf.getInputStream(ze);
