@@ -50,7 +50,6 @@ class DumpArchiveUtil {
      * Verify that the buffer contains a tape segment header.
      *
      * @param buffer
-     * @throws Exception
      */
     public static final boolean verify(byte[] buffer) {
         // verify magic. for now only accept NFS_MAGIC.
@@ -74,7 +73,6 @@ class DumpArchiveUtil {
      * Get the ino associated with this buffer.
      *
      * @param buffer
-     * @throws Exception
      */
     public static final int getIno(byte[] buffer) {
         return convert32(buffer, 20);
