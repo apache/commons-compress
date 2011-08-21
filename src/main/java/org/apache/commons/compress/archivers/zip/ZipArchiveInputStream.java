@@ -262,7 +262,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             if (current.usesZip64 && (cSize.equals(ZipLong.ZIP64_MAGIC)
                                       || size.equals(ZipLong.ZIP64_MAGIC))
                 ) {
-                current.entry.setCompressedSize(z64.getCompressedSize()
+                current.entry.setCompressedSize(z64.getCompressedSize() // z64 cannot be null here
                                                 .getLongValue());
                 current.entry.setSize(z64.getSize().getLongValue());
             } else {
@@ -743,8 +743,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
      * worst case) can be 20 bytes max.</p>
      */
     private int cacheBytesRead(ByteArrayOutputStream bos, int offset,
-                               int lastRead, int expecteDDLen)
-        throws IOException {
+                               int lastRead, int expecteDDLen) {
         final int cacheable = offset + lastRead - expecteDDLen - 3;
         if (cacheable > 0) {
             bos.write(buf.buf, 0, cacheable);
