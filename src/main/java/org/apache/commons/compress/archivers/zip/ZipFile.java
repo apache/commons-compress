@@ -263,7 +263,7 @@ public class ZipFile {
      *
      * @return all entries as {@link ZipArchiveEntry} instances
      */
-    public Enumeration getEntries() {
+    public Enumeration<ZipArchiveEntry> getEntries() {
         return Collections.enumeration(entries.keySet());
     }
 
@@ -277,7 +277,7 @@ public class ZipFile {
      *
      * @since Commons Compress 1.1
      */
-    public Enumeration getEntriesInPhysicalOrder() {
+    public Enumeration<ZipArchiveEntry> getEntriesInPhysicalOrder() {
         ZipArchiveEntry[] allEntries =
             entries.keySet().toArray(new ZipArchiveEntry[0]);
         Arrays.sort(allEntries, OFFSET_COMPARATOR);

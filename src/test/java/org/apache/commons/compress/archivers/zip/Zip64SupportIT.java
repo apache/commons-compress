@@ -464,12 +464,10 @@ public class Zip64SupportIT {
                                      try {
                                          zf = new ZipFile(f);
                                          int idx = 0;
-                                         for (Enumeration e =
+                                         for (Enumeration<ZipArchiveEntry> e =
                                                   zf.getEntriesInPhysicalOrder();
                                               e.hasMoreElements(); ) {
-                                             ZipArchiveEntry zae =
-                                                 (ZipArchiveEntry)
-                                                 e.nextElement();
+                                             ZipArchiveEntry zae = e.nextElement();
                                              assertEquals(String.valueOf(idx),
                                                           zae.getName());
                                              if (idx++ < 2) {
@@ -2393,9 +2391,9 @@ public class Zip64SupportIT {
         ZipFile zf = null;
         try {
             zf = new ZipFile(f);
-            Enumeration e = zf.getEntries();
+            Enumeration<ZipArchiveEntry> e = zf.getEntries();
             assertTrue(e.hasMoreElements());
-            ZipArchiveEntry zae = (ZipArchiveEntry) e.nextElement();
+            ZipArchiveEntry zae = e.nextElement();
             assertEquals(expectedName, zae.getName());
             assertEquals(FIVE_BILLION, zae.getSize());
             byte[] buf = new byte[1024 * 1024];
@@ -2451,8 +2449,8 @@ public class Zip64SupportIT {
         try {
             zf = new ZipFile(f);
             int files = 0;
-            for (Enumeration e = zf.getEntries(); e.hasMoreElements(); ) {
-                ZipArchiveEntry zae = (ZipArchiveEntry) e.nextElement();
+            for (Enumeration<ZipArchiveEntry> e = zf.getEntries(); e.hasMoreElements(); ) {
+                ZipArchiveEntry zae = e.nextElement();
                 if (!zae.isDirectory()) {
                     files++;
                     assertEquals(0, zae.getSize());

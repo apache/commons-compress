@@ -316,9 +316,9 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         try {
             zf = new ZipFile(file, encoding, false);
 
-            Enumeration e = zf.getEntries();
+            Enumeration<ZipArchiveEntry> e = zf.getEntries();
             while (e.hasMoreElements()) {
-                ZipArchiveEntry ze = (ZipArchiveEntry) e.nextElement();
+                ZipArchiveEntry ze = e.nextElement();
 
                 if (ze.getName().endsWith("sser.txt")) {
                     assertUnicodeName(ze, OIL_BARREL_TXT, encoding);
