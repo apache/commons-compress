@@ -70,7 +70,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      * Constructor.
      *
      * @param is
-     * @throws Exception
+     * @throws ArchiveException
      */
     public DumpArchiveInputStream(InputStream is) throws ArchiveException {
         this.raw = new TapeInputStream(new CountingStream(is));
