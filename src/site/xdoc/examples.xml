@@ -137,6 +137,30 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
 
       </subsection>
 
+      <subsection name="dump">
+
+        <p>In addition to the information stored
+          in <code>ArchiveEntry</code> a <code>DumpArchiveEntry</code>
+          stores various attributes including information about the
+          original owner and permissions.</p>
+
+        <p>As of Commons Compress 1.3 only dump archives using the
+          new-fs format - this is the most common variant - are
+          supported.  Right now this library supports uncompressed and
+          ZLIB compressed archives and can not write archives at
+          all.</p>
+
+        <p>Reading entries from an dump archive:</p>
+<source><![CDATA[
+DumpArchiveEntry entry = dumpInput.getNextDumpEntry();
+byte[] content = new byte[entry.getSize()];
+LOOP UNTIL entry.getSize() HAS BEEN READ {
+    dumpInput.read(content, offset, content.length - offset);
+}
+]]></source>
+
+      </subsection>
+
       <subsection name="tar">
 
         <p>In addition to the information stored

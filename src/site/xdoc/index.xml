@@ -26,7 +26,7 @@
         <section name="Apache Commons Compress&#x2122;">
             <p>
                 The Apache Commons Compress library defines an API for
-                working with ar, cpio, tar, zip, gzip and bzip2 files.
+                working with ar, cpio, Unix dump, tar, zip, gzip and bzip2 files.
             </p>
             <p>
                 The code in this component has many origins:
@@ -67,10 +67,11 @@
             the <code>java.util.zip</code> package of the Java class
             library.</p>
 
-          <p>The ar, cpio, tar and zip formats are supported as
+          <p>The ar, cpio, dump, tar and zip formats are supported as
             archivers where the <a href="zip.html">zip</a>
             implementation provides capabilities that go beyond the
-            features found in java.util.zip.</p>
+            features found in java.util.zip.  As of Commons Compress
+            1.3 support for the dump format is read-only.</p>
 
           <p>The compress component provides abstract base classes for
             compressors and archivers together with factories that can
