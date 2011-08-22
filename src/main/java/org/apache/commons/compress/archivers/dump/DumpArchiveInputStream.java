@@ -176,6 +176,13 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     /**
      * Read the next entry.
      */
+    public DumpArchiveEntry getNextDumpEntry() throws IOException {
+        return getNextEntry();
+    }
+
+    /**
+     * Read the next entry.
+     */
     @Override
     public DumpArchiveEntry getNextEntry() throws IOException {
         DumpArchiveEntry entry = null;
