@@ -26,6 +26,8 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
+import org.apache.commons.compress.compressors.pack200.Pack200CompressorInputStream;
+import org.apache.commons.compress.compressors.pack200.Pack200CompressorOutputStream;
 
 /**
  * <p>Factory to create Compressor[In|Out]putStreams from names. To add other
@@ -40,7 +42,7 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
  *      new CompressorStreamFactory().createCompressorOutputStream(CompressorStreamFactory.BZIP2, out);
  * IOUtils.copy(new FileInputStream(input), cos);
  * cos.close();
- * </pre>    
+ * </pre>
  * 
  * Example (Compressing a file):
  * <pre>
@@ -65,6 +67,11 @@ public class CompressorStreamFactory {
      * @since Commons Compress 1.1
      */
     public static final String GZIP = "gz";
+    /**
+     * Constant used to identify the PACK200 compression algorithm.
+     * @since Commons Compress 1.3
+     */
+    public static final String PACK200 = "pack200";
 
     /**
      * Create an compressor input stream from an input stream, autodetecting
@@ -92,13 +99,17 @@ public class CompressorStreamFactory {
         try {
             int signatureLength = in.read(signature);
             in.reset();
-            
+
             if (BZip2CompressorInputStream.matches(signature, signatureLength)) {
                 return new BZip2CompressorInputStream(in);
             }
-            
+
             if (GzipCompressorInputStream.matches(signature, signatureLength)) {
                 return new GzipCompressorInputStream(in);
+            }
+
+            if (Pack200CompressorInputStream.matches(signature, signatureLength)) {
+                return new Pack200CompressorInputStream(in);
             }
 
         } catch (IOException e) {
@@ -107,11 +118,11 @@ public class CompressorStreamFactory {
 
         throw new CompressorException("No Compressor found for the stream signature.");
     }
-    
+
     /**
      * Create a compressor input stream from a compressor name and an input stream.
      * 
-     * @param name of the compressor, i.e. "gz" or "bzip2"
+     * @param name of the compressor, i.e. "gz", "bzip2" or "pack200"
      * @param in the input stream
      * @return compressor input stream
      * @throws CompressorException if the compressor name is not known
@@ -125,15 +136,19 @@ public class CompressorStreamFactory {
         }
 
         try {
-            
+
             if (GZIP.equalsIgnoreCase(name)) {
                 return new GzipCompressorInputStream(in);
             }
-            
+
             if (BZIP2.equalsIgnoreCase(name)) {
                 return new BZip2CompressorInputStream(in);
             }
-            
+
+            if (PACK200.equalsIgnoreCase(name)) {
+                return new Pack200CompressorInputStream(in);
+            }
+
         } catch (IOException e) {
             throw new CompressorException(
                     "Could not create CompressorInputStream.", e);
@@ -144,7 +159,7 @@ public class CompressorStreamFactory {
     /**
      * Create an compressor output stream from an compressor name and an input stream.
      * 
-     * @param name the compressor name, i.e. "gz" or "bzip2"
+     * @param name the compressor name, i.e. "gz", "bzip2" or "pack200"
      * @param out the output stream
      * @return the compressor output stream
      * @throws CompressorException if the archiver name is not known
@@ -163,11 +178,15 @@ public class CompressorStreamFactory {
             if (GZIP.equalsIgnoreCase(name)) {
                 return new GzipCompressorOutputStream(out);
             }
-            
+
             if (BZIP2.equalsIgnoreCase(name)) {
                 return new BZip2CompressorOutputStream(out);
             }
-        
+
+            if (PACK200.equalsIgnoreCase(name)) {
+                return new Pack200CompressorOutputStream(out);
+            }
+
         } catch (IOException e) {
             throw new CompressorException(
                     "Could not create CompressorOutputStream", e);
