@@ -38,7 +38,7 @@ import org.apache.commons.compress.compressors.CompressorInputStream;
  */
 public class Pack200CompressorInputStream extends CompressorInputStream {
     private final InputStream originalInput;
-    private final StreamSwitcher streamSwitcher;
+    private final StreamBridge streamBridge;
 
     /**
      * Decompresses the given stream, caching the decompressed data in
@@ -49,7 +49,7 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
      */
     public Pack200CompressorInputStream(final InputStream in)
         throws IOException {
-        this(in, StreamMode.IN_MEMORY);
+        this(in, Pack200Strategy.IN_MEMORY);
     }
 
     /**
@@ -60,7 +60,7 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
      * provide better performance.</p>
      */
     public Pack200CompressorInputStream(final InputStream in,
-                                        final StreamMode mode)
+                                        final Pack200Strategy mode)
         throws IOException {
         this(in, null, mode, null);
     }
@@ -75,7 +75,7 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     public Pack200CompressorInputStream(final InputStream in,
                                         final Map<String, String> props)
         throws IOException {
-        this(in, StreamMode.IN_MEMORY, props);
+        this(in, Pack200Strategy.IN_MEMORY, props);
     }
 
     /**
@@ -86,7 +86,7 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
      * provide better performance.</p>
      */
     public Pack200CompressorInputStream(final InputStream in,
-                                        final StreamMode mode,
+                                        final Pack200Strategy mode,
                                         final Map<String, String> props)
         throws IOException {
         this(in, null, mode, props);
@@ -97,14 +97,14 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
      * memory.
      */
     public Pack200CompressorInputStream(final File f) throws IOException {
-        this(f, StreamMode.IN_MEMORY);
+        this(f, Pack200Strategy.IN_MEMORY);
     }
 
     /**
      * Decompresses the given file using the given strategy to cache
      * the results.
      */
-    public Pack200CompressorInputStream(final File f, final StreamMode mode)
+    public Pack200CompressorInputStream(final File f, final Pack200Strategy mode)
         throws IOException {
         this(null, f, mode, null);
     }
@@ -116,26 +116,26 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     public Pack200CompressorInputStream(final File f,
                                         final Map<String, String> props)
         throws IOException {
-        this(f, StreamMode.IN_MEMORY, props);
+        this(f, Pack200Strategy.IN_MEMORY, props);
     }
 
     /**
      * Decompresses the given file using the given strategy to cache
      * the results and the given properties.
      */
-    public Pack200CompressorInputStream(final File f, final StreamMode mode,
+    public Pack200CompressorInputStream(final File f, final Pack200Strategy mode,
                                         final Map<String, String> props)
         throws IOException {
         this(null, f, mode, props);
     }
 
     private Pack200CompressorInputStream(final InputStream in, final File f,
-                                         final StreamMode mode,
+                                         final Pack200Strategy mode,
                                          final Map<String, String> props)
         throws IOException {
         originalInput = in;
-        streamSwitcher = mode.newStreamSwitcher();
-        JarOutputStream jarOut = new JarOutputStream(streamSwitcher);
+        streamBridge = mode.newStreamBridge();
+        JarOutputStream jarOut = new JarOutputStream(streamBridge);
         Pack200.Unpacker u = Pack200.newUnpacker();
         if (props != null) {
             u.properties().putAll(props);
@@ -158,32 +158,32 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     /** {@inheritDoc} */
     @Override
     public int read() throws IOException {
-        return streamSwitcher.getInput().read();
+        return streamBridge.getInput().read();
     }
 
     /** {@inheritDoc} */
     @Override
     public int read(byte[] b) throws IOException {
-        return streamSwitcher.getInput().read(b);
+        return streamBridge.getInput().read(b);
     }
 
     /** {@inheritDoc} */
     @Override
     public int read(byte[] b, int off, int count) throws IOException {
-        return streamSwitcher.getInput().read(b, off, count);
+        return streamBridge.getInput().read(b, off, count);
     }
 
     /** {@inheritDoc} */
     @Override
     public int available() throws IOException {
-        return streamSwitcher.getInput().available();
+        return streamBridge.getInput().available();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean markSupported() {
         try {
-            return streamSwitcher.getInput().markSupported();
+            return streamBridge.getInput().markSupported();
         } catch (IOException ex) {
             return false;
         }
@@ -193,7 +193,7 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     @Override
     public void mark(int limit) {
         try {
-            streamSwitcher.getInput().mark(limit);
+            streamBridge.getInput().mark(limit);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
@@ -202,19 +202,19 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     /** {@inheritDoc} */
     @Override
     public void reset() throws IOException {
-        streamSwitcher.getInput().reset();
+        streamBridge.getInput().reset();
     }
 
     /** {@inheritDoc} */
     @Override
     public long skip(long count) throws IOException {
-        return streamSwitcher.getInput().skip(count);
+        return streamBridge.getInput().skip(count);
     }
 
     @Override
     public void close() throws IOException {
         try {
-            streamSwitcher.stop();
+            streamBridge.stop();
         } finally {
             if (originalInput != null) {
                 originalInput.close();

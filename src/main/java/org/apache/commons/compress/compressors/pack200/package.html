@@ -66,7 +66,7 @@
       pumping like Commons Exec's <code>InputStreamPumper</code> but
       they have all failed because they rely on the output end to be
       consumed completely or else the <code>(un)pack</code> will block
-      forever.  Espectially for <code>Pack200InputStream</code> it is
+      forever.  Especially for <code>Pack200InputStream</code> it is
       very likely that it will be wrapped in
       a <code>ZipArchiveInputStream</code> which will never read the
       archive completely as it is not interested in the ZIP central

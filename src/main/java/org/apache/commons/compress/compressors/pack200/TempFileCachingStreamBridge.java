@@ -19,19 +19,24 @@
 
 package org.apache.commons.compress.compressors.pack200;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 /**
  * StreamSwitcher that caches all data written to the output side in
- * memory.
+ * a temporary file.
  * @since Apache Commons Compress 1.3
  */
-class InMemoryStreamSwitcher extends StreamSwitcher {
-    InMemoryStreamSwitcher() {
-        super(new ByteArrayOutputStream());
+class TempFileCachingStreamBridge extends StreamBridge {
+    private final File f;
+
+    TempFileCachingStreamBridge() throws IOException {
+        f = File.createTempFile("commons-compress", "packtemp");
+        f.deleteOnExit();
+        out = new FileOutputStream(f);
     }
 
     /**
@@ -39,7 +44,13 @@ class InMemoryStreamSwitcher extends StreamSwitcher {
      */
     @Override
     InputStream getInputView() throws IOException {
-        return new ByteArrayInputStream(((ByteArrayOutputStream) out)
-                                        .toByteArray());
+        out.close();
+        return new FileInputStream(f) {
+            @Override
+            public void close() throws IOException {
+                super.close();
+                f.delete();
+            }
+        };
     }
 }
