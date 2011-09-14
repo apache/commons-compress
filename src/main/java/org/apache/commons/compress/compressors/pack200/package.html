@@ -60,6 +60,17 @@
       in memory but you should switch to the temporary file option if
       your archives are really big.</p>
 
-    <p>
+    <p>During development of the initial version several attempts have
+      been made to use a real streaming API based for example
+      on <code>Piped(In|Out)putStream</code> or explicit stream
+      pumping like Commons Exec's <code>InputStreamPumper</code> but
+      they have all failed because they rely on the output end to be
+      consumed completely or else the <code>(un)pack</code> will block
+      forever.  Espectially for <code>Pack200InputStream</code> it is
+      very likely that it will be wrapped in
+      a <code>ZipArchiveInputStream</code> which will never read the
+      archive completely as it is not interested in the ZIP central
+      directory data at the end of the JAR archive.</p>
+
   </body>
 </html>
