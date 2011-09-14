@@ -353,6 +353,33 @@ gzIn.close();
 ]]></source>
       </subsection>
 
+      <subsection name="Pack200">
+
+        <p>The Pack200 package has a <a href="pack200.html">dedicated
+          documentation page</a>.</p>
+
+        <p>The implementation of this package is provided by
+          the <code>java.util.zip</code> package of the Java class
+          library.</p>
+
+        <p>Uncompressing a given pack200 compressed file (you would
+          certainly add exception handling and make sure all streams
+          get closed properly):</p>
+<source><![CDATA[
+FileInputStream fin = new FileInputStream("archive.pack");
+BufferedInputStream in = new BufferedInputStream(fin);
+FileOutputStream out = new FileOutputStream("archive.jar");
+Pack200CompressorInputStream pIn = new Pack200CompressorInputStream(in);
+final byte[] buffer = new byte[buffersize];
+int n = 0;
+while (-1 != (n = pIn.read(buffer))) {
+    out.write(buffer, 0, n);
+}
+out.close();
+pIn.close();
+]]></source>
+      </subsection>
+
     </section>
   </body>
 </document>
