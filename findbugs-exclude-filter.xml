@@ -81,4 +81,24 @@
     <Bug pattern="SR_NOT_CHECKED" />
   </Match>
 
+  <!-- Reason: trying to delete a temporary file that has deleteOnExit set
+       anyway -->
+  <Match>
+    <Class name="org.apache.commons.compress.compressors.pack200.Pack200Utils" />
+    <Method name="normalize" />
+    <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE" />
+  </Match>
+  <Match>
+    <Class name="org.apache.commons.compress.compressors.pack200.TempFileCachingStreamBridge$1" />
+    <Method name="close" />
+    <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE" />
+  </Match>
+
+  <!-- Reason: It is the Pack200*Stream that's going to close it. -->
+  <Match>
+    <Class name="org.apache.commons.compress.compressors.pack200.TempFileCachingStreamBridge$1" />
+    <Method name="&lt;init&gt;" />
+    <Bug pattern="OBL_UNSATISFIED_OBLIGATION" />
+  </Match>
+
 </FindBugsFilter>
