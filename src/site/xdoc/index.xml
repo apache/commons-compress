@@ -26,7 +26,7 @@
         <section name="Apache Commons Compress&#x2122;">
             <p>
                 The Apache Commons Compress library defines an API for
-                working with ar, cpio, Unix dump, tar, zip, gzip and bzip2 files.
+                working with ar, cpio, Unix dump, tar, zip, gzip, Pack200 and bzip2 files.
             </p>
             <p>
                 The code in this component has many origins:
@@ -51,8 +51,7 @@
             </subsection>
         </section>
         <section name="Documentation">
-          <p>Commons Compress 1.2 requires Java 1.4 or later and will
-            be the last version that doesn't require Java 5.</p>
+          <p>Commons Compress 1.3 requires Java 5.</p>
           
           <p>The compress component is split into <em>compressors</em> and
             <em>archivers</em>.  While <em>compressors</em>
@@ -62,9 +61,10 @@
             by <code>ArchiveEntry</code> instances which in turn
             usually correspond to single files or directories.</p>
 
-          <p>Currently the bzip2 and gzip formats are supported as
-            compressors where gzip support is provided by
-            the <code>java.util.zip</code> package of the Java class
+          <p>Currently the bzip2, Pack200 and gzip formats are
+            supported as compressors where gzip support is provided by
+            the <code>java.util.zip</code> package and Pack200 support
+            by the <code>java.util.jar</code> package of the Java class
             library.</p>
 
           <p>The ar, cpio, dump, tar and zip formats are supported as
