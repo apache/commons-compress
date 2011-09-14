@@ -508,7 +508,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
         // this will work in a pinch.
         return DumpArchiveConstants.NFS_MAGIC == DumpArchiveUtil.convert32(buffer,
-            7);
+            24);
     }
 
     private class CountingStream extends FilterInputStream {
