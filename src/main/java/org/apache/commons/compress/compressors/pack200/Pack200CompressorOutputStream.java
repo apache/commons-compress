@@ -36,7 +36,7 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
 public class Pack200CompressorOutputStream extends CompressorOutputStream {
     private boolean finished = false;
     private final OutputStream originalOutput;
-    private final StreamSwitcher streamSwitcher;
+    private final StreamBridge streamBridge;
     private final Map<String, String> properties;
 
     /**
@@ -45,7 +45,7 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream {
      */
     public Pack200CompressorOutputStream(final OutputStream out)
         throws IOException {
-        this(out, StreamMode.IN_MEMORY);
+        this(out, Pack200Strategy.IN_MEMORY);
     }
 
     /**
@@ -53,7 +53,7 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream {
      * the results.
      */
     public Pack200CompressorOutputStream(final OutputStream out,
-                                         final StreamMode mode)
+                                         final Pack200Strategy mode)
         throws IOException {
         this(out, mode, null);
     }
@@ -65,7 +65,7 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream {
     public Pack200CompressorOutputStream(final OutputStream out,
                                          final Map<String, String> props)
         throws IOException {
-        this(out, StreamMode.IN_MEMORY, props);
+        this(out, Pack200Strategy.IN_MEMORY, props);
     }
 
     /**
@@ -73,18 +73,18 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream {
      * the results and the given properties.
      */
     public Pack200CompressorOutputStream(final OutputStream out,
-                                         final StreamMode mode,
+                                         final Pack200Strategy mode,
                                          final Map<String, String> props)
         throws IOException {
         originalOutput = out;
-        streamSwitcher = mode.newStreamSwitcher();
+        streamBridge = mode.newStreamBridge();
         properties = props;
     }
 
     /** {@inheritDoc} */
     @Override
     public void write(int b) throws IOException {
-        streamSwitcher.write(b);
+        streamBridge.write(b);
     }
 
     /**
@@ -92,7 +92,7 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream {
      */
     @Override
     public void write(byte[] b) throws IOException {
-        streamSwitcher.write(b);
+        streamBridge.write(b);
     }
 
     /**
@@ -100,14 +100,14 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream {
      */
     @Override
     public void write(byte[] b, int from, int length) throws IOException {
-        streamSwitcher.write(b, from, length);
+        streamBridge.write(b, from, length);
     }
 
     @Override
     public void close() throws IOException {
         finish();
         try {
-            streamSwitcher.stop();
+            streamBridge.stop();
         } finally {
             originalOutput.close();
         }
@@ -120,7 +120,7 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream {
             if (properties != null) {
                 p.properties().putAll(properties);
             }
-            p.pack(new JarInputStream(streamSwitcher.getInput()),
+            p.pack(new JarInputStream(streamBridge.getInput()),
                    originalOutput);
         }
     }

@@ -34,28 +34,28 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorInputStream;
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorOutputStream;
-import org.apache.commons.compress.compressors.pack200.StreamMode;
+import org.apache.commons.compress.compressors.pack200.Pack200Strategy;
 import org.apache.commons.compress.utils.IOUtils;
 
 public final class Pack200TestCase extends AbstractTestCase {
 
     public void testJarUnarchiveAllInMemory() throws Exception {
-        jarUnarchiveAll(false, StreamMode.IN_MEMORY);
+        jarUnarchiveAll(false, Pack200Strategy.IN_MEMORY);
     }
 
     public void testJarUnarchiveAllFileArgInMemory() throws Exception {
-        jarUnarchiveAll(true, StreamMode.IN_MEMORY);
+        jarUnarchiveAll(true, Pack200Strategy.IN_MEMORY);
     }
 
     public void testJarUnarchiveAllTempFile() throws Exception {
-        jarUnarchiveAll(false, StreamMode.TEMP_FILE);
+        jarUnarchiveAll(false, Pack200Strategy.TEMP_FILE);
     }
 
     public void testJarUnarchiveAllFileTempFile() throws Exception {
-        jarUnarchiveAll(true, StreamMode.TEMP_FILE);
+        jarUnarchiveAll(true, Pack200Strategy.TEMP_FILE);
     }
 
-    private void jarUnarchiveAll(boolean useFile, StreamMode mode)
+    private void jarUnarchiveAll(boolean useFile, Pack200Strategy mode)
         throws Exception {
         final File input = getFile("bla.pack");
         final InputStream is = useFile
@@ -88,14 +88,14 @@ public final class Pack200TestCase extends AbstractTestCase {
     }
 
     public void testJarArchiveCreationInMemory() throws Exception {
-        jarArchiveCreation(StreamMode.IN_MEMORY);
+        jarArchiveCreation(Pack200Strategy.IN_MEMORY);
     }
 
     public void testJarArchiveCreationTempFile() throws Exception {
-        jarArchiveCreation(StreamMode.TEMP_FILE);
+        jarArchiveCreation(Pack200Strategy.TEMP_FILE);
     }
 
-    private void jarArchiveCreation(StreamMode mode) throws Exception {
+    private void jarArchiveCreation(Pack200Strategy mode) throws Exception {
         final File output = new File(dir, "bla.pack");
 
         final File file1 = getFile("test1.xml");

@@ -26,19 +26,19 @@ import java.io.IOException;
  * output.
  * @since Apache Commons Compress 1.3
  */
-public enum StreamMode {
+public enum Pack200Strategy {
     /** Cache output in memory */
     IN_MEMORY() {
-        StreamSwitcher newStreamSwitcher() {
-            return new InMemoryStreamSwitcher();
+        StreamBridge newStreamBridge() {
+            return new InMemoryCachingStreamBridge();
         }
     },
     /** Cache output in a temporary file */
     TEMP_FILE() {
-        StreamSwitcher newStreamSwitcher() throws IOException {
-            return new TempFileStreamSwitcher();
+        StreamBridge newStreamBridge() throws IOException {
+            return new TempFileCachingStreamBridge();
         }
     };
 
-    abstract StreamSwitcher newStreamSwitcher() throws IOException;
+    abstract StreamBridge newStreamBridge() throws IOException;
 }

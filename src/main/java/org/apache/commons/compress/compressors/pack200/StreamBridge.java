@@ -31,15 +31,15 @@ import java.io.OutputStream;
  * @ThreadSafe
  * @since Apache Commons Compress 1.3
  */
-abstract class StreamSwitcher extends FilterOutputStream {
+abstract class StreamBridge extends FilterOutputStream {
     private InputStream input;
     private final Object INPUT_LOCK = new Object();
 
-    protected StreamSwitcher(OutputStream out) {
+    protected StreamBridge(OutputStream out) {
         super(out);
     }
 
-    protected StreamSwitcher() {
+    protected StreamBridge() {
         this(null);
     }
 
