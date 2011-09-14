@@ -38,7 +38,7 @@ public class Pack200Utils {
     private Pack200Utils() { }
 
     /**
-     * Normalizes a JAR archive so it can be savely signed and packed.
+     * Normalizes a JAR archive so it can be safely signed and packed.
      *
      * <p>As stated in <a
      * href="http://download.oracle.com/javase/1.5.0/docs/api/java/util/jar/Pack200.Packer.html">Pack200.Packer's</a>
@@ -47,7 +47,7 @@ public class Pack200Utils {
      * JAR for signing it should be "normalized" by packing and
      * unpacking it.  This is what this method does.</p>
      *
-     * <p>This method does not replace the existing archive but create
+     * <p>This method does not replace the existing archive but creates
      * a new one.</p>
      *
      * @param from the JAR archive to normalize
