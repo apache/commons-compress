@@ -74,11 +74,11 @@ public final class DumpTestCase extends AbstractTestCase {
         }
     }
 
-    public void YtestArchiveDetection() throws Exception {
+    public void testArchiveDetection() throws Exception {
         archiveDetection(getFile("bla.dump"));
     }
 
-    public void YtestCompressedArchiveDetection() throws Exception {
+    public void testCompressedArchiveDetection() throws Exception {
         archiveDetection(getFile("bla.z.dump"));
     }
 
