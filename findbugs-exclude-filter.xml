@@ -71,6 +71,11 @@
     <Method name="&lt;init&gt;" />
     <Bug pattern="DE_MIGHT_IGNORE" />
   </Match>
+  <Match>
+    <Class name="org.apache.commons.compress.compressors.pack200.Pack200CompressorOutputStream" />
+    <Method name="finish" />
+    <Bug pattern="DE_MIGHT_IGNORE" />
+  </Match>
 
   <!-- Reason: skip(Long.MAX_VALUE) called to drain stream completely,
        the class overrides skip to ensure it reads the full amount
