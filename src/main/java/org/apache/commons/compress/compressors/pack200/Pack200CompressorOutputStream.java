@@ -120,8 +120,21 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream {
             if (properties != null) {
                 p.properties().putAll(properties);
             }
-            p.pack(new JarInputStream(streamBridge.getInput()),
-                   originalOutput);
+            JarInputStream ji = null;
+            boolean success = false;
+            try {
+                p.pack(ji = new JarInputStream(streamBridge.getInput()),
+                       originalOutput);
+                success = true;
+            } finally {
+                if (!success && ji != null) {
+                    try {
+                        ji.close();
+                    } catch (IOException ex) { // NOPMD
+                        // swallow so original exception isn't masked
+                    }
+                }
+            }
         }
     }
 }

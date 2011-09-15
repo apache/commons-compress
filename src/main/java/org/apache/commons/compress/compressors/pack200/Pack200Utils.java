@@ -62,10 +62,12 @@ public class Pack200Utils {
         f.deleteOnExit();
         try {
             OutputStream os = new FileOutputStream(f);
+            JarFile j = null;
             try {
                 Pack200.Packer p = Pack200.newPacker();
                 p.properties().putAll(props);
-                p.pack(new JarFile(from), os);
+                p.pack(j = new JarFile(from), os);
+                j = null;
                 os.close();
                 os = null;
 
@@ -73,6 +75,9 @@ public class Pack200Utils {
                 os = new JarOutputStream(new FileOutputStream(to));
                 u.unpack(f, (JarOutputStream) os);
             } finally {
+                if (j != null) {
+                    j.close();
+                }
                 if (os != null) {
                     os.close();
                 }
