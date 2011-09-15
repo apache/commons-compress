@@ -69,4 +69,51 @@ public final class Pack200UtilsTest extends AbstractTestCase {
         }
     }
 
+    public void testNormalizeInPlace() throws Throwable {
+        final File input = getFile("bla.jar");
+        final File[] output = createTempDirAndFile();
+        try {
+            FileInputStream is = new FileInputStream(input);
+            OutputStream os = null;
+            try {
+                os = new FileOutputStream(output[1]);
+                IOUtils.copy(is, os);
+            } finally {
+                is.close();
+                if (os != null) {
+                    os.close();
+                }
+            }
+
+            Pack200Utils.normalize(output[1]);
+            is = new FileInputStream(output[1]);
+            try {
+                final ArchiveInputStream in = new ArchiveStreamFactory()
+                    .createArchiveInputStream("jar", is);
+
+                ArchiveEntry entry = in.getNextEntry();
+                while (entry != null) {
+                    File archiveEntry = new File(dir, entry.getName());
+                    archiveEntry.getParentFile().mkdirs();
+                    if (entry.isDirectory()) {
+                        archiveEntry.mkdir();
+                        entry = in.getNextEntry();
+                        continue;
+                    }
+                    OutputStream out = new FileOutputStream(archiveEntry);
+                    IOUtils.copy(in, out);
+                    out.close();
+                    entry = in.getNextEntry();
+                }
+
+                in.close();
+            } finally {
+                is.close();
+            }
+        } finally {
+            output[1].delete();
+            output[0].delete();
+        }
+    }
+
 }
