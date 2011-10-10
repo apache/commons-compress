@@ -23,5 +23,61 @@
     <author email="dev@commons.apache.org">Commons Documentation Team</author>
   </properties>
   <body>
-  </body>
+    <section name="The Pack200 package">
+
+      <p>The Pack200 algorithm is not a general purpose compression
+      algorithm but one specialized for compressing JAR archives.  JAR
+      archives compressed with Pack200 will in general be different
+      from the original archive when decompressed again.  More
+      information can be found in the Javadocs of the <a
+      href="http://download.oracle.com/javase/1.5.0/docs/api/java/util/jar/Pack200.html">Pack200
+      class</a>.</p>
+
+      <p>While the <code>pack200</code> command line utility of the
+      JDK creates GZip compressed archives (<code>.pack.gz</code>) by
+      default, the streams provided by the Pack200 package only
+      perform the actual Pack200 operation.  Wrap them in an
+      additional <code>GZip(In|Out)putStream</code> in order to deal
+      with deflated streams.</p>
+
+      <subsection name="Pack200Strategy">
+
+        <p>The Pack200-API provided by the java class library is not
+        streaming friendly as it wants to consume its input completely
+        in a single operation.  Because of this
+        <code>Pack200InputStream</code>'s constructor will immediately
+        unpack the stream, cache the results and provide an input
+        stream to the cache.</p>
+
+        <p><code>Pack200OutputStream</code> will cache all data that
+        is written to it and then pack it once the <code>finish</code>
+        or <code>close</code> method is called.</p>
+
+        <p>Two different caching modes are available - "in memory",
+        which is the default, and "temporary file".  By default data
+        is cached in memory but you should switch to the temporary
+        file option if your archives are really big.</p>
+
+      </subsection>
+
+      <subsection name="Normalization">
+
+        <p>As a pack/unpack cycle may create a JAR archive that is
+        different from the original, digital signatures created for
+        the initial JAR will be broken by the process.  There is a way
+        to "normalize" JAR archives prior to packing them that ensures
+        signatures applied to the "normalized" JAR will still be valid
+        aftre a pack/unpack cycle - see <a
+        href="http://download.oracle.com/javase/1.5.0/docs/api/java/util/jar/Pack200.Packer.html">Pack200.Packer</a>'s
+        javadocs.</p>
+
+        <p>The <code>Pack200Utils</code> class in the
+        <code>pack200</code> package provides several overloads of a
+        <code>normalize</code> method that can be used to prepare a
+        JAR archive in place or to a separate file.</p>
+
+      </subsection>
+
+    </section>
+</body>
 </document>
