@@ -432,6 +432,20 @@
             </tr>
           </tbody>
         </table>
+
+        <h4>Known Interoperability Problems</h4>
+
+        <p>The <code>java.util.zip</code> package of OpenJDK7 supports
+        Zip 64 extensions but its <code>ZipInputStream</code> and
+        <code>ZipFile</code> classes will be unable to extract
+        archives created with Commons Compress 1.3's
+        <code>ZipArchiveOutputStream</code> if the archive contains
+        entries that use the data descriptor, are smaller than 4 GiB
+        and have Zip 64 extensions enabled.  I.e. the classes in
+        OpenJDK currently only support archives that use Zip 64
+        extensions only when they are actually needed.  These classes
+        are used to load JAR files and are the base for the
+        <code>jar</code> command line utility as well.</p>
       </subsection>
     </section>
   </body>
