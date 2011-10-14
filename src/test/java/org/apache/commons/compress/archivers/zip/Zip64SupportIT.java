@@ -68,6 +68,12 @@ public class Zip64SupportIT {
         read5GBOfZerosImpl(get5GBZerosFileGeneratedByWinZIP(), "5GB_of_Zeros");
     }
 
+    @Test public void read5GBOfZerosGeneratedByPKZipUsingInputStream()
+        throws Throwable {
+        read5GBOfZerosImpl(get5GBZerosFileGeneratedByPKZip(),
+                           "zip6/5GB_of_Zeros");
+    }
+
     @Test public void read100KFilesUsingInputStream() throws Throwable {
         read100KFilesImpl(get100KFileFile());
     }
@@ -92,6 +98,11 @@ public class Zip64SupportIT {
         read100KFilesImpl(get100KFileFileGeneratedByWinZIP());
     }
 
+    @Test public void read100KFilesGeneratedByPKZipUsingInputStream()
+        throws Throwable {
+        read100KFilesImpl(get100KFileFileGeneratedByPKZip());
+    }
+
     @Test public void read5GBOfZerosUsingZipFile() throws Throwable {
         read5GBOfZerosUsingZipFileImpl(get5GBZerosFile(), "5GB_of_Zeros");
     }
@@ -112,6 +123,12 @@ public class Zip64SupportIT {
         throws Throwable {
         read5GBOfZerosUsingZipFileImpl(get5GBZerosFileGeneratedByWinZIP(),
                                        "5GB_of_Zeros");
+    }
+
+    @Test public void read5GBOfZerosGeneratedByPKZipUsingZipFile()
+        throws Throwable {
+        read5GBOfZerosUsingZipFileImpl(get5GBZerosFileGeneratedByPKZip(),
+                                       "zip6/5GB_of_Zeros");
     }
 
     @Test public void read100KFilesUsingZipFile() throws Throwable {
@@ -136,6 +153,11 @@ public class Zip64SupportIT {
     @Test public void read100KFilesGeneratedByWinZIPUsingZipFile()
         throws Throwable {
         read100KFilesUsingZipFileImpl(get100KFileFileGeneratedByWinZIP());
+    }
+
+    @Test public void read100KFilesGeneratedByPKZipUsingZipFile()
+        throws Throwable {
+        read100KFilesUsingZipFileImpl(get100KFileFileGeneratedByPKZip());
     }
 
     private static ZipOutputTest write100KFiles() {
@@ -2322,7 +2344,11 @@ public class Zip64SupportIT {
     }
 
     private static File get5GBZerosFileGeneratedByWinZIP() throws Throwable {
-        return getFile("/5GB_of_Zeros_7ZIP.zip");
+        return getFile("/5GB_of_Zeros_WinZip.zip");
+    }
+
+    private static File get5GBZerosFileGeneratedByPKZip() throws Throwable {
+        return getFile("/5GB_of_Zeros_PKZip.zip");
     }
 
     private static File get100KFileFile() throws Throwable {
@@ -2345,6 +2371,10 @@ public class Zip64SupportIT {
         return getFile("/100k_Files_WinZIP.zip");
     }
 
+    private static File get100KFileFileGeneratedByPKZip() throws Throwable {
+        return getFile("/100k_Files_PKZip.zip");
+    }
+
     private static File getTempFile(String testName) throws Throwable {
         File f = File.createTempFile("commons-compress-" + testName, ".zip");
         f.deleteOnExit();
@@ -2358,6 +2388,9 @@ public class Zip64SupportIT {
         try {
             zin = new ZipArchiveInputStream(fin);
             ZipArchiveEntry zae = zin.getNextZipEntry();
+            while (zae.isDirectory()) {
+                zae = zin.getNextZipEntry();
+            }
             assertEquals(expectedName, zae.getName());
             byte[] buf = new byte[1024 * 1024];
             long read = 0;
@@ -2392,6 +2425,9 @@ public class Zip64SupportIT {
             Enumeration<ZipArchiveEntry> e = zf.getEntries();
             assertTrue(e.hasMoreElements());
             ZipArchiveEntry zae = e.nextElement();
+            while (zae.isDirectory()) {
+                zae = e.nextElement();
+            }
             assertEquals(expectedName, zae.getName());
             assertEquals(FIVE_BILLION, zae.getSize());
             byte[] buf = new byte[1024 * 1024];
