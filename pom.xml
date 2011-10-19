@@ -20,7 +20,7 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>20</version>
+    <version>22</version>
   </parent>
 
   <groupId>org.apache.commons</groupId>
@@ -193,19 +193,14 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration> 
-          <archive>
-            <manifest>
-              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-            </manifest>
-          </archive>
-          <aggregate>false</aggregate>
+          <quiet>true</quiet>
           <source>${maven.compile.source}</source>
           <encoding>${commons.encoding}</encoding>
           <docEncoding>${commons.docEncoding}</docEncoding>
           <linksource>true</linksource>
           <links>
-            <link>http://download.oracle.com/javase/6/docs/api/</link>
+            <link>${commons.javadoc.java.link}</link>
+            <link>${commons.javadoc.javaee.link}</link>
           </links>
           <tags>
             <tag>
@@ -228,21 +223,6 @@
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
-        <artifactId>clirr-maven-plugin</artifactId>
-        <version>2.3</version>
-        <configuration>
-          <comparisonArtifacts>
-            <comparisonArtifact>
-              <groupId>org.apache.commons</groupId>
-              <artifactId>commons-compress</artifactId>
-              <version>1.2</version>
-            </comparisonArtifact>
-          </comparisonArtifacts>
-          <minSeverity>info</minSeverity>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
         <version>2.3.2</version>
         <configuration>
@@ -250,6 +230,19 @@
           <effort>Default</effort>
           <excludeFilterFile>${basedir}/findbugs-exclude-filter.xml</excludeFilterFile>
        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <version>${commons.rat.version}</version>
+        <configuration>
+          <excludes>
+            <!-- files used during tests -->
+            <exclude>src/test/resources/**</exclude>
+            <!-- proposal text without license -->
+            <exclude>PROPOSAL.txt</exclude>
+          </excludes>
+        </configuration>
       </plugin>
     </plugins>
   </reporting>
@@ -291,7 +284,6 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-antrun-plugin</artifactId>
-            <version>1.6</version>
             <executions>
               <execution>
                 <phase>process-test-resources</phase>
