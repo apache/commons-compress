@@ -22,7 +22,6 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 
 import java.io.EOFException;
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -33,7 +32,6 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Stack;
-
 
 /**
  * The DumpArchiveInputStream reads a UNIX dump archive as an InputStream.
@@ -73,7 +71,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      * @throws ArchiveException
      */
     public DumpArchiveInputStream(InputStream is) throws ArchiveException {
-        this.raw = new TapeInputStream(new CountingStream(is));
+        this.raw = new TapeInputStream(is);
         this.hasHitEOF = false;
 
         try {
@@ -116,6 +114,17 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
                         return p.getOriginalName().compareTo(q.getOriginalName());
                     }
                 });
+    }
+
+    @Deprecated
+    @Override
+    public int getCount() {
+        return (int) getBytesRead();
+    }
+
+    @Override
+    public long getBytesRead() {
+        return raw.getBytesRead();
     }
 
     /**
@@ -511,29 +520,4 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
             24);
     }
 
-    private class CountingStream extends FilterInputStream {
-        private CountingStream(final InputStream in) {
-            super(in);
-        }
-        @Override
-        public int read() throws IOException {
-            int r = in.read();
-            if (r >= 0) {
-                count(1);
-            }
-            return r;
-        }
-        @Override
-        public int read(byte[] b) throws IOException {
-            return read(b, 0, b.length);
-        }
-        @Override
-        public int read(byte[] b, int off, int len) throws IOException {
-            int r = in.read(b, off, len);
-            if (r >= 0) {
-                count(r);
-            }
-            return r;
-        }
-    }
 }
