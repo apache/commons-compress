@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class CountingInputStream extends FilterInputStream {
     private final AtomicLong bytesRead = new AtomicLong();
 
-    private CountingInputStream(final InputStream in) {
+    public CountingInputStream(final InputStream in) {
         super(in);
     }
 

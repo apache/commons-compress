@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class CountingOutputStream extends FilterOutputStream {
     private final AtomicLong bytesWritten = new AtomicLong();
 
-    private CountingOutputStream(final OutputStream out) {
+    public CountingOutputStream(final OutputStream out) {
         super(out);
     }
 
