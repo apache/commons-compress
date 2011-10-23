@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
+import org.apache.commons.compress.utils.CountingOutputStream;
 
 /**
  * The TarOutputStream writes a UNIX tar archive as an OutputStream.
@@ -84,9 +85,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * @param recordSize the record size to use
      */
     public TarArchiveOutputStream(OutputStream os, int blockSize, int recordSize) {
-        out = os;
+        out = new CountingOutputStream(os);
 
-        this.buffer = new TarBuffer(os, blockSize, recordSize);
+        this.buffer = new TarBuffer(out, blockSize, recordSize);
         this.assemLen = 0;
         this.assemBuf = new byte[recordSize];
         this.recordBuf = new byte[recordSize];
@@ -103,6 +104,17 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         this.longFileMode = longFileMode;
     }
 
+
+    @Deprecated
+    @Override
+    public int getCount() {
+        return (int) getBytesWritten();
+    }
+
+    @Override
+    public long getBytesWritten() {
+        return ((CountingOutputStream) out).getBytesWritten();
+    }
 
     /**
      * Ends the TAR archive without closing the underlying OutputStream.
@@ -324,8 +336,6 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             numToWrite -= num;
             wOffset += num;
         }
-        
-        count(numToWrite);
     }
 
     /**

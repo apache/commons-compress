@@ -68,6 +68,10 @@ The <action> type attribute can be add,update,fix,remove.
         ZipArchiveInputStream and ZipArchiveOutputStream could leak
         resources on some JDKs.
       </action> 
+      <action issue="COMPRESS-160" type="fix" date="2011-10-23">
+        TarArchiveOutputStream's getBytesWritten method didn't count
+        correctly.
+      </action> 
     </release>
     <release version="1.2" date="2011-07-31"
              description="Release 1.2 - a bugfix release, the last release expected to be compatible with Java 1.4">
