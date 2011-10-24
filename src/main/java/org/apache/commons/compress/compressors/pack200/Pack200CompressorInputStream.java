@@ -33,6 +33,10 @@ import org.apache.commons.compress.compressors.CompressorInputStream;
  * An input stream that decompresses from the Pack200 format to be read
  * as any other stream.
  * 
+ * <p>The {@link CompressorInputStream#getCount getCount} and {@link
+ * CompressorInputStream#getBytesRead getBytesRead} methods always
+ * return 0.</p>
+ *
  * @NotThreadSafe
  * @since Apache Commons Compress 1.3
  */
