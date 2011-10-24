@@ -45,11 +45,11 @@
         <p>The Pack200-API provided by the java class library is not
         streaming friendly as it wants to consume its input completely
         in a single operation.  Because of this
-        <code>Pack200InputStream</code>'s constructor will immediately
+        <code>Pack200CompressorInputStream</code>'s constructor will immediately
         unpack the stream, cache the results and provide an input
         stream to the cache.</p>
 
-        <p><code>Pack200OutputStream</code> will cache all data that
+        <p><code>Pack200CompressorOutputStream</code> will cache all data that
         is written to it and then pack it once the <code>finish</code>
         or <code>close</code> method is called.</p>
 
@@ -57,6 +57,12 @@
         which is the default, and "temporary file".  By default data
         is cached in memory but you should switch to the temporary
         file option if your archives are really big.</p>
+
+        <p>Given there always is an intermediate result
+        the <code>getBytesRead</code> and <code>getCount</code>
+        methods of <code>Pack200CompressorInputStream</code> are
+        meaningless (read from the real stream or from the
+        intermediate result?)  and always return 0.</p>
 
       </subsection>
 

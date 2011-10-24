@@ -60,6 +60,12 @@
       in memory but you should switch to the temporary file option if
       your archives are really big.</p>
 
+    <p>Given there always is an intermediate result
+      the <code>getBytesRead</code> and <code>getCount</code> methods
+      of <code>Pack200CompressorInputStream</code> are meaningless
+      (read from the real stream or from the intermediate result?)
+      and always return 0.</p>
+
     <p>During development of the initial version several attempts have
       been made to use a real streaming API based for example
       on <code>Piped(In|Out)putStream</code> or explicit stream
