@@ -30,7 +30,7 @@
   <url>http://commons.apache.org/compress/</url>
   <description>
   Apache Commons Compress software defines an API for working with compression and archive formats.
-  These include: bzip2, gzip and ar, cpio, jar, tar, zip.
+  These include: bzip2, gzip, pack200 and ar, cpio, jar, tar, zip, dump.
   </description>
 
   <properties>
@@ -188,7 +188,7 @@
           </rulesets>
         </configuration>
       </plugin>
-      <!-- Override Javadoc config in parent pom to add default manifest entries -->
+      <!-- Override Javadoc config in parent pom to add JCIP tags -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
