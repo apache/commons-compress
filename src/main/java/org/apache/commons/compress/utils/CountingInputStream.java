@@ -26,10 +26,10 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Stream that tracks the number of bytes read.
  * @since Apache Commons Compress 1.3
- * @ThreadSafe
+ * @NotThreadSafe
  */
 public class CountingInputStream extends FilterInputStream {
-    private final AtomicLong bytesRead = new AtomicLong();
+    private long bytesRead;
 
     public CountingInputStream(final InputStream in) {
         super(in);
@@ -63,7 +63,7 @@ public class CountingInputStream extends FilterInputStream {
      */
     protected final void count(long read) {
         if (read != -1) {
-            bytesRead.addAndGet(read);
+            bytesRead += read;
         }
     }
     
@@ -72,6 +72,6 @@ public class CountingInputStream extends FilterInputStream {
      * @return the number of read bytes
      */
     public long getBytesRead() {
-        return bytesRead.longValue();
+        return bytesRead;
     }
 }
