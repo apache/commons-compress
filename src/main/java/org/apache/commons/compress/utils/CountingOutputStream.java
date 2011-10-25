@@ -21,7 +21,6 @@ package org.apache.commons.compress.utils;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Stream that tracks the number of bytes read.
