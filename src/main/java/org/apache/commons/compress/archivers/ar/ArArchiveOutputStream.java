@@ -39,7 +39,6 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     public static final int LONGFILE_BSD = 1;
 
     private final OutputStream out;
-    private long archiveOffset = 0;
     private long entryOffset = 0;
     private ArArchiveEntry prevEntry;
     private boolean haveUnclosedEntry = false;
@@ -81,7 +80,6 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         }
         if ((entryOffset % 2) != 0) {
             out.write('\n'); // Pad byte
-            archiveOffset++;
         }
         haveUnclosedEntry = false;
     }
@@ -95,7 +93,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
 
         ArArchiveEntry pArEntry = (ArArchiveEntry)pEntry;
         if (prevEntry == null) {
-            archiveOffset += writeArchiveHeader();
+            writeArchiveHeader();
         } else {
             if (prevEntry.getLength() != entryOffset) {
                 throw new IOException("length does not match entry (" + prevEntry.getLength() + " != " + entryOffset);
@@ -108,7 +106,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
 
         prevEntry = pArEntry;
 
-        archiveOffset += writeEntryHeader(pArEntry);
+        writeEntryHeader(pArEntry);
 
         entryOffset = 0;
         haveUnclosedEntry = true;
