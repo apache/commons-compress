@@ -229,6 +229,7 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     private static final byte[] CAFE_DOOD = new byte[] {
         (byte) 0xCA, (byte) 0xFE, (byte) 0xD0, (byte) 0x0D
     };
+    private static final int SIG_LENGTH = CAFE_DOOD.length;
 
     /**
      * Checks if the signature matches what is expected for a pack200
@@ -242,11 +243,11 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
      * false otherwise
      */
     public static boolean matches(byte[] signature, int length) {
-        if (length < 4) {
+        if (length < SIG_LENGTH) {
             return false;
         }
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < SIG_LENGTH; i++) {
             if (signature[i] != CAFE_DOOD[i]) {
                 return false;
             }
