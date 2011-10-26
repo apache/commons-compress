@@ -1,51 +1,38 @@
-                        
+              Apache Commons Compress 1.3 RELEASE NOTES
 
-              Apache Commons Compress 1.2 RELEASE NOTES
+Apache Commons Compress software defines an API for working with
+  compression and archive formats.  These include: bzip2, gzip,
+  pack200 and ar, cpio, jar, tar, zip, dump.
 
-Release 1.2 - a bugfix release,
-        
-              The last release expected to be compatible with Java 1.4.
+Commons Compress 1.3 is the first version to require Java5 at runtime.
 
 Changes in this version include:
 
 New features:
-o COMPRESS-123:  ZipArchiveEntry has a new method getRawName that provides the
-        original bytes that made up the name.  This may allow user
-        code to detect the encoding. 
-o COMPRESS-122:  TarArchiveEntry provides access to the flags that determine
-        whether it is an archived symbolic link, pipe or other
-        "uncommon" file system object. 
+o Support for the Pack200 format has been added.  Issue: COMPRESS-142. 
+o Read-only support for the format used by the Unix dump(8) tool
+        has been added.  Issue: COMPRESS-132. 
 
 Fixed Bugs:
-o COMPRESS-129:  ZipArchiveInputStream could fail with a "Truncated ZIP" error
-        message for entries between 2 GByte and 4 GByte in size. 
-o COMPRESS-145:  TarArchiveInputStream now detects sparse entries using the
-        oldgnu format and properly reports it cannot extract their
-        contents. 
-o COMPRESS-130:  The Javadoc for ZipArchiveInputStream#skip now matches the
-        implementation, the code has been made more defensive. 
-o COMPRESS-140:  ArArchiveInputStream fails if entries contain only blanks for
-        userId or groupId. Thanks to Trejkaz. 
-o COMPRESS-139:  ZipFile may leak resources on some JDKs. 
-o COMPRESS-125:  BZip2CompressorInputStream throws IOException if
-        underlying stream returns available() == 0.
-        Removed the check. 
-o COMPRESS-127:  Calling close() on inputStream returned by
-        CompressorStreamFactory.createCompressorInputStream()
-        does not close the underlying input stream. 
-o COMPRESS-119:  TarArchiveOutputStream#finish now writes all buffered
-        data to the stream 
+o BZip2CompressorInputStream's getBytesRead method always
+        returned 0. 
+o ZipArchiveInputStream and ZipArchiveOutputStream could leak
+        resources on some JDKs.  Issue: COMPRESS-152. 
+o TarArchiveOutputStream's getBytesWritten method didn't count
+        correctly.  Issue: COMPRESS-160. 
 
 Changes:
-o ZipFile now implements finalize which closes the underlying
-        file. 
-o COMPRESS-117:  Certain tar files not recognised by ArchiveStreamFactory. 
+o The ZIP package now supports Zip64 extensions.  Issue: COMPRESS-36. 
+o The AR package now supports the BSD dialect of storing file
+        names longer than 16 chars (both reading and writing).
+        Issue: COMPRESS-144. 
 
- 
 For complete information on Commons Compress, including instructions
 on how to submit bug reports, patches, or suggestions for improvement,
 see the Apache Commons Compress website:
-
+ 
 http://commons.apache.org/compress/
 
+Have fun!
+-Commons Compress team
 
