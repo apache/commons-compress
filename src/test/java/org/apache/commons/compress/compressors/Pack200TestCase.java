@@ -22,9 +22,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -154,6 +157,58 @@ public final class Pack200TestCase extends AbstractTestCase {
             assertFalse(Pack200CompressorInputStream.matches(sig, 4));
         } finally {
             is.close();
+        }
+    }
+
+    public void testShortSignature() throws Exception {
+        final InputStream is = new FileInputStream(getFile("bla.pack"));
+        try {
+            byte[] sig = new byte[2];
+            is.read(sig);
+            assertFalse(Pack200CompressorInputStream.matches(sig, 2));
+        } finally {
+            is.close();
+        }
+    }
+
+    public void testInputStreamMethods() throws Exception {
+        Map<String, String> m = new HashMap<String, String>();
+        m.put("foo", "bar");
+        final InputStream is =
+            new Pack200CompressorInputStream(new FileInputStream(getFile("bla.jar")),
+                                             m);
+        try {
+            // packed file is a jar, which is a zip so it starts with
+            // a local file header
+            assertTrue(is.markSupported());
+            is.mark(5);
+            assertEquals(0x50, is.read());
+            byte[] rest = new byte[3];
+            assertEquals(3, is.read(rest));
+            assertEquals(0x4b, rest[0]);
+            assertEquals(3, rest[1]);
+            assertEquals(4, rest[2]);
+            assertEquals(1, is.skip(1));
+            is.reset();
+            assertEquals(0x50, is.read());
+            assertTrue(is.available() > 0);
+        } finally {
+            is.close();
+        }
+    }
+
+    public void testOutputStreamMethods() throws Exception {
+        final File output = new File(dir, "bla.pack");
+        Map<String, String> m = new HashMap<String, String>();
+        m.put("foo", "bar");
+        final OutputStream out = new FileOutputStream(output);
+        try {
+            final OutputStream os = new Pack200CompressorOutputStream(out, m);
+            os.write(1);
+            os.write(new byte[] { 2, 3 });
+            os.close();
+        } finally {
+            out.close();
         }
     }
 }
