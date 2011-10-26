@@ -39,7 +39,7 @@
                 the work done by Keiron Liddle.  It has migrated
                 via:<br/> Ant -&gt; Avalon-Excalibur -&gt; Commons-IO
                 -&gt; Commons-Compress.</li>
-              <li>The cpio package has been contributed by Markus Kuss
+              <li>The cpio package has been contributed by Michael Kuss
                 and
                 the <a href="http://jrpm.sourceforge.net/">jRPM</a>
                 project.</li>
