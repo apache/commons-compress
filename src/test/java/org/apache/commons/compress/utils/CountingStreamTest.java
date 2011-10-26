@@ -29,7 +29,7 @@ public class CountingStreamTest {
     @Test
     public void output() throws Exception {
         // I don't like "test all at once" tests either, but the class
-        // is soo trivial
+        // is so trivial
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         CountingOutputStream o = new CountingOutputStream(bos);
         o.write(1);
@@ -49,7 +49,7 @@ public class CountingStreamTest {
     @Test
     public void input() throws Exception {
         // I don't like "test all at once" tests either, but the class
-        // is soo trivial
+        // is so trivial
         ByteArrayInputStream bis =
             new ByteArrayInputStream(new byte[] { 1, 2, 3, 4 });
         CountingInputStream i = new CountingInputStream(bis);
