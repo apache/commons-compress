@@ -130,28 +130,4 @@ class DumpArchiveUtil {
 
         return i;
     }
-
-    /**
-     * Dump the start of a block.
-     *
-     * @param buffer
-     */
-    public static final void dumpBlock(byte[] buffer) {
-        for (int i = 0; i < 128; i += 32) {
-            System.out.printf("%08x ", DumpArchiveUtil.convert32(buffer, i));
-            System.out.printf("%08x ", DumpArchiveUtil.convert32(buffer, i + 4));
-            System.out.printf("%08x ", DumpArchiveUtil.convert32(buffer, i + 8));
-            System.out.printf("%08x - ",
-                DumpArchiveUtil.convert32(buffer, i + 12));
-            System.out.printf("%08x ", DumpArchiveUtil.convert32(buffer, i +
-                    16));
-            System.out.printf("%08x ", DumpArchiveUtil.convert32(buffer, i +
-                    20));
-            System.out.printf("%08x ", DumpArchiveUtil.convert32(buffer, i +
-                    24));
-            System.out.printf("%08x ", DumpArchiveUtil.convert32(buffer, i +
-                    28));
-            System.out.println();
-        }
-    }
 }
