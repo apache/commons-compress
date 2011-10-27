@@ -19,6 +19,9 @@
 package org.apache.commons.compress.archivers.zip;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -96,6 +99,43 @@ public class ZipFileTest extends TestCase {
             zf.close();
         } catch (Exception ex) {
             fail("Caught exception of second close");
+        }
+    }
+
+    public void testReadingOfStoredEntry() throws Exception {
+        File f = File.createTempFile("commons-compress-zipfiletest", ".zip");
+        f.deleteOnExit();
+        OutputStream o = null;
+        InputStream i = null;
+        try {
+            o = new FileOutputStream(f);
+            ZipArchiveOutputStream zo = new ZipArchiveOutputStream(o);
+            ZipArchiveEntry ze = new ZipArchiveEntry("foo");
+            ze.setMethod(ZipArchiveEntry.STORED);
+            ze.setSize(4);
+            ze.setCrc(0xb63cfbcdl);
+            zo.putArchiveEntry(ze);
+            zo.write(new byte[] { 1, 2, 3, 4 });
+            zo.closeArchiveEntry();
+            zo.close();
+            o.close();
+            o  = null;
+
+            zf = new ZipFile(f);
+            ze = zf.getEntry("foo");
+            assertNotNull(ze);
+            i = zf.getInputStream(ze);
+            byte[] b = new byte[4];
+            assertEquals(4, i.read(b));
+            assertEquals(-1, i.read());
+        } finally {
+            if (o != null) {
+                o.close();
+            }
+            if (i != null) {
+                i.close();
+            }
+            f.delete();
         }
     }
 
