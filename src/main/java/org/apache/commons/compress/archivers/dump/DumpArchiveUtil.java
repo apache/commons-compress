@@ -108,10 +108,10 @@ class DumpArchiveUtil {
      */
     public static final int convert32(byte[] buffer, int offset) {
         int i = 0;
-        i = ((int) buffer[offset + 3]) << 24;
-        i += (((int) buffer[offset + 2] << 16) & 0x00FF0000);
-        i += (((int) buffer[offset + 1] << 8) & 0x0000FF00);
-        i += (((int) buffer[offset]) & 0x000000FF);
+        i = buffer[offset + 3] << 24;
+        i += (buffer[offset + 2] << 16) & 0x00FF0000;
+        i += (buffer[offset + 1] << 8) & 0x0000FF00;
+        i += buffer[offset] & 0x000000FF;
 
         return i;
     }
@@ -125,8 +125,8 @@ class DumpArchiveUtil {
      */
     public static final int convert16(byte[] buffer, int offset) {
         int i = 0;
-        i += (((int) buffer[offset + 1] << 8) & 0x0000FF00);
-        i += (((int) buffer[offset]) & 0x000000FF);
+        i += (buffer[offset + 1] << 8) & 0x0000FF00;
+        i += buffer[offset] & 0x000000FF;
 
         return i;
     }
