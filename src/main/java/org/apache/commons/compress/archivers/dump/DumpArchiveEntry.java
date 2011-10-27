@@ -232,8 +232,9 @@ public class DumpArchiveEntry implements ArchiveEntry {
      */
     protected DumpArchiveEntry(String name, String simpleName, int ino,
                                TYPE type) {
-        this(name, simpleName);
         setType(type);
+        setName(name);
+        this.simpleName = simpleName;
         this.ino = ino;
         this.offset = 0;
     }
