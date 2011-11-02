@@ -26,6 +26,8 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
+import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
+import org.apache.commons.compress.compressors.xz.XZCompressorOutputStream;
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorInputStream;
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorOutputStream;
 
@@ -62,6 +64,7 @@ public class CompressorStreamFactory {
      * @since Commons Compress 1.1
      */
     public static final String BZIP2 = "bzip2";
+
     /**
      * Constant used to identify the GZIP compression algorithm.
      * @since Commons Compress 1.1
@@ -72,6 +75,12 @@ public class CompressorStreamFactory {
      * @since Commons Compress 1.3
      */
     public static final String PACK200 = "pack200";
+
+    /**
+     * Constant used to identify the XZ compression method.
+     * @since Commons Compress 1.4
+     */
+    public static final String XZ = "xz";
 
     /**
      * Create an compressor input stream from an input stream, autodetecting
@@ -108,6 +117,10 @@ public class CompressorStreamFactory {
                 return new GzipCompressorInputStream(in);
             }
 
+            if (XZCompressorInputStream.matches(signature, signatureLength)) {
+                return new XZCompressorInputStream(in);
+            }
+
             if (Pack200CompressorInputStream.matches(signature, signatureLength)) {
                 return new Pack200CompressorInputStream(in);
             }
@@ -122,7 +135,7 @@ public class CompressorStreamFactory {
     /**
      * Create a compressor input stream from a compressor name and an input stream.
      * 
-     * @param name of the compressor, i.e. "gz", "bzip2" or "pack200"
+     * @param name of the compressor, i.e. "gz", "bzip2", "xz", or "pack200"
      * @param in the input stream
      * @return compressor input stream
      * @throws CompressorException if the compressor name is not known
@@ -145,6 +158,10 @@ public class CompressorStreamFactory {
                 return new BZip2CompressorInputStream(in);
             }
 
+            if (XZ.equalsIgnoreCase(name)) {
+                return new XZCompressorInputStream(in);
+            }
+
             if (PACK200.equalsIgnoreCase(name)) {
                 return new Pack200CompressorInputStream(in);
             }
@@ -159,7 +176,7 @@ public class CompressorStreamFactory {
     /**
      * Create an compressor output stream from an compressor name and an input stream.
      * 
-     * @param name the compressor name, i.e. "gz", "bzip2" or "pack200"
+     * @param name the compressor name, i.e. "gz", "bzip2", "xz", or "pack200"
      * @param out the output stream
      * @return the compressor output stream
      * @throws CompressorException if the archiver name is not known
@@ -181,6 +198,10 @@ public class CompressorStreamFactory {
 
             if (BZIP2.equalsIgnoreCase(name)) {
                 return new BZip2CompressorOutputStream(out);
+            }
+
+            if (XZ.equalsIgnoreCase(name)) {
+                return new XZCompressorOutputStream(out);
             }
 
             if (PACK200.equalsIgnoreCase(name)) {
