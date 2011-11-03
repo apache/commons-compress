@@ -69,7 +69,7 @@ public class BZip2UtilsTestCase extends TestCase {
         assertEquals("x.bz2", BZip2Utils.getCompressedFilename("x"));
         assertEquals("X.bz2", BZip2Utils.getCompressedFilename("X"));
         assertEquals("x.tar.bz2", BZip2Utils.getCompressedFilename("x.tar"));
-        assertEquals("x.TAR.bz2", BZip2Utils.getCompressedFilename("x.TAR"));
+        assertEquals("x.tar.bz2", BZip2Utils.getCompressedFilename("x.TAR"));
     }
 
 }

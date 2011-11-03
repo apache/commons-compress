@@ -18,9 +18,9 @@
  */
 package org.apache.commons.compress.compressors.gzip;
 
-import java.util.HashMap;
-import java.util.Locale;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import org.apache.commons.compress.compressors.FileNameUtil;
 
 /**
  * Utility code for the gzip compression format.
@@ -28,31 +28,14 @@ import java.util.Map;
  */
 public class GzipUtils {
 
-    /**
-     * Map from common filename suffixes to the suffixes that identify gzipped
-     * versions of those file types. For example: from ".tar" to ".tgz".
-     */
-    private static final Map<String, String> compressSuffix =
-        new HashMap<String, String>();
-
-    /**
-     * Map from common filename suffixes of gzipped files to the corresponding
-     * suffixes of uncompressed files. For example: from ".tgz" to ".tar".
-     * <p>
-     * This map also contains gzip-specific suffixes like ".gz" and "-z".
-     * These suffixes are mapped to the empty string, as they should simply
-     * be removed from the filename when the file is uncompressed.
-     */
-    private static final Map<String, String> uncompressSuffix =
-        new HashMap<String, String>();
+    private static final FileNameUtil fileNameUtil;
 
     static {
-        compressSuffix.put(".tar", ".tgz");
-        compressSuffix.put(".svg", ".svgz");
-        compressSuffix.put(".cpio", ".cpgz");
-        compressSuffix.put(".wmf", ".wmz");
-        compressSuffix.put(".emf", ".emz");
-
+        // using LinkedHashMap so .tgz is preferred over .taz as
+        // compressed extension of .tar as FileNameUtil will use the
+        // first one found
+        Map<String, String> uncompressSuffix =
+            new LinkedHashMap<String, String>();
         uncompressSuffix.put(".tgz", ".tar");
         uncompressSuffix.put(".taz", ".tar");
         uncompressSuffix.put(".svgz", ".svg");
@@ -64,8 +47,8 @@ public class GzipUtils {
         uncompressSuffix.put("-gz", "");
         uncompressSuffix.put("-z", "");
         uncompressSuffix.put("_z", "");
+        fileNameUtil = new FileNameUtil(uncompressSuffix, ".gz");
     }
-    // N.B. if any shorter or longer keys are added, ensure the for loop limits are changed
 
     /** Private constructor to prevent instantiation of this utility class. */
     private GzipUtils() {
@@ -79,15 +62,7 @@ public class GzipUtils {
      *         <code>false</code> otherwise
      */
     public static boolean isCompressedFilename(String filename) {
-        String lower = filename.toLowerCase(Locale.ENGLISH);
-        int n = lower.length();
-        // Shortest suffix is two letters (_z), longest is five (.svgz)
-        for (int i = 2; i <= 5 && i < n; i++) {
-            if (uncompressSuffix.containsKey(lower.substring(n - i))) {
-                return true;
-            }
-        }
-        return false;
+        return fileNameUtil.isCompressedFilename(filename);
     }
 
     /**
@@ -104,16 +79,7 @@ public class GzipUtils {
      * @return name of the corresponding uncompressed file
      */
     public static String getUncompressedFilename(String filename) {
-        String lower = filename.toLowerCase(Locale.ENGLISH);
-        int n = lower.length();
-        // Shortest suffix is two letters (_z), longest is five (.svgz)
-        for (int i = 2; i <= 5 && i < n; i++) {
-            Object suffix = uncompressSuffix.get(lower.substring(n - i));
-            if (suffix != null) {
-                return filename.substring(0, n - i) + suffix;
-            }
-        }
-        return filename;
+        return fileNameUtil.getUncompressedFilename(filename);
     }
 
     /**
@@ -128,17 +94,7 @@ public class GzipUtils {
      * @return name of the corresponding compressed file
      */
     public static String getCompressedFilename(String filename) {
-        String lower = filename.toLowerCase(Locale.ENGLISH);
-        int n = lower.length();
-        // Shortest suffix is four letters (.svg), longest is five (.cpio)
-        for (int i = 4; i <= 5 && i < n; i++) {
-            Object suffix = compressSuffix.get(lower.substring(n - i));
-            if (suffix != null) {
-                return filename.substring(0, n - i) + suffix;
-            }
-        }
-        // No custom suffix found, just append the default .gz
-        return filename + ".gz";
+        return fileNameUtil.getCompressedFilename(filename);
     }
 
 }

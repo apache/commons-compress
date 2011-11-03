@@ -19,8 +19,8 @@
 package org.apache.commons.compress.compressors.xz;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
+import org.apache.commons.compress.compressors.FileNameUtil;
 
 /**
  * Utility code for the xz compression format.
@@ -29,32 +29,15 @@ import java.util.Map;
  */
 public class XZUtils {
 
-    /**
-     * Map from common filename suffixes to the suffixes that identify xzped
-     * versions of those file types. For example: from ".tar" to ".txz".
-     */
-    private static final Map<String, String> compressSuffix =
-        new HashMap<String, String>();
-
-    /**
-     * Map from common filename suffixes of xzped files to the corresponding
-     * suffixes of uncompressed files. For example: from ".tgz" to ".tar".
-     * <p>
-     * This map also contains xz-specific suffixes like ".gz" and "-z".
-     * These suffixes are mapped to the empty string, as they should simply
-     * be removed from the filename when the file is uncompressed.
-     */
-    private static final Map<String, String> uncompressSuffix =
-        new HashMap<String, String>();
+    private static final FileNameUtil fileNameUtil;
 
     static {
-        compressSuffix.put(".tar", ".txz");
-
+        Map<String, String> uncompressSuffix = new HashMap<String, String>();
         uncompressSuffix.put(".txz", ".tar");
         uncompressSuffix.put(".xz", "");
         uncompressSuffix.put("-xz", "");
+        fileNameUtil = new FileNameUtil(uncompressSuffix, ".xz");
     }
-    // N.B. if any shorter or longer keys are added, ensure the for loop limits are changed
 
     /** Private constructor to prevent instantiation of this utility class. */
     private XZUtils() {
@@ -68,15 +51,7 @@ public class XZUtils {
      *         <code>false</code> otherwise
      */
     public static boolean isCompressedFilename(String filename) {
-        String lower = filename.toLowerCase(Locale.ENGLISH);
-        int n = lower.length();
-        // Shortest suffix is three letters (.xz), longest is four (.txz)
-        for (int i = 3; i <= 4 && i < n; i++) {
-            if (uncompressSuffix.containsKey(lower.substring(n - i))) {
-                return true;
-            }
-        }
-        return false;
+        return fileNameUtil.isCompressedFilename(filename);
     }
 
     /**
@@ -93,16 +68,7 @@ public class XZUtils {
      * @return name of the corresponding uncompressed file
      */
     public static String getUncompressedFilename(String filename) {
-        String lower = filename.toLowerCase(Locale.ENGLISH);
-        int n = lower.length();
-        // Shortest suffix is three letters (.xz), longest is four (.txz)
-        for (int i = 3; i <= 4 && i < n; i++) {
-            Object suffix = uncompressSuffix.get(lower.substring(n - i));
-            if (suffix != null) {
-                return filename.substring(0, n - i) + suffix;
-            }
-        }
-        return filename;
+        return fileNameUtil.getUncompressedFilename(filename);
     }
 
     /**
@@ -117,17 +83,7 @@ public class XZUtils {
      * @return name of the corresponding compressed file
      */
     public static String getCompressedFilename(String filename) {
-        String lower = filename.toLowerCase(Locale.ENGLISH);
-        int n = lower.length();
-        // Shortest suffix is three letters (.xz), longest is four (.txz)
-        for (int i = 3; i <= 4 && i < n; i++) {
-            Object suffix = compressSuffix.get(lower.substring(n - i));
-            if (suffix != null) {
-                return filename.substring(0, n - i) + suffix;
-            }
-        }
-        // No custom suffix found, just append the default .gz
-        return filename + ".xz";
+        return fileNameUtil.getCompressedFilename(filename);
     }
 
 }
