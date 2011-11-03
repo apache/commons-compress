@@ -81,6 +81,7 @@
     </developer>
     <developer>
       <name>Christian Grobmeier</name>
+      <id>grobmeier</id>
       <email>grobmeier at apache.org</email>
     </developer>
   </developers>
