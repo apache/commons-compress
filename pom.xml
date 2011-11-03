@@ -102,6 +102,10 @@
       <name>Michael Kuss</name>
       <email>mail at michael minus kuss.de</email>
     </contributor>
+    <contributor>
+      <name>Lasse Collin</name>
+      <email>lasse.collin@tukaani.org</email>
+    </contributor>
   </contributors>
 
   <scm>
