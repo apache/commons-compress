@@ -49,6 +49,10 @@ The <action> type attribute can be add,update,fix,remove.
       <action issue="COMPRESS-156" type="add" date="2011-11-02">
         Support for the XZ format has been added.
       </action> 
+      <action issue="COMPRESS-146" type="update" date="2011-11-07">
+        BZip2CompressorInputStream now optionally supports reading of
+        concatenated .bz2 files.
+      </action>
     </release>
     <release version="1.3" date="2011-11-01"
              description="Release 1.3 - API compatible to 1.2 but requires Java5 at runtime">
