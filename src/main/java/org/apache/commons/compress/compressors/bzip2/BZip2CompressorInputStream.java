@@ -62,6 +62,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     private int nInUse;
 
     private InputStream in;
+    private final boolean decompressConcatenated;
 
     private int currentChar = -1;
 
@@ -97,8 +98,9 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     private BZip2CompressorInputStream.Data data;
 
     /**
-     * Constructs a new BZip2CompressorInputStream which decompresses bytes read from the
-     * specified stream.
+     * Constructs a new BZip2CompressorInputStream which decompresses bytes
+     * read from the specified stream. This doesn't suppprt decompressing
+     * concatenated .bz2 files.
      * 
      * @throws IOException
      *             if the stream content is malformed or an I/O error occurs.
@@ -106,10 +108,37 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      *             if <tt>in == null</tt>
      */
     public BZip2CompressorInputStream(final InputStream in) throws IOException {
+        this(in, false);
+    }
+
+    /**
+     * Constructs a new BZip2CompressorInputStream which decompresses bytes
+     * read from the specified stream.
+     *
+     * @param inputStream  the InputStream from which this object should
+     *                     be created of
+     * @param decompressConcatenated
+     *                     if true, decompress until the end of the input;
+     *                     if false, stop after the first .bz2 stream and
+     *                     leave the input position to point to the next
+     *                     byte after the .bz2 stream
+     *
+     * @throws IOException
+     *             if the stream content is malformed or an I/O error occurs.
+     * @throws NullPointerException
+     *             if <tt>in == null</tt>
+     */
+    public BZip2CompressorInputStream(final InputStream in,
+                                      final boolean decompressConcatenated)
+            throws IOException {
         super();
 
         this.in = in;
-        init();
+        this.decompressConcatenated = decompressConcatenated;
+
+        init(true);
+        initBlock();
+        setupBlock();
     }
 
     /** {@inheritDoc} */
@@ -210,54 +239,71 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         return retChar;
     }
 
-    private void init() throws IOException {
+    private boolean init(boolean isFirstStream) throws IOException {
         if (null == in) {
             throw new IOException("No InputStream");
         }
-        checkMagicChar('B', "first");
-        checkMagicChar('Z', "second");
-        checkMagicChar('h', "third");
+
+        int magic0 = this.in.read();
+        int magic1 = this.in.read();
+        int magic2 = this.in.read();
+        if (magic0 == -1 && !isFirstStream)
+            return false;
+
+        if (magic0 != 'B' || magic1 != 'Z' || magic2 != 'h')
+            throw new IOException(isFirstStream
+                    ? "Stream is not in the BZip2 format"
+                    : "Garbage after a valid BZip2 stream");
 
         int blockSize = this.in.read();
         if ((blockSize < '1') || (blockSize > '9')) {
-            throw new IOException("Stream is not BZip2 formatted: illegal "
-                                  + "blocksize " + (char) blockSize);
+            throw new IOException("BZip2 block size is invalid");
         }
 
         this.blockSize100k = blockSize - '0';
 
-        initBlock();
-        setupBlock();
-    }
+        this.bsLive = 0;
+        this.computedCombinedCRC = 0;
 
-    private void checkMagicChar(char expected, String position)
-        throws IOException {
-        int magic = this.in.read();
-        if (magic != expected) {
-            throw new IOException("Stream is not BZip2 formatted: expected '"
-                                  + expected + "' as " + position + " byte but got '"
-                                  + (char) magic + "'");
-        }
+        return true;
     }
 
     private void initBlock() throws IOException {
-        char magic0 = bsGetUByte();
-        char magic1 = bsGetUByte();
-        char magic2 = bsGetUByte();
-        char magic3 = bsGetUByte();
-        char magic4 = bsGetUByte();
-        char magic5 = bsGetUByte();
+        char magic0;
+        char magic1;
+        char magic2;
+        char magic3;
+        char magic4;
+        char magic5;
 
-        if (magic0 == 0x17 && magic1 == 0x72 && magic2 == 0x45
-            && magic3 == 0x38 && magic4 == 0x50 && magic5 == 0x90) {
-            complete(); // end of file
-        } else if (magic0 != 0x31 || // '1'
-                   magic1 != 0x41 || // ')'
-                   magic2 != 0x59 || // 'Y'
-                   magic3 != 0x26 || // '&'
-                   magic4 != 0x53 || // 'S'
-                   magic5 != 0x59 // 'Y'
-                   ) {
+        while (true) {
+            // Get the block magic bytes.
+            magic0 = bsGetUByte();
+            magic1 = bsGetUByte();
+            magic2 = bsGetUByte();
+            magic3 = bsGetUByte();
+            magic4 = bsGetUByte();
+            magic5 = bsGetUByte();
+
+            // If isn't end of stream magic, break out of the loop.
+            if (magic0 != 0x17 || magic1 != 0x72 || magic2 != 0x45
+                    || magic3 != 0x38 || magic4 != 0x50 || magic5 != 0x90)
+                break;
+
+            // End of stream was reached. Check the combined CRC and
+            // advance to the next .bz2 stream if decoding concatenated
+            // streams.
+            if (complete())
+                return;
+        }
+
+        if (magic0 != 0x31 || // '1'
+            magic1 != 0x41 || // ')'
+            magic2 != 0x59 || // 'Y'
+            magic3 != 0x26 || // '&'
+            magic4 != 0x53 || // 'S'
+            magic5 != 0x59 // 'Y'
+            ) {
             this.currentState = EOF;
             throw new IOException("bad block header");
         } else {
@@ -299,7 +345,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         this.computedCombinedCRC ^= this.computedBlockCRC;
     }
 
-    private void complete() throws IOException {
+    private boolean complete() throws IOException {
         this.storedCombinedCRC = bsGetInt();
         this.currentState = EOF;
         this.data = null;
@@ -307,6 +353,10 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         if (this.storedCombinedCRC != this.computedCombinedCRC) {
             throw new IOException("BZip2 CRC error");
         }
+
+        // Look for the next .bz2 stream if decompressing
+        // concatenated files.
+        return !decompressConcatenated || !init(false);
     }
 
     @Override
