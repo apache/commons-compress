@@ -1159,8 +1159,8 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             ChangeSetResults results = performer.perform(ais, out);
             assertTrue(results.getAddedFromStream().contains("testdata/test1.xml"));
-            assertTrue(results.getAddedFromChangeSet().size() == 0);
-            assertTrue(results.getDeleted().size() == 0);
+            assertTrue(results.getAddedFromChangeSet().isEmpty());
+            assertTrue(results.getDeleted().isEmpty());
             is.close();
 
         } finally {
