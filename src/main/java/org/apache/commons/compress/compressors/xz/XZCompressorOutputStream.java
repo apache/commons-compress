@@ -60,11 +60,13 @@ public class XZCompressorOutputStream extends CompressorOutputStream {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void write(int b) throws IOException {
         out.write(b);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void write(byte[] buf, int off, int len) throws IOException {
         out.write(buf, off, len);
     }
@@ -75,6 +77,7 @@ public class XZCompressorOutputStream extends CompressorOutputStream {
      * the output stream. Calling this function very often may increase
      * the compressed file size a lot.
      */
+    @Override
     public void flush() throws IOException {
         out.flush();
     }
@@ -88,6 +91,7 @@ public class XZCompressorOutputStream extends CompressorOutputStream {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void close() throws IOException {
         out.close();
     }
