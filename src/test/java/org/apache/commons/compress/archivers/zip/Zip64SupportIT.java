@@ -343,7 +343,7 @@ public class Zip64SupportIT {
 
                 RandomAccessFile a = new RandomAccessFile(f, "r");
                 try {
-                    final long end = getLengthAndPositionAtCentralDirectory(a);
+                    getLengthAndPositionAtCentralDirectory(a);
                     // skip first two entries
                     a.skipBytes(2 * 47 /* CD entry of file with
                                           file name length 1 and no
@@ -553,7 +553,7 @@ public class Zip64SupportIT {
 
                 RandomAccessFile a = new RandomAccessFile(f, "r");
                 try {
-                    final long end = getLengthAndPositionAtCentralDirectory(a);
+                    getLengthAndPositionAtCentralDirectory(a);
 
                     // grab first entry, verify sizes are 0xFFFFFFFF
                     // and it has a ZIP64 extended information extra
@@ -792,7 +792,7 @@ public class Zip64SupportIT {
                 RandomAccessFile a =
                     new RandomAccessFile(f, "r");
                 try {
-                    final long end = getLengthAndPositionAtCentralDirectory(a);
+                    getLengthAndPositionAtCentralDirectory(a);
 
                     long cfhPos = a.getFilePointer();
                     // grab first entry, verify
@@ -1034,9 +1034,8 @@ public class Zip64SupportIT {
 
                 RandomAccessFile a = new RandomAccessFile(f, "r");
                 try {
-                    final long end = getLengthAndPositionAtCentralDirectory(a);
+                    getLengthAndPositionAtCentralDirectory(a);
 
-                    long cfhPos = a.getFilePointer();
                     // grab first entry, verify
                     // sizes are 0xFFFFFFFF and
                     // it has a ZIP64 extended
@@ -1291,7 +1290,7 @@ public class Zip64SupportIT {
 
                 RandomAccessFile a = new RandomAccessFile(f, "r");
                 try {
-                    final long end = getLengthAndPositionAtCentralDirectory(a);
+                    getLengthAndPositionAtCentralDirectory(a);
 
                     // grab first CF entry, verify sizes are 1e6 and it
                     // has no ZIP64 extended information extra field
@@ -1467,7 +1466,7 @@ public class Zip64SupportIT {
 
                 RandomAccessFile a = new RandomAccessFile(f, "r");
                 try {
-                    final long end = getLengthAndPositionAtCentralDirectory(a);
+                    getLengthAndPositionAtCentralDirectory(a);
 
                     // grab first CF entry, verify sizes are 1e6 and it
                     // has an empty ZIP64 extended information extra field
@@ -1630,7 +1629,7 @@ public class Zip64SupportIT {
 
                 RandomAccessFile a = new RandomAccessFile(f, "r");
                 try {
-                    final long end = getLengthAndPositionAtCentralDirectory(a);
+                    getLengthAndPositionAtCentralDirectory(a);
 
                     long cfhPos = a.getFilePointer();
                     // grab first entry, verify sizes are not
@@ -1800,7 +1799,7 @@ public class Zip64SupportIT {
 
                 RandomAccessFile a = new RandomAccessFile(f, "r");
                 try {
-                    final long end = getLengthAndPositionAtCentralDirectory(a);
+                    getLengthAndPositionAtCentralDirectory(a);
 
                     long cfhPos = a.getFilePointer();
                     // grab first entry, verify sizes are not
@@ -1984,9 +1983,8 @@ public class Zip64SupportIT {
 
                 RandomAccessFile a = new RandomAccessFile(f, "r");
                 try {
-                    final long end = getLengthAndPositionAtCentralDirectory(a);
+                    getLengthAndPositionAtCentralDirectory(a);
 
-                    long cfhPos = a.getFilePointer();
                     // grab first CD entry, verify sizes are not
                     // 0xFFFFFFFF and it has a no ZIP64 extended
                     // information extra field
@@ -2157,9 +2155,8 @@ public class Zip64SupportIT {
 
                 RandomAccessFile a = new RandomAccessFile(f, "r");
                 try {
-                    final long end = getLengthAndPositionAtCentralDirectory(a);
+                    getLengthAndPositionAtCentralDirectory(a);
 
-                    long cfhPos = a.getFilePointer();
                     // grab first CD entry, verify sizes are not
                     // 0xFFFFFFFF and it has a an empty ZIP64 extended
                     // information extra field
