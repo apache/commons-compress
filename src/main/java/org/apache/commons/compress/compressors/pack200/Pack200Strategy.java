@@ -29,12 +29,14 @@ import java.io.IOException;
 public enum Pack200Strategy {
     /** Cache output in memory */
     IN_MEMORY() {
+        @Override
         StreamBridge newStreamBridge() {
             return new InMemoryCachingStreamBridge();
         }
     },
     /** Cache output in a temporary file */
     TEMP_FILE() {
+        @Override
         StreamBridge newStreamBridge() throws IOException {
             return new TempFileCachingStreamBridge();
         }

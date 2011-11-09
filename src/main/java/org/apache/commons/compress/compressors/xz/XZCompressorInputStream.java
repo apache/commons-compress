@@ -96,6 +96,7 @@ public class XZCompressorInputStream extends CompressorInputStream {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int read() throws IOException {
         int ret = in.read();
         count(ret == -1 ? -1 : 1);
@@ -103,6 +104,7 @@ public class XZCompressorInputStream extends CompressorInputStream {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int read(byte[] buf, int off, int len) throws IOException {
         int ret = in.read(buf, off, len);
         count(ret);
@@ -110,16 +112,19 @@ public class XZCompressorInputStream extends CompressorInputStream {
     }
 
     /** {@inheritDoc} */
+    @Override
     public long skip(long n) throws IOException {
         return in.skip(n);
     }
 
     /** {@inheritDoc} */
+    @Override
     public int available() throws IOException {
         return in.available();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void close() throws IOException {
         in.close();
     }
