@@ -53,7 +53,8 @@ public class XZCompressorInputStream extends CompressorInputStream {
 
     /**
      * Creates a new input stream that decompresses XZ-compressed data
-     * from the specified input stream. This supports concatenated .xz files.
+     * from the specified input stream. This doesn't support
+     * concatenated .xz files.
      *
      * @param       inputStream where to read the compressed data
      *
@@ -65,7 +66,7 @@ public class XZCompressorInputStream extends CompressorInputStream {
      */
     public XZCompressorInputStream(InputStream inputStream)
             throws IOException {
-        this(inputStream, true);
+        this(inputStream, false);
     }
 
     /**
