@@ -198,6 +198,7 @@ public class GzipCompressorInputStream extends CompressorInputStream {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int read() throws IOException {
         byte[] buf = new byte[1];
         return read(buf, 0, 1) == -1 ? -1 : (buf[0] & 0xFF);
@@ -208,6 +209,7 @@ public class GzipCompressorInputStream extends CompressorInputStream {
      *
      * @since Apache Commons Compress 1.1
      */
+    @Override
     public int read(byte[] b, int off, int len) throws IOException {
         if (endReached)
             return -1;
@@ -319,6 +321,7 @@ public class GzipCompressorInputStream extends CompressorInputStream {
      *
      * @since 1.2
      */
+    @Override
     public void close() throws IOException {
         if (inf != null) {
             inf.end();
