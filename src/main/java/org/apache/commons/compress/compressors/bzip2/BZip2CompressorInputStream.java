@@ -115,8 +115,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      * Constructs a new BZip2CompressorInputStream which decompresses bytes
      * read from the specified stream.
      *
-     * @param inputStream  the InputStream from which this object should
-     *                     be created of
+     * @param in the InputStream from which this object should be created
      * @param decompressConcatenated
      *                     if true, decompress until the end of the input;
      *                     if false, stop after the first .bz2 stream and
