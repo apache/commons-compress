@@ -1189,7 +1189,6 @@ public class Zip64SupportIT {
                                      throws IOException {
                                      zos.setUseZip64(Zip64Mode.Never);
                                      try {
-                                         byte[] buf = new byte[ONE_MILLION];
                                          ZipArchiveEntry zae =
                                              new ZipArchiveEntry("0");
                                          zae.setSize(FIVE_BILLION);
