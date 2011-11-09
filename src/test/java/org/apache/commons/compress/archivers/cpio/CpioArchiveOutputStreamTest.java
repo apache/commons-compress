@@ -21,7 +21,6 @@ package org.apache.commons.compress.archivers.cpio;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 
 import org.apache.commons.compress.AbstractTestCase;
