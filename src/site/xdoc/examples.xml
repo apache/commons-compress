@@ -71,6 +71,17 @@ ArchiveInputStream input = new ArchiveStreamFactory()
 
       </subsection>
 
+      <subsection name="Concatenated Streams">
+        <p>For the bzip2, gzip and xz formats a single compressed file
+        may actually consist of several streams that will be
+        concatenated by the commnd line utilities when decompressing
+        them.  Starting with Commons Compress 1.4 the
+        <code>*CompressorInputStream</code>s for these formats support
+        concatenating streams as well, but they won't do so by
+        default.  You must use the two-arg constructor and explicitly
+        enable the support.</p>
+      </subsection>
+
       <subsection name="ar">
 
         <p>In addition to the information stored

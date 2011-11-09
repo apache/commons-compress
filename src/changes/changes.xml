@@ -53,6 +53,10 @@ The <action> type attribute can be add,update,fix,remove.
         BZip2CompressorInputStream now optionally supports reading of
         concatenated .bz2 files.
       </action>
+      <action issue="COMPRESS-154" type="update" date="2011-11-09">
+        GZipCompressorInputStream now optionally supports reading of
+        concatenated .gz files.
+      </action>
     </release>
     <release version="1.3" date="2011-11-01"
              description="Release 1.3 - API compatible to 1.2 but requires Java5 at runtime">

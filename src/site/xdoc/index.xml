@@ -62,7 +62,7 @@
             usually correspond to single files or directories.</p>
 
           <p>Currently the bzip2, Pack200, XZ and gzip formats are
-            supported as compressors where gzip support is provided by
+            supported as compressors where gzip support is mostly provided by
             the <code>java.util.zip</code> package and Pack200 support
             by the <code>java.util.jar</code> package of the Java
             class library.  XZ support is provided by the public
