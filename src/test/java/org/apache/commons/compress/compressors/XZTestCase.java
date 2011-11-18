@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 
 public final class XZTestCase extends AbstractTestCase {
@@ -68,4 +69,39 @@ public final class XZTestCase extends AbstractTestCase {
         }
     }
 
+    public void testConcatenatedStreamsReadFirstOnly() throws Exception {
+        final File input = getFile("multiple.xz");
+        final InputStream is = new FileInputStream(input);
+        try {
+            final CompressorInputStream in = new CompressorStreamFactory()
+                .createCompressorInputStream("xz", is);
+            try {
+                assertEquals('a', in.read());
+                assertEquals(-1, in.read());
+            } finally {
+                in.close();
+            }
+        } finally {
+            is.close();
+        }
+    }
+
+    public void testConcatenatedStreamsReadFully() throws Exception {
+        final File input = getFile("multiple.xz");
+        final InputStream is = new FileInputStream(input);
+        try {
+            final CompressorInputStream in =
+                new XZCompressorInputStream(is, true);
+            try {
+                assertEquals('a', in.read());
+                assertEquals('b', in.read());
+                assertEquals(0, in.available());
+                assertEquals(-1, in.read());
+            } finally {
+                in.close();
+            }
+        } finally {
+            is.close();
+        }
+    }
 }

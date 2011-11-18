@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 
 public final class GZipTestCase extends AbstractTestCase {
@@ -64,6 +65,42 @@ public final class GZipTestCase extends AbstractTestCase {
                 if (out != null) {
                     out.close();
                 }
+                in.close();
+            }
+        } finally {
+            is.close();
+        }
+    }
+
+    public void testConcatenatedStreamsReadFirstOnly() throws Exception {
+        final File input = getFile("multiple.gz");
+        final InputStream is = new FileInputStream(input);
+        try {
+            final CompressorInputStream in = new CompressorStreamFactory()
+                .createCompressorInputStream("gz", is);
+            try {
+                assertEquals('a', in.read());
+                assertEquals(-1, in.read());
+            } finally {
+                in.close();
+            }
+        } finally {
+            is.close();
+        }
+    }
+
+    public void testConcatenatedStreamsReadFully() throws Exception {
+        final File input = getFile("multiple.gz");
+        final InputStream is = new FileInputStream(input);
+        try {
+            final CompressorInputStream in =
+                new GzipCompressorInputStream(is, true);
+            try {
+                assertEquals('a', in.read());
+                assertEquals('b', in.read());
+                assertEquals(0, in.available());
+                assertEquals(-1, in.read());
+            } finally {
                 in.close();
             }
         } finally {
