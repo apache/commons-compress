@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 
 public final class BZip2TestCase extends AbstractTestCase {
@@ -68,4 +69,39 @@ public final class BZip2TestCase extends AbstractTestCase {
         os.close();
     }
 
+    public void testConcatenatedStreamsReadFirstOnly() throws Exception {
+        final File input = getFile("multiple.bz2");
+        final InputStream is = new FileInputStream(input);
+        try {
+            final CompressorInputStream in = new CompressorStreamFactory()
+                .createCompressorInputStream("bzip2", is);
+            try {
+                assertEquals('a', in.read());
+                assertEquals(-1, in.read());
+            } finally {
+                in.close();
+            }
+        } finally {
+            is.close();
+        }
+    }
+
+    public void testConcatenatedStreamsReadFully() throws Exception {
+        final File input = getFile("multiple.bz2");
+        final InputStream is = new FileInputStream(input);
+        try {
+            final CompressorInputStream in =
+                new BZip2CompressorInputStream(is, true);
+            try {
+                assertEquals('a', in.read());
+                assertEquals('b', in.read());
+                assertEquals(0, in.available());
+                assertEquals(-1, in.read());
+            } finally {
+                in.close();
+            }
+        } finally {
+            is.close();
+        }
+    }
 }
