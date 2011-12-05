@@ -294,7 +294,7 @@
       </build>
     </profile>
     <profile>
-      <id>run-it</id>
+      <id>run-zipit</id>
       <!-- Add long running tests as **/*IT.java -->
       <build>
         <plugins>
@@ -321,8 +321,7 @@
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
               <includes>
-                <include>**/*Test.java</include>
-                <include>**/*IT.java</include>
+                <include>**/zip/*IT.java</include>
               </includes>
             </configuration>
           </plugin>
