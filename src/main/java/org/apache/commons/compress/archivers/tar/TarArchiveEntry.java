@@ -789,7 +789,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         offset += UIDLEN;
         groupId = (int) TarUtils.parseOctal(header, offset, GIDLEN);
         offset += GIDLEN;
-        size = TarUtils.parseOctal(header, offset, SIZELEN);
+        size = TarUtils.parseOctalOrBinary(header, offset, SIZELEN);
         offset += SIZELEN;
         modTime = TarUtils.parseOctal(header, offset, MODTIMELEN);
         offset += MODTIMELEN;

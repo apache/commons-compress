@@ -106,6 +106,41 @@ public class TarUtils {
         return result;
     }
 
+    /** 
+     * Compute the value contained in a byte buffer.  If the most
+     * significant bit of the first byte in the buffer is set, this
+     * bit is ignored and the rest of the buffer is interpreted as a
+     * binary number.  Otherwise, the buffer is interpreted as an
+     * octal number as per the parseOctal function above.
+     *
+     * @param buffer The buffer from which to parse.
+     * @param offset The offset into the buffer from which to parse.
+     * @param length The maximum number of bytes to parse.
+     * @return The long value of the octal or binary string.
+     * @throws IllegalArgumentException if the trailing space/NUL is
+     * missing or an invalid byte is detected in an octal number, or
+     * if a binary number would exceed the size of a signed long
+     * 64-bit integer.
+     */
+    public static long parseOctalOrBinary(final byte[] buffer, final int offset,
+                                          final int length) {
+
+        if ((buffer[offset] & 0x80) == 0) {
+            return parseOctal(buffer, offset, length);
+        }
+
+        long val = buffer[offset] & 0x7f;
+        for (int i = 1; i < length; i++) {
+            if (val >= (1L << (63 - 8))) {
+                throw new IllegalArgumentException(
+                    "At offset " + offset + ", " + length + " byte " +
+                    "binary number exceeds maximum signed long value");
+            }
+            val = (val << 8) + (buffer[offset + i] & 0xff);
+        }
+        return val;
+    }
+
     /**
      * Parse a boolean byte from a buffer.
      * Leading spaces and NUL are ignored.
