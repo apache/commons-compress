@@ -21,6 +21,7 @@ package org.apache.commons.compress.archivers.zip;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -128,11 +129,23 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         ZipFile zf = null;
         try {
             zf = new ZipFile(archive, null, true);
-            assertNotNull(zf.getEntry(ASCII_TXT));
-            assertNotNull(zf.getEntry(EURO_FOR_DOLLAR_TXT));
-            assertNotNull(zf.getEntry(OIL_BARREL_TXT));
+            assertCanRead(zf, ASCII_TXT);
+            assertCanRead(zf, EURO_FOR_DOLLAR_TXT);
+            assertCanRead(zf, OIL_BARREL_TXT);
         } finally {
             ZipFile.closeQuietly(zf);
+        }
+    }
+
+    private void assertCanRead(ZipFile zf, String fileName) throws IOException {
+        ZipArchiveEntry entry = zf.getEntry(fileName);
+        assertNotNull("Entry doesn't exist", entry);
+        InputStream is = zf.getInputStream(entry);
+        assertNotNull("InputStream is null", is);
+        try {
+            is.read();
+        } finally {
+            is.close();
         }
     }
 
