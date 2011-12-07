@@ -272,9 +272,21 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                     // make sure GC doesn't close "this" before we are done
                 }
             };
+        Map<String, String> headers = null;
+        try {
+            headers = parsePaxHeaders(br);
+        } finally {
+            // NO-OP but makes FindBugs happy
+            br.close();
+        }
+
+        getNextEntry(); // Get the actual file entry
+        applyPaxHeadersToCurrentEntry(headers);
+    }
+
+    Map<String, String> parsePaxHeaders(Reader br) throws IOException {
         Map<String, String> headers = new HashMap<String, String>();
         // Format is "length keyword=value\n";
-        try {
             while(true){ // get length
                 int ch;
                 int len = 0;
@@ -315,12 +327,10 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                     break;
                 }
             }
-        } finally {
-            // NO-OP but makes FindBugs happy
-            br.close();
-        }
+        return headers;
+    }
 
-        getNextEntry(); // Get the actual file entry
+    private void applyPaxHeadersToCurrentEntry(Map<String, String> headers) {
         /*
          * The following headers are defined for Pax.
          * atime, ctime, mtime, charset: cannot use these without changing TarArchiveEntry fields
