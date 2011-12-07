@@ -115,4 +115,17 @@ public class TarArchiveEntryTest extends TestCase {
         } catch (IllegalArgumentException expected) {
         }
     }
+
+    public void testAdjustFileSize(){
+        TarArchiveEntry t = new TarArchiveEntry("");
+        t.adjustSize(0);
+        t.adjustSize(1);
+        try {
+            t.adjustSize(-1);
+            fail("Should have generated IllegalArgumentException");
+        } catch (IllegalArgumentException expected) {
+        }
+        t.adjustSize(077777777777L);
+        t.adjustSize(0100000000000L);
+    }
 }

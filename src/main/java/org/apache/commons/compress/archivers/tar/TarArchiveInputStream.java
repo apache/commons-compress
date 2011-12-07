@@ -229,6 +229,11 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             readGNUSparse();
         }
 
+        // If the size of the next element in the archive has changed
+        // due to a new size being reported in the posix header
+        // information, we update entrySize here so that it contains
+        // the correct value.
+        entrySize = currEntry.getSize();
         return currEntry;
     }
 
@@ -341,7 +346,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             } else if ("uname".equals(key)){
                 currEntry.setUserName(val);
             } else if ("size".equals(key)){
-                currEntry.setSize(Long.parseLong(val));
+                currEntry.adjustSize(Long.parseLong(val));
             }
         }
     }
