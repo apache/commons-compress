@@ -57,13 +57,14 @@ The <action> type attribute can be add,update,fix,remove.
         GZipCompressorInputStream now optionally supports reading of
         concatenated .gz files.
       </action>
-      <action issue="COMPRESS-16" type="update" date="2011-12-05">
-        The tar package can now read archives that use GNU extensions
-        for files that are longer than 8 GByte.
-      </action>
       <action issue="COMPRESS-164" type="fix" date="2011-12-05">
         ZipFile didn't work properly for archives using unicode extra
         fields rather than UTF-8 filenames and the EFS-Flag.
+      </action>
+      <action issue="COMPRESS-16" type="update" date="2011-12-07">
+        The tar package can now read archives that use star/GNU/BSD
+        extensions for files that are longer than 8 GByte as well as
+        archives that use the POSIX/PAX variant.
       </action>
     </release>
     <release version="1.3" date="2011-11-01"

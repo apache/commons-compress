@@ -30,13 +30,22 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 public class BigFilesIT {
 
     @Test
-    public void readFileBiggerThan8GByte() throws Exception {
+    public void readFileBiggerThan8GByteStar() throws Exception {
+        readFileBiggerThan8GByte("/8.star.tar.gz");
+    }
+
+    @Test
+    public void readFileBiggerThan8GBytePosix() throws Exception {
+        readFileBiggerThan8GByte("/8.posix.tar.gz");
+    }
+
+    private void readFileBiggerThan8GByte(String name) throws Exception {
         GzipCompressorInputStream in = null;
         TarArchiveInputStream tin = null;
         try {
             in =
                 new GzipCompressorInputStream(BigFilesIT.class
-                                              .getResourceAsStream("/8.tar.gz"));
+                                              .getResourceAsStream(name));
             tin = new TarArchiveInputStream(in);
             TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
