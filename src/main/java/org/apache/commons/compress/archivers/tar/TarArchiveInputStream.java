@@ -287,46 +287,46 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     Map<String, String> parsePaxHeaders(Reader br) throws IOException {
         Map<String, String> headers = new HashMap<String, String>();
         // Format is "length keyword=value\n";
-            while(true){ // get length
-                int ch;
-                int len = 0;
-                int read = 0;
-                while((ch = br.read()) != -1){
-                    read++;
-                    if (ch == ' '){ // End of length string
-                        // Get keyword
-                        StringBuffer sb = new StringBuffer();
-                        while((ch = br.read()) != -1){
-                            read++;
-                            if (ch == '='){ // end of keyword
-                                String keyword = sb.toString();
-                                // Get rest of entry
-                                char[] cbuf = new char[len-read];
-                                int got = br.read(cbuf);
-                                if (got != len - read){
-                                    throw new IOException("Failed to read "
-                                                          + "Paxheader. Expected "
-                                                          + (len - read)
-                                                          + " chars, read "
-                                                          + got);
-                                }
-                                // Drop trailing NL
-                                String value = new String(cbuf, 0,
-                                                          len - read - 1);
-                                headers.put(keyword, value);
-                                break;
+        while(true){ // get length
+            int ch;
+            int len = 0;
+            int read = 0;
+            while((ch = br.read()) != -1){
+                read++;
+                if (ch == ' '){ // End of length string
+                    // Get keyword
+                    StringBuffer sb = new StringBuffer();
+                    while((ch = br.read()) != -1){
+                        read++;
+                        if (ch == '='){ // end of keyword
+                            String keyword = sb.toString();
+                            // Get rest of entry
+                            char[] cbuf = new char[len-read];
+                            int got = br.read(cbuf);
+                            if (got != len - read){
+                                throw new IOException("Failed to read "
+                                                      + "Paxheader. Expected "
+                                                      + (len - read)
+                                                      + " chars, read "
+                                                      + got);
                             }
-                            sb.append((char) ch);
+                            // Drop trailing NL
+                            String value = new String(cbuf, 0,
+                                                      len - read - 1);
+                            headers.put(keyword, value);
+                            break;
                         }
-                        break; // Processed single header
+                        sb.append((char) ch);
                     }
-                    len *= 10;
-                    len += ch - '0';
+                    break; // Processed single header
                 }
-                if (ch == -1){ // EOF
-                    break;
-                }
+                len *= 10;
+                len += ch - '0';
             }
+            if (ch == -1){ // EOF
+                break;
+            }
+        }
         return headers;
     }
 
