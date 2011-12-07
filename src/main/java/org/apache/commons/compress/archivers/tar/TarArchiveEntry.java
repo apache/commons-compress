@@ -572,6 +572,20 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     }
 
     /**
+     * Set this entry's file size.
+     *
+     * <p>Invoked by input stream when reading a PAX header.</p>
+     * @throws IllegalArgumentException if the size is &lt; 0
+     * @since Apache Commons Compress 1.4
+     */
+    void adjustSize(long size) {
+        if (size < 0){
+            throw new IllegalArgumentException("Size is out of range: " + size);
+        }
+        this.size = size;
+    }
+
+    /**
      * Indicates in case of a sparse file if an extension sparse header
      * follows.
      *
