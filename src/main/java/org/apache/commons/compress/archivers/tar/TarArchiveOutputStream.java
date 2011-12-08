@@ -21,6 +21,9 @@ package org.apache.commons.compress.archivers.tar;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
@@ -207,6 +210,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             throw new IOException("Stream has already been finished");
         }
         TarArchiveEntry entry = (TarArchiveEntry) archiveEntry;
+        Map<String, String> paxHeaders = new HashMap<String, String>();
         if (entry.getName().length() >= TarConstants.NAMELEN) {
 
             if (longFileMode == LONGFILE_GNU) {
@@ -227,12 +231,19 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                                            + TarConstants.NAMELEN + " bytes)");
             }
         }
+
         if (entry.getSize() > TarConstants.MAXSIZE) {
-            if (bigFileMode != BIGFILE_STAR) {
+            if (bigFileMode == BIGFILE_POSIX) {
+                paxHeaders.put("size", String.valueOf(entry.getSize()));
+            } else if (bigFileMode != BIGFILE_STAR) {
                 throw new RuntimeException("file size '" + entry.getSize()
                                            + "' is too big ( > "
                                            + TarConstants.MAXSIZE + " bytes)");
             }
+        }
+
+        if (paxHeaders.size() > 0) {
+            writePaxHeaders(entry.getName(), paxHeaders);
         }
 
         entry.writeEntryHeader(recordBuf, bigFileMode == BIGFILE_STAR);
@@ -365,6 +376,47 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             numToWrite -= num;
             wOffset += num;
         }
+    }
+
+    /**
+     * Writes a PAX extended header with the given map as contents.
+     * @since Apache Commons Compress 1.4
+     */
+    void writePaxHeaders(String entryName,
+                         Map<String, String> headers) throws IOException {
+        String name = "./PaxHeaders.X/" + entryName;
+        if (name.length() > TarConstants.NAMELEN) {
+            name = name.substring(0, TarConstants.NAMELEN);
+        }
+        TarArchiveEntry pex = new TarArchiveEntry(name,
+                                                  TarConstants.LF_PAX_EXTENDED_HEADER_LC);
+
+        StringWriter w = new StringWriter();
+        for (Map.Entry<String, String> h : headers.entrySet()) {
+            String key = h.getKey();
+            String value = h.getValue();
+            int len = key.length() + value.length()
+                + 3 /* blank, equals and newline */
+                + 2 /* guess 9 < actual length < 100 */;
+            String line = len + " " + key + "=" + value + "\n";
+            int actualLength = line.getBytes("UTF-8").length;
+            while (len != actualLength) {
+                // Adjust for cases where length < 10 or > 100
+                // or where UTF-8 encoding isn't a single octet
+                // per character.
+                // Must be in loop as size may go from 99 to 100 in
+                // first pass so we'd need a second.
+                len = actualLength;
+                line = len + " " + key + "=" + value + "\n";
+                actualLength = line.getBytes("UTF-8").length;
+            }
+            w.write(line);
+        }
+        byte[] data = w.toString().getBytes("UTF-8");
+        pex.setSize(data.length);
+        putArchiveEntry(pex);
+        write(data);
+        closeArchiveEntry();
     }
 
     /**

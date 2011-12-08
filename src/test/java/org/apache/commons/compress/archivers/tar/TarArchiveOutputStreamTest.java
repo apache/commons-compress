@@ -23,6 +23,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
@@ -92,5 +94,92 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
             new TarArchiveInputStream(new ByteArrayInputStream(data));
         TarArchiveEntry e = tin.getNextTarEntry();
         assertEquals(0100000000000L, e.getSize());
+    }
+
+    public void testBigFilePosixMode() throws Exception {
+        TarArchiveEntry t = new TarArchiveEntry("foo");
+        t.setSize(0100000000000L);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
+        tos.setBigFileMode(TarArchiveOutputStream.BIGFILE_POSIX);
+        tos.putArchiveEntry(t);
+        // make sure header is written to byte array
+        tos.write(new byte[10 * 1024]);
+        byte[] data = bos.toByteArray();
+        assertEquals("00000000000 ",
+                     new String(data,
+                                1024 + TarConstants.NAMELEN
+                                + TarConstants.MODELEN
+                                + TarConstants.UIDLEN
+                                + TarConstants.GIDLEN, 12,
+                                "UTF-8"));
+        TarArchiveInputStream tin =
+            new TarArchiveInputStream(new ByteArrayInputStream(data));
+        TarArchiveEntry e = tin.getNextTarEntry();
+        assertEquals(0100000000000L, e.getSize());
+    }
+
+    public void testWriteSimplePaxHeaders() throws Exception {
+        Map<String, String> m = new HashMap<String, String>();
+        m.put("a", "b");
+        byte[] data = writePaxHeader(m);
+        assertEquals("00000000006 ",
+                     new String(data, TarConstants.NAMELEN
+                                + TarConstants.MODELEN
+                                + TarConstants.UIDLEN
+                                + TarConstants.GIDLEN, 12,
+                                "UTF-8"));
+        assertEquals("6 a=b\n", new String(data, 512, 6, "UTF-8"));
+    }
+
+    public void testPaxHeadersWithLength99() throws Exception {
+        Map<String, String> m = new HashMap<String, String>();
+        m.put("a",
+              "0123456789012345678901234567890123456789"
+              + "01234567890123456789012345678901234567890123456789"
+              + "012");
+        byte[] data = writePaxHeader(m);
+        assertEquals("00000000143 ",
+                     new String(data, TarConstants.NAMELEN
+                                + TarConstants.MODELEN
+                                + TarConstants.UIDLEN
+                                + TarConstants.GIDLEN, 12,
+                                "UTF-8"));
+        assertEquals("99 a=0123456789012345678901234567890123456789"
+              + "01234567890123456789012345678901234567890123456789"
+              + "012\n", new String(data, 512, 99, "UTF-8"));
+    }
+
+    public void testPaxHeadersWithLength101() throws Exception {
+        Map<String, String> m = new HashMap<String, String>();
+        m.put("a",
+              "0123456789012345678901234567890123456789"
+              + "01234567890123456789012345678901234567890123456789"
+              + "0123");
+        byte[] data = writePaxHeader(m);
+        assertEquals("00000000145 ",
+                     new String(data, TarConstants.NAMELEN
+                                + TarConstants.MODELEN
+                                + TarConstants.UIDLEN
+                                + TarConstants.GIDLEN, 12,
+                                "UTF-8"));
+        assertEquals("101 a=0123456789012345678901234567890123456789"
+              + "01234567890123456789012345678901234567890123456789"
+              + "0123\n", new String(data, 512, 101, "UTF-8"));
+    }
+
+    private byte[] writePaxHeader(Map<String, String> m) throws Exception {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
+        tos.writePaxHeaders("foo", m);
+
+        // add a dummy entry so data gets written
+        TarArchiveEntry t = new TarArchiveEntry("foo");
+        t.setSize(10 * 1024);
+        tos.putArchiveEntry(t);
+        tos.write(new byte[10 * 1024]);
+        tos.closeArchiveEntry();
+
+        return bos.toByteArray();
     }
 }
