@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<!--
+
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+-->
+<document>
+  <properties>
+    <title>Commons Compress TAR package</title>
+    <author email="dev@commons.apache.org">Commons Documentation Team</author>
+  </properties>
+  <body>
+    <section name="The TAR package">
+
+      <p>In addition to the information stored
+      in <code>ArchiveEntry</code> a <code>TarArchiveEntry</code>
+      stores various attributes including information about the
+      original owner and permissions.</p>
+
+      <p>There are several different tar formats and the TAR package
+      of Compress 1.4 mostly only provides the common functionality
+      of the existing variants.</p>
+
+      <p>The original format (often called "ustar") didn't support
+      file names longer than 100 characters or bigger than 8 GiB and
+      the tar package will by default fail if you try to write an
+      entry that goes beyond those limits.</p>
+
+      <p>The tar package does not support the full POSIX tar standard
+      nor more modern GNU extension of said standard.</p>
+
+      <subsection name="Long File Names">
+
+        <p>The <code>longFileMode</code> option of
+        <code>TarArchiveOutputStream</code> controls how files with
+        names longer than 100 characters are handled.  The possible
+        choices are:</p>
+
+        <ul>
+          <li><code>LONGFILE_ERROR</code>: throw an exception if such a
+          file is added.  This is the default.</li>
+          <li><code>LONGFILE_TRUNCATE</code>: truncate such names.</li>
+          <li><code>LONGFILE_GNU</code>: use a GNU tar variant now
+          refered to as "oldgnu" of storing such names.  If you choose
+          the GNU tar option, the archive can not be extracted using
+          many other tar implementations like the ones of OpenBSD,
+          Solaris or MacOS X.</li> 
+          <li><code>LONGFILE_POSIX</code>: use a PAX <a
+          href="http://pubs.opengroup.org/onlinepubs/009695399/utilities/pax.html#tag_04_100_13_03">extended
+          header</a> as defined by POSIX 1003.1.  Most modern tar
+          implementations are able to extract such archives. <em>since
+          Commons Compress 1.4</em></li>
+        </ul>
+
+        <p><code>TarArchiveInputStream</code> will recognize the GNU
+        tar as well as the POSIX extensions (starting with Commons
+        Compress 1.2) for long file names and reads the longer names
+        transparently.</p>
+      </subsection>
+
+      <subsection name="Big Entries">
+
+        <p>The <code>bigFileMode</code> option of
+        <code>TarArchiveOutputStream</code> controls how files larger
+        than 8GiB are handled.  The possible choices are:</p>
+
+        <ul>
+          <li><code>BIGFILE_ERROR</code>: throw an exception if such a
+          file is added.  This is the default.</li>
+          <li><code>BIGFILE_STAR</code>: use a variant first
+          introduced by J&#xf6;rg Schilling's <a
+          href="http://developer.berlios.de/projects/star">star</a>
+          and later adopted by GNU and BSD tar.  This method is not
+          supported by all implementations.</li>
+          <li><code>BUGFILE_POSIX</code>: use a PAX <a
+          href="http://pubs.opengroup.org/onlinepubs/009695399/utilities/pax.html#tag_04_100_13_03">extended
+          header</a> as defined by POSIX 1003.1.  Most modern tar
+          implementations are able to extract such archives.</li>
+        </ul>
+
+        <p>Starting with Commons Compress 1.4
+        <code>TarArchiveInputStream</code> will recognize the star as
+        well as the POSIX extensions for big file sizes and reads the
+        sizes transparently.</p>
+      </subsection>
+
+      <subsection name="Sparse files">
+
+        <p><code>TarArchiveInputStream</code> will recognize sparse
+        file entries stored using the "oldgnu" format
+        (<code>-&#x2d;sparse-version=0.0</code> in GNU tar) but is not
+        able to extract them correctly.  <a href="#Unsupported
+        Features"><code>canReadEntryData</code></a> will return false
+        on such entries.  The other variants of sparse files can
+        currently not be detected at all.</p>
+      </subsection>
+
+    </section>
+  </body>
+</document>
