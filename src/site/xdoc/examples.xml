@@ -174,39 +174,8 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
 
       <subsection name="tar">
 
-        <p>In addition to the information stored
-          in <code>ArchiveEntry</code> a <code>TarArchiveEntry</code>
-          stores various attributes including information about the
-          original owner and permissions.</p>
-
-        <p>There are several different tar formats and the TAR package
-          of Compress 1.0 only provides the common functionality of
-          the existing variants.</p>
-        <p>The original format (often called "ustar") didn't support
-          file names longer than 100 characters and the tar package
-          will fail if you try to add an entry longer than that.
-          The <code>longFileMode</code> option
-          of <code>TarArchiveOutputStream</code> can be used to make
-          the archive truncate such names or use a GNU tar variant now
-          refered to as "oldgnu" of storing such names.  If you choose
-          the GNU tar option, the archive can not be extracted using
-          many other tar implementations like the ones of OpenBSD,
-          Solaris or MacOS X.</p>
-        <p>The tar package does not support the full POSIX tar
-          standard nor more modern GNU extension of said standard.  It
-          cannot deal with entries larger than 2 GByte either.</p>
-
-        <p><code>TarArchiveInputStream</code> will recognize the GNU
-          tar extension for long file names and read the longer names
-          accordingly.</p>
-
-        <p><code>TarArchiveInputStream</code> will recognize sparse
-          file entries stored using the "oldgnu" format
-          (<code>-&#x2d;sparse-version=0.0</code> in GNU tar) but is
-          not able to extract them correctly.
-          <a href="#Unsupported Features"><code>canReadEntryData</code></a>
-          will return false on such entries.  The other variants of
-          sparse files can currently not be detected at all.</p>
+        <p>The TAR package has a <a href="tar.html">dedicated
+            documentation page</a>.</p>
 
         <p>Adding an entry to a tar archive:</p>
 <source><![CDATA[
