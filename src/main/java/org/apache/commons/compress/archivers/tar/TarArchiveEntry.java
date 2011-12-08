@@ -561,26 +561,11 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * Set this entry's file size.
      *
      * @param size This entry's new file size.
-     * @throws IllegalArgumentException if the size is < 0
-     * or > {@link TarConstants#MAXSIZE} (077777777777L).
+     * @throws IllegalArgumentException if the size is &lt; 0.
      */
     public void setSize(long size) {
-        if (size > MAXSIZE || size < 0){
-            throw new IllegalArgumentException("Size is out of range: "+size);
-        }
-        this.size = size;
-    }
-
-    /**
-     * Set this entry's file size.
-     *
-     * <p>Invoked by input stream when reading a PAX header.</p>
-     * @throws IllegalArgumentException if the size is &lt; 0
-     * @since Apache Commons Compress 1.4
-     */
-    void adjustSize(long size) {
         if (size < 0){
-            throw new IllegalArgumentException("Size is out of range: " + size);
+            throw new IllegalArgumentException("Size is out of range: "+size);
         }
         this.size = size;
     }
@@ -751,16 +736,35 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     /**
      * Write an entry's header information to a header buffer.
      *
+     * <p>This method does not use the star/GNU tar/BSD tar extensions.</p>
+     *
      * @param outbuf The tar entry header buffer to fill in.
      */
     public void writeEntryHeader(byte[] outbuf) {
+        writeEntryHeader(outbuf, false);
+    }
+
+    /**
+     * Write an entry's header information to a header buffer.
+     *
+     * @param outbuf The tar entry header buffer to fill in.
+     * @param starMode whether to use the star/GNU tar/BSD tar
+     * extension for the size field if the size is bigger than 8GiB
+     * @since Apache Commons Compress 1.4
+     */
+    public void writeEntryHeader(byte[] outbuf, boolean starMode) {
         int offset = 0;
 
         offset = TarUtils.formatNameBytes(name, outbuf, offset, NAMELEN);
         offset = TarUtils.formatOctalBytes(mode, outbuf, offset, MODELEN);
         offset = TarUtils.formatOctalBytes(userId, outbuf, offset, UIDLEN);
         offset = TarUtils.formatOctalBytes(groupId, outbuf, offset, GIDLEN);
-        offset = TarUtils.formatLongOctalBytes(size, outbuf, offset, SIZELEN);
+        if (size > TarConstants.MAXSIZE && !starMode) {
+            // size is in PAX header
+            offset = TarUtils.formatLongOctalBytes(0, outbuf, offset, SIZELEN);
+        } else {
+            offset = TarUtils.formatLongOctalOrBinaryBytes(size, outbuf, offset, SIZELEN);
+        }
         offset = TarUtils.formatLongOctalBytes(modTime, outbuf, offset, MODTIMELEN);
 
         int csOffset = offset;

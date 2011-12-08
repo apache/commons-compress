@@ -42,6 +42,15 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     /** GNU tar extensions are used to store long file names in the archive. */
     public static final int LONGFILE_GNU = 2;
 
+    /** Fail if a big file (&gt; 8GiB) is required in the archive. */
+    public static final int BIGFILE_ERROR = 0;
+
+    /** star/GNU tar/BSD tar extensions are used to store big file sizes in the archive. */
+    public static final int BIGFILE_STAR = 1;
+
+    /** POSIX/PAX extensions are used to store big file sizes in the archive. */
+    public static final int BIGFILE_POSIX = 2;
+
     private long      currSize;
     private String    currName;
     private long      currBytes;
@@ -50,6 +59,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     private final byte[]    assemBuf;
     protected final TarBuffer buffer;
     private int       longFileMode = LONGFILE_ERROR;
+    private int       bigFileMode = BIGFILE_ERROR;
 
     private boolean closed = false;
 
@@ -102,6 +112,18 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      */
     public void setLongFileMode(int longFileMode) {
         this.longFileMode = longFileMode;
+    }
+
+    /**
+     * Set the big file mode.
+     * This can be BIGFILE_ERROR(0), BIGFILE_POSIX(1) or BIGFILE_STAR(2).
+     * This specifies the treatment of big files (sizes &gt; TarConstants.MAXSIZE).
+     * Default is BIGFILE_ERROR.
+     * @param bigFileMode the mode to use
+     * @since Apache Commons Compress 1.4
+     */
+    public void setBigFileMode(int bigFileMode) {
+        this.bigFileMode = bigFileMode;
     }
 
 
@@ -205,8 +227,15 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                                            + TarConstants.NAMELEN + " bytes)");
             }
         }
+        if (entry.getSize() > TarConstants.MAXSIZE) {
+            if (bigFileMode != BIGFILE_STAR) {
+                throw new RuntimeException("file size '" + entry.getSize()
+                                           + "' is too big ( > "
+                                           + TarConstants.MAXSIZE + " bytes)");
+            }
+        }
 
-        entry.writeEntryHeader(recordBuf);
+        entry.writeEntryHeader(recordBuf, bigFileMode == BIGFILE_STAR);
         buffer.writeRecord(recordBuf);
 
         currBytes = 0;
