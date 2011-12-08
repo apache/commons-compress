@@ -121,6 +121,7 @@ public class TarUtils {
      * missing or an invalid byte is detected in an octal number, or
      * if a binary number would exceed the size of a signed long
      * 64-bit integer.
+     * @since Apache Commons Compress 1.4
      */
     public static long parseOctalOrBinary(final byte[] buffer, final int offset,
                                           final int length) {
@@ -300,6 +301,45 @@ public class TarUtils {
         formatUnsignedOctalString(value, buf, offset, idx);
         buf[offset + idx] = (byte) ' '; // Trailing space
 
+        return offset + length;
+    }
+
+    /**
+     * Write an long integer into a buffer as an octal string if this
+     * will fit, or as a binary number otherwise.
+     * 
+     * Uses {@link #formatUnsignedOctalString} to format
+     * the value as an octal string with leading zeros.
+     * The converted number is followed by a space.
+     * 
+     * @param value The value to write into the buffer.
+     * @param buf The destination buffer.
+     * @param offset The starting offset into the buffer.
+     * @param length The length of the buffer.
+     * @return The updated offset.
+     * @throws IllegalArgumentException if the value (and trailer)
+     * will not fit in the buffer.
+     * @since Apache Commons Compress 1.4
+     */
+    public static int formatLongOctalOrBinaryBytes(
+        final long value, byte[] buf, final int offset, final int length) {
+
+        if (value < TarConstants.MAXSIZE + 1) {
+            return formatLongOctalBytes(value, buf, offset, length);
+        }
+
+        long val = value;
+        for (int i = offset + length - 1; i >= offset; i--) {
+            buf[i] = (byte) val;
+            val >>= 8;
+        }
+
+        if (val != 0 || (buf[offset] & 0x80) != 0) {
+            throw new IllegalArgumentException("Value " + value +
+                " is too large for " + length + " byte field.");
+        }
+
+        buf[offset] |= 0x80;
         return offset + length;
     }
 

@@ -356,7 +356,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             } else if ("uname".equals(key)){
                 currEntry.setUserName(val);
             } else if ("size".equals(key)){
-                currEntry.adjustSize(Long.parseLong(val));
+                currEntry.setSize(Long.parseLong(val));
             }
         }
     }
