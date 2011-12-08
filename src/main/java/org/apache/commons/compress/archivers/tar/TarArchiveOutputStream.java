@@ -45,6 +45,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     /** GNU tar extensions are used to store long file names in the archive. */
     public static final int LONGFILE_GNU = 2;
 
+    /** POSIX/PAX extensions are used to store long file names in the archive. */
+    public static final int LONGFILE_POSIX = 3;
+
     /** Fail if a big file (&gt; 8GiB) is required in the archive. */
     public static final int BIGFILE_ERROR = 0;
 
@@ -213,7 +216,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         Map<String, String> paxHeaders = new HashMap<String, String>();
         if (entry.getName().length() >= TarConstants.NAMELEN) {
 
-            if (longFileMode == LONGFILE_GNU) {
+            if (longFileMode == LONGFILE_POSIX) {
+                paxHeaders.put("path", entry.getName());
+            } else if (longFileMode == LONGFILE_GNU) {
                 // create a TarEntry for the LongLink, the contents
                 // of which are the entry's name
                 TarArchiveEntry longLinkEntry = new TarArchiveEntry(TarConstants.GNU_LONGLINK,
@@ -385,8 +390,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     void writePaxHeaders(String entryName,
                          Map<String, String> headers) throws IOException {
         String name = "./PaxHeaders.X/" + entryName;
-        if (name.length() > TarConstants.NAMELEN) {
-            name = name.substring(0, TarConstants.NAMELEN);
+        if (name.length() >= TarConstants.NAMELEN) {
+            name = name.substring(0, TarConstants.NAMELEN - 1);
         }
         TarArchiveEntry pex = new TarArchiveEntry(name,
                                                   TarConstants.LF_PAX_EXTENDED_HEADER_LC);

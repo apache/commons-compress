@@ -182,4 +182,26 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
 
         return bos.toByteArray();
     }
+
+    public void testWriteLongFileNamePosixMode() throws Exception {
+        String n = "01234567890123456789012345678901234567890123456789"
+            + "01234567890123456789012345678901234567890123456789"
+            + "01234567890123456789012345678901234567890123456789";
+        TarArchiveEntry t =
+            new TarArchiveEntry(n);
+        t.setSize(10 * 1024);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
+        tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
+        tos.putArchiveEntry(t);
+        tos.write(new byte[10 * 1024]);
+        tos.closeArchiveEntry();
+        byte[] data = bos.toByteArray();
+        assertEquals("160 path=" + n + "\n",
+                     new String(data, 512, 160, "UTF-8"));
+        TarArchiveInputStream tin =
+            new TarArchiveInputStream(new ByteArrayInputStream(data));
+        TarArchiveEntry e = tin.getNextTarEntry();
+        assertEquals(n, e.getName());
+    }
 }
