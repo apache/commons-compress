@@ -821,8 +821,8 @@ public class ZipFile {
             while (lenToSkip > 0) {
                 int skipped = archive.skipBytes(lenToSkip);
                 if (skipped <= 0) {
-                    throw new RuntimeException("failed to skip file name in"
-                                               + " local file header");
+                    throw new IOException("failed to skip file name in"
+                                          + " local file header");
                 }
                 lenToSkip -= skipped;
             }
