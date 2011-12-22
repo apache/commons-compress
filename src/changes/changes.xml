@@ -75,6 +75,11 @@ The <action> type attribute can be add,update,fix,remove.
         The tar package can now use the POSIX/PAX variant for writing
         entries with names longer than 100 characters.
       </action>
+      <action issue="COMPRESS-169" type="fix" date="2011-12-22">
+        For corrupt archives ZipFile would throw a RuntimeException in
+        some cases and an IOException in others.  It will now
+        consistently throw an IOException.
+      </action>
     </release>
     <release version="1.3" date="2011-11-01"
              description="Release 1.3 - API compatible to 1.2 but requires Java5 at runtime">
