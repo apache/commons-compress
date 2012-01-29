@@ -46,6 +46,10 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.4" date="unreleased"
              description="Release 1.4">
+      <action issue="COMPRESS-171" type="fix" date="2012-01-29">
+        ArchiveStreamFactory.createArchiveInputStream would claim
+        short text files were TAR archives.
+      </action> 
       <action issue="COMPRESS-156" type="add" date="2011-11-02">
         Support for the XZ format has been added.
       </action> 
