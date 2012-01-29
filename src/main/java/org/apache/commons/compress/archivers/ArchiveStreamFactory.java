@@ -238,15 +238,16 @@ public class ArchiveStreamFactory {
             }
             // COMPRESS-117 - improve auto-recognition
             if (signatureLength >= 512) {
-            try {
-                TarArchiveInputStream tais = new TarArchiveInputStream(new ByteArrayInputStream(tarheader));
-                tais.getNextEntry();
-                return new TarArchiveInputStream(in);
-            } catch (Exception e) { // NOPMD
-                // can generate IllegalArgumentException as well as IOException
-                // autodetection, simply not a TAR
-                // ignored
-            }
+                try {
+                    TarArchiveInputStream tais = new TarArchiveInputStream(new ByteArrayInputStream(tarheader));
+                    tais.getNextEntry();
+                    return new TarArchiveInputStream(in);
+                } catch (Exception e) { // NOPMD
+                    // can generate IllegalArgumentException as well
+                    // as IOException
+                    // autodetection, simply not a TAR
+                    // ignored
+                }
             }
         } catch (IOException e) {
             throw new ArchiveException("Could not use reset and mark operations.", e);
