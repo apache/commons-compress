@@ -142,16 +142,16 @@ public class TarUtilsTest extends TestCase {
         assertEquals('3', buffer[buffer.length-3]); // end of number
     }
     
-    public void testNegative() {
+    public void testNegative() throws Exception {
         byte [] buffer = new byte[22];
         TarUtils.formatUnsignedOctalString(-1, buffer, 0, buffer.length);
-        assertEquals("1777777777777777777777", new String(buffer));
+        assertEquals("1777777777777777777777", new String(buffer, "UTF-8"));
     }
 
-    public void testOverflow() {
+    public void testOverflow() throws Exception {
         byte [] buffer = new byte[8-1]; // a lot of the numbers have 8-byte buffers (nul term)
         TarUtils.formatUnsignedOctalString(07777777L, buffer, 0, buffer.length);
-        assertEquals("7777777", new String(buffer));        
+        assertEquals("7777777", new String(buffer, "UTF-8"));        
         try {
             TarUtils.formatUnsignedOctalString(017777777L, buffer, 0, buffer.length);
             fail("Should have cause IllegalArgumentException");
