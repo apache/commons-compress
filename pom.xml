@@ -276,23 +276,6 @@
         </site>
       </distributionManagement>
     </profile>
-    <profile>
-      <id>relnotes</id>
-      <!-- Override the built-in announce.vm in order to generate release notes -->
-      <build>
-        <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-changes-plugin</artifactId>
-              <version>${commons.changes.version}</version>
-              <configuration>
-                <template>release-notes.vm</template>
-                <templateDirectory>src/changes</templateDirectory>
-              </configuration>
-            </plugin>
-        </plugins>
-      </build>
-    </profile>
     <!-- Add long running tests as **/*IT.java -->
     <profile>
       <id>run-zipit</id>
