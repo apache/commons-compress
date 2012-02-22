@@ -803,9 +803,9 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         offset += NAMELEN;
         mode = (int) TarUtils.parseOctal(header, offset, MODELEN);
         offset += MODELEN;
-        userId = (int) TarUtils.parseOctal(header, offset, UIDLEN);
+        userId = (int) TarUtils.parseOctalOrBinary(header, offset, UIDLEN);
         offset += UIDLEN;
-        groupId = (int) TarUtils.parseOctal(header, offset, GIDLEN);
+        groupId = (int) TarUtils.parseOctalOrBinary(header, offset, GIDLEN);
         offset += GIDLEN;
         size = TarUtils.parseOctalOrBinary(header, offset, SIZELEN);
         offset += SIZELEN;
