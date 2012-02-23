@@ -46,6 +46,9 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.4" date="unreleased"
              description="Release 1.4">
+      <action issue="COMPRESS-179" type="fix" date="2012-02-23">
+        TarUtils.formatLongOctalOrBinaryBytes() assumes the field will be 12 bytes long
+      </action> 
       <action issue="COMPRESS-175" type="fix" date="2012-02-22">
         GNU Tar sometimes uses binary encoding for UID and GID
       </action> 

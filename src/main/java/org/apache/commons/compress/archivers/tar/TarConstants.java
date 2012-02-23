@@ -58,6 +58,13 @@ public interface TarConstants {
     int    GIDLEN = 8;
 
     /**
+     * The maximum value of gid/uid in a tar archive which can
+     * be expressed in octal char notation (that's 7 sevens, octal).
+     * @since 1.4
+     */
+    long    MAXID = 07777777L;
+ 
+    /**
      * The length of the checksum field in a header buffer.
      */
     int    CHKSUMLEN = 8;
@@ -69,7 +76,8 @@ public interface TarConstants {
     int    SIZELEN = 12;
 
     /**
-     * The maximum size of a file in a tar archive (That's 11 sevens, octal).
+     * The maximum size of a file in a tar archive 
+     * which can be expressed in octal char notation (that's 11 sevens, octal).
      */
     long   MAXSIZE = 077777777777L;
 

@@ -324,7 +324,10 @@ public class TarUtils {
     public static int formatLongOctalOrBinaryBytes(
         final long value, byte[] buf, final int offset, final int length) {
 
-        if (value < TarConstants.MAXSIZE + 1) {
+        // Check whether we are dealing with UID/GID or SIZE field
+        final long maxAsOctalChar = length == TarConstants.UIDLEN ? TarConstants.MAXID : TarConstants.MAXSIZE;
+
+        if (value <= maxAsOctalChar) { // OK to store as octal chars
             return formatLongOctalBytes(value, buf, offset, length);
         }
 
