@@ -77,6 +77,11 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * } header;
  * All unused bytes are set to null.
  * New-style GNU tar files are slightly different from the above.
+ * For values of size larger than 077777777777L (11 7s)
+ * or uid and gid larger than 07777777L (7 7s)
+ * the sign bit of the first byte is set, and the rest of the
+ * field is the binary representation of the number.
+ * See TarUtils.parseOctalOrBinary.
  * </pre>
  * 
  * <p>
