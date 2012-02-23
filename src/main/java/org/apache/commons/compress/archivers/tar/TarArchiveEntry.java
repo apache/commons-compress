@@ -307,6 +307,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * to null.
      *
      * @param headerBuf The header bytes from a tar archive entry.
+     * @throws IllegalArgumentException if any of the numeric fields have an invalid format
      */
     public TarArchiveEntry(byte[] headerBuf) {
         this();
@@ -800,6 +801,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * Parse an entry's header information from a header buffer.
      *
      * @param header The tar entry header buffer to get information from.
+     * @throws IllegalArgumentException if any of the numeric fields have an invalid format
      */
     public void parseTarHeader(byte[] header) {
         int offset = 0;
