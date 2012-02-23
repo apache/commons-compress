@@ -110,20 +110,43 @@ public class TarUtilsTest extends TestCase {
         }
     }
 
-    private void checkRoundTripOctal(final long value) {
-        byte [] buffer = new byte[12];
+    private void checkRoundTripOctal(final long value, final int bufsize) {
+        byte [] buffer = new byte[bufsize];
         long parseValue;
         TarUtils.formatLongOctalBytes(value, buffer, 0, buffer.length);
         parseValue = TarUtils.parseOctal(buffer,0, buffer.length);
         assertEquals(value,parseValue);
     }
     
+    private void checkRoundTripOctal(final long value) {
+        checkRoundTripOctal(value, TarConstants.SIZELEN);
+    }
+
     public void testRoundTripOctal() {
         checkRoundTripOctal(0);
         checkRoundTripOctal(1);
 //        checkRoundTripOctal(-1); // TODO What should this do?
-        checkRoundTripOctal(077777777777L);
+        checkRoundTripOctal(TarConstants.MAXSIZE);
 //        checkRoundTripOctal(0100000000000L); // TODO What should this do?
+
+        checkRoundTripOctal(0, TarConstants.UIDLEN);
+        checkRoundTripOctal(1, TarConstants.UIDLEN);
+        checkRoundTripOctal(TarConstants.MAXID, 8);
+    }
+
+    private void checkRoundTripOctalOrBinary(final long value, final int bufsize) {
+        byte [] buffer = new byte[bufsize];
+        long parseValue;
+        TarUtils.formatLongOctalOrBinaryBytes(value, buffer, 0, buffer.length);
+        parseValue = TarUtils.parseOctalOrBinary(buffer,0, buffer.length);
+        assertEquals(value,parseValue);
+    }
+
+    public void testRoundTripOctalOrBinary() {
+        checkRoundTripOctalOrBinary(0, 8);
+        checkRoundTripOctalOrBinary(1, 8);
+        checkRoundTripOctalOrBinary(Long.MAX_VALUE, 8); // [0x7f ff ff ff ff ff ff ff
+        checkRoundTripOctalOrBinary(TarConstants.MAXSIZE, 8); // will need binary format
     }
     
     // Check correct trailing bytes are generated
