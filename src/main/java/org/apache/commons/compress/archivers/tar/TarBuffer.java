@@ -44,14 +44,16 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
     /** Default block size */
     public static final int DEFAULT_BLKSIZE = (DEFAULT_RCDSIZE * 20);
 
+    // TODO make these final? (would need to change close() method)
     private InputStream     inStream;
     private OutputStream    outStream;
-    private byte[]          blockBuffer;
+    private final int             blockSize;
+    private final int             recordSize;
+    private final int             recsPerBlock;
+    private final byte[]          blockBuffer;
+
     private int             currBlkIdx;
     private int             currRecIdx;
-    private int             blockSize;
-    private int             recordSize;
-    private int             recsPerBlock;
     
     /**
      * Constructor for a TarBuffer on an input stream.
@@ -77,10 +79,7 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
      * @param recordSize the record size to use
      */
     public TarBuffer(InputStream inStream, int blockSize, int recordSize) {
-        this.inStream = inStream;
-        this.outStream = null;
-
-        this.initialize(blockSize, recordSize);
+        this(inStream, null, blockSize, recordSize);
     }
 
     /**
@@ -107,16 +106,15 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
      * @param recordSize the record size to use
      */
     public TarBuffer(OutputStream outStream, int blockSize, int recordSize) {
-        this.inStream = null;
-        this.outStream = outStream;
-
-        this.initialize(blockSize, recordSize);
+        this(null, outStream, blockSize, recordSize);
     }
 
     /**
-     * Initialization common to all constructors.
+     * Private constructor to perform common setup.
      */
-    private void initialize(int blockSize, int recordSize) {
+    private TarBuffer(InputStream inStream, OutputStream outStream, int blockSize, int recordSize) {
+        this.inStream = inStream;
+        this.outStream = outStream;        
         this.blockSize = blockSize;
         this.recordSize = recordSize;
         this.recsPerBlock = (this.blockSize / this.recordSize);
