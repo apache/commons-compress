@@ -195,7 +195,13 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             return null;
         }
 
-        currEntry = new TarArchiveEntry(headerBuf);
+        try {
+            currEntry = new TarArchiveEntry(headerBuf);
+        } catch (IllegalArgumentException e) {
+            IOException ioe = new IOException("Error detected parsing the header");
+            ioe.initCause(e);
+            throw ioe;
+        }
         entryOffset = 0;
         entrySize = currEntry.getSize();
 
