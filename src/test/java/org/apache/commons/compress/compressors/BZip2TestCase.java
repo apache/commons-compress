@@ -104,4 +104,25 @@ public final class BZip2TestCase extends AbstractTestCase {
             is.close();
         }
     }
+
+    public void testCOMPRESS131() throws Exception {
+        final File input = getFile("COMPRESS-131.bz2");
+        final InputStream is = new FileInputStream(input);
+        try {
+            final CompressorInputStream in =
+                new BZip2CompressorInputStream(is, true);
+            try {
+                int l = 0;
+                while(in.read() != -1) {
+                    l++;
+                }
+                assertEquals(539, l);
+            } finally {
+                in.close();
+            }
+        } finally {
+            is.close();
+        }
+    }
+    
 }
