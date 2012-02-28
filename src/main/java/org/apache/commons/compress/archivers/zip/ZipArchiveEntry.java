@@ -509,6 +509,10 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * @param name the name to use
      */
     protected void setName(String name) {
+        if (name != null && getPlatform() == PLATFORM_FAT
+            && name.indexOf("/") == -1) {
+            name = name.replace('\\', '/');
+        }
         this.name = name;
     }
 
