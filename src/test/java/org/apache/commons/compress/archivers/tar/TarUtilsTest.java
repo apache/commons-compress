@@ -72,12 +72,6 @@ public class TarUtilsTest extends TestCase {
             fail("Expected IllegalArgumentException - should be at least 2 bytes long");
         } catch (IllegalArgumentException expected) {
         }
-        buffer=new byte[]{0,0,' '}; // not all NULs
-        try {
-            TarUtils.parseOctal(buffer,0, buffer.length);
-            fail("Expected IllegalArgumentException - not all NULs");
-        } catch (IllegalArgumentException expected) {
-        }
         buffer=new byte[]{' ',0,0,0}; // not all NULs
         try {
             TarUtils.parseOctal(buffer,0, buffer.length);

@@ -34,13 +34,18 @@ public class TarUtils {
 
     /**
      * Parse an octal string from a buffer.
-     * Leading spaces are ignored.
-     * The buffer must contain a trailing space or NUL,
-     * and may contain an additional trailing space or NUL.
      *
-     * The input buffer is allowed to contain all NULs,
+     * <p>Leading spaces are ignored.
+     * The buffer must contain a trailing space or NUL,
+     * and may contain an additional trailing space or NUL.</p>
+     *
+     * <p>The input buffer is allowed to contain all NULs,
      * in which case the method returns 0L
-     * (this allows for missing fields).
+     * (this allows for missing fields).</p>
+     *
+     * <p>To work-around some tar implementations that insert a
+     * leading NUL this method returns 0 if it detects a leading NUL
+     * since Commons Compress 1.4.</p>
      *
      * @param buffer The buffer from which to parse.
      * @param offset The offset into the buffer from which to parse.
@@ -57,14 +62,7 @@ public class TarUtils {
             throw new IllegalArgumentException("Length "+length+" must be at least 2");
         }
 
-        boolean allNUL = true;
-        for (int i = start; i < end; i++){
-            if (buffer[i] != 0){
-                allNUL = false;
-                break;
-            }
-        }
-        if (allNUL) {
+        if (buffer[start] == 0) {
             return 0L;
         }
 

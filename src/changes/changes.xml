@@ -46,6 +46,10 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.4" date="unreleased"
              description="Release 1.4">
+      <action issue="COMPRESS-181" type="update" date="2012-03-02">
+        Added a workaround for a Bug some tar implementations that add
+        a NUL byte as first byte in numeric header fields.
+      </action> 
       <action issue="COMPRESS-176" type="update" date="2012-02-28">
         Added a workaround for a Bug in WinZIP which uses backslashes
         as path separators in Unicode Extra Fields.
