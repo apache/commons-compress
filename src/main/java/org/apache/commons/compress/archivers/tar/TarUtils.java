@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.archivers.tar;
 
+import java.math.BigInteger;
+
 /**
  * This class provides static utility methods to work with byte streams.
  *
@@ -127,17 +129,52 @@ public class TarUtils {
         if ((buffer[offset] & 0x80) == 0) {
             return parseOctal(buffer, offset, length);
         }
+        final boolean negative = buffer[offset] == (byte) 0xff;
+        if (length < 9) {
+            return parseBinaryLong(buffer, offset, length, negative);
+        }
+        return parseBinaryBigInteger(buffer, offset, length, negative);
+    }
 
-        long val = buffer[offset] & 0x7f;
+    private static long parseBinaryLong(final byte[] buffer, final int offset,
+                                        final int length,
+                                        final boolean negative) {
+        if (length >= 9) {
+            throw new IllegalArgumentException("At offset " + offset + ", "
+                                               + length + " byte binary number"
+                                               + " exceeds maximum signed long"
+                                               + " value");
+        }
+        long val = 0;
         for (int i = 1; i < length; i++) {
-            if (val >= (1L << (63 - 8))) {
-                throw new IllegalArgumentException(
-                    "At offset " + offset + ", " + length + " byte " +
-                    "binary number exceeds maximum signed long value");
-            }
             val = (val << 8) + (buffer[offset + i] & 0xff);
         }
-        return val;
+        if (negative) {
+            // 2's complement
+            val--;
+            val ^= ((long) Math.pow(2, (length - 1) * 8) - 1);
+        }
+        return negative ? -val : val;
+    }
+
+    private static long parseBinaryBigInteger(final byte[] buffer,
+                                              final int offset,
+                                              final int length,
+                                              final boolean negative) {
+        byte[] remainder = new byte[length - 1];
+        System.arraycopy(buffer, offset + 1, remainder, 0, length - 1);
+        BigInteger val = new BigInteger(remainder);
+        if (negative) {
+            // 2's complement
+            val = val.add(BigInteger.valueOf(-1)).not();
+        }
+        if (val.bitLength() > 63) {
+            throw new IllegalArgumentException("At offset " + offset + ", "
+                                               + length + " byte binary number"
+                                               + " exceeds maximum signed long"
+                                               + " value");
+        }
+        return negative ? -val.longValue() : val.longValue();
     }
 
     /**
@@ -325,23 +362,54 @@ public class TarUtils {
         // Check whether we are dealing with UID/GID or SIZE field
         final long maxAsOctalChar = length == TarConstants.UIDLEN ? TarConstants.MAXID : TarConstants.MAXSIZE;
 
-        if (value <= maxAsOctalChar) { // OK to store as octal chars
+        final boolean negative = value < 0;
+        if (!negative && value <= maxAsOctalChar) { // OK to store as octal chars
             return formatLongOctalBytes(value, buf, offset, length);
         }
 
-        long val = value;
+        if (length < 9) {
+            formatLongBinary(value, buf, offset, length, negative);
+        }
+        formatBigIntegerBinary(value, buf, offset, length, negative);
+
+        buf[offset] = (byte) (negative ? 0xff : 0x80);
+        return offset + length;
+    }
+
+    private static void formatLongBinary(final long value, byte[] buf,
+                                         final int offset, final int length,
+                                         final boolean negative) {
+        final int bits = (length - 1) * 8;
+        final long max = (long) Math.pow(2, bits);
+        long val = Math.abs(value);
+        if (val >= max) {
+            throw new IllegalArgumentException("Value " + value +
+                " is too large for " + length + " byte field.");
+        }
+        if (negative) {
+            val ^= max - 1;
+            val |= 0xff << bits;
+            val++;
+        }
         for (int i = offset + length - 1; i >= offset; i--) {
             buf[i] = (byte) val;
             val >>= 8;
         }
+    }
 
-        if (val != 0 || (buf[offset] & 0x80) != 0) {
-            throw new IllegalArgumentException("Value " + value +
-                " is too large for " + length + " byte field.");
+    private static void formatBigIntegerBinary(final long value, byte[] buf,
+                                               final int offset,
+                                               final int length,
+                                               final boolean negative) {
+        BigInteger val = BigInteger.valueOf(value);
+        final byte[] b = val.toByteArray();
+        final int len = b.length;
+        final int off = offset + length - len;
+        System.arraycopy(b, 0, buf, off, len);
+        final byte fill = (byte) (negative ? 0xff : 0);
+        for (int i = offset + 1; i < off; i++) {
+            buf[i] = fill;
         }
-
-        buf[offset] |= 0x80;
-        return offset + length;
     }
 
     /**

@@ -136,11 +136,18 @@ public class TarUtilsTest extends TestCase {
         assertEquals(value,parseValue);
     }
 
-    public void testRoundTripOctalOrBinary() {
-        checkRoundTripOctalOrBinary(0, 8);
-        checkRoundTripOctalOrBinary(1, 8);
-        checkRoundTripOctalOrBinary(Long.MAX_VALUE, 8); // [0x7f ff ff ff ff ff ff ff
-        checkRoundTripOctalOrBinary(TarConstants.MAXSIZE, 8); // will need binary format
+    public void testRoundTripOctalOrBinary8() {
+        testRoundTripOctalOrBinary(8);
+    }
+    public void testRoundTripOctalOrBinary12() {
+        testRoundTripOctalOrBinary(12);
+    }
+    private void testRoundTripOctalOrBinary(int length) {
+        checkRoundTripOctalOrBinary(0, length);
+        checkRoundTripOctalOrBinary(1, length);
+        checkRoundTripOctalOrBinary(Long.MAX_VALUE >> 7, length); // [0x00 ff ff ff ff ff ff ff
+        checkRoundTripOctalOrBinary(TarConstants.MAXSIZE, length); // will need binary format
+        checkRoundTripOctalOrBinary(-1, length); // will need binary format
     }
     
     // Check correct trailing bytes are generated
@@ -190,4 +197,31 @@ public class TarUtilsTest extends TestCase {
         int len = TarUtils.formatNameBytes(string, buff, 0, buff.length);
         assertEquals(string, TarUtils.parseName(buff, 0, len));
     }
+
+    public void testReadNegativeBinary8Byte() {
+        byte[] b = new byte[] {
+            (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+            (byte) 0xff, (byte) 0xff, (byte) 0xf1, (byte) 0xef,
+        };
+        assertEquals(-3601l, TarUtils.parseOctalOrBinary(b, 0, 8));
+    }
+
+    public void testReadNegativeBinary12Byte() {
+        byte[] b = new byte[] {
+            (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+            (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+            (byte) 0xff, (byte) 0xff, (byte) 0xf1, (byte) 0xef,
+        };
+        assertEquals(-3601l, TarUtils.parseOctalOrBinary(b, 0, 12));
+    }
+
+
+    public void testWriteNegativeBinary8Byte() {
+        byte[] b = new byte[] {
+            (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+            (byte) 0xff, (byte) 0xff, (byte) 0xf1, (byte) 0xef,
+        };
+        assertEquals(-3601l, TarUtils.parseOctalOrBinary(b, 0, 8));
+    }
+
 }
