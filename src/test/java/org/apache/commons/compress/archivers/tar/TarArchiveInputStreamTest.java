@@ -23,8 +23,10 @@ import java.io.FileInputStream;
 import java.io.StringReader;
 import java.net.URI;
 import java.net.URL;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
+import java.util.TimeZone;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -58,6 +60,25 @@ public class TarArchiveInputStreamTest {
             assertEquals("sample/link-to-txt-file.lnk", tae.getName());
             assertEquals(new Date(0), tae.getLastModifiedDate());
             assertTrue(tae.isSymbolicLink());
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+        }
+    }        
+
+    @Test
+    public void datePriorToEpochInGNUFormat() throws Exception {
+        URL tar = getClass().getResource("/preepoch-gnu.tar");
+        TarArchiveInputStream in = null;
+        try {
+            in = new TarArchiveInputStream(new FileInputStream(new File(new URI(tar.toString()))));
+            TarArchiveEntry tae = in.getNextTarEntry();
+            assertEquals("foo", tae.getName());
+            Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+            cal.set(1969, 11, 31, 23, 59, 59);
+            cal.set(Calendar.MILLISECOND, 0);
+            assertEquals(cal.getTime(), tae.getLastModifiedDate());
         } finally {
             if (in != null) {
                 in.close();
