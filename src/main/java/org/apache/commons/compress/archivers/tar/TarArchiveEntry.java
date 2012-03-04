@@ -808,7 +808,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
 
         name = TarUtils.parseName(header, offset, NAMELEN);
         offset += NAMELEN;
-        mode = (int) TarUtils.parseOctal(header, offset, MODELEN);
+        mode = (int) TarUtils.parseOctalOrBinary(header, offset, MODELEN);
         offset += MODELEN;
         userId = (int) TarUtils.parseOctalOrBinary(header, offset, UIDLEN);
         offset += UIDLEN;
@@ -816,7 +816,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         offset += GIDLEN;
         size = TarUtils.parseOctalOrBinary(header, offset, SIZELEN);
         offset += SIZELEN;
-        modTime = TarUtils.parseOctal(header, offset, MODTIMELEN);
+        modTime = TarUtils.parseOctalOrBinary(header, offset, MODTIMELEN);
         offset += MODTIMELEN;
         offset += CHKSUMLEN;
         linkFlag = header[offset++];
@@ -830,9 +830,9 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         offset += UNAMELEN;
         groupName = TarUtils.parseName(header, offset, GNAMELEN);
         offset += GNAMELEN;
-        devMajor = (int) TarUtils.parseOctal(header, offset, DEVLEN);
+        devMajor = (int) TarUtils.parseOctalOrBinary(header, offset, DEVLEN);
         offset += DEVLEN;
-        devMinor = (int) TarUtils.parseOctal(header, offset, DEVLEN);
+        devMinor = (int) TarUtils.parseOctalOrBinary(header, offset, DEVLEN);
         offset += DEVLEN;
 
         int type = evaluateType(header);
