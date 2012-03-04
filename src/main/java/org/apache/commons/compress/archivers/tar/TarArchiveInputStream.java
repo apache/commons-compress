@@ -339,12 +339,14 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     private void applyPaxHeadersToCurrentEntry(Map<String, String> headers) {
         /*
          * The following headers are defined for Pax.
-         * atime, ctime, mtime, charset: cannot use these without changing TarArchiveEntry fields
+         * atime, ctime, charset: cannot use these without changing TarArchiveEntry fields
+         * mtime
          * comment
          * gid, gname
          * linkpath
          * size
          * uid,uname
+         * SCHILY.devminor, SCHILY.devmajor: don't have setters/getters for those
          */
         for (Entry<String, String> ent : headers.entrySet()){
             String key = ent.getKey();
@@ -363,6 +365,14 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                 currEntry.setUserName(val);
             } else if ("size".equals(key)){
                 currEntry.setSize(Long.parseLong(val));
+            } else if ("mtime".equals(key)){
+                currEntry.setModTime((long) (Double.parseDouble(val) * 1000));
+            /* currently not settable
+            } else if ("SCHILY.devminor".equals(key)){
+                currEntry.setMinor(Integer.parseInt(val));
+            } else if ("SCHILY.devmajor".equals(key)){
+                currEntry.setMajor(Integer.parseInt(val));
+            */
             }
         }
     }
