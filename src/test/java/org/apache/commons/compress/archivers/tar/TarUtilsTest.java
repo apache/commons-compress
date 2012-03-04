@@ -139,15 +139,19 @@ public class TarUtilsTest extends TestCase {
     public void testRoundTripOctalOrBinary8() {
         testRoundTripOctalOrBinary(8);
     }
+
     public void testRoundTripOctalOrBinary12() {
         testRoundTripOctalOrBinary(12);
+        checkRoundTripOctalOrBinary(Long.MAX_VALUE, 12);
+        checkRoundTripOctalOrBinary(Long.MIN_VALUE + 1, 12);
     }
+
     private void testRoundTripOctalOrBinary(int length) {
         checkRoundTripOctalOrBinary(0, length);
         checkRoundTripOctalOrBinary(1, length);
-        checkRoundTripOctalOrBinary(Long.MAX_VALUE >> 7, length); // [0x00 ff ff ff ff ff ff ff
         checkRoundTripOctalOrBinary(TarConstants.MAXSIZE, length); // will need binary format
         checkRoundTripOctalOrBinary(-1, length); // will need binary format
+        checkRoundTripOctalOrBinary(0xff00000000000001l, length);
     }
     
     // Check correct trailing bytes are generated
