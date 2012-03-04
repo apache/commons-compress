@@ -69,7 +69,17 @@ public class TarArchiveInputStreamTest {
 
     @Test
     public void datePriorToEpochInGNUFormat() throws Exception {
-        URL tar = getClass().getResource("/preepoch-gnu.tar");
+        datePriorToEpoch("/preepoch-gnu.tar");
+    }
+
+
+    @Test
+    public void datePriorToEpochInPAXFormat() throws Exception {
+        datePriorToEpoch("/preepoch-posix.tar");
+    }
+
+    private void datePriorToEpoch(String archive) throws Exception {
+        URL tar = getClass().getResource(archive);
         TarArchiveInputStream in = null;
         try {
             in = new TarArchiveInputStream(new FileInputStream(new File(new URI(tar.toString()))));
