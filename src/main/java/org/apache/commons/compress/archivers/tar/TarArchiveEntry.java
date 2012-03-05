@@ -755,23 +755,22 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      *
      * @param outbuf The tar entry header buffer to fill in.
      * @param starMode whether to use the star/GNU tar/BSD tar
-     * extension for the size field if the size is bigger than 8GiB
+     * extension for numeric fields if their value doesn't fit in the
+     * maximum size of standard tar archives
      * @since Apache Commons Compress 1.4
      */
     public void writeEntryHeader(byte[] outbuf, boolean starMode) {
         int offset = 0;
 
         offset = TarUtils.formatNameBytes(name, outbuf, offset, NAMELEN);
-        offset = TarUtils.formatOctalBytes(mode, outbuf, offset, MODELEN);
-        offset = TarUtils.formatOctalBytes(userId, outbuf, offset, UIDLEN);
-        offset = TarUtils.formatOctalBytes(groupId, outbuf, offset, GIDLEN);
-        if (size > TarConstants.MAXSIZE && !starMode) {
-            // size is in PAX header
-            offset = TarUtils.formatLongOctalBytes(0, outbuf, offset, SIZELEN);
-        } else {
-            offset = TarUtils.formatLongOctalOrBinaryBytes(size, outbuf, offset, SIZELEN);
-        }
-        offset = TarUtils.formatLongOctalBytes(modTime, outbuf, offset, MODTIMELEN);
+        offset = writeEntryHeaderField(mode, outbuf, offset, MODELEN, starMode);
+        offset = writeEntryHeaderField(userId, outbuf, offset, UIDLEN,
+                                       starMode);
+        offset = writeEntryHeaderField(groupId, outbuf, offset, GIDLEN,
+                                       starMode);
+        offset = writeEntryHeaderField(size, outbuf, offset, SIZELEN, starMode);
+        offset = writeEntryHeaderField(modTime, outbuf, offset, MODTIMELEN,
+                                       starMode);
 
         int csOffset = offset;
 
@@ -785,8 +784,10 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         offset = TarUtils.formatNameBytes(version, outbuf, offset, VERSIONLEN);
         offset = TarUtils.formatNameBytes(userName, outbuf, offset, UNAMELEN);
         offset = TarUtils.formatNameBytes(groupName, outbuf, offset, GNAMELEN);
-        offset = TarUtils.formatOctalBytes(devMajor, outbuf, offset, DEVLEN);
-        offset = TarUtils.formatOctalBytes(devMinor, outbuf, offset, DEVLEN);
+        offset = writeEntryHeaderField(devMajor, outbuf, offset, DEVLEN,
+                                       starMode);
+        offset = writeEntryHeaderField(devMinor, outbuf, offset, DEVLEN,
+                                       starMode);
 
         while (offset < outbuf.length) {
             outbuf[offset++] = 0;
@@ -795,6 +796,19 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         long chk = TarUtils.computeCheckSum(outbuf);
 
         TarUtils.formatCheckSumOctalBytes(chk, outbuf, csOffset, CHKSUMLEN);
+    }
+
+    private int writeEntryHeaderField(long value, byte[] outbuf, int offset,
+                                      int length, boolean starMode) {
+        if (!starMode && (value < 0
+                          || value >= (1l << (3 * (length - 1))))) {
+            // value doesn't fit into field when written as octal
+            // number, will be written to PAX header or causes an
+            // error
+            return TarUtils.formatLongOctalBytes(0, outbuf, offset, length);
+        }
+        return TarUtils.formatLongOctalOrBinaryBytes(value, outbuf, offset,
+                                                     length);
     }
 
     /**
