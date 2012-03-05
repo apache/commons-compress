@@ -23,8 +23,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
@@ -204,4 +206,31 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         TarArchiveEntry e = tin.getNextTarEntry();
         assertEquals(n, e.getName());
     }
+
+    public void testOldEntryStarMode() throws Exception {
+        TarArchiveEntry t = new TarArchiveEntry("foo");
+        t.setSize(Integer.MAX_VALUE);
+        t.setModTime(-1000);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
+        tos.setBigFileMode(TarArchiveOutputStream.BIGFILE_STAR);
+        tos.putArchiveEntry(t);
+        // make sure header is written to byte array
+        tos.write(new byte[10 * 1024]);
+        byte[] data = bos.toByteArray();
+        assertEquals((byte) 0xff,
+                     data[TarConstants.NAMELEN
+                          + TarConstants.MODELEN
+                          + TarConstants.UIDLEN
+                          + TarConstants.GIDLEN
+                          + TarConstants.SIZELEN]);
+        TarArchiveInputStream tin =
+            new TarArchiveInputStream(new ByteArrayInputStream(data));
+        TarArchiveEntry e = tin.getNextTarEntry();
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+        cal.set(1969, 11, 31, 23, 59, 59);
+        cal.set(Calendar.MILLISECOND, 0);
+        assertEquals(cal.getTime(), e.getLastModifiedDate());
+    }
+
 }

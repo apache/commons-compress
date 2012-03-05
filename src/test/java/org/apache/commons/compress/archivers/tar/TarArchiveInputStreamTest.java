@@ -69,7 +69,7 @@ public class TarArchiveInputStreamTest {
 
     @Test
     public void datePriorToEpochInGNUFormat() throws Exception {
-        datePriorToEpoch("/preepoch-gnu.tar");
+        datePriorToEpoch("/preepoch-star.tar");
     }
 
 
