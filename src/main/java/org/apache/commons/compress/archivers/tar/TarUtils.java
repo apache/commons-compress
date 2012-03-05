@@ -380,7 +380,7 @@ public class TarUtils {
                                          final int offset, final int length,
                                          final boolean negative) {
         final int bits = (length - 1) * 8;
-        final long max = (long) Math.pow(2, bits);
+        final long max = 1l << bits;
         long val = Math.abs(value);
         if (val >= max) {
             throw new IllegalArgumentException("Value " + value +
