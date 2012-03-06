@@ -237,14 +237,10 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             }
         }
 
-        if (entry.getSize() > TarConstants.MAXSIZE) {
-            if (bigFileMode == BIGFILE_POSIX) {
-                paxHeaders.put("size", String.valueOf(entry.getSize()));
-            } else if (bigFileMode != BIGFILE_STAR) {
-                throw new RuntimeException("file size '" + entry.getSize()
-                                           + "' is too big ( > "
-                                           + TarConstants.MAXSIZE + " bytes)");
-            }
+        if (bigFileMode == BIGFILE_POSIX) {
+            addPaxHeadersForBigNumbers(paxHeaders, entry);
+        } else if (bigFileMode != BIGFILE_STAR) {
+            failForBigNumbers(entry);
         }
 
         if (paxHeaders.size() > 0) {
@@ -449,5 +445,59 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             throw new IOException("Stream has already been finished");
         }
         return new TarArchiveEntry(inputFile, entryName);
+    }
+
+    private void addPaxHeadersForBigNumbers(Map<String, String> paxHeaders,
+                                            TarArchiveEntry entry) {
+        if (entry.getSize() > TarConstants.MAXSIZE) {
+            paxHeaders.put("size", String.valueOf(entry.getSize()));
+        }
+        if (entry.getGroupId() > TarConstants.MAXID) {
+            paxHeaders.put("gid", String.valueOf(entry.getGroupId()));
+        }
+        final long mtime =  entry.getModTime().getTime() / 1000;
+        if (mtime < 0 || mtime > TarConstants.MAXSIZE) {
+            paxHeaders.put("mtime", String.valueOf(mtime));
+        }
+        if (entry.getUserId() > TarConstants.MAXID) {
+            paxHeaders.put("uid", String.valueOf(entry.getUserId()));
+        }
+        if (entry.getMode() > TarConstants.MAXID) {
+            throw new RuntimeException("mode '" + entry.getMode()
+                                       + "' is too big ( > "
+                                       + TarConstants.MAXID + " bytes)");
+        }
+        // TODO add devMajor and devMinor
+    }
+
+    private void failForBigNumbers(TarArchiveEntry entry) {
+        if (entry.getSize() > TarConstants.MAXSIZE) {
+            throw new RuntimeException("file size '" + entry.getSize()
+                                       + "' is too big ( > "
+                                       + TarConstants.MAXSIZE + " bytes)");
+        }
+        if (entry.getGroupId() > TarConstants.MAXID) {
+            throw new RuntimeException("group id '" + entry.getGroupId()
+                                       + "' is too big ( > "
+                                       + TarConstants.MAXID + " bytes)");
+        }
+        final long mtime =  entry.getModTime().getTime() / 1000;
+        if (mtime < 0 || mtime > TarConstants.MAXSIZE) {
+            throw new RuntimeException("last modification time '"
+                                       + entry.getModTime()
+                                       + "' is too big ( > "
+                                       + TarConstants.MAXSIZE + " bytes)");
+        }
+        if (entry.getUserId() > TarConstants.MAXID) {
+            throw new RuntimeException("user id '" + entry.getUserId()
+                                       + "' is too big ( > "
+                                       + TarConstants.MAXID + " bytes)");
+        }
+        if (entry.getMode() > TarConstants.MAXID) {
+            throw new RuntimeException("mode '" + entry.getMode()
+                                       + "' is too big ( > "
+                                       + TarConstants.MAXID + " bytes)");
+        }
+        // TODO add devMajor and devMinor
     }
 }
