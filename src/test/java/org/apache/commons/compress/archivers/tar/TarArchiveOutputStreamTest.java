@@ -233,4 +233,45 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         assertEquals(cal.getTime(), e.getLastModifiedDate());
     }
 
+    public void testOldEntryPosixMode() throws Exception {
+        TarArchiveEntry t = new TarArchiveEntry("foo");
+        t.setSize(Integer.MAX_VALUE);
+        t.setModTime(-1000);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
+        tos.setBigFileMode(TarArchiveOutputStream.BIGFILE_POSIX);
+        tos.putArchiveEntry(t);
+        // make sure header is written to byte array
+        tos.write(new byte[10 * 1024]);
+        byte[] data = bos.toByteArray();
+        assertEquals("00000000000 ",
+                     new String(data,
+                                1024 + TarConstants.NAMELEN
+                                + TarConstants.MODELEN
+                                + TarConstants.UIDLEN
+                                + TarConstants.GIDLEN
+                                + TarConstants.SIZELEN, 12,
+                                "UTF-8"));
+        TarArchiveInputStream tin =
+            new TarArchiveInputStream(new ByteArrayInputStream(data));
+        TarArchiveEntry e = tin.getNextTarEntry();
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+        cal.set(1969, 11, 31, 23, 59, 59);
+        cal.set(Calendar.MILLISECOND, 0);
+        assertEquals(cal.getTime(), e.getLastModifiedDate());
+    }
+
+    public void testOldEntryError() throws Exception {
+        TarArchiveEntry t = new TarArchiveEntry("foo");
+        t.setSize(Integer.MAX_VALUE);
+        t.setModTime(-1000);
+        TarArchiveOutputStream tos =
+            new TarArchiveOutputStream(new ByteArrayOutputStream());
+        try {
+            tos.putArchiveEntry(t);
+            fail("Should have generated RuntimeException");
+        } catch (RuntimeException expected) {
+        }
+    }
+
 }
