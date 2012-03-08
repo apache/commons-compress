@@ -234,9 +234,6 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         this.linkName = "";
         this.userName = "";
         this.groupName = "";
-        this.devMajor = 0;
-        this.devMinor = 0;
-
     }
 
     /**
