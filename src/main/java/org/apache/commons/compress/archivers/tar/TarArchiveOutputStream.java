@@ -462,12 +462,19 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         if (entry.getUserId() > TarConstants.MAXID) {
             paxHeaders.put("uid", String.valueOf(entry.getUserId()));
         }
+        if (entry.getDevMajor() > TarConstants.MAXID) {
+            paxHeaders.put("SCHILY.devmajor",
+                           String.valueOf(entry.getDevMajor()));
+        }
+        if (entry.getDevMinor() > TarConstants.MAXID) {
+            paxHeaders.put("SCHILY.devminor",
+                           String.valueOf(entry.getDevMinor()));
+        }
         if (entry.getMode() > TarConstants.MAXID) {
             throw new RuntimeException("mode '" + entry.getMode()
                                        + "' is too big ( > "
                                        + TarConstants.MAXID + " bytes)");
         }
-        // TODO add devMajor and devMinor
     }
 
     private void failForBigNumbers(TarArchiveEntry entry) {
@@ -498,6 +505,17 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                                        + "' is too big ( > "
                                        + TarConstants.MAXID + " bytes)");
         }
-        // TODO add devMajor and devMinor
+        if (entry.getDevMajor() > TarConstants.MAXID) {
+            throw new RuntimeException("major device number '"
+                                       + entry.getDevMajor()
+                                       + "' is too big ( > "
+                                       + TarConstants.MAXID + " bytes)");
+        }
+        if (entry.getDevMinor() > TarConstants.MAXID) {
+            throw new RuntimeException("minor device number '"
+                                       + entry.getDevMinor()
+                                       + "' is too big ( > "
+                                       + TarConstants.MAXID + " bytes)");
+        }
     }
 }

@@ -574,6 +574,56 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     }
 
     /**
+     * Get this entry's major device number.
+     *
+     * @return This entry's major device number.
+     * @since Apache Commons Compress 1.4
+     */
+    public int getDevMajor() {
+        return devMajor;
+    }
+
+    /**
+     * Set this entry's major device number.
+     *
+     * @param devNo This entry's major device number.
+     * @throws IllegalArgumentException if the devNo is &lt; 0.
+     * @since Apache Commons Compress 1.4
+     */
+    public void setDevMajor(int devNo) {
+        if (devNo < 0){
+            throw new IllegalArgumentException("Major device number is out of "
+                                               + "range: " + devNo);
+        }
+        this.devMajor = devNo;
+    }
+
+    /**
+     * Get this entry's minor device number.
+     *
+     * @return This entry's minor device number.
+     * @since Apache Commons Compress 1.4
+     */
+    public int getDevMinor() {
+        return devMinor;
+    }
+
+    /**
+     * Set this entry's minor device number.
+     *
+     * @param devNo This entry's minor device number.
+     * @throws IllegalArgumentException if the devNo is &lt; 0.
+     * @since Apache Commons Compress 1.4
+     */
+    public void setDevMinor(int devNo) {
+        if (devNo < 0){
+            throw new IllegalArgumentException("Minor device number is out of "
+                                               + "range: " + devNo);
+        }
+        this.devMinor = devNo;
+    }
+
+    /**
      * Indicates in case of a sparse file if an extension sparse header
      * follows.
      *
