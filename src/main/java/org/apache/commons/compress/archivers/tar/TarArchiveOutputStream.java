@@ -470,52 +470,28 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             paxHeaders.put("SCHILY.devminor",
                            String.valueOf(entry.getDevMinor()));
         }
-        if (entry.getMode() > TarConstants.MAXID) {
-            throw new RuntimeException("mode '" + entry.getMode()
-                                       + "' is too big ( > "
-                                       + TarConstants.MAXID + " bytes)");
-        }
+        failForBigNumber("mode", entry.getMode(), TarConstants.MAXID);
     }
 
     private void failForBigNumbers(TarArchiveEntry entry) {
-        if (entry.getSize() > TarConstants.MAXSIZE) {
-            throw new RuntimeException("file size '" + entry.getSize()
+        failForBigNumber("entry size", entry.getSize(), TarConstants.MAXSIZE);
+        failForBigNumber("group id", entry.getGroupId(), TarConstants.MAXID);
+        failForBigNumber("last modification time",
+                         entry.getModTime().getTime() / 1000,
+                         TarConstants.MAXSIZE);
+        failForBigNumber("user id", entry.getUserId(), TarConstants.MAXID);
+        failForBigNumber("mode", entry.getMode(), TarConstants.MAXID);
+        failForBigNumber("major device number", entry.getDevMajor(),
+                         TarConstants.MAXID);
+        failForBigNumber("minor device number", entry.getDevMinor(),
+                         TarConstants.MAXID);
+    }
+
+    private void failForBigNumber(String field, long value, long maxValue) {
+        if (value < 0 || value > maxValue) {
+            throw new RuntimeException(field + " '" + value
                                        + "' is too big ( > "
-                                       + TarConstants.MAXSIZE + " bytes)");
-        }
-        if (entry.getGroupId() > TarConstants.MAXID) {
-            throw new RuntimeException("group id '" + entry.getGroupId()
-                                       + "' is too big ( > "
-                                       + TarConstants.MAXID + " bytes)");
-        }
-        final long mtime =  entry.getModTime().getTime() / 1000;
-        if (mtime < 0 || mtime > TarConstants.MAXSIZE) {
-            throw new RuntimeException("last modification time '"
-                                       + entry.getModTime()
-                                       + "' is too big ( > "
-                                       + TarConstants.MAXSIZE + " bytes)");
-        }
-        if (entry.getUserId() > TarConstants.MAXID) {
-            throw new RuntimeException("user id '" + entry.getUserId()
-                                       + "' is too big ( > "
-                                       + TarConstants.MAXID + " bytes)");
-        }
-        if (entry.getMode() > TarConstants.MAXID) {
-            throw new RuntimeException("mode '" + entry.getMode()
-                                       + "' is too big ( > "
-                                       + TarConstants.MAXID + " bytes)");
-        }
-        if (entry.getDevMajor() > TarConstants.MAXID) {
-            throw new RuntimeException("major device number '"
-                                       + entry.getDevMajor()
-                                       + "' is too big ( > "
-                                       + TarConstants.MAXID + " bytes)");
-        }
-        if (entry.getDevMinor() > TarConstants.MAXID) {
-            throw new RuntimeException("minor device number '"
-                                       + entry.getDevMinor()
-                                       + "' is too big ( > "
-                                       + TarConstants.MAXID + " bytes)");
+                                       + maxValue + " )");
         }
     }
 }
