@@ -449,28 +449,30 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     private void addPaxHeadersForBigNumbers(Map<String, String> paxHeaders,
                                             TarArchiveEntry entry) {
-        if (entry.getSize() > TarConstants.MAXSIZE) {
-            paxHeaders.put("size", String.valueOf(entry.getSize()));
-        }
-        if (entry.getGroupId() > TarConstants.MAXID) {
-            paxHeaders.put("gid", String.valueOf(entry.getGroupId()));
-        }
-        final long mtime =  entry.getModTime().getTime() / 1000;
-        if (mtime < 0 || mtime > TarConstants.MAXSIZE) {
-            paxHeaders.put("mtime", String.valueOf(mtime));
-        }
-        if (entry.getUserId() > TarConstants.MAXID) {
-            paxHeaders.put("uid", String.valueOf(entry.getUserId()));
-        }
-        if (entry.getDevMajor() > TarConstants.MAXID) {
-            paxHeaders.put("SCHILY.devmajor",
-                           String.valueOf(entry.getDevMajor()));
-        }
-        if (entry.getDevMinor() > TarConstants.MAXID) {
-            paxHeaders.put("SCHILY.devminor",
-                           String.valueOf(entry.getDevMinor()));
-        }
+        addPaxHeaderForBigNumber(paxHeaders, "size", entry.getSize(),
+                                 TarConstants.MAXSIZE);
+        addPaxHeaderForBigNumber(paxHeaders, "gid", entry.getGroupId(),
+                                 TarConstants.MAXID);
+        addPaxHeaderForBigNumber(paxHeaders, "mtime",
+                                 entry.getModTime().getTime() / 1000,
+                                 TarConstants.MAXSIZE);
+        addPaxHeaderForBigNumber(paxHeaders, "uid", entry.getUserId(),
+                                 TarConstants.MAXID);
+        // star extensions by J\u00f6rg Schillig
+        addPaxHeaderForBigNumber(paxHeaders, "SCHILY.devmajor",
+                                 entry.getDevMajor(), TarConstants.MAXID);
+        addPaxHeaderForBigNumber(paxHeaders, "SCHILY.devminor",
+                                 entry.getDevMinor(), TarConstants.MAXID);
+        // there is no PAX header for file mode
         failForBigNumber("mode", entry.getMode(), TarConstants.MAXID);
+    }
+
+    private void addPaxHeaderForBigNumber(Map<String, String> paxHeaders,
+                                          String header, long value,
+                                          long maxValue) {
+        if (value < 0 || value > maxValue) {
+            paxHeaders.put(header, String.valueOf(value));
+        }
     }
 
     private void failForBigNumbers(TarArchiveEntry entry) {
