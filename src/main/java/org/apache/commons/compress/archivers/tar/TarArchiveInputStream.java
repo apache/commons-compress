@@ -367,12 +367,10 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                 currEntry.setSize(Long.parseLong(val));
             } else if ("mtime".equals(key)){
                 currEntry.setModTime((long) (Double.parseDouble(val) * 1000));
-            /* currently not settable
             } else if ("SCHILY.devminor".equals(key)){
-                currEntry.setMinor(Integer.parseInt(val));
+                currEntry.setDevMinor(Integer.parseInt(val));
             } else if ("SCHILY.devmajor".equals(key)){
-                currEntry.setMajor(Integer.parseInt(val));
-            */
+                currEntry.setDevMajor(Integer.parseInt(val));
             }
         }
     }
