@@ -76,12 +76,12 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         }
     }
 
-    public void testBigFileStarMode() throws Exception {
+    public void testBigNumberStarMode() throws Exception {
         TarArchiveEntry t = new TarArchiveEntry("foo");
         t.setSize(0100000000000L);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
-        tos.setBigFileMode(TarArchiveOutputStream.BIGFILE_STAR);
+        tos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_STAR);
         tos.putArchiveEntry(t);
         // make sure header is written to byte array
         tos.write(new byte[10 * 1024]);
@@ -98,12 +98,12 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         assertEquals(0100000000000L, e.getSize());
     }
 
-    public void testBigFilePosixMode() throws Exception {
+    public void testBigNumberPosixMode() throws Exception {
         TarArchiveEntry t = new TarArchiveEntry("foo");
         t.setSize(0100000000000L);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
-        tos.setBigFileMode(TarArchiveOutputStream.BIGFILE_POSIX);
+        tos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_POSIX);
         tos.putArchiveEntry(t);
         // make sure header is written to byte array
         tos.write(new byte[10 * 1024]);
@@ -213,7 +213,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         t.setModTime(-1000);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
-        tos.setBigFileMode(TarArchiveOutputStream.BIGFILE_STAR);
+        tos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_STAR);
         tos.putArchiveEntry(t);
         // make sure header is written to byte array
         tos.write(new byte[10 * 1024]);
@@ -239,7 +239,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         t.setModTime(-1000);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
-        tos.setBigFileMode(TarArchiveOutputStream.BIGFILE_POSIX);
+        tos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_POSIX);
         tos.putArchiveEntry(t);
         // make sure header is written to byte array
         tos.write(new byte[10 * 1024]);

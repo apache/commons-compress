@@ -48,14 +48,14 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     /** POSIX/PAX extensions are used to store long file names in the archive. */
     public static final int LONGFILE_POSIX = 3;
 
-    /** Fail if a big file (&gt; 8GiB) is required in the archive. */
-    public static final int BIGFILE_ERROR = 0;
+    /** Fail if a big number (e.g. size &gt; 8GiB) is required in the archive. */
+    public static final int BIGNUMBER_ERROR = 0;
 
-    /** star/GNU tar/BSD tar extensions are used to store big file sizes in the archive. */
-    public static final int BIGFILE_STAR = 1;
+    /** star/GNU tar/BSD tar extensions are used to store big number in the archive. */
+    public static final int BIGNUMBER_STAR = 1;
 
-    /** POSIX/PAX extensions are used to store big file sizes in the archive. */
-    public static final int BIGFILE_POSIX = 2;
+    /** POSIX/PAX extensions are used to store big numbers in the archive. */
+    public static final int BIGNUMBER_POSIX = 2;
 
     private long      currSize;
     private String    currName;
@@ -65,7 +65,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     private final byte[]    assemBuf;
     protected final TarBuffer buffer;
     private int       longFileMode = LONGFILE_ERROR;
-    private int       bigFileMode = BIGFILE_ERROR;
+    private int       bigNumberMode = BIGNUMBER_ERROR;
 
     private boolean closed = false;
 
@@ -121,15 +121,15 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Set the big file mode.
-     * This can be BIGFILE_ERROR(0), BIGFILE_POSIX(1) or BIGFILE_STAR(2).
-     * This specifies the treatment of big files (sizes &gt; TarConstants.MAXSIZE).
-     * Default is BIGFILE_ERROR.
-     * @param bigFileMode the mode to use
+     * Set the big number mode.
+     * This can be BIGNUMBER_ERROR(0), BIGNUMBER_POSIX(1) or BIGNUMBER_STAR(2).
+     * This specifies the treatment of big files (sizes &gt; TarConstants.MAXSIZE) and other numeric values to big to fit into a traditional tar header.
+     * Default is BIGNUMBER_ERROR.
+     * @param bigNumberMode the mode to use
      * @since Apache Commons Compress 1.4
      */
-    public void setBigFileMode(int bigFileMode) {
-        this.bigFileMode = bigFileMode;
+    public void setBigNumberMode(int bigNumberMode) {
+        this.bigNumberMode = bigNumberMode;
     }
 
 
@@ -237,9 +237,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             }
         }
 
-        if (bigFileMode == BIGFILE_POSIX) {
+        if (bigNumberMode == BIGNUMBER_POSIX) {
             addPaxHeadersForBigNumbers(paxHeaders, entry);
-        } else if (bigFileMode != BIGFILE_STAR) {
+        } else if (bigNumberMode != BIGNUMBER_STAR) {
             failForBigNumbers(entry);
         }
 
@@ -247,7 +247,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             writePaxHeaders(entry.getName(), paxHeaders);
         }
 
-        entry.writeEntryHeader(recordBuf, bigFileMode == BIGFILE_STAR);
+        entry.writeEntryHeader(recordBuf, bigNumberMode == BIGNUMBER_STAR);
         buffer.writeRecord(recordBuf);
 
         currBytes = 0;
@@ -458,7 +458,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                                  TarConstants.MAXSIZE);
         addPaxHeaderForBigNumber(paxHeaders, "uid", entry.getUserId(),
                                  TarConstants.MAXID);
-        // star extensions by J\u00f6rg Schillig
+        // star extensions by J\u00f6rg Schilling
         addPaxHeaderForBigNumber(paxHeaders, "SCHILY.devmajor",
                                  entry.getDevMajor(), TarConstants.MAXID);
         addPaxHeaderForBigNumber(paxHeaders, "SCHILY.devminor",
