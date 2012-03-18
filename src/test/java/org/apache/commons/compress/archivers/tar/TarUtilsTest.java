@@ -19,6 +19,8 @@
 package org.apache.commons.compress.archivers.tar;
 
 import junit.framework.TestCase;
+import org.apache.commons.compress.archivers.zip.ZipEncoding;
+import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 
 public class TarUtilsTest extends TestCase {
 
@@ -192,8 +194,15 @@ public class TarUtilsTest extends TestCase {
         checkName("The quick brown fox\n");
         checkName("\177");
         // checkName("\0"); // does not work, because NUL is ignored
+    }
+
+    public void testRoundEncoding() throws Exception {
         // COMPRESS-114
-        checkName("0302-0601-3\u00b1\u00b1\u00b1F06\u00b1W220\u00b1ZB\u00b1LALALA\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1CAN\u00b1\u00b1DC\u00b1\u00b1\u00b104\u00b1060302\u00b1MOE.model");
+        ZipEncoding enc = ZipEncodingHelper.getZipEncoding("iso-8859-1");
+        String s = "0302-0601-3\u00b1\u00b1\u00b1F06\u00b1W220\u00b1ZB\u00b1LALALA\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1CAN\u00b1\u00b1DC\u00b1\u00b1\u00b104\u00b1060302\u00b1MOE.model";
+        byte buff[] = new byte[100];
+        int len = TarUtils.formatNameBytes(s, buff, 0, buff.length, enc);
+        assertEquals(s, TarUtils.parseName(buff, 0, len, enc));
     }
 
     private void checkName(String string) {
