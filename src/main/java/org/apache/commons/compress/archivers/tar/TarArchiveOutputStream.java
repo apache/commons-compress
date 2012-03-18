@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
+import org.apache.commons.compress.archivers.zip.ZipEncoding;
+import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.CountingOutputStream;
 
@@ -77,12 +79,24 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     
     private final OutputStream out;
 
+    private final ZipEncoding encoding;
+
     /**
      * Constructor for TarInputStream.
      * @param os the output stream to use
      */
     public TarArchiveOutputStream(OutputStream os) {
         this(os, TarBuffer.DEFAULT_BLKSIZE, TarBuffer.DEFAULT_RCDSIZE);
+    }
+
+    /**
+     * Constructor for TarInputStream.
+     * @param os the output stream to use
+     * @param encoding name of the encoding to use for file names
+     * @since Commons Compress 1.4
+     */
+    public TarArchiveOutputStream(OutputStream os, String encoding) {
+        this(os, TarBuffer.DEFAULT_BLKSIZE, TarBuffer.DEFAULT_RCDSIZE, encoding);
     }
 
     /**
@@ -98,10 +112,36 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * Constructor for TarInputStream.
      * @param os the output stream to use
      * @param blockSize the block size to use
+     * @param encoding name of the encoding to use for file names
+     * @since Commons Compress 1.4
+     */
+    public TarArchiveOutputStream(OutputStream os, int blockSize,
+                                  String encoding) {
+        this(os, blockSize, TarBuffer.DEFAULT_RCDSIZE, encoding);
+    }
+
+    /**
+     * Constructor for TarInputStream.
+     * @param os the output stream to use
+     * @param blockSize the block size to use
      * @param recordSize the record size to use
      */
     public TarArchiveOutputStream(OutputStream os, int blockSize, int recordSize) {
+        this(os, blockSize, recordSize, null);
+    }
+
+    /**
+     * Constructor for TarInputStream.
+     * @param os the output stream to use
+     * @param blockSize the block size to use
+     * @param recordSize the record size to use
+     * @param encoding name of the encoding to use for file names
+     * @since Commons Compress 1.4
+     */
+    public TarArchiveOutputStream(OutputStream os, int blockSize,
+                                  int recordSize, String encoding) {
         out = new CountingOutputStream(os);
+        this.encoding = ZipEncodingHelper.getZipEncoding(encoding);
 
         this.buffer = new TarBuffer(out, blockSize, recordSize);
         this.assemLen = 0;

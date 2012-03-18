@@ -33,6 +33,8 @@ import java.util.Map.Entry;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.ZipEncoding;
+import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ArchiveUtils;
 
 /**
@@ -52,6 +54,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     private byte[] readBuf;
     protected final TarBuffer buffer;
     private TarArchiveEntry currEntry;
+    private final ZipEncoding encoding;
 
     /**
      * Constructor for TarInputStream.
@@ -59,6 +62,16 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      */
     public TarArchiveInputStream(InputStream is) {
         this(is, TarBuffer.DEFAULT_BLKSIZE, TarBuffer.DEFAULT_RCDSIZE);
+    }
+
+    /**
+     * Constructor for TarInputStream.
+     * @param is the input stream to use
+     * @param encoding name of the encoding to use for file names
+     * @since Commons Compress 1.4
+     */
+    public TarArchiveInputStream(InputStream is, String encoding) {
+        this(is, TarBuffer.DEFAULT_BLKSIZE, TarBuffer.DEFAULT_RCDSIZE, encoding);
     }
 
     /**
@@ -74,12 +87,38 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * Constructor for TarInputStream.
      * @param is the input stream to use
      * @param blockSize the block size to use
+     * @param encoding name of the encoding to use for file names
+     * @since Commons Compress 1.4
+     */
+    public TarArchiveInputStream(InputStream is, int blockSize,
+                                 String encoding) {
+        this(is, blockSize, TarBuffer.DEFAULT_RCDSIZE, encoding);
+    }
+
+    /**
+     * Constructor for TarInputStream.
+     * @param is the input stream to use
+     * @param blockSize the block size to use
      * @param recordSize the record size to use
      */
     public TarArchiveInputStream(InputStream is, int blockSize, int recordSize) {
+        this(is, blockSize, recordSize, null);
+    }
+
+    /**
+     * Constructor for TarInputStream.
+     * @param is the input stream to use
+     * @param blockSize the block size to use
+     * @param recordSize the record size to use
+     * @param encoding name of the encoding to use for file names
+     * @since Commons Compress 1.4
+     */
+    public TarArchiveInputStream(InputStream is, int blockSize, int recordSize,
+                                 String encoding) {
         this.buffer = new TarBuffer(is, blockSize, recordSize);
         this.readBuf = null;
         this.hasHitEOF = false;
+        this.encoding = ZipEncodingHelper.getZipEncoding(encoding);
     }
 
     /**
@@ -196,7 +235,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         }
 
         try {
-            currEntry = new TarArchiveEntry(headerBuf);
+            currEntry = new TarArchiveEntry(headerBuf, encoding);
         } catch (IllegalArgumentException e) {
             IOException ioe = new IOException("Error detected parsing the header");
             ioe.initCause(e);
