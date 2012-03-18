@@ -117,7 +117,8 @@ public final class TarTestCase extends AbstractTestCase {
     public void testCOMPRESS114() throws Exception {
         final File input = getFile("COMPRESS-114.tar");
         final InputStream is = new FileInputStream(input);
-        final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("tar", is);
+        final ArchiveInputStream in = new TarArchiveInputStream(is,
+                                                                "iso-8859-1");
         TarArchiveEntry entry = (TarArchiveEntry)in.getNextEntry();
         assertEquals("3\u00b1\u00b1\u00b1F06\u00b1W2345\u00b1ZB\u00b1la\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1BLA", entry.getName());
         entry = (TarArchiveEntry)in.getNextEntry();

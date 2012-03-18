@@ -18,7 +18,11 @@
  */
 package org.apache.commons.compress.archivers.tar;
 
+import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import org.apache.commons.compress.archivers.zip.ZipEncoding;
+import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 
 /**
  * This class provides static utility methods to work with byte streams.
@@ -29,6 +33,9 @@ import java.math.BigInteger;
 public class TarUtils {
 
     private static final int BYTE_MASK = 255;
+
+    static final ZipEncoding DEFAULT_ENCODING =
+        ZipEncodingHelper.getZipEncoding(null);
 
     /** Private constructor to prevent instantiation of this utility class. */
     private TarUtils(){    
@@ -211,6 +218,19 @@ public class TarUtils {
      * @return The entry name.
      */
     public static String parseName(byte[] buffer, final int offset, final int length) {
+        try {
+            return parseName(buffer, offset, length, DEFAULT_ENCODING);
+        } catch (IOException ex) {
+            return parseNameFallback(buffer, offset, length);
+        }
+    }
+
+    /*
+     * Used if default encoding cannot encode name and no explicit
+     * encoding has been specified.
+     */
+    private static String parseNameFallback(byte[] buffer, final int offset,
+                                            final int length) {
         StringBuffer result = new StringBuffer(length);
         int          end = offset + length;
 
@@ -226,7 +246,38 @@ public class TarUtils {
     }
 
     /**
-     * Copy a name (StringBuffer) into a buffer.
+     * Parse an entry name from a buffer.
+     * Parsing stops when a NUL is found
+     * or the buffer length is reached.
+     *
+     * @param buffer The buffer from which to parse.
+     * @param offset The offset into the buffer from which to parse.
+     * @param length The maximum number of bytes to parse.
+     * @param encoding name of the encoding to use for file names
+     * @since Commons Compress 1.4
+     * @return The entry name.
+     */
+    public static String parseName(byte[] buffer, final int offset,
+                                   final int length,
+                                   final ZipEncoding encoding)
+        throws IOException {
+
+        int len = length;
+        for (; len > 0; len--) {
+            if (buffer[offset + len - 1] != 0) {
+                break;
+            }
+        }
+        if (len > 0) {
+            byte[] b = new byte[len];
+            System.arraycopy(buffer, offset, b, 0, len);
+            return encoding.decode(b);
+        }
+        return "";
+    }
+
+    /**
+     * Copy a name into a buffer.
      * Copies characters from the name into the buffer
      * starting at the specified offset. 
      * If the buffer is longer than the name, the buffer
@@ -241,6 +292,20 @@ public class TarUtils {
      * @return The updated offset, i.e. offset + length
      */
     public static int formatNameBytes(String name, byte[] buf, final int offset, final int length) {
+        try {
+            return formatNameBytes(name, buf, offset, length, DEFAULT_ENCODING);
+        } catch (IOException ex) {
+            return formatNameBytesFallback(name, buf, offset, length);
+        }
+    }
+
+    /*
+     * Used if default encoding cannot format name and no explicit encoding
+     * has been specified.
+     */
+    private static int formatNameBytesFallback(String name, byte[] buf,
+                                               final int offset,
+                                               final int length) {
         int i;
 
         // copy until end of input or output is reached.
@@ -250,6 +315,43 @@ public class TarUtils {
 
         // Pad any remaining output bytes with NUL
         for (; i < length; ++i) {
+            buf[offset + i] = 0;
+        }
+
+        return offset + length;
+    }
+
+    /**
+     * Copy a name (StringBuffer) into a buffer.
+     * Copies characters from the name into the buffer
+     * starting at the specified offset. 
+     * If the buffer is longer than the name, the buffer
+     * is filled with trailing NULs.
+     * If the name is longer than the buffer,
+     * the output is truncated.
+     *
+     * @param name The header name from which to copy the characters.
+     * @param buf The buffer where the name is to be stored.
+     * @param offset The starting offset into the buffer
+     * @param length The maximum number of header bytes to copy.
+     * @param encoding name of the encoding to use for file names
+     * @since Commons Compress 1.4
+     * @return The updated offset, i.e. offset + length
+     */
+    public static int formatNameBytes(String name, byte[] buf, final int offset,
+                                      final int length,
+                                      final ZipEncoding encoding)
+        throws IOException {
+        int len = name.length();
+        ByteBuffer b = encoding.encode(name);
+        while (b.limit() > length && len > 0) {
+            b = encoding.encode(name.substring(0, --len));
+        }
+        final int limit = b.limit();
+        System.arraycopy(b.array(), b.arrayOffset(), buf, offset, limit);
+
+        // Pad any remaining output bytes with NUL
+        for (int i = limit; i < length; ++i) {
             buf[offset + i] = 0;
         }
 

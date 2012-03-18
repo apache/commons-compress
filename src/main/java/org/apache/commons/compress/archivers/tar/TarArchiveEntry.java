@@ -19,11 +19,13 @@
 package org.apache.commons.compress.archivers.tar;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.Locale;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipEncoding;
 
 /**
  * This class represents an entry in a Tar archive. It consists
@@ -177,7 +179,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     /**
      * Construct an empty entry and prepares the header values.
      */
-    private TarArchiveEntry () {
+    private TarArchiveEntry() {
         this.magic = MAGIC_POSIX;
         this.version = VERSION_POSIX;
         this.name = "";
@@ -307,8 +309,30 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @throws IllegalArgumentException if any of the numeric fields have an invalid format
      */
     public TarArchiveEntry(byte[] headerBuf) {
+        this(headerBuf, null);
+    }
+
+    /**
+     * Construct an entry from an archive's header bytes. File is set
+     * to null.
+     *
+     * @param headerBuf The header bytes from a tar archive entry.
+     * @param encoding encoding to use for file names
+     * @since Commons Compress 1.4
+     * @throws IllegalArgumentException if any of the numeric fields have an invalid format
+     */
+    public TarArchiveEntry(byte[] headerBuf, ZipEncoding encoding) {
         this();
-        parseTarHeader(headerBuf);
+        try {
+            parseTarHeader(headerBuf, encoding);
+        } catch (IOException ex) {
+            try {
+                parseTarHeader(headerBuf, encoding, true);
+            } catch (IOException ex2) {
+                // impossible
+                throw new RuntimeException(ex2);
+            }
+        }
     }
 
     /**
@@ -865,9 +889,39 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @throws IllegalArgumentException if any of the numeric fields have an invalid format
      */
     public void parseTarHeader(byte[] header) {
+        try {
+            parseTarHeader(header, TarUtils.DEFAULT_ENCODING);
+        } catch (IOException ex) {
+            try {
+                parseTarHeader(header, TarUtils.DEFAULT_ENCODING, true);
+            } catch (IOException ex2) {
+                // not really possible
+                throw new RuntimeException(ex2);
+            }
+        }
+    }
+
+    /**
+     * Parse an entry's header information from a header buffer.
+     *
+     * @param header The tar entry header buffer to get information from.
+     * @param encoding encoding to use for file names
+     * @since Commons Compress 1.4
+     * @throws IllegalArgumentException if any of the numeric fields
+     * have an invalid format
+     */
+    public void parseTarHeader(byte[] header, ZipEncoding encoding)
+        throws IOException {
+        parseTarHeader(header, encoding, false);
+    }
+
+    private void parseTarHeader(byte[] header, ZipEncoding encoding,
+                                final boolean oldStyle)
+        throws IOException {
         int offset = 0;
 
-        name = TarUtils.parseName(header, offset, NAMELEN);
+        name = oldStyle ? TarUtils.parseName(header, offset, NAMELEN)
+            : TarUtils.parseName(header, offset, NAMELEN, encoding);
         offset += NAMELEN;
         mode = (int) TarUtils.parseOctalOrBinary(header, offset, MODELEN);
         offset += MODELEN;
@@ -881,15 +935,18 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         offset += MODTIMELEN;
         offset += CHKSUMLEN;
         linkFlag = header[offset++];
-        linkName = TarUtils.parseName(header, offset, NAMELEN);
+        linkName = oldStyle ? TarUtils.parseName(header, offset, NAMELEN)
+            : TarUtils.parseName(header, offset, NAMELEN, encoding);
         offset += NAMELEN;
         magic = TarUtils.parseName(header, offset, MAGICLEN);
         offset += MAGICLEN;
         version = TarUtils.parseName(header, offset, VERSIONLEN);
         offset += VERSIONLEN;
-        userName = TarUtils.parseName(header, offset, UNAMELEN);
+        userName = oldStyle ? TarUtils.parseName(header, offset, UNAMELEN)
+            : TarUtils.parseName(header, offset, UNAMELEN, encoding);
         offset += UNAMELEN;
-        groupName = TarUtils.parseName(header, offset, GNAMELEN);
+        groupName = oldStyle ? TarUtils.parseName(header, offset, GNAMELEN)
+            : TarUtils.parseName(header, offset, GNAMELEN, encoding);
         offset += GNAMELEN;
         devMajor = (int) TarUtils.parseOctalOrBinary(header, offset, DEVLEN);
         offset += DEVLEN;
@@ -913,7 +970,9 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         }
         case FORMAT_POSIX:
         default: {
-            String prefix = TarUtils.parseName(header, offset, PREFIXLEN);
+            String prefix = oldStyle
+                ? TarUtils.parseName(header, offset, PREFIXLEN)
+                : TarUtils.parseName(header, offset, PREFIXLEN, encoding);
             // SunOS tar -E does not add / to directory names, so fix
             // up to be consistent
             if (isDirectory() && !name.endsWith("/")){
