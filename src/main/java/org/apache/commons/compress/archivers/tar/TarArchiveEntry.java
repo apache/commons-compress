@@ -309,7 +309,8 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @throws IllegalArgumentException if any of the numeric fields have an invalid format
      */
     public TarArchiveEntry(byte[] headerBuf) {
-        this(headerBuf, null);
+        this();
+        parseTarHeader(headerBuf);
     }
 
     /**
@@ -321,18 +322,10 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @since Commons Compress 1.4
      * @throws IllegalArgumentException if any of the numeric fields have an invalid format
      */
-    public TarArchiveEntry(byte[] headerBuf, ZipEncoding encoding) {
+    public TarArchiveEntry(byte[] headerBuf, ZipEncoding encoding)
+        throws IOException {
         this();
-        try {
-            parseTarHeader(headerBuf, encoding);
-        } catch (IOException ex) {
-            try {
-                parseTarHeader(headerBuf, encoding, true);
-            } catch (IOException ex2) {
-                // impossible
-                throw new RuntimeException(ex2);
-            }
-        }
+        parseTarHeader(headerBuf, encoding);
     }
 
     /**
