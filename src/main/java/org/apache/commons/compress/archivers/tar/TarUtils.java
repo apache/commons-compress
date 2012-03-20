@@ -37,6 +37,40 @@ public class TarUtils {
     static final ZipEncoding DEFAULT_ENCODING =
         ZipEncodingHelper.getZipEncoding(null);
 
+    /**
+     * Encapsulates the algorithms used up to Commons Compress 1.3 as
+     * ZipEncoding.
+     */
+    private static final ZipEncoding FALLBACK_ENCODING = new ZipEncoding() {
+            public boolean canEncode(String name) { return true; }
+
+            public ByteBuffer encode(String name) {
+                final int length = name.length();
+                byte[] buf = new byte[length];
+
+                // copy until end of input or output is reached.
+                for (int i = 0; i < length; ++i) {
+                    buf[i] = (byte) name.charAt(i);
+                }
+                return ByteBuffer.wrap(buf);
+            }
+
+            public String decode(byte[] buffer) {
+                final int length = buffer.length;
+                StringBuffer result = new StringBuffer(length);
+
+                for (int i = 0; i < length; ++i) {
+                    byte b = buffer[i];
+                    if (b == 0) { // Trailing null
+                        break;
+                    }
+                    result.append((char) (b & 0xFF)); // Allow for sign-extension
+                }
+
+                return result.toString();
+            }
+        };
+
     /** Private constructor to prevent instantiation of this utility class. */
     private TarUtils(){    
     }
@@ -221,28 +255,13 @@ public class TarUtils {
         try {
             return parseName(buffer, offset, length, DEFAULT_ENCODING);
         } catch (IOException ex) {
-            return parseNameFallback(buffer, offset, length);
-        }
-    }
-
-    /*
-     * Used if default encoding cannot encode name and no explicit
-     * encoding has been specified.
-     */
-    private static String parseNameFallback(byte[] buffer, final int offset,
-                                            final int length) {
-        StringBuffer result = new StringBuffer(length);
-        int          end = offset + length;
-
-        for (int i = offset; i < end; ++i) {
-            byte b = buffer[i];
-            if (b == 0) { // Trailing null
-                break;
+            try {
+                return parseName(buffer, offset, length, FALLBACK_ENCODING);
+            } catch (IOException ex2) {
+                // impossible
+                throw new RuntimeException(ex2);
             }
-            result.append((char) (b & 0xFF)); // Allow for sign-extension
         }
-
-        return result.toString();
     }
 
     /**
@@ -295,34 +314,18 @@ public class TarUtils {
         try {
             return formatNameBytes(name, buf, offset, length, DEFAULT_ENCODING);
         } catch (IOException ex) {
-            return formatNameBytesFallback(name, buf, offset, length);
+            try {
+                return formatNameBytes(name, buf, offset, length,
+                                       FALLBACK_ENCODING);
+            } catch (IOException ex2) {
+                // impossible
+                throw new RuntimeException(ex2);
+            }
         }
-    }
-
-    /*
-     * Used if default encoding cannot format name and no explicit encoding
-     * has been specified.
-     */
-    private static int formatNameBytesFallback(String name, byte[] buf,
-                                               final int offset,
-                                               final int length) {
-        int i;
-
-        // copy until end of input or output is reached.
-        for (i = 0; i < length && i < name.length(); ++i) {
-            buf[offset + i] = (byte) name.charAt(i);
-        }
-
-        // Pad any remaining output bytes with NUL
-        for (; i < length; ++i) {
-            buf[offset + i] = 0;
-        }
-
-        return offset + length;
     }
 
     /**
-     * Copy a name (StringBuffer) into a buffer.
+     * Copy a name into a buffer.
      * Copies characters from the name into the buffer
      * starting at the specified offset. 
      * If the buffer is longer than the name, the buffer
@@ -554,4 +557,5 @@ public class TarUtils {
 
         return sum;
     }
+
 }
