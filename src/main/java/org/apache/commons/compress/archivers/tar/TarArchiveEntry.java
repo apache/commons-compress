@@ -811,22 +811,34 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @param outbuf The tar entry header buffer to fill in.
      */
     public void writeEntryHeader(byte[] outbuf) {
-        writeEntryHeader(outbuf, false);
+        try {
+            writeEntryHeader(outbuf, TarUtils.DEFAULT_ENCODING, false);
+        } catch (IOException ex) {
+            try {
+                writeEntryHeader(outbuf, TarUtils.FALLBACK_ENCODING, false);
+            } catch (IOException ex2) {
+                // impossible
+                throw new RuntimeException(ex2);
+            }
+        }
     }
 
     /**
      * Write an entry's header information to a header buffer.
      *
      * @param outbuf The tar entry header buffer to fill in.
+     * @param encoding encoding to use when writing the file name.
      * @param starMode whether to use the star/GNU tar/BSD tar
      * extension for numeric fields if their value doesn't fit in the
      * maximum size of standard tar archives
      * @since Apache Commons Compress 1.4
      */
-    public void writeEntryHeader(byte[] outbuf, boolean starMode) {
+    public void writeEntryHeader(byte[] outbuf, ZipEncoding encoding,
+                                 boolean starMode) throws IOException {
         int offset = 0;
 
-        offset = TarUtils.formatNameBytes(name, outbuf, offset, NAMELEN);
+        offset = TarUtils.formatNameBytes(name, outbuf, offset, NAMELEN,
+                                          encoding);
         offset = writeEntryHeaderField(mode, outbuf, offset, MODELEN, starMode);
         offset = writeEntryHeaderField(userId, outbuf, offset, UIDLEN,
                                        starMode);
@@ -843,11 +855,14 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         }
 
         outbuf[offset++] = linkFlag;
-        offset = TarUtils.formatNameBytes(linkName, outbuf, offset, NAMELEN);
+        offset = TarUtils.formatNameBytes(linkName, outbuf, offset, NAMELEN,
+                                          encoding);
         offset = TarUtils.formatNameBytes(magic, outbuf, offset, MAGICLEN);
         offset = TarUtils.formatNameBytes(version, outbuf, offset, VERSIONLEN);
-        offset = TarUtils.formatNameBytes(userName, outbuf, offset, UNAMELEN);
-        offset = TarUtils.formatNameBytes(groupName, outbuf, offset, GNAMELEN);
+        offset = TarUtils.formatNameBytes(userName, outbuf, offset, UNAMELEN,
+                                          encoding);
+        offset = TarUtils.formatNameBytes(groupName, outbuf, offset, GNAMELEN,
+                                          encoding);
         offset = writeEntryHeaderField(devMajor, outbuf, offset, DEVLEN,
                                        starMode);
         offset = writeEntryHeaderField(devMinor, outbuf, offset, DEVLEN,
