@@ -254,7 +254,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         }
         TarArchiveEntry entry = (TarArchiveEntry) archiveEntry;
         Map<String, String> paxHeaders = new HashMap<String, String>();
-        if (entry.getName().length() >= TarConstants.NAMELEN) {
+        final byte[] nameBytes = encoding.encode(entry.getName()).array();
+        if (nameBytes.length >= TarConstants.NAMELEN) {
 
             if (longFileMode == LONGFILE_POSIX) {
                 paxHeaders.put("path", entry.getName());
@@ -264,7 +265,6 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 TarArchiveEntry longLinkEntry = new TarArchiveEntry(TarConstants.GNU_LONGLINK,
                                                                     TarConstants.LF_GNUTYPE_LONGNAME);
 
-                final byte[] nameBytes = ArchiveUtils.toAsciiBytes(entry.getName());
                 longLinkEntry.setSize(nameBytes.length + 1); // +1 for NUL
                 putArchiveEntry(longLinkEntry);
                 write(nameBytes);
@@ -287,7 +287,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             writePaxHeaders(entry.getName(), paxHeaders);
         }
 
-        entry.writeEntryHeader(recordBuf, bigNumberMode == BIGNUMBER_STAR);
+        entry.writeEntryHeader(recordBuf, encoding,
+                               bigNumberMode == BIGNUMBER_STAR);
         buffer.writeRecord(recordBuf);
 
         currBytes = 0;

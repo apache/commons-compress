@@ -41,7 +41,7 @@ public class TarUtils {
      * Encapsulates the algorithms used up to Commons Compress 1.3 as
      * ZipEncoding.
      */
-    private static final ZipEncoding FALLBACK_ENCODING = new ZipEncoding() {
+    static final ZipEncoding FALLBACK_ENCODING = new ZipEncoding() {
             public boolean canEncode(String name) { return true; }
 
             public ByteBuffer encode(String name) {
