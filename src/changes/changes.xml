@@ -46,6 +46,10 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.4" date="unreleased"
              description="Release 1.4">
+      <action issue="COMPRESS-184" type="fix" date="2012-03-22">
+        TarArchiveInputStream failed to parse PAX headers that
+        contained non-ASCII characters.
+      </action> 
       <action issue="COMPRESS-182" type="update" date="2012-03-02">
         The tar package can now write archives that use star/GNU/BSD
         extensions or use the POSIX/PAX variant to store numeric
