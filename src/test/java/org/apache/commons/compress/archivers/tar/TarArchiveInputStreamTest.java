@@ -18,9 +18,9 @@
 
 package org.apache.commons.compress.archivers.tar;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.StringReader;
 import java.net.URI;
 import java.net.URL;
 import java.util.Calendar;
@@ -36,7 +36,8 @@ public class TarArchiveInputStreamTest {
     @Test
     public void readSimplePaxHeader() throws Exception {
         Map<String, String> headers = new TarArchiveInputStream(null)
-            .parsePaxHeaders(new StringReader("30 atime=1321711775.972059463\n"));
+            .parsePaxHeaders(new ByteArrayInputStream("30 atime=1321711775.972059463\n"
+                                                      .getBytes("UTF-8")));
         assertEquals(1, headers.size());
         assertEquals("1321711775.972059463", headers.get("atime"));
     }
@@ -44,9 +45,21 @@ public class TarArchiveInputStreamTest {
     @Test
     public void readPaxHeaderWithEmbeddedNewline() throws Exception {
         Map<String, String> headers = new TarArchiveInputStream(null)
-            .parsePaxHeaders(new StringReader("28 comment=line1\nline2\nand3\n"));
+            .parsePaxHeaders(new ByteArrayInputStream("28 comment=line1\nline2\nand3\n"
+                                                      .getBytes("UTF-8")));
         assertEquals(1, headers.size());
         assertEquals("line1\nline2\nand3", headers.get("comment"));
+    }
+
+    @Test
+    public void readNonAsciiPaxHeader() throws Exception {
+        String ae = "\u00e4";
+        String line = "11 path="+ ae + "\n";
+        assertEquals(11, line.getBytes("UTF-8").length);
+        Map<String, String> headers = new TarArchiveInputStream(null)
+            .parsePaxHeaders(new ByteArrayInputStream(line.getBytes("UTF-8")));
+        assertEquals(1, headers.size());
+        assertEquals(ae, headers.get("path"));
     }
 
     @Test
