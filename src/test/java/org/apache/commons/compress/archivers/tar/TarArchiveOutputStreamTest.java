@@ -294,4 +294,25 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         assertEquals(n, e.getName());
     }
 
+    public void testWriteNonAsciiLinkPathNamePaxHeader() throws Exception {
+        String n = "\u00e4";
+        TarArchiveEntry t = new TarArchiveEntry("a", TarConstants.LF_LINK);
+        t.setSize(10 * 1024);
+        t.setLinkName(n);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
+        tos.setAddPaxHeadersForNonAsciiNames(true);
+        tos.putArchiveEntry(t);
+        tos.write(new byte[10 * 1024]);
+        tos.closeArchiveEntry();
+        tos.close();
+        byte[] data = bos.toByteArray();
+        assertEquals("15 linkpath=" + n + "\n",
+                     new String(data, 512, 15, "UTF-8"));
+        TarArchiveInputStream tin =
+            new TarArchiveInputStream(new ByteArrayInputStream(data));
+        TarArchiveEntry e = tin.getNextTarEntry();
+        assertEquals(n, e.getLinkName());
+    }
+
 }
