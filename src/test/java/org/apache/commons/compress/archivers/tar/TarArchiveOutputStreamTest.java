@@ -288,9 +288,6 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         byte[] data = bos.toByteArray();
         assertEquals("11 path=" + n + "\n",
                      new String(data, 512, 11, "UTF-8"));
-        FileOutputStream fos = new FileOutputStream("/tmp/x");
-        fos.write(data);
-        fos.close();
         TarArchiveInputStream tin =
             new TarArchiveInputStream(new ByteArrayInputStream(data));
         TarArchiveEntry e = tin.getNextTarEntry();
