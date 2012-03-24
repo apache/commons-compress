@@ -81,6 +81,10 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     private final ZipEncoding encoding;
 
+    private boolean addPaxHeadersForNonAsciiNames = false;
+    private static final ZipEncoding ASCII =
+        ZipEncodingHelper.getZipEncoding("ASCII");
+
     /**
      * Constructor for TarInputStream.
      * @param os the output stream to use
@@ -172,6 +176,13 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         this.bigNumberMode = bigNumberMode;
     }
 
+    /**
+     * Whether to add a PAX extension header for non-ASCII file names.
+     * @since Apache Commons Compress 1.4
+     */
+    public void setAddPaxHeadersForNonAsciiNames(boolean b) {
+        addPaxHeadersForNonAsciiNames = b;
+    }
 
     @Deprecated
     @Override
@@ -254,11 +265,14 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         }
         TarArchiveEntry entry = (TarArchiveEntry) archiveEntry;
         Map<String, String> paxHeaders = new HashMap<String, String>();
-        final byte[] nameBytes = encoding.encode(entry.getName()).array();
+        final String entryName = entry.getName();
+        final byte[] nameBytes = encoding.encode(entryName).array();
+        boolean paxHeaderContainsPath = false;
         if (nameBytes.length >= TarConstants.NAMELEN) {
 
             if (longFileMode == LONGFILE_POSIX) {
-                paxHeaders.put("path", entry.getName());
+                paxHeaders.put("path", entryName);
+                paxHeaderContainsPath = true;
             } else if (longFileMode == LONGFILE_GNU) {
                 // create a TarEntry for the LongLink, the contents
                 // of which are the entry's name
@@ -271,7 +285,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 write(0); // NUL terminator
                 closeArchiveEntry();
             } else if (longFileMode != LONGFILE_TRUNCATE) {
-                throw new RuntimeException("file name '" + entry.getName()
+                throw new RuntimeException("file name '" + entryName
                                            + "' is too long ( > "
                                            + TarConstants.NAMELEN + " bytes)");
             }
@@ -283,8 +297,13 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             failForBigNumbers(entry);
         }
 
+        if (addPaxHeadersForNonAsciiNames && !paxHeaderContainsPath
+            && !ASCII.canEncode(entryName)) {
+            paxHeaders.put("path", entryName);
+        }
+
         if (paxHeaders.size() > 0) {
-            writePaxHeaders(entry.getName(), paxHeaders);
+            writePaxHeaders(entryName, paxHeaders);
         }
 
         entry.writeEntryHeader(recordBuf, encoding,
@@ -298,7 +317,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         } else {
             currSize = entry.getSize();
         }
-        currName = entry.getName();
+        currName = entryName;
         haveUnclosedEntry = true;
     }
 
@@ -426,7 +445,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      */
     void writePaxHeaders(String entryName,
                          Map<String, String> headers) throws IOException {
-        String name = "./PaxHeaders.X/" + entryName;
+        String name = "./PaxHeaders.X/" + stripTo7Bits(entryName);
         if (name.length() >= TarConstants.NAMELEN) {
             name = name.substring(0, TarConstants.NAMELEN - 1);
         }
@@ -459,6 +478,18 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         putArchiveEntry(pex);
         write(data);
         closeArchiveEntry();
+    }
+
+    private String stripTo7Bits(String name) {
+        final int length = name.length();
+        StringBuffer result = new StringBuffer(length);
+        for (int i = 0; i < length; i++) {
+            char stripped = (char) (name.charAt(i) & 0x7F);
+            if (stripped != 0) { // would be read as Trailing null
+                result.append(stripped);
+            }
+        }
+        return result.toString();
     }
 
     /**

@@ -274,4 +274,27 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         }
     }
 
+    public void testWriteNonAsciiPathNamePaxHeader() throws Exception {
+        String n = "\u00e4";
+        TarArchiveEntry t = new TarArchiveEntry(n);
+        t.setSize(10 * 1024);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
+        tos.setAddPaxHeadersForNonAsciiNames(true);
+        tos.putArchiveEntry(t);
+        tos.write(new byte[10 * 1024]);
+        tos.closeArchiveEntry();
+        tos.close();
+        byte[] data = bos.toByteArray();
+        assertEquals("11 path=" + n + "\n",
+                     new String(data, 512, 11, "UTF-8"));
+        FileOutputStream fos = new FileOutputStream("/tmp/x");
+        fos.write(data);
+        fos.close();
+        TarArchiveInputStream tin =
+            new TarArchiveInputStream(new ByteArrayInputStream(data));
+        TarArchiveEntry e = tin.getNextTarEntry();
+        assertEquals(n, e.getName());
+    }
+
 }
