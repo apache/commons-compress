@@ -808,8 +808,9 @@ public class ZipFile {
         Map<ZipArchiveEntry, OffsetEntry> origMap =
             new LinkedHashMap<ZipArchiveEntry, OffsetEntry>(entries);
         entries.clear();
-        for (ZipArchiveEntry ze : origMap.keySet()) {
-            OffsetEntry offsetEntry = origMap.get(ze);
+        for (Map.Entry<ZipArchiveEntry, OffsetEntry> ent : origMap.entrySet()) {
+            ZipArchiveEntry ze = ent.getKey();
+            OffsetEntry offsetEntry = ent.getValue();
             long offset = offsetEntry.headerOffset;
             archive.seek(offset + LFH_OFFSET_FOR_FILENAME_LENGTH);
             byte[] b = new byte[SHORT];
