@@ -99,6 +99,29 @@
         transparently.</p>
       </subsection>
 
+      <subsection name="File Name Encoding">
+        <p>The original ustar format only supports 7-Bit ASCII file
+        names, later implementations use the platform's default
+        encoding to encode file names.  The POSIX standard recommends
+        using PAX extension headers for non-ASCII file names
+        instead.</p>
+
+        <p>Commons Compress 1.1 to 1.3 assumed file names would be
+        encoded using ISO-8859-1.  Starting with Commons Compress 1.4
+        you can specify the encoding to expect (to use when writing)
+        as a parameter to <code>TarArchiveInputStream</code>
+        (<code>TarArchiveOutputStream</code>), it now defaults to the
+        platform's default encoding.</p>
+
+        <p>Since Commons Compress 1.4 another optional parameter -
+        <code>addPaxHeadersForNonAsciiNames</code> - of
+        <code>TarArchiveOutputStream</code> controls whether PAX
+        extension headers will be written for non-ASCII file names.
+        By default they will not be written to preserve space.
+        <code>TarArchiveInputStream</code> will read them
+        transparently if present.</p>
+      </subsection>
+
       <subsection name="Sparse files">
 
         <p><code>TarArchiveInputStream</code> will recognize sparse
