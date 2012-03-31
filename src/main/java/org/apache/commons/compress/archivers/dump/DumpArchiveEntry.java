@@ -749,7 +749,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
         CHRDEV(2),
         FIFO(1),
         UNKNOWN(15);
-    	
+
         private int code;
 
         private TYPE(int code) {
@@ -782,7 +782,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
         WORLD_READ(00004),
         WORLD_WRITE(00002),
         WORLD_EXEC(00001);
-    	
+
         private int code;
 
         private PERMISSION(int code) {
