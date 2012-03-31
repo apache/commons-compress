@@ -385,7 +385,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
     private String readCString(final int length) throws IOException {
         byte tmpBuffer[] = new byte[length];
         readFully(tmpBuffer, 0, tmpBuffer.length);
-        return new String(tmpBuffer, 0, tmpBuffer.length - 1);
+        return new String(tmpBuffer, 0, tmpBuffer.length - 1); // TODO default charset?
     }
 
     /**

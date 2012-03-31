@@ -249,7 +249,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             byte[] buf = new byte[SMALL_BUFFER_SIZE];
             int length = 0;
             while ((length = read(buf)) >= 0) {
-                longName.append(new String(buf, 0, length));
+                longName.append(new String(buf, 0, length)); // TODO default charset?
             }
             getNextEntry();
             if (currEntry == null) {
