@@ -317,17 +317,17 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      * <p>From the FreeBSD ar(5) man page:</p>
      * <pre>
      * BSD   In the BSD variant, names that are shorter than 16
-     *	     characters and without embedded spaces are stored
-     *	     directly in this field.  If a name has an embedded
-     *	     space, or if it is longer than 16 characters, then
-     *	     the string "#1/" followed by the decimal represen-
-     *	     tation of the length of the file name is placed in
-     *	     this field.	The actual file name is stored immedi-
-     *	     ately after the archive header.  The content of the
-     *	     archive member follows the file name.  The ar_size
-     *	     field of the header (see below) will then hold the
-     *	     sum of the size of the file name and the size of
-     *	     the member.
+     *       characters and without embedded spaces are stored
+     *       directly in this field.  If a name has an embedded
+     *       space, or if it is longer than 16 characters, then
+     *       the string "#1/" followed by the decimal represen-
+     *       tation of the length of the file name is placed in
+     *       this field. The actual file name is stored immedi-
+     *       ately after the archive header.  The content of the
+     *       archive member follows the file name.  The ar_size
+     *       field of the header (see below) will then hold the
+     *       sum of the size of the file name and the size of
+     *       the member.
      * </pre>
      *
      * @since Apache Commons Compress 1.3
