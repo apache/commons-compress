@@ -58,12 +58,12 @@ public class JarArchiveEntry extends ZipArchiveEntry implements ArchiveEntry {
     }
 
     public Certificate[] getCertificates() {
-            if (certificates != null) {
-                Certificate[] certs = new Certificate[certificates.length];
-                System.arraycopy(certificates, 0, certs, 0, certs.length);
-                return certs;
-            }
-            return null;
+        if (certificates != null) {
+            Certificate[] certs = new Certificate[certificates.length];
+            System.arraycopy(certificates, 0, certs, 0, certs.length);
+            return certs;
+        }
+        return null;
     }
 
     @Override
