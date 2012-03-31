@@ -681,7 +681,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     /**
      * Check if this is a Pax header.
      * 
-     * @return <code>true</code> if this is a Pax header.
+     * @return {@code true} if this is a Pax header.
      * 
      * @since Apache Commons Compress 1.1
      */
@@ -693,7 +693,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     /**
      * Check if this is a Pax header.
      * 
-     * @return <code>true</code> if this is a Pax header.
+     * @return {@code true} if this is a Pax header.
      * 
      * @since Apache Commons Compress 1.1
      */

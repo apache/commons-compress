@@ -54,7 +54,7 @@ class FallbackZipEncoding implements ZipEncoding {
     /**
      * Construct a fallback zip encoding, which uses the given charset.
      * 
-     * @param charset The name of the charset or <code>null</code> for
+     * @param charset The name of the charset or {@code null} for
      *                the platform's default character set.
      */
     public FallbackZipEncoding(String charset) {

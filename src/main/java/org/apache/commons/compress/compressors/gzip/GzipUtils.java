@@ -58,8 +58,8 @@ public class GzipUtils {
      * Detects common gzip suffixes in the given filename.
      *
      * @param filename name of a file
-     * @return <code>true</code> if the filename has a common gzip suffix,
-     *         <code>false</code> otherwise
+     * @return {@code true} if the filename has a common gzip suffix,
+     *         {@code false} otherwise
      */
     public static boolean isCompressedFilename(String filename) {
         return fileNameUtil.isCompressedFilename(filename);
