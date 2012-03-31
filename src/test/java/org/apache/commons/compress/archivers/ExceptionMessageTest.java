@@ -24,9 +24,9 @@ import junit.framework.TestCase;
 public class ExceptionMessageTest extends TestCase {
 
     private static final String ARCHIVER_NULL_MESSAGE = "Archivername must not be null.";
-    
+
     private static final String INPUTSTREAM_NULL_MESSAGE = "InputStream must not be null.";
-    
+
     private static final String OUTPUTSTREAM_NULL_MESSAGE = "OutputStream must not be null.";
 
 

@@ -54,7 +54,7 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
 
     private int             currBlkIdx;
     private int             currRecIdx;
-    
+
     /**
      * Constructor for a TarBuffer on an input stream.
      * @param inStream the input stream to use
@@ -114,7 +114,7 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
      */
     private TarBuffer(InputStream inStream, OutputStream outStream, int blockSize, int recordSize) {
         this.inStream = inStream;
-        this.outStream = outStream;        
+        this.outStream = outStream;
         this.blockSize = blockSize;
         this.recordSize = recordSize;
         this.recsPerBlock = (this.blockSize / this.recordSize);

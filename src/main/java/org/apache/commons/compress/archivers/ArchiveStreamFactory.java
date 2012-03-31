@@ -116,11 +116,11 @@ public class ArchiveStreamFactory {
     public ArchiveInputStream createArchiveInputStream(
             final String archiverName, final InputStream in)
             throws ArchiveException {
-        
+
         if (archiverName == null) {
             throw new IllegalArgumentException("Archivername must not be null.");
         }
-        
+
         if (in == null) {
             throw new IllegalArgumentException("InputStream must not be null.");
         }
@@ -143,7 +143,7 @@ public class ArchiveStreamFactory {
         if (DUMP.equalsIgnoreCase(archiverName)) {
             return new DumpArchiveInputStream(in);
         }
-        
+
         throw new ArchiveException("Archiver: " + archiverName + " not found.");
     }
 

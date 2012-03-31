@@ -38,7 +38,7 @@ public interface CpioConstants {
     final int MAGIC_OLD_BINARY = 070707;
 
     // These FORMAT_ constants are internal to the code
-    
+
     /** write/read a CPIOArchiveEntry in the new format */
     final short FORMAT_NEW = 1;
 
@@ -60,7 +60,7 @@ public interface CpioConstants {
     /*
      * Constants for the MODE bits
      */
-    
+
     /** Mask for all file type bits. */
     final int S_IFMT   = 0170000;
 
@@ -130,7 +130,6 @@ public interface CpioConstants {
 
     /** Permits others to execute the file or to search the directory */
     final int C_IXOTH  = 0000001;
-    
 
     /** The special trailer marker */
     final String CPIO_TRAILER = "TRAILER!!!";

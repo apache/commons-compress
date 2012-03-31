@@ -124,5 +124,5 @@ public final class BZip2TestCase extends AbstractTestCase {
             is.close();
         }
     }
-    
+
 }

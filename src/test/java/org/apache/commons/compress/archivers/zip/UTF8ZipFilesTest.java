@@ -312,7 +312,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
             zos.putArchiveEntry(ze);
             zos.write("ascii".getBytes("US-ASCII"));
             zos.closeArchiveEntry();
-            
+
             zos.finish();
         } finally {
             if (zos != null) {

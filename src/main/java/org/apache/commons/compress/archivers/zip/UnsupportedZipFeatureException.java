@@ -75,7 +75,7 @@ public class UnsupportedZipFeatureException extends ZipException {
          * The entry uses a data descriptor.
          */
         public static final Feature DATA_DESCRIPTOR = new Feature("data descriptor");
-        
+
         private final String name;
 
         private Feature(String name) {

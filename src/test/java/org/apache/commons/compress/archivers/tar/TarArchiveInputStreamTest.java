@@ -78,7 +78,7 @@ public class TarArchiveInputStreamTest {
                 in.close();
             }
         }
-    }        
+    }
 
     @Test
     public void datePriorToEpochInGNUFormat() throws Exception {
@@ -107,6 +107,6 @@ public class TarArchiveInputStreamTest {
                 in.close();
             }
         }
-    }        
+    }
 
 }

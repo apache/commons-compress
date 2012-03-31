@@ -1035,7 +1035,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         if (length < 3) {
             return false;
         }
-        
+
         if (signature[0] != 'B') {
             return false;
         }
@@ -1047,7 +1047,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         if (signature[2] != 'h') {
             return false;
         }
-        
+
         return true;
     }
 }

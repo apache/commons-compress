@@ -44,7 +44,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
  * as JUnit does not allow one to change the display name of a test.
  */
 public class LongPathTest extends AbstractTestCase {
-    
+
     private static final ClassLoader classLoader = LongPathTest.class.getClassLoader();
 
     private File file;
@@ -54,12 +54,12 @@ public class LongPathTest extends AbstractTestCase {
     public LongPathTest(String name) {
         super(name);
     }
-    
+
     private LongPathTest(String name, File file){
         super(name);
         this.file = file;
     }
-    
+
     public static TestSuite suite() throws IOException{
         TestSuite suite = new TestSuite("LongPathTests");
         URL resource = classLoader.getResource("longpath");
@@ -88,10 +88,10 @@ public class LongPathTest extends AbstractTestCase {
             Test test = new LongPathTest("testArchive", file);
             namedSuite.addTest(test);
             suite.addTest(namedSuite);
-        }        
+        }
         return suite;
     }
-    
+
     public void testArchive() throws Exception {
         @SuppressWarnings("unchecked") // fileList is of correct type
         ArrayList<String> expected = (ArrayList<String>) fileList.clone();
@@ -124,7 +124,7 @@ public class LongPathTest extends AbstractTestCase {
                 if (!ent.endsWith("/")){// not a directory
                     final int lastSlash = ent.lastIndexOf('/');
                     if (lastSlash >= 0) { // extract path name
-                        expected.add(ent.substring(lastSlash+1, ent.length()));                        
+                        expected.add(ent.substring(lastSlash+1, ent.length()));
                     } else {
                         expected.add(ent);
                     }

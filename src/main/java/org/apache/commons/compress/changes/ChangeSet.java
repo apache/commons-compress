@@ -55,7 +55,7 @@ public final class ChangeSet {
     public void deleteDir(final String dirName) {
         addDeletion(new Change(dirName, Change.TYPE_DELETE_DIR));
     }
-    
+
     /**
      * Adds a new archive entry to the archive.
      * 
@@ -67,7 +67,7 @@ public final class ChangeSet {
     public void add(final ArchiveEntry pEntry, final InputStream pInput) {
         this.add(pEntry, pInput, true);
     }
-    
+
     /**
      * Adds a new archive entry to the archive.
      * If replace is set to true, this change will replace all other additions
@@ -78,7 +78,7 @@ public final class ChangeSet {
      * @param pInput
      *            the datastream to add
      * @param replace
-     *            indicates the this change should replace existing entries            
+     *            indicates the this change should replace existing entries
      */
     public void add(final ArchiveEntry pEntry, final InputStream pInput, final boolean replace) {
         addAddition(new Change(pEntry, pInput, replace));
@@ -91,7 +91,7 @@ public final class ChangeSet {
      *            the change which should result in an addition
      */
     private void addAddition(Change pChange) {
-        if (Change.TYPE_ADD != pChange.type() ||    
+        if (Change.TYPE_ADD != pChange.type() ||
             pChange.getInput() == null) {
             return;
         }
@@ -118,7 +118,7 @@ public final class ChangeSet {
         }
         changes.add(pChange);
     }
-    
+
     /**
      * Adds an delete change.
      * 
@@ -127,7 +127,7 @@ public final class ChangeSet {
      */
     private void addDeletion(Change pChange) {
         if ((Change.TYPE_DELETE != pChange.type() &&
-            Change.TYPE_DELETE_DIR != pChange.type()) ||    
+            Change.TYPE_DELETE_DIR != pChange.type()) ||
             pChange.targetFile() == null) {
             return;
         }

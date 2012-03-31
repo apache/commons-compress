@@ -48,7 +48,7 @@ public class IOMethodsTest extends AbstractTestCase {
             i += 2;
         }
     }
-    
+
     public void testWriteAr() throws Exception {
         ArchiveEntry entry = new ArArchiveEntry("dummy", bytesToTest);
         compareWrites("ar", entry);
@@ -102,7 +102,7 @@ public class IOMethodsTest extends AbstractTestCase {
         ArchiveOutputStream aos3 = factory.createArchiveOutputStream(archiverName, out3);
         aos3.putArchiveEntry(entry);
         for (int i=0; i<byteTest.length; i++){
-            aos1.write(byteTest[i]);            
+            aos1.write(byteTest[i]);
         }
         aos1.closeArchiveEntry();
         aos1.close();
@@ -110,32 +110,32 @@ public class IOMethodsTest extends AbstractTestCase {
         aos2.write(byteTest);
         aos2.closeArchiveEntry();
         aos2.close();
-        
+
         aos3.write(byteTest, 0, byteTest.length);
         aos3.closeArchiveEntry();
         aos3.close();
         assertEquals("out1!=out2",out1.toString(),out2.toString());
         assertEquals("out1!=out3",out1.toString(),out3.toString());
     }
-    
+
     private void compareReads(String archiverName) throws Exception {
         OutputStream out1 = new ByteArrayOutputStream();
         OutputStream out2 = new ByteArrayOutputStream();
         OutputStream out3 = new ByteArrayOutputStream();
         File file = createSingleEntryArchive(archiverName);
         file.deleteOnExit();
-        
+
         InputStream is1 = new FileInputStream(file);
         ArchiveInputStream ais1 = factory.createArchiveInputStream(archiverName, is1);
         final ArchiveEntry nextEntry = ais1.getNextEntry();
         assertNotNull(nextEntry);
-        
+
         byte [] buff = new byte[10]; // small so multiple reads are needed;
         long size = nextEntry.getSize();
         if (size != ArchiveEntry.SIZE_UNKNOWN) {
             assertTrue("Size should be > 0, found: "+size, size > 0);
         }
-        
+
         InputStream is2 = new FileInputStream(file);
         ArchiveInputStream ais2 = factory.createArchiveInputStream(archiverName, is2);
         final ArchiveEntry nextEntry2 = ais2.getNextEntry();
@@ -159,7 +159,7 @@ public class IOMethodsTest extends AbstractTestCase {
             out2.write(buff, 0, bytes);
         }
         ais2.close();
-        
+
         while((bytes=ais3.read(buff, 0 , buff.length)) > 0){
             out3.write(buff, 0, bytes);
         }

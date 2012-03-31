@@ -24,7 +24,7 @@ import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 
 public class TarUtilsTest extends TestCase {
 
-    
+
     public void testName(){
         byte [] buff = new byte[20];
         String sb1 = "abcdefghijklmnopqrstuvwxyz";
@@ -40,7 +40,7 @@ public class TarUtilsTest extends TestCase {
         sb2 = TarUtils.parseName(buff, 1, buff.length-1);
         assertEquals(sb1, sb2);
     }
-    
+
     public void testParseOctal() throws Exception{
         long value; 
         byte [] buffer;
@@ -54,10 +54,10 @@ public class TarUtilsTest extends TestCase {
         assertEquals(MAX_OCTAL, value);
         buffer=new byte[]{0,0};
         value = TarUtils.parseOctal(buffer,0, buffer.length);
-        assertEquals(0, value);        
+        assertEquals(0, value);
         buffer=new byte[]{0,' '};
         value = TarUtils.parseOctal(buffer,0, buffer.length);
-        assertEquals(0, value);        
+        assertEquals(0, value);
     }
 
     public void testParseOctalInvalid() throws Exception{
@@ -113,7 +113,7 @@ public class TarUtilsTest extends TestCase {
         parseValue = TarUtils.parseOctal(buffer,0, buffer.length);
         assertEquals(value,parseValue);
     }
-    
+
     private void checkRoundTripOctal(final long value) {
         checkRoundTripOctal(value, TarConstants.SIZELEN);
     }
@@ -155,7 +155,7 @@ public class TarUtilsTest extends TestCase {
         checkRoundTripOctalOrBinary(-1, length); // will need binary format
         checkRoundTripOctalOrBinary(0xff00000000000001l, length);
     }
-    
+
     // Check correct trailing bytes are generated
     public void testTrailers() {
         byte [] buffer = new byte[12];
@@ -171,7 +171,7 @@ public class TarUtilsTest extends TestCase {
         assertEquals(0  , buffer[buffer.length-2]);
         assertEquals('3', buffer[buffer.length-3]); // end of number
     }
-    
+
     public void testNegative() throws Exception {
         byte [] buffer = new byte[22];
         TarUtils.formatUnsignedOctalString(-1, buffer, 0, buffer.length);
@@ -181,14 +181,14 @@ public class TarUtilsTest extends TestCase {
     public void testOverflow() throws Exception {
         byte [] buffer = new byte[8-1]; // a lot of the numbers have 8-byte buffers (nul term)
         TarUtils.formatUnsignedOctalString(07777777L, buffer, 0, buffer.length);
-        assertEquals("7777777", new String(buffer, "UTF-8"));        
+        assertEquals("7777777", new String(buffer, "UTF-8"));
         try {
             TarUtils.formatUnsignedOctalString(017777777L, buffer, 0, buffer.length);
             fail("Should have cause IllegalArgumentException");
         } catch (IllegalArgumentException expected) {
         }
     }
-    
+
     public void testRoundTripNames(){
         checkName("");
         checkName("The quick brown fox\n");

@@ -28,7 +28,7 @@ public class ChangeSetResults {
     private final List<String> addedFromChangeSet = new ArrayList<String>();
     private final List<String> addedFromStream = new ArrayList<String>();
     private final List<String> deleted = new ArrayList<String>();
-    
+
     /**
      * Adds the filename of a recently deleted file to the result list.
      * @param fileName the file which has been deleted
@@ -36,7 +36,7 @@ public class ChangeSetResults {
     void deleted(String fileName) {
         deleted.add(fileName);
     }
-    
+
     /**
      * Adds the name of a file to the result list which has been 
      * copied from the source stream to the target stream.
@@ -45,7 +45,7 @@ public class ChangeSetResults {
     void addedFromStream(String fileName) {
         addedFromStream.add(fileName);
     }
-    
+
     /**
      * Adds the name of a file to the result list which has been
      * copied from the changeset to the target stream
@@ -78,7 +78,7 @@ public class ChangeSetResults {
     public List<String> getDeleted() {
         return deleted;
     }
-    
+
     /**
      * Checks if an filename already has been added to the result list
      * @param filename the filename to check

@@ -75,7 +75,7 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
         assertNotNull(cpio);
         assertTrue(cpio instanceof CpioArchiveInputStream);
 
-// Not yet implemented        
+// Not yet implemented
 //        final ArchiveInputStream tgz = getStreamFor("bla.tgz");
 //        assertNotNull(tgz);
 //        assertTrue(tgz instanceof TarArchiveInputStream);
@@ -90,9 +90,9 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
                    new BufferedInputStream(new FileInputStream(
                        new File(rsc.getFile()))));
     }
-    
+
     // Check that the empty archives created by the code are readable
-    
+
     // Not possible to detect empty "ar" archive as it is completely empty
 //    public void testEmptyArArchive() throws Exception {
 //        emptyArchive("ar");

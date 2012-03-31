@@ -72,10 +72,10 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     /** Indicates if putArchiveEntry has been called without closeArchiveEntry */
     private boolean haveUnclosedEntry = false;
-    
+
     /** indicates if this archive is finished */
     private boolean finished = false;
-    
+
     private final OutputStream out;
 
     private final ZipEncoding encoding;
@@ -208,7 +208,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         if (finished) {
             throw new IOException("This archive has already been finished");
         }
-        
+
         if(haveUnclosedEntry) {
             throw new IOException("This archives contains unclosed entries.");
         }
@@ -227,7 +227,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         if(!finished) {
             finish();
         }
-        
+
         if (!closed) {
             buffer.close();
             out.close();

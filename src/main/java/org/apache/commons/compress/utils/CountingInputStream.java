@@ -65,7 +65,7 @@ public class CountingInputStream extends FilterInputStream {
             bytesRead += read;
         }
     }
-    
+
     /**
      * Returns the current number of bytes read from this stream.
      * @return the number of read bytes

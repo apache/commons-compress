@@ -768,7 +768,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
             return type;
         }
     }
-    
+
     public enum PERMISSION {
         SETUID(04000),
         SETGUI(02000),
