@@ -1,38 +1,62 @@
-              Apache Commons Compress 1.3 RELEASE NOTES
+              Apache Commons Compress 1.4 RELEASE NOTES
 
-Apache Commons Compress software defines an API for working with
-  compression and archive formats.  These include: bzip2, gzip,
-  pack200 and ar, cpio, jar, tar, zip, dump.
+Apache Commons Compress software defines an API for working with compression and archive formats.
+These include: bzip2, gzip, pack200 and ar, cpio, jar, tar, zip, dump.
 
-Commons Compress 1.3 is the first version to require Java5 at runtime.
+Release 1.4
 
 Changes in this version include:
 
 New features:
-o Support for the Pack200 format has been added.  Issue: COMPRESS-142. 
-o Read-only support for the format used by the Unix dump(8) tool
-        has been added.  Issue: COMPRESS-132. 
+o COMPRESS-156:  Support for the XZ format has been added. 
 
 Fixed Bugs:
-o BZip2CompressorInputStream's getBytesRead method always
-        returned 0. 
-o ZipArchiveInputStream and ZipArchiveOutputStream could leak
-        resources on some JDKs.  Issue: COMPRESS-152. 
-o TarArchiveOutputStream's getBytesWritten method didn't count
-        correctly.  Issue: COMPRESS-160. 
+o COMPRESS-183:  The tar package now allows the encoding of file names to be
+                 specified and can optionally use PAX extension headers to
+                 write non-ASCII file names.
+                 The stream classes now write (or expect to read) archives that
+                 use the platform's native encoding for file names.  Apache
+                 Commons Compress 1.3 used to strip everything but the lower
+                 eight bits of each character which effectively only worked for
+                 ASCII and ISO-8859-1 file names.
+                 This new default behavior is a breaking change. 
+o COMPRESS-184:  TarArchiveInputStream failed to parse PAX headers that
+                 contained non-ASCII characters. 
+o COMPRESS-178:  TarArchiveInputStream throws IllegalArgumentException instead of IOException 
+o COMPRESS-179:  TarUtils.formatLongOctalOrBinaryBytes() assumes the field will be 12 bytes long 
+o COMPRESS-175:  GNU Tar sometimes uses binary encoding for UID and GID 
+o COMPRESS-171:  ArchiveStreamFactory.createArchiveInputStream would claim
+                 short text files were TAR archives. 
+o COMPRESS-164:  ZipFile didn't work properly for archives using unicode extra
+                 fields rather than UTF-8 filenames and the EFS-Flag. 
+o COMPRESS-169:  For corrupt archives ZipFile would throw a RuntimeException in
+                 some cases and an IOException in others.  It will now
+                 consistently throw an IOException. 
 
 Changes:
-o The ZIP package now supports Zip64 extensions.  Issue: COMPRESS-36. 
-o The AR package now supports the BSD dialect of storing file
-        names longer than 16 chars (both reading and writing).
-        Issue: COMPRESS-144. 
+o COMPRESS-182:  The tar package can now write archives that use star/GNU/BSD
+                 extensions or use the POSIX/PAX variant to store numeric
+                 values that don't fit into the traditional header fields. 
+o COMPRESS-181:  Added a workaround for a Bug some tar implementations that add
+                 a NUL byte as first byte in numeric header fields. 
+o COMPRESS-176:  Added a workaround for a Bug in WinZIP which uses backslashes
+                 as path separators in Unicode Extra Fields. 
+o COMPRESS-131:  ArrayOutOfBounds while decompressing bz2. Added test case - code already seems to have been fixed. 
+o COMPRESS-146:  BZip2CompressorInputStream now optionally supports reading of
+                 concatenated .bz2 files. 
+o COMPRESS-154:  GZipCompressorInputStream now optionally supports reading of
+                 concatenated .gz files. 
+o COMPRESS-16:  The tar package can now read archives that use star/GNU/BSD
+                 extensions for files that are longer than 8 GByte as well as
+                 archives that use the POSIX/PAX variant. 
+o COMPRESS-165:  The tar package can now write archives that use star/GNU/BSD
+                 extensions for files that are longer than 8 GByte as well as
+                 archives that use the POSIX/PAX variant. 
+o COMPRESS-166:  The tar package can now use the POSIX/PAX variant for writing
+                 entries with names longer than 100 characters. 
 
-For complete information on Commons Compress, including instructions
-on how to submit bug reports, patches, or suggestions for improvement,
-see the Apache Commons Compress website:
  
+For complete information on Commons Compress, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Commons Compress website:
+
 http://commons.apache.org/compress/
-
-Have fun!
--Commons Compress team
-
