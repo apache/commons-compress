@@ -20,6 +20,7 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.math.BigInteger;
 import java.util.zip.ZipException;
+
 import junit.framework.TestCase;
 
 public class Zip64ExtendedInformationExtraFieldTest extends TestCase {

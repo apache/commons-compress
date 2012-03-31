@@ -24,6 +24,8 @@ import java.nio.ByteBuffer;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.compress.utils.CharsetNames;
+
 /**
  * Test zip encodings.
  */
@@ -138,9 +140,9 @@ public class TestZipEncodings extends TestCase {
         assertEquals(testBytes, encoded);
 
         assertEquals(false, enc.canEncode(UNENC_STRING));
-        assertEquals("%U2016".getBytes("US-ASCII"), enc.encode(UNENC_STRING));
+        assertEquals("%U2016".getBytes(CharsetNames.US_ASCII), enc.encode(UNENC_STRING));
         assertEquals(false, enc.canEncode(BAD_STRING));
-        assertEquals(BAD_STRING_ENC.getBytes("US-ASCII"),
+        assertEquals(BAD_STRING_ENC.getBytes(CharsetNames.US_ASCII),
                      enc.encode(BAD_STRING));
     }
 

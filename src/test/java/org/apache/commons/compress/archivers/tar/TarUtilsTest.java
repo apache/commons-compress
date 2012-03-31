@@ -19,8 +19,10 @@
 package org.apache.commons.compress.archivers.tar;
 
 import junit.framework.TestCase;
+
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
+import org.apache.commons.compress.utils.CharsetNames;
 
 public class TarUtilsTest extends TestCase {
 
@@ -46,7 +48,7 @@ public class TarUtilsTest extends TestCase {
         byte [] buffer;
         final long MAX_OCTAL  = 077777777777L; // Allowed 11 digits
         final String maxOctal = "77777777777 "; // Maximum valid octal
-        buffer = maxOctal.getBytes("UTF-8");
+        buffer = maxOctal.getBytes(CharsetNames.UTF_8);
         value = TarUtils.parseOctal(buffer,0, buffer.length);
         assertEquals(MAX_OCTAL, value);
         buffer[buffer.length-1]=0;
@@ -80,25 +82,25 @@ public class TarUtilsTest extends TestCase {
             fail("Expected IllegalArgumentException - not all NULs");
         } catch (IllegalArgumentException expected) {
         }
-        buffer = "abcdef ".getBytes("UTF-8"); // Invalid input
+        buffer = "abcdef ".getBytes(CharsetNames.UTF_8); // Invalid input
         try {
             TarUtils.parseOctal(buffer,0, buffer.length);
             fail("Expected IllegalArgumentException");
         } catch (IllegalArgumentException expected) {
         }
-        buffer = "77777777777".getBytes("UTF-8"); // Invalid input - no trailer
+        buffer = "77777777777".getBytes(CharsetNames.UTF_8); // Invalid input - no trailer
         try {
             TarUtils.parseOctal(buffer,0, buffer.length);
             fail("Expected IllegalArgumentException - no trailer");
         } catch (IllegalArgumentException expected) {
         }
-        buffer = " 0 07 ".getBytes("UTF-8"); // Invalid - embedded space
+        buffer = " 0 07 ".getBytes(CharsetNames.UTF_8); // Invalid - embedded space
         try {
             TarUtils.parseOctal(buffer,0, buffer.length);
             fail("Expected IllegalArgumentException - embedded space");
         } catch (IllegalArgumentException expected) {
         }
-        buffer = " 0\00007 ".getBytes("UTF-8"); // Invalid - embedded NUL
+        buffer = " 0\00007 ".getBytes(CharsetNames.UTF_8); // Invalid - embedded NUL
         try {
             TarUtils.parseOctal(buffer,0, buffer.length);
             fail("Expected IllegalArgumentException - embedded NUL");
@@ -175,13 +177,13 @@ public class TarUtilsTest extends TestCase {
     public void testNegative() throws Exception {
         byte [] buffer = new byte[22];
         TarUtils.formatUnsignedOctalString(-1, buffer, 0, buffer.length);
-        assertEquals("1777777777777777777777", new String(buffer, "UTF-8"));
+        assertEquals("1777777777777777777777", new String(buffer, CharsetNames.UTF_8));
     }
 
     public void testOverflow() throws Exception {
         byte [] buffer = new byte[8-1]; // a lot of the numbers have 8-byte buffers (nul term)
         TarUtils.formatUnsignedOctalString(07777777L, buffer, 0, buffer.length);
-        assertEquals("7777777", new String(buffer, "UTF-8"));
+        assertEquals("7777777", new String(buffer, CharsetNames.UTF_8));
         try {
             TarUtils.formatUnsignedOctalString(017777777L, buffer, 0, buffer.length);
             fail("Should have cause IllegalArgumentException");
@@ -198,7 +200,7 @@ public class TarUtilsTest extends TestCase {
 
     public void testRoundEncoding() throws Exception {
         // COMPRESS-114
-        ZipEncoding enc = ZipEncodingHelper.getZipEncoding("iso-8859-1");
+        ZipEncoding enc = ZipEncodingHelper.getZipEncoding(CharsetNames.ISO_8859_1);
         String s = "0302-0601-3\u00b1\u00b1\u00b1F06\u00b1W220\u00b1ZB\u00b1LALALA\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1CAN\u00b1\u00b1DC\u00b1\u00b1\u00b104\u00b1060302\u00b1MOE.model";
         byte buff[] = new byte[100];
         int len = TarUtils.formatNameBytes(s, buff, 0, buff.length, enc);

@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.net.URI;
 import java.net.URL;
+
 import junit.framework.TestCase;
 
 public class SparseFilesTest extends TestCase {

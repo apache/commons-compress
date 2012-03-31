@@ -19,11 +19,12 @@
 package org.apache.commons.compress.archivers.ar;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.commons.compress.AbstractTestCase;
 
 public class ArArchiveOutputStreamTest extends AbstractTestCase {

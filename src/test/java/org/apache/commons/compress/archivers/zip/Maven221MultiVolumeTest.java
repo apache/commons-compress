@@ -25,9 +25,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.apache.commons.compress.archivers.ArchiveEntry;
-
 import junit.framework.TestCase;
+
+import org.apache.commons.compress.archivers.ArchiveEntry;
 
 /**
  * JUnit 3 testcase for a multi-volume zip file.

@@ -24,10 +24,9 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.utils.IOUtils;
-
-import org.apache.commons.compress.AbstractTestCase;
 
 public final class JarTestCase extends AbstractTestCase {
     public void testJarArchiveCreation() throws Exception {

@@ -24,6 +24,8 @@ import java.nio.charset.UnsupportedCharsetException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.compress.utils.CharsetNames;
+
 /**
  * Static helper functions for robustly encoding filenames in zip files. 
  */
@@ -193,7 +195,7 @@ public abstract class ZipEncodingHelper {
     /**
      * variant name of the encoding UTF-8 used for comparisions.
      */
-    private static final String UTF_DASH_8 = "utf-8";
+    private static final String UTF_DASH_8 = CharsetNames.UTF_8;
 
     /**
      * name of the encoding UTF-8

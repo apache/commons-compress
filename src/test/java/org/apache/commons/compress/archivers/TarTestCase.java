@@ -29,6 +29,7 @@ import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
+import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
 
 public final class TarTestCase extends AbstractTestCase {
@@ -53,7 +54,7 @@ public final class TarTestCase extends AbstractTestCase {
 
     public void testTarArchiveLongNameCreation() throws Exception {
         String name = "testdata/12345678901234567890123456789012345678901234567890123456789012345678901234567890123456.xml";
-        byte[] bytes = name.getBytes("UTF-8");
+        byte[] bytes = name.getBytes(CharsetNames.UTF_8);
         assertEquals(bytes.length, 99);
 
         final File output = new File(dir, "bla.tar");
@@ -118,7 +119,7 @@ public final class TarTestCase extends AbstractTestCase {
         final File input = getFile("COMPRESS-114.tar");
         final InputStream is = new FileInputStream(input);
         final ArchiveInputStream in = new TarArchiveInputStream(is,
-                                                                "iso-8859-1");
+                CharsetNames.ISO_8859_1);
         TarArchiveEntry entry = (TarArchiveEntry)in.getNextEntry();
         assertEquals("3\u00b1\u00b1\u00b1F06\u00b1W2345\u00b1ZB\u00b1la\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1BLA", entry.getName());
         entry = (TarArchiveEntry)in.getNextEntry();

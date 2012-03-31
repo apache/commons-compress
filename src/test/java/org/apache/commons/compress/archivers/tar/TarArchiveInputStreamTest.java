@@ -18,6 +18,9 @@
 
 package org.apache.commons.compress.archivers.tar;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,9 +30,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 import java.util.TimeZone;
+
+import org.apache.commons.compress.utils.CharsetNames;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class TarArchiveInputStreamTest {
 
@@ -37,7 +40,7 @@ public class TarArchiveInputStreamTest {
     public void readSimplePaxHeader() throws Exception {
         Map<String, String> headers = new TarArchiveInputStream(null)
             .parsePaxHeaders(new ByteArrayInputStream("30 atime=1321711775.972059463\n"
-                                                      .getBytes("UTF-8")));
+                                                      .getBytes(CharsetNames.UTF_8)));
         assertEquals(1, headers.size());
         assertEquals("1321711775.972059463", headers.get("atime"));
     }
@@ -46,7 +49,7 @@ public class TarArchiveInputStreamTest {
     public void readPaxHeaderWithEmbeddedNewline() throws Exception {
         Map<String, String> headers = new TarArchiveInputStream(null)
             .parsePaxHeaders(new ByteArrayInputStream("28 comment=line1\nline2\nand3\n"
-                                                      .getBytes("UTF-8")));
+                                                      .getBytes(CharsetNames.UTF_8)));
         assertEquals(1, headers.size());
         assertEquals("line1\nline2\nand3", headers.get("comment"));
     }
@@ -55,9 +58,9 @@ public class TarArchiveInputStreamTest {
     public void readNonAsciiPaxHeader() throws Exception {
         String ae = "\u00e4";
         String line = "11 path="+ ae + "\n";
-        assertEquals(11, line.getBytes("UTF-8").length);
+        assertEquals(11, line.getBytes(CharsetNames.UTF_8).length);
         Map<String, String> headers = new TarArchiveInputStream(null)
-            .parsePaxHeaders(new ByteArrayInputStream(line.getBytes("UTF-8")));
+            .parsePaxHeaders(new ByteArrayInputStream(line.getBytes(CharsetNames.UTF_8)));
         assertEquals(1, headers.size());
         assertEquals(ae, headers.get("path"));
     }

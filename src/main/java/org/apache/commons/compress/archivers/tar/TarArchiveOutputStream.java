@@ -28,6 +28,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
+import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.CountingOutputStream;
 
 /**
@@ -465,7 +466,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 + 3 /* blank, equals and newline */
                 + 2 /* guess 9 < actual length < 100 */;
             String line = len + " " + key + "=" + value + "\n";
-            int actualLength = line.getBytes("UTF-8").length;
+            int actualLength = line.getBytes(CharsetNames.UTF_8).length;
             while (len != actualLength) {
                 // Adjust for cases where length < 10 or > 100
                 // or where UTF-8 encoding isn't a single octet
@@ -474,11 +475,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 // first pass so we'd need a second.
                 len = actualLength;
                 line = len + " " + key + "=" + value + "\n";
-                actualLength = line.getBytes("UTF-8").length;
+                actualLength = line.getBytes(CharsetNames.UTF_8).length;
             }
             w.write(line);
         }
-        byte[] data = w.toString().getBytes("UTF-8");
+        byte[] data = w.toString().getBytes(CharsetNames.UTF_8);
         pex.setSize(data.length);
         putArchiveEntry(pex);
         write(data);
