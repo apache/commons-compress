@@ -247,6 +247,7 @@ These include: bzip2, gzip, pack200 and ar, cpio, jar, tar, zip, dump.
             <exclude>src/test/resources/**</exclude>
             <!-- proposal text without license -->
             <exclude>PROPOSAL.txt</exclude>
+            <exclude>.pmd</exclude>
           </excludes>
         </configuration>
       </plugin>
