@@ -181,12 +181,12 @@ public class GzipCompressorInputStream extends CompressorInputStream {
 
         // Original file name, ignored
         if ((flg & FNAME) != 0) {
-            while (inData.readUnsignedByte() != 0x00) {}
+            readToNull(inData);
         }
 
         // Comment, ignored
         if ((flg & FCOMMENT) != 0) {
-            while (inData.readUnsignedByte() != 0x00) {}
+            readToNull(inData);
         }
 
         // Header "CRC16" which is actually a truncated CRC32 (which isn't
@@ -204,6 +204,10 @@ public class GzipCompressorInputStream extends CompressorInputStream {
         memberSize = 0;
 
         return true;
+    }
+
+    private void readToNull(DataInputStream inData) throws IOException {
+        while (inData.readUnsignedByte() != 0x00) {}
     }
 
     /** {@inheritDoc} */
