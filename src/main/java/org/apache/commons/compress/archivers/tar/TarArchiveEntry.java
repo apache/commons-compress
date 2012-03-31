@@ -20,12 +20,12 @@ package org.apache.commons.compress.archivers.tar;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.Locale;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
+import org.apache.commons.compress.utils.ArchiveUtils;
 
 /**
  * This class represents an entry in a Tar archive. It consists
@@ -1043,11 +1043,10 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @return format type
      */
     private int evaluateType(byte[] header) {
-        final ByteBuffer magic = ByteBuffer.wrap(header, MAGIC_OFFSET, MAGICLEN);
-        if (magic.compareTo(ByteBuffer.wrap(MAGIC_GNU.getBytes())) == 0) {
+        if (ArchiveUtils.matchAsciiBuffer(MAGIC_GNU, header, MAGIC_OFFSET, MAGICLEN)) {
             return FORMAT_OLDGNU;
         }
-        if (magic.compareTo(ByteBuffer.wrap(MAGIC_POSIX.getBytes())) == 0) {
+        if (ArchiveUtils.matchAsciiBuffer(MAGIC_POSIX, header, MAGIC_OFFSET, MAGICLEN)) {
             return FORMAT_POSIX;
         }
         return 0;
