@@ -190,7 +190,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         throw new IOException("Failed to read entry: "+offset);
     }
     private long asLong(byte[] input) {
-        return Long.parseLong(new String(input).trim());
+        return Long.parseLong(ArchiveUtils.toAsciiString(input).trim());
     }
 
     private int asInt(byte[] input) {
@@ -206,7 +206,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
     }
 
     private int asInt(byte[] input, int base, boolean treatBlankAsZero) {
-        String string = new String(input).trim();
+        String string = ArchiveUtils.toAsciiString(input).trim();
         if (string.length() == 0 && treatBlankAsZero) {
             return 0;
         }
