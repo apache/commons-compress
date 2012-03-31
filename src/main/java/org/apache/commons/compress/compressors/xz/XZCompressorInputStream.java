@@ -41,12 +41,15 @@ public class XZCompressorInputStream extends CompressorInputStream {
      * @return  true if signature matches the .xz magic bytes, false otherwise
      */
     public static boolean matches(byte[] signature, int length) {
-        if (length < XZ.HEADER_MAGIC.length)
+        if (length < XZ.HEADER_MAGIC.length) {
             return false;
+        }
 
-        for (int i = 0; i < XZ.HEADER_MAGIC.length; ++i)
-            if (signature[i] != XZ.HEADER_MAGIC[i])
+        for (int i = 0; i < XZ.HEADER_MAGIC.length; ++i) {
+            if (signature[i] != XZ.HEADER_MAGIC[i]) {
                 return false;
+            }
+        }
 
         return true;
     }
@@ -89,10 +92,11 @@ public class XZCompressorInputStream extends CompressorInputStream {
     public XZCompressorInputStream(InputStream inputStream,
                                    boolean decompressConcatenated)
             throws IOException {
-        if (decompressConcatenated)
+        if (decompressConcatenated) {
             in = new XZInputStream(inputStream);
-        else
+        } else {
             in = new SingleXZInputStream(inputStream);
+        }
     }
 
     /** {@inheritDoc} */

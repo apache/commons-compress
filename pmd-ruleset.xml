@@ -30,4 +30,5 @@
   <rule ref="rulesets/finalizers.xml"/>
   <rule ref="rulesets/imports.xml"/>
   <rule ref="rulesets/unusedcode.xml"/>
+  <rule ref="rulesets/braces.xml"/>
 </ruleset>

@@ -1044,10 +1044,12 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      */
     private int evaluateType(byte[] header) {
         final ByteBuffer magic = ByteBuffer.wrap(header, MAGIC_OFFSET, MAGICLEN);
-        if (magic.compareTo(ByteBuffer.wrap(MAGIC_GNU.getBytes())) == 0)
+        if (magic.compareTo(ByteBuffer.wrap(MAGIC_GNU.getBytes())) == 0) {
             return FORMAT_OLDGNU;
-        if (magic.compareTo(ByteBuffer.wrap(MAGIC_POSIX.getBytes())) == 0)
+        }
+        if (magic.compareTo(ByteBuffer.wrap(MAGIC_POSIX.getBytes())) == 0) {
             return FORMAT_POSIX;
+        }
         return 0;
     }
 }
