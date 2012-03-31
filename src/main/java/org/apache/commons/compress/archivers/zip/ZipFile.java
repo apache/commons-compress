@@ -285,11 +285,11 @@ public class ZipFile {
     }
 
     /**
-     * Returns a named entry - or <code>null</code> if no entry by
+     * Returns a named entry - or {@code null} if no entry by
      * that name exists.
      * @param name name of the entry.
      * @return the ZipArchiveEntry corresponding to the given name - or
-     * <code>null</code> if not present.
+     * {@code null} if not present.
      */
     public ZipArchiveEntry getEntry(String name) {
         return nameMap.get(name);

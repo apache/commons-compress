@@ -61,7 +61,7 @@ public class ArchiveUtils {
      * @param buffer
      * @param offset
      * @param length
-     * @return <code>true</code> if buffer is the same as the expected string
+     * @return {@code true} if buffer is the same as the expected string
      */
     public static boolean matchAsciiBuffer(
             String expected, byte[] buffer, int offset, int length){
@@ -79,7 +79,7 @@ public class ArchiveUtils {
      * 
      * @param expected
      * @param buffer
-     * @return <code>true</code> if buffer is the same as the expected string
+     * @return {@code true} if buffer is the same as the expected string
      */
     public static boolean matchAsciiBuffer(String expected, byte[] buffer){
         return matchAsciiBuffer(expected, buffer, 0, buffer.length);
@@ -140,7 +140,7 @@ public class ArchiveUtils {
      * @param offset2
      * @param length2
      * @param ignoreTrailingNulls
-     * @return <code>true</code> if buffer1 and buffer2 have same contents, having regard to trailing nulls
+     * @return {@code true} if buffer1 and buffer2 have same contents, having regard to trailing nulls
      */
     public static boolean isEqual(
             final byte[] buffer1, final int offset1, final int length1,
@@ -183,7 +183,7 @@ public class ArchiveUtils {
      * @param buffer2
      * @param offset2
      * @param length2
-     * @return <code>true</code> if buffer1 and buffer2 have same contents
+     * @return {@code true} if buffer1 and buffer2 have same contents
      */
     public static boolean isEqual(
             final byte[] buffer1, final int offset1, final int length1,
@@ -196,7 +196,7 @@ public class ArchiveUtils {
      * 
      * @param buffer1
      * @param buffer2
-     * @return <code>true</code> if buffer1 and buffer2 have same contents
+     * @return {@code true} if buffer1 and buffer2 have same contents
      */
     public static boolean isEqual(final byte[] buffer1, final byte[] buffer2 ){
         return isEqual(buffer1, 0, buffer1.length, buffer2, 0, buffer2.length, false);
@@ -208,7 +208,7 @@ public class ArchiveUtils {
      * @param buffer1
      * @param buffer2
      * @param ignoreTrailingNulls
-     * @return <code>true</code> if buffer1 and buffer2 have same contents
+     * @return {@code true} if buffer1 and buffer2 have same contents
      */
     public static boolean isEqual(final byte[] buffer1, final byte[] buffer2, boolean ignoreTrailingNulls){
         return isEqual(buffer1, 0, buffer1.length, buffer2, 0, buffer2.length, ignoreTrailingNulls);
@@ -223,7 +223,7 @@ public class ArchiveUtils {
      * @param buffer2
      * @param offset2
      * @param length2
-     * @return <code>true</code> if buffer1 and buffer2 have same contents, having regard to trailing nulls
+     * @return {@code true} if buffer1 and buffer2 have same contents, having regard to trailing nulls
      */
     public static boolean isEqualWithNull(
             final byte[] buffer1, final int offset1, final int length1,

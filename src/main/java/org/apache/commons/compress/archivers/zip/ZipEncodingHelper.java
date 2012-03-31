@@ -205,7 +205,7 @@ public abstract class ZipEncodingHelper {
     /**
      * Instantiates a zip encoding.
      * 
-     * @param name The name of the zip encoding. Specify <code>null</code> for
+     * @param name The name of the zip encoding. Specify {@code null} for
      *             the platform's default encoding.
      * @return A zip encoding for the given encoding name.
      */

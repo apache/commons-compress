@@ -293,7 +293,7 @@ public abstract class AbstractTestCase extends TestCase {
      * Checks that an archive input stream can be read, and that the file data matches file sizes.
      * 
      * @param in
-     * @param expected list of expected entries or <code>null</code> if no check of names desired
+     * @param expected list of expected entries or {@code null} if no check of names desired
      * @throws Exception
      */
     protected void checkArchiveContent(ArchiveInputStream in, List<String> expected)
@@ -305,7 +305,7 @@ public abstract class AbstractTestCase extends TestCase {
      * Checks that an archive input stream can be read, and that the file data matches file sizes.
      * 
      * @param in
-     * @param expected list of expected entries or <code>null</code> if no check of names desired
+     * @param expected list of expected entries or {@code null} if no check of names desired
      * @param cleanUp Cleans up resources if true 
      * @return returns the created result file if cleanUp = false, or null otherwise 
      * @throws Exception

@@ -52,8 +52,8 @@ public abstract class BZip2Utils {
      * Detects common bzip2 suffixes in the given filename.
      *
      * @param filename name of a file
-     * @return <code>true</code> if the filename has a common bzip2 suffix,
-     *         <code>false</code> otherwise
+     * @return {@code true} if the filename has a common bzip2 suffix,
+     *         {@code false} otherwise
      */
     public static boolean isCompressedFilename(String filename) {
         return fileNameUtil.isCompressedFilename(filename);

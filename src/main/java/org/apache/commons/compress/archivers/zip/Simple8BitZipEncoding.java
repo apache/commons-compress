@@ -152,7 +152,7 @@ class Simple8BitZipEncoding implements ZipEncoding {
      * @param bb The byte buffer to write to.
      * @param c The character to encode.
      * @return Whether the given unicode character is covered by this encoding.
-     *         If <code>false</code> is returned, nothing is pushed to the
+     *         If {@code false} is returned, nothing is pushed to the
      *         byte buffer. 
      */
     public boolean pushEncodedChar(ByteBuffer bb, char c) {
@@ -173,7 +173,7 @@ class Simple8BitZipEncoding implements ZipEncoding {
     /**
      * @param c A unicode character in the range from 0x0080 to 0x7f00
      * @return A Simple8BitChar, if this character is covered by this encoding.
-     *         A <code>null</code> value is returned, if this character is not
+     *         A {@code null} value is returned, if this character is not
      *         covered by this encoding.
      */
     private Simple8BitChar encodeHighChar(char c) {

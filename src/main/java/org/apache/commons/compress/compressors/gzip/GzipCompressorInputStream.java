@@ -98,7 +98,7 @@ public class GzipCompressorInputStream extends CompressorInputStream {
      * Constructs a new input stream that decompresses gzip-compressed data
      * from the specified input stream.
      * <p>
-     * If <code>decompressConcatenated</code> is <code>false</code>:
+     * If <code>decompressConcatenated</code> is {@code false}:
      * This decompressor might read more input than it will actually use.
      * If <code>inputStream</code> supports <code>mark</code> and
      * <code>reset</code>, then the input position will be adjusted
