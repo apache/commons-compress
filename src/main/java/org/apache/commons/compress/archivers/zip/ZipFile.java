@@ -952,8 +952,9 @@ public class ZipFile {
     private final Comparator<ZipArchiveEntry> OFFSET_COMPARATOR =
         new Comparator<ZipArchiveEntry>() {
         public int compare(ZipArchiveEntry e1, ZipArchiveEntry e2) {
-            if (e1 == e2)
+            if (e1 == e2) {
                 return 0;
+            }
 
             OffsetEntry off1 = entries.get(e1);
             OffsetEntry off2 = entries.get(e2);

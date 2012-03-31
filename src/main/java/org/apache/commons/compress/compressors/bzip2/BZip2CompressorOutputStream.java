@@ -1564,8 +1564,9 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
             c1 = c2;
         }
 
-        for (int i = 1; i <= 65536; i++)
+        for (int i = 1; i <= 65536; i++) {
             ftab[i] += ftab[i - 1];
+        }
 
         c1 = block[1] & 0xff;
         for (int i = 0; i < lastShadow; i++) {
@@ -1654,8 +1655,9 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                 }
             }
 
-            for (int j = 256; --j >= 0;)
+            for (int j = 256; --j >= 0;) {
                 ftab[(j << 8) + ss] |= SETMASK;
+            }
 
             // Step 3:
             /*
@@ -1694,8 +1696,9 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         final byte[] block = this.data.block;
         final int lastShadow = this.last;
 
-        for (int i = 256; --i >= 0;)
+        for (int i = 256; --i >= 0;) {
             inUse[i] = false;
+        }
 
         int rNToGo = 0;
         int rTPos = 0;
