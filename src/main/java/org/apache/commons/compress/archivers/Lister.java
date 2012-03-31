@@ -33,7 +33,7 @@ import java.io.InputStream;
  */
 public final class Lister {
     private static final ArchiveStreamFactory factory = new ArchiveStreamFactory();
-    
+
     public static void main(String[] args) throws Exception {
         if (args.length == 0) {
             usage();
@@ -62,7 +62,6 @@ public final class Lister {
 
     private static void usage() {
         System.out.println("Parameters: archive-name [archive-type]");
-        
     }
 
 }

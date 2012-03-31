@@ -40,7 +40,7 @@ import org.apache.commons.compress.utils.IOUtils;
  */
 public class ChangeSetPerformer {
     private final Set<Change> changes;
-    
+
     /**
      * Constructs a ChangeSetPerformer with the changes from this ChangeSet
      * @param changeSet the ChangeSet which operations are used for performing
@@ -48,7 +48,7 @@ public class ChangeSetPerformer {
     public ChangeSetPerformer(final ChangeSet changeSet) {
         changes = changeSet.getChanges();
     }
-    
+
     /**
      * Performs all changes collected in this ChangeSet on the input stream and
      * streams the result to the output stream. Perform may be called more than once.
@@ -67,9 +67,9 @@ public class ChangeSetPerformer {
     public ChangeSetResults perform(ArchiveInputStream in, ArchiveOutputStream out)
             throws IOException {
         ChangeSetResults results = new ChangeSetResults();
-        
+
         Set<Change> workingSet = new LinkedHashSet<Change>(changes);
-        
+
         for (Iterator<Change> it = workingSet.iterator(); it.hasNext();) {
             Change change = it.next();
 
@@ -113,7 +113,7 @@ public class ChangeSetPerformer {
                 results.addedFromStream(entry.getName());
             }
         }
-        
+
         // Adds files which hasn't been added from the original and do not have replace mode on
         for (Iterator<Change> it = workingSet.iterator(); it.hasNext();) {
             Change change = it.next();

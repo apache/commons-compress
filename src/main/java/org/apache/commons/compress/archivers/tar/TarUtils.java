@@ -72,7 +72,7 @@ public class TarUtils {
         };
 
     /** Private constructor to prevent instantiation of this utility class. */
-    private TarUtils(){    
+    private TarUtils(){
     }
 
     /**
@@ -437,7 +437,7 @@ public class TarUtils {
     public static int formatLongOctalBytes(final long value, byte[] buf, final int offset, final int length) {
 
         int idx=length-1; // For space
-        
+
         formatUnsignedOctalString(value, buf, offset, idx);
         buf[offset + idx] = (byte) ' '; // Trailing space
 

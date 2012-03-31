@@ -44,16 +44,16 @@ public class ArchiveUtilsTest extends AbstractTestCase {
         assertTrue(ArchiveUtils.isEqual(buffer1, buffer3));
         assertTrue(ArchiveUtils.isEqual(buffer3, buffer1));
     }
-    
+
     public void testCompareAscii(){
         byte[] buffer1 = {'a','b','c'};
         byte[] buffer2 = {'d','e','f',0};
         assertTrue(ArchiveUtils.matchAsciiBuffer("abc", buffer1));
         assertFalse(ArchiveUtils.matchAsciiBuffer("abc\0", buffer1));
-        assertTrue(ArchiveUtils.matchAsciiBuffer("def\0", buffer2));        
+        assertTrue(ArchiveUtils.matchAsciiBuffer("def\0", buffer2));
         assertFalse(ArchiveUtils.matchAsciiBuffer("def", buffer2));
     }
-    
+
     public void testAsciiConversions() {
         asciiToByteAndBackOK("");
         asciiToByteAndBackOK("abcd");

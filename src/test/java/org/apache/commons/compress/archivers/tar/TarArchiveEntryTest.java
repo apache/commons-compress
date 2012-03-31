@@ -98,7 +98,7 @@ public class TarArchiveEntryTest extends TestCase {
             AbstractTestCase.tryHardToDelete(f);
         }
     }
-    
+
     public void testMaxFileSize(){
         TarArchiveEntry t = new TarArchiveEntry("");
         t.setSize(0);

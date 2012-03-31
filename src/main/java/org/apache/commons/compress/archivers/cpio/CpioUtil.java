@@ -68,7 +68,7 @@ class CpioUtil {
      * 
      * @param number 
      *            the input long number to be converted
-     *            
+     * 
      * @param length
      *            The length of the returned array
      * @param swapHalfWord

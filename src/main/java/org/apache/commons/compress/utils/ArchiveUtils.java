@@ -26,9 +26,9 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * Generic Archive utilities
  */
 public class ArchiveUtils {
-    
+
     /** Private constructor to prevent instantiation of this utility class. */
-    private ArchiveUtils(){    
+    private ArchiveUtils(){
     }
 
     /**
@@ -73,7 +73,7 @@ public class ArchiveUtils {
         }
         return isEqual(buffer1, 0, buffer1.length, buffer, offset, length, false);
     }
-    
+
     /**
      * Check if buffer contents matches Ascii String.
      * 
@@ -84,7 +84,7 @@ public class ArchiveUtils {
     public static boolean matchAsciiBuffer(String expected, byte[] buffer){
         return matchAsciiBuffer(expected, buffer, 0, buffer.length);
     }
-    
+
     /**
      * Convert a string to Ascii bytes.
      * Used for comparing "magic" strings which need to be independent of the default Locale.
@@ -167,13 +167,13 @@ public class ArchiveUtils {
                     if (buffer2[offset2+i] != 0){
                         return false;
                     }
-                }                
+                }
             }
             return true;
         }
         return false;
     }
-    
+
     /**
      * Compare byte buffers
      * 
@@ -190,7 +190,7 @@ public class ArchiveUtils {
             final byte[] buffer2, final int offset2, final int length2){
         return isEqual(buffer1, offset1, length1, buffer2, offset2, length2, false);
     }
-    
+
     /**
      * Compare byte buffers
      * 
@@ -201,7 +201,7 @@ public class ArchiveUtils {
     public static boolean isEqual(final byte[] buffer1, final byte[] buffer2 ){
         return isEqual(buffer1, 0, buffer1.length, buffer2, 0, buffer2.length, false);
     }
-    
+
     /**
      * Compare byte buffers, optionally ignoring trailing nulls
      * 
@@ -213,7 +213,7 @@ public class ArchiveUtils {
     public static boolean isEqual(final byte[] buffer1, final byte[] buffer2, boolean ignoreTrailingNulls){
         return isEqual(buffer1, 0, buffer1.length, buffer2, 0, buffer2.length, ignoreTrailingNulls);
     }
-    
+
     /**
      * Compare byte buffers, ignoring trailing nulls
      * 
@@ -230,5 +230,5 @@ public class ArchiveUtils {
             final byte[] buffer2, final int offset2, final int length2){
         return isEqual(buffer1, offset1, length1, buffer2, offset2, length2, true);
     }
-    
+
 }

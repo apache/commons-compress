@@ -41,7 +41,7 @@ public abstract class ArchiveInputStream extends InputStream {
 
     private byte[] SINGLE = new byte[1];
     private static final int BYTE_MASK = 0xFF;
-    
+
     /** holds the number of bytes read in this stream */
     private long bytesRead = 0;
 
@@ -81,7 +81,7 @@ public abstract class ArchiveInputStream extends InputStream {
         int num = read(SINGLE, 0, 1);
         return num == -1 ? -1 : SINGLE[0] & BYTE_MASK;
     }
-    
+
     /**
      * Increments the counter of already read bytes.
      * Doesn't increment if the EOF has been hit (read == -1)
@@ -104,7 +104,7 @@ public abstract class ArchiveInputStream extends InputStream {
             bytesRead = bytesRead + read;
         }
     }
-    
+
     /**
      * Decrements the counter of already read bytes.
      * 
@@ -114,7 +114,7 @@ public abstract class ArchiveInputStream extends InputStream {
     protected void pushedBackBytes(long pushedBack) {
         bytesRead -= pushedBack;
     }
-    
+
     /**
      * Returns the current number of bytes read from this stream.
      * @return the number of read bytes

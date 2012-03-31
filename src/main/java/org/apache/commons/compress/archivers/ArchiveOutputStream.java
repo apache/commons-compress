@@ -47,7 +47,7 @@ import java.io.OutputStream;
  * </p>
  */
 public abstract class ArchiveOutputStream extends OutputStream {
-    
+
     /** Temporary buffer used for the {@link #write(int)} method */
     private final byte[] oneByte = new byte[1];
     static final int BYTE_MASK = 0xFF;
@@ -55,7 +55,7 @@ public abstract class ArchiveOutputStream extends OutputStream {
     /** holds the number of bytes written to this stream */
     private long bytesWritten = 0;
     // Methods specific to ArchiveOutputStream
-    
+
     /**
      * Writes the headers for an archive entry to the output stream.
      * The caller must then write the content to the stream and call
@@ -72,7 +72,7 @@ public abstract class ArchiveOutputStream extends OutputStream {
      * @throws IOException
      */
     public abstract void closeArchiveEntry() throws IOException;
-    
+
     /**
      * Finishes the addition of entries to this stream, without closing it.
      * Additional data can be written, if the format supports it.
@@ -93,9 +93,9 @@ public abstract class ArchiveOutputStream extends OutputStream {
      * @throws IOException
      */
     public abstract ArchiveEntry createArchiveEntry(File inputFile, String entryName) throws IOException;
-    
+
     // Generic implementations of OutputStream methods that may be useful to sub-classes
-    
+
     /**
      * Writes a byte to the current archive entry.
      *
@@ -135,7 +135,7 @@ public abstract class ArchiveOutputStream extends OutputStream {
             bytesWritten = bytesWritten + written;
         }
     }
-    
+
     /**
      * Returns the current number of bytes written to this stream.
      * @return the number of written bytes

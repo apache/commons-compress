@@ -46,7 +46,7 @@ public abstract class AbstractTestCase extends TestCase {
 
     private File archive; // used to delete the archive in tearDown
     protected List<String> archiveList; // Lists the content of the archive as originally created
-    
+
     protected ArchiveStreamFactory factory = new ArchiveStreamFactory();
 
     public AbstractTestCase() {
@@ -300,7 +300,7 @@ public abstract class AbstractTestCase extends TestCase {
             throws Exception {
         checkArchiveContent(in, expected, true);
     }
-    
+
     /**
      * Checks that an archive input stream can be read, and that the file data matches file sizes.
      * 
@@ -330,7 +330,7 @@ public abstract class AbstractTestCase extends TestCase {
                         copied=IOUtils.copy(in, out);
                     } finally {
                         out.close();
-                    }                    
+                    }
                 }
                 final long size = entry.getSize();
                 if (size != ArchiveEntry.SIZE_UNKNOWN) {
@@ -389,6 +389,6 @@ public abstract class AbstractTestCase extends TestCase {
             return new File[] {tmpDir, tmpFile};
         } finally {
             fos.close();
-        }            
+        }
     }
 }

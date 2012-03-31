@@ -167,7 +167,7 @@ public final class ZipTestCase extends AbstractTestCase {
      */
     public void testListAllFilesWithNestedArchive() throws Exception {
         final File input = getFile("OSX_ArchiveWithNestedArchive.zip");
-       
+
         List<String> results = new ArrayList<String>();
 
         final InputStream is = new FileInputStream(input);
@@ -192,7 +192,7 @@ public final class ZipTestCase extends AbstractTestCase {
             }
         }
         is.close();
-        
+
         results.contains("NestedArchiv.zip");
         results.contains("test1.xml");
         results.contains("test2.xml");

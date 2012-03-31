@@ -29,12 +29,12 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
         expected.append("./test1.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>./test2.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>\n");
-        
+
 
         CpioArchiveInputStream in = 
                 new CpioArchiveInputStream(new FileInputStream(getFile("bla.cpio")));
         CpioArchiveEntry entry= null;
-        
+
         StringBuffer result = new StringBuffer();
         while ((entry = (CpioArchiveEntry) in.getNextEntry()) != null) {
             result.append(entry.getName());
@@ -45,5 +45,5 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
          }
          in.close();
          assertEquals(result.toString(), expected.toString());
-    }    
+    }
 }

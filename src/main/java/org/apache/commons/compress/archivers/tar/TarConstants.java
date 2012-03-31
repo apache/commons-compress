@@ -252,14 +252,14 @@ public interface TarConstants {
      * @since Apache Commons Compress 1.1
      */
     byte LF_PAX_EXTENDED_HEADER_UC = (byte) 'X';
-    
+
     /**
      * Identifies the entry as a Pax global extended header.
      *
      * @since Apache Commons Compress 1.1
      */
     byte LF_PAX_GLOBAL_EXTENDED_HEADER = (byte) 'g';
-    
+
     /**
      * The magic tag representing a POSIX tar archive.
      */
@@ -280,7 +280,7 @@ public interface TarConstants {
      * @since Apache Commons Compress 1.1
      */
     String MAGIC_ANT = "ustar\0";
-    
+
     /**
      * The "version" representing an Ant tar archive.
      *

@@ -46,7 +46,7 @@ public final class DumpArchiveConstants {
         ADDR(4),
         END(5),
         CLRI(6);
-   
+
         int code;
 
         private SEGMENT_TYPE(int code) {

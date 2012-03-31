@@ -62,5 +62,5 @@ public final class DetectCompressorTestCase extends TestCase {
                    new BufferedInputStream(new FileInputStream(
                        new File(rsc.getFile()))));
     }
-    
+
 }

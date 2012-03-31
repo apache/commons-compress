@@ -60,7 +60,7 @@ public class CountingOutputStream extends FilterOutputStream {
             bytesWritten += written;
         }
     }
-    
+
     /**
      * Returns the current number of bytes written to this stream.
      * @return the number of written bytes
