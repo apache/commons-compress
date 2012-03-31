@@ -119,10 +119,11 @@ public class GzipCompressorInputStream extends CompressorInputStream {
             throws IOException {
         // Mark support is strictly needed for concatenated files only,
         // but it's simpler if it is always available.
-        if (inputStream.markSupported())
+        if (inputStream.markSupported()) {
             in = inputStream;
-        else
+        } else {
             in = new BufferedInputStream(inputStream);
+        }
 
         this.decompressConcatenated = decompressConcatenated;
         init(true);
@@ -137,25 +138,29 @@ public class GzipCompressorInputStream extends CompressorInputStream {
 
         // If end of input was reached after decompressing at least
         // one .gz member, we have reached the end of the file successfully.
-        if (magic0 == -1 && !isFirstMember)
+        if (magic0 == -1 && !isFirstMember) {
             return false;
+        }
 
-        if (magic0 != 31 || magic1 != 139)
+        if (magic0 != 31 || magic1 != 139) {
             throw new IOException(isFirstMember
                                   ? "Input is not in the .gz format"
                                   : "Garbage after a valid .gz stream");
+        }
 
         // Parsing the rest of the header may throw EOFException.
         DataInputStream inData = new DataInputStream(in);
         int method = inData.readUnsignedByte();
-        if (method != 8)
+        if (method != 8) {
             throw new IOException("Unsupported compression method "
                                   + method + " in the .gz header");
+        }
 
         int flg = inData.readUnsignedByte();
-        if ((flg & FRESERVED) != 0)
+        if ((flg & FRESERVED) != 0) {
             throw new IOException(
                     "Reserved flags are set in the .gz header");
+        }
 
         inData.readInt(); // mtime, ignored
         inData.readUnsignedByte(); // extra flags, ignored
@@ -169,25 +174,29 @@ public class GzipCompressorInputStream extends CompressorInputStream {
             // This isn't as efficient as calling in.skip would be,
             // but it's lazier to handle unexpected end of input this way.
             // Most files don't have an extra field anyway.
-            while (xlen-- > 0)
+            while (xlen-- > 0) {
                 inData.readUnsignedByte();
+            }
         }
 
         // Original file name, ignored
-        if ((flg & FNAME) != 0)
+        if ((flg & FNAME) != 0) {
             while (inData.readUnsignedByte() != 0x00) {}
+        }
 
         // Comment, ignored
-        if ((flg & FCOMMENT) != 0)
+        if ((flg & FCOMMENT) != 0) {
             while (inData.readUnsignedByte() != 0x00) {}
+        }
 
         // Header "CRC16" which is actually a truncated CRC32 (which isn't
         // as good as real CRC16). I don't know if any encoder implementation
         // sets this, so it's not worth trying to verify it. GNU gzip 1.4
         // doesn't support this field, but zlib seems to be able to at least
         // skip over it.
-        if ((flg & FHCRC) != 0)
+        if ((flg & FHCRC) != 0) {
             inData.readShort();
+        }
 
         // Reset
         inf.reset();
@@ -211,8 +220,9 @@ public class GzipCompressorInputStream extends CompressorInputStream {
      */
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
-        if (endReached)
+        if (endReached) {
             return -1;
+        }
 
         int size = 0;
 
@@ -223,8 +233,9 @@ public class GzipCompressorInputStream extends CompressorInputStream {
                 in.mark(buf.length);
 
                 bufUsed = in.read(buf);
-                if (bufUsed == -1)
+                if (bufUsed == -1) {
                     throw new EOFException();
+                }
 
                 inf.setInput(buf, 0, bufUsed);
             }
@@ -252,8 +263,9 @@ public class GzipCompressorInputStream extends CompressorInputStream {
                 in.reset();
 
                 int skipAmount = bufUsed - inf.getRemaining();
-                if (in.skip(skipAmount) != skipAmount)
+                if (in.skip(skipAmount) != skipAmount) {
                     throw new IOException();
+                }
 
                 bufUsed = 0;
 
@@ -261,21 +273,25 @@ public class GzipCompressorInputStream extends CompressorInputStream {
 
                 // CRC32
                 long crcStored = 0;
-                for (int i = 0; i < 4; ++i)
+                for (int i = 0; i < 4; ++i) {
                     crcStored |= (long)inData.readUnsignedByte() << (i * 8);
+                }
 
-                if (crcStored != crc.getValue())
+                if (crcStored != crc.getValue()) {
                     throw new IOException("Gzip-compressed data is corrupt "
                                           + "(CRC32 error)");
+                }
 
                 // Uncompressed size modulo 2^32 (ISIZE in the spec)
                 int isize = 0;
-                for (int i = 0; i < 4; ++i)
+                for (int i = 0; i < 4; ++i) {
                     isize |= inData.readUnsignedByte() << (i * 8);
+                }
 
-                if (isize != memberSize)
+                if (isize != memberSize) {
                     throw new IOException("Gzip-compressed data is corrupt"
                                           + "(uncompressed size mismatch)");
+                }
 
                 // See if this is the end of the file.
                 if (!decompressConcatenated || !init(false)) {
