@@ -29,7 +29,7 @@ import static org.junit.Assert.assertEquals;
 public class ZipArchiveInputStreamTest {
 
     /**
-     * @see https://issues.apache.org/jira/browse/COMPRESS-176
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-176"
      */
     @Test
     public void winzipBackSlashWorkaround() throws Exception {
