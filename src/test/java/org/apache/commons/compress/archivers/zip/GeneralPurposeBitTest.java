@@ -20,6 +20,7 @@
 package org.apache.commons.compress.archivers.zip;
 
 import java.util.Arrays;
+
 import junit.framework.TestCase;
 
 public class GeneralPurposeBitTest extends TestCase {

@@ -18,13 +18,14 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URI;
 import java.net.URL;
-import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 public class ZipArchiveInputStreamTest {
 

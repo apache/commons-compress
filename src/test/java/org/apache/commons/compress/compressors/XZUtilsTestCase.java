@@ -18,9 +18,9 @@
  */
 package org.apache.commons.compress.compressors;
 
-import org.apache.commons.compress.compressors.xz.XZUtils;
-
 import junit.framework.TestCase;
+
+import org.apache.commons.compress.compressors.xz.XZUtils;
 
 public class XZUtilsTestCase extends TestCase {
 

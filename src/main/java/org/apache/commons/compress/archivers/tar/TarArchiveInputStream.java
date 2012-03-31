@@ -35,6 +35,7 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ArchiveUtils;
+import org.apache.commons.compress.utils.CharsetNames;
 
 /**
  * The TarInputStream reads a UNIX tar archive as an InputStream.
@@ -330,7 +331,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                     while((ch = i.read()) != -1) {
                         read++;
                         if (ch == '='){ // end of keyword
-                            String keyword = coll.toString("UTF-8");
+                            String keyword = coll.toString(CharsetNames.UTF_8);
                             // Get rest of entry
                             byte[] rest = new byte[len - read];
                             int got = i.read(rest);
@@ -343,7 +344,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                             }
                             // Drop trailing NL
                             String value = new String(rest, 0,
-                                                      len - read - 1, "UTF-8");
+                                                      len - read - 1, CharsetNames.UTF_8);
                             headers.put(keyword, value);
                             break;
                         }

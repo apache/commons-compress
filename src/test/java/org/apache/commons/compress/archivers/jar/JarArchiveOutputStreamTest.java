@@ -21,6 +21,7 @@ package org.apache.commons.compress.archivers.jar;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
 import junit.framework.TestCase;
 
 import org.apache.commons.compress.AbstractTestCase;

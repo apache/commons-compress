@@ -18,9 +18,9 @@
  */
 package org.apache.commons.compress.compressors;
 
-import org.apache.commons.compress.compressors.gzip.GzipUtils;
-
 import junit.framework.TestCase;
+
+import org.apache.commons.compress.compressors.gzip.GzipUtils;
 
 public class GzipUtilsTestCase extends TestCase {
 

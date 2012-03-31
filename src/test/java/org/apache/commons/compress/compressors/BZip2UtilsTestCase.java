@@ -18,9 +18,9 @@
  */
 package org.apache.commons.compress.compressors;
 
-import org.apache.commons.compress.compressors.bzip2.BZip2Utils;
-
 import junit.framework.TestCase;
+
+import org.apache.commons.compress.compressors.bzip2.BZip2Utils;
 
 public class BZip2UtilsTestCase extends TestCase {
 

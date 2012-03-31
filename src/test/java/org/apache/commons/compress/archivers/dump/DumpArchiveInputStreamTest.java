@@ -19,8 +19,9 @@
 package org.apache.commons.compress.archivers.dump;
 
 import java.io.FileInputStream;
-import org.apache.commons.compress.archivers.ArchiveException;
+
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.archivers.ArchiveException;
 
 public class DumpArchiveInputStreamTest extends AbstractTestCase {
 

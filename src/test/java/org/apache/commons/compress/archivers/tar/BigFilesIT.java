@@ -18,14 +18,14 @@
 
 package org.apache.commons.compress.archivers.tar;
 
-import java.util.Random;
-
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.util.Random;
+
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.junit.Test;
 
 public class BigFilesIT {
 
