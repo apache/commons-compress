@@ -140,7 +140,7 @@ public class ZipFileTest extends TestCase {
     }
 
     /**
-     * @see https://issues.apache.org/jira/browse/COMPRESS-176
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-176"
      */
     public void testWinzipBackSlashWorkaround() throws Exception {
         URL zip = getClass().getResource("/test-winzip.zip");
