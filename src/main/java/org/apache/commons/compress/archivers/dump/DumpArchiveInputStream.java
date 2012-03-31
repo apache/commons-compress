@@ -326,7 +326,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
                 byte type = blockBuffer[i + 6];
 
-                String name = new String(blockBuffer, i + 8, blockBuffer[i + 7]);
+                String name = new String(blockBuffer, i + 8, blockBuffer[i + 7]); // TODO default charset?
 
                 if (".".equals(name) || "..".equals(name)) {
                     // do nothing...

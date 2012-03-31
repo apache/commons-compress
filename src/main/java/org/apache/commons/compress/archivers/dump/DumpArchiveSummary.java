@@ -45,11 +45,11 @@ public class DumpArchiveSummary {
         dumpDate = 1000L * DumpArchiveUtil.convert32(buffer, 4);
         previousDumpDate = 1000L * DumpArchiveUtil.convert32(buffer, 8);
         volume = DumpArchiveUtil.convert32(buffer, 12);
-        label = new String(buffer, 676, DumpArchiveConstants.LBLSIZE).trim();
+        label = new String(buffer, 676, DumpArchiveConstants.LBLSIZE).trim(); // TODO default charset?
         level = DumpArchiveUtil.convert32(buffer, 692);
-        filesys = new String(buffer, 696, DumpArchiveConstants.NAMELEN).trim();
-        devname = new String(buffer, 760, DumpArchiveConstants.NAMELEN).trim();
-        hostname = new String(buffer, 824, DumpArchiveConstants.NAMELEN).trim();
+        filesys = new String(buffer, 696, DumpArchiveConstants.NAMELEN).trim(); // TODO default charset?
+        devname = new String(buffer, 760, DumpArchiveConstants.NAMELEN).trim(); // TODO default charset?
+        hostname = new String(buffer, 824, DumpArchiveConstants.NAMELEN).trim(); // TODO default charset?
         flags = DumpArchiveUtil.convert32(buffer, 888);
         firstrec = DumpArchiveUtil.convert32(buffer, 892);
         ntrec = DumpArchiveUtil.convert32(buffer, 896);

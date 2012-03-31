@@ -235,7 +235,7 @@ public class TarUtils {
     // Helper method to generate the exception message
     private static String exceptionMessage(byte[] buffer, final int offset,
             final int length, int current, final byte currentByte) {
-        String string = new String(buffer, offset, length);
+        String string = new String(buffer, offset, length); // TODO default charset?
         string=string.replaceAll("\0", "{NUL}"); // Replace NULs to allow string to be printed
         final String s = "Invalid byte "+currentByte+" at offset "+(current-offset)+" in '"+string+"' len="+length;
         return s;
