@@ -14,14 +14,21 @@
 ## KIND, either express or implied.  See the License for the
 ## specific language governing permissions and limitations
 ## under the License.
-                        
-
               Apache ${project.name} ${version} RELEASE NOTES
 
+$introduction.replaceAll("(?<!\015)\012", "
+")
+
+## N.B. the available variables are described here:
+## http://maven.apache.org/plugins/maven-changes-plugin/examples/using-a-custom-announcement-template.html
 ## Hack to improve layout: replace all pairs of spaces with a single new-line
 $release.description.replaceAll("  ", "
 ")
 
+## Fix up indentation for multi-line action descriptions
+#macro ( indent )
+#set($action=$action.replaceAll("(?m)^  +","                 "))
+#end
 #if ($release.getActions().size() == 0)
 No changes defined in this version.
 #else
@@ -33,6 +40,7 @@ New features:
 ## Use replaceAll to fix up LF-only line ends on Windows.
 #set($action=$actionItem.getAction().replaceAll("\n","
 "))
+#indent()
 #if ($actionItem.getIssue())
 #set($issue=$actionItem.getIssue())
 #else
@@ -56,6 +64,7 @@ Fixed Bugs:
 ## Use replaceAll to fix up LF-only line ends on Windows.
 #set($action=$actionItem.getAction().replaceAll("\n","
 "))
+#indent()
 #if ($actionItem.getIssue())
 #set($issue=$actionItem.getIssue())
 #else
@@ -79,6 +88,7 @@ Changes:
 ## Use replaceAll to fix up LF-only line ends on Windows.
 #set($action=$actionItem.getAction().replaceAll("\n","
 "))
+#indent()
 #if ($actionItem.getIssue())
 #set($issue=$actionItem.getIssue())
 #else
@@ -102,6 +112,7 @@ Removed:
 ## Use replaceAll to fix up LF-only line ends on Windows.
 #set($action=$actionItem.getAction().replaceAll("\n","
 "))
+#indent()
 #if ($actionItem.getIssue())
 #set($issue=$actionItem.getIssue())
 #else
