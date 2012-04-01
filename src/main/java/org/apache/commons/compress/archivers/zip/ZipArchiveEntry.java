@@ -49,7 +49,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * @NotThreadSafe
  */
 public class ZipArchiveEntry extends java.util.zip.ZipEntry
-    implements ArchiveEntry, Cloneable {
+    implements ArchiveEntry {
 
     public static final int PLATFORM_UNIX = 3;
     public static final int PLATFORM_FAT  = 0;
