@@ -34,7 +34,6 @@ import java.nio.charset.UnsupportedCharsetException;
  * not foreseen that Commons Codec would be made to depend on Commons Lang.
  * 
  * @see <a href="http://docs.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
- * @author Apache Software Foundation
  * @since 1.4
  * @version $Id$
  */
