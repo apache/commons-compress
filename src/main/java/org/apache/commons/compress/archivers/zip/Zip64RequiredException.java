@@ -24,7 +24,7 @@ import java.util.zip.ZipException;
  * Exception thrown when attempting to write data that requires Zip64
  * support to an archive and {@link ZipArchiveOutputStream#setUseZip64
  * UseZip64} has been set to {@link Zip64Mode#Never Never}.
- * @since Apache Commons Compress 1.3
+ * @since 1.3
  */
 public class Zip64RequiredException extends ZipException {
 

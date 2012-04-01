@@ -216,7 +216,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @param preserveLeadingSlashes whether to allow leading slashes
      * in the name.
      * 
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     public TarArchiveEntry(String name, boolean preserveLeadingSlashes) {
         this();
@@ -417,7 +417,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * 
      * @param link the link name to use.
      * 
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     public void setLinkName(String link) {
         this.linkName = link;
@@ -594,7 +594,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * Get this entry's major device number.
      *
      * @return This entry's major device number.
-     * @since Apache Commons Compress 1.4
+     * @since 1.4
      */
     public int getDevMajor() {
         return devMajor;
@@ -605,7 +605,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      *
      * @param devNo This entry's major device number.
      * @throws IllegalArgumentException if the devNo is &lt; 0.
-     * @since Apache Commons Compress 1.4
+     * @since 1.4
      */
     public void setDevMajor(int devNo) {
         if (devNo < 0){
@@ -619,7 +619,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * Get this entry's minor device number.
      *
      * @return This entry's minor device number.
-     * @since Apache Commons Compress 1.4
+     * @since 1.4
      */
     public int getDevMinor() {
         return devMinor;
@@ -630,7 +630,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      *
      * @param devNo This entry's minor device number.
      * @throws IllegalArgumentException if the devNo is &lt; 0.
-     * @since Apache Commons Compress 1.4
+     * @since 1.4
      */
     public void setDevMinor(int devNo) {
         if (devNo < 0){
@@ -683,7 +683,8 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * 
      * @return {@code true} if this is a Pax header.
      * 
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
+     * 
      */
     public boolean isPaxHeader(){
         return linkFlag == LF_PAX_EXTENDED_HEADER_LC
@@ -695,7 +696,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * 
      * @return {@code true} if this is a Pax header.
      * 
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     public boolean isGlobalPaxHeader(){
         return linkFlag == LF_PAX_GLOBAL_EXTENDED_HEADER;
@@ -725,7 +726,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     /**
      * Check if this is a "normal file"
      *
-     * @since Apache Commons Compress 1.2
+     * @since 1.2
      */
     public boolean isFile() {
         if (file != null) {
@@ -740,7 +741,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     /**
      * Check if this is a symbolic link entry.
      *
-     * @since Apache Commons Compress 1.2
+     * @since 1.2
      */
     public boolean isSymbolicLink() {
         return linkFlag == LF_SYMLINK;
@@ -749,7 +750,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     /**
      * Check if this is a link entry.
      *
-     * @since Apache Commons Compress 1.2
+     * @since 1.2
      */
     public boolean isLink() {
         return linkFlag == LF_LINK;
@@ -758,7 +759,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     /**
      * Check if this is a character device entry.
      *
-     * @since Apache Commons Compress 1.2
+     * @since 1.2
      */
     public boolean isCharacterDevice() {
         return linkFlag == LF_CHR;
@@ -767,7 +768,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     /**
      * Check if this is a block device entry.
      *
-     * @since Apache Commons Compress 1.2
+     * @since 1.2
      */
     public boolean isBlockDevice() {
         return linkFlag == LF_BLK;
@@ -776,7 +777,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     /**
      * Check if this is a FIFO (pipe) entry.
      *
-     * @since Apache Commons Compress 1.2
+     * @since 1.2
      */
     public boolean isFIFO() {
         return linkFlag == LF_FIFO;
@@ -831,7 +832,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @param starMode whether to use the star/GNU tar/BSD tar
      * extension for numeric fields if their value doesn't fit in the
      * maximum size of standard tar archives
-     * @since Apache Commons Compress 1.4
+     * @since 1.4
      */
     public void writeEntryHeader(byte[] outbuf, ZipEncoding encoding,
                                  boolean starMode) throws IOException {

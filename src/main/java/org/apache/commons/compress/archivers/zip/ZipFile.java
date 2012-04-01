@@ -300,7 +300,7 @@ public class ZipFile {
      *
      * <p>May return false if it is set up to use encryption or a
      * compression method that hasn't been implemented yet.</p>
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     public boolean canReadEntryData(ZipArchiveEntry ze) {
         return ZipUtil.canHandleEntryData(ze);

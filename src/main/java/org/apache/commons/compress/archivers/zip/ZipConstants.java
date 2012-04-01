@@ -20,7 +20,7 @@ package org.apache.commons.compress.archivers.zip;
 /**
  * Various constants used throughout the package.
  *
- * @since Apache Commons Compress 1.3
+ * @since 1.3
  */
 final class ZipConstants {
     private ZipConstants() { }

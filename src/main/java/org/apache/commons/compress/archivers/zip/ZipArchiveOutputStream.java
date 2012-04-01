@@ -239,7 +239,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Whether anything inside this archive has used a ZIP64 feature.
      *
-     * @since Apache Commons Compress 1.3
+     * @since 1.3
      */
     private boolean hasUsedZip64 = false;
 
@@ -391,7 +391,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * size and data is written to a non-seekable stream - in this
      * case the default is {@link Zip64Mode#Never Never}.</p>
      *
-     * @since Apache Commons Compress 1.3
+     * @since 1.3
      */
     public void setUseZip64(Zip64Mode mode) {
         zip64Mode = mode;
@@ -734,7 +734,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      *
      * <p>May return false if it is set up to use encryption or a
      * compression method that hasn't been implemented yet.</p>
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     @Override
     public boolean canWriteEntryData(ArchiveEntry ae) {
@@ -1190,7 +1190,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * Writes the &quot;ZIP64 End of central dir record&quot; and
      * &quot;ZIP64 End of central dir locator&quot;.
      * @throws IOException on error
-     * @since Apache Commons Compress 1.3
+     * @since 1.3
      */
     protected void writeZip64CentralDirectory() throws IOException {
         if (zip64Mode == Zip64Mode.Never) {
@@ -1338,7 +1338,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * Get the existing ZIP64 extended information extra field or
      * create a new one and add it to the entry.
      *
-     * @since Apache Commons Compress 1.3
+     * @since 1.3
      */
     private Zip64ExtendedInformationExtraField
         getZip64Extra(ZipArchiveEntry ze) {
@@ -1370,7 +1370,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * Is there a ZIP64 extended information extra field for the
      * entry?
      *
-     * @since Apache Commons Compress 1.3
+     * @since 1.3
      */
     private boolean hasZip64Extra(ZipArchiveEntry ze) {
         return ze.getExtraField(Zip64ExtendedInformationExtraField
@@ -1383,7 +1383,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * unknown size that gets written to a non-seekable stream the
      * change the default to Never.
      *
-     * @since Apache Commons Compress 1.3
+     * @since 1.3
      */
     private Zip64Mode getEffectiveZip64Mode(ZipArchiveEntry ze) {
         if (zip64Mode != Zip64Mode.AsNeeded

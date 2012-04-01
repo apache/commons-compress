@@ -26,7 +26,7 @@ import static org.apache.commons.compress.archivers.zip.ZipConstants.BYTE_MASK;
  * rules for the big endian byte order of ZIP files.
  * @Immutable
  *
- * @since Apache Commons Compress 1.2
+ * @since 1.2
  */
 public final class ZipEightByteInteger {
 

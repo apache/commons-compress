@@ -184,7 +184,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      *
      * @return compression method
      *
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     @Override
     public int getMethod() {
@@ -196,7 +196,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      *
      * @param method compression method
      *
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     @Override
     public void setMethod(int method) {
@@ -315,7 +315,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * exists.
      * @return an array of the extra fields
      *
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     public ZipExtraField[] getExtraFields(boolean includeUnparseable) {
         if (extraFields == null) {
@@ -390,7 +390,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     /**
      * Removes unparseable extra field data.
      *
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     public void removeUnparseableExtraFieldData() {
         if (unparseableExtra == null) {
@@ -417,7 +417,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      *
      * @return null if no such field exists.
      *
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     public UnparseableExtraFieldData getUnparseableExtraFieldData() {
         return unparseableExtra;
@@ -546,7 +546,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * the guessed or configured encoding
      * @param rawName the bytes originally read as name from the
      * archive
-     * @since Apache Commons Compress 1.2
+     * @since 1.2
      */
     protected void setName(String name, byte[] rawName) {
         setName(name);
@@ -560,7 +560,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * <p>This method will return null if this instance has not been
      * read from an archive.</p>
      *
-     * @since Apache Commons Compress 1.2
+     * @since 1.2
      */
     public byte[] getRawName() {
         if (rawName != null) {
@@ -587,7 +587,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
 
     /**
      * The "general purpose bit" field.
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     public GeneralPurposeBit getGeneralPurposeBit() {
         return gpb;
@@ -595,7 +595,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
 
     /**
      * The "general purpose bit" field.
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     public void setGeneralPurposeBit(GeneralPurposeBit b) {
         gpb = b;

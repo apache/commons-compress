@@ -109,7 +109,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      * @param blockSize
      *            The block size of the archive.
      * 
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     public CpioArchiveOutputStream(final OutputStream out, final short format,
                                    final int blockSize) {

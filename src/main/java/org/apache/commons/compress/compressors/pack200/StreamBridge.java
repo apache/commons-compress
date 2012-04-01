@@ -29,7 +29,7 @@ import java.io.OutputStream;
  * OutputStream.
  *
  * @ThreadSafe
- * @since Apache Commons Compress 1.3
+ * @since 1.3
  */
 abstract class StreamBridge extends FilterOutputStream {
     private InputStream input;

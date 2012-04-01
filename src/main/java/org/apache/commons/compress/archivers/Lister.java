@@ -29,7 +29,7 @@ import java.io.InputStream;
  * <p>The name of the archive must be given as a command line argument.</p>
  * <p>The optional second argument defines the archive type, in case the format is not recognised.</p>
  *
- * @since Apache Commons Compress 1.1
+ * @since 1.1
  */
 public final class Lister {
     private static final ArchiveStreamFactory factory = new ArchiveStreamFactory();

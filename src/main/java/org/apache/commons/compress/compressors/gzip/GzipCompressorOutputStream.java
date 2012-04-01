@@ -41,7 +41,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
     /**
      * {@inheritDoc}
      * 
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     @Override
     public void write(byte[] b) throws IOException {
@@ -51,7 +51,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
     /**
      * {@inheritDoc}
      * 
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     @Override
     public void write(byte[] b, int from, int length) throws IOException {

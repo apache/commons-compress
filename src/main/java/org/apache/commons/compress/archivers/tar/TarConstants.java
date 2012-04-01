@@ -234,7 +234,7 @@ public interface TarConstants {
 
     /**
      * Sparse file type.
-     * @since Apache Commons Compress 1.1.1
+     * @since 1.1.1
      */
     byte LF_GNUTYPE_SPARSE = (byte) 'S';
 
@@ -242,21 +242,21 @@ public interface TarConstants {
 
     /**
      * Identifies the entry as a Pax extended header.
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     byte LF_PAX_EXTENDED_HEADER_LC = (byte) 'x';
 
     /**
      * Identifies the entry as a Pax extended header (SunOS tar -E).
      *
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     byte LF_PAX_EXTENDED_HEADER_UC = (byte) 'X';
 
     /**
      * Identifies the entry as a Pax global extended header.
      *
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     byte LF_PAX_GLOBAL_EXTENDED_HEADER = (byte) 'g';
 
@@ -277,14 +277,14 @@ public interface TarConstants {
     /**
      * The magic tag representing an Ant tar archive.
      *
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     String MAGIC_ANT = "ustar\0";
 
     /**
      * The "version" representing an Ant tar archive.
      *
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     // Does not appear to have a version, however Ant does write 8 bytes,
     // so assume the version is 2 nulls

@@ -170,7 +170,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * This specifies the treatment of big files (sizes &gt; TarConstants.MAXSIZE) and other numeric values to big to fit into a traditional tar header.
      * Default is BIGNUMBER_ERROR.
      * @param bigNumberMode the mode to use
-     * @since Apache Commons Compress 1.4
+     * @since 1.4
      */
     public void setBigNumberMode(int bigNumberMode) {
         this.bigNumberMode = bigNumberMode;
@@ -178,7 +178,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     /**
      * Whether to add a PAX extension header for non-ASCII file names.
-     * @since Apache Commons Compress 1.4
+     * @since 1.4
      */
     public void setAddPaxHeadersForNonAsciiNames(boolean b) {
         addPaxHeadersForNonAsciiNames = b;
@@ -447,7 +447,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     /**
      * Writes a PAX extended header with the given map as contents.
-     * @since Apache Commons Compress 1.4
+     * @since 1.4
      */
     void writePaxHeaders(String entryName,
                          Map<String, String> headers) throws IOException {

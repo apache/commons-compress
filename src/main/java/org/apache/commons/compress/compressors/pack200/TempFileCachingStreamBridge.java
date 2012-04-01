@@ -28,7 +28,7 @@ import java.io.InputStream;
 /**
  * StreamSwitcher that caches all data written to the output side in
  * a temporary file.
- * @since Apache Commons Compress 1.3
+ * @since 1.3
  */
 class TempFileCachingStreamBridge extends StreamBridge {
     private final File f;

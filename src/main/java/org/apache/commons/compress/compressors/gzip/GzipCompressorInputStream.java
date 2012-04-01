@@ -220,7 +220,7 @@ public class GzipCompressorInputStream extends CompressorInputStream {
     /**
      * {@inheritDoc}
      *
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
@@ -317,7 +317,7 @@ public class GzipCompressorInputStream extends CompressorInputStream {
      * @param length    the number of bytes to check
      * @return          true if this is a .gz stream, false otherwise
      *
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     public static boolean matches(byte[] signature, int length) {
 
