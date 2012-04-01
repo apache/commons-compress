@@ -88,11 +88,10 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         tos.write(new byte[10 * 1024]);
         byte[] data = bos.toByteArray();
         assertEquals(0x80,
-                     ((int) data[TarConstants.NAMELEN
-                                 + TarConstants.MODELEN
-                                 + TarConstants.UIDLEN
-                                 + TarConstants.GIDLEN]
-                      ) & 0x80);
+                     data[TarConstants.NAMELEN
+                        + TarConstants.MODELEN
+                        + TarConstants.UIDLEN
+                        + TarConstants.GIDLEN] & 0x80);
         TarArchiveInputStream tin =
             new TarArchiveInputStream(new ByteArrayInputStream(data));
         TarArchiveEntry e = tin.getNextTarEntry();
