@@ -26,6 +26,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.zip.ZipEntry;
 
 import junit.framework.TestCase;
 
@@ -112,7 +113,7 @@ public class ZipFileTest extends TestCase {
             o = new FileOutputStream(f);
             ZipArchiveOutputStream zo = new ZipArchiveOutputStream(o);
             ZipArchiveEntry ze = new ZipArchiveEntry("foo");
-            ze.setMethod(ZipArchiveEntry.STORED);
+            ze.setMethod(ZipEntry.STORED);
             ze.setSize(4);
             ze.setCrc(0xb63cfbcdl);
             zo.putArchiveEntry(ze);

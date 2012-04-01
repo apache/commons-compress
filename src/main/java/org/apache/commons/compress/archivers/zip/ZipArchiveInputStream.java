@@ -27,6 +27,7 @@ import java.io.PushbackInputStream;
 import java.util.zip.CRC32;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -635,7 +636,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     private boolean supportsDataDescriptorFor(ZipArchiveEntry entry) {
         return allowStoredEntriesWithDataDescriptor ||
             !entry.getGeneralPurposeBit().usesDataDescriptor()
-            || entry.getMethod() == ZipArchiveEntry.DEFLATED;
+            || entry.getMethod() == ZipEntry.DEFLATED;
     }
 
     /**
