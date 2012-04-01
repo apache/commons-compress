@@ -94,7 +94,7 @@ class DumpArchiveUtil {
         i += (((long) buffer[offset + 3] << 24) & 0x00000000FF000000L);
         i += (((long) buffer[offset + 2] << 16) & 0x0000000000FF0000L);
         i += (((long) buffer[offset + 1] << 8) & 0x000000000000FF00L);
-        i += (((long) buffer[offset]) & 0x00000000000000FFL);
+        i += (buffer[offset] & 0x00000000000000FFL);
 
         return i;
     }
