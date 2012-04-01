@@ -197,8 +197,8 @@ public class ExtraFieldUtils {
             lastIsUnparseableHolder ? data.length - 1 : data.length;
 
         int sum = WORD * regularExtraFieldCount;
-        for (int i = 0; i < data.length; i++) {
-            sum += data[i].getLocalFileDataLength().getValue();
+        for (ZipExtraField element : data) {
+            sum += element.getLocalFileDataLength().getValue();
         }
 
         byte[] result = new byte[sum];
@@ -231,8 +231,8 @@ public class ExtraFieldUtils {
             lastIsUnparseableHolder ? data.length - 1 : data.length;
 
         int sum = WORD * regularExtraFieldCount;
-        for (int i = 0; i < data.length; i++) {
-            sum += data[i].getCentralDirectoryLength().getValue();
+        for (ZipExtraField element : data) {
+            sum += element.getCentralDirectoryLength().getValue();
         }
         byte[] result = new byte[sum];
         int start = 0;

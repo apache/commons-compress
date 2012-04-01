@@ -78,8 +78,7 @@ public class LongPathTest extends AbstractTestCase {
         }
         br.close();
         File[]files=arcdir.listFiles();
-        for (int i=0; i<files.length; i++){
-            final File file = files[i];
+        for (final File file : files) {
             if (file.getName().endsWith(".txt")){
                 continue;
             }

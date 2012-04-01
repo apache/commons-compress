@@ -78,8 +78,8 @@ public class Maven221MultiVolumeTest extends TestCase {
 
             // these are the entries that are supposed to be processed
             // correctly without any problems
-            for (int i = 0; i < ENTRIES.length; i++) {
-                assertEquals(ENTRIES[i], zi.getNextEntry().getName());
+            for (String element : ENTRIES) {
+                assertEquals(element, zi.getNextEntry().getName());
             }
 
             // this is the last entry that is truncated
