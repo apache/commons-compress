@@ -70,7 +70,7 @@ import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
  * <p>The implementation relies on data being read from the local file
  * header and assumes that both size values are always present.</p>
  *
- * @since Apache Commons Compress 1.2
+ * @since 1.2
  * @NotThreadSafe
  */
 public class Zip64ExtendedInformationExtraField implements ZipExtraField {
@@ -92,7 +92,7 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
      *
      * <p>Not used for anything else</p>
      *
-     * @since Apache Commons Compress 1.3
+     * @since 1.3
      */
     private byte[] rawCentralDirectoryData;
 

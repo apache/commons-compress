@@ -20,7 +20,7 @@ package org.apache.commons.compress.archivers.zip;
 /**
  * Parser/encoder for the "general purpose bit" field in ZIP's local
  * file and central directory headers.
- * @since Apache Commons Compress 1.1
+ * @since 1.1
  * @NotThreadSafe
  */
 public final class GeneralPurposeBit {

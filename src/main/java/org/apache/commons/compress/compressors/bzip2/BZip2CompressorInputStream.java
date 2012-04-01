@@ -1028,7 +1028,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      *            the number of bytes to check
      * @return true, if this stream is a bzip2 compressed stream, false otherwise
      * 
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     public static boolean matches(byte[] signature, int length) {
 

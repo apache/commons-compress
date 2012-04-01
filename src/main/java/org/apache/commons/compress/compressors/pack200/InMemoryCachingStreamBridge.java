@@ -27,7 +27,7 @@ import java.io.InputStream;
 /**
  * StreamSwitcher that caches all data written to the output side in
  * memory.
- * @since Apache Commons Compress 1.3
+ * @since 1.3
  */
 class InMemoryCachingStreamBridge extends StreamBridge {
     InMemoryCachingStreamBridge() {

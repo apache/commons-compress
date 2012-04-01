@@ -137,7 +137,7 @@ public interface CpioConstants {
     /**
      * The default block size.
      * 
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     final int BLOCK_SIZE = 512;
 }

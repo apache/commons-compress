@@ -57,7 +57,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
      * This specifies the treatment of long file names (names >= 16).
      * Default is LONGFILE_ERROR.
      * @param longFileMode the mode to use
-     * @since Apache Commons Compress 1.3
+     * @since 1.3
      */
     public void setLongFileMode(int longFileMode) {
         this.longFileMode = longFileMode;

@@ -122,7 +122,7 @@ public class ExtraFieldUtils {
      * @return an array of ExtraFields
      * @throws ZipException on error
      *
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     public static ZipExtraField[] parse(byte[] data, boolean local,
                                         UnparseableExtraField onUnparseableData)
@@ -256,7 +256,7 @@ public class ExtraFieldUtils {
      * "enum" for the possible actions to take if the extra field
      * cannot be parsed.
      *
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     public static final class UnparseableExtraField {
         /**

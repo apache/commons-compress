@@ -150,7 +150,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
      * Extra Fields (if present) to set the file names.
      * @param allowStoredEntriesWithDataDescriptor whether the stream
      * will try to read STORED entries that use a data descriptor
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     public ZipArchiveInputStream(InputStream inputStream,
                                  String encoding,
@@ -283,7 +283,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
      *
      * <p>May return false if it is set up to use encryption or a
      * compression method that hasn't been implemented yet.</p>
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     @Override
     public boolean canReadEntryData(ArchiveEntry ae) {

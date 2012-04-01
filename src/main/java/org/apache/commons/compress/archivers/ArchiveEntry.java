@@ -40,7 +40,7 @@ public interface ArchiveEntry {
     /**
      * The last modified date of the entry.
      * 
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     public Date getLastModifiedDate();
 }

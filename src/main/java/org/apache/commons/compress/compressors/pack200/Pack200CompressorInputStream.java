@@ -38,7 +38,7 @@ import org.apache.commons.compress.compressors.CompressorInputStream;
  * return 0.</p>
  *
  * @NotThreadSafe
- * @since Apache Commons Compress 1.3
+ * @since 1.3
  */
 public class Pack200CompressorInputStream extends CompressorInputStream {
     private final InputStream originalInput;

@@ -31,7 +31,7 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
  * An output stream that compresses using the Pack200 format.
  * 
  * @NotThreadSafe
- * @since Apache Commons Compress 1.3
+ * @since 1.3
  */
 public class Pack200CompressorOutputStream extends CompressorOutputStream {
     private boolean finished = false;

@@ -24,7 +24,7 @@ import java.io.IOException;
 /**
  * The different modes the Pack200 streams can use to wrap input and
  * output.
- * @since Apache Commons Compress 1.3
+ * @since 1.3
  */
 public enum Pack200Strategy {
     /** Cache output in memory */

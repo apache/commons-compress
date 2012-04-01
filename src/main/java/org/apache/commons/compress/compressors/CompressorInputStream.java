@@ -29,7 +29,7 @@ public abstract class CompressorInputStream extends InputStream {
      * 
      * @param read the number of bytes read
      *
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     protected void count(int read) {
         count((long) read);
@@ -62,7 +62,7 @@ public abstract class CompressorInputStream extends InputStream {
      * Returns the current number of bytes read from this stream.
      * @return the number of read bytes
      *
-     * @since Apache Commons Compress 1.1
+     * @since 1.1
      */
     public long getBytesRead() {
         return bytesRead;

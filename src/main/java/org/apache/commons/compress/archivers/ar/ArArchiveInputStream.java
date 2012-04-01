@@ -330,7 +330,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      *       the member.
      * </pre>
      *
-     * @since Apache Commons Compress 1.3
+     * @since 1.3
      */
     private static boolean isBSDLongName(String name) {
         return name != null && name.matches(BSD_LONGNAME_PATTERN);
@@ -342,7 +342,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      *
      * @see #isBSDLongName
      *
-     * @since Apache Commons Compress 1.3
+     * @since 1.3
      */
     private String getBSDLongName(String bsdLongName) throws IOException {
         int nameLen =

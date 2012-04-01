@@ -23,7 +23,7 @@ package org.apache.commons.compress.archivers.zip;
  *
  * @see ZipArchiveOutputStream#setUseZip64
  *
- * @since Apache Commons Compress 1.3
+ * @since 1.3
  */
 public enum Zip64Mode {
     /**

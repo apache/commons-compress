@@ -162,7 +162,7 @@ public class TarUtils {
      * missing or an invalid byte is detected in an octal number, or
      * if a binary number would exceed the size of a signed long
      * 64-bit integer.
-     * @since Apache Commons Compress 1.4
+     * @since 1.4
      */
     public static long parseOctalOrBinary(final byte[] buffer, final int offset,
                                           final int length) {
@@ -459,7 +459,7 @@ public class TarUtils {
      * @return The updated offset.
      * @throws IllegalArgumentException if the value (and trailer)
      * will not fit in the buffer.
-     * @since Apache Commons Compress 1.4
+     * @since 1.4
      */
     public static int formatLongOctalOrBinaryBytes(
         final long value, byte[] buf, final int offset, final int length) {

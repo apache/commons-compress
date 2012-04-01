@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * File name mapping code for the compression formats.
  * @ThreadSafe
- * @since Apache Commons Compress 1.4
+ * @since 1.4
  */
 public class FileNameUtil {
 

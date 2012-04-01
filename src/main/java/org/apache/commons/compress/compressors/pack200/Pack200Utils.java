@@ -33,7 +33,7 @@ import java.util.jar.Pack200;
  * Utility methods for Pack200.
  *
  * @ThreadSafe
- * @since Apache Commons Compress 1.3
+ * @since 1.3
  */
 public class Pack200Utils {
     private Pack200Utils() { }
