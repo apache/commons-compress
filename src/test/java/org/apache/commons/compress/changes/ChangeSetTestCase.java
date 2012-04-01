@@ -91,10 +91,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             Change c = changes.getChanges().iterator().next();
             assertEquals(in2, c.getInput());
         } finally {
-            if (in != null)
+            if (in != null) {
                 in.close();
-            if (in2 != null)
+            }
+            if (in2 != null) {
                 in2.close();
+            }
         }
     }
 
@@ -123,10 +125,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             Change c = changes.getChanges().iterator().next();
             assertEquals(in, c.getInput());
         } finally {
-            if (in != null)
+            if (in != null) {
                 in.close();
-            if (in2 != null)
+            }
+            if (in2 != null) {
                 in2.close();
+            }
         }
     }
 
@@ -162,10 +166,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             is.close();
 
         } finally {
-            if (out != null)
+            if (out != null) {
                 out.close();
-            if (ais != null)
+            }
+            if (ais != null) {
                 ais.close();
+            }
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -201,10 +207,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             is.close();
 
         } finally {
-            if (out != null)
+            if (out != null) {
                 out.close();
-            if (ais != null)
+            }
+            if (ais != null) {
                 ais.close();
+            }
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -240,10 +248,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             is.close();
 
         } finally {
-            if (out != null)
+            if (out != null) {
                 out.close();
-            if (ais != null)
+            }
+            if (ais != null) {
                 ais.close();
+            }
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -280,10 +290,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             is.close();
 
         } finally {
-            if (out != null)
+            if (out != null) {
                 out.close();
-            if (ais != null)
+            }
+            if (ais != null) {
                 ais.close();
+            }
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -320,10 +332,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             is.close();
 
         } finally {
-            if (out != null)
+            if (out != null) {
                 out.close();
-            if (ais != null)
+            }
+            if (ais != null) {
                 ais.close();
+            }
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -368,10 +382,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             is.close();
 
         } finally {
-            if (out != null)
+            if (out != null) {
                 out.close();
-            if (ais != null)
+            }
+            if (ais != null) {
                 ais.close();
+            }
         }
 
         // Checks
@@ -450,10 +466,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             assertTrue(results.getAddedFromStream().contains("test with spaces.txt"));
             assertEquals(6,results.getAddedFromStream().size());
         } finally {
-            if (out != null)
+            if (out != null) {
                 out.close();
-            if (ais != null)
+            }
+            if (ais != null) {
                 ais.close();
+            }
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -496,10 +514,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             is.close();
 
         } finally {
-            if (out != null)
+            if (out != null) {
                 out.close();
-            if (ais != null)
+            }
+            if (ais != null) {
                 ais.close();
+            }
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -540,10 +560,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             is.close();
 
         } finally {
-            if (out != null)
+            if (out != null) {
                 out.close();
-            if (ais != null)
+            }
+            if (ais != null) {
                 ais.close();
+            }
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -586,10 +608,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             is.close();
 
         } finally {
-            if (out != null)
+            if (out != null) {
                 out.close();
-            if (ais != null)
+            }
+            if (ais != null) {
                 ais.close();
+            }
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -634,10 +658,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             is.close();
 
         } finally {
-            if (out != null)
+            if (out != null) {
                 out.close();
-            if (ais != null)
+            }
+            if (ais != null) {
                 ais.close();
+            }
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -669,10 +695,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             performer.perform(ais, out);
 
         } finally {
-            if (out != null)
+            if (out != null) {
                 out.close();
-            if (ais != null)
+            }
+            if (ais != null) {
                 ais.close();
+            }
         }
 
         List<String> expected = new ArrayList<String>();
@@ -706,10 +734,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             performer.perform(ais, out);
 
         } finally {
-            if (out != null)
+            if (out != null) {
                 out.close();
-            if (ais != null)
+            }
+            if (ais != null) {
                 ais.close();
+            }
         }
         List<String> expected = new ArrayList<String>();
         expected.add("test1.xml");
@@ -744,10 +774,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             performer.perform(ais, out);
 
         } finally {
-            if (out != null)
+            if (out != null) {
                 out.close();
-            if (ais != null)
+            }
+            if (ais != null) {
                 ais.close();
+            }
         }
         List<String> expected = new ArrayList<String>();
         expected.add("test1.xml");
@@ -788,10 +820,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             performer.perform(ais, out);
 
         } finally {
-            if (out != null)
+            if (out != null) {
                 out.close();
-            if (ais != null)
+            }
+            if (ais != null) {
                 ais.close();
+            }
         }
         List<String> expected = new ArrayList<String>();
         expected.add("test1.xml");
@@ -832,10 +866,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             performer.perform(ais, out);
 
         } finally {
-            if (out != null)
+            if (out != null) {
                 out.close();
-            if (ais != null)
+            }
+            if (ais != null) {
                 ais.close();
+            }
         }
         List<String> expected = new ArrayList<String>();
         expected.add("test1.xml");
@@ -868,10 +904,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             performer.perform(ais, out);
 
         } finally {
-            if (out != null)
+            if (out != null) {
                 out.close();
-            if (ais != null)
+            }
+            if (ais != null) {
                 ais.close();
+            }
         }
 
         List<String> expected = new ArrayList<String>();
@@ -911,10 +949,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             performer.perform(ais, out);
 
         } finally {
-            if (out != null)
+            if (out != null) {
                 out.close();
-            if (ais != null)
+            }
+            if (ais != null) {
                 ais.close();
+            }
         }
         List<String> expected = new ArrayList<String>();
         expected.add("test1.xml");
@@ -1120,10 +1160,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             is.close();
 
         } finally {
-            if (out != null)
+            if (out != null) {
                 out.close();
-            if (ais != null)
+            }
+            if (ais != null) {
                 ais.close();
+            }
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -1164,10 +1206,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             is.close();
 
         } finally {
-            if (out != null)
+            if (out != null) {
                 out.close();
-            if (ais != null)
+            }
+            if (ais != null) {
                 ais.close();
+            }
         }
 
         this.checkArchiveContent(result, archiveList);
