@@ -101,8 +101,8 @@ public class IOMethodsTest extends AbstractTestCase {
         aos2.putArchiveEntry(entry);
         ArchiveOutputStream aos3 = factory.createArchiveOutputStream(archiverName, out3);
         aos3.putArchiveEntry(entry);
-        for (int i=0; i<byteTest.length; i++){
-            aos1.write(byteTest[i]);
+        for (byte element : byteTest) {
+            aos1.write(element);
         }
         aos1.closeArchiveEntry();
         aos1.close();

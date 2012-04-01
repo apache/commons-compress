@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -89,14 +88,14 @@ public abstract class AbstractTestCase extends TestCase {
     protected static void rmdir(File f) {
         String[] s = f.list();
         if (s != null) {
-            for (int i = 0; i < s.length; i++) {
-                final File file = new File(f, s[i]);
+            for (String element : s) {
+                final File file = new File(f, element);
                 if (file.isDirectory()){
                     rmdir(file);
                 }
                 boolean ok = tryHardToDelete(file);
                 if (!ok && file.exists()){
-                    System.out.println("Failed to delete "+s[i]+" in "+f.getPath());
+                    System.out.println("Failed to delete "+element+" in "+f.getPath());
                 }
             }
         }
@@ -346,8 +345,7 @@ public abstract class AbstractTestCase extends TestCase {
             }
             in.close();
             if (expected != null && expected.size() > 0) {
-                for (Iterator<String> iterator = expected.iterator(); iterator.hasNext();) {
-                    String name = iterator.next();
+                for (String name : expected) {
                     fail("Expected entry: " + name);
                 }
             }

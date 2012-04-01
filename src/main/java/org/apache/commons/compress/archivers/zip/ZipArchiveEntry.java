@@ -290,11 +290,11 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      */
     public void setExtraFields(ZipExtraField[] fields) {
         extraFields = new LinkedHashMap<ZipShort, ZipExtraField>();
-        for (int i = 0; i < fields.length; i++) {
-            if (fields[i] instanceof UnparseableExtraFieldData) {
-                unparseableExtra = (UnparseableExtraFieldData) fields[i];
+        for (ZipExtraField field : fields) {
+            if (field instanceof UnparseableExtraFieldData) {
+                unparseableExtra = (UnparseableExtraFieldData) field;
             } else {
-                extraFields.put(fields[i].getHeaderId(), fields[i]);
+                extraFields.put(field.getHeaderId(), field);
             }
         }
         setExtra();
@@ -614,21 +614,21 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         if (extraFields == null) {
             setExtraFields(f);
         } else {
-            for (int i = 0; i < f.length; i++) {
+            for (ZipExtraField element : f) {
                 ZipExtraField existing;
-                if (f[i] instanceof UnparseableExtraFieldData) {
+                if (element instanceof UnparseableExtraFieldData) {
                     existing = unparseableExtra;
                 } else {
-                    existing = getExtraField(f[i].getHeaderId());
+                    existing = getExtraField(element.getHeaderId());
                 }
                 if (existing == null) {
-                    addExtraField(f[i]);
+                    addExtraField(element);
                 } else {
                     if (local) {
-                        byte[] b = f[i].getLocalFileDataData();
+                        byte[] b = element.getLocalFileDataData();
                         existing.parseFromLocalFileData(b, 0, b.length);
                     } else {
-                        byte[] b = f[i].getCentralDirectoryData();
+                        byte[] b = element.getCentralDirectoryData();
                         existing.parseFromCentralDirectoryData(b, 0, b.length);
                     }
                 }
