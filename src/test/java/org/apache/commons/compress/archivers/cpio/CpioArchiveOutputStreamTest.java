@@ -35,9 +35,9 @@ public class CpioArchiveOutputStreamTest extends AbstractTestCase {
         InputStream in = null;
         try {
             final CpioArchiveOutputStream os =
-                new CpioArchiveOutputStream(out, CpioArchiveOutputStream
+                new CpioArchiveOutputStream(out, CpioConstants
                                             .FORMAT_OLD_BINARY);
-            os.putArchiveEntry(new CpioArchiveEntry(CpioArchiveOutputStream
+            os.putArchiveEntry(new CpioArchiveEntry(CpioConstants
                                                     .FORMAT_OLD_BINARY,
                                                     f, "test1.xml"));
             IOUtils.copy(in = new FileInputStream(f), os);

@@ -31,6 +31,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
 import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
@@ -325,9 +326,9 @@ public class ZipFile {
         BoundedInputStream bis =
             new BoundedInputStream(start, ze.getCompressedSize());
         switch (ze.getMethod()) {
-            case ZipArchiveEntry.STORED:
+            case ZipEntry.STORED:
                 return bis;
-            case ZipArchiveEntry.DEFLATED:
+            case ZipEntry.DEFLATED:
                 bis.addDummy();
                 final Inflater inflater = new Inflater(true);
                 return new InflaterInputStream(bis, inflater) {

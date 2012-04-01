@@ -18,6 +18,8 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import java.util.zip.ZipEntry;
+
 import junit.framework.TestCase;
 
 /**
@@ -209,12 +211,12 @@ public class ZipArchiveEntryTest extends TestCase {
         assertEquals(-1, entry.getMethod());
         assertFalse(zos.canWriteEntryData(entry));
 
-        entry.setMethod(ZipArchiveEntry.STORED);
-        assertEquals(ZipArchiveEntry.STORED, entry.getMethod());
+        entry.setMethod(ZipEntry.STORED);
+        assertEquals(ZipEntry.STORED, entry.getMethod());
         assertTrue(zos.canWriteEntryData(entry));
 
-        entry.setMethod(ZipArchiveEntry.DEFLATED);
-        assertEquals(ZipArchiveEntry.DEFLATED, entry.getMethod());
+        entry.setMethod(ZipEntry.DEFLATED);
+        assertEquals(ZipEntry.DEFLATED, entry.getMethod());
         assertTrue(zos.canWriteEntryData(entry));
 
         // Test the unsupported "imploded" compression method (6)

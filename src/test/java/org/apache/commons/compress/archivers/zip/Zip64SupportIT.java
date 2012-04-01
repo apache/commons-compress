@@ -39,6 +39,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Random;
+import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.junit.Test;
@@ -543,7 +544,7 @@ public class Zip64SupportIT {
                     zae.setSize(FIVE_BILLION);
                     zae.setCrc(0x5c316f50L);
                 }
-                zae.setMethod(ZipArchiveEntry.STORED);
+                zae.setMethod(ZipEntry.STORED);
                 zos.putArchiveEntry(zae);
                 for (int j = 0; j < FIVE_BILLION / 1000 / 1000; j++) {
                     zos.write(buf);
@@ -723,7 +724,7 @@ public class Zip64SupportIT {
                         zae.setSize(FIVE_BILLION);
                         zae.setCrc(0x5c316f50L);
                     }
-                    zae.setMethod(ZipArchiveEntry.STORED);
+                    zae.setMethod(ZipEntry.STORED);
                     zos.putArchiveEntry(zae);
                     for (int j = 0; j < FIVE_BILLION / 1000 / 1000; j++) {
                         zos.write(buf);
@@ -781,7 +782,7 @@ public class Zip64SupportIT {
                 if (knownSize) {
                     zae.setSize(FIVE_BILLION);
                 }
-                zae.setMethod(ZipArchiveEntry.DEFLATED);
+                zae.setMethod(ZipEntry.DEFLATED);
                 zos.putArchiveEntry(zae);
                 for (int j = 0; j < FIVE_BILLION / 1000 / 1000; j++) {
                     zos.write(buf);
@@ -964,7 +965,7 @@ public class Zip64SupportIT {
                     }
                     byte[] buf = new byte[ONE_MILLION];
                     ZipArchiveEntry zae = new ZipArchiveEntry("0");
-                    zae.setMethod(ZipArchiveEntry.DEFLATED);
+                    zae.setMethod(ZipEntry.DEFLATED);
                     zos.putArchiveEntry(zae);
                     for (int j = 0; j < FIVE_BILLION / 1000 / 1000; j++) {
                         zos.write(buf);
@@ -1022,7 +1023,7 @@ public class Zip64SupportIT {
                 if (knownSize) {
                     zae.setSize(FIVE_BILLION);
                 }
-                zae.setMethod(ZipArchiveEntry.DEFLATED);
+                zae.setMethod(ZipEntry.DEFLATED);
                 zos.putArchiveEntry(zae);
                 for (int j = 0;
                      j < FIVE_BILLION / 1000 / 1000;
@@ -1191,7 +1192,7 @@ public class Zip64SupportIT {
                                          ZipArchiveEntry zae =
                                              new ZipArchiveEntry("0");
                                          zae.setSize(FIVE_BILLION);
-                                         zae.setMethod(ZipArchiveEntry.DEFLATED);
+                                         zae.setMethod(ZipEntry.DEFLATED);
                                          zos.putArchiveEntry(zae);
                                          fail("expected a"
                                               + " Zip64RequiredException");
@@ -1225,7 +1226,7 @@ public class Zip64SupportIT {
                     if (knownSize) {
                         zae.setSize(FIVE_BILLION);
                     }
-                    zae.setMethod(ZipArchiveEntry.DEFLATED);
+                    zae.setMethod(ZipEntry.DEFLATED);
                     zos.putArchiveEntry(zae);
                     for (int j = 0;
                          j < FIVE_BILLION / 1000 / 1000;
@@ -1282,7 +1283,7 @@ public class Zip64SupportIT {
                     zae.setSize(ONE_MILLION);
                     zae.setCrc(0x1279CB9EL);
                 }
-                zae.setMethod(ZipArchiveEntry.STORED);
+                zae.setMethod(ZipEntry.STORED);
                 zos.putArchiveEntry(zae);
                 zos.write(buf);
                 zos.closeArchiveEntry();
@@ -1458,7 +1459,7 @@ public class Zip64SupportIT {
                     zae.setSize(ONE_MILLION);
                     zae.setCrc(0x1279CB9EL);
                 }
-                zae.setMethod(ZipArchiveEntry.STORED);
+                zae.setMethod(ZipEntry.STORED);
                 zos.putArchiveEntry(zae);
                 zos.write(buf);
                 zos.closeArchiveEntry();
@@ -1621,7 +1622,7 @@ public class Zip64SupportIT {
                 if (knownSize) {
                     zae.setSize(ONE_MILLION);
                 }
-                zae.setMethod(ZipArchiveEntry.DEFLATED);
+                zae.setMethod(ZipEntry.DEFLATED);
                 zos.putArchiveEntry(zae);
                 zos.write(buf);
                 zos.closeArchiveEntry();
@@ -1791,7 +1792,7 @@ public class Zip64SupportIT {
                 if (knownSize) {
                     zae.setSize(ONE_MILLION);
                 }
-                zae.setMethod(ZipArchiveEntry.DEFLATED);
+                zae.setMethod(ZipEntry.DEFLATED);
                 zos.putArchiveEntry(zae);
                 zos.write(buf);
                 zos.closeArchiveEntry();
@@ -1975,7 +1976,7 @@ public class Zip64SupportIT {
                 if (knownSize) {
                     zae.setSize(ONE_MILLION);
                 }
-                zae.setMethod(ZipArchiveEntry.DEFLATED);
+                zae.setMethod(ZipEntry.DEFLATED);
                 zos.putArchiveEntry(zae);
                 zos.write(buf);
                 zos.closeArchiveEntry();
@@ -2147,7 +2148,7 @@ public class Zip64SupportIT {
                 if (knownSize) {
                     zae.setSize(ONE_MILLION);
                 }
-                zae.setMethod(ZipArchiveEntry.DEFLATED);
+                zae.setMethod(ZipEntry.DEFLATED);
                 zos.putArchiveEntry(zae);
                 zos.write(buf);
                 zos.closeArchiveEntry();
@@ -2541,7 +2542,7 @@ public class Zip64SupportIT {
         for (int i = 0; i < 2; i++) {
             zae = new ZipArchiveEntry(String.valueOf(i));
             zae.setSize(FIVE_BILLION / 2);
-            zae.setMethod(ZipArchiveEntry.STORED);
+            zae.setMethod(ZipEntry.STORED);
             zae.setCrc(0x8a408f16L);
             zos.putArchiveEntry(zae);
             for (int j = 0; j < FIVE_BILLION / 2 / 1000 / 1000;
@@ -2552,7 +2553,7 @@ public class Zip64SupportIT {
         }
         zae = new ZipArchiveEntry(String.valueOf(2));
         zae.setSize(1);
-        zae.setMethod(ZipArchiveEntry.STORED);
+        zae.setMethod(ZipEntry.STORED);
         zae.setCrc(0x9b9265bL);
         zos.putArchiveEntry(zae);
         zos.write(new byte[] { 42 });
