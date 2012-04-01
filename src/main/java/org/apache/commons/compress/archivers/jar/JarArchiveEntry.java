@@ -24,14 +24,13 @@ import java.util.jar.JarEntry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
-import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 
 /**
  *
  * @NotThreadSafe
  */
-public class JarArchiveEntry extends ZipArchiveEntry implements ArchiveEntry {
+public class JarArchiveEntry extends ZipArchiveEntry {
 
     private Attributes manifestAttributes = null;
     private Certificate[] certificates = null;
