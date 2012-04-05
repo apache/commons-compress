@@ -48,8 +48,8 @@ import java.nio.charset.UnsupportedCharsetException;
  * accepted on input, big-endian used on output.)</li>
  * </ul>
  * 
- * This perhaps would best belong in the Commons Lang project. Even if a similar class is defined in Commons Lang, it is
- * not foreseen that Commons Codec would be made to depend on Commons Lang.
+ * This class best belongs in the Commons Lang or IO project. Even if a similar class is defined in another Commons component, it is
+ * not foreseen that Commons Compress would be made to depend on another Commons component.
  * 
  * @see <a href="http://docs.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
  * @since 1.4
