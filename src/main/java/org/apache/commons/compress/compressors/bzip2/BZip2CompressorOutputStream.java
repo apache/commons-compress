@@ -321,6 +321,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
      * All memory intensive stuff.
      */
     private Data data;
+    private BlockSort blockSorter;
 
     private OutputStream out;
 
@@ -480,6 +481,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
             } finally {
                 this.out = null;
                 this.data = null;
+                this.blockSorter = null;
             }
         }
     }
@@ -512,6 +514,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         bsPutUByte('Z');
 
         this.data = new Data(this.blockSize100k);
+        this.blockSorter = new BlockSort(this.data);
 
         // huffmanised magic bytes
         bsPutUByte('h');
@@ -1147,7 +1150,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     }
 
     private boolean blockSort() {
-        return new BlockSort().blockSort(data, last);
+        return blockSorter.blockSort(data, last);
     }
 
     private void generateMTFValues() {
@@ -1274,19 +1277,10 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         final byte[] sendMTFValues2_pos = new byte[N_GROUPS]; // 6 byte
         final boolean[] sentMTFValues4_inUse16 = new boolean[16]; // 16 byte
 
-        final int[] stack_ll = new int[BlockSort.QSORT_STACK_SIZE]; // 4000 byte
-        final int[] stack_hh = new int[BlockSort.QSORT_STACK_SIZE]; // 4000 byte
-        final int[] stack_dd = new int[BlockSort.QSORT_STACK_SIZE]; // 4000 byte
-
-        final int[] mainSort_runningOrder = new int[256]; // 1024 byte
-        final int[] mainSort_copy = new int[256]; // 1024 byte
-        final boolean[] mainSort_bigDone = new boolean[256]; // 256 byte
-
         final int[] heap = new int[MAX_ALPHA_SIZE + 2]; // 1040 byte
         final int[] weight = new int[MAX_ALPHA_SIZE * 2]; // 2064 byte
         final int[] parent = new int[MAX_ALPHA_SIZE * 2]; // 2064 byte
 
-        final int[] ftab = new int[65537]; // 262148 byte
         // ------------
         // 333408 byte
 
@@ -1296,13 +1290,6 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         // ------------
         // 8433529 byte
         // ============
-
-        /**
-         * Array instance identical to sfmap, both are used only
-         * temporarily and indepently, so we do not need to allocate
-         * additional memory.
-         */
-        final char[] quadrant;
 
         /**
          * Index in fmap[] of original string after sorting.
@@ -1316,7 +1303,6 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
             this.block = new byte[(n + 1 + NUM_OVERSHOOT_BYTES)];
             this.fmap = new int[n];
             this.sfmap = new char[2 * n];
-            this.quadrant = this.sfmap;
         }
 
     }

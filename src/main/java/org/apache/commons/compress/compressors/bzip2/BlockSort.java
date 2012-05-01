@@ -37,7 +37,7 @@ class BlockSort {
      * try again. In practice I have never seen the stack go above 27
      * elems, so the following limit seems very generous.  </p>
      */
-    static final int QSORT_STACK_SIZE = 1000;
+    private static final int QSORT_STACK_SIZE = 1000;
 
     /**
      * Knuth's increments seem to work better than Incerpi-Sedgewick here.
@@ -57,6 +57,27 @@ class BlockSort {
     private int workDone;
     private int workLimit;
     private boolean firstAttempt;
+
+    private final int[] stack_ll = new int[QSORT_STACK_SIZE]; // 4000 byte
+    private final int[] stack_hh = new int[QSORT_STACK_SIZE]; // 4000 byte
+    private final int[] stack_dd = new int[QSORT_STACK_SIZE]; // 4000 byte
+
+    private final int[] mainSort_runningOrder = new int[256]; // 1024 byte
+    private final int[] mainSort_copy = new int[256]; // 1024 byte
+    private final boolean[] mainSort_bigDone = new boolean[256]; // 256 byte
+
+    private final int[] ftab = new int[65537]; // 262148 byte
+
+    /**
+     * Array instance identical to Data's sfmap, both are used only
+     * temporarily and indepently, so we do not need to allocate
+     * additional memory.
+     */
+    private final char[] quadrant;
+
+    BlockSort(final BZip2CompressorOutputStream.Data data) {
+        this.quadrant = data.sfmap;
+    }
 
     /**
      * This is the most hammered method of this class.
@@ -82,7 +103,7 @@ class BlockSort {
         }
 
         final int[] fmap = dataShadow.fmap;
-        final char[] quadrant = dataShadow.quadrant;
+        final char[] quadrant = this.quadrant;
         final byte[] block = dataShadow.block;
         final int lastPlus1 = lastShadow + 1;
         final boolean firstAttemptShadow = this.firstAttempt;
@@ -299,9 +320,9 @@ class BlockSort {
     private void mainQSort3(final BZip2CompressorOutputStream.Data dataShadow,
                             final int loSt, final int hiSt, final int dSt,
                             final int last) {
-        final int[] stack_ll = dataShadow.stack_ll;
-        final int[] stack_hh = dataShadow.stack_hh;
-        final int[] stack_dd = dataShadow.stack_dd;
+        final int[] stack_ll = this.stack_ll;
+        final int[] stack_hh = this.stack_hh;
+        final int[] stack_dd = this.stack_dd;
         final int[] fmap = dataShadow.fmap;
         final byte[] block = dataShadow.block;
 
@@ -403,13 +424,13 @@ class BlockSort {
 
     private void mainSort(final BZip2CompressorOutputStream.Data dataShadow,
                           final int lastShadow) {
-        final int[] runningOrder = dataShadow.mainSort_runningOrder;
-        final int[] copy = dataShadow.mainSort_copy;
-        final boolean[] bigDone = dataShadow.mainSort_bigDone;
-        final int[] ftab = dataShadow.ftab;
+        final int[] runningOrder = this.mainSort_runningOrder;
+        final int[] copy = this.mainSort_copy;
+        final boolean[] bigDone = this.mainSort_bigDone;
+        final int[] ftab = this.ftab;
         final byte[] block = dataShadow.block;
         final int[] fmap = dataShadow.fmap;
-        final char[] quadrant = dataShadow.quadrant;
+        final char[] quadrant = this.quadrant;
         final int workLimitShadow = this.workLimit;
         final boolean firstAttemptShadow = this.firstAttempt;
 
