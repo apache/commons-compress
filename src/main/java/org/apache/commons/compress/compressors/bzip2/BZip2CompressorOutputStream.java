@@ -315,7 +315,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
 
     private int blockCRC;
     private int combinedCRC;
-    private int allowableBlockSize;
+    private final int allowableBlockSize;
 
     /**
      * All memory intensive stuff.
@@ -391,6 +391,8 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         }
 
         this.blockSize100k = blockSize;
+        /* 20 is just a paranoia constant */
+        this.allowableBlockSize = (this.blockSize100k * BZip2Constants.BASEBLOCKSIZE) - 20;
         this.out = out;
         init();
     }
@@ -405,6 +407,19 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         }
     }
 
+    /**
+     * Writes the current byte to the buffer, run-length encoding it
+     * if it has been repeated at least four times (the first step
+     * RLEs sequences of four identical bytes).
+     *
+     * <p>Flushes the current block before writing data if it is
+     * full.</p>
+     *
+     * <p>"write to the buffer" means adding to data.buffer starting
+     * two steps "after" this.last - initially starting at index 1
+     * (not 0) - and updating this.last to point to the last index
+     * written minus 1.</p>
+     */
     private void writeRun() throws IOException {
         final int lastShadow = this.last;
 
@@ -534,9 +549,6 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         for (int i = 256; --i >= 0;) {
             inUse[i] = false;
         }
-
-        /* 20 is just a paranoia constant */
-        this.allowableBlockSize = (this.blockSize100k * BZip2Constants.BASEBLOCKSIZE) - 20;
     }
 
     private void endBlock() throws IOException {
@@ -632,6 +644,10 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         }
     }
 
+    /**
+     * Keeps track of the last bytes written and implicitly performs
+     * run-length encoding as the first step of the bzip2 algorithm.
+     */
     private void write0(int b) throws IOException {
         if (this.currentChar != -1) {
             b &= 0xff;
@@ -1153,6 +1169,13 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         return blockSorter.blockSort(data, last);
     }
 
+    /*
+     * Performs Move-To-Front on the Burrows-Wheeler transformed
+     * buffer, storing the MTFed data in data.sfmap in RUNA/RUNB
+     * run-length-encoded form.
+     *
+     * <p>Keeps track of byte frequencies in data.mtfFreq at the same time.</p>
+     */
     private void generateMTFValues() {
         final int lastShadow = this.last;
         final Data dataShadow = this.data;
@@ -1259,6 +1282,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     static final class Data extends Object {
 
         // with blockSize 900k
+        /* maps unsigned byte => "does it occur in block" */
         final boolean[] inUse = new boolean[256]; // 256 byte
         final byte[] unseqToSeq = new byte[256]; // 256 byte
         final int[] mtfFreq = new int[MAX_ALPHA_SIZE]; // 1032 byte
@@ -1284,7 +1308,12 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         // ------------
         // 333408 byte
 
+        /* holds the RLEd block of original data starting at index 1.
+         * After sorting the last byte added to the buffer is at index
+         * 0. */
         final byte[] block; // 900021 byte
+        /* maps index in Burrows-Wheeler transformed block => index of
+         * byte in original block */
         final int[] fmap; // 3600000 byte
         final char[] sfmap; // 3600000 byte
         // ------------
