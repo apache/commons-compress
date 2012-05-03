@@ -19,7 +19,8 @@
 package org.apache.commons.compress.compressors.bzip2;
 
 /**
- * Encapsulates the sorting algorithms needed by {@link BZip2CompressorOutputStream}.
+ * Encapsulates the Burrows-Wheeler sorting algorithm needed by {@link
+ * BZip2CompressorOutputStream}.
  *
  * @NotThreadSafe
  */
@@ -301,7 +302,7 @@ class BlockSort {
             mainSort(data, last);
         }
 
-        int[] fmap = data.fmap;
+        final int[] fmap = data.fmap;
         data.origPtr = -1;
         for (int i = 0; i <= last; i++) {
             if (fmap[i] == 0) {
