@@ -1321,7 +1321,10 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         // ============
 
         /**
-         * Index in fmap[] of original string after sorting.
+         * Index of original line in Burrows-Wheeler table.
+         *
+         * <p>This is the index in fmap that points to the last byte
+         * of the original data.</p>
          */
         int origPtr;
 
