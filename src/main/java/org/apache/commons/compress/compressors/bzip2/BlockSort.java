@@ -34,6 +34,7 @@ import java.util.BitSet;
  * Compress" you'd get:</p>
  *
  * <pre>
+ *  CompressCommons
  * Commons Compress
  * CompressCommons 
  * essCommons Compr
@@ -51,9 +52,9 @@ import java.util.BitSet;
  * ssCommons Compre
  * </pre>
  *
- * <p>Which results in a new text "s romooCCmmpnse", in adition the
+ * <p>Which results in a new text "ss romooCCmmpnse", in adition the
  * index of the first line that contained the original text is kept -
- * in this case it is 0.  The idea is that in a long English text all
+ * in this case it is 1.  The idea is that in a long English text all
  * permutations that start with "he" are likely suffixes of a "the" and
  * thus they end in "t" leading to a larger block of "t"s that can
  * better be compressed by the subsequent Move-to-Front, run-length
@@ -101,7 +102,8 @@ class BlockSort {
      * been dropped after 0.9.0 and replaced by a fallback sorting
      * algorithm.
      *
-     * I've added the fallbackSort function of 1.0.6.
+     * I've added the fallbackSort function of 1.0.6 and tried to
+     * integrate it with the existing code without touching too much.
      */
 
     /*
@@ -154,13 +156,16 @@ class BlockSort {
         this.workDone = 0;
         this.blockRandomised = false;
         this.firstAttempt = true;
+
+        if (last + 1 < 10000) {
+            fallbackSort(data, last);
+        } else {
+
         mainSort(data, last);
 
         if (this.firstAttempt && (this.workDone > this.workLimit)) {
-            randomiseBlock(data, last);
-            this.workLimit = this.workDone = 0;
-            this.firstAttempt = false;
-            mainSort(data, last);
+                fallbackSort(data, last);
+        }
         }
 
         final int[] fmap = data.fmap;
@@ -173,7 +178,27 @@ class BlockSort {
         }
 
         // assert (data.origPtr != -1) : data.origPtr;
-        return blockRandomised;
+        return false;
+    }
+
+    /**
+     * Adapt fallbackSort to the expected interface of the rest of the
+     * code, in particular deal with the fact that block starts at
+     * offset 1 (in libbzip2 1.0.6 it starts at 0).
+     */
+    final void fallbackSort(final BZip2CompressorOutputStream.Data data,
+                            final int last) {
+        data.block[0] = data.block[last + 1];
+        fallbackSort(data.fmap, data.block, last + 1);
+        for (int i = 0; i < last + 1; i++) {
+            --data.fmap[i];
+        }
+        for (int i = 0; i < last + 1; i++) {
+            if (data.fmap[i] == -1) {
+                data.fmap[i] = last;
+                break;
+            }
+        }
     }
 
 /*---------------------------------------------*/
@@ -415,12 +440,13 @@ class BlockSort {
     }
 
     /*
-     * The C code uses an array of ints to represents the bucket-start
-     * flags (bhtab).  It also contains optimizations to skip over 32
-     * consecutively set or consecutively unset bits on word
-     * boundaries at once.  For now I've chosen to use the simpler but
-     * potentially slower code using BitSet - also in the hope that
-     * using the BitSet#nextXXX methods may be fast enough.
+     * The C code uses an array of ints (each int holding 32 flags) to
+     * represents the bucket-start flags (bhtab).  It also contains
+     * optimizations to skip over 32 consecutively set or
+     * consecutively unset bits on word boundaries at once.  For now
+     * I've chosen to use the simpler but potentially slower code
+     * using BitSet - also in the hope that using the BitSet#nextXXX
+     * methods may be fast enough.
      */
 
     /**
@@ -432,16 +458,22 @@ class BlockSort {
      * @param off offset of first byte to sort in block
      */
     final void fallbackSort(int[] fmap, byte[] block, int nblock) {
-        int[] ftab = new int[257];
+        final int[] ftab = new int[257];
         int H, i, j, k, l, r, cc, cc1;
         int nNotDone;
         int nBhtab;
+        final int[] eclass = getEclass();
 
+        for (i = 0; i < nblock; i++) {
+            eclass[i] = 0;
+        }
         /*--
           LBZ2: Initial 1-char radix sort to generate
           initial fmap and initial BH bits.
           --*/
-        for (i = 0; i < nblock; i++) ftab[block[i] & 0xff]++;
+        for (i = 0; i < nblock; i++) {
+            ftab[block[i] & 0xff]++;
+        }
         for (i = 1; i < 257;    i++) ftab[i] += ftab[i - 1];
 
         for (i = 0; i < nblock; i++) {
@@ -467,8 +499,6 @@ class BlockSort {
             bhtab.clear(nblock + 2 * i + 1);
         }
 
-        eclass = getEclass();
-
         /*-- LBZ2: the log(N) loop --*/
         H = 1;
         while (true) {
@@ -491,10 +521,10 @@ class BlockSort {
 
                 /*-- LBZ2: find the next non-singleton bucket --*/
                 k = r + 1;
-                k = bhtab.nextSetBit(k);
+                k = bhtab.nextClearBit(k);
                 l = k - 1;
                 if (l >= nblock) break;
-                k = bhtab.nextClearBit(k);
+                k = bhtab.nextSetBit(k + 1);
                 r = k - 1;
                 if (r >= nblock) break;
 
@@ -862,8 +892,8 @@ class BlockSort {
     private static final int SETMASK = (1 << 21);
     private static final int CLEARMASK = (~SETMASK);
 
-    private void mainSort(final BZip2CompressorOutputStream.Data dataShadow,
-                          final int lastShadow) {
+    final void mainSort(final BZip2CompressorOutputStream.Data dataShadow,
+                        final int lastShadow) {
         final int[] runningOrder = this.mainSort_runningOrder;
         final int[] copy = this.mainSort_copy;
         final boolean[] bigDone = this.mainSort_bigDone;
