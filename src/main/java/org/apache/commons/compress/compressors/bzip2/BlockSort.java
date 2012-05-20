@@ -22,9 +22,83 @@ package org.apache.commons.compress.compressors.bzip2;
  * Encapsulates the Burrows-Wheeler sorting algorithm needed by {@link
  * BZip2CompressorOutputStream}.
  *
+ * <p>This class is based on a Java port of Julian Seward's
+ * blocksort.c in his libbzip2</p>
+ *
+ * <p>The Burrows-Wheeler transform is a reversible transform of the
+ * original data that is supposed to group similiar bytes close to
+ * each other.  The idea is to sort all permutations of the input and
+ * only keep the last byte of each permutation.  E.g. for "Commons
+ * Compress" you'd get:</p>
+ *
+ * <pre>
+ * Commons Compress
+ * CompressCommons 
+ * essCommons Compr
+ * mmons CompressCo
+ * mons CompressCom
+ * mpressCommons Co
+ * ns CompressCommo
+ * ommons CompressC
+ * ompressCommons C
+ * ons CompressComm
+ * pressCommons Com
+ * ressCommons Comp
+ * s CompressCommon
+ * sCommons Compres
+ * ssCommons Compre
+ * </pre>
+ *
+ * <p>Which results in a new text "s romooCCmmpnse", in adition the
+ * index of the first line that contained the original text is kept -
+ * in this case it is 0.  The idea is that in a long English text all
+ * permutations that start with "he" are likely suffixes of a "the" and
+ * thus they end in "t" leading to a larger block of "t"s that can
+ * better be compressed by the subsequent Move-to-Front, run-length
+ * und Huffman encoding steps.</p>
+ *
+ * <p>For more information see for example:</p>
+ * <ul>
+ *   <li><a
+ *   href="http://www.hpl.hp.com/techreports/Compaq-DEC/SRC-RR-124.pdf">Burrows,
+ *   M. and Wheeler, D.: A Block-sorting Lossless Data Compression
+ *   Algorithm</a></li>
+ *   <li><a href="http://webglimpse.net/pubs/suffix.pdf">Manber, U. and
+ *   Myers, G.: Suffix arrays: A new method for on-line string
+ *   searches</a></li>
+ *   <li><a
+ *   href="http://www.cs.tufts.edu/~nr/comp150fp/archive/bob-sedgewick/fast-strings.pdf">Bentley,
+ *   J.L. and Sedgewick, R.: Fast Algorithms for Sorting and Searching
+ *   Strings</a></li>
+ * </ul>
+ *
  * @NotThreadSafe
  */
 class BlockSort {
+
+    /*
+     * Some of the constructs used in the C code cannot be ported
+     * literally to Java - for example macros, unsigned types.  Some
+     * code has been hand-tuned to improve performance.  In order to
+     * avoid memory pressure some structures are reused for several
+     * blocks and some memory is even shared between sorting and the
+     * MTF stage even though either algorithm uses it for its own
+     * purpose.
+     *
+     * Comments preserved from the actual C code are prefixed with
+     * "LBZ2:".
+     */
+
+    /*
+     * 2012-05-20 Stefan Bodewig:
+     *
+     * The class seems to mix several revisions of libbzip2's code.
+     * The mainSort function and those used by it look closer to the
+     * 0.9.5 version but show some variations introduced later.  At
+     * the same time the logic to randomize the block on bad input has
+     * been dropped after 0.9.0 and replaced by a fallback sorting
+     * algorithm.
+     */
 
     private static final int SETMASK = (1 << 21);
     private static final int CLEARMASK = (~SETMASK);
@@ -33,15 +107,15 @@ class BlockSort {
     private static final int WORK_FACTOR = 30;
 
     /*
-     * <p> If you are ever unlucky/improbable enough to get a stack
+     * LBZ2: If you are ever unlucky/improbable enough to get a stack
      * overflow whilst sorting, increase the following constant and
      * try again. In practice I have never seen the stack go above 27
-     * elems, so the following limit seems very generous.  </p>
+     * elems, so the following limit seems very generous.
      */
     private static final int QSORT_STACK_SIZE = 1000;
 
-    /**
-     * Knuth's increments seem to work better than Incerpi-Sedgewick here.
+    /*
+     * LBZ2: Knuth's increments seem to work better than Incerpi-Sedgewick here.
      * Possibly because the number of elems to sort is usually small, typically
      * &lt;= 20.
      */
@@ -79,6 +153,15 @@ class BlockSort {
     BlockSort(final BZip2CompressorOutputStream.Data data) {
         this.quadrant = data.sfmap;
     }
+
+/*---------------------------------------------*/
+/*--
+   LBZ2: The following is an implementation of
+   an elegant 3-way quicksort for strings,
+   described in a paper "Fast Algorithms for
+   Sorting and Searching Strings", by Robert
+   Sedgewick and Jon L. Bentley.
+--*/
 
     /**
      * This is the most hammered method of this class.
@@ -435,7 +518,7 @@ class BlockSort {
         final int workLimitShadow = this.workLimit;
         final boolean firstAttemptShadow = this.firstAttempt;
 
-        // Set up the 2-byte frequency table
+        // LBZ2: Set up the 2-byte frequency table
         for (int i = 65537; --i >= 0;) {
             ftab[i] = 0;
         }
@@ -453,7 +536,7 @@ class BlockSort {
         }
         block[0] = block[lastShadow + 1];
 
-        // Complete the initial radix sort:
+        // LBZ2: Complete the initial radix sort:
 
         int c1 = block[0] & 0xff;
         for (int i = 0; i <= lastShadow; i++) {
@@ -476,7 +559,7 @@ class BlockSort {
         fmap[--ftab[((block[lastShadow + 1] & 0xff) << 8) + (block[1] & 0xff)]] = lastShadow;
 
         /*
-         * Now ftab contains the first loc of every small bucket. Calculate the
+         * LBZ2: Now ftab contains the first loc of every small bucket. Calculate the
          * running order, from smallest to largest big bucket.
          */
         for (int i = 256; --i >= 0;) {
@@ -504,17 +587,17 @@ class BlockSort {
         }
 
         /*
-         * The main sorting loop.
+         * LBZ2: The main sorting loop.
          */
         for (int i = 0; i <= 255; i++) {
             /*
-             * Process big buckets, starting with the least full.
+             * LBZ2: Process big buckets, starting with the least full.
              */
             final int ss = runningOrder[i];
 
             // Step 1:
             /*
-             * Complete the big bucket [ss] by quicksorting any unsorted small
+             * LBZ2: Complete the big bucket [ss] by quicksorting any unsorted small
              * buckets [ss, j]. Hopefully previous pointer-scanning phases have
              * already completed many of the small buckets [ss, j], so we don't
              * have to sort them at all.
@@ -537,7 +620,7 @@ class BlockSort {
             }
 
             // Step 2:
-            // Now scan this big bucket so as to synthesise the
+            // LBZ2: Now scan this big bucket so as to synthesise the
             // sorted order for small buckets [t, ss] for all t != ss.
 
             for (int j = 0; j <= 255; j++) {
@@ -559,7 +642,7 @@ class BlockSort {
 
             // Step 3:
             /*
-             * The ss big bucket is now done. Record this fact, and update the
+             * LBZ2: The ss big bucket is now done. Record this fact, and update the
              * quadrant descriptors. Remember to update quadrants in the
              * overshoot area too, if necessary. The "if (i < 255)" test merely
              * skips this updating for the last bucket processed, since updating
@@ -588,6 +671,8 @@ class BlockSort {
 
         }
     }
+
+/*---------------------------------------------*/
 
     private void randomiseBlock(final BZip2CompressorOutputStream.Data data,
                                 final int lastShadow) {
