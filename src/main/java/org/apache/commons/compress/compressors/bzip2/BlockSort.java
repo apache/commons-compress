@@ -100,12 +100,6 @@ class BlockSort {
      * algorithm.
      */
 
-    private static final int SETMASK = (1 << 21);
-    private static final int CLEARMASK = (~SETMASK);
-    private static final int SMALL_THRESH = 20;
-    private static final int DEPTH_THRESH = 10;
-    private static final int WORK_FACTOR = 30;
-
     /*
      * LBZ2: If you are ever unlucky/improbable enough to get a stack
      * overflow whilst sorting, increase the following constant and
@@ -113,15 +107,6 @@ class BlockSort {
      * elems, so the following limit seems very generous.
      */
     private static final int QSORT_STACK_SIZE = 1000;
-
-    /*
-     * LBZ2: Knuth's increments seem to work better than Incerpi-Sedgewick here.
-     * Possibly because the number of elems to sort is usually small, typically
-     * &lt;= 20.
-     */
-    private static final int[] INCS = { 1, 4, 13, 40, 121, 364, 1093, 3280,
-                                        9841, 29524, 88573, 265720, 797161,
-                                        2391484 };
 
     private boolean blockRandomised;
 
@@ -154,14 +139,43 @@ class BlockSort {
         this.quadrant = data.sfmap;
     }
 
+    boolean blockSort(final BZip2CompressorOutputStream.Data data, final int last) {
+        this.workLimit = WORK_FACTOR * last;
+        this.workDone = 0;
+        this.blockRandomised = false;
+        this.firstAttempt = true;
+        mainSort(data, last);
+
+        if (this.firstAttempt && (this.workDone > this.workLimit)) {
+            randomiseBlock(data, last);
+            this.workLimit = this.workDone = 0;
+            this.firstAttempt = false;
+            mainSort(data, last);
+        }
+
+        final int[] fmap = data.fmap;
+        data.origPtr = -1;
+        for (int i = 0; i <= last; i++) {
+            if (fmap[i] == 0) {
+                data.origPtr = i;
+                break;
+            }
+        }
+
+        // assert (data.origPtr != -1) : data.origPtr;
+        return blockRandomised;
+    }
+
 /*---------------------------------------------*/
-/*--
-   LBZ2: The following is an implementation of
-   an elegant 3-way quicksort for strings,
-   described in a paper "Fast Algorithms for
-   Sorting and Searching Strings", by Robert
-   Sedgewick and Jon L. Bentley.
---*/
+
+    /*
+     * LBZ2: Knuth's increments seem to work better than Incerpi-Sedgewick here.
+     * Possibly because the number of elems to sort is usually small, typically
+     * &lt;= 20.
+     */
+    private static final int[] INCS = { 1, 4, 13, 40, 121, 364, 1093, 3280,
+                                        9841, 29524, 88573, 265720, 797161,
+                                        2391484 };
 
     /**
      * This is the most hammered method of this class.
@@ -357,6 +371,14 @@ class BlockSort {
         return firstAttemptShadow && (workDoneShadow > workLimitShadow);
     }
 
+/*--
+   LBZ2: The following is an implementation of
+   an elegant 3-way quicksort for strings,
+   described in a paper "Fast Algorithms for
+   Sorting and Searching Strings", by Robert
+   Sedgewick and Jon L. Bentley.
+--*/
+
     private static void vswap(int[] fmap, int p1, int p2, int n) {
         n += p1;
         while (p1 < n) {
@@ -371,32 +393,9 @@ class BlockSort {
                                                         : a);
     }
 
-    boolean blockSort(final BZip2CompressorOutputStream.Data data, final int last) {
-        this.workLimit = WORK_FACTOR * last;
-        this.workDone = 0;
-        this.blockRandomised = false;
-        this.firstAttempt = true;
-        mainSort(data, last);
-
-        if (this.firstAttempt && (this.workDone > this.workLimit)) {
-            randomiseBlock(data, last);
-            this.workLimit = this.workDone = 0;
-            this.firstAttempt = false;
-            mainSort(data, last);
-        }
-
-        final int[] fmap = data.fmap;
-        data.origPtr = -1;
-        for (int i = 0; i <= last; i++) {
-            if (fmap[i] == 0) {
-                data.origPtr = i;
-                break;
-            }
-        }
-
-        // assert (data.origPtr != -1) : data.origPtr;
-        return blockRandomised;
-    }
+    private static final int SMALL_THRESH = 20;
+    private static final int DEPTH_THRESH = 10;
+    private static final int WORK_FACTOR = 30;
 
     /**
      * Method "mainQSort3", file "blocksort.c", BZip2 1.0.2
@@ -505,6 +504,9 @@ class BlockSort {
             }
         }
     }
+
+    private static final int SETMASK = (1 << 21);
+    private static final int CLEARMASK = (~SETMASK);
 
     private void mainSort(final BZip2CompressorOutputStream.Data dataShadow,
                           final int lastShadow) {
