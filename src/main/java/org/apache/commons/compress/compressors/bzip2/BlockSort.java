@@ -370,7 +370,7 @@ class BlockSort {
             if (r3 == 0) {
                 med = eclass[fmap[lo]]; 
             } else if (r3 == 1) {
-                med = eclass[fmap[(lo+hi)>>1]];
+                med = eclass[fmap[(lo + hi) >>> 1]];
             } else {
                 med = eclass[fmap[hi]];
             }
