@@ -562,7 +562,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         }
 
         /* sort the block and establish posn of original string */
-        final boolean blockRandomised = blockSort();
+        blockSort();
 
         /*
          * A 6-byte block header, the value chosen arbitrarily as 0x314159265359
@@ -585,12 +585,8 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         /* Now the block's CRC, so it is in a known place. */
         bsPutInt(this.blockCRC);
 
-        /* Now a single bit indicating randomisation. */
-        if (blockRandomised) {
-            bsW(1, 1);
-        } else {
-            bsW(1, 0);
-        }
+        /* Now a single bit indicating no randomisation. */
+        bsW(1, 0);
 
         /* Finally, block's contents proper. */
         moveToFrontCodeAndSend();
@@ -1165,8 +1161,8 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         sendMTFValues();
     }
 
-    private boolean blockSort() {
-        return blockSorter.blockSort(data, last);
+    private void blockSort() {
+        blockSorter.blockSort(data, last);
     }
 
     /*

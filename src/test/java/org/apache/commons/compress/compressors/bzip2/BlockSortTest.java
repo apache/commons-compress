@@ -22,7 +22,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
 public class BlockSortTest {
 
@@ -81,7 +80,7 @@ public class BlockSortTest {
     @Test
     public void testSortFixture() {
         DS ds = setUpFixture();
-        assertFalse(ds.s.blockSort(ds.data, FIXTURE.length - 1));
+        ds.s.blockSort(ds.data, FIXTURE.length - 1);
         assertFixtureSorted(ds.data);
         assertEquals(0, ds.data.origPtr);
     }
@@ -103,7 +102,7 @@ public class BlockSortTest {
     @Test
     public void testSortFixture2() {
         DS ds = setUpFixture2();
-        assertFalse(ds.s.blockSort(ds.data, FIXTURE2.length - 1));
+        ds.s.blockSort(ds.data, FIXTURE2.length - 1);
         assertFixture2Sorted(ds.data);
         assertEquals(1, ds.data.origPtr);
     }
