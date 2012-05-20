@@ -42,8 +42,13 @@ The <action> type attribute can be add,update,fix,remove.
     <title>commons-compress</title>
   </properties>
   <body>
-    <release version="1.5" date="unreleased"
-             description="Release 1.5">
+    <release version="1.4.1" date="unreleased"
+             description="Release 1.4.1">
+      <action type="fix" date="2012-05-20">
+        Ported libbzip2's fallback sort algorithm to
+        BZip2CompressorOutputStream to speed up compression in certain
+        edge cases.
+      </action>
     </release>
     <release version="1.4" date="2012-04-11"
              description="Release 1.4">
