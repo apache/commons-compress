@@ -160,12 +160,11 @@ class BlockSort {
         if (last + 1 < 10000) {
             fallbackSort(data, last);
         } else {
+            mainSort(data, last);
 
-        mainSort(data, last);
-
-        if (this.firstAttempt && (this.workDone > this.workLimit)) {
+            if (this.firstAttempt && (this.workDone > this.workLimit)) {
                 fallbackSort(data, last);
-        }
+            }
         }
 
         final int[] fmap = data.fmap;
