@@ -104,7 +104,7 @@ class BlockSort {
      *
      * I've added the fallbackSort function of 1.0.6 and tried to
      * integrate it with the existing code without touching too much.
-     * I've also removed the now unused reandomization code.
+     * I've also removed the now unused randomization code.
      */
 
     /*
@@ -268,7 +268,9 @@ class BlockSort {
                                     int[] eclass, 
                                     int lo, 
                                     int hi) {
-        if (lo == hi) return;
+        if (lo == hi) {
+            return;
+        }
 
         int j;
         if (hi - lo > 3) {
@@ -380,32 +382,44 @@ class BlockSort {
             // in the cited Sedgewick paper
             while (true) {
                 while (true) {
-                    if (unLo > unHi) break;
+                    if (unLo > unHi) {
+                        break;
+                    }
                     n = eclass[fmap[unLo]] - (int) med;
                     if (n == 0) { 
                         fswap(fmap, unLo, ltLo); 
                         ltLo++; unLo++; 
                         continue; 
-                    };
-                    if (n > 0) break;
+                    }
+                    if (n > 0) {
+                        break;
+                    }
                     unLo++;
                 }
                 while (true) {
-                    if (unLo > unHi) break;
+                    if (unLo > unHi) {
+                        break;
+                    }
                     n = eclass[fmap[unHi]] - (int) med;
                     if (n == 0) {
                         fswap(fmap, unHi, gtHi); 
                         gtHi--; unHi--; 
                         continue; 
-                    };
-                    if (n < 0) break;
+                    }
+                    if (n < 0) {
+                        break;
+                    }
                     unHi--;
                 }
-                if (unLo > unHi) break;
+                if (unLo > unHi) {
+                    break;
+                }
                 fswap(fmap, unLo, unHi); unLo++; unHi--;
             }
 
-            if (gtHi < ltLo) continue;
+            if (gtHi < ltLo) {
+                continue;
+            }
 
             n = fmin(ltLo - lo, unLo - ltLo);
             fvswap(fmap, lo, unLo - n, n);
@@ -470,7 +484,9 @@ class BlockSort {
         for (i = 0; i < nblock; i++) {
             ftab[block[i] & 0xff]++;
         }
-        for (i = 1; i < 257;    i++) ftab[i] += ftab[i - 1];
+        for (i = 1; i < 257;    i++) {
+            ftab[i] += ftab[i - 1];
+        }
 
         for (i = 0; i < nblock; i++) {
             j = block[i] & 0xff;
@@ -481,7 +497,9 @@ class BlockSort {
 
         nBhtab = 64 + nblock;
         BitSet bhtab = new BitSet(nBhtab);
-        for (i = 0; i < 256; i++) bhtab.set(ftab[i]);
+        for (i = 0; i < 256; i++) {
+            bhtab.set(ftab[i]);
+        }
 
         /*--
           LBZ2: Inductively refine the buckets.  Kind-of an
@@ -519,10 +537,14 @@ class BlockSort {
                 k = r + 1;
                 k = bhtab.nextClearBit(k);
                 l = k - 1;
-                if (l >= nblock) break;
+                if (l >= nblock) {
+                    break;
+                }
                 k = bhtab.nextSetBit(k + 1);
                 r = k - 1;
-                if (r >= nblock) break;
+                if (r >= nblock) {
+                    break;
+                }
 
                 /*-- LBZ2: now [l, r] bracket current bucket --*/
                 if (r > l) {
@@ -536,13 +558,15 @@ class BlockSort {
                         if (cc != cc1) {
                             bhtab.set(i);
                             cc = cc1;
-                        };
+                        }
                     }
                 }
             }
 
             H *= 2;
-            if (H > nblock || nNotDone == 0) break;
+            if (H > nblock || nNotDone == 0) {
+                break;
+            }
         }
     }
 
