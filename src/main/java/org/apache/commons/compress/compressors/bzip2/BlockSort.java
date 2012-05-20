@@ -98,12 +98,13 @@ class BlockSort {
      * This class seems to mix several revisions of libbzip2's code.
      * The mainSort function and those used by it look closer to the
      * 0.9.5 version but show some variations introduced later.  At
-     * the same time the logic to randomize the block on bad input has
-     * been dropped after 0.9.0 and replaced by a fallback sorting
-     * algorithm.
+     * the same time the logic of Compress 1.4 to randomize the block
+     * on bad input has been dropped after libbzip2 0.9.0 and replaced
+     * by a fallback sorting algorithm.
      *
      * I've added the fallbackSort function of 1.0.6 and tried to
      * integrate it with the existing code without touching too much.
+     * I've also removed the now unused reandomization code.
      */
 
     /*
@@ -120,11 +121,9 @@ class BlockSort {
         QSORT_STACK_SIZE < FALLBACK_QSORT_STACK_SIZE
         ? FALLBACK_QSORT_STACK_SIZE : QSORT_STACK_SIZE;
 
-    private boolean blockRandomised;
-
     /*
      * Used when sorting. If too many long comparisons happen, we stop sorting,
-     * randomise the block slightly, and try again.
+     * and use fallbackSort instead.
      */
     private int workDone;
     private int workLimit;
@@ -151,10 +150,9 @@ class BlockSort {
         this.quadrant = data.sfmap;
     }
 
-    boolean blockSort(final BZip2CompressorOutputStream.Data data, final int last) {
+    void blockSort(final BZip2CompressorOutputStream.Data data, final int last) {
         this.workLimit = WORK_FACTOR * last;
         this.workDone = 0;
-        this.blockRandomised = false;
         this.firstAttempt = true;
 
         if (last + 1 < 10000) {
@@ -177,7 +175,6 @@ class BlockSort {
         }
 
         // assert (data.origPtr != -1) : data.origPtr;
-        return false;
     }
 
     /**
@@ -1055,37 +1052,6 @@ class BlockSort {
             }
 
         }
-    }
-
-/*---------------------------------------------*/
-
-    private void randomiseBlock(final BZip2CompressorOutputStream.Data data,
-                                final int lastShadow) {
-        final boolean[] inUse = data.inUse;
-        final byte[] block = data.block;
-
-        for (int i = 256; --i >= 0;) {
-            inUse[i] = false;
-        }
-
-        int rNToGo = 0;
-        int rTPos = 0;
-        for (int i = 0, j = 1; i <= lastShadow; i = j, j++) {
-            if (rNToGo == 0) {
-                rNToGo = (char) Rand.rNums(rTPos);
-                if (++rTPos == 512) {
-                    rTPos = 0;
-                }
-            }
-
-            rNToGo--;
-            block[j] ^= ((rNToGo == 1) ? 1 : 0);
-
-            // handle 16 bit signed numbers
-            inUse[block[j] & 0xff] = true;
-        }
-
-        this.blockRandomised = true;
     }
 
 }
