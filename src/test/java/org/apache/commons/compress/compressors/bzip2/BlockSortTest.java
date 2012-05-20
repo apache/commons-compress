@@ -66,6 +66,10 @@ public class BlockSortTest {
     private static final byte[] FIXTURE_BWT = { (byte) 128, 0, 3, (byte) 254, 2, 1, 
                                                 (byte) 252, (byte) 255, (byte) 253 };
 
+    private static final int[] FIXTURE_SORTED = {
+        0, 1, 7, 6, 8, 2, 3, 5, 4
+    };
+
     @Test
     public void testSortFixture() {
         BZip2CompressorOutputStream.Data data = new BZip2CompressorOutputStream.Data(1);
@@ -77,5 +81,14 @@ public class BlockSortTest {
             assertEquals(FIXTURE_BWT[i], data.block[data.fmap[i]]);
         }
         assertEquals(0, data.origPtr);
+    }
+
+    @Test
+    public void testFallbackSort() {
+        BZip2CompressorOutputStream.Data data = new BZip2CompressorOutputStream.Data(1);
+        BlockSort s = new BlockSort(data);
+        int[] fmap = new int[FIXTURE.length];
+        s.fallbackSort(fmap, FIXTURE, FIXTURE.length);
+        assertArrayEquals(FIXTURE_SORTED, fmap);
     }
 }

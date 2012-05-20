@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.compressors.bzip2;
 
+import java.util.BitSet;
+
 /**
  * Encapsulates the Burrows-Wheeler sorting algorithm needed by {@link
  * BZip2CompressorOutputStream}.
@@ -92,12 +94,14 @@ class BlockSort {
     /*
      * 2012-05-20 Stefan Bodewig:
      *
-     * The class seems to mix several revisions of libbzip2's code.
+     * This class seems to mix several revisions of libbzip2's code.
      * The mainSort function and those used by it look closer to the
      * 0.9.5 version but show some variations introduced later.  At
      * the same time the logic to randomize the block on bad input has
      * been dropped after 0.9.0 and replaced by a fallback sorting
      * algorithm.
+     *
+     * I've added the fallbackSort function of 1.0.6.
      */
 
     /*
@@ -107,6 +111,12 @@ class BlockSort {
      * elems, so the following limit seems very generous.
      */
     private static final int QSORT_STACK_SIZE = 1000;
+
+    private static final int FALLBACK_QSORT_STACK_SIZE = 100;
+
+    private static final int STACK_SIZE =
+        QSORT_STACK_SIZE < FALLBACK_QSORT_STACK_SIZE
+        ? FALLBACK_QSORT_STACK_SIZE : QSORT_STACK_SIZE;
 
     private boolean blockRandomised;
 
@@ -118,8 +128,8 @@ class BlockSort {
     private int workLimit;
     private boolean firstAttempt;
 
-    private final int[] stack_ll = new int[QSORT_STACK_SIZE]; // 4000 byte
-    private final int[] stack_hh = new int[QSORT_STACK_SIZE]; // 4000 byte
+    private final int[] stack_ll = new int[STACK_SIZE]; // 4000 byte
+    private final int[] stack_hh = new int[STACK_SIZE]; // 4000 byte
     private final int[] stack_dd = new int[QSORT_STACK_SIZE]; // 4000 byte
 
     private final int[] mainSort_runningOrder = new int[256]; // 1024 byte
@@ -164,6 +174,350 @@ class BlockSort {
 
         // assert (data.origPtr != -1) : data.origPtr;
         return blockRandomised;
+    }
+
+/*---------------------------------------------*/
+
+/*---------------------------------------------*/
+/*--- LBZ2: Fallback O(N log(N)^2) sorting        ---*/
+/*--- algorithm, for repetitive blocks      ---*/
+/*---------------------------------------------*/
+
+    /*
+     * This is the fallback sorting algorithm libbzip2 1.0.6 uses for
+     * repetitive or very short inputs.
+     *
+     * The idea is inspired by Manber-Myers string suffix sorting
+     * algorithm.  First a bucket sort places each permutation of the
+     * block into a bucket based on its first byte.  Permutations are
+     * represented by pointers to their first character kept in
+     * (partially) sorted order inside the array ftab.
+     *
+     * The next step visits all buckets in order and performs a
+     * quicksort on all permutations of the bucket based on the index
+     * of the bucket the second byte of the permutation belongs to,
+     * thereby forming new buckets.  When arrived here the
+     * permutations are sorted up to the second character and we have
+     * buckets of permutations that are identical up to two
+     * characters.
+     *
+     * Repeat the step of quicksorting each bucket, now based on the
+     * bucket holding the sequence of the third and forth character
+     * leading to four byte buckets.  Repeat this doubling of bucket
+     * sizes until all buckets only contain single permutations or the
+     * bucket size exceeds the block size.
+     *
+     * I.e.
+     *
+     * "abraba" form three buckets for the chars "a", "b", and "r" in
+     * the first step with
+     *
+     * fmap = { 'a:' 5, 3, 0, 'b:' 4, 1, 'r', 2 }
+     *
+     * when looking at the bucket of "a"s the second characters are in
+     * the buckets that start with fmap-index 0 (rolled over), 3 and 3
+     * respectively, forming two new buckets "aa" and "ab", so we get
+     *
+     * fmap = { 'aa:' 5, 'ab:' 3, 0, 'ba:' 4, 'br': 1, 'ra:' 2 }
+     *
+     * since the last bucket only contained a single item it didn't
+     * have to be sorted at all.
+     *
+     * There now is just one bucket with more than one permutation
+     * that remains to be sorted.  For the permutation that starts
+     * with index 3 the third and forth char are in bucket 'aa' at
+     * index 0 and for the one starting at block index 0 they are in
+     * bucket 'ra' with sort index 5.  The fully sorted order then becomes.
+     *
+     * fmap = { 5, 3, 0, 4, 1, 2 }
+     * 
+     */
+
+    /**
+     * @param fmap points to the index of the starting point of a
+     *        permutation inside the block of data in the current
+     *        partially sorted order
+     * @param eclass points from the index of a character inside the
+     *        block to the first index in fmap that contains the
+     *        bucket of its suffix that is sorted in this step.
+     * @param lo lower boundary of the fmap-interval to be sorted 
+     * @param hi upper boundary of the fmap-interval to be sorted 
+     */
+    private void fallbackSimpleSort(int[] fmap, 
+                                    int[] eclass, 
+                                    int lo, 
+                                    int hi) {
+        if (lo == hi) return;
+
+        int j;
+        if (hi - lo > 3) {
+            for (int i = hi - 4; i >= lo; i--) {
+                int tmp = fmap[i];
+                int ec_tmp = eclass[tmp];
+                for (j = i + 4; j <= hi && ec_tmp > eclass[fmap[j]];
+                     j += 4) {
+                    fmap[j - 4] = fmap[j];
+                }
+                fmap[j - 4] = tmp;
+            }
+        }
+
+        for (int i = hi - 1; i >= lo; i--) {
+            int tmp = fmap[i];
+            int ec_tmp = eclass[tmp];
+            for (j = i + 1; j <= hi && ec_tmp > eclass[fmap[j]]; j++) {
+                fmap[j - 1] = fmap[j];
+            }
+            fmap[j-1] = tmp;
+        }
+    }
+
+    private static final int FALLBACK_QSORT_SMALL_THRESH = 10;
+
+    /**
+     * swaps two values in fmap
+     */
+    private void fswap(int[] fmap, int zz1, int zz2) {
+        int zztmp = fmap[zz1];
+        fmap[zz1] = fmap[zz2];
+        fmap[zz2] = zztmp;
+    }
+
+    /**
+     * swaps two intervals starting at yyp1 and yyp2 of length yyn inside fmap.
+     */
+    private void fvswap(int[] fmap, int yyp1, int yyp2, int yyn) {
+        while (yyn > 0) {
+            fswap(fmap, yyp1, yyp2);
+            yyp1++; yyp2++; yyn--;
+        }
+    }
+
+    private int fmin(int a, int b) {
+        return a < b ? a : b;
+    }
+
+    private void fpush(int sp, int lz, int hz) {
+        stack_ll[sp] = lz;
+        stack_hh[sp] = hz;
+    }
+
+    private int[] fpop(int sp) {
+        return new int[] { stack_ll[sp], stack_hh[sp] };
+    }
+
+    /**
+     * @param fmap points to the index of the starting point of a
+     *        permutation inside the block of data in the current
+     *        partially sorted order
+     * @param eclass points from the index of a character inside the
+     *        block to the first index in fmap that contains the
+     *        bucket of its suffix that is sorted in this step.
+     * @param loSt lower boundary of the fmap-interval to be sorted 
+     * @param hiSt upper boundary of the fmap-interval to be sorted 
+     */
+    private void fallbackQSort3(int[] fmap, 
+                                int[] eclass, 
+                                int loSt, 
+                                int hiSt) {
+        int lo, unLo, ltLo, hi, unHi, gtHi, n;
+
+        long r = 0;
+        int sp = 0;
+        fpush(sp++, loSt, hiSt);
+
+        while (sp > 0) {
+            int[] s = fpop(--sp);
+            lo = s[0]; hi = s[1];
+
+            if (hi - lo < FALLBACK_QSORT_SMALL_THRESH) {
+                fallbackSimpleSort(fmap, eclass, lo, hi);
+                continue;
+            }
+
+            /* LBZ2: Random partitioning.  Median of 3 sometimes fails to
+               avoid bad cases.  Median of 9 seems to help but 
+               looks rather expensive.  This too seems to work but
+               is cheaper.  Guidance for the magic constants 
+               7621 and 32768 is taken from Sedgewick's algorithms
+               book, chapter 35.
+            */
+            r = ((r * 7621) + 1) % 32768;
+            long r3 = r % 3, med;
+            if (r3 == 0) {
+                med = eclass[fmap[lo]]; 
+            } else if (r3 == 1) {
+                med = eclass[fmap[(lo+hi)>>1]];
+            } else {
+                med = eclass[fmap[hi]];
+            }
+
+            unLo = ltLo = lo;
+            unHi = gtHi = hi;
+
+            // looks like the ternary partition attributed to Wegner
+            // in the cited Sedgewick paper
+            while (true) {
+                while (true) {
+                    if (unLo > unHi) break;
+                    n = eclass[fmap[unLo]] - (int) med;
+                    if (n == 0) { 
+                        fswap(fmap, unLo, ltLo); 
+                        ltLo++; unLo++; 
+                        continue; 
+                    };
+                    if (n > 0) break;
+                    unLo++;
+                }
+                while (true) {
+                    if (unLo > unHi) break;
+                    n = eclass[fmap[unHi]] - (int) med;
+                    if (n == 0) {
+                        fswap(fmap, unHi, gtHi); 
+                        gtHi--; unHi--; 
+                        continue; 
+                    };
+                    if (n < 0) break;
+                    unHi--;
+                }
+                if (unLo > unHi) break;
+                fswap(fmap, unLo, unHi); unLo++; unHi--;
+            }
+
+            if (gtHi < ltLo) continue;
+
+            n = fmin(ltLo - lo, unLo - ltLo);
+            fvswap(fmap, lo, unLo - n, n);
+            int m = fmin(hi - gtHi, gtHi - unHi);
+            fvswap(fmap, unHi + 1, hi - m + 1, m);
+
+            n = lo + unLo - ltLo - 1;
+            m = hi - (gtHi - unHi) + 1;
+
+            if (n - lo > hi - m) {
+                fpush(sp++, lo, n);
+                fpush(sp++, m, hi);
+            } else {
+                fpush(sp++, m, hi);
+                fpush(sp++, lo, n);
+            }
+        }
+    }
+
+
+/*---------------------------------------------*/
+
+    private int[] eclass;
+
+    private int[] getEclass() {
+        return eclass == null
+            ? (eclass = new int[quadrant.length / 2]) : eclass;
+    }
+
+    /*
+     * The C code uses an array of ints to represents the bucket-start
+     * flags (bhtab).  It also contains optimizations to skip over 32
+     * consecutively set or consecutively unset bits on word
+     * boundaries at once.  For now I've chosen to use the simpler but
+     * potentially slower code using BitSet - also in the hope that
+     * using the BitSet#nextXXX methods may be fast enough.
+     */
+
+    /**
+     * @param fmap points to the index of the starting point of a
+     *        permutation inside the block of data in the current
+     *        partially sorted order
+     * @param block the original data
+     * @param nblock size of the block
+     * @param off offset of first byte to sort in block
+     */
+    final void fallbackSort(int[] fmap, byte[] block, int nblock) {
+        int[] ftab = new int[257];
+        int H, i, j, k, l, r, cc, cc1;
+        int nNotDone;
+        int nBhtab;
+
+        /*--
+          LBZ2: Initial 1-char radix sort to generate
+          initial fmap and initial BH bits.
+          --*/
+        for (i = 0; i < nblock; i++) ftab[block[i] & 0xff]++;
+        for (i = 1; i < 257;    i++) ftab[i] += ftab[i - 1];
+
+        for (i = 0; i < nblock; i++) {
+            j = block[i] & 0xff;
+            k = ftab[j] - 1;
+            ftab[j] = k;
+            fmap[k] = i;
+        }
+
+        nBhtab = 64 + nblock;
+        BitSet bhtab = new BitSet(nBhtab);
+        for (i = 0; i < 256; i++) bhtab.set(ftab[i]);
+
+        /*--
+          LBZ2: Inductively refine the buckets.  Kind-of an
+          "exponential radix sort" (!), inspired by the
+          Manber-Myers suffix array construction algorithm.
+          --*/
+
+        /*-- LBZ2: set sentinel bits for block-end detection --*/
+        for (i = 0; i < 32; i++) { 
+            bhtab.set(nblock + 2 * i);
+            bhtab.clear(nblock + 2 * i + 1);
+        }
+
+        eclass = getEclass();
+
+        /*-- LBZ2: the log(N) loop --*/
+        H = 1;
+        while (true) {
+
+            j = 0;
+            for (i = 0; i < nblock; i++) {
+                if (bhtab.get(i)) {
+                    j = i;
+                }
+                k = fmap[i] - H;
+                if (k < 0) {
+                    k += nblock;
+                }
+                eclass[k] = j;
+            }
+
+            nNotDone = 0;
+            r = -1;
+            while (true) {
+
+                /*-- LBZ2: find the next non-singleton bucket --*/
+                k = r + 1;
+                k = bhtab.nextSetBit(k);
+                l = k - 1;
+                if (l >= nblock) break;
+                k = bhtab.nextClearBit(k);
+                r = k - 1;
+                if (r >= nblock) break;
+
+                /*-- LBZ2: now [l, r] bracket current bucket --*/
+                if (r > l) {
+                    nNotDone += (r - l + 1);
+                    fallbackQSort3(fmap, eclass, l, r);
+
+                    /*-- LBZ2: scan bucket and generate header bits-- */
+                    cc = -1;
+                    for (i = l; i <= r; i++) {
+                        cc1 = eclass[fmap[i]];
+                        if (cc != cc1) {
+                            bhtab.set(i);
+                            cc = cc1;
+                        };
+                    }
+                }
+            }
+
+            H *= 2;
+            if (H > nblock || nNotDone == 0) break;
+        }
     }
 
 /*---------------------------------------------*/
