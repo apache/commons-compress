@@ -335,7 +335,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
      *
      * @param inputLength
      *            The length of the data which will be compressed by
-     *            <tt>CBZip2OutputStream</tt>.
+     *            <tt>BZip2CompressorOutputStream</tt>.
      */
     public static int chooseBlockSize(long inputLength) {
         return (inputLength > 0) ? (int) Math
@@ -343,7 +343,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     }
 
     /**
-     * Constructs a new <tt>CBZip2OutputStream</tt> with a blocksize of 900k.
+     * Constructs a new <tt>BZip2CompressorOutputStream</tt> with a blocksize of 900k.
      *
      * @param out 
      *            the destination stream.
@@ -359,7 +359,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     }
 
     /**
-     * Constructs a new <tt>CBZip2OutputStream</tt> with specified blocksize.
+     * Constructs a new <tt>BZip2CompressorOutputStream</tt> with specified blocksize.
      *
      * @param out
      *            the destination stream.
@@ -391,8 +391,6 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         }
 
         this.blockSize100k = blockSize;
-        /* 20 is just a paranoia constant */
-        this.allowableBlockSize = (this.blockSize100k * BZip2Constants.BASEBLOCKSIZE) - 20;
         this.out = out;
         init();
     }
@@ -549,6 +547,9 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         for (int i = 256; --i >= 0;) {
             inUse[i] = false;
         }
+
+        /* 20 is just a paranoia constant */
+        this.allowableBlockSize = (this.blockSize100k * BZip2Constants.BASEBLOCKSIZE) - 20;
     }
 
     private void endBlock() throws IOException {
