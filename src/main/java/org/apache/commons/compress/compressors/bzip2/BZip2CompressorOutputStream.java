@@ -392,6 +392,9 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
 
         this.blockSize100k = blockSize;
         this.out = out;
+
+        /* 20 is just a paranoia constant */
+        this.allowableBlockSize = (this.blockSize100k * BZip2Constants.BASEBLOCKSIZE) - 20;
         init();
     }
 
@@ -548,8 +551,6 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
             inUse[i] = false;
         }
 
-        /* 20 is just a paranoia constant */
-        this.allowableBlockSize = (this.blockSize100k * BZip2Constants.BASEBLOCKSIZE) - 20;
     }
 
     private void endBlock() throws IOException {
