@@ -36,7 +36,9 @@
                 Excalibur, but originally from Ant, as far as life in
                 Apache goes. The tar package is originally Tim Endres'
                 public domain package. The bzip2 package is based on
-                the work done by Keiron Liddle.  It has migrated
+                the work done by Keiron Liddle as well as Julian Seward's
+                <a href="http://www.bzip.org/index.html">libbzip2</a>.
+                It has migrated
                 via:<br/> Ant -&gt; Avalon-Excalibur -&gt; Commons-IO
                 -&gt; Commons-Compress.</li>
               <li>The cpio package has been contributed by Michael Kuss
