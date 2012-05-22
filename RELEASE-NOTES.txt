@@ -3,58 +3,14 @@
 Apache Commons Compress software defines an API for working with compression and archive formats.
 These include: bzip2, gzip, pack200 and ar, cpio, jar, tar, zip, dump.
 
-Release 1.4
+Release 1.4.1
 
 Changes in this version include:
 
-New features:
-o COMPRESS-156:  Support for the XZ format has been added. 
-
 Fixed Bugs:
-o COMPRESS-183:  The tar package now allows the encoding of file names to be
-                 specified and can optionally use PAX extension headers to
-                 write non-ASCII file names.
-                 The stream classes now write (or expect to read) archives that
-                 use the platform's native encoding for file names.  Apache
-                 Commons Compress 1.3 used to strip everything but the lower
-                 eight bits of each character which effectively only worked for
-                 ASCII and ISO-8859-1 file names.
-                 This new default behavior is a breaking change. 
-o COMPRESS-184:  TarArchiveInputStream failed to parse PAX headers that
-                 contained non-ASCII characters. 
-o COMPRESS-178:  TarArchiveInputStream throws IllegalArgumentException instead of IOException 
-o COMPRESS-179:  TarUtils.formatLongOctalOrBinaryBytes() assumes the field will be 12 bytes long 
-o COMPRESS-175:  GNU Tar sometimes uses binary encoding for UID and GID 
-o COMPRESS-171:  ArchiveStreamFactory.createArchiveInputStream would claim
-                 short text files were TAR archives. 
-o COMPRESS-164:  ZipFile didn't work properly for archives using unicode extra
-                 fields rather than UTF-8 filenames and the EFS-Flag. 
-o COMPRESS-169:  For corrupt archives ZipFile would throw a RuntimeException in
-                 some cases and an IOException in others.  It will now
-                 consistently throw an IOException. 
-
-Changes:
-o COMPRESS-182:  The tar package can now write archives that use star/GNU/BSD
-                 extensions or use the POSIX/PAX variant to store numeric
-                 values that don't fit into the traditional header fields. 
-o COMPRESS-181:  Added a workaround for a Bug some tar implementations that add
-                 a NUL byte as first byte in numeric header fields. 
-o COMPRESS-176:  Added a workaround for a Bug in WinZIP which uses backslashes
-                 as path separators in Unicode Extra Fields. 
-o COMPRESS-131:  ArrayOutOfBounds while decompressing bz2. Added test case - code already seems to have been fixed. 
-o COMPRESS-146:  BZip2CompressorInputStream now optionally supports reading of
-                 concatenated .bz2 files. 
-o COMPRESS-154:  GZipCompressorInputStream now optionally supports reading of
-                 concatenated .gz files. 
-o COMPRESS-16:  The tar package can now read archives that use star/GNU/BSD
-                 extensions for files that are longer than 8 GByte as well as
-                 archives that use the POSIX/PAX variant. 
-o COMPRESS-165:  The tar package can now write archives that use star/GNU/BSD
-                 extensions for files that are longer than 8 GByte as well as
-                 archives that use the POSIX/PAX variant. 
-o COMPRESS-166:  The tar package can now use the POSIX/PAX variant for writing
-                 entries with names longer than 100 characters. 
-
+o Ported libbzip2's fallback sort algorithm to
+        BZip2CompressorOutputStream to speed up compression in certain
+        edge cases.
  
 For complete information on Commons Compress, including instructions on how to submit bug reports,
 patches, or suggestions for improvement, see the Apache Commons Compress website:
