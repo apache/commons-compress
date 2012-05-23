@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+<!--
+
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<document>
+    <properties>
+        <title>Commons Compress Security Reports</title>
+        <author email="dev@commons.apache.org">Commons Documentation Team</author>
+    </properties>
+    <body>
+      <section name="Reporting New Security Problems with Apache Commons Compress">
+        <p>The Apache Software Foundation takes a very active stance
+        in eliminating security problems and denial of service attacks
+        against its products.</p>
+
+        <p>We strongly encourage folks to report such problems to our
+        private security mailing list first, before disclosing them in
+        a public forum.</p>
+
+        <p>Please note that the security mailing list should only be
+        used for reporting undisclosed security vulnerabilities and
+        managing the process of fixing such vulnerabilities. We cannot
+        accept regular bug reports or other queries at this
+        address. All mail sent to this address that does not relate to
+        an undisclosed security problem in our source code will be
+        ignored.</p>
+
+        <p>If you need to report a bug that isn't an undisclosed
+        security vulnerability, please use the <a
+        href="issue-tracking.html">bug reporting page</a>.</p>
+
+        <p>Questions about:</p>
+
+        <ul>
+          <li>if a vulnerability applies to your particular application</li>
+          <li>obtaining further information on a published vulnerability</li>
+          <li>availability of patches and/or new releases</li>
+        </ul>
+
+        <p>should be addressed to the users mailing list. Please see
+        the <a href="mail-lists.html">mailing lists page</a> for
+        details of how to subscribe.</p>
+
+        <p>The private security mailing address is: <a
+        href="mailto:security@apache.org">security@apache.org</a></p>
+      </section>
+
+      <section name="Apache Commons Compress Security Vulnerabilities">
+        <p>This page lists all security vulnerabilities fixed in
+        released versions of Apache Commons Compress. Each
+        vulnerability is given a security impact rating by the
+        development team - please note that this rating may vary from
+        platform to platform. We also list the versions of Commons
+        Compress the flaw is known to affect, and where a flaw has not
+        been verified list the version with a question mark.</p>
+
+        <p>Please note that binary patches are never provided. If you
+        need to apply a source code patch, use the building
+        instructions for the Commons Compress version that you are
+        using.</p>
+
+        <p>If you need help on building Commons Compress or other help
+        on following the instructions to mitigate the known
+        vulnerabilities listed here, please send your questions to the
+        public <a href="mail-lists.html">Compress Users mailing
+        list</a>.</p>
+
+        <p>If you have encountered an unlisted security vulnerability
+        or other unexpected behaviour that has security impact, or if
+        the descriptions here are incomplete, please report them
+        privately to the Apache Security Team. Thank you.</p>
+
+        <subsection name="Fixed in Apache Commons Compress 1.4.1">
+          <p><b>Low: Denial of Service</b> <a
+          href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-2098">CVE-2012-2098</a></p>
+
+          <p>The bzip2 compressing streams in Apache Commons Compress
+          internally use sorting algorithms with unacceptable
+          worst-case performance on very repetitive inputs.  A
+          specially crafted input to Compress'
+          <code>BZip2CompressorOutputStream</code> can be used to make
+          the process spend a very long time while using up all
+          available processing time effectively leading to a denial of
+          service.</p>
+
+          <p>This was fixed in revisions
+          <a href="http://svn.apache.org/viewvc?view=revision&amp;revision=1332540">1332540</a>,
+          <a href="http://svn.apache.org/viewvc?view=revision&amp;revision=1332552">1332552</a>,
+          <a href="http://svn.apache.org/viewvc?view=revision&amp;revision=1333522">1333522</a>,
+          <a href="http://svn.apache.org/viewvc?view=revision&amp;revision=1337444">1337444</a>,
+          <a href="http://svn.apache.org/viewvc?view=revision&amp;revision=1340715">1340715</a>,
+          <a href="http://svn.apache.org/viewvc?view=revision&amp;revision=1340723">1340723</a>,
+          <a href="http://svn.apache.org/viewvc?view=revision&amp;revision=1340757">1340757</a>,
+          <a href="http://svn.apache.org/viewvc?view=revision&amp;revision=1340786">1340786</a>,
+          <a href="http://svn.apache.org/viewvc?view=revision&amp;revision=1340787">1340787</a>,
+          <a href="http://svn.apache.org/viewvc?view=revision&amp;revision=1340790">1340790</a>,
+          <a href="http://svn.apache.org/viewvc?view=revision&amp;revision=1340795">1340795</a> and
+          <a href="http://svn.apache.org/viewvc?view=revision&amp;revision=1340799">1340799</a>.</p>
+
+          <p>This was first reported to the Security Team on 12 April
+          2012 and made public on 23 May 2012.</p>
+
+          <p>Affects: 1.0 - 1.4</p>
+
+        </subsection>
+      </section>
+
+      <section name="Errors and Ommissions">
+        <p>Please report any errors or omissions to <a
+        href="mail-lists.html">the dev mailing list</a>.</p>
+      </section>
+    </body>
+</document>

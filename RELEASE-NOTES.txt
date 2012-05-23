@@ -1,4 +1,4 @@
-              Apache Commons Compress 1.4 RELEASE NOTES
+              Apache Commons Compress 1.4.1 RELEASE NOTES
 
 Apache Commons Compress software defines an API for working with compression and archive formats.
 These include: bzip2, gzip, pack200 and ar, cpio, jar, tar, zip, dump.
@@ -8,10 +8,16 @@ Release 1.4.1
 Changes in this version include:
 
 Fixed Bugs:
+
 o Ported libbzip2's fallback sort algorithm to
-        BZip2CompressorOutputStream to speed up compression in certain
-        edge cases.
+  BZip2CompressorOutputStream to speed up compression in certain edge
+  cases.
  
+  Using specially crafted inputs this can be used as a denial of
+  service attack.  See
+  http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-2098
+
+
 For complete information on Commons Compress, including instructions on how to submit bug reports,
 patches, or suggestions for improvement, see the Apache Commons Compress website:
 
