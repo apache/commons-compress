@@ -666,13 +666,13 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         String myComment = getComment();
         String otherComment = other.getComment();
         if (myComment == null) {
-            if (otherComment != null) {
-                return false;
-            }
-        } else if (!myComment.equals(otherComment)) {
-            return false;
+            myComment = "";
+        }
+        if (otherComment == null) {
+            otherComment = "";
         }
         return getTime() == other.getTime()
+            && myComment.equals(otherComment)
             && getInternalAttributes() == other.getInternalAttributes()
             && getPlatform() == other.getPlatform()
             && getExternalAttributes() == other.getExternalAttributes()
