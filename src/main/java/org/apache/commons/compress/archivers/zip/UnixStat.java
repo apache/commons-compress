@@ -21,8 +21,9 @@ package org.apache.commons.compress.archivers.zip;
 /**
  * Constants from stat.h on Unix systems.
  */
-public interface UnixStat
-{
+// CheckStyle:InterfaceIsTypeCheck OFF - backward compatible
+public interface UnixStat {
+
     /**
      * Bits used for permissions (and sticky bit)
      */

@@ -65,7 +65,7 @@ import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
  * </pre></p>
  *
  * <p>Currently Commons Compress doesn't support encrypting the
- * central directory so the not about masking doesn't apply.</p>
+ * central directory so the note about masking doesn't apply.</p>
  *
  * <p>The implementation relies on data being read from the local file
  * header and assumes that both size values are always present.</p>

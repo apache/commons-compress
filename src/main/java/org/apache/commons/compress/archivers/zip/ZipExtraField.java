@@ -21,12 +21,14 @@ package org.apache.commons.compress.archivers.zip;
 import java.util.zip.ZipException;
 
 /**
- * General format of extra field data. <p>
+ * General format of extra field data.
  *
- * Extra fields usually appear twice per file, once in the local file data and
- * once in the central directory. Usually they are the same, but they don't have
- * to be. {@link java.util.zip.ZipOutputStream java.util.zip.ZipOutputStream}
- * will only use the local file data in both places.</p>
+ * <p>Extra fields usually appear twice per file, once in the local
+ * file data and once in the central directory.  Usually they are the
+ * same, but they don't have to be.  {@link
+ * java.util.zip.ZipOutputStream java.util.zip.ZipOutputStream} will
+ * only use the local file data in both places.</p>
+ *
  */
 public interface ZipExtraField {
     /**
@@ -37,34 +39,30 @@ public interface ZipExtraField {
     ZipShort getHeaderId();
 
     /**
-     * Length of the extra field in the local file data - without Header-ID or
-     * length specifier.
-     *
-     * @return The LocalFileDataLength value
+     * Length of the extra field in the local file data - without
+     * Header-ID or length specifier.
+     * @return the length of the field in the local file data
      */
     ZipShort getLocalFileDataLength();
 
     /**
-     * Length of the extra field in the central directory - without Header-ID or
-     * length specifier.
-     *
-     * @return The CentralDirectoryLength value
+     * Length of the extra field in the central directory - without
+     * Header-ID or length specifier.
+     * @return the length of the field in the central directory
      */
     ZipShort getCentralDirectoryLength();
 
     /**
-     * The actual data to put into local file data - without Header-ID or length
-     * specifier.
-     *
-     * @return The LocalFileDataData value
+     * The actual data to put into local file data - without Header-ID
+     * or length specifier.
+     * @return the data
      */
     byte[] getLocalFileDataData();
 
     /**
      * The actual data to put into central directory - without Header-ID or
      * length specifier.
-     *
-     * @return The CentralDirectoryData value
+     * @return the data
      */
     byte[] getCentralDirectoryData();
 
