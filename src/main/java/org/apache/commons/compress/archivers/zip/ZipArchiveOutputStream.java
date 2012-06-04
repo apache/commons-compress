@@ -62,7 +62,7 @@ import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MIN_V
  * uncompressed size information is required before {@link
  * #putArchiveEntry(ArchiveEntry)} can be called.</p>
  *
- * <p>As of Apache Commons Compress it transparently supports Zip64
+ * <p>As of Apache Commons Compress 1.3 it transparently supports Zip64
  * extensions and thus individual entries and archives larger than 4
  * GB or with more than 65536 entries in most cases but explicit
  * control is provided via {@link #setUseZip64}.  If the stream can not
@@ -208,7 +208,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     protected final Deflater def = new Deflater(level, true);
 
     /**
-     * This buffer servers as a Deflater.
+     * This buffer serves as a Deflater.
      *
      */
     private final byte[] buf = new byte[BUFFER_SIZE];
@@ -410,7 +410,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         }
 
         if (entry != null) {
-            throw new IOException("This archives contains unclosed entries.");
+            throw new IOException("This archive contains unclosed entries.");
         }
 
         cdOffset = written;

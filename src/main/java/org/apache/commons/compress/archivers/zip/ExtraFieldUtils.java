@@ -67,12 +67,12 @@ public class ExtraFieldUtils {
     }
 
     /**
-     * Create an instance of the approriate ExtraField, falls back to
+     * Create an instance of the appropriate ExtraField, falls back to
      * {@link UnrecognizedExtraField UnrecognizedExtraField}.
      * @param headerId the header identifier
-     * @return an instance of the appropiate ExtraField
+     * @return an instance of the appropriate ExtraField
      * @exception InstantiationException if unable to instantiate the class
-     * @exception IllegalAccessException if not allowed to instatiate the class
+     * @exception IllegalAccessException if not allowed to instantiate the class
      */
     public static ZipExtraField createExtraField(ZipShort headerId)
         throws InstantiationException, IllegalAccessException {

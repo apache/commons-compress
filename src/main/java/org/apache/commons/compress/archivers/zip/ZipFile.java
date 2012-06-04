@@ -54,7 +54,7 @@ import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC
  * have to reimplement all methods anyway.  Like
  * <code>java.util.ZipFile</code>, it uses RandomAccessFile under the
  * covers and supports compressed and uncompressed entries.  As of
- * Apache Commons Compress it also transparently supports Zip64
+ * Apache Commons Compress 1.3 it also transparently supports Zip64
  * extensions and thus individual entries and archives larger than 4
  * GB or with more than 65536 entries.</p>
  *
@@ -312,7 +312,7 @@ public class ZipFile {
      *
      * @param ze the entry to get the stream for.
      * @return a stream to read the entry from.
-     * @throws IOException if unable to create an input stream from the zipenty
+     * @throws IOException if unable to create an input stream from the zipentry
      * @throws ZipException if the zipentry uses an unsupported feature
      */
     public InputStream getInputStream(ZipArchiveEntry ze)
