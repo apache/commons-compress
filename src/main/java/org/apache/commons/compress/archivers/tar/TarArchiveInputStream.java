@@ -145,7 +145,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * is left in the entire archive, only in the current entry.
      * This value is determined from the entry's size header field
      * and the amount of data already read from the current entry.
-     * Integer.MAX_VALUE is returen in case more than Integer.MAX_VALUE
+     * Integer.MAX_VALUE is returned in case more than Integer.MAX_VALUE
      * bytes are left in the current entry in the archive.
      *
      * @return The number of available bytes for the current entry.
@@ -219,7 +219,8 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             while (numToSkip > 0) {
                 long skipped = skip(numToSkip);
                 if (skipped <= 0) {
-                    throw new RuntimeException("failed to skip current tar entry");
+                    throw new RuntimeException("failed to skip current tar"
+                                               + " entry");
                 }
                 numToSkip -= skipped;
             }

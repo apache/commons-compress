@@ -675,7 +675,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      */
     public boolean isGNULongNameEntry() {
         return linkFlag == LF_GNUTYPE_LONGNAME
-            && name.toString().equals(GNU_LONGLINK);
+            && name.equals(GNU_LONGLINK);
     }
 
     /**

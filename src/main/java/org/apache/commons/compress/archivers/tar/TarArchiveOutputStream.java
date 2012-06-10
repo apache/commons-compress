@@ -210,7 +210,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             throw new IOException("This archive has already been finished");
         }
 
-        if(haveUnclosedEntry) {
+        if (haveUnclosedEntry) {
             throw new IOException("This archives contains unclosed entries.");
         }
         writeEOFRecord();
@@ -339,7 +339,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      */
     @Override
     public void closeArchiveEntry() throws IOException {
-        if(finished) {
+        if (finished) {
             throw new IOException("Stream has already been finished");
         }
         if (!haveUnclosedEntry){
