@@ -60,7 +60,6 @@ public interface TarConstants {
     /**
      * The maximum value of gid/uid in a tar archive which can
      * be expressed in octal char notation (that's 7 sevens, octal).
-     * @since 1.4
      */
     long    MAXID = 07777777L;
  
