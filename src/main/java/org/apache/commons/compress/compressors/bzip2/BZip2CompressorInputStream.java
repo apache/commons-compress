@@ -245,11 +245,11 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         }
 
         int magic0 = this.in.read();
-        int magic1 = this.in.read();
-        int magic2 = this.in.read();
         if (magic0 == -1 && !isFirstStream) {
             return false;
         }
+        int magic1 = this.in.read();
+        int magic2 = this.in.read();
 
         if (magic0 != 'B' || magic1 != 'Z' || magic2 != 'h') {
             throw new IOException(isFirstStream
