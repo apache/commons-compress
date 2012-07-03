@@ -115,7 +115,7 @@ public abstract class ArchiveOutputStream extends OutputStream {
 
     /**
      * Increments the counter of already written bytes.
-     * Doesn't increment if the EOF has been hit (read == -1)
+     * Doesn't increment if the EOF has been hit ({@code written} == -1)
      * 
      * @param written the number of bytes written
      */
@@ -125,7 +125,7 @@ public abstract class ArchiveOutputStream extends OutputStream {
 
     /**
      * Increments the counter of already written bytes.
-     * Doesn't increment if the EOF has been hit (read == -1)
+     * Doesn't increment if the EOF has been hit ({@code written} == -1)
      * 
      * @param written the number of bytes written
      * @since 1.1
