@@ -114,6 +114,10 @@ public class IOMethodsTest extends AbstractTestCase {
         aos3.write(byteTest, 0, byteTest.length);
         aos3.closeArchiveEntry();
         aos3.close();
+        assertEquals("aos1Bytes!=aos2Bytes",aos1.getBytesWritten(),aos2.getBytesWritten());
+        assertEquals("aos1Bytes!=aos3Bytes",aos1.getBytesWritten(),aos3.getBytesWritten());
+        assertEquals("out1Len!=out2Len",out1.toString().length(),out2.toString().length());
+        assertEquals("out1Len!=out2Len",out1.toString().length(),out3.toString().length());
         assertEquals("out1!=out2",out1.toString(),out2.toString());
         assertEquals("out1!=out3",out1.toString(),out3.toString());
     }
@@ -165,6 +169,8 @@ public class IOMethodsTest extends AbstractTestCase {
         }
         ais3.close();
 
+        assertEquals("out1Len!=out2Len",out1.toString().length(),out2.toString().length());
+        assertEquals("out1Len!=out3Len",out1.toString().length(),out3.toString().length());
         assertEquals("out1!=out2",out1.toString(),out2.toString());
         assertEquals("out1!=out3",out1.toString(),out3.toString());
     }
