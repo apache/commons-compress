@@ -21,7 +21,10 @@ package org.apache.commons.compress.archivers;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
 import org.junit.Test;
 
@@ -38,6 +41,25 @@ public class ArchiveStreamFactoryTest {
             fail("created an input stream for a non-archive");
         } catch (ArchiveException ae) {
             assertTrue(ae.getMessage().startsWith("No Archiver found"));
+        }
+    }
+
+    /**
+     * see https://issues.apache.org/jira/browse/COMPRESS-191
+     */
+    @Test
+    public void aiffFilesAreNoTARs() throws Exception {
+        InputStream is = null;
+        try {
+            is = new BufferedInputStream(new FileInputStream("src/test/resources/testAIFF.aif"));
+            new ArchiveStreamFactory().createArchiveInputStream(is);
+            fail("created an input stream for a non-archive");
+        } catch (ArchiveException ae) {
+            assertTrue(ae.getMessage().startsWith("No Archiver found"));
+        } finally {
+            if (is != null) {
+                is.close();
+            }
         }
     }
 

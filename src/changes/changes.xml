@@ -42,6 +42,18 @@ The <action> type attribute can be add,update,fix,remove.
     <title>commons-compress</title>
   </properties>
   <body>
+    <release version="1.5" date="not released, yet"
+             description="Release 1.5">
+      <action type="fix" date="2012-07-07" issue="COMPRESS-191"
+              due-to="Jukka Zitting">
+        ArchiveStreamFactory's tar stream detection created false
+        positives for AIFF files.
+      </action>
+      <action type="update" date="2012-07-07" issue="COMPRESS-191"
+              due-to="Jukka Zitting">
+        TarArchiveEntry now has a method to verify its checksum.
+      </action>
+    </release>
     <release version="1.4.1" date="2012-05-23"
              description="Release 1.4.1">
       <action type="fix" date="2012-05-20">

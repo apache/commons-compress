@@ -240,8 +240,10 @@ public class ArchiveStreamFactory {
             if (signatureLength >= 512) {
                 try {
                     TarArchiveInputStream tais = new TarArchiveInputStream(new ByteArrayInputStream(tarheader));
-                    tais.getNextEntry();
-                    return new TarArchiveInputStream(in);
+                    // COMPRESS-191 - verify the header checksum
+                    if (tais.getNextTarEntry().isCheckSumOK()) {
+                        return new TarArchiveInputStream(in);
+                    }
                 } catch (Exception e) { // NOPMD
                     // can generate IllegalArgumentException as well
                     // as IOException
