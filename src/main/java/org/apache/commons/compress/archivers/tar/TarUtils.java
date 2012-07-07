@@ -18,6 +18,9 @@
  */
 package org.apache.commons.compress.archivers.tar;
 
+import static org.apache.commons.compress.archivers.tar.TarConstants.CHKSUMLEN;
+import static org.apache.commons.compress.archivers.tar.TarConstants.CHKSUM_OFFSET;
+
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
@@ -556,6 +559,65 @@ public class TarUtils {
         }
 
         return sum;
+    }
+
+    /**
+     * Wikipedia <a href="http://en.wikipedia.org/wiki/Tar_(file_format)#File_header">says</a>:
+     * <blockquote>
+     * The checksum is calculated by taking the sum of the unsigned byte values
+     * of the header block with the eight checksum bytes taken to be ascii
+     * spaces (decimal value 32). It is stored as a six digit octal number with
+     * leading zeroes followed by a NUL and then a space. Various
+     * implementations do not adhere to this format. For better compatibility,
+     * ignore leading and trailing whitespace, and get the first six digits. In
+     * addition, some historic tar implementations treated bytes as signed.
+     * Implementations typically calculate the checksum both ways, and treat it
+     * as good if either the signed or unsigned sum matches the included
+     * checksum.
+     * </blockquote>
+     * <p>
+     * In addition there are
+     * <a href="https://issues.apache.org/jira/browse/COMPRESS-117">some tar files</a>
+     * that seem to have parts of their header cleared to zero (no detectable
+     * magic bytes, etc.) but still have a reasonable-looking checksum field
+     * present. It looks like we can detect such cases reasonably well by
+     * checking whether the stored checksum is <em>greater than</em> the
+     * computed unsigned checksum. That check is unlikely to pass on some
+     * random file header, as it would need to have a valid sequence of
+     * octal digits in just the right place.
+     * <p>
+     * The return value of this method should be treated as a best-effort
+     * heuristic rather than an absolute and final truth. The checksum
+     * verification logic may well evolve over time as more special cases
+     * are encountered.
+     *
+     * @param header tar header
+     * @return whether the checksum is reasonably good
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-191">COMPRESS-191</a>
+     * @since 1.5
+     */
+    public static boolean verifyCheckSum(byte[] header) {
+        long storedSum = 0;
+        long unsignedSum = 0;
+        long signedSum = 0;
+
+        int digits = 0;
+        for (int i = 0; i < header.length; i++) {
+            byte b = header[i];
+            if (CHKSUM_OFFSET  <= i && i < CHKSUM_OFFSET + CHKSUMLEN) {
+                if ('0' <= b && b <= '7' && digits++ < 6) {
+                    storedSum = storedSum * 8 + b - '0';
+                } else if (digits > 0) {
+                    digits = 6; // only look at the first octal digit sequence
+                }
+                b = ' ';
+            }
+            unsignedSum += 0xff & b;
+            signedSum += b;
+        }
+
+        return storedSum == unsignedSum || storedSum == signedSum
+                || storedSum > unsignedSum; // COMPRESS-177
     }
 
 }

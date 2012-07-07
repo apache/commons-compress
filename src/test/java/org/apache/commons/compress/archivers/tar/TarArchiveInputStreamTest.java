@@ -76,6 +76,7 @@ public class TarArchiveInputStreamTest {
             assertEquals("sample/link-to-txt-file.lnk", tae.getName());
             assertEquals(new Date(0), tae.getLastModifiedDate());
             assertTrue(tae.isSymbolicLink());
+            assertTrue(tae.isCheckSumOK());
         } finally {
             if (in != null) {
                 in.close();
@@ -105,6 +106,7 @@ public class TarArchiveInputStreamTest {
             cal.set(1969, 11, 31, 23, 59, 59);
             cal.set(Calendar.MILLISECOND, 0);
             assertEquals(cal.getTime(), tae.getLastModifiedDate());
+            assertTrue(tae.isCheckSumOK());
         } finally {
             if (in != null) {
                 in.close();
