@@ -129,7 +129,16 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     private static final long TWO_EXP_32 = ZIP64_MAGIC + 1;
 
     public ZipArchiveInputStream(InputStream inputStream) {
-        this(inputStream, ZipEncodingHelper.UTF8, true);
+        this(inputStream, ZipEncodingHelper.UTF8);
+    }
+
+    /**
+     * @param encoding the encoding to use for file names, use null
+     * for the platform's default encoding
+     * @since 1.5
+     */
+    public ZipArchiveInputStream(InputStream inputStream, String encoding) {
+        this(inputStream, encoding, true);
     }
 
     /**

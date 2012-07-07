@@ -44,6 +44,11 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.5" date="not released, yet"
              description="Release 1.5">
+      <action type="update" date="2012-07-07" issue="COMPRESS-192"
+              due-to="Jukka Zitting">
+        ArchiveStreamFactory has a setting for file name encoding that
+        sets up encoding for ZIP and TAR streams.
+      </action>
       <action type="fix" date="2012-07-07" issue="COMPRESS-191"
               due-to="Jukka Zitting">
         ArchiveStreamFactory's tar stream detection created false
