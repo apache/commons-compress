@@ -80,15 +80,19 @@ public class TarArchiveEntryTest extends TestCase {
             t = tin.getNextTarEntry();
             assertNotNull(t);
             assertEquals("/", t.getName());
+            assertTrue(t.isCheckSumOK());
             t = tin.getNextTarEntry();
             assertNotNull(t);
             assertEquals("foo.txt", t.getName());
+            assertTrue(t.isCheckSumOK());
             t = tin.getNextTarEntry();
             assertNotNull(t);
             assertEquals("bar.txt", t.getName());
+            assertTrue(t.isCheckSumOK());
             t = tin.getNextTarEntry();
             assertNotNull(t);
             assertEquals("baz.txt", t.getName());
+            assertTrue(t.isCheckSumOK());
         } finally {
             if (tin != null) {
                 tin.close();

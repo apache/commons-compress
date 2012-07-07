@@ -132,6 +132,9 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     /** The entry's modification time. */
     private long modTime;
 
+    /** If the header checksum is reasonably correct. */
+    private boolean checkSumOK;
+
     /** The entry's link flag. */
     private byte linkFlag;
 
@@ -551,6 +554,17 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     }
 
     /**
+     * Get this entry's checksum status.
+     *
+     * @return if the header checksum is reasonably correct
+     * @see TarUtils#verifyCheckSum(byte[])
+     * @since 1.5
+     */
+    public boolean isCheckSumOK() {
+        return checkSumOK;
+    }
+
+    /**
      * Get this entry's file.
      *
      * @return This entry's file.
@@ -942,6 +956,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         offset += SIZELEN;
         modTime = TarUtils.parseOctalOrBinary(header, offset, MODTIMELEN);
         offset += MODTIMELEN;
+        checkSumOK = TarUtils.verifyCheckSum(header);
         offset += CHKSUMLEN;
         linkFlag = header[offset++];
         linkName = oldStyle ? TarUtils.parseName(header, offset, NAMELEN)
