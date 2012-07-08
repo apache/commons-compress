@@ -225,9 +225,14 @@ public abstract class ZipUtil {
                                                    .Feature.ENCRYPTION, ze);
         }
         if (!supportsMethodOf(ze)) {
-            throw
-                new UnsupportedZipFeatureException(UnsupportedZipFeatureException
-                                                   .Feature.METHOD, ze);
+            ZipMethod m = ZipMethod.getMethodByCode(ze.getMethod());
+            if (m == null) {
+                throw
+                    new UnsupportedZipFeatureException(UnsupportedZipFeatureException
+                                                       .Feature.METHOD, ze);
+            } else {
+                throw new UnsupportedZipFeatureException(m, ze);
+            }
         }
     }
 }
