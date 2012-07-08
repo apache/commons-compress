@@ -45,6 +45,21 @@ public class UnsupportedZipFeatureException extends ZipException {
     }
 
     /**
+     * Creates an exception for archives that use an unsupported
+     * compression algorithm.
+     * @param method the method that is not supported
+     * @param entry the entry using the feature
+     * @since 1.5
+     */
+    public UnsupportedZipFeatureException(ZipMethod method,
+                                          ZipArchiveEntry entry) {
+        super("unsupported feature method '" + method.name()
+              +  "' used in entry " + entry.getName());
+        this.reason = Feature.METHOD;
+        this.entry = entry;
+    }
+
+    /**
      * The unsupported feature that has been used.
      */
     public Feature getFeature() {

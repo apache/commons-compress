@@ -44,6 +44,11 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.5" date="not released, yet"
              description="Release 1.5">
+      <action type="update" date="2012-07-08" issue="COMPRESS-188"
+              due-to="Harald Kuhn">
+        Improved exception message if a zip archive cannot be read
+        because of an unsupported compression method.
+      </action>
       <action type="update" date="2012-07-07" issue="COMPRESS-192"
               due-to="Jukka Zitting">
         ArchiveStreamFactory has a setting for file name encoding that
