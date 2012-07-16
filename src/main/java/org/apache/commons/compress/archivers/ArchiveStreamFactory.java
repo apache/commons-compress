@@ -124,7 +124,6 @@ public class ArchiveStreamFactory {
      * Sets the encoding to use for zip and tar files. Use null for
      * the default.
      *
-     * @return entryEncoding entry encoding, or null
      * @since 1.5
      */
     public void setEntryEncoding(String entryEncoding) {
