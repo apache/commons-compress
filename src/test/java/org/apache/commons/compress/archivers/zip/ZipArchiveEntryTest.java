@@ -18,6 +18,7 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import java.io.ByteArrayOutputStream;
 import java.util.zip.ZipEntry;
 
 import junit.framework.TestCase;
@@ -206,7 +207,7 @@ public class ZipArchiveEntryTest extends TestCase {
      */
     public void testCompressionMethod() throws Exception {
         ZipArchiveOutputStream zos =
-            new ZipArchiveOutputStream((java.io.OutputStream) null);
+            new ZipArchiveOutputStream(new ByteArrayOutputStream());
         ZipArchiveEntry entry = new ZipArchiveEntry("foo");
         assertEquals(-1, entry.getMethod());
         assertFalse(zos.canWriteEntryData(entry));
