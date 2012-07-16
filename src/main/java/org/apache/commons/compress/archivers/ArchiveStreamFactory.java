@@ -289,8 +289,9 @@ public class ArchiveStreamFactory {
             }
             // COMPRESS-117 - improve auto-recognition
             if (signatureLength >= 512) {
+                TarArchiveInputStream tais = null;
                 try {
-                    TarArchiveInputStream tais = new TarArchiveInputStream(new ByteArrayInputStream(tarheader));
+                    tais = new TarArchiveInputStream(new ByteArrayInputStream(tarheader));
                     // COMPRESS-191 - verify the header checksum
                     if (tais.getNextTarEntry().isCheckSumOK()) {
                         return new TarArchiveInputStream(in);
@@ -300,6 +301,14 @@ public class ArchiveStreamFactory {
                     // as IOException
                     // autodetection, simply not a TAR
                     // ignored
+                } finally {
+                    if (tais != null) {
+                        try {
+                            tais.close();
+                        } catch (IOException ignored) {
+                            // ignored
+                        }
+                    }
                 }
             }
         } catch (IOException e) {
