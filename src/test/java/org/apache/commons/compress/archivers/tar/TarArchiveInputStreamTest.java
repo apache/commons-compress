@@ -38,20 +38,24 @@ public class TarArchiveInputStreamTest {
 
     @Test
     public void readSimplePaxHeader() throws Exception {
-        Map<String, String> headers = new TarArchiveInputStream(null)
+        final TarArchiveInputStream tais = new TarArchiveInputStream(null);
+        Map<String, String> headers = tais
             .parsePaxHeaders(new ByteArrayInputStream("30 atime=1321711775.972059463\n"
                                                       .getBytes(CharsetNames.UTF_8)));
         assertEquals(1, headers.size());
         assertEquals("1321711775.972059463", headers.get("atime"));
+        tais.close();
     }
 
     @Test
     public void readPaxHeaderWithEmbeddedNewline() throws Exception {
-        Map<String, String> headers = new TarArchiveInputStream(null)
+        final TarArchiveInputStream tais = new TarArchiveInputStream(null);
+        Map<String, String> headers = tais
             .parsePaxHeaders(new ByteArrayInputStream("28 comment=line1\nline2\nand3\n"
                                                       .getBytes(CharsetNames.UTF_8)));
         assertEquals(1, headers.size());
         assertEquals("line1\nline2\nand3", headers.get("comment"));
+        tais.close();
     }
 
     @Test
@@ -59,10 +63,12 @@ public class TarArchiveInputStreamTest {
         String ae = "\u00e4";
         String line = "11 path="+ ae + "\n";
         assertEquals(11, line.getBytes(CharsetNames.UTF_8).length);
-        Map<String, String> headers = new TarArchiveInputStream(null)
+        final TarArchiveInputStream tais = new TarArchiveInputStream(null);
+        Map<String, String> headers = tais
             .parsePaxHeaders(new ByteArrayInputStream(line.getBytes(CharsetNames.UTF_8)));
         assertEquals(1, headers.size());
         assertEquals(ae, headers.get("path"));
+        tais.close();
     }
 
     @Test

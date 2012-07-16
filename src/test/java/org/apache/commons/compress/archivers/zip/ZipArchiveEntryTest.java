@@ -204,7 +204,7 @@ public class ZipArchiveEntryTest extends TestCase {
      * <a href="https://issues.apache.org/jira/browse/COMPRESS-93"
      * >COMPRESS-93</a>.
      */
-    public void testCompressionMethod() {
+    public void testCompressionMethod() throws Exception {
         ZipArchiveOutputStream zos =
             new ZipArchiveOutputStream((java.io.OutputStream) null);
         ZipArchiveEntry entry = new ZipArchiveEntry("foo");
@@ -223,6 +223,7 @@ public class ZipArchiveEntryTest extends TestCase {
         entry.setMethod(6);
         assertEquals(6, entry.getMethod());
         assertFalse(zos.canWriteEntryData(entry));
+        zos.close();
     }
 
     /**
@@ -238,7 +239,7 @@ public class ZipArchiveEntryTest extends TestCase {
 
     /**
      * Tests comment's influence on equals comparisons.
-     * @see https://issues.apache.org/jira/browse/COMPRESS-187
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-187"
      */
     public void testNullCommentEqualsEmptyComment() {
         ZipArchiveEntry entry1 = new ZipArchiveEntry("foo");

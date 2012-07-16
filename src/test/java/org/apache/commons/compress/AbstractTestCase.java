@@ -19,6 +19,7 @@
 package org.apache.commons.compress;
 
 import java.io.BufferedInputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -387,6 +388,16 @@ public abstract class AbstractTestCase extends TestCase {
             return new File[] {tmpDir, tmpFile};
         } finally {
             fos.close();
+        }
+    }
+    
+    protected void closeQuietly(Closeable closeable){
+        if (closeable != null) {
+            try {
+                closeable.close();
+            } catch (IOException ignored) {
+                // ignored
+            }
         }
     }
 }
