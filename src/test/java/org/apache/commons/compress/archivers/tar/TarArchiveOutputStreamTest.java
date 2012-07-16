@@ -96,6 +96,8 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
             new TarArchiveInputStream(new ByteArrayInputStream(data));
         TarArchiveEntry e = tin.getNextTarEntry();
         assertEquals(0100000000000L, e.getSize());
+        tin.close();
+        tos.close();
     }
 
     public void testBigNumberPosixMode() throws Exception {
@@ -119,6 +121,8 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
             new TarArchiveInputStream(new ByteArrayInputStream(data));
         TarArchiveEntry e = tin.getNextTarEntry();
         assertEquals(0100000000000L, e.getSize());
+        tin.close();
+        tos.close();
     }
 
     public void testWriteSimplePaxHeaders() throws Exception {
@@ -181,6 +185,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         tos.putArchiveEntry(t);
         tos.write(new byte[10 * 1024]);
         tos.closeArchiveEntry();
+        tos.close();
 
         return bos.toByteArray();
     }
@@ -205,6 +210,8 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
             new TarArchiveInputStream(new ByteArrayInputStream(data));
         TarArchiveEntry e = tin.getNextTarEntry();
         assertEquals(n, e.getName());
+        tin.close();
+        tos.close();
     }
 
     public void testOldEntryStarMode() throws Exception {
@@ -231,6 +238,8 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         cal.set(1969, 11, 31, 23, 59, 59);
         cal.set(Calendar.MILLISECOND, 0);
         assertEquals(cal.getTime(), e.getLastModifiedDate());
+        tin.close();
+        tos.close();
     }
 
     public void testOldEntryPosixMode() throws Exception {
@@ -259,6 +268,8 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         cal.set(1969, 11, 31, 23, 59, 59);
         cal.set(Calendar.MILLISECOND, 0);
         assertEquals(cal.getTime(), e.getLastModifiedDate());
+        tin.close();
+        tos.close();
     }
 
     public void testOldEntryError() throws Exception {
@@ -272,6 +283,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
             fail("Should have generated RuntimeException");
         } catch (RuntimeException expected) {
         }
+        tos.close();
     }
 
     public void testWriteNonAsciiPathNamePaxHeader() throws Exception {
@@ -292,6 +304,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
             new TarArchiveInputStream(new ByteArrayInputStream(data));
         TarArchiveEntry e = tin.getNextTarEntry();
         assertEquals(n, e.getName());
+        tin.close();
     }
 
     public void testWriteNonAsciiLinkPathNamePaxHeader() throws Exception {
@@ -313,6 +326,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
             new TarArchiveInputStream(new ByteArrayInputStream(data));
         TarArchiveEntry e = tin.getNextTarEntry();
         assertEquals(n, e.getLinkName());
+        tin.close();
     }
 
 }

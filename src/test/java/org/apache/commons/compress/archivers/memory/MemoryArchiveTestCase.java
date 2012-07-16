@@ -48,6 +48,7 @@ public final class MemoryArchiveTestCase extends TestCase {
         final ArchiveEntry entry3 = is.getNextEntry();
         assertNull(entry3);
 
+        is.close();
     }
 
 }
