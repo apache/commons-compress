@@ -41,7 +41,7 @@ public enum ZipMethod {
      * UnShrinking.
      * dynamic Lempel-Ziv-Welch-Algorithm
      * 
-     * @see http://www.pkware.com/documents/casestudies/APPNOTE.TXT J.
+     * @see "http://www.pkware.com/documents/casestudies/APPNOTE.TXT J."
      * Explanation of fields: compression method: (2 bytes)
      */
     UNSHRINKING(1),
@@ -49,7 +49,7 @@ public enum ZipMethod {
     /**
      * Reduced with compression factor 1.
      * 
-     * @see http://www.pkware.com/documents/casestudies/APPNOTE.TXT J.
+     * @see "http://www.pkware.com/documents/casestudies/APPNOTE.TXT J."
      * Explanation of fields: compression method: (2 bytes)
      */
     EXPANDING_LEVEL_1(2),
@@ -57,7 +57,7 @@ public enum ZipMethod {
     /**
      * Reduced with compression factor 2.
      * 
-     * @see http://www.pkware.com/documents/casestudies/APPNOTE.TXT J.
+     * @see "http://www.pkware.com/documents/casestudies/APPNOTE.TXT J."
      * Explanation of fields: compression method: (2 bytes)
      */
     EXPANDING_LEVEL_2(3),
@@ -65,7 +65,7 @@ public enum ZipMethod {
     /**
      * Reduced with compression factor 3.
      * 
-     * @see http://www.pkware.com/documents/casestudies/APPNOTE.TXT J.
+     * @see "http://www.pkware.com/documents/casestudies/APPNOTE.TXT J."
      * Explanation of fields: compression method: (2 bytes)
      */
     EXPANDING_LEVEL_3(4),
@@ -73,7 +73,7 @@ public enum ZipMethod {
     /**
      * Reduced with compression factor 4.
      * 
-     * @see http://www.pkware.com/documents/casestudies/APPNOTE.TXT J.
+     * @see "http://www.pkware.com/documents/casestudies/APPNOTE.TXT J."
      * Explanation of fields: compression method: (2 bytes)
      */
     EXPANDING_LEVEL_4(5),
@@ -81,7 +81,7 @@ public enum ZipMethod {
     /**
      * Imploding.
      * 
-     * @see http://www.pkware.com/documents/casestudies/APPNOTE.TXT J.
+     * @see "http://www.pkware.com/documents/casestudies/APPNOTE.TXT J."
      * Explanation of fields: compression method: (2 bytes)
      */
     IMPLODING(6),
@@ -89,7 +89,7 @@ public enum ZipMethod {
     /**
      * Tokenization.
      * 
-     * @see http://www.pkware.com/documents/casestudies/APPNOTE.TXT J.
+     * @see "http://www.pkware.com/documents/casestudies/APPNOTE.TXT J."
      * Explanation of fields: compression method: (2 bytes)
      */
     TOKENIZATION(7),
@@ -104,29 +104,29 @@ public enum ZipMethod {
     /**
      * Compression Method 9 for enhanced deflate.
      * 
-     * @see http://www.winzip.com/wz54.htm
+     * @see "http://www.winzip.com/wz54.htm"
      */
     ENHANCED_DEFLATED(9),
 
     /**
      * PKWARE Data Compression Library Imploding.
      * 
-     * @see http://www.winzip.com/wz54.htm
+     * @see "http://www.winzip.com/wz54.htm"
      */
     PKWARE_IMPLODING(10),
 
     /**
      * Compression Method 12 for bzip2.
      * 
-     * @see http://www.winzip.com/wz54.htm
+     * @see "http://www.winzip.com/wz54.htm"
      */
     BZIP2(12),
 
     /**
      * Compression Method 14 for LZMA.
      * 
-     * @see http://www.7-zip.org/sdk.html
-     * @see http://www.winzip.com/wz54.htm
+     * @see "http://www.7-zip.org/sdk.html"
+     * @see "http://www.winzip.com/wz54.htm"
      */
     LZMA(14),
 
@@ -134,21 +134,21 @@ public enum ZipMethod {
     /**
      * Compression Method 96 for Jpeg compression.
      * 
-     * @see http://www.winzip.com/wz54.htm
+     * @see "http://www.winzip.com/wz54.htm"
      */
     JPEG(96),
 
     /**
      * Compression Method 97 for WavPack.
      * 
-     * @see http://www.winzip.com/wz54.htm
+     * @see "http://www.winzip.com/wz54.htm"
      */
     WAVPACK(97),
 
     /**
      * Compression Method 98 for PPMd.
      * 
-     * @see http://www.winzip.com/wz54.htm
+     * @see "http://www.winzip.com/wz54.htm"
      */
     PPMD(98),
 
@@ -156,7 +156,7 @@ public enum ZipMethod {
     /**
      * Compression Method 99 for AES encryption.
      * 
-     * @see http://www.winzip.com/wz54.htm
+     * @see "http://www.winzip.com/wz54.htm"
      */
     AES_ENCRYPTED(99),
 
