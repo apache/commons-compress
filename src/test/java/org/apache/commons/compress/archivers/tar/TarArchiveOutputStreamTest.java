@@ -97,7 +97,9 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         TarArchiveEntry e = tin.getNextTarEntry();
         assertEquals(0100000000000L, e.getSize());
         tin.close();
-        tos.close();
+        // generates IOE because of unclosed entries.
+        // However we don't really want to create such large entries.
+        closeQuietly(tos);
     }
 
     public void testBigNumberPosixMode() throws Exception {
@@ -122,7 +124,9 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         TarArchiveEntry e = tin.getNextTarEntry();
         assertEquals(0100000000000L, e.getSize());
         tin.close();
-        tos.close();
+        // generates IOE because of unclosed entries.
+        // However we don't really want to create such large entries.
+        closeQuietly(tos);
     }
 
     public void testWriteSimplePaxHeaders() throws Exception {
@@ -239,7 +243,9 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         cal.set(Calendar.MILLISECOND, 0);
         assertEquals(cal.getTime(), e.getLastModifiedDate());
         tin.close();
-        tos.close();
+        // generates IOE because of unclosed entries.
+        // However we don't really want to create such large entries.
+        closeQuietly(tos);
     }
 
     public void testOldEntryPosixMode() throws Exception {
@@ -269,7 +275,9 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         cal.set(Calendar.MILLISECOND, 0);
         assertEquals(cal.getTime(), e.getLastModifiedDate());
         tin.close();
-        tos.close();
+        // generates IOE because of unclosed entries.
+        // However we don't really want to create such large entries.
+        closeQuietly(tos);
     }
 
     public void testOldEntryError() throws Exception {
