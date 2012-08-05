@@ -20,10 +20,12 @@ package org.apache.commons.compress.archivers.tar;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Calendar;
@@ -118,6 +120,26 @@ public class TarArchiveInputStreamTest {
                 in.close();
             }
         }
+    }
+
+    @Test
+    public void testCompress197() throws Exception {
+        TarArchiveInputStream tar = getTestStream("/COMPRESS-197.tar");
+        try {
+            TarArchiveEntry entry = tar.getNextTarEntry();
+            while (entry != null) {
+                entry = tar.getNextTarEntry();
+            }
+        } catch (IOException e) {
+            fail("COMPRESS-197: " + e.getMessage());
+        } finally {
+            tar.close();
+        }
+    }
+
+    private TarArchiveInputStream getTestStream(String name) {
+        return new TarArchiveInputStream(
+                TarArchiveInputStreamTest.class.getResourceAsStream(name));
     }
 
 }
