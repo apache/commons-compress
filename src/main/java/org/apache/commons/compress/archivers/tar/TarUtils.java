@@ -130,10 +130,11 @@ public class TarUtils {
             throw new IllegalArgumentException(
                     exceptionMessage(buffer, offset, length, end-1, trailer));
         }
-        // May have additional NUL or space
-        trailer = buffer[end-1];
-        if (trailer == 0 || trailer == ' '){
+        // May have additional NULs or spaces
+        trailer = buffer[end - 1];
+        while (start < end - 1 && (trailer == 0 || trailer == ' ')) {
             end--;
+            trailer = buffer[end - 1];
         }
 
         for ( ;start < end; start++) {
