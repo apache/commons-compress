@@ -41,56 +41,56 @@ public enum ZipMethod {
      * UnShrinking.
      * dynamic Lempel-Ziv-Welch-Algorithm
      * 
-     * @see "http://www.pkware.com/documents/casestudies/APPNOTE.TXT J."
-     * Explanation of fields: compression method: (2 bytes)
+     * @see <a href="http://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression
+     *      method: (2 bytes)</a>
      */
     UNSHRINKING(1),
 
     /**
      * Reduced with compression factor 1.
      * 
-     * @see "http://www.pkware.com/documents/casestudies/APPNOTE.TXT J."
-     * Explanation of fields: compression method: (2 bytes)
+     * @see <a href="http://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression
+     *      method: (2 bytes)</a>
      */
     EXPANDING_LEVEL_1(2),
 
     /**
      * Reduced with compression factor 2.
      * 
-     * @see "http://www.pkware.com/documents/casestudies/APPNOTE.TXT J."
-     * Explanation of fields: compression method: (2 bytes)
+     * @see <a href="http://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression
+     *      method: (2 bytes)</a>
      */
     EXPANDING_LEVEL_2(3),
 
     /**
      * Reduced with compression factor 3.
      * 
-     * @see "http://www.pkware.com/documents/casestudies/APPNOTE.TXT J."
-     * Explanation of fields: compression method: (2 bytes)
+     * @see <a href="http://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression
+     *      method: (2 bytes)</a>
      */
     EXPANDING_LEVEL_3(4),
 
     /**
      * Reduced with compression factor 4.
      * 
-     * @see "http://www.pkware.com/documents/casestudies/APPNOTE.TXT J."
-     * Explanation of fields: compression method: (2 bytes)
+     * @see <a href="http://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression
+     *      method: (2 bytes)</a>
      */
     EXPANDING_LEVEL_4(5),
 
     /**
      * Imploding.
      * 
-     * @see "http://www.pkware.com/documents/casestudies/APPNOTE.TXT J."
-     * Explanation of fields: compression method: (2 bytes)
+     * @see <a href="http://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression
+     *      method: (2 bytes)</a>
      */
     IMPLODING(6),
 
     /**
      * Tokenization.
      * 
-     * @see "http://www.pkware.com/documents/casestudies/APPNOTE.TXT J."
-     * Explanation of fields: compression method: (2 bytes)
+     * @see <a href="http://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression
+     *      method: (2 bytes)</a>
      */
     TOKENIZATION(7),
 
