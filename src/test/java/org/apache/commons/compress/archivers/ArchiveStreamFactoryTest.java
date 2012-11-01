@@ -63,4 +63,20 @@ public class ArchiveStreamFactoryTest {
         }
     }
 
+    @Test
+    public void testCOMPRESS209() throws Exception {
+        InputStream is = null;
+        try {
+            is = new BufferedInputStream(new FileInputStream("src/test/resources/testCompress209.doc"));
+            new ArchiveStreamFactory().createArchiveInputStream(is);
+            fail("created an input stream for a non-archive");
+        } catch (ArchiveException ae) {
+            assertTrue(ae.getMessage().startsWith("No Archiver found"));
+        } finally {
+            if (is != null) {
+                is.close();
+            }
+        }
+    }
+
 }
