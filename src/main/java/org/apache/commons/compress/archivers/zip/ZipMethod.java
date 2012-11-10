@@ -17,6 +17,7 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -167,13 +168,14 @@ public enum ZipMethod {
 
     private final int code;
 
-    private static final Map<Integer, ZipMethod> codeToEnum =
-        new HashMap<Integer, ZipMethod>();
+    private static final Map<Integer, ZipMethod> codeToEnum;
 
     static {
+        Map<Integer, ZipMethod> cte = new HashMap<Integer, ZipMethod>();
         for (ZipMethod method : values()) {
-            codeToEnum.put(Integer.valueOf(method.getCode()), method);
+            cte.put(Integer.valueOf(method.getCode()), method);
         }
+        codeToEnum = Collections.unmodifiableMap(cte);
     }
 
     /**
