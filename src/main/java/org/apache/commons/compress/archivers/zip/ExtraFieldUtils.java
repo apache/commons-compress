@@ -18,9 +18,9 @@
 package org.apache.commons.compress.archivers.zip;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.ZipException;
 
 /**
@@ -38,7 +38,7 @@ public class ExtraFieldUtils {
     private static final Map<ZipShort, Class<?>> implementations;
 
     static {
-        implementations = new HashMap<ZipShort, Class<?>>();
+        implementations = new ConcurrentHashMap<ZipShort, Class<?>>();
         register(AsiExtraField.class);
         register(JarMarker.class);
         register(UnicodePathExtraField.class);
