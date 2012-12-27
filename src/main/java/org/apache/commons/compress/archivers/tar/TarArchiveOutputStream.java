@@ -454,13 +454,13 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     void writePaxHeaders(String entryName,
                          Map<String, String> headers) throws IOException {
         String name = "./PaxHeaders.X/" + stripTo7Bits(entryName);
+        if (name.length() >= TarConstants.NAMELEN) {
+            name = name.substring(0, TarConstants.NAMELEN - 1);
+        }
         while (name.endsWith("/")) {
             // TarEntry's constructor would think this is a directory
             // and not allow any data to be written
             name = name.substring(0, name.length() - 1);
-        }
-        if (name.length() >= TarConstants.NAMELEN) {
-            name = name.substring(0, TarConstants.NAMELEN - 1);
         }
         TarArchiveEntry pex = new TarArchiveEntry(name,
                                                   TarConstants.LF_PAX_EXTENDED_HEADER_LC);
