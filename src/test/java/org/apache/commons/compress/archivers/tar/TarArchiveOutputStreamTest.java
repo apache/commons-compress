@@ -180,7 +180,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
 
     private byte[] writePaxHeader(Map<String, String> m) throws Exception {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
+        TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, "ASCII");
         tos.writePaxHeaders("foo", m);
 
         // add a dummy entry so data gets written
@@ -202,7 +202,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
             new TarArchiveEntry(n);
         t.setSize(10 * 1024);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
+        TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, "ASCII");
         tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
         tos.putArchiveEntry(t);
         tos.write(new byte[10 * 1024]);
