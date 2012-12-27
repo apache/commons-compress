@@ -272,7 +272,8 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
                 ze.addExtraField(new UnicodePathExtraField(ze.getName(),
                                                            en.array(),
                                                            en.arrayOffset(),
-                                                           en.limit()));
+                                                           en.limit()
+                                                           - en.position()));
             }
 
             zos.putArchiveEntry(ze);
@@ -288,7 +289,8 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
                 ze.addExtraField(new UnicodePathExtraField(ze.getName(),
                                                            en.array(),
                                                            en.arrayOffset(),
-                                                           en.limit()));
+                                                           en.limit()
+                                                           - en.position()));
             }
 
             zos.putArchiveEntry(ze);
@@ -305,7 +307,8 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
                 ze.addExtraField(new UnicodePathExtraField(ze.getName(),
                                                            en.array(),
                                                            en.arrayOffset(),
-                                                           en.limit()));
+                                                           en.limit()
+                                                           - en.position()));
             }
 
             zos.putArchiveEntry(ze);
@@ -364,7 +367,8 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
             ByteBuffer ne = enc.encode(ze.getName());
 
             CRC32 crc = new CRC32();
-            crc.update(ne.array(),ne.arrayOffset(),ne.limit());
+            crc.update(ne.array(), ne.arrayOffset(),
+                       ne.limit() - ne.position());
 
             assertEquals(crc.getValue(), ucpf.getNameCRC32());
             assertEquals(expectedName, new String(ucpf.getUnicodeName(),

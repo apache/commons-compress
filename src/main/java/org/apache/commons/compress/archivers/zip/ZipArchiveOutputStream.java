@@ -936,7 +936,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         written += SHORT;
 
         // file name
-        writeOut(name.array(), name.arrayOffset(), name.limit());
+        writeOut(name.array(), name.arrayOffset(),
+                 name.limit() - name.position());
         written += name.limit();
 
         // extra field
@@ -959,7 +960,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             ze.addExtraField(new UnicodePathExtraField(ze.getName(),
                                                        name.array(),
                                                        name.arrayOffset(),
-                                                       name.limit()));
+                                                       name.limit()
+                                                       - name.position()));
         }
 
         String comm = ze.getComment();
@@ -973,7 +975,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                 ze.addExtraField(new UnicodeCommentExtraField(comm,
                                                               commentB.array(),
                                                               commentB.arrayOffset(),
-                                                              commentB.limit())
+                                                              commentB.limit()
+                                                              - commentB.position())
                                  );
             }
         }
@@ -1107,7 +1110,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         written += WORD;
 
         // file name
-        writeOut(name.array(), name.arrayOffset(), name.limit());
+        writeOut(name.array(), name.arrayOffset(),
+                 name.limit() - name.position());
         written += name.limit();
 
         // extra field
@@ -1115,7 +1119,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         written += extra.length;
 
         // file comment
-        writeOut(commentB.array(), commentB.arrayOffset(), commentB.limit());
+        writeOut(commentB.array(), commentB.arrayOffset(),
+                 commentB.limit() - commentB.position());
         written += commentB.limit();
     }
 
@@ -1181,7 +1186,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         // ZIP file comment
         ByteBuffer data = this.zipEncoding.encode(comment);
         writeOut(ZipShort.getBytes(data.limit()));
-        writeOut(data.array(), data.arrayOffset(), data.limit());
+        writeOut(data.array(), data.arrayOffset(),
+                 data.limit() - data.position());
     }
 
     private static final byte[] ONE = ZipLong.getBytes(1L);
