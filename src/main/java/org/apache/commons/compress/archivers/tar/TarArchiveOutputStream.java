@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -266,9 +267,10 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         TarArchiveEntry entry = (TarArchiveEntry) archiveEntry;
         Map<String, String> paxHeaders = new HashMap<String, String>();
         final String entryName = entry.getName();
-        final byte[] nameBytes = encoding.encode(entryName).array();
+        final ByteBuffer encodedName = encoding.encode(entryName);
+        final int nameLen = encodedName.limit() - encodedName.position();
         boolean paxHeaderContainsPath = false;
-        if (nameBytes.length >= TarConstants.NAMELEN) {
+        if (nameLen >= TarConstants.NAMELEN) {
 
             if (longFileMode == LONGFILE_POSIX) {
                 paxHeaders.put("path", entryName);
@@ -279,9 +281,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 TarArchiveEntry longLinkEntry = new TarArchiveEntry(TarConstants.GNU_LONGLINK,
                                                                     TarConstants.LF_GNUTYPE_LONGNAME);
 
-                longLinkEntry.setSize(nameBytes.length + 1); // +1 for NUL
+                longLinkEntry.setSize(nameLen + 1); // +1 for NUL
                 putArchiveEntry(longLinkEntry);
-                write(nameBytes);
+                write(encodedName.array(), encodedName.arrayOffset(), nameLen);
                 write(0); // NUL terminator
                 closeArchiveEntry();
             } else if (longFileMode != LONGFILE_TRUNCATE) {

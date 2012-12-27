@@ -69,6 +69,11 @@ The <action> type attribute can be add,update,fix,remove.
         dependency on it has now been marked optional so Compress
         itself can still be used in an OSGi context.
       </action>
+      <action type="fix" date="2012-12-27" issue="COMPRESS-200">
+        When specifying the encoding explicitly TarArchiveOutputStream
+        would write unreadable names in GNU mode or even cause errors
+        in POSIX mode for file names longer than 66 characters.
+      </action>
     </release>
     <release version="1.4.1" date="2012-05-23"
              description="Release 1.4.1">
