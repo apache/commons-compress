@@ -358,18 +358,18 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         TarArchiveEntry t = new TarArchiveEntry(n);
         t.setSize(10 * 1024);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
+        TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, "ASCII");
         tos.setLongFileMode(mode);
         tos.putArchiveEntry(t);
         tos.write(new byte[10 * 1024]);
         tos.closeArchiveEntry();
+        tos.close();
         byte[] data = bos.toByteArray();
         TarArchiveInputStream tin =
             new TarArchiveInputStream(new ByteArrayInputStream(data));
         TarArchiveEntry e = tin.getNextTarEntry();
         assertEquals(n, e.getName());
         tin.close();
-        tos.close();
     }
 
 }
