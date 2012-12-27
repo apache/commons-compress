@@ -337,4 +337,39 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         tin.close();
     }
 
+    /**
+     * @see https://issues.apache.org/jira/browse/COMPRESS-200
+     */
+    public void testRoundtripWith66CharFileNameGnu() throws Exception {
+        testRoundtripWith66CharFileName(TarArchiveOutputStream.LONGFILE_GNU);
+    }
+
+    /**
+     * @see https://issues.apache.org/jira/browse/COMPRESS-200
+     */
+    public void testRoundtripWith66CharFileNamePosix() throws Exception {
+        testRoundtripWith66CharFileName(TarArchiveOutputStream.LONGFILE_POSIX);
+    }
+
+    private void testRoundtripWith66CharFileName(int mode) throws Exception {
+        String n = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+            + "AAAAAAA";
+        assertEquals(67, n.length());
+        TarArchiveEntry t = new TarArchiveEntry(n);
+        t.setSize(10 * 1024);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
+        tos.setLongFileMode(mode);
+        tos.putArchiveEntry(t);
+        tos.write(new byte[10 * 1024]);
+        tos.closeArchiveEntry();
+        byte[] data = bos.toByteArray();
+        TarArchiveInputStream tin =
+            new TarArchiveInputStream(new ByteArrayInputStream(data));
+        TarArchiveEntry e = tin.getNextTarEntry();
+        assertEquals(n, e.getName());
+        tin.close();
+        tos.close();
+    }
+
 }
