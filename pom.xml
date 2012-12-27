@@ -151,6 +151,15 @@ These include: bzip2, gzip, pack200, xz and ar, cpio, jar, tar, zip, dump.
           </archive>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Import-Package>org.tukaani.xz;resolution:=optional</Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
