@@ -340,18 +340,18 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
     /**
      * @see https://issues.apache.org/jira/browse/COMPRESS-200
      */
-    public void testRoundtripWith66CharFileNameGnu() throws Exception {
-        testRoundtripWith66CharFileName(TarArchiveOutputStream.LONGFILE_GNU);
+    public void testRoundtripWith67CharFileNameGnu() throws Exception {
+        testRoundtripWith67CharFileName(TarArchiveOutputStream.LONGFILE_GNU);
     }
 
     /**
      * @see https://issues.apache.org/jira/browse/COMPRESS-200
      */
-    public void testRoundtripWith66CharFileNamePosix() throws Exception {
-        testRoundtripWith66CharFileName(TarArchiveOutputStream.LONGFILE_POSIX);
+    public void testRoundtripWith67CharFileNamePosix() throws Exception {
+        testRoundtripWith67CharFileName(TarArchiveOutputStream.LONGFILE_POSIX);
     }
 
-    private void testRoundtripWith66CharFileName(int mode) throws Exception {
+    private void testRoundtripWith67CharFileName(int mode) throws Exception {
         String n = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
             + "AAAAAAA";
         assertEquals(67, n.length());
