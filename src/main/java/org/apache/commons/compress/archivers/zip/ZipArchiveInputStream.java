@@ -382,8 +382,12 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         throws IOException {
         int read = readFromInflater(buffer, start, length);
         if (read == 0) {
-            if (inf.finished() || inf.needsDictionary()) {
+            if (inf.finished()) {
                 return -1;
+            } else if (inf.needsDictionary()) {
+                throw new ZipException("This archive needs a preset dictionary"
+                                       + " which is not supported by Commons"
+                                       + " Compress.");
             } else if (buf.lengthOfLastRead == -1) {
                 throw new IOException("Truncated ZIP file");
             }
