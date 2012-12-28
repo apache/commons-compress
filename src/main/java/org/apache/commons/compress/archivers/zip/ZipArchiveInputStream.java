@@ -380,26 +380,40 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
      */
     private int readDeflated(byte[] buffer, int start, int length)
         throws IOException {
-        if (inf.needsInput()) {
-            fill();
-            if (buf.lengthOfLastRead > 0) {
-                current.bytesReadFromStream += buf.lengthOfLastRead;
-            }
-        }
-        int read = 0;
-        try {
-            read = inf.inflate(buffer, start, length);
-        } catch (DataFormatException e) {
-            throw new ZipException(e.getMessage());
-        }
+        int read = readFromInflater(buffer, start, length);
         if (read == 0) {
-            if (inf.finished()) {
+            if (inf.finished() || inf.needsDictionary()) {
                 return -1;
             } else if (buf.lengthOfLastRead == -1) {
                 throw new IOException("Truncated ZIP file");
             }
         }
         crc.update(buffer, start, read);
+        return read;
+    }
+
+    /**
+     * Potentially reads more bytes to fill the inflater's buffer and
+     * reads from it.
+     */
+    private int readFromInflater(byte[] buffer, int start, int length)
+        throws IOException {
+        int read = 0;
+        do {
+            if (inf.needsInput()) {
+                fill();
+                if (buf.lengthOfLastRead > 0) {
+                    current.bytesReadFromStream += buf.lengthOfLastRead;
+                } else {
+                    break;
+                }
+            }
+            try {
+                read = inf.inflate(buffer, start, length);
+            } catch (DataFormatException e) {
+                throw new ZipException(e.getMessage());
+            }
+        } while (read == 0 && inf.needsInput());
         return read;
     }
 
