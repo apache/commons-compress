@@ -69,7 +69,8 @@ The <action> type attribute can be add,update,fix,remove.
         dependency on it has now been marked optional so Compress
         itself can still be used in an OSGi context.
       </action>
-      <action type="fix" date="2012-12-27" issue="COMPRESS-200">
+      <action type="fix" date="2012-12-27" issue="COMPRESS-200"
+              due-to="Christian Schlichtherle">
         When specifying the encoding explicitly TarArchiveOutputStream
         would write unreadable names in GNU mode or even cause errors
         in POSIX mode for file names longer than 66 characters.
@@ -78,7 +79,8 @@ The <action> type attribute can be add,update,fix,remove.
         Writing TAR PAX headers failed if the generated entry name
         ended with a "/".
       </action>
-      <action type="fix" date="2012-12-28" issue="COMPRESS-189">
+      <action type="fix" date="2012-12-28" issue="COMPRESS-189"
+              due-to="Daniel Lowe">
         ZipArchiveInputStream sometimes failed to provide input to the
         Inflater when it needed it, leading to reads returning 0.
       </action>
