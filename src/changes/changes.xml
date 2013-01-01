@@ -99,6 +99,10 @@ The <action> type attribute can be add,update,fix,remove.
         TarArchiveEntry has a new constructor that allows setting
         linkFlag and preserveLeadingSlashes at the same time.
       </action>
+      <action type="update" date="2013-01-01" issue="COMPRESS-159">
+        ChangeSetPerformer has a new perform overload that uses a
+        ZipFile instance as input.
+      </action>
     </release>
     <release version="1.4.1" date="2012-05-23"
              description="Release 1.4.1">

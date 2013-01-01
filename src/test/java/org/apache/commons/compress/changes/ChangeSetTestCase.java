@@ -38,6 +38,7 @@ import org.apache.commons.compress.archivers.cpio.CpioArchiveEntry;
 import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipFile;
 
 /**
  * Checks several ChangeSet business logics.
@@ -558,6 +559,50 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
             is.close();
+
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+            if (ais != null) {
+                ais.close();
+            }
+        }
+
+        this.checkArchiveContent(result, archiveList);
+    }
+
+    /**
+     * Adds a file to a zip archive. Deletes an other file.
+     * 
+     * @throws Exception
+     */
+    public void testDeleteFromAndAddToZipUsingZipFilePerform() throws Exception {
+        final String archivename = "zip";
+        File input = this.createArchive(archivename);
+
+        ArchiveOutputStream out = null;
+        ZipFile ais = null;
+        File result = File.createTempFile("test", "."+archivename);
+        result.deleteOnExit();
+        try {
+
+            ais = new ZipFile(input);
+            out = factory.createArchiveOutputStream(archivename,
+                    new FileOutputStream(result));
+
+            ChangeSet changes = new ChangeSet();
+
+            final File file1 = getFile("test.txt");
+            ArchiveEntry entry = new ZipArchiveEntry("blub/test.txt");
+            changes.add(entry, new FileInputStream(file1));
+            archiveList.add("blub/test.txt");
+
+            changes.delete("testdata/test1.xml");
+            archiveListDelete("testdata/test1.xml");
+
+            ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
 
         } finally {
             if (out != null) {
