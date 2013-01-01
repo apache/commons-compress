@@ -233,7 +233,21 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @param linkFlag the entry link flag.
      */
     public TarArchiveEntry(String name, byte linkFlag) {
-        this(name);
+        this(name, linkFlag, false);
+    }
+
+    /**
+     * Construct an entry with a name and a link flag.
+     *
+     * @param name the entry name
+     * @param linkFlag the entry link flag.
+     * @param preserveLeadingSlashes whether to allow leading slashes
+     * in the name.
+     * 
+     * @since 1.5
+     */
+    public TarArchiveEntry(String name, byte linkFlag, boolean preserveLeadingSlashes) {
+        this(name, preserveLeadingSlashes);
         this.linkFlag = linkFlag;
         if (linkFlag == LF_GNUTYPE_LONGNAME) {
             magic = MAGIC_GNU;
