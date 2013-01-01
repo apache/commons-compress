@@ -282,6 +282,14 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                 UnsupportedZipFeatureException(UnsupportedZipFeatureException
                                                .Feature.SPLITTING);
         }
+        if (sig.equals(ZipLong.SINGLE_SEGMENT_SPLIT_MARKER)) {
+            // The archive is not really split as only one segment was
+            // needed in the end.  Just skip over the marker.
+            byte[] missedLfhBytes = new byte[4];
+            readFully(missedLfhBytes);
+            System.arraycopy(lfh, 4, lfh, 0, LFH_LEN - 4);
+            System.arraycopy(missedLfhBytes, 0, lfh, LFH_LEN - 4, 4);
+        }
     }
 
     /**

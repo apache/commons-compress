@@ -116,6 +116,24 @@ public final class ZipTestCase extends AbstractTestCase {
     }
 
     /**
+     * Test case for 
+     * <a href="https://issues.apache.org/jira/browse/COMPRESS-208"
+     * >COMPRESS-208</a>.
+     */
+    public void testSkipsPK00Prefix() throws Exception {
+        final File input = getFile("COMPRESS-208.zip");
+        InputStream is = new FileInputStream(input);
+        ArrayList al = new ArrayList();
+        al.add("test1.xml");
+        al.add("test2.xml");
+        try {
+            checkArchiveContent(new ZipArchiveInputStream(is), al);
+        } finally {
+            is.close();
+        }
+    }
+
+    /**
      * Test case for
      * <a href="https://issues.apache.org/jira/browse/COMPRESS-93"
      * >COMPRESS-93</a>.
