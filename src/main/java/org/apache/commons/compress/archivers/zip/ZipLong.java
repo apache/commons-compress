@@ -67,6 +67,17 @@ public final class ZipLong implements Cloneable {
     static final ZipLong ZIP64_MAGIC = new ZipLong(ZipConstants.ZIP64_MAGIC);
 
     /**
+     * Marks ZIP archives that were supposed to be split or spanned
+     * but only needed a single segment in then end (so are actually
+     * neither split nor spanned).
+     *
+     * <p>This is the "PK00" prefix found in some archives.</p>
+     * @since 1.5
+     */
+    public static final ZipLong SINGLE_SEGMENT_SPLIT_MARKER =
+        new ZipLong(0X30304B50L);
+
+    /**
      * Create instance from a number.
      * @param value the long to store as a ZipLong
      */
