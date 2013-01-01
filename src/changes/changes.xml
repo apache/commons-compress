@@ -84,6 +84,17 @@ The <action> type attribute can be add,update,fix,remove.
         ZipArchiveInputStream sometimes failed to provide input to the
         Inflater when it needed it, leading to reads returning 0.
       </action>
+      <action type="update" date="2013-01-01">
+        Split/spanned ZIP archives are now properly detected by
+        ArchiveStreamFactory but will cause an
+        UnsupportedZipFeatureException when read.
+      </action>
+      <action type="update" date="2013-01-01" issue="COMPRESS-208">
+        ZipArchiveInputStream now reads archives that start with a
+        "PK00" signature.  Archives with this signatures are created
+        when the archiver was willing to split the archive but in the
+        end only needed a single segment - so didn't split anything. 
+      </action>
     </release>
     <release version="1.4.1" date="2012-05-23"
              description="Release 1.4.1">
