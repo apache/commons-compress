@@ -115,19 +115,19 @@ import org.apache.commons.compress.utils.ArchiveUtils;
 
 public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     /** The entry's name. */
-    private String name;
+    private String name = "";
 
     /** The entry's permission mode. */
     private int mode;
 
     /** The entry's user id. */
-    private int userId;
+    private int userId = 0;
 
     /** The entry's group id. */
-    private int groupId;
+    private int groupId = 0;
 
     /** The entry's size. */
-    private long size;
+    private long size = 0;
 
     /** The entry's modification time. */
     private long modTime;
@@ -139,24 +139,24 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     private byte linkFlag;
 
     /** The entry's link name. */
-    private String linkName;
+    private String linkName = "";
 
     /** The entry's magic tag. */
-    private String magic;
+    private String magic = MAGIC_POSIX;
     /** The version of the format */
-    private String version;
+    private String version = VERSION_POSIX;
 
     /** The entry's user name. */
     private String userName;
 
     /** The entry's group name. */
-    private String groupName;
+    private String groupName = "";
 
     /** The entry's major device number. */
-    private int devMajor;
+    private int devMajor = 0;
 
     /** The entry's minor device number. */
-    private int devMinor;
+    private int devMinor = 0;
 
     /** If an extension sparse header follows. */
     private boolean isExtended;
@@ -165,7 +165,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     private long realSize;
 
     /** The entry's file reference */
-    private File file;
+    private final File file;
 
     /** Maximum length of a user's name in the tar file */
     public static final int MAX_NAMELEN = 31;
@@ -183,21 +183,13 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * Construct an empty entry and prepares the header values.
      */
     private TarArchiveEntry() {
-        this.magic = MAGIC_POSIX;
-        this.version = VERSION_POSIX;
-        this.name = "";
-        this.linkName = "";
-
         String user = System.getProperty("user.name", "");
 
         if (user.length() > MAX_NAMELEN) {
             user = user.substring(0, MAX_NAMELEN);
         }
 
-        this.userId = 0;
-        this.groupId = 0;
         this.userName = user;
-        this.groupName = "";
         this.file = null;
     }
 
@@ -227,18 +219,11 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         name = normalizeFileName(name, preserveLeadingSlashes);
         boolean isDir = name.endsWith("/");
 
-        this.devMajor = 0;
-        this.devMinor = 0;
         this.name = name;
         this.mode = isDir ? DEFAULT_DIR_MODE : DEFAULT_FILE_MODE;
         this.linkFlag = isDir ? LF_DIR : LF_NORMAL;
-        this.userId = 0;
-        this.groupId = 0;
-        this.size = 0;
         this.modTime = (new Date()).getTime() / MILLIS_PER_SECOND;
-        this.linkName = "";
         this.userName = "";
-        this.groupName = "";
     }
 
     /**
@@ -275,11 +260,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @param fileName the name to be used for the entry.
      */
     public TarArchiveEntry(File file, String fileName) {
-        this();
-
         this.file = file;
-
-        this.linkName = "";
 
         if (file.isDirectory()) {
             this.mode = DEFAULT_DIR_MODE;
@@ -291,7 +272,6 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
             } else {
                 this.name = fileName;
             }
-            this.size = 0;
         } else {
             this.mode = DEFAULT_FILE_MODE;
             this.linkFlag = LF_NORMAL;
@@ -300,8 +280,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         }
 
         this.modTime = file.lastModified() / MILLIS_PER_SECOND;
-        this.devMajor = 0;
-        this.devMinor = 0;
+        this.userName = "";
     }
 
     /**
