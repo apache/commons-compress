@@ -26,6 +26,7 @@ import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.junit.Test;
 
 public class ArchiveStreamFactoryTest {
@@ -79,4 +80,22 @@ public class ArchiveStreamFactoryTest {
         }
     }
 
+    /**
+     * Test case for 
+     * <a href="https://issues.apache.org/jira/browse/COMPRESS-208"
+     * >COMPRESS-208</a>.
+     */
+    @Test
+    public void skipsPK00Prefix() throws Exception {
+        InputStream is = null;
+        try {
+            is = new BufferedInputStream(new FileInputStream("src/test/resources/COMPRESS-208.zip"));
+            ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(is);
+            assertTrue(ais instanceof ZipArchiveInputStream);
+        } finally {
+            if (is != null) {
+                is.close();
+            }
+        }
+    }
 }
