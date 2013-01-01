@@ -152,6 +152,19 @@ public class ZipFileTest extends TestCase {
         assertNotNull(zf.getEntry("\u00e4/\u00fc.txt"));
     }
 
+    /**
+     * Test case for 
+     * <a href="https://issues.apache.org/jira/browse/COMPRESS-208"
+     * >COMPRESS-208</a>.
+     */
+    public void testSkipsPK00Prefix() throws Exception {
+        URL zip = getClass().getResource("/COMPRESS-208.zip");
+        File archive = new File(new URI(zip.toString()));
+        zf = new ZipFile(archive);
+        assertNotNull(zf.getEntry("test1.xml"));
+        assertNotNull(zf.getEntry("test2.xml"));
+    }
+
     /*
      * ordertest.zip has been handcrafted.
      *
