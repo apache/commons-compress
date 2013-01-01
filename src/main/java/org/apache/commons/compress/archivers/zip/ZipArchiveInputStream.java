@@ -174,18 +174,30 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     }
 
     public ZipArchiveEntry getNextZipEntry() throws IOException {
+        boolean firstEntry = true;
         if (closed || hitCentralDirectory) {
             return null;
         }
         if (current != null) {
             closeEntry();
+            firstEntry = false;
         }
+
         byte[] lfh = new byte[LFH_LEN];
         try {
-            readFully(lfh);
+            if (firstEntry) {
+                // split archives have a special signature before the
+                // first local file header - look for it and fail with
+                // the appropriate error message if this is a split
+                // archive.
+                readFirstLocalFileHeader(lfh);
+            } else {
+                readFully(lfh);
+            }
         } catch (EOFException e) {
             return null;
         }
+            
         ZipLong sig = new ZipLong(lfh);
         if (sig.equals(ZipLong.CFH_SIG)) {
             hitCentralDirectory = true;
@@ -255,6 +267,21 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
 
         processZip64Extra(size, cSize);
         return current.entry;
+    }
+
+    /**
+     * Fills the given array with the first local file header and
+     * deals with splitting/spanning markers that may prefix the first
+     * LFH.
+     */
+    private void readFirstLocalFileHeader(byte[] lfh) throws IOException {
+        readFully(lfh);
+        ZipLong sig = new ZipLong(lfh);
+        if (sig.equals(ZipLong.DD_SIG)) {
+            throw new 
+                UnsupportedZipFeatureException(UnsupportedZipFeatureException
+                                               .Feature.SPLITTING);
+        }
     }
 
     /**

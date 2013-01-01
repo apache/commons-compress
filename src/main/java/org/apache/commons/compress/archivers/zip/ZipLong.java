@@ -50,7 +50,11 @@ public final class ZipLong implements Cloneable {
     public static final ZipLong LFH_SIG = new ZipLong(0X04034B50L);
 
     /**
-     * Data Descriptor signature
+     * Data Descriptor signature.
+     *
+     * <p>Actually, PKWARE uses this as marker for split/spanned
+     * archives and other archivers have started to use it as Data
+     * Descriptor signature (as well).</p>
      * @since 1.1
      */
     public static final ZipLong DD_SIG = new ZipLong(0X08074B50L);
