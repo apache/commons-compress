@@ -515,7 +515,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         }
 
         return checksig(signature, ZipArchiveOutputStream.LFH_SIG) // normal file
-            || checksig(signature, ZipArchiveOutputStream.EOCD_SIG); // empty zip
+            || checksig(signature, ZipArchiveOutputStream.EOCD_SIG) // empty zip
+            || checksig(signature, ZipArchiveOutputStream.DD_SIG) // split zip
+            || checksig(signature,
+                        ZipLong.SINGLE_SEGMENT_SPLIT_MARKER.getBytes());
     }
 
     private static boolean checksig(byte[] signature, byte[] expected){
