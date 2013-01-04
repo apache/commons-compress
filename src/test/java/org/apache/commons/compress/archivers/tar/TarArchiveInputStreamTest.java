@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -135,6 +136,31 @@ public class TarArchiveInputStreamTest {
         } finally {
             tar.close();
         }
+    }
+
+    @Test
+    public void shouldUseSpecifiedEncodingWhenReadingGNULongNames()
+        throws Exception {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        String encoding = CharsetNames.UTF_16;
+        String name = "1234567890123456789012345678901234567890123456789"
+            + "01234567890123456789012345678901234567890123456789"
+            + "01234567890\u00e4";
+        TarArchiveOutputStream tos =
+            new TarArchiveOutputStream(bos, encoding);
+        tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
+        TarArchiveEntry t = new TarArchiveEntry(name);
+        t.setSize(1);
+        tos.putArchiveEntry(t);
+        tos.write(30);
+        tos.closeArchiveEntry();
+        tos.close();
+        byte[] data = bos.toByteArray();
+        ByteArrayInputStream bis = new ByteArrayInputStream(data);
+        TarArchiveInputStream tis =
+            new TarArchiveInputStream(bis, encoding);
+        t = tis.getNextTarEntry();
+        assertEquals(name, t.getName());
     }
 
     private TarArchiveInputStream getTestStream(String name) {
