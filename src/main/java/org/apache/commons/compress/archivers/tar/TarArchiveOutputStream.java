@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -510,10 +511,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * An EOF record consists of a record of all zeros.
      */
     private void writeEOFRecord() throws IOException {
-        for (int i = 0; i < recordBuf.length; ++i) {
-            recordBuf[i] = 0;
-        }
-
+        Arrays.fill(recordBuf, (byte) 0);
         buffer.writeRecord(recordBuf);
     }
 
