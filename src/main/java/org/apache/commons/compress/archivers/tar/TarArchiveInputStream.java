@@ -247,11 +247,11 @@ public class TarArchiveInputStream extends ArchiveInputStream {
 
         if (currEntry.isGNULongNameEntry()) {
             // read in the name
-            StringBuffer longName = new StringBuffer();
+            ByteArrayOutputStream longName = new ByteArrayOutputStream();
             byte[] buf = new byte[SMALL_BUFFER_SIZE];
             int length = 0;
             while ((length = read(buf)) >= 0) {
-                longName.append(new String(buf, 0, length)); // TODO default charset?
+                longName.write(buf, 0, length);
             }
             getNextEntry();
             if (currEntry == null) {
@@ -259,12 +259,19 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                 // Malformed tar file - long entry name not followed by entry
                 return null;
             }
-            // remove trailing null terminator
-            if (longName.length() > 0
-                && longName.charAt(longName.length() - 1) == 0) {
-                longName.deleteCharAt(longName.length() - 1);
+            byte[] longNameData = longName.toByteArray();
+            // remove trailing null terminator(s)
+            length = longNameData.length;
+            while (length > 0 && longNameData[length - 1] == 0) {
+                --length;
             }
-            currEntry.setName(longName.toString());
+            if (length != longNameData.length) {
+                byte[] l = new byte[length];
+                System.arraycopy(longNameData, 0, l, 0, length);
+                longNameData = l;
+            }
+            
+            currEntry.setName(encoding.decode(longNameData));
         }
 
         if (currEntry.isPaxHeader()){ // Process Pax headers
