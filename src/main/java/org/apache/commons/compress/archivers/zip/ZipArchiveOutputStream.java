@@ -115,6 +115,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     @Deprecated
     public static final int EFS_FLAG = GeneralPurposeBit.UFT8_NAMES_FLAG;
 
+    private static final byte[] EMPTY = new byte[0];
+
     /**
      * Current entry.
      */
@@ -444,7 +446,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         }
 
         if (!entry.hasWritten) {
-            write(new byte[0], 0, 0);
+            write(EMPTY, 0, 0);
         }
 
         flushDeflater();

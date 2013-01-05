@@ -76,6 +76,9 @@ public class GzipCompressorInputStream extends CompressorInputStream {
     // True once everything has been decompressed
     private boolean endReached = false;
 
+    // used in no-arg read method
+    private final byte[] oneByte = new byte[1];
+
     /**
      * Constructs a new input stream that decompresses gzip-compressed data
      * from the specified input stream.
@@ -213,8 +216,7 @@ public class GzipCompressorInputStream extends CompressorInputStream {
     /** {@inheritDoc} */
     @Override
     public int read() throws IOException {
-        byte[] buf = new byte[1];
-        return read(buf, 0, 1) == -1 ? -1 : (buf[0] & 0xFF);
+        return read(oneByte, 0, 1) == -1 ? -1 : (oneByte[0] & 0xFF);
     }
 
     /**

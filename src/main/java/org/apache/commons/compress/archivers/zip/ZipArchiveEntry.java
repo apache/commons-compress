@@ -55,6 +55,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     public static final int PLATFORM_FAT  = 0;
     private static final int SHORT_MASK = 0xFFFF;
     private static final int SHORT_SHIFT = 16;
+    private static final byte[] EMPTY = new byte[0];
 
     /**
      * The {@link java.util.zip.ZipEntry} base class only supports
@@ -475,7 +476,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      */
     public byte[] getLocalFileDataExtra() {
         byte[] extra = getExtra();
-        return extra != null ? extra : new byte[0];
+        return extra != null ? extra : EMPTY;
     }
 
     /**
