@@ -77,6 +77,11 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
 
     private final InputStream in;
 
+    // cached buffers
+    private final byte[] TWO_BYTES_BUF = new byte[2];
+    private final byte[] FOUR_BYTES_BUF = new byte[4];
+    private final byte[] SIX_BYTES_BUF = new byte[6];
+
     /**
      * Construct the cpio input stream
      * 
@@ -165,20 +170,18 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         if (this.entry != null) {
             closeEntry();
         }
-        byte magic[] = new byte[2];
-        readFully(magic, 0, magic.length);
-        if (CpioUtil.byteArray2long(magic, false) == MAGIC_OLD_BINARY) {
+        readFully(TWO_BYTES_BUF, 0, TWO_BYTES_BUF.length);
+        if (CpioUtil.byteArray2long(TWO_BYTES_BUF, false) == MAGIC_OLD_BINARY) {
             this.entry = readOldBinaryEntry(false);
-        } else if (CpioUtil.byteArray2long(magic, true) == MAGIC_OLD_BINARY) {
+        } else if (CpioUtil.byteArray2long(TWO_BYTES_BUF, true)
+                   == MAGIC_OLD_BINARY) {
             this.entry = readOldBinaryEntry(true);
         } else {
-            byte more_magic[] = new byte[4];
-            readFully(more_magic, 0, more_magic.length);
-            byte tmp[] = new byte[6];
-            System.arraycopy(magic, 0, tmp, 0, magic.length);
-            System.arraycopy(more_magic, 0, tmp, magic.length,
-                    more_magic.length);
-            String magicString = ArchiveUtils.toAsciiString(tmp);
+            System.arraycopy(TWO_BYTES_BUF, 0, SIX_BYTES_BUF, 0,
+                             TWO_BYTES_BUF.length);
+            readFully(SIX_BYTES_BUF, TWO_BYTES_BUF.length,
+                      FOUR_BYTES_BUF.length);
+            String magicString = ArchiveUtils.toAsciiString(SIX_BYTES_BUF);
             if (magicString.equals(MAGIC_NEW)) {
                 this.entry = readNewEntry(false);
             } else if (magicString.equals(MAGIC_NEW_CRC)) {
@@ -202,9 +205,9 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
     }
 
     private void skip(int bytes) throws IOException{
-        final byte[] buff = new byte[4]; // Cannot be more than 3 bytes
+        // bytes cannot be more than 3 bytes
         if (bytes > 0) {
-            readFully(buff, 0, bytes);
+            readFully(FOUR_BYTES_BUF, 0, bytes);
         }
     }
 

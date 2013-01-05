@@ -53,6 +53,13 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      */
     private long entryOffset = -1;
 
+    // cached buffers
+    private final byte[] NAME_BUF = new byte[16];
+    private final byte[] LAST_MODIFIED_BUF = new byte[12];
+    private final byte[] ID_BUF = new byte[6];
+    private final byte[] FILE_MODE_BUF = new byte[8];
+    private final byte[] LENGTH_BUF = new byte[10];
+
     /**
      * Constructs an Ar input stream with the referenced stream
      * 
@@ -108,19 +115,13 @@ public class ArArchiveInputStream extends ArchiveInputStream {
             return null;
         }
 
-        final byte[] name = new byte[16];
-        final byte[] lastmodified = new byte[12];
-        final byte[] userid = new byte[6];
-        final byte[] groupid = new byte[6];
-        final byte[] filemode = new byte[8];
-        final byte[] length = new byte[10];
-
-        read(name);
-        read(lastmodified);
-        read(userid);
-        read(groupid);
-        read(filemode);
-        read(length);
+        read(NAME_BUF);
+        read(LAST_MODIFIED_BUF);
+        read(ID_BUF);
+        int userId = asInt(ID_BUF, true);
+        read(ID_BUF);
+        read(FILE_MODE_BUF);
+        read(LENGTH_BUF);
 
         {
             final byte[] expected = ArchiveUtils.toAsciiBytes(ArArchiveEntry.TRAILER);
@@ -141,13 +142,14 @@ public class ArArchiveInputStream extends ArchiveInputStream {
 //        GNU ar uses a '/' to mark the end of the filename; this allows for the use of spaces without the use of an extended filename.
 
         // entry name is stored as ASCII string
-        String temp = ArchiveUtils.toAsciiString(name).trim();
-        long len = asLong(length);
-
+        String temp = ArchiveUtils.toAsciiString(NAME_BUF).trim();
         if (isGNUStringTable(temp)) { // GNU extended filenames entry
-            currentEntry = readGNUStringTable(length);
+            currentEntry = readGNUStringTable(LENGTH_BUF);
             return getNextArEntry();
-        } else if (temp.endsWith("/")) { // GNU terminator
+        }
+
+        long len = asLong(LENGTH_BUF);
+        if (temp.endsWith("/")) { // GNU terminator
             temp = temp.substring(0, temp.length() - 1);
         } else if (isGNULongName(temp)) {
             int offset = Integer.parseInt(temp.substring(1));// get the offset
@@ -162,9 +164,10 @@ public class ArArchiveInputStream extends ArchiveInputStream {
             entryOffset += nameLen;
         }
 
-        currentEntry = new ArArchiveEntry(temp, len, asInt(userid, true),
-                                          asInt(groupid, true), asInt(filemode, 8),
-                                          asLong(lastmodified));
+        currentEntry = new ArArchiveEntry(temp, len, userId,
+                                          asInt(ID_BUF, true),
+                                          asInt(FILE_MODE_BUF, 8),
+                                          asLong(LAST_MODIFIED_BUF));
         return currentEntry;
     }
 
