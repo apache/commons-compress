@@ -27,7 +27,6 @@ import java.io.FileInputStream;
 import java.net.URI;
 import java.net.URL;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class ZipArchiveInputStreamTest {
@@ -56,7 +55,6 @@ public class ZipArchiveInputStreamTest {
      * @see "https://issues.apache.org/jira/browse/COMPRESS-189"
      */
     @Test
-    @Ignore
     public void properUseOfInflater() throws Exception {
         URL zip = getClass().getResource("/COMPRESS-189.zip");
         ZipFile zf = null;
