@@ -19,7 +19,6 @@
 package org.apache.commons.compress.utils;
 
 import java.nio.charset.Charset;
-import java.nio.charset.UnsupportedCharsetException;
 
 /**
  * Charsets required of every implementation of the Java platform.
