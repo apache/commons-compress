@@ -132,7 +132,7 @@ public class ZipFile {
      */
     private boolean closed;
 
-    // cached buffers
+    // cached buffers - must only be used locally in the class (COMPRESS-172 - reduce garbage collection)
     private final byte[] DWORD_BUF = new byte[DWORD];
     private final byte[] WORD_BUF = new byte[WORD];
     private final byte[] CFH_BUF = new byte[CFH_LEN];

@@ -128,7 +128,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
 
     private static final long TWO_EXP_32 = ZIP64_MAGIC + 1;
 
-    // cached buffers
+    // cached buffers - must only be used locally in the class (COMPRESS-172 - reduce garbage collection)
     private final byte[] LFH_BUF = new byte[LFH_LEN];
     private final byte[] SKIP_BUF = new byte[1024];
     private final byte[] WORD_BUF = new byte[WORD];

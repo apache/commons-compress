@@ -77,7 +77,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
 
     private final InputStream in;
 
-    // cached buffers
+    // cached buffers - must only be used locally in the class (COMPRESS-172 - reduce garbage collection)
     private final byte[] TWO_BYTES_BUF = new byte[2];
     private final byte[] FOUR_BYTES_BUF = new byte[4];
     private final byte[] SIX_BYTES_BUF = new byte[6];
