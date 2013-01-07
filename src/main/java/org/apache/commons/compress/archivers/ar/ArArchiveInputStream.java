@@ -53,7 +53,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      */
     private long entryOffset = -1;
 
-    // cached buffers
+    // cached buffers - must only be used locally in the class (COMPRESS-172 - reduce garbage collection)
     private final byte[] NAME_BUF = new byte[16];
     private final byte[] LAST_MODIFIED_BUF = new byte[12];
     private final byte[] ID_BUF = new byte[6];
