@@ -18,6 +18,7 @@
 package org.apache.commons.compress.archivers.zip;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.zip.CRC32;
@@ -71,9 +72,6 @@ public abstract class ZipUtil {
      * Assumes a negative integer really is a positive integer that
      * has wrapped around and re-creates the original value.
      *
-     * <p>This methods is no longer used as of Apache Commons Compress
-     * 1.3</p>
-     *
      * @param i the value to treat as unsigned int.
      * @return the unsigned int as a long.
      */
@@ -82,6 +80,96 @@ public abstract class ZipUtil {
             return 2 * ((long) Integer.MAX_VALUE) + 2 + i;
         } else {
             return i;
+        }
+    }
+
+    /**
+     * Reverses a byte[] array.  Reverses in-place (thus provided array is
+     * mutated), but also returns same for convenience.
+     *
+     * @param array to reverse (mutated in-place, but also returned for
+     *        convenience).
+     *
+     * @return the reversed array (mutated in-place, but also returned for
+     *        convenience).
+     */
+    public static byte[] reverse(final byte[] array) {
+        final int z = array.length - 1; // position of last element
+        for (int i = 0; i < array.length / 2; i++) {
+            byte x = array[i];
+            array[i] = array[z - i];
+            array[z - i] = x;
+        }
+        return array;
+    }
+
+    /**
+     * Converts a BigInteger into a long, and blows up
+     * (NumberFormatException) if the BigInteger is too big.
+     *
+     * @param big BigInteger to convert.
+     * @return long representation of the BigInteger.
+     */
+    static long bigToLong(BigInteger big) {
+        if (big.bitLength() <= 63) { // bitLength() doesn't count the sign bit.
+            return big.longValue();
+        } else {
+            throw new NumberFormatException("The BigInteger cannot fit inside a 64 bit java long: [" + big + "]");
+        }
+    }
+
+    /**
+     * <p>
+     * Converts a long into a BigInteger.  Negative numbers between -1 and
+     * -2^31 are treated as unsigned 32 bit (e.g., positive) integers.
+     * Negative numbers below -2^31 cause an IllegalArgumentException
+     * to be thrown.
+     * </p>
+     *
+     * @param l long to convert to BigInteger.
+     * @return BigInteger representation of the provided long.
+     */
+    static BigInteger longToBig(long l) {
+        if (l < Integer.MIN_VALUE) {
+            throw new IllegalArgumentException("Negative longs < -2^31 not permitted: [" + l + "]");
+        } else if (l < 0 && l >= Integer.MIN_VALUE) {
+            // If someone passes in a -2, they probably mean 4294967294
+            // (For example, Unix UID/GID's are 32 bit unsigned.)
+            l = ZipUtil.adjustToLong((int) l);
+        }
+        return BigInteger.valueOf(l);
+    }
+
+    /**
+     * Converts a signed byte into an unsigned integer representation
+     * (e.g., -1 becomes 255).
+     *
+     * @param b byte to convert to int
+     * @return int representation of the provided byte
+     */
+    public static int signedByteToUnsignedInt(byte b) {
+        if (b >= 0) {
+            return b;
+        } else {
+            return 256 + b;
+        }
+    }
+
+    /**
+     * Converts an unsigned integer to a signed byte (e.g., 255 becomes -1).
+     *
+     * @param i integer to convert to byte
+     * @return byte representation of the provided int
+     * @throws IllegalArgumentException if the provided integer is not inside the range [0,255].
+     */
+    public static byte unsignedIntToSignedByte(int i) {
+        if (i > 255 || i < 0) {
+            throw new IllegalArgumentException("Can only convert non-negative integers between [0,255] to byte: [" + i + "]");
+        }
+        if (i < 128) {
+            return (byte) i;
+        } else {
+            return (byte) (i - 256);
         }
     }
 
