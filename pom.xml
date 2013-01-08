@@ -85,6 +85,11 @@ These include: bzip2, gzip, pack200, xz and ar, cpio, jar, tar, zip, dump.
       <id>grobmeier</id>
       <email>grobmeier at apache.org</email>
     </developer>
+    <developer>
+      <name>Julius Davies</name>
+      <id>julius</id>
+      <email>julius at apache.org</email>
+    </developer>
   </developers>
 
   <contributors>

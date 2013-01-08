@@ -112,6 +112,18 @@ The <action> type attribute can be add,update,fix,remove.
         Garbage collection pressure has been reduced by reusing
         temporary byte arrays in classes.
       </action>
+        <action type="update" date="2013-01-08" issue="COMPRESS-210"
+                due-to="Julius Davies">
+          Can now handle zip extra field 0x5455 - Extended Timestamp.
+        </action>
+        <action type="update" date="2013-01-07" issue="COMPRESS-211"
+                due-to="Julius Davies">
+          handle zip extra field 0x7875 - Info Zip New Unix Extra Field.
+        </action>
+        <action type="update" date="2013-01-07" issue="COMPRESS-213"
+                due-to="Julius Davies">
+            ZipShort, ZipLong, ZipEightByteInteger should implement Serializable
+        </action>
     </release>
     <release version="1.4.1" date="2012-05-23"
              description="Release 1.4.1">
