@@ -53,6 +53,8 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     // BigInteger helps us with little-endian / big-endian conversions.
     // (thanks to BigInteger.toByteArray() and a reverse() method we created).
     // Also, the spec theoretically allows UID/GID up to 255 bytes long!
+    //
+    // NOTE:  equals() and hashCode() currently assume these can never be null.
     private BigInteger uid;
     private BigInteger gid;
 
@@ -247,12 +249,8 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     public boolean equals(Object o) {
         if (o instanceof X7875_NewUnix) {
             X7875_NewUnix xf = (X7875_NewUnix) o;
-            if (version == xf.version) {
-                // The BigInteger==BigInteger clause handles the case where both are null.
-                if (uid == xf.uid || (uid != null && uid.equals(xf.uid))) {
-                    return gid == xf.gid || (gid != null && gid.equals(xf.gid));
-                }
-            }
+            // We assume uid and gid can never be null.
+            return version == xf.version && uid.equals(xf.uid) && gid.equals(xf.gid);
         }
         return false;
     }
@@ -260,12 +258,11 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     @Override
     public int hashCode() {
         int hc = (-1234567 * version);
-        if (uid != null) {
-            hc ^= uid.hashCode();
-        }
-        if (gid != null) {
-            hc ^= gid.hashCode();
-        }
+        // Since most UID's and GID's are below 65,536, this is (hopefully!)
+        // a nice way to make sure typical UID and GID values impact the hash
+        // as much as possible.
+        hc ^= Integer.rotateLeft(uid.hashCode(), 16);
+        hc ^= gid.hashCode();
         return hc;
     }
 

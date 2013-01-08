@@ -29,6 +29,7 @@ import java.util.Enumeration;
 import java.util.zip.ZipException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class X7875_NewUnixTest {
@@ -95,10 +96,13 @@ public class X7875_NewUnixTest {
 
     @Test
     public void testMisc() throws Exception {
+        assertFalse(xf.equals(new Object()));
         assertTrue(xf.toString().startsWith("0x7875 Zip Extra Field"));
         Object o = xf.clone();
         assertEquals(o.hashCode(), xf.hashCode());
         assertTrue(xf.equals(o));
+        xf.setUID(12345);
+        assertFalse(xf.equals(o));
     }
 
     @Test
@@ -135,6 +139,9 @@ public class X7875_NewUnixTest {
     @Test
     public void testParseReparse() throws ZipException {
 
+        // Version=1, Len=0, Len=0.
+        final byte[] ZERO_LEN = {1, 0, 0};
+
         // Version=1, Len=1, zero, Len=1, zero.
         final byte[] ZERO_UID_GID = {1, 1, 0, 1, 0};
 
@@ -159,6 +166,7 @@ public class X7875_NewUnixTest {
         final long TWO_TO_32 = 0x100000000L;
         final long MAX = TWO_TO_32 - 2;
 
+        parseReparse(0, 0, ZERO_LEN, 0, 0);
         parseReparse(0, 0, ZERO_UID_GID, 0, 0);
         parseReparse(1, 1, ONE_UID_GID, 1, 1);
         parseReparse(1000, 1000, ONE_THOUSAND_UID_GID, 1000, 1000);
@@ -193,11 +201,38 @@ public class X7875_NewUnixTest {
             final long expectedUID,
             final long expectedGID
     ) throws ZipException {
+
+        // Initial local parse (init with garbage to avoid defaults causing test to pass).
+        xf.setUID(54321);
+        xf.setGID(12345);
+        xf.parseFromLocalFileData(expected, 0, expected.length);
+        assertEquals(expectedUID, xf.getUID());
+        assertEquals(expectedGID, xf.getGID());
+
+        // Initial central parse (init with garbage to avoid defaults causing test to pass).
+        xf.setUID(54321);
+        xf.setGID(12345);
+        xf.parseFromCentralDirectoryData(expected, 0, expected.length);
+        assertEquals(expectedUID, xf.getUID());
+        assertEquals(expectedGID, xf.getGID());
+
         xf.setUID(uid);
         xf.setGID(gid);
-        assertEquals(expected.length, xf.getLocalFileDataLength().getValue());
+        if (expected.length < 5) {
+            // We never emit zero-length entries.
+            assertEquals(5, xf.getLocalFileDataLength().getValue());
+        } else {
+            assertEquals(expected.length, xf.getLocalFileDataLength().getValue());
+        }
         byte[] result = xf.getLocalFileDataData();
-        assertTrue(Arrays.equals(expected, result));
+        if (expected.length < 5) {
+            // We never emit zero-length entries.
+            assertTrue(Arrays.equals(new byte[]{1,1,0,1,0}, result));
+        } else {
+            assertTrue(Arrays.equals(expected, result));
+        }
+
+
 
         // And now we re-parse:
         xf.parseFromLocalFileData(result, 0, result.length);
@@ -209,9 +244,19 @@ public class X7875_NewUnixTest {
         // Do the same as above, but with Central Directory data:
         xf.setUID(uid);
         xf.setGID(gid);
-        assertEquals(expected.length, xf.getCentralDirectoryLength().getValue());
+        if (expected.length < 5) {
+            // We never emit zero-length entries.
+            assertEquals(5, xf.getCentralDirectoryLength().getValue());
+        } else {
+            assertEquals(expected.length, xf.getCentralDirectoryLength().getValue());
+        }
         result = xf.getCentralDirectoryData();
-        assertTrue(Arrays.equals(expected, result));
+        if (expected.length < 5) {
+            // We never emit zero-length entries.
+            assertTrue(Arrays.equals(new byte[]{1,1,0,1,0}, result));
+        } else {
+            assertTrue(Arrays.equals(expected, result));
+        }
 
         // And now we re-parse:
         xf.parseFromCentralDirectoryData(result, 0, result.length);
