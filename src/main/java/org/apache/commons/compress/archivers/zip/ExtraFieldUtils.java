@@ -40,6 +40,7 @@ public class ExtraFieldUtils {
     static {
         implementations = new ConcurrentHashMap<ZipShort, Class<?>>();
         register(AsiExtraField.class);
+        register(X5455_ExtendedTimestamp.class);
         register(X7875_NewUnix.class);
         register(JarMarker.class);
         register(UnicodePathExtraField.class);
