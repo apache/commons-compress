@@ -123,7 +123,7 @@ public class X5455_ExtendedTimestampTest {
                         switch (year) {
                             case 2107:
                                 // Zip time is okay up to 2107.
-                                assertEquals(year  + "-01-01/00:00:02 +0000", zipTime);
+                                assertEquals(year + "-01-01/00:00:02 +0000", zipTime);
                                 // But the X5455 data has overflowed:
                                 assertEquals("1970-11-24/17:31:45 +0000", modTime);
                                 assertEquals("1970-11-24/17:31:47 +0000", accTime);
@@ -469,8 +469,10 @@ public class X5455_ExtendedTimestampTest {
     private static Date adjustFromGMTToExpectedOffset(Date from) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(from);
-        // we may even need to take DST into account for the southern hemisphere
         cal.add(Calendar.MILLISECOND, cal.get(Calendar.ZONE_OFFSET));
+        if (cal.getTimeZone().inDaylightTime(from)) {
+            cal.add(Calendar.MILLISECOND, cal.get(Calendar.DST_OFFSET));
+        }
         cal.add(Calendar.HOUR, 8);
         return cal.getTime();
     }
