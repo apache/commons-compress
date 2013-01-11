@@ -117,34 +117,34 @@ public class TarArchiveEntryTest extends TestCase implements TarConstants {
         t.setSize(0100000000000L);
     }
 
-    public void testLinkFlagConstructor() throws IOException {
+    public void testLinkFlagConstructor() {
         TarArchiveEntry t = new TarArchiveEntry("/foo", LF_GNUTYPE_LONGNAME);
         assertGnuMagic(t);
         assertEquals("foo", t.getName());
     }
 
-    public void testLinkFlagConstructorWithFileFlag() throws IOException {
+    public void testLinkFlagConstructorWithFileFlag() {
         TarArchiveEntry t = new TarArchiveEntry("/foo", LF_NORMAL);
         assertPosixMagic(t);
         assertEquals("foo", t.getName());
     }
 
-    public void testLinkFlagConstructorWithPreserve() throws IOException {
+    public void testLinkFlagConstructorWithPreserve() {
         TarArchiveEntry t = new TarArchiveEntry("/foo", LF_GNUTYPE_LONGNAME,
                                                 true);
         assertGnuMagic(t);
         assertEquals("/foo", t.getName());
     }
 
-    private void assertGnuMagic(TarArchiveEntry t) throws IOException {
+    private void assertGnuMagic(TarArchiveEntry t) {
         assertEquals(MAGIC_GNU + VERSION_GNU_SPACE, readMagic(t));
     }
 
-    private void assertPosixMagic(TarArchiveEntry t) throws IOException {
+    private void assertPosixMagic(TarArchiveEntry t) {
         assertEquals(MAGIC_POSIX + VERSION_POSIX, readMagic(t));
     }
 
-    private String readMagic(TarArchiveEntry t) throws IOException {
+    private String readMagic(TarArchiveEntry t) {
         byte[] buf = new byte[512];
         t.writeEntryHeader(buf);
         return new String(buf, MAGIC_OFFSET, MAGICLEN + VERSIONLEN);
