@@ -338,14 +338,14 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
     }
 
     /**
-     * @see https://issues.apache.org/jira/browse/COMPRESS-200
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-200"
      */
     public void testRoundtripWith67CharFileNameGnu() throws Exception {
         testRoundtripWith67CharFileName(TarArchiveOutputStream.LONGFILE_GNU);
     }
 
     /**
-     * @see https://issues.apache.org/jira/browse/COMPRESS-200
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-200"
      */
     public void testRoundtripWith67CharFileNamePosix() throws Exception {
         testRoundtripWith67CharFileName(TarArchiveOutputStream.LONGFILE_POSIX);
@@ -373,14 +373,14 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
     }
 
     /**
-     * @see https://issues.apache.org/jira/browse/COMPRESS-203
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-203"
      */
     public void testWriteLongDirectoryNameGnuMode() throws Exception {
         testWriteLongDirectoryName(TarArchiveOutputStream.LONGFILE_GNU);
     }
 
     /**
-     * @see https://issues.apache.org/jira/browse/COMPRESS-203
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-203"
      */
     public void testWriteLongDirectoryNamePosixMode() throws Exception {
         testWriteLongDirectoryName(TarArchiveOutputStream.LONGFILE_POSIX);
@@ -407,7 +407,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
     }
 
     /**
-     * @see https://issues.apache.org/jira/browse/COMPRESS-203
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-203"
      */
     public void testWriteNonAsciiDirectoryNamePosixMode() throws Exception {
         String n = "f\u00f6\u00f6/";
