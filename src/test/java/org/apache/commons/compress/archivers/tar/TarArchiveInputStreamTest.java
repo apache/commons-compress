@@ -161,6 +161,7 @@ public class TarArchiveInputStreamTest {
             new TarArchiveInputStream(bis, encoding);
         t = tis.getNextTarEntry();
         assertEquals(name, t.getName());
+        tis.close();
     }
 
     private TarArchiveInputStream getTestStream(String name) {
