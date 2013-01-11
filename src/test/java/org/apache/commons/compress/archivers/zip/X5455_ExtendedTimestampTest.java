@@ -45,7 +45,7 @@ public class X5455_ExtendedTimestampTest {
 
     private final static ZipLong ZERO_TIME = new ZipLong(0);
     private final static ZipLong MAX_TIME_SECONDS = new ZipLong(0xFFFFFFFFL);
-    private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd/HH:mm:ss Z");
+    private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd/HH:mm:ss Z");
 
     static {
         DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
