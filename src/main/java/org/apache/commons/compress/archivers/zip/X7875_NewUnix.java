@@ -236,6 +236,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      * @return A String representation of this class useful for
      *         debugging purposes.
      */
+    @Override
     public String toString() {
         return "0x7875 Zip Extra Field: UID=" + uid + " GID=" + gid;
     }
