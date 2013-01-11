@@ -123,7 +123,7 @@ public final class ZipTestCase extends AbstractTestCase {
     public void testSkipsPK00Prefix() throws Exception {
         final File input = getFile("COMPRESS-208.zip");
         InputStream is = new FileInputStream(input);
-        ArrayList al = new ArrayList();
+        ArrayList<String> al = new ArrayList<String>();
         al.add("test1.xml");
         al.add("test2.xml");
         try {
