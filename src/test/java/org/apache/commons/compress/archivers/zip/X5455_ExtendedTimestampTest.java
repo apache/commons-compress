@@ -124,25 +124,25 @@ public class X5455_ExtendedTimestampTest {
                         switch (year) {
                             case 2107:
                                 // Zip time is okay up to 2107.
-                                assertEquals(zipTime, year + "-01-01/00:00:02 +0000");
+                                assertEquals(year + "-01-01/00:00:02 +0000", zipTime);
                                 // But the X5455 data has overflowed:
-                                assertEquals(modTime, "1970-11-24/17:31:45 +0000");
-                                assertEquals(accTime, "1970-11-24/17:31:47 +0000");
+                                assertEquals("1970-11-24/17:31:45 +0000", modTime);
+                                assertEquals("1970-11-24/17:31:47 +0000", accTime);
                                 break;
                             case 2108:
                                 // Zip time is still okay at Jan 1st midnight (UTC) in 2108
                                 // because we created the zip file in pacific time zone, so it's
                                 // actually still 2107 in the zip file!
-                                assertEquals(zipTime, year + "-01-01/00:00:02 +0000");
+                                assertEquals(year + "-01-01/00:00:02 +0000", zipTime);
                                 // The X5455 data is still overflowed, of course:
-                                assertEquals(modTime, "1971-11-24/17:31:45 +0000");
-                                assertEquals(accTime, "1971-11-24/17:31:47 +0000");
+                                assertEquals("1971-11-24/17:31:45 +0000", modTime);
+                                assertEquals("1971-11-24/17:31:47 +0000", accTime);
                                 break;
                             case 2109:
                                 // All three timestamps have overflowed by 2109.
-                                assertEquals(zipTime, "1981-01-01/00:00:02 +0000");
-                                assertEquals(modTime, "1972-11-24/17:31:45 +0000");
-                                assertEquals(accTime, "1972-11-24/17:31:47 +0000");
+                                assertEquals("1981-01-01/00:00:02 +0000", zipTime);
+                                assertEquals("1972-11-24/17:31:45 +0000", modTime);
+                                assertEquals("1972-11-24/17:31:47 +0000", accTime);
 
                                 // Hmmm.... looks like one could examine both DOS time
                                 // and the Unix time together to hack a nice workaround to
@@ -153,12 +153,12 @@ public class X5455_ExtendedTimestampTest {
                                 // X5455 time is good from epoch (1970) to 2106.
                                 // Zip time is good from 1980 to 2107.
                                 if (year < 1980) {
-                                    assertEquals(zipTime, "1980-01-01/08:00:00 +0000");
+                                    assertEquals("1980-01-01/08:00:00 +0000", zipTime);
                                 } else {
-                                    assertEquals(zipTime, year + "-01-01/00:00:02 +0000");
+                                    assertEquals(year + "-01-01/00:00:02 +0000", zipTime);
                                 }
-                                assertEquals(modTime, year + "-01-01/00:00:01 +0000");
-                                assertEquals(accTime, year + "-01-01/00:00:03 +0000");
+                                assertEquals(year + "-01-01/00:00:01 +0000", modTime);
+                                assertEquals(year + "-01-01/00:00:03 +0000", accTime);
                                 break;
                         }
                     }
