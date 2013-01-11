@@ -106,7 +106,7 @@ public class X7875_NewUnixTest {
     }
 
     @Test
-    public void testTrimLeadingZeroesForceMinLength4() throws ZipException {
+    public void testTrimLeadingZeroesForceMinLength4() {
         final byte[] NULL = null;
         final byte[] EMPTY = new byte[0];
         final byte[] ONE_ZERO = {0};
