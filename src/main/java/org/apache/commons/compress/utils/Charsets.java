@@ -78,8 +78,10 @@ public class Charsets {
      * @param charset
      *            The name of the requested charset, may be null.
      * @return a Charset for the named charset
-     * @throws UnsupportedCharsetException
+     * @throws java.nio.charset.UnsupportedCharsetException
      *             If the named charset is unavailable
+     * @throws java.nio.charset.IllegalCharsetNameException
+     *             If the given charset name is illegal
      */
     public static Charset toCharset(String charset) {
         return charset == null ? Charset.defaultCharset() : Charset.forName(charset);
