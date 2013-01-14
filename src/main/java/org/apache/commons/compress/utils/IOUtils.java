@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress.utils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -68,5 +69,29 @@ public final class IOUtils {
             count += n;
         }
         return count;
+    }
+
+
+    // toByteArray(InputStream) copied from:
+    // commons/proper/io/trunk/src/main/java/org/apache/commons/io/IOUtils.java?revision=1428941
+    // January 8th, 2013
+    //
+    // Assuming our copy() works just as well as theirs!  :-)
+
+    /**
+     * Gets the contents of an <code>InputStream</code> as a <code>byte[]</code>.
+     * <p>
+     * This method buffers the input internally, so there is no need to use a
+     * <code>BufferedInputStream</code>.
+     *
+     * @param input  the <code>InputStream</code> to read from
+     * @return the requested byte array
+     * @throws NullPointerException if the input is null
+     * @throws IOException if an I/O error occurs
+     */
+    public static byte[] toByteArray(final InputStream input) throws IOException {
+        final ByteArrayOutputStream output = new ByteArrayOutputStream();
+        copy(input, output);
+        return output.toByteArray();
     }
 }
