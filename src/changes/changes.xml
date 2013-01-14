@@ -124,6 +124,9 @@ The <action> type attribute can be add,update,fix,remove.
                 due-to="Julius Davies">
             ZipShort, ZipLong, ZipEightByteInteger should implement Serializable
         </action>
+        <action type="update" date="2013-01-14" issue="COMPRESS-214" due-to="Julius Davies">
+            better support for unix symlinks
+        </action>
     </release>
     <release version="1.4.1" date="2012-05-23"
              description="Release 1.4.1">
