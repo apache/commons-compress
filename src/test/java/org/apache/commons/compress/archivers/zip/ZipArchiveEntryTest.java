@@ -18,10 +18,15 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import java.io.ByteArrayOutputStream;
-import java.util.zip.ZipEntry;
-
 import junit.framework.TestCase;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.net.URI;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.TreeMap;
+import java.util.zip.ZipEntry;
 
 /**
  * JUnit 3 testcases for org.apache.commons.compress.archivers.zip.ZipEntry.
@@ -31,6 +36,54 @@ public class ZipArchiveEntryTest extends TestCase {
 
     public ZipArchiveEntryTest(String name) {
         super(name);
+    }
+
+    public void testUnixSymlinkSampleFile() throws Exception {
+        final String entryPrefix = "COMPRESS-214_unix_symlinks/";
+        final TreeMap<String, String> expectedVals = new TreeMap<String, String>();
+
+        // I threw in some Japanese characters to keep things interesting.
+        expectedVals.put(entryPrefix + "link1", "../COMPRESS-214_unix_symlinks/./a/b/c/../../../\uF999");
+        expectedVals.put(entryPrefix + "link2", "../COMPRESS-214_unix_symlinks/./a/b/c/../../../g");
+        expectedVals.put(entryPrefix + "link3", "../COMPRESS-214_unix_symlinks/././a/b/c/../../../\u76F4\u6A39");
+        expectedVals.put(entryPrefix + "link4", "\u82B1\u5B50/\u745B\u5B50");
+        expectedVals.put(entryPrefix + "\uF999", "./\u82B1\u5B50/\u745B\u5B50/\u5897\u8C37/\uF999");
+        expectedVals.put(entryPrefix + "g", "./a/b/c/d/e/f/g");
+        expectedVals.put(entryPrefix + "\u76F4\u6A39", "./g");
+
+        // Notice how a directory link might contain a trailing slash, or it might not.
+        // Also note:  symlinks are always stored as files, even if they link to directories.
+        expectedVals.put(entryPrefix + "link5", "../COMPRESS-214_unix_symlinks/././a/b");
+        expectedVals.put(entryPrefix + "link6", "../COMPRESS-214_unix_symlinks/././a/b/");
+
+        // I looked into creating a test with hard links, but zip does not appear to
+        // support hard links, so nevermind.
+
+        URL zip = getClass().getResource("/COMPRESS-214_unix_symlinks.zip");
+        File archive = new File(new URI(zip.toString()));
+        ZipFile zf = null;
+
+        try {
+            zf = new ZipFile(archive);
+            Enumeration<ZipArchiveEntry> en = zf.getEntries();
+            while (en.hasMoreElements()) {
+                ZipArchiveEntry zae = en.nextElement();
+                if (zae.isUnixSymlink()) {
+                    String name = zae.getName();
+                    String link = zae.getUnixSymlink(zf);
+                    String expected = expectedVals.get(name);
+                    assertEquals(expected, link);
+                } else {
+                    String link = zae.getUnixSymlink(zf);
+                    // Should be null if it's not a symlink!
+                    assertNull(link);
+                }
+            }
+        } finally {
+            if (zf != null) {
+                zf.close();
+            }
+        }
     }
 
     /**

@@ -17,14 +17,18 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.utils.IOUtils;
+
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.zip.ZipException;
-import org.apache.commons.compress.archivers.ArchiveEntry;
 
 /**
  * Extension that adds better handling of extra fields and provides
@@ -264,6 +268,83 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     public int getUnixMode() {
         return platform != PLATFORM_UNIX ? 0 :
             (int) ((getExternalAttributes() >> SHORT_SHIFT) & SHORT_MASK);
+    }
+
+    /**
+     * Returns true if this entry represents a unix symlink,
+     * in which case the entry's content contains the target path
+     * for the symlink.
+     *
+     * @return true if the entry represents a unix symlink, false otherwise.
+     */
+    public boolean isUnixSymlink() {
+        return (getUnixMode() & UnixStat.LINK_FLAG) == UnixStat.LINK_FLAG;
+    }
+
+    /**
+     * <p>
+     * Convenience method to return this entry's content as a String if isUnixSymlink()
+     * returns true, otherwise returns null.
+     * This method assumes the symlink's target path has been stored in the zip file using the
+     * UTF-8 character encoding.
+     * </p><p>
+     * Unfortunately, there is no reliable way to automatically obtain the target path's
+     * character encoding (within the zip file) should it differ from UTF-8.  Zip files
+     * do not remember the character set used to encode zip contents.
+     * Entry names do not have this problem (thanks to various flags and extra fields),
+     * but symlink targets are not so lucky.  If you happen to know the character set that was used
+     * to encode symlink paths in the zip file, feel free to use the overloaded version:
+     * <code>getUnixSymlink(ZipFile zf, String pathCharset)</code>.
+     * </p><p>
+     * This method can only be used in conjunction with a ZipFile object (since we need
+     * the entry's contents); users of ZipArchiveInputStream will need to create their
+     * own logic.
+     * </p>
+     *
+     * @param zf ZipFile object that contains this ZipArchiveEntry's contents.
+     * @return entry's content as a String (UTF-8 character set assumed).
+     * @throws IOException problem with content's input stream
+     */
+    public String getUnixSymlink(ZipFile zf) throws IOException {
+        return getUnixSymlink(zf, "UTF-8");
+    }
+
+    /**
+     * <p>
+     * Convenience method to return this entry's content as a String if isUnixSymlink()
+     * returns true, otherwise returns null.
+     * </p><p>
+     * Unfortunately, there is no reliable way to automatically obtain the target path's
+     * character encoding (within the zip file) should it differ from UTF-8.  Zip files
+     * do not remember the character set used to encode zip contents.
+     * Entry names do not have this problem (thanks to various flags and extra fields),
+     * but symlink targets are not so lucky.
+     * </p><p>
+     * This method can only be used in conjunction with a ZipFile object (since we need
+     * the entry's contents); users of ZipArchiveInputStream will need to create their
+     * own logic.
+     * </p>
+     *
+     * @param zf          ZipFile object that contains this ZipArchiveEntry's contents.
+     * @param pathCharset the character set used to encode the symlink's target path.
+     * @return entry's content as a String (using the provided character set).
+     * @throws IOException problem with content's input stream
+     */
+    public String getUnixSymlink(ZipFile zf, String pathCharset) throws IOException {
+        if (isUnixSymlink()) {
+            InputStream in = null;
+            try {
+                in = zf.getInputStream(this);
+                byte[] symlinkBytes = IOUtils.toByteArray(in);
+                return new String(symlinkBytes, pathCharset);
+            } finally {
+                if (in != null) {
+                    in.close();
+                }
+            }
+        } else {
+            return null;
+        }
     }
 
     /**
