@@ -116,6 +116,11 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
           longer than 16 characters using the BSD dialect, writing
           the SVR4/GNU dialect is not supported.</p>
 
+        <p>It is not possible to detect the end of an AR archive in a
+        reliable way so <code>ArArchiveInputStream</code> will read
+        until it reaches the end of the stream or fails to parse the
+        stream's content as AR entries.</p>
+
       </subsection>
 
       <subsection name="cpio">
@@ -146,6 +151,16 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
 }
 ]]></source>
 
+        <p>Traditionally CPIO archives are written in blocks of 512
+        bytes - the block size is a configuration parameter of the
+        <code>Cpio*Stream</code>'s constuctors.  Starting with version
+        1.5 <code>CpioArchiveInputStream</code> will consume the
+        padding written to fill the current block when the end of the
+        archive is reached.  Unfortunately many CPIO implementations
+        use larger block sizes so there may be more zero-byte padding
+        left inside the original input stream after the archive has
+        been consumed completely.</p>
+
       </subsection>
 
       <subsection name="dump">
@@ -169,6 +184,11 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
     dumpInput.read(content, offset, content.length - offset);
 }
 ]]></source>
+
+        <p>Prior to version 1.5 <code>DumpArchiveInputStream</code>
+        would close the original input once it had read the last
+        record.  Starting with version 1.5 it will not close the
+        stream implicitly.</p>
 
       </subsection>
 

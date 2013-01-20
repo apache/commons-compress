@@ -82,14 +82,32 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
     private final byte[] FOUR_BYTES_BUF = new byte[4];
     private final byte[] SIX_BYTES_BUF = new byte[6];
 
+    private final int blockSize;
+
     /**
-     * Construct the cpio input stream
+     * Construct the cpio input stream with a blocksize of {@link
+     * CpioConstants#BLOCK_SIZE BLOCK_SIZE}.
      * 
      * @param in
      *            The cpio stream
      */
     public CpioArchiveInputStream(final InputStream in) {
+        this(in, BLOCK_SIZE);
+    }
+
+    /**
+     * Construct the cpio input stream with a blocksize of {@link CpioConstants#BLOCK_SIZE BLOCK_SIZE}.
+     * Construct the cpio input stream.
+     * 
+     * @param in
+     *            The cpio stream
+     * @param blockSize
+     *            The block size of the archive.
+     * @since 1.5
+     */
+    public CpioArchiveInputStream(final InputStream in, int blockSize) {
         this.in = in;
+        this.blockSize = blockSize;
     }
 
     /**
@@ -199,6 +217,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
 
         if (this.entry.getName().equals(CPIO_TRAILER)) {
             this.entryEOF = true;
+            skipRemainderOfLastBlock();
             return null;
         }
         return this.entry;
@@ -430,6 +449,16 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
     @Override
     public ArchiveEntry getNextEntry() throws IOException {
         return getNextCPIOEntry();
+    }
+
+    /**
+     * Skips the padding zeros written after the TRAILER!!! entry.
+     */
+    private void skipRemainderOfLastBlock() throws IOException {
+        long readFromLastBlock = (getBytesRead() % blockSize);
+        if (readFromLastBlock != 0) {
+            skip(blockSize - readFromLastBlock);
+        }
     }
 
     /**
