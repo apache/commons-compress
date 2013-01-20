@@ -138,6 +138,11 @@ The <action> type attribute can be add,update,fix,remove.
           TarArchiveInputStream could leave the second EOF record
           inside the stream it had just finished reading.
         </action>
+        <action type="fix" date="2013-01-20">
+          DumpArchiveInputStream no longer implicitly closes the
+          original input stream when it reaches the end of the
+          archive.
+        </action>
     </release>
     <release version="1.4.1" date="2012-05-23"
              description="Release 1.4.1">

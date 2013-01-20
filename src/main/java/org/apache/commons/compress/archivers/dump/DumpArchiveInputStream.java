@@ -250,8 +250,6 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
             // check if this is an end-of-volume marker.
             if (DumpArchiveConstants.SEGMENT_TYPE.END == active.getHeaderType()) {
                 hasHitEOF = true;
-                isClosed = true;
-                raw.close();
 
                 return null;
             }
@@ -436,7 +434,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     public int read(byte[] buf, int off, int len) throws IOException {
         int totalRead = 0;
 
-        if (isClosed || (entryOffset >= entrySize)) {
+        if (hasHitEOF || isClosed || (entryOffset >= entrySize)) {
             return -1;
         }
 
