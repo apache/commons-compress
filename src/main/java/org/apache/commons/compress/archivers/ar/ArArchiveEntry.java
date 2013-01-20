@@ -44,8 +44,8 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * 
  * Due to the limitation of the file name length to 16 bytes GNU and
  * BSD has their own variants of this format. Currently Commons
- * Compress can read but not write the GNU variant and doesn't support
- * the BSD variant at all.
+ * Compress can read but not write the GNU variant and fully supports
+ * the BSD variant.
  * 
  * @see <a href="http://www.freebsd.org/cgi/man.cgi?query=ar&sektion=5">ar man page</a>
  *
