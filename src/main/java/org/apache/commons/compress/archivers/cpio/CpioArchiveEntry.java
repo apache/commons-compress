@@ -30,7 +30,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * 
  * <ul>
  * <li>"070701" ASCII for new portable format</li>
- * <li>"070702" ASCII for new portable format with CRC format</li>
+ * <li>"070702" ASCII for new portable format with CRC</li>
  * <li>"070707" ASCII for old ascii (also known as Portable ASCII, odc or old
  * character format</li>
  * <li>070707 binary for old binary</li>
