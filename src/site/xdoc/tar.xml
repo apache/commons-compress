@@ -133,6 +133,24 @@
         currently not be detected at all.</p>
       </subsection>
 
+      <subsection name="Consuming Archives Completely">
+
+        <p>The end of a tar archive is signalled by two consecutive
+        records of all zeros.  Unfortunately not all tar
+        implementations adhere to this and some only write one record
+        to end the archive.  Commons Compress will always write two
+        records but stop reading an archive as soon as finds one
+        record of all zeros.</p>
+
+        <p>Prior to version 1.5 this could leave the second EOF record
+        inside the stream when <code>getNextEntry</code> or
+        <code>getNextTarEntry</code> returned <code>null</code>
+        Starting with version 1.5 <code>TarArchiveInputStream</code>
+        will try to read a second record as well if present,
+        effectively consuming the archive completely.</p>
+
+      </subsection>
+
     </section>
   </body>
 </document>
