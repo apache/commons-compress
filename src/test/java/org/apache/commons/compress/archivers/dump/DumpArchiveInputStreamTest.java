@@ -18,7 +18,10 @@
  */
 package org.apache.commons.compress.archivers.dump;
 
+import static org.junit.Assert.assertArrayEquals;
+
 import java.io.FileInputStream;
+import java.io.InputStream;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -49,6 +52,22 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
         } finally {
             is.close();
         }
+    }
+
+    public void testConsumesArchiveCompletely() throws Exception {
+        InputStream is = DumpArchiveInputStreamTest.class
+            .getResourceAsStream("/archive_with_trailer.dump");
+        DumpArchiveInputStream dump = new DumpArchiveInputStream(is);
+        while (dump.getNextDumpEntry() != null) {
+            // just consume the archive
+            ;
+        }
+        byte[] expected = new byte[] {
+            'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '\n'
+        };
+        byte[] actual = new byte[expected.length];
+        is.read(actual);
+        assertArrayEquals(expected, actual);
     }
 
 }
