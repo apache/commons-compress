@@ -133,6 +133,11 @@ The <action> type attribute can be add,update,fix,remove.
           ZipFile's initialization has been improved for non-Zip64
           archives.
         </action>
+        <action type="fix" date="2013-01-20" issue="COMPRESS-206"
+                due-to="Peter De Maeyer">
+          TarArchiveInputStream could leave the second EOF record
+          inside the stream it had just finished reading.
+        </action>
     </release>
     <release version="1.4.1" date="2012-05-23"
              description="Release 1.4.1">

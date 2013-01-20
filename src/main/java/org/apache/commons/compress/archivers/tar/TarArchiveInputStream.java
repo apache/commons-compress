@@ -315,6 +315,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             hasHitEOF = true;
         } else if (buffer.isEOFRecord(headerBuf)) {
             hasHitEOF = true;
+            buffer.tryToConsumeSecondEOFRecord();
         }
 
         return hasHitEOF ? null : headerBuf;
