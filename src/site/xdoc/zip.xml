@@ -447,6 +447,20 @@
         are used to load JAR files and are the base for the
         <code>jar</code> command line utility as well.</p>
       </subsection>
+
+      <subsection name="Consuming Archives Completely">
+
+        <p>Prior to version 1.5 <code>ZipArchiveInputStream</code>
+        would return null from <code>getNextEntry</code> or
+        <code>getNextZipEntry</code> as soon as the first central
+        directory header of the archive was found, leaving the whole
+        central directory itself unread inside the stream.  Starting
+        with version 1.5 <code>ZipArchiveInputStream</code> will try
+        to read the archive up to and including the "end of central
+        directory" record effectively consuming the archive
+        completely.</p>
+
+      </subsection>
     </section>
   </body>
 </document>
