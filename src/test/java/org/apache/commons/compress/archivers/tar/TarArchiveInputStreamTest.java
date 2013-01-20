@@ -18,6 +18,7 @@
 
 package org.apache.commons.compress.archivers.tar;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -26,6 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
@@ -162,6 +164,23 @@ public class TarArchiveInputStreamTest {
         t = tis.getNextTarEntry();
         assertEquals(name, t.getName());
         tis.close();
+    }
+
+    @Test
+    public void shouldConsumeArchiveCompletely() throws Exception {
+        InputStream is = TarArchiveInputStreamTest.class
+            .getResourceAsStream("/archive_with_trailer.tar");
+        TarArchiveInputStream tar = new TarArchiveInputStream(is);
+        while (tar.getNextTarEntry() != null) {
+            // just consume the archive
+            ;
+        }
+        byte[] expected = new byte[] {
+            'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '\n'
+        };
+        byte[] actual = new byte[expected.length];
+        is.read(actual);
+        assertArrayEquals(expected, actual);
     }
 
     private TarArchiveInputStream getTestStream(String name) {

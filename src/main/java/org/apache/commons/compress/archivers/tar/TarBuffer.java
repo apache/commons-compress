@@ -405,4 +405,30 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
             inStream = null;
         }
     }
+
+    /**
+     * Tries to read the next record rewinding the stream if if is not a EOF record.
+     *
+     * <p>This is meant to protect against cases where a tar
+     * implemenation has written only one EOF record when two are
+     * expected.  Actually this won't help since a non-conforming
+     * implementation likely won't fill full blocks consisting of - be
+     * default - ten records either so we probably have already read
+     * beyond the archive anyway.</p>
+     */
+    void tryToConsumeSecondEOFRecord() throws IOException {
+        boolean shouldReset = true;
+        boolean marked = inStream.markSupported();
+        if (marked) {
+            inStream.mark(recordSize);
+        }
+        try {
+            shouldReset = !isEOFRecord(readRecord());
+        } finally {
+            if (shouldReset && marked) {
+                inStream.reset();
+            }
+        }
+    }
+
 }
