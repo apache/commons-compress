@@ -39,7 +39,7 @@ import java.io.InputStream;
  */
 public abstract class ArchiveInputStream extends InputStream {
 
-    private byte[] SINGLE = new byte[1];
+    private final byte[] SINGLE = new byte[1];
     private static final int BYTE_MASK = 0xFF;
 
     /** holds the number of bytes read in this stream */
