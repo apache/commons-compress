@@ -463,7 +463,7 @@ public class X5455_ExtendedTimestampTest {
      * to GMT when writing ZIPs while java.util.zip.ZipEntry thinks it
      * was in local time.
      *
-     * The archive read in {@see #testSampleFile} has been created
+     * The archive read in {@link #testSampleFile} has been created
      * with GMT-8 so we need to adjust for the difference.
      */
     private static Date adjustFromGMTToExpectedOffset(Date from) {
