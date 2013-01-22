@@ -190,10 +190,10 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Currently unused
      */
-    private DumpArchiveSummary summary = null;
+    private final DumpArchiveSummary summary = null;
 
     // this information is available from standard index.
-    private TapeSegmentHeader header = new TapeSegmentHeader();
+    private final TapeSegmentHeader header = new TapeSegmentHeader();
     private String simpleName;
     private String originalName;
 
@@ -523,7 +523,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
         private int ino;
         private int count;
         private int holes;
-        private byte[] cdata = new byte[512]; // map of any 'holes'
+        private final byte[] cdata = new byte[512]; // map of any 'holes'
 
         public DumpArchiveConstants.SEGMENT_TYPE getType() {
             return type;

@@ -69,7 +69,7 @@ public class GzipCompressorInputStream extends CompressorInputStream {
     private Inflater inf = new Inflater(true);
 
     // CRC32 from uncompressed data
-    private CRC32 crc = new CRC32();
+    private final CRC32 crc = new CRC32();
 
     private int memberSize;
 
