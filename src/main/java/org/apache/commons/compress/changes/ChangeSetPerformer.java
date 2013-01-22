@@ -259,7 +259,7 @@ public class ChangeSetPerformer {
         private final ZipFile in;
         private final Enumeration<ZipArchiveEntry> nestedEnum;
         private ZipArchiveEntry current;
-        ZipFileIterator(ZipFile in) throws IOException {
+        ZipFileIterator(ZipFile in) {
             this.in = in;
             nestedEnum = in.getEntriesInPhysicalOrder();
         }
