@@ -137,7 +137,7 @@ public abstract class AbstractTestCase extends TestCase {
      * Creates an archive of textbased files in several directories. The
      * archivername is the factory identifier for the archiver, for example zip,
      * tar, cpio, jar, ar. The archive is created as a temp file.
-     * 
+     *
      * The archive contains the following files:
      * <ul>
      * <li>testdata/test1.xml</li>
@@ -150,7 +150,7 @@ public abstract class AbstractTestCase extends TestCase {
      * <li>something/bla</li>
      * <li>test with spaces.txt</li>
      * </ul>
-     * 
+     *
      * @param archivename
      *            the identifier of this archive
      * @return the newly created file
@@ -198,7 +198,7 @@ public abstract class AbstractTestCase extends TestCase {
 
     /**
      * Add an entry to the archive, and keep track of the names in archiveList.
-     * 
+     *
      * @param out
      * @param file1
      * @throws IOException
@@ -241,7 +241,7 @@ public abstract class AbstractTestCase extends TestCase {
 
     /**
      * Create an archive with a single file "test1.xml".
-     * 
+     *
      * @param archivename
      * @return the archive File
      * @throws Exception
@@ -270,7 +270,7 @@ public abstract class AbstractTestCase extends TestCase {
 
     /**
      * Checks if an archive contains all expected files.
-     * 
+     *
      * @param archive
      *            the archive to check
      * @param expected
@@ -291,7 +291,7 @@ public abstract class AbstractTestCase extends TestCase {
 
     /**
      * Checks that an archive input stream can be read, and that the file data matches file sizes.
-     * 
+     *
      * @param in
      * @param expected list of expected entries or {@code null} if no check of names desired
      * @throws Exception
@@ -303,11 +303,11 @@ public abstract class AbstractTestCase extends TestCase {
 
     /**
      * Checks that an archive input stream can be read, and that the file data matches file sizes.
-     * 
+     *
      * @param in
      * @param expected list of expected entries or {@code null} if no check of names desired
-     * @param cleanUp Cleans up resources if true 
-     * @return returns the created result file if cleanUp = false, or null otherwise 
+     * @param cleanUp Cleans up resources if true
+     * @return returns the created result file if cleanUp = false, or null otherwise
      * @throws Exception
      */
     protected File checkArchiveContent(ArchiveInputStream in, List<String> expected, boolean cleanUp)
@@ -364,7 +364,7 @@ public abstract class AbstractTestCase extends TestCase {
     /**
      * Override this method to change what is to be compared in the List.
      * For example, size + name instead of just name.
-     * 
+     *
      * @param entry
      * @return returns the entry name
      */
@@ -390,7 +390,7 @@ public abstract class AbstractTestCase extends TestCase {
             fos.close();
         }
     }
-    
+
     protected void closeQuietly(Closeable closeable){
         if (closeable != null) {
             try {

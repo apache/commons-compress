@@ -226,7 +226,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         } catch (EOFException e) {
             return null;
         }
-            
+
         ZipLong sig = new ZipLong(LFH_BUF);
         if (sig.equals(ZipLong.CFH_SIG) || sig.equals(ZipLong.AED_SIG)) {
             hitCentralDirectory = true;
@@ -308,7 +308,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         readFully(lfh);
         ZipLong sig = new ZipLong(lfh);
         if (sig.equals(ZipLong.DD_SIG)) {
-            throw new 
+            throw new
                 UnsupportedZipFeatureException(UnsupportedZipFeatureException
                                                .Feature.SPLITTING);
         }
@@ -533,7 +533,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
      * Checks if the signature matches what is expected for a zip file.
      * Does not currently handle self-extracting zips which may have arbitrary
      * leading content.
-     * 
+     *
      * @param signature
      *            the bytes to check
      * @param length
@@ -594,7 +594,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         } else {
             skip(Long.MAX_VALUE);
 
-            long inB = 
+            long inB =
                 current.entry.getMethod() == ZipArchiveOutputStream.DEFLATED
                 ? getBytesInflated() : current.bytesRead;
 

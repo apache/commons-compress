@@ -13,7 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  */
 
 package org.apache.commons.compress.utils;
@@ -22,7 +22,7 @@ import java.nio.charset.Charset;
 
 /**
  * Charsets required of every implementation of the Java platform.
- * 
+ *
  * From the Java documentation <a href="http://docs.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard
  * charsets</a>:
  * <p>
@@ -30,7 +30,7 @@ import java.nio.charset.Charset;
  * release documentation for your implementation to see if any other encodings are supported. Consult the release
  * documentation for your implementation to see if any other encodings are supported. </cite>
  * </p>
- * 
+ *
  * <ul>
  * <li><code>US-ASCII</code><br/>
  * Seven-bit ASCII, a.k.a. ISO646-US, a.k.a. the Basic Latin block of the Unicode character set.</li>
@@ -46,24 +46,24 @@ import java.nio.charset.Charset;
  * Sixteen-bit Unicode Transformation Format, byte order specified by a mandatory initial byte-order mark (either order
  * accepted on input, big-endian used on output.)</li>
  * </ul>
- * 
+ *
  * This class best belongs in the Commons Lang or IO project. Even if a similar class is defined in another Commons component, it is
  * not foreseen that Commons Compress would be made to depend on another Commons component.
- * 
+ *
  * @see <a href="http://docs.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
  * @since 1.4
  * @version $Id$
  */
 public class Charsets {
-    
+
     //
     // This class should only contain Charset instances for required encodings. This guarantees that it will load correctly and
     // without delay on all Java platforms.
     //
-    
+
     /**
-     * Returns the given Charset or the default Charset if the given Charset is null. 
-     * 
+     * Returns the given Charset or the default Charset if the given Charset is null.
+     *
      * @param charset
      *            A charset or null.
      * @return the given Charset or the default Charset if the given Charset is null
@@ -74,7 +74,7 @@ public class Charsets {
 
     /**
      * Returns a Charset for the named charset. If the name is null, return the default Charset.
-     * 
+     *
      * @param charset
      *            The name of the requested charset, may be null.
      * @return a Charset for the named charset
@@ -92,7 +92,7 @@ public class Charsets {
      * <p>
      * Every implementation of the Java platform is required to support this character encoding.
      * </p>
-     * 
+     *
      * @see <a href="http://docs.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
      */
     public static final Charset ISO_8859_1 = Charset.forName(CharsetNames.ISO_8859_1);
@@ -104,7 +104,7 @@ public class Charsets {
      * <p>
      * Every implementation of the Java platform is required to support this character encoding.
      * </p>
-     * 
+     *
      * @see <a href="http://docs.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
      */
     public static final Charset US_ASCII = Charset.forName(CharsetNames.US_ASCII);
@@ -117,7 +117,7 @@ public class Charsets {
      * <p>
      * Every implementation of the Java platform is required to support this character encoding.
      * </p>
-     * 
+     *
      * @see <a href="http://docs.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
      */
     public static final Charset UTF_16 = Charset.forName(CharsetNames.UTF_16);
@@ -129,7 +129,7 @@ public class Charsets {
      * <p>
      * Every implementation of the Java platform is required to support this character encoding.
      * </p>
-     * 
+     *
      * @see <a href="http://docs.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
      */
     public static final Charset UTF_16BE = Charset.forName(CharsetNames.UTF_16BE);
@@ -141,7 +141,7 @@ public class Charsets {
      * <p>
      * Every implementation of the Java platform is required to support this character encoding.
      * </p>
-     * 
+     *
      * @see <a href="http://docs.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
      */
     public static final Charset UTF_16LE = Charset.forName(CharsetNames.UTF_16LE);
@@ -153,7 +153,7 @@ public class Charsets {
      * <p>
      * Every implementation of the Java platform is required to support this character encoding.
      * </p>
-     * 
+     *
      * @see <a href="http://docs.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
      */
     public static final Charset UTF_8 = Charset.forName(CharsetNames.UTF_8);
