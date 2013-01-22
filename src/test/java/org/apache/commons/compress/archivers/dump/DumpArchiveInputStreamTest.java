@@ -60,8 +60,8 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
         DumpArchiveInputStream dump = new DumpArchiveInputStream(is);
         while (dump.getNextDumpEntry() != null) {
             // just consume the archive
-            ;
         }
+        dump.close();
         byte[] expected = new byte[] {
             'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '\n'
         };

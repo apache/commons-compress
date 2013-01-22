@@ -173,8 +173,8 @@ public class TarArchiveInputStreamTest {
         TarArchiveInputStream tar = new TarArchiveInputStream(is);
         while (tar.getNextTarEntry() != null) {
             // just consume the archive
-            ;
         }
+        tar.close();
         byte[] expected = new byte[] {
             'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '\n'
         };
