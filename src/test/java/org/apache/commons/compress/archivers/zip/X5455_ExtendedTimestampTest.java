@@ -396,18 +396,16 @@ public class X5455_ExtendedTimestampTest {
             final byte[] expectedLocal,
             final byte[] almostExpectedCentral
     ) throws ZipException {
-        parseReparse(null, time, null, expectedLocal, almostExpectedCentral);
+        parseReparse(expectedLocal[0], time, expectedLocal[0], expectedLocal, almostExpectedCentral);
     }
 
     private void parseReparse(
-            final Byte providedFlagsByte,
+            final byte providedFlags,
             final ZipLong time,
-            final Byte expectedFlagsByte,
+            final byte expectedFlags,
             final byte[] expectedLocal,
             final byte[] almostExpectedCentral
     ) throws ZipException {
-        final byte providedFlags = providedFlagsByte == null ? expectedLocal[0] : providedFlagsByte;
-        final byte expectedFlags = expectedFlagsByte == null ? expectedLocal[0] : expectedFlagsByte;
 
         // We're responsible for expectedCentral's flags.  Too annoying to set in caller.
         final byte[] expectedCentral = new byte[almostExpectedCentral.length];
