@@ -32,8 +32,8 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
  */
 public class JarArchiveEntry extends ZipArchiveEntry {
 
-    private Attributes manifestAttributes = null;
-    private Certificate[] certificates = null;
+    private final Attributes manifestAttributes = null;
+    private final Certificate[] certificates = null;
 
     public JarArchiveEntry(ZipEntry entry) throws ZipException {
         super(entry);

@@ -22,10 +22,10 @@ package org.apache.commons.compress.archivers.dump;
  * Directory entry.
  */
 class Dirent {
-    private int ino;
-    private int parentIno;
-    private int type;
-    private String name;
+    private final int ino;
+    private final int parentIno;
+    private final int type;
+    private final String name;
 
     /**
      * Constructor

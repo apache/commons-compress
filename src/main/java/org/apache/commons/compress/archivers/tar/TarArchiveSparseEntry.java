@@ -42,7 +42,7 @@ import java.io.IOException;
 
 public class TarArchiveSparseEntry implements TarConstants {
     /** If an extension sparse header follows. */
-    private boolean isExtended;
+    private final boolean isExtended;
 
     /**
      * Construct an entry from an archive's header bytes. File is set
