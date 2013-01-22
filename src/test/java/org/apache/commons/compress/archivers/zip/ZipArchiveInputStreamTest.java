@@ -89,12 +89,12 @@ public class ZipArchiveInputStreamTest {
         while (zip.getNextZipEntry() != null) {
             // just consume the archive
         }
-        zip.close();
         byte[] expected = new byte[] {
             'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '\n'
         };
         byte[] actual = new byte[expected.length];
         is.read(actual);
         assertArrayEquals(expected, actual);
+        zip.close();
     }
 }
