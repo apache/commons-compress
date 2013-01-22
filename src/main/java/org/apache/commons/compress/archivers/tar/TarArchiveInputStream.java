@@ -272,7 +272,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                 System.arraycopy(longNameData, 0, l, 0, length);
                 longNameData = l;
             }
-            
+
             currEntry.setName(encoding.decode(longNameData));
         }
 
@@ -415,10 +415,10 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     /**
      * Adds the sparse chunks from the current entry to the sparse chunks,
      * including any additional sparse entries following the current entry.
-     * 
-     * @throws IOException on error 
-     * 
-     * @todo Sparse files get not yet really processed. 
+     *
+     * @throws IOException on error
+     *
+     * @todo Sparse files get not yet really processed.
      */
     private void readGNUSparse() throws IOException {
         /* we do not really process sparse files yet
@@ -559,7 +559,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
 
     /**
      * Checks if the signature matches what is expected for a tar file.
-     * 
+     *
      * @param signature
      *            the bytes to check
      * @param length
