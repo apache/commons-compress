@@ -167,6 +167,7 @@ public final class ZipTestCase extends AbstractTestCase {
             try {
                 assertNull(zip.getNextZipEntry());
             } catch (IOException e) {
+                e.printStackTrace();
                 fail("COMPRESS-93: Unable to skip an unsupported zip entry");
             }
         } finally {

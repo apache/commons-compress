@@ -143,6 +143,10 @@ The <action> type attribute can be add,update,fix,remove.
           original input stream when it reaches the end of the
           archive.
         </action>
+        <action type="fix" date="2013-01-22">
+          ZipArchiveInputStream now consumes the remainder of the
+          archive when getNextZipEntry returns null.
+        </action>
     </release>
     <release version="1.4.1" date="2012-05-23"
              description="Release 1.4.1">
@@ -150,7 +154,6 @@ The <action> type attribute can be add,update,fix,remove.
         Ported libbzip2's fallback sort algorithm to
         BZip2CompressorOutputStream to speed up compression in certain
         edge cases.
-
         Using specially crafted inputs this can be used as a denial
         of service attack.  See the security reports page for details.
       </action>
