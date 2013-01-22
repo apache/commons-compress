@@ -126,13 +126,37 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
       extra field length              2 bytes
     */
 
+    private static final int CFH_LEN = 46;
+    /*
+        central file header signature   4 bytes  (0x02014b50)
+        version made by                 2 bytes
+        version needed to extract       2 bytes
+        general purpose bit flag        2 bytes
+        compression method              2 bytes
+        last mod file time              2 bytes
+        last mod file date              2 bytes
+        crc-32                          4 bytes
+        compressed size                 4 bytes
+        uncompressed size               4 bytes
+        file name length                2 bytes
+        extra field length              2 bytes
+        file comment length             2 bytes
+        disk number start               2 bytes
+        internal file attributes        2 bytes
+        external file attributes        4 bytes
+        relative offset of local header 4 bytes
+    */
+
     private static final long TWO_EXP_32 = ZIP64_MAGIC + 1;
 
     // cached buffers - must only be used locally in the class (COMPRESS-172 - reduce garbage collection)
     private final byte[] LFH_BUF = new byte[LFH_LEN];
     private final byte[] SKIP_BUF = new byte[1024];
+    private final byte[] SHORT_BUF = new byte[SHORT];
     private final byte[] WORD_BUF = new byte[WORD];
     private final byte[] TWO_DWORD_BUF = new byte[2 * DWORD];
+
+    private int entriesRead = 0;
 
     public ZipArchiveInputStream(InputStream inputStream) {
         this(inputStream, ZipEncodingHelper.UTF8);
@@ -204,9 +228,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         }
             
         ZipLong sig = new ZipLong(LFH_BUF);
-        if (sig.equals(ZipLong.CFH_SIG)) {
+        if (sig.equals(ZipLong.CFH_SIG) || sig.equals(ZipLong.AED_SIG)) {
             hitCentralDirectory = true;
-            return null;
+            skipRemainderOfArchive();
         }
         if (!sig.equals(ZipLong.LFH_SIG)) {
             return null;
@@ -271,6 +295,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         }
 
         processZip64Extra(size, cSize);
+        entriesRead++;
         return current.entry;
     }
 
@@ -832,6 +857,122 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         throws IOException {
         ((PushbackInputStream) in).unread(buf, offset, length);
         pushedBackBytes(length);
+    }
+
+    // End of Central Directory Record
+    //   end of central dir signature    4 bytes  (0x06054b50)
+    //   number of this disk             2 bytes
+    //   number of the disk with the
+    //   start of the central directory  2 bytes
+    //   total number of entries in the
+    //   central directory on this disk  2 bytes
+    //   total number of entries in
+    //   the central directory           2 bytes
+    //   size of the central directory   4 bytes
+    //   offset of start of central
+    //   directory with respect to
+    //   the starting disk number        4 bytes
+    //   .ZIP file comment length        2 bytes
+    //   .ZIP file comment       (variable size)
+    //
+
+    /**
+     * Reads the stream until it find the "End of central directory
+     * record" and consumes it as well.
+     */
+    private void skipRemainderOfArchive() throws IOException {
+        // skip over central directory. One LFH has been read too much
+        // already.  The calculation discounts file names and extra
+        // data so it will be too short.
+        realSkip(entriesRead * CFH_LEN - LFH_LEN);
+        findEocdRecord();
+        realSkip(ZipFile.MIN_EOCD_SIZE
+                 - WORD /* signature */ - SHORT /* comment len */);
+        readFully(SHORT_BUF);
+        // file comment
+        realSkip(ZipShort.getValue(SHORT_BUF));
+    }
+
+    /**
+     * Reads forward until the signature of the &quot;End of central
+     * directory&quot; recod is found.
+     */
+    private void findEocdRecord() throws IOException {
+        int currentByte = -1;
+        boolean skipReadCall = false;
+        while (skipReadCall || (currentByte = readOneByte()) > -1) {
+            skipReadCall = false;
+            if (!isFirstByteOfEocdSig(currentByte)) {
+                continue;
+            }
+            currentByte = readOneByte();
+            if (currentByte != ZipArchiveOutputStream.EOCD_SIG[1]) {
+                if (currentByte == -1) {
+                    break;
+                }
+                skipReadCall = isFirstByteOfEocdSig(currentByte);
+                continue;
+            }
+            currentByte = readOneByte();
+            if (currentByte != ZipArchiveOutputStream.EOCD_SIG[2]) {
+                if (currentByte == -1) {
+                    break;
+                }
+                skipReadCall = isFirstByteOfEocdSig(currentByte);
+                continue;
+            }
+            currentByte = readOneByte();
+            if (currentByte == -1
+                || currentByte == ZipArchiveOutputStream.EOCD_SIG[3]) {
+                break;
+            }
+            skipReadCall = isFirstByteOfEocdSig(currentByte);
+        }
+    }
+
+    /**
+     * Skips bytes by reading from the underlying stream rather than
+     * the (potentially inflating) archive stream - which {@link
+     * #skip} would do.
+     *
+     * Also updates bytes-read counter.
+     */
+    private void realSkip(long value) throws IOException {
+        if (value >= 0) {
+            long skipped = 0;
+            while (skipped < value) {
+                long rem = value - skipped;
+                int x = in.read(SKIP_BUF, 0,
+                                (int) (SKIP_BUF.length > rem ? rem
+                                       : SKIP_BUF.length));
+                if (x == -1) {
+                    return;
+                }
+                count(x);
+                skipped += x;
+            }
+            return;
+        }
+        throw new IllegalArgumentException();
+    }
+
+    /**
+     * Reads bytes by reading from the underlying stream rather than
+     * the (potentially inflating) archive stream - which {@link
+     * #read} would do.
+     *
+     * Also updates bytes-read counter.
+     */
+    private int readOneByte() throws IOException {
+        int b = in.read();
+        if (b != -1) {
+            count(1);
+        }
+        return b;
+    }
+
+    private boolean isFirstByteOfEocdSig(int b) {
+        return b == ZipArchiveOutputStream.EOCD_SIG[0];
     }
 
     /**

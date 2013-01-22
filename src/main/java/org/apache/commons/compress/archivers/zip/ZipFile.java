@@ -571,7 +571,7 @@ public class ZipFile {
      * supposed to be the last structure of the archive - without file
      * comment.
      */
-    private static final int MIN_EOCD_SIZE =
+    static final int MIN_EOCD_SIZE =
         /* end of central dir signature    */ WORD
         /* number of this disk             */ + SHORT
         /* number of the disk with the     */
@@ -685,6 +685,9 @@ public class ZipFile {
      * finds the &quot;Zip64 end of central directory record&quot; using the
      * parsed information, parses that and positions the stream at the
      * first central directory record.
+     *
+     * Expects stream to be positioned right behind the &quot;Zip64
+     * end of central directory locator&quot;'s signature.
      */
     private void positionAtCentralDirectory64()
         throws IOException {
@@ -704,9 +707,11 @@ public class ZipFile {
     }
 
     /**
-     * Searches for the &quot;End of central dir record&quot;, parses
-     * it and positions the stream at the first central directory
-     * record.
+     * Parses the &quot;End of central dir record&quot; and positions
+     * the stream at the first central directory record.
+     *
+     * Expects stream to be positioned at the beginning of the
+     * &quot;End of central dir record&quot;.
      */
     private void positionAtCentralDirectory32()
         throws IOException {
