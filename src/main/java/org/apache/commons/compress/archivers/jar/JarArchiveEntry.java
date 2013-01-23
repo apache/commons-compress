@@ -28,7 +28,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 
 /**
  *
- * @NotThreadSafe
+ * @NotThreadSafe (parent is not thread-safe)
  */
 public class JarArchiveEntry extends ZipArchiveEntry {
 
@@ -53,12 +53,28 @@ public class JarArchiveEntry extends ZipArchiveEntry {
 
     }
 
+    /**
+     * This method is not implemented and won't ever be.
+     * The JVM equivalent has a different name {@link java.util.jar.JarEntry#getAttributes()}
+     *
+     * @deprecated Do not use; always returns null
+     * @return Always returns null.
+     */
+    @Deprecated
     public Attributes getManifestAttributes() {
         return manifestAttributes;
     }
 
+    /**
+     * Return a copy of the list of certificates or null if there are none.
+     *
+     * @return Always returns null in the current implementation
+     *
+     * @deprecated Not currently implemented
+     */
+    @Deprecated
     public Certificate[] getCertificates() {
-        if (certificates != null) {
+        if (certificates != null) { // never true currently
             Certificate[] certs = new Certificate[certificates.length];
             System.arraycopy(certificates, 0, certs, 0, certs.length);
             return certs;
