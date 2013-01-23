@@ -32,6 +32,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
  */
 public class JarArchiveEntry extends ZipArchiveEntry {
 
+    // These are always null - see https://issues.apache.org/jira/browse/COMPRESS-18 for discussion
     private final Attributes manifestAttributes = null;
     private final Certificate[] certificates = null;
 
@@ -62,6 +63,11 @@ public class JarArchiveEntry extends ZipArchiveEntry {
             System.arraycopy(certificates, 0, certs, 0, certs.length);
             return certs;
         }
+        /*
+         * Note, the method
+         * Certificate[] java.util.jar.JarEntry.getCertificates()
+         * also returns null or the list of certificates (but not copied)
+         */
         return null;
     }
 
