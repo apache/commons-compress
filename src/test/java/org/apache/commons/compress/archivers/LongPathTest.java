@@ -44,8 +44,6 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
  */
 public class LongPathTest extends AbstractTestCase {
 
-    private static final ClassLoader classLoader = LongPathTest.class.getClassLoader();
-
     private File file;
 
     private static final ArrayList<String> fileList = new ArrayList<String>();
