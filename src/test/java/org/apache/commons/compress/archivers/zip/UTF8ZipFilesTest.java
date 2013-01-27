@@ -23,7 +23,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.Enumeration;
 import java.util.zip.CRC32;
@@ -84,7 +83,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
      * 7-ZIP doesn't use EFS for strings that can be encoded in CP437
      * - which is true for OIL_BARREL_TXT.
      */
-    public void testRead7ZipArchive() throws IOException, URISyntaxException {
+    public void testRead7ZipArchive() throws IOException {
         File archive = getFile("utf8-7zip-test.zip");
         ZipFile zf = null;
         try {
@@ -97,8 +96,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         }
     }
 
-    public void testRead7ZipArchiveForStream() throws IOException,
-                                                      URISyntaxException {
+    public void testRead7ZipArchiveForStream() throws IOException {
         FileInputStream archive =
             new FileInputStream(getFile("utf8-7zip-test.zip"));
         ZipArchiveInputStream zi = null;
@@ -118,7 +116,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
      * WinZIP created archive, uses Unicode Extra Fields but only in
      * the central directory.
      */
-    public void testReadWinZipArchive() throws IOException, URISyntaxException {
+    public void testReadWinZipArchive() throws IOException {
         File archive = getFile("utf8-winzip-test.zip");
         ZipFile zf = null;
         try {
@@ -143,8 +141,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         }
     }
 
-    public void testReadWinZipArchiveForStream() throws IOException,
-                                                      URISyntaxException {
+    public void testReadWinZipArchiveForStream() throws IOException {
         FileInputStream archive =
             new FileInputStream(getFile("utf8-winzip-test.zip"));
         ZipArchiveInputStream zi = null;
@@ -197,7 +194,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
     }
 
     public void testRawNameReadFromZipFile()
-        throws IOException, URISyntaxException {
+        throws IOException {
         File archive = getFile("utf8-7zip-test.zip");
         ZipFile zf = null;
         try {
@@ -209,7 +206,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
     }
 
     public void testRawNameReadFromStream()
-        throws IOException, URISyntaxException {
+        throws IOException {
         FileInputStream archive =
             new FileInputStream(getFile("utf8-7zip-test.zip"));
         ZipArchiveInputStream zi = null;
