@@ -62,9 +62,7 @@ public class LongPathTest extends AbstractTestCase {
 
     public static TestSuite suite() throws IOException{
         TestSuite suite = new TestSuite("LongPathTests");
-        URL resource = classLoader.getResource("longpath");
-        assertNotNull("Cannot find 'longpath' resource",resource);
-        File arcdir =new File(resource.getFile());
+        File arcdir = getFile("longpath");
         assertTrue(arcdir.exists());
         File listing= new File(arcdir,"files.txt");
         assertTrue("File listing is readable",listing.canRead());

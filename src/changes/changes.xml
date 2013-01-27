@@ -147,6 +147,11 @@ The <action> type attribute can be add,update,fix,remove.
           ZipArchiveInputStream now consumes the remainder of the
           archive when getNextZipEntry returns null.
         </action>
+        <action type="fix" date="2013-01-27" issue="COMPRESS-205"
+                due-to="Daniel Lowe">
+          Unit tests could fail if the source tree was checked out to
+          a directory tree containign spaces.
+        </action>
     </release>
     <release version="1.4.1" date="2012-05-23"
              description="Release 1.4.1">

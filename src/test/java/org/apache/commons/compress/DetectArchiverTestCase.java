@@ -21,7 +21,7 @@ package org.apache.commons.compress;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -38,7 +38,7 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
 
     final ClassLoader classLoader = getClass().getClassLoader();
 
-    public void testDetectionNotArchive() throws FileNotFoundException {
+    public void testDetectionNotArchive() throws IOException {
         try {
             getStreamFor("test.txt");
             fail("Expected ArchiveException");
@@ -83,12 +83,10 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
     }
 
     private ArchiveInputStream getStreamFor(String resource)
-            throws ArchiveException, FileNotFoundException {
-        final URL rsc = classLoader.getResource(resource);
-        assertNotNull("Could not find resource "+resource,rsc);
+            throws ArchiveException, IOException {
         return factory.createArchiveInputStream(
                    new BufferedInputStream(new FileInputStream(
-                       new File(rsc.getFile()))));
+                       getFile(resource))));
     }
 
     // Check that the empty archives created by the code are readable

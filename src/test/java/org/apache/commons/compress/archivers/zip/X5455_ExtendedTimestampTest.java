@@ -21,8 +21,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.net.URI;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -31,6 +29,7 @@ import java.util.Enumeration;
 import java.util.TimeZone;
 import java.util.zip.ZipException;
 
+import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp.ACCESS_TIME_BIT;
 import static org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp.CREATE_TIME_BIT;
 import static org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp.MODIFY_TIME_BIT;
@@ -87,8 +86,7 @@ public class X5455_ExtendedTimestampTest {
         1999's acc time:  Jan 1st, 1999-01-01/00:00:03
          */
 
-        URL zip = getClass().getResource("/COMPRESS-210_unix_time_zip_test.zip");
-        File archive = new File(new URI(zip.toString()));
+        File archive = getFile("COMPRESS-210_unix_time_zip_test.zip");
         ZipFile zf = null;
 
         try {

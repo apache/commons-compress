@@ -22,12 +22,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.net.URI;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.zip.ZipException;
 
+import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -46,8 +45,7 @@ public class X7875_NewUnixTest {
 
     @Test
     public void testSampleFile() throws Exception {
-        URL zip = getClass().getResource("/COMPRESS-211_uid_gid_zip_test.zip");
-        File archive = new File(new URI(zip.toString()));
+        File archive = getFile("COMPRESS-211_uid_gid_zip_test.zip");
         ZipFile zf = null;
 
         try {

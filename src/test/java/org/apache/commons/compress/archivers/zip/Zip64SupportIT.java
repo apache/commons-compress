@@ -18,6 +18,7 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -35,8 +36,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
-import java.net.URI;
-import java.net.URL;
 import java.util.Enumeration;
 import java.util.Random;
 import java.util.zip.ZipEntry;
@@ -2320,56 +2319,48 @@ public class Zip64SupportIT {
         }
     }
 
-    private static File getFile(String name) throws Throwable {
-        URL url = Zip64SupportIT.class.getResource(name);
-        assumeNotNull(url);
-        File file = new File(new URI(url.toString()));
-        assumeTrue(file.exists());
-        return file;
-    }
-
     private static File get5GBZerosFile() throws Throwable {
-        return getFile("/5GB_of_Zeros.zip");
+        return getFile("5GB_of_Zeros.zip");
     }
 
     private static File get5GBZerosFileGeneratedBy7ZIP() throws Throwable {
-        return getFile("/5GB_of_Zeros_7ZIP.zip");
+        return getFile("5GB_of_Zeros_7ZIP.zip");
     }
 
     private static File get5GBZerosFileGeneratedByJava7Jar() throws Throwable {
-        return getFile("/5GB_of_Zeros_jar.zip");
+        return getFile("5GB_of_Zeros_jar.zip");
     }
 
     private static File get5GBZerosFileGeneratedByWinZIP() throws Throwable {
-        return getFile("/5GB_of_Zeros_WinZip.zip");
+        return getFile("5GB_of_Zeros_WinZip.zip");
     }
 
     private static File get5GBZerosFileGeneratedByPKZip() throws Throwable {
-        return getFile("/5GB_of_Zeros_PKZip.zip");
+        return getFile("5GB_of_Zeros_PKZip.zip");
     }
 
     private static File get100KFileFile() throws Throwable {
-        return getFile("/100k_Files.zip");
+        return getFile("100k_Files.zip");
     }
 
     private static File get100KFileFileGeneratedBy7ZIP() throws Throwable {
-        return getFile("/100k_Files_7ZIP.zip");
+        return getFile("100k_Files_7ZIP.zip");
     }
 
     private static File get100KFileFileGeneratedByWinCF() throws Throwable {
-        return getFile("/100k_Files_WindowsCompressedFolders.zip");
+        return getFile("100k_Files_WindowsCompressedFolders.zip");
     }
 
     private static File get100KFileFileGeneratedByJava7Jar() throws Throwable {
-        return getFile("/100k_Files_jar.zip");
+        return getFile("100k_Files_jar.zip");
     }
 
     private static File get100KFileFileGeneratedByWinZIP() throws Throwable {
-        return getFile("/100k_Files_WinZIP.zip");
+        return getFile("100k_Files_WinZIP.zip");
     }
 
     private static File get100KFileFileGeneratedByPKZip() throws Throwable {
-        return getFile("/100k_Files_PKZip.zip");
+        return getFile("100k_Files_PKZip.zip");
     }
 
     private static File getTempFile(String testName) throws Throwable {

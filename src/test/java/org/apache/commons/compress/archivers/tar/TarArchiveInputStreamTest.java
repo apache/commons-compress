@@ -18,6 +18,7 @@
 
 package org.apache.commons.compress.archivers.tar;
 
+import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -25,12 +26,9 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
@@ -78,10 +76,9 @@ public class TarArchiveInputStreamTest {
 
     @Test
     public void workaroundForBrokenTimeHeader() throws Exception {
-        URL tar = getClass().getResource("/simple-aix-native-tar.tar");
         TarArchiveInputStream in = null;
         try {
-            in = new TarArchiveInputStream(new FileInputStream(new File(new URI(tar.toString()))));
+            in = new TarArchiveInputStream(new FileInputStream(getFile("simple-aix-native-tar.tar")));
             TarArchiveEntry tae = in.getNextTarEntry();
             tae = in.getNextTarEntry();
             assertEquals("sample/link-to-txt-file.lnk", tae.getName());
@@ -97,20 +94,19 @@ public class TarArchiveInputStreamTest {
 
     @Test
     public void datePriorToEpochInGNUFormat() throws Exception {
-        datePriorToEpoch("/preepoch-star.tar");
+        datePriorToEpoch("preepoch-star.tar");
     }
 
 
     @Test
     public void datePriorToEpochInPAXFormat() throws Exception {
-        datePriorToEpoch("/preepoch-posix.tar");
+        datePriorToEpoch("preepoch-posix.tar");
     }
 
     private void datePriorToEpoch(String archive) throws Exception {
-        URL tar = getClass().getResource(archive);
         TarArchiveInputStream in = null;
         try {
-            in = new TarArchiveInputStream(new FileInputStream(new File(new URI(tar.toString()))));
+            in = new TarArchiveInputStream(new FileInputStream(getFile(archive)));
             TarArchiveEntry tae = in.getNextTarEntry();
             assertEquals("foo", tae.getName());
             Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));

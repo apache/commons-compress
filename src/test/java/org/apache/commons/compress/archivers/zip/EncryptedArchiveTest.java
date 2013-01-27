@@ -18,21 +18,19 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import static org.apache.commons.compress.AbstractTestCase.getFile;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 
 import junit.framework.TestCase;
 
 public class EncryptedArchiveTest extends TestCase {
 
     public void testReadPasswordEncryptedEntryViaZipFile()
-        throws IOException, URISyntaxException {
-        URL zip = getClass().getResource("/password-encrypted.zip");
-        File file = new File(new URI(zip.toString()));
+        throws IOException {
+        File file = getFile("password-encrypted.zip");
         ZipFile zf = null;
         try {
             zf = new ZipFile(file);
@@ -53,9 +51,8 @@ public class EncryptedArchiveTest extends TestCase {
     }
 
     public void testReadPasswordEncryptedEntryViaStream()
-        throws IOException, URISyntaxException {
-        URL zip = getClass().getResource("/password-encrypted.zip");
-        File file = new File(new URI(zip.toString()));
+        throws IOException {
+        File file = getFile("password-encrypted.zip");
         ZipArchiveInputStream zin = null;
         try {
             zin = new ZipArchiveInputStream(new FileInputStream(file));

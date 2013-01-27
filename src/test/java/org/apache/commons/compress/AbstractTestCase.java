@@ -27,6 +27,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -71,8 +73,18 @@ public abstract class AbstractTestCase extends TestCase {
         return f;
     }
 
-    protected File getFile(String path) {
-        return new File("src/test/resources", path);
+    public static File getFile(String path) throws IOException {
+        URL url = AbstractTestCase.class.getClassLoader().getResource(path);
+        if (url == null) {
+            throw new FileNotFoundException("couldn't find " + path);
+        }
+        URI uri = null;
+        try {
+            uri = url.toURI();
+        } catch (java.net.URISyntaxException ex) {
+            throw new IOException(ex);
+        }
+        return new File(uri);
     }
 
     @Override
