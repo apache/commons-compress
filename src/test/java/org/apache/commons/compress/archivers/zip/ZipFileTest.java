@@ -18,12 +18,12 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import static org.apache.commons.compress.AbstractTestCase.getFile;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.zip.ZipEntry;
@@ -145,8 +145,7 @@ public class ZipFileTest extends TestCase {
      * @see "https://issues.apache.org/jira/browse/COMPRESS-176"
      */
     public void testWinzipBackSlashWorkaround() throws Exception {
-        URL zip = getClass().getResource("/test-winzip.zip");
-        File archive = new File(new URI(zip.toString()));
+        File archive = getFile("test-winzip.zip");
         zf = new ZipFile(archive);
         assertNull(zf.getEntry("\u00e4\\\u00fc.txt"));
         assertNotNull(zf.getEntry("\u00e4/\u00fc.txt"));
@@ -158,8 +157,7 @@ public class ZipFileTest extends TestCase {
      * >COMPRESS-208</a>.
      */
     public void testSkipsPK00Prefix() throws Exception {
-        URL zip = getClass().getResource("/COMPRESS-208.zip");
-        File archive = new File(new URI(zip.toString()));
+        File archive = getFile("COMPRESS-208.zip");
         zf = new ZipFile(archive);
         assertNotNull(zf.getEntry("test1.xml"));
         assertNotNull(zf.getEntry("test2.xml"));
@@ -176,8 +174,7 @@ public class ZipFileTest extends TestCase {
      * central directory order is different from entry data order.
      */
     private void readOrderTest() throws Exception {
-        URL zip = getClass().getResource("/ordertest.zip");
-        File archive = new File(new URI(zip.toString()));
+        File archive = getFile("ordertest.zip");
         zf = new ZipFile(archive);
     }
 

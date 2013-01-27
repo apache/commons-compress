@@ -18,6 +18,7 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -26,8 +27,6 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
 
 import org.junit.Test;
 
@@ -38,10 +37,9 @@ public class ZipArchiveInputStreamTest {
      */
     @Test
     public void winzipBackSlashWorkaround() throws Exception {
-        URL zip = getClass().getResource("/test-winzip.zip");
         ZipArchiveInputStream in = null;
         try {
-            in = new ZipArchiveInputStream(new FileInputStream(new File(new URI(zip.toString()))));
+            in = new ZipArchiveInputStream(new FileInputStream(getFile("test-winzip.zip")));
             ZipArchiveEntry zae = in.getNextZipEntry();
             zae = in.getNextZipEntry();
             zae = in.getNextZipEntry();
@@ -58,11 +56,10 @@ public class ZipArchiveInputStreamTest {
      */
     @Test
     public void properUseOfInflater() throws Exception {
-        URL zip = getClass().getResource("/COMPRESS-189.zip");
         ZipFile zf = null;
         ZipArchiveInputStream in = null;
         try {
-            zf = new ZipFile(new File(new URI(zip.toString())));
+            zf = new ZipFile(getFile("COMPRESS-189.zip"));
             ZipArchiveEntry zae = zf.getEntry("USD0558682-20080101.ZIP");
             in = new ZipArchiveInputStream(new BufferedInputStream(zf.getInputStream(zae)));
             ZipArchiveEntry innerEntry;

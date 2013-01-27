@@ -18,12 +18,11 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import static org.apache.commons.compress.AbstractTestCase.getFile;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 
 import junit.framework.TestCase;
 
@@ -66,12 +65,10 @@ public class Maven221MultiVolumeTest extends TestCase {
     private static final String LAST_ENTRY_NAME =
         "apache-maven-2.2.1/lib/maven-2.2.1-uber.jar";
 
-    public void testRead7ZipMultiVolumeArchiveForStream() throws IOException,
-            URISyntaxException {
+    public void testRead7ZipMultiVolumeArchiveForStream() throws IOException {
 
-        URL zip = getClass().getResource("/apache-maven-2.2.1.zip.001");
-        FileInputStream archive = new FileInputStream(
-            new File(new URI(zip.toString())));
+        FileInputStream archive =
+            new FileInputStream(getFile("apache-maven-2.2.1.zip.001"));
         ZipArchiveInputStream zi = null;
         try {
             zi = new ZipArchiveInputStream(archive,null,false);
@@ -114,10 +111,8 @@ public class Maven221MultiVolumeTest extends TestCase {
         }
     }
 
-    public void testRead7ZipMultiVolumeArchiveForFile()
-        throws URISyntaxException {
-        URL zip = getClass().getResource("/apache-maven-2.2.1.zip.001");
-        File file = new File(new URI(zip.toString()));
+    public void testRead7ZipMultiVolumeArchiveForFile() throws IOException {
+        File file = getFile("apache-maven-2.2.1.zip.001");
         try {
             new ZipFile(file);
             fail("Expected ZipFile to fail");

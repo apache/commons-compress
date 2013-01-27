@@ -30,7 +30,7 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 public class ChainingTestCase extends AbstractTestCase {
 
     public void testTarGzip() throws Exception {
-        File file = new File("src/test/resources/bla.tgz");
+        File file = getFile("bla.tgz");
         final TarArchiveInputStream is = new TarArchiveInputStream(new GzipCompressorInputStream(new FileInputStream(file)));
         final TarArchiveEntry entry = (TarArchiveEntry)is.getNextEntry();
         assertNotNull(entry);
@@ -39,7 +39,7 @@ public class ChainingTestCase extends AbstractTestCase {
     }
 
     public void testTarBzip2() throws Exception {
-        File file = new File("src/test/resources/bla.tar.bz2");
+        File file = getFile("bla.tar.bz2");
         final TarArchiveInputStream is = new TarArchiveInputStream(new BZip2CompressorInputStream(new FileInputStream(file)));
         final TarArchiveEntry entry = (TarArchiveEntry)is.getNextEntry();
         assertNotNull(entry);

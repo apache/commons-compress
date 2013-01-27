@@ -18,12 +18,12 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import static org.apache.commons.compress.AbstractTestCase.getFile;
+
 import junit.framework.TestCase;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.net.URI;
-import java.net.URL;
 import java.util.Enumeration;
 import java.util.TreeMap;
 import java.util.zip.ZipEntry;
@@ -59,8 +59,7 @@ public class ZipArchiveEntryTest extends TestCase {
         // I looked into creating a test with hard links, but zip does not appear to
         // support hard links, so nevermind.
 
-        URL zip = getClass().getResource("/COMPRESS-214_unix_symlinks.zip");
-        File archive = new File(new URI(zip.toString()));
+        File archive = getFile("COMPRESS-214_unix_symlinks.zip");
         ZipFile zf = null;
 
         try {

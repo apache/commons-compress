@@ -18,10 +18,12 @@
  */
 package org.apache.commons.compress;
 
+import static org.apache.commons.compress.AbstractTestCase.getFile;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
 
 import junit.framework.TestCase;
@@ -54,13 +56,10 @@ public final class DetectCompressorTestCase extends TestCase {
     }
 
     private CompressorInputStream getStreamFor(String resource)
-            throws CompressorException, FileNotFoundException {
-
-        final URL rsc = classLoader.getResource(resource);
-        assertNotNull("Could not find resource "+resource,rsc);
+            throws CompressorException, IOException {
         return factory.createCompressorInputStream(
                    new BufferedInputStream(new FileInputStream(
-                       new File(rsc.getFile()))));
+                       getFile(resource))));
     }
 
 }
