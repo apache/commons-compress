@@ -21,11 +21,8 @@ package org.apache.commons.compress;
 import static org.apache.commons.compress.AbstractTestCase.getFile;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URL;
-
 import junit.framework.TestCase;
 
 import org.apache.commons.compress.compressors.CompressorException;

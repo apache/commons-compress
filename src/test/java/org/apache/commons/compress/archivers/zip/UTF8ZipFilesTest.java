@@ -18,8 +18,6 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import static org.apache.commons.compress.AbstractTestCase.getFile;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
