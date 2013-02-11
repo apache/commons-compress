@@ -455,9 +455,15 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
      * Skips the padding zeros written after the TRAILER!!! entry.
      */
     private void skipRemainderOfLastBlock() throws IOException {
-        long readFromLastBlock = (getBytesRead() % blockSize);
-        if (readFromLastBlock != 0) {
-            skip(blockSize - readFromLastBlock);
+        long readFromLastBlock = getBytesRead() % blockSize;
+        long remainingBytes = readFromLastBlock == 0 ? 0
+            : blockSize - readFromLastBlock;
+        while (remainingBytes > 0) {
+            long skipped = skip(blockSize - readFromLastBlock);
+            if (skipped <= 0) {
+                break;
+            }
+            remainingBytes -= skipped;
         }
     }
 
