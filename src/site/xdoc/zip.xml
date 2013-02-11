@@ -461,6 +461,20 @@
         completely.</p>
 
       </subsection>
+
+      <subsection name="Symbolic Links" id="symlinks">
+
+        <p>Starting with Compress 1.4 <code>ZipArchiveEntry</code>
+        recognizes Unix Symbolic Link entries written by InfoZIP's
+        zip.</p>
+
+        <p>The <code>ZipFile</code> class contains a convenience
+        method to read the link name of an entry.  Basically all it
+        does is reading the contents of he entry and converting it to
+        a string using the given file name encoding of the
+        archive.</p>
+
+      </subsection>
     </section>
   </body>
 </document>
