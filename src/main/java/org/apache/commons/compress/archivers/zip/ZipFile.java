@@ -34,6 +34,8 @@ import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
+import org.apache.commons.compress.utils.IOUtils;
+
 import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
@@ -347,6 +349,36 @@ public class ZipFile {
             default:
                 throw new ZipException("Found unsupported compression method "
                                        + ze.getMethod());
+        }
+    }
+
+    /**
+     * <p>
+     * Convenience method to return the entry's content as a String if isUnixSymlink()
+     * returns true for it, otherwise returns null.
+     * </p>
+     *
+     * <p>This method assumes the symbolic link's file name uses the
+     * same encoding that as been specified for this ZipFile.</p>
+     *
+     * @param entry ZipArchiveEntry object that represents the symbolic link
+     * @return entry's content as a String
+     * @throws IOException problem with content's input stream
+     */
+    public String getUnixSymlink(ZipArchiveEntry entry) throws IOException {
+        if (entry != null && entry.isUnixSymlink()) {
+            InputStream in = null;
+            try {
+                in = getInputStream(entry);
+                byte[] symlinkBytes = IOUtils.toByteArray(in);
+                return zipEncoding.decode(symlinkBytes);
+            } finally {
+                if (in != null) {
+                    in.close();
+                }
+            }
+        } else {
+            return null;
         }
     }
 
