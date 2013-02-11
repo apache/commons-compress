@@ -37,7 +37,7 @@ class TapeInputStream extends FilterInputStream {
     private byte[] blockBuffer = new byte[DumpArchiveConstants.TP_SIZE];
     private int currBlkIdx = -1;
     private int blockSize = DumpArchiveConstants.TP_SIZE;
-    private final int recordSize = DumpArchiveConstants.TP_SIZE;
+    private static final int recordSize = DumpArchiveConstants.TP_SIZE;
     private int readOffset = DumpArchiveConstants.TP_SIZE;
     private boolean isCompressed = false;
     private long bytesRead = 0;
