@@ -18,13 +18,9 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import static org.apache.commons.compress.AbstractTestCase.getFile;
-
 import junit.framework.TestCase;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 
 /**
