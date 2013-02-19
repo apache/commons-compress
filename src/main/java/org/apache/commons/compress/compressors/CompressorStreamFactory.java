@@ -46,7 +46,7 @@ import org.apache.commons.compress.compressors.pack200.Pack200CompressorOutputSt
  * cos.close();
  * </pre>
  * 
- * Example (Compressing a file):
+ * Example (Decompressing a file):
  * <pre>
  * final InputStream is = new FileInputStream(input); 
  * CompressorInputStream in = 
