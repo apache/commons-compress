@@ -44,6 +44,10 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.5" date="not released, yet"
              description="Release 1.5">
+      <action type="fix" date="2012-02-19" issue="COMPRESS-218"
+              due-to="Gili">
+        Typo in CompressorStreamFactory Javadoc
+      </action>
       <action type="update" date="2012-07-08" issue="COMPRESS-188"
               due-to="Harald Kuhn">
         Improved exception message if a zip archive cannot be read
