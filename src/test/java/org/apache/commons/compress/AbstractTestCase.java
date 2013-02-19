@@ -66,7 +66,7 @@ public abstract class AbstractTestCase extends TestCase {
         archive = null;
     }
 
-    protected static File mkdir(String name) throws IOException {
+    public static File mkdir(String name) throws IOException {
         File f = File.createTempFile(name, "");
         f.delete();
         f.mkdir();
@@ -101,7 +101,7 @@ public abstract class AbstractTestCase extends TestCase {
         }
     }
 
-    protected static void rmdir(File f) {
+    public static void rmdir(File f) {
         String[] s = f.list();
         if (s != null) {
             for (String element : s) {
