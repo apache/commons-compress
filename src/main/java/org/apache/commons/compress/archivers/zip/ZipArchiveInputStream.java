@@ -426,9 +426,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             current.bytesReadFromStream += buf.lengthOfLastRead;
         }
 
-        int toRead = length > buf.lengthOfLastRead
-            ? buf.lengthOfLastRead - buf.offsetInBuffer
-            : length;
+        int availableBytesInBuffer = buf.lengthOfLastRead - buf.offsetInBuffer;
+        int toRead = Math.min(availableBytesInBuffer, length);
         if ((csize - current.bytesRead) < toRead) {
             // if it is smaller than toRead then it fits into an int
             toRead = (int) (csize - current.bytesRead);
