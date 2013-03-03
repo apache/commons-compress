@@ -25,6 +25,18 @@
   <body>
     <section name="Examples">
 
+      <subsection name="Archivers and Compressors">
+        <p>Commons Compress calls all formats that compress a single
+        stream of data compressor formats while all formats that
+        collect multiple entries inside a single (potentially
+        compressed) archive are archiver formats.</p>
+
+        <p>The compressor formats supported are gzip, bzip2, xz and
+        Pack200, the archiver formats are ar, cpio, dump (read-only),
+        tar and zip.  Pack200 is a special case as it can only
+        compress JAR files.</p>
+      </subsection>
+
       <subsection name="Common Notes">
         <p>The stream classes all wrap around streams provided by the
           calling code and they work on them directly without any
@@ -49,10 +61,18 @@ CompressorOutputStream gzippedOut = new CompressorStreamFactory()
     .createCompressorOutputStream(CompressorStreamFactory.GZIP, myOutputStream);
 ]]></source>
 
-        <p>Make the factory guess the input format for a given stream:</p>
+        <p>Make the factory guess the input format for a given
+        archiver stream:</p>
         <source><![CDATA[
 ArchiveInputStream input = new ArchiveStreamFactory()
     .createArchiveInputStream(originalInput);
+]]></source>
+
+        <p>Make the factory guess the input format for a given
+        compressor stream:</p>
+        <source><![CDATA[
+CompressorInputStream input = new CompressorStreamFactory()
+    .createCompressorInputStream(originalInput);
 ]]></source>
 
       </subsection>
