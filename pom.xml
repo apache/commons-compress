@@ -124,14 +124,6 @@ These include: bzip2, gzip, pack200, xz and ar, cpio, jar, tar, zip, dump.
     <url>http://svn.apache.org/repos/asf/commons/proper/compress/trunk</url>
   </scm>
 
-  <distributionManagement>
-    <site>
-      <id>website</id>
-      <name>Apache Website</name>
-      <url>scp://people.apache.org/www/commons.apache.org/compress/</url>
-    </site>
-  </distributionManagement>
-
   <build>
     <plugins>
       <plugin>
@@ -269,17 +261,6 @@ These include: bzip2, gzip, pack200, xz and ar, cpio, jar, tar, zip, dump.
   </reporting>
 
   <profiles>
-    <profile>
-      <id>rc</id>
-      <distributionManagement>
-        <!-- Cannot define in parent ATM, see COMMONSSITE-26 -->
-        <site>
-          <id>apache.website</id>
-          <name>Apache Commons Release Candidate Staging Site</name>
-          <url>${commons.deployment.protocol}://people.apache.org/www/people.apache.org/builds/commons/${commons.componentid}/${commons.release.version}/${commons.rc.version}/site</url>
-        </site>
-      </distributionManagement>
-    </profile>
     <!-- Add long running tests as **/*IT.java -->
     <profile>
       <id>run-zipit</id>
