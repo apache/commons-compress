@@ -28,6 +28,7 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorOutputStream;
+import org.apache.commons.compress.compressors.xz.XZUtils;
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorInputStream;
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorOutputStream;
 
@@ -117,7 +118,8 @@ public class CompressorStreamFactory {
                 return new GzipCompressorInputStream(in);
             }
 
-            if (XZCompressorInputStream.matches(signature, signatureLength)) {
+            if (XZUtils.isXZCompressionAvailable() &&
+                XZCompressorInputStream.matches(signature, signatureLength)) {
                 return new XZCompressorInputStream(in);
             }
 

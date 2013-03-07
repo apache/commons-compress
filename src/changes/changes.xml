@@ -164,6 +164,10 @@ The <action> type attribute can be add,update,fix,remove.
           Fixed a potential ArrayIndexOutOfBoundsException when
           reading STORED entries from ZipArchiveInputStream.
         </action>
+        <action type="fix" date="2013-03-07" issue="COMPRESS-221">
+          CompressorStreamFactory can now be used without XZ for Java
+          being available.
+        </action>
     </release>
     <release version="1.4.1" date="2012-05-23"
              description="Release 1.4.1">
