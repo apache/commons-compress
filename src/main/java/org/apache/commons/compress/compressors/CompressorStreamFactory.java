@@ -83,6 +83,25 @@ public class CompressorStreamFactory {
      */
     public static final String XZ = "xz";
 
+    private boolean decompressConcatenated = false;
+
+    /**
+     * Whether to decompress the full input or only the first stream
+     * in formats supporting multiple concatenated input streams.
+     *
+     * <p>This setting applies to the gzip, bzip2 and xz formats only.</p>
+     *
+     * @param       decompressConcatenated
+     *                          if true, decompress until the end of the
+     *                          input; if false, stop after the first
+     *                          stream and leave the input position to point
+     *                          to the next byte after the stream
+     * @since Commons Compress 1.5
+     */
+    public void setDecompressConcatenated(boolean decompressConcatenated) {
+        this.decompressConcatenated = decompressConcatenated;
+    }
+
     /**
      * Create an compressor input stream from an input stream, autodetecting
      * the compressor type from the first few bytes of the stream. The InputStream
@@ -111,16 +130,16 @@ public class CompressorStreamFactory {
             in.reset();
 
             if (BZip2CompressorInputStream.matches(signature, signatureLength)) {
-                return new BZip2CompressorInputStream(in);
+                return new BZip2CompressorInputStream(in, decompressConcatenated);
             }
 
             if (GzipCompressorInputStream.matches(signature, signatureLength)) {
-                return new GzipCompressorInputStream(in);
+                return new GzipCompressorInputStream(in, decompressConcatenated);
             }
 
             if (XZUtils.isXZCompressionAvailable() &&
                 XZCompressorInputStream.matches(signature, signatureLength)) {
-                return new XZCompressorInputStream(in);
+                return new XZCompressorInputStream(in, decompressConcatenated);
             }
 
             if (Pack200CompressorInputStream.matches(signature, signatureLength)) {

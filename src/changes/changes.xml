@@ -168,6 +168,11 @@ The <action> type attribute can be add,update,fix,remove.
           CompressorStreamFactory can now be used without XZ for Java
           being available.
         </action>
+        <action type="add" date="2013-03-07" issue="COMPRESS-220">
+          CompressorStreamFactory has an option to create
+          decompressing streams that decompress the full input for
+          formats that support multiple concatenated streams.
+        </action>
     </release>
     <release version="1.4.1" date="2012-05-23"
              description="Release 1.4.1">
