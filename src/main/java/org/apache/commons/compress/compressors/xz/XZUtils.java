@@ -44,6 +44,19 @@ public class XZUtils {
     }
 
     /**
+     * Are the classes required to support XZ compression available?
+     * @since Commons Compress 1.5
+     */
+    public static boolean isXZCompressionAvailable() {
+        try {
+            XZCompressorInputStream.matches(null, 0);
+            return true;
+        } catch (NoClassDefFoundError error) {
+            return false;
+        }
+    }
+
+    /**
      * Detects common xz suffixes in the given filename.
      *
      * @param filename name of a file
