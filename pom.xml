@@ -254,6 +254,8 @@ These include: bzip2, gzip, pack200, xz and ar, cpio, jar, tar, zip, dump.
             <!-- proposal text without license -->
             <exclude>PROPOSAL.txt</exclude>
             <exclude>.pmd</exclude>
+            <exclude>.gitignore</exclude>
+            <exclude>.gitattributes</exclude>
           </excludes>
         </configuration>
       </plugin>
