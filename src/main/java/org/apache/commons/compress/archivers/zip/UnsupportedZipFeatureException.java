@@ -64,6 +64,7 @@ public class UnsupportedZipFeatureException extends ZipException {
      * feature.
      *
      * @param reason the feature that is not supported
+     * @since 1.5
      */
     public UnsupportedZipFeatureException(Feature reason) {
         super("unsupported feature " + reason +  " used in archive.");

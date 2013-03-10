@@ -42,6 +42,7 @@ import static org.apache.commons.compress.archivers.zip.ZipUtil.unsignedIntToSig
  * GIDSize       1 byte      Size of GID field
  * GID           Variable    GID for this entry (little endian)
  * </pre>
+ * @since 1.5
  */
 public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     private static final ZipShort HEADER_ID = new ZipShort(0x7875);

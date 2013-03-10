@@ -364,6 +364,7 @@ public class ZipFile {
      * @param entry ZipArchiveEntry object that represents the symbolic link
      * @return entry's content as a String
      * @throws IOException problem with content's input stream
+     * @since 1.5
      */
     public String getUnixSymlink(ZipArchiveEntry entry) throws IOException {
         if (entry != null && entry.isUnixSymlink()) {

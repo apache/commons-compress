@@ -79,6 +79,7 @@ import java.util.zip.ZipException;
  * Flags         Byte        info bits (refers to local header!)
  * (ModTime)     Long        time of last modification (UTC/GMT)
  * </pre>
+ * @since 1.5
  */
 public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serializable {
     private static final ZipShort HEADER_ID = new ZipShort(0x5455);
