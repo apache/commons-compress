@@ -86,6 +86,7 @@ public class ChangeSetPerformer {
      * @throws IOException
      *             if an read/write error occurs
      * @return the results of this operation
+     * @since 1.5
      */
     public ChangeSetResults perform(ZipFile in, ArchiveOutputStream out)
             throws IOException {

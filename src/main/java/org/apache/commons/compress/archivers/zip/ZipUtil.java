@@ -92,6 +92,7 @@ public abstract class ZipUtil {
      *
      * @return the reversed array (mutated in-place, but also returned for
      *        convenience).
+     * @since 1.5
      */
     public static byte[] reverse(final byte[] array) {
         final int z = array.length - 1; // position of last element
@@ -146,6 +147,7 @@ public abstract class ZipUtil {
      *
      * @param b byte to convert to int
      * @return int representation of the provided byte
+     * @since 1.5
      */
     public static int signedByteToUnsignedInt(byte b) {
         if (b >= 0) {
@@ -161,6 +163,7 @@ public abstract class ZipUtil {
      * @param i integer to convert to byte
      * @return byte representation of the provided int
      * @throws IllegalArgumentException if the provided integer is not inside the range [0,255].
+     * @since 1.5
      */
     public static byte unsignedIntToSignedByte(int i) {
         if (i > 255 || i < 0) {

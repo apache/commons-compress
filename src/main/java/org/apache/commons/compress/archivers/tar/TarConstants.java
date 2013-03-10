@@ -70,6 +70,7 @@ public interface TarConstants {
 
     /**
      * Offset of the checksum field within header record.
+     * @since 1.5
      */
     int    CHKSUM_OFFSET = 148;
 

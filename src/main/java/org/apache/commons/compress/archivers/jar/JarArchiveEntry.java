@@ -57,7 +57,7 @@ public class JarArchiveEntry extends ZipArchiveEntry {
      * This method is not implemented and won't ever be.
      * The JVM equivalent has a different name {@link java.util.jar.JarEntry#getAttributes()}
      *
-     * @deprecated Do not use; always returns null
+     * @deprecated since 1.5, do not use; always returns null
      * @return Always returns null.
      */
     @Deprecated
@@ -70,7 +70,7 @@ public class JarArchiveEntry extends ZipArchiveEntry {
      *
      * @return Always returns null in the current implementation
      *
-     * @deprecated Not currently implemented
+     * @deprecated since 1.5, not currently implemented
      */
     @Deprecated
     public Certificate[] getCertificates() {

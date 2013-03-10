@@ -272,6 +272,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * in which case the entry's content contains the target path
      * for the symlink.
      *
+     * @since 1.5
      * @return true if the entry represents a unix symlink, false otherwise.
      */
     public boolean isUnixSymlink() {
