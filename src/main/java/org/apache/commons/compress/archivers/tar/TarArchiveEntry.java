@@ -238,7 +238,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
 
     /**
      * Construct an entry with a name and a link flag.
-s     *
+     *
      * @param name the entry name
      * @param linkFlag the entry link flag.
      * @param preserveLeadingSlashes whether to allow leading slashes
