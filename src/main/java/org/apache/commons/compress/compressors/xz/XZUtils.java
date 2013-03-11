@@ -45,7 +45,7 @@ public class XZUtils {
 
     /**
      * Are the classes required to support XZ compression available?
-     * @since Commons Compress 1.5
+     * @since 1.5
      */
     public static boolean isXZCompressionAvailable() {
         try {
