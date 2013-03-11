@@ -96,7 +96,7 @@ public class CompressorStreamFactory {
      *                          input; if false, stop after the first
      *                          stream and leave the input position to point
      *                          to the next byte after the stream
-     * @since Commons Compress 1.5
+     * @since 1.5
      */
     public void setDecompressConcatenated(boolean decompressConcatenated) {
         this.decompressConcatenated = decompressConcatenated;
