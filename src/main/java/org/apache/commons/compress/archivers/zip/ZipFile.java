@@ -284,7 +284,7 @@ public class ZipFile {
      *
      * @return all entries as {@link ZipArchiveEntry} instances
      *
-     * @since Commons Compress 1.1
+     * @since 1.1
      */
     public Enumeration<ZipArchiveEntry> getEntriesInPhysicalOrder() {
         ZipArchiveEntry[] allEntries =
@@ -992,7 +992,7 @@ public class ZipFile {
      * <p>Won't return any meaningful results if one of the entries
      * isn't part of the archive at all.</p>
      *
-     * @since Commons Compress 1.1
+     * @since 1.1
      */
     private final Comparator<ZipArchiveEntry> OFFSET_COMPARATOR =
         new Comparator<ZipArchiveEntry>() {

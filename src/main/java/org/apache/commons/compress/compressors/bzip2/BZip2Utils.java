@@ -25,7 +25,7 @@ import org.apache.commons.compress.compressors.FileNameUtil;
 /**
  * Utility code for the BZip2 compression format.
  * @ThreadSafe
- * @since Commons Compress 1.1
+ * @since 1.1
  */
 public abstract class BZip2Utils {
 

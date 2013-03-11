@@ -62,24 +62,24 @@ public class CompressorStreamFactory {
 
     /**
      * Constant used to identify the BZIP2 compression algorithm.
-     * @since Commons Compress 1.1
+     * @since 1.1
      */
     public static final String BZIP2 = "bzip2";
 
     /**
      * Constant used to identify the GZIP compression algorithm.
-     * @since Commons Compress 1.1
+     * @since 1.1
      */
     public static final String GZIP = "gz";
     /**
      * Constant used to identify the PACK200 compression algorithm.
-     * @since Commons Compress 1.3
+     * @since 1.3
      */
     public static final String PACK200 = "pack200";
 
     /**
      * Constant used to identify the XZ compression method.
-     * @since Commons Compress 1.4
+     * @since 1.4
      */
     public static final String XZ = "xz";
 
@@ -111,7 +111,7 @@ public class CompressorStreamFactory {
      * @return the compressor input stream
      * @throws CompressorException if the compressor name is not known
      * @throws IllegalArgumentException if the stream is null or does not support mark
-     * @since Commons Compress 1.1
+     * @since 1.1
      */
     public CompressorInputStream createCompressorInputStream(final InputStream in)
             throws CompressorException {

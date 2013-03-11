@@ -99,7 +99,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * Constructor for TarInputStream.
      * @param os the output stream to use
      * @param encoding name of the encoding to use for file names
-     * @since Commons Compress 1.4
+     * @since 1.4
      */
     public TarArchiveOutputStream(OutputStream os, String encoding) {
         this(os, TarBuffer.DEFAULT_BLKSIZE, TarBuffer.DEFAULT_RCDSIZE, encoding);
@@ -119,7 +119,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * @param os the output stream to use
      * @param blockSize the block size to use
      * @param encoding name of the encoding to use for file names
-     * @since Commons Compress 1.4
+     * @since 1.4
      */
     public TarArchiveOutputStream(OutputStream os, int blockSize,
                                   String encoding) {
@@ -142,7 +142,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * @param blockSize the block size to use
      * @param recordSize the record size to use
      * @param encoding name of the encoding to use for file names
-     * @since Commons Compress 1.4
+     * @since 1.4
      */
     public TarArchiveOutputStream(OutputStream os, int blockSize,
                                   int recordSize, String encoding) {
