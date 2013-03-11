@@ -23,7 +23,7 @@ import java.util.zip.ZipException;
 /**
  * Exception thrown when attempting to read or write data for a zip
  * entry that uses ZIP features not supported by this library.
- * @since Commons Compress 1.1
+ * @since 1.1
  */
 public class UnsupportedZipFeatureException extends ZipException {
 
@@ -88,7 +88,7 @@ public class UnsupportedZipFeatureException extends ZipException {
 
     /**
      * ZIP Features that may or may not be supported.
-     * @since Commons Compress 1.1
+     * @since 1.1
      */
     public static class Feature {
         /**

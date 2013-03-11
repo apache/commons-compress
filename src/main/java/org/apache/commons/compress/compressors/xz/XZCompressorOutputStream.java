@@ -27,7 +27,7 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
 
 /**
  * XZ compressor.
- * @since Commons Compress 1.4
+ * @since 1.4
  */
 public class XZCompressorOutputStream extends CompressorOutputStream {
     private final XZOutputStream out;

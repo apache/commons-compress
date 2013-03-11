@@ -71,7 +71,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * Constructor for TarInputStream.
      * @param is the input stream to use
      * @param encoding name of the encoding to use for file names
-     * @since Commons Compress 1.4
+     * @since 1.4
      */
     public TarArchiveInputStream(InputStream is, String encoding) {
         this(is, TarBuffer.DEFAULT_BLKSIZE, TarBuffer.DEFAULT_RCDSIZE, encoding);
@@ -91,7 +91,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @param is the input stream to use
      * @param blockSize the block size to use
      * @param encoding name of the encoding to use for file names
-     * @since Commons Compress 1.4
+     * @since 1.4
      */
     public TarArchiveInputStream(InputStream is, int blockSize,
                                  String encoding) {
@@ -114,7 +114,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @param blockSize the block size to use
      * @param recordSize the record size to use
      * @param encoding name of the encoding to use for file names
-     * @since Commons Compress 1.4
+     * @since 1.4
      */
     public TarArchiveInputStream(InputStream is, int blockSize, int recordSize,
                                  String encoding) {

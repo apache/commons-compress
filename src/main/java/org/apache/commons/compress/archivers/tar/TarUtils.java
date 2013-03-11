@@ -277,7 +277,7 @@ public class TarUtils {
      * @param offset The offset into the buffer from which to parse.
      * @param length The maximum number of bytes to parse.
      * @param encoding name of the encoding to use for file names
-     * @since Commons Compress 1.4
+     * @since 1.4
      * @return The entry name.
      */
     public static String parseName(byte[] buffer, final int offset,
@@ -342,7 +342,7 @@ public class TarUtils {
      * @param offset The starting offset into the buffer
      * @param length The maximum number of header bytes to copy.
      * @param encoding name of the encoding to use for file names
-     * @since Commons Compress 1.4
+     * @since 1.4
      * @return The updated offset, i.e. offset + length
      */
     public static int formatNameBytes(String name, byte[] buf, final int offset,

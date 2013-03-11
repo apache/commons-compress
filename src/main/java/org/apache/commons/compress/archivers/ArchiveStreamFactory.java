@@ -75,32 +75,32 @@ public class ArchiveStreamFactory {
 
     /**
      * Constant used to identify the AR archive format.
-     * @since Commons Compress 1.1
+     * @since 1.1
      */
     public static final String AR = "ar";
     /**
      * Constant used to identify the CPIO archive format.
-     * @since Commons Compress 1.1
+     * @since 1.1
      */
     public static final String CPIO = "cpio";
     /**
      * Constant used to identify the Unix DUMP archive format.
-     * @since Commons Compress 1.3
+     * @since 1.3
      */
     public static final String DUMP = "dump";
     /**
      * Constant used to identify the JAR archive format.
-     * @since Commons Compress 1.1
+     * @since 1.1
      */
     public static final String JAR = "jar";
     /**
      * Constant used to identify the TAR archive format.
-     * @since Commons Compress 1.1
+     * @since 1.1
      */
     public static final String TAR = "tar";
     /**
      * Constant used to identify the ZIP archive format.
-     * @since Commons Compress 1.1
+     * @since 1.1
      */
     public static final String ZIP = "zip";
 

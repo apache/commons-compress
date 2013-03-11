@@ -25,7 +25,7 @@ import org.apache.commons.compress.compressors.FileNameUtil;
 /**
  * Utility code for the xz compression format.
  * @ThreadSafe
- * @since Commons Compress 1.4
+ * @since 1.4
  */
 public class XZUtils {
 

@@ -315,7 +315,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      *
      * @param headerBuf The header bytes from a tar archive entry.
      * @param encoding encoding to use for file names
-     * @since Commons Compress 1.4
+     * @since 1.4
      * @throws IllegalArgumentException if any of the numeric fields have an invalid format
      */
     public TarArchiveEntry(byte[] headerBuf, ZipEncoding encoding)
@@ -922,7 +922,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      *
      * @param header The tar entry header buffer to get information from.
      * @param encoding encoding to use for file names
-     * @since Commons Compress 1.4
+     * @since 1.4
      * @throws IllegalArgumentException if any of the numeric fields
      * have an invalid format
      */
