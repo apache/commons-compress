@@ -31,7 +31,7 @@ import org.apache.commons.compress.AbstractTestCase;
 public class TarArchiveEntryTest extends TestCase implements TarConstants {
 
     private static final String OS =
-        System.getProperty("os.name").toLowerCase(Locale.US);
+        System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
     private static final String ROOT =
         OS.startsWith("windows") || OS.startsWith("netware") ? "C:\\" : "/";
 
