@@ -48,17 +48,12 @@
             </ul>
             <subsection name="Status">
               <ul>
-                <li>The current release is 1.4.1.  This release fixes
-                a denial of service flaw in
-                <code>BZip2CompressorOutputStream</code> that is
-                present in all earlier versions of Commons Compress.
-                For details see the <a href="security.html">security
-                reports page</a>.</li>
+                <li>The current release is 1.5.</li>
               </ul>
             </subsection>
         </section>
         <section name="Documentation">
-          <p>Commons Compress 1.4.1 requires Java 5.</p>
+          <p>Commons Compress 1.5 requires Java 5.</p>
           
           <p>The compress component is split into <em>compressors</em> and
             <em>archivers</em>.  While <em>compressors</em>
@@ -99,7 +94,7 @@
         </section>
         <section name="Releases">
           <p>
-            The latest version v1.4.1, is Java5 compatible -
+            The latest version v1.5, is Java5 compatible -
             <a href="http://commons.apache.org/compress/download_compress.cgi">Download now!</a>
           </p>
         </section>

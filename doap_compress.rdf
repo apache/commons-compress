@@ -36,6 +36,13 @@
     <release>
       <Version>
         <name>commons-compress</name>
+        <created>2013-03-14</created>
+        <revision>1.5</revision>
+      </Version>
+    </release>
+    <release>
+      <Version>
+        <name>commons-compress</name>
         <created>2012-05-23</created>
         <revision>1.4.1</revision>
       </Version>
