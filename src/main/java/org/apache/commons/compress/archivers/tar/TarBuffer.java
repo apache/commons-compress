@@ -153,12 +153,13 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
      * @return true if the record data is an End of Archive
      */
     public boolean isEOFRecord(byte[] record) {
-        for (int i = 0, sz = getRecordSize(); i < sz; ++i) {
-            if (record[i] != 0) {
-                return false;
+        if (record != null) {
+            for (int i = 0, sz = getRecordSize(); i < sz; ++i) {
+                if (record[i] != 0) {
+                    return false;
+                }
             }
         }
-
         return true;
     }
 
@@ -181,7 +182,7 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
     /**
      * Read a record from the input stream and return the data.
      *
-     * @return The record data.
+     * @return The record data or null if EOF has been hit.
      * @throws IOException on error
      */
     public byte[] readRecord() throws IOException {
@@ -407,12 +408,12 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
     }
 
     /**
-     * Tries to read the next record rewinding the stream if if is not a EOF record.
+     * Tries to read the next record rewinding the stream if it is not a EOF record.
      *
      * <p>This is meant to protect against cases where a tar
      * implemenation has written only one EOF record when two are
      * expected.  Actually this won't help since a non-conforming
-     * implementation likely won't fill full blocks consisting of - be
+     * implementation likely won't fill full blocks consisting of - by
      * default - ten records either so we probably have already read
      * beyond the archive anyway.</p>
      */
