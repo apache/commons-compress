@@ -28,18 +28,21 @@ import java.io.OutputStream;
  * They should also override {@link #close()} to ensure that any necessary
  * trailers are added.
  * 
- * <p>
- * The normal sequence of calls for working with ArchiveOutputStreams is:
- * + create ArchiveOutputStream object
- * + write SFX header (optional, Zip only)
- * + repeat as needed:
- *      - putArchiveEntry() (writes entry header)
- *      - write() (writes entry data)
- *      - closeArchiveEntry() (closes entry)
- * + finish() (ends the addition of entries)
- * + write additional data if format supports it (optional)
- * + close()
- * </p>
+ * <p>The normal sequence of calls when working with ArchiveOutputStreams is:</p>
+ * <ul>
+ *   <li>Create ArchiveOutputStream object,</li>
+ *   <li>optionally write SFX header (Zip only),</li>
+ *   <li>repeat as needed:
+ *     <ul>
+ *       <li>{@link #putArchiveEntry(ArchiveEntry)} (writes entry header),
+ *       <li>{@link #write(byte[])} (writes entry data, as often as needed),
+ *       <li>{@link #closeArchiveEntry()} (closes entry),
+ *     </ul>
+ *   </li>
+ *   <li> {@link #finish()} (ends the addition of entries),</li>
+ *   <li> optionally write additional data, provided format supports it,</li>
+ *   <li>{@link #close()}.</li>
+ * </ul>
  * 
  * <p>
  * Example usage:<br/>
@@ -77,9 +80,7 @@ public abstract class ArchiveOutputStream extends OutputStream {
      * Finishes the addition of entries to this stream, without closing it.
      * Additional data can be written, if the format supports it.
      * 
-     * The finish() method throws an Exception if the user forgets to close the entry
-     * .
-     * @throws IOException
+     * @throws IOException if the user forgets to close the entry.
      */
     public abstract void finish() throws IOException;
 
@@ -99,9 +100,9 @@ public abstract class ArchiveOutputStream extends OutputStream {
     /**
      * Writes a byte to the current archive entry.
      *
-     * This method simply calls write( byte[], 0, 1 ).
+     * <p>This method simply calls {@code write( byte[], 0, 1 )}.
      *
-     * MUST be overridden if the {@link #write(byte[], int, int)} method
+     * <p>MUST be overridden if the {@link #write(byte[], int, int)} method
      * is not overridden; may be overridden otherwise.
      * 
      * @param b The byte to be written.
@@ -115,7 +116,7 @@ public abstract class ArchiveOutputStream extends OutputStream {
 
     /**
      * Increments the counter of already written bytes.
-     * Doesn't increment if the EOF has been hit ({@code written} == -1)
+     * Doesn't increment if EOF has been hit ({@code written == -1}).
      * 
      * @param written the number of bytes written
      */
@@ -125,7 +126,7 @@ public abstract class ArchiveOutputStream extends OutputStream {
 
     /**
      * Increments the counter of already written bytes.
-     * Doesn't increment if the EOF has been hit ({@code written} == -1)
+     * Doesn't increment if EOF has been hit ({@code written == -1}).
      * 
      * @param written the number of bytes written
      * @since 1.1
