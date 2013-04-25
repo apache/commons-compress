@@ -36,10 +36,10 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 
 /**
- * <p>Factory to create Archive[In|Out]putStreams from names or the first bytes of
- * the InputStream. In order add other implementations you should extend
+ * Factory to create Archive[In|Out]putStreams from names or the first bytes of
+ * the InputStream. In order to add other implementations, you should extend
  * ArchiveStreamFactory and override the appropriate methods (and call their
- * implementation from super of course).</p>
+ * implementation from super of course).
  * 
  * Compressing a ZIP-File:
  * 
