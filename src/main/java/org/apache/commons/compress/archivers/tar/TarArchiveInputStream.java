@@ -311,11 +311,11 @@ public class TarArchiveInputStream extends ArchiveInputStream {
 
         byte[] headerBuf = buffer.readRecord();
 
-        if (headerBuf == null) {
+        if (buffer.isEOFRecord(headerBuf)) {
             hasHitEOF = true;
-        } else if (buffer.isEOFRecord(headerBuf)) {
-            hasHitEOF = true;
-            buffer.tryToConsumeSecondEOFRecord();
+            if (headerBuf != null) {
+                buffer.tryToConsumeSecondEOFRecord();
+            }
         }
 
         return hasHitEOF ? null : headerBuf;
