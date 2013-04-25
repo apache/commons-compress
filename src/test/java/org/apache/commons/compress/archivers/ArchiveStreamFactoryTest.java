@@ -50,34 +50,38 @@ public class ArchiveStreamFactoryTest {
      */
     @Test
     public void aiffFilesAreNoTARs() throws Exception {
-        InputStream is = null;
-        try {
-            is = new BufferedInputStream(new FileInputStream("src/test/resources/testAIFF.aif"));
-            new ArchiveStreamFactory().createArchiveInputStream(is);
-            fail("created an input stream for a non-archive");
-        } catch (ArchiveException ae) {
-            assertTrue(ae.getMessage().startsWith("No Archiver found"));
-        } finally {
-            if (is != null) {
+    	FileInputStream fis = new FileInputStream("src/test/resources/testAIFF.aif");
+    	try {
+            InputStream is = new BufferedInputStream(fis);
+            try {
+                new ArchiveStreamFactory().createArchiveInputStream(is);
+                fail("created an input stream for a non-archive");
+            } catch (ArchiveException ae) {
+                assertTrue(ae.getMessage().startsWith("No Archiver found"));
+            } finally {
                 is.close();
             }
-        }
+    	} finally {
+            fis.close();
+    	}
     }
 
     @Test
     public void testCOMPRESS209() throws Exception {
-        InputStream is = null;
-        try {
-            is = new BufferedInputStream(new FileInputStream("src/test/resources/testCompress209.doc"));
-            new ArchiveStreamFactory().createArchiveInputStream(is);
-            fail("created an input stream for a non-archive");
-        } catch (ArchiveException ae) {
-            assertTrue(ae.getMessage().startsWith("No Archiver found"));
-        } finally {
-            if (is != null) {
-                is.close();
+    	FileInputStream fis = new FileInputStream("src/test/resources/testCompress209.doc");
+    	try {
+            InputStream bis = new BufferedInputStream(fis);
+            try {
+                new ArchiveStreamFactory().createArchiveInputStream(bis);
+                fail("created an input stream for a non-archive");
+            } catch (ArchiveException ae) {
+                assertTrue(ae.getMessage().startsWith("No Archiver found"));
+            } finally {
+                bis.close();
             }
-        }
+    	} finally {
+            fis.close();
+    	}
     }
 
     /**
@@ -87,15 +91,21 @@ public class ArchiveStreamFactoryTest {
      */
     @Test
     public void skipsPK00Prefix() throws Exception {
-        InputStream is = null;
-        try {
-            is = new BufferedInputStream(new FileInputStream("src/test/resources/COMPRESS-208.zip"));
-            ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(is);
-            assertTrue(ais instanceof ZipArchiveInputStream);
-        } finally {
-            if (is != null) {
-                is.close();
+    	FileInputStream fis = new FileInputStream("src/test/resources/COMPRESS-208.zip");
+    	try {
+            InputStream bis = new BufferedInputStream(fis);
+            try {
+                ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(bis);
+                try {
+                    assertTrue(ais instanceof ZipArchiveInputStream);
+                } finally {
+                    ais.close();
+                }
+            } finally {
+                bis.close();
             }
-        }
+    	} finally {
+            fis.close();
+    	}
     }
 }
