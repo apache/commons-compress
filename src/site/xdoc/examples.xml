@@ -33,7 +33,7 @@
 
         <p>The compressor formats supported are gzip, bzip2, xz and
         Pack200, the archiver formats are ar, cpio, dump (read-only),
-        tar and zip.  Pack200 is a special case as it can only
+        tar, zip and 7z.  Pack200 is a special case as it can only
         compress JAR files.</p>
       </subsection>
 
@@ -421,6 +421,21 @@ while (-1 != (n = xzIn.read(buffer))) {
 }
 out.close();
 xzIn.close();
+]]></source>
+      </subsection>
+
+      <subsection name="7z">
+
+        <p>Uncompressing a given 7z archive (you would
+          certainly add exception handling and make sure all streams
+          get closed properly):</p>
+<source><![CDATA[
+SevenZFile sevenZFile = new SevenZFile(new File("archive.7z"));
+SevenZArchiveEntry entry = sevenZFile.getNextEntry();
+byte[] content = new byte[entry.getSize()];
+LOOP UNTIL entry.getSize() HAS BEEN READ {
+    sevenZFile.read(content, offset, content.length - offset);
+}
 ]]></source>
       </subsection>
 
