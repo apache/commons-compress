@@ -1,0 +1,182 @@
+/*
+ *  Licensed to the Apache Software Foundation (ASF) under one or more
+ *  contributor license agreements.  See the NOTICE file distributed with
+ *  this work for additional information regarding copyright ownership.
+ *  The ASF licenses this file to You under the Apache License, Version 2.0
+ *  (the "License"); you may not use this file except in compliance with
+ *  the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+package org.apache.commons.compress.archivers.sevenz;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.GeneralSecurityException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.tukaani.xz.LZMA2InputStream;
+
+class Coders {
+    static InputStream addDecoder(final InputStream is,
+            final Coder coder, final String password) throws IOException {
+        for (final CoderId coderId : coderTable) {
+            if (Arrays.equals(coderId.id, coder.decompressionMethodId)) {
+                return coderId.coder.decode(is, coder, password);
+            }
+        }
+        throw new IOException("Unsupported compression method " +
+                Arrays.toString(coder.decompressionMethodId));
+    }
+    
+    static CoderId[] coderTable = new CoderId[] {
+        new CoderId(new byte[] { (byte)0x00 }, new CopyDecoder()),
+        new CoderId(new byte[] { (byte)0x21 }, new LZMA2Decoder()),
+        // FIXME: gives corrupt output
+        //new CoderId(new byte[] { (byte)0x04, (byte)0x01, (byte)0x08 }, new DeflateDecoder()),
+        new CoderId(new byte[] { (byte)0x04, (byte)0x02, (byte)0x02 }, new BZIP2Decoder()),
+        new CoderId(new byte[] { (byte)0x06, (byte)0xf1, (byte)0x07, (byte)0x01 }, new AES256SHA256Decoder())
+    };
+    
+    static class CoderId {
+        CoderId(final byte[] id, final CoderBase coder) {
+            this.id = id;
+            this.coder = coder;
+        }
+
+        final byte[] id;
+        final CoderBase coder;
+    }
+    
+    static abstract class CoderBase {
+        abstract InputStream decode(final InputStream in, final Coder coder,
+                String password) throws IOException;
+    }
+    
+    static class CopyDecoder extends CoderBase {
+        @Override
+        InputStream decode(final InputStream in, final Coder coder,
+                String password) throws IOException {
+            return in; 
+        }
+    }
+    
+    static class LZMA2Decoder extends CoderBase {
+        @Override
+        InputStream decode(final InputStream in, final Coder coder,
+                String password) throws IOException {
+            final int dictionarySizeBits = 0xff & coder.properties[0];
+            if ((dictionarySizeBits & (~0x3f)) != 0) {
+                throw new IOException("Unsupported LZMA2 property bits");
+            }
+            if (dictionarySizeBits > 40) {
+                throw new IOException("Dictionary larger than 4GiB maximum size");
+            }
+            final int dictionarySize;
+            if (dictionarySizeBits == 40) {
+                dictionarySize = 0xFFFFffff;
+            } else {
+                dictionarySize = (2 | (dictionarySizeBits & 0x1)) << (dictionarySizeBits / 2 + 11);
+            }
+            return new LZMA2InputStream(in, dictionarySize);
+        }
+    }
+    
+//    static class DeflateDecoder extends CoderBase {
+//        @Override
+//        InputStream decode(final InputStream in, final Coder coder, final String password)
+//                throws IOException {
+//            System.out.println("deflate prop count = " + (coder.properties == null ? -1 : coder.properties.length));
+//            return new DeflaterInputStream(in, new Deflater(Deflater.DEFAULT_COMPRESSION, true));
+//            //return new GZIPInputStream(in);
+//        }
+//    }
+
+    static class BZIP2Decoder extends CoderBase {
+        @Override
+        InputStream decode(final InputStream in, final Coder coder, final String password)
+                throws IOException {
+            return new BZip2CompressorInputStream(in);
+        }
+    }
+
+    static class AES256SHA256Decoder extends CoderBase {
+        @Override
+        InputStream decode(final InputStream in, final Coder coder,
+                String password) throws IOException {
+            final int byte0 = 0xff & coder.properties[0];
+            final int numCyclesPower = byte0 & 0x3f;
+            final int byte1 = 0xff & coder.properties[1];
+            final int ivSize = ((byte0 >> 6) & 1) + (byte1 & 0x0f);
+            final int saltSize = ((byte0 >> 7) & 1) + (byte1 >> 4);
+            //debug("numCyclesPower=" + numCyclesPower + ", saltSize=" + saltSize + ", ivSize=" + ivSize);
+            if (2 + saltSize + ivSize > coder.properties.length) {
+                throw new IOException("Salt size + IV size too long");
+            }
+            final byte[] salt = new byte[saltSize];
+            System.arraycopy(coder.properties, 2, salt, 0, saltSize);
+            final byte[] iv = new byte[16];
+            System.arraycopy(coder.properties, 2 + saltSize, iv, 0, ivSize);
+            
+            if (password == null) {
+                throw new IOException("Cannot read encrypted files without a password");
+            }
+            final byte[] passwordBytes = password.getBytes("UTF-16LE");
+            final byte[] aesKeyBytes;
+            if (numCyclesPower == 0x3f) {
+                aesKeyBytes = new byte[32];
+                System.arraycopy(salt, 0, aesKeyBytes, 0, saltSize);
+                System.arraycopy(passwordBytes, 0, aesKeyBytes, saltSize,
+                        Math.min(passwordBytes.length, aesKeyBytes.length - saltSize));
+            } else {
+                final MessageDigest digest;
+                try {
+                    digest = MessageDigest.getInstance("SHA-256");
+                } catch (NoSuchAlgorithmException noSuchAlgorithmException) {
+                    throw new IOException("SHA-256 is unsupported by your Java implementation",
+                            noSuchAlgorithmException);
+                }
+                final byte[] extra = new byte[8];
+                for (long j = 0; j < (1L << numCyclesPower); j++) {
+                    digest.update(salt);
+                    digest.update(passwordBytes);
+                    digest.update(extra);
+                    for (int k = 0; k < extra.length; k++) {
+                        ++extra[k];
+                        if (extra[k] != 0) {
+                            break;
+                        }
+                    }
+                }
+                aesKeyBytes = digest.digest();
+            }
+            
+            final SecretKey aesKey = new SecretKeySpec(aesKeyBytes, "AES");
+            try {
+                Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+                cipher.init(Cipher.DECRYPT_MODE, aesKey, new IvParameterSpec(iv));
+                return new CipherInputStream(in, cipher);
+            } catch (GeneralSecurityException generalSecurityException) {
+                throw new IOException("Decryption error " +
+                        "(do you have the JCE Unlimited Strength Jurisdiction Policy Files installed?)",
+                        generalSecurityException);
+            }
+        }
+    }
+}

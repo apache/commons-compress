@@ -29,22 +29,23 @@ import java.util.BitSet;
 import java.util.zip.CRC32;
 
 import org.apache.commons.compress.utils.CRC32VerifyingInputStream;
-import org.tukaani.xz.LZMA2InputStream;
 
 /**
  * Reads a 7z file, using RandomAccessFile under
  * the covers.
  * <p>
  * The 7z file format is a flexible container
- * that can contain many compression types, but
- * at the moment only Copy and LZMA2 are
- * supported, and archive header compression
+ * that can contain many compression and
+ * encryption types, but at the moment only
+ * only Copy, LZMA2, BZIP2, and AES-256 + SHA-256
+ * are supported, and archive header compression
  * (which always uses the unsupported LZMA
  * compression) isn't. So the only archives
  * that can be read are the following:
  * <pre>
- * 7z -mhc=off -mx=0 archive.7z files
- * 7z -mhc=off -m0=LZMA2 archive.7z files
+ * 7z -mhc=off -mx=0 [-ppassword] archive.7z files
+ * 7z -mhc=off -m0=LZMA2 [-ppassword] archive.7z files
+ * 7z -mhc=off -m0=BZIP2 [-ppassword] archive.7z files
  * </pre>
  * <p>
  * The format is very Windows/Intel specific,
@@ -74,6 +75,7 @@ public class SevenZFile {
     private int currentFolderIndex = -1;
     private InputStream currentFolderInputStream = null;
     private InputStream currentEntryInputStream = null;
+    private String password;
         
     private static final byte[] sevenZSignature = {
         (byte)'7', (byte)'z', (byte)0xBC, (byte)0xAF, (byte)0x27, (byte)0x1C
@@ -92,6 +94,11 @@ public class SevenZFile {
         }
     }
     
+    public SevenZFile(final File filename, final String password) throws IOException {
+        this(filename);
+        this.password = password;
+    }
+
     public void close() {
         if (file != null) {
             try {
@@ -178,7 +185,7 @@ public class SevenZFile {
         DataInputStream dataInputStream = null;
         try {
              dataInputStream = new DataInputStream(new CRC32VerifyingInputStream(
-                    new BoundedRandomAccessFileInputStream(20), 20, startHeaderCrc));
+                    new BoundedRandomAccessFileInputStream(file, 20), 20, startHeaderCrc));
              startHeader.nextHeaderOffset = Long.reverseBytes(dataInputStream.readLong());
              startHeader.nextHeaderSize = Long.reverseBytes(dataInputStream.readLong());
              startHeader.nextHeaderCrc = Integer.reverseBytes(dataInputStream.readInt());
@@ -836,65 +843,14 @@ public class SevenZFile {
     
     private InputStream buildDecoderStack(final Folder folder, final long folderOffset,
             final int firstPackStreamIndex) throws IOException {
-        InputStream inputStreamStack = null;
-        for (int i = 0; i < folder.coders.length; i++) {
-            if (i > 0) {
-                throw new IOException("Unsupported multi-codec stream");
+        file.seek(folderOffset);
+        InputStream inputStreamStack = new BoundedRandomAccessFileInputStream(file,
+                archive.packSizes[firstPackStreamIndex]);
+        for (final Coder coder : folder.coders) {
+            if (coder.numInStreams != 1 || coder.numOutStreams != 1) {
+                throw new IOException("Multi input/output stream coders are not yet supported");
             }
-            file.seek(folderOffset);
-            if (folder.coders[i].decompressionMethodId.length == 1 &&
-                    folder.coders[i].decompressionMethodId[0] == 0) {
-                // 00 - Copy
-                inputStreamStack = new BoundedRandomAccessFileInputStream(
-                        archive.packSizes[firstPackStreamIndex]);
-                // FIXME: LZMA is the default coder yet ironically we don't have it.
-//            } else if (folder.coders[i].decompressionMethodId.length == 3 &&
-//                    folder.coders[i].decompressionMethodId[0] == 3 &&
-//                    folder.coders[i].decompressionMethodId[1] == 1 &&
-//                    folder.coders[i].decompressionMethodId[2] == 1) {
-//                // 03.. - 7z
-//                //    01 - LZMA
-//                //       01 - Version
-            } else if (folder.coders[i].decompressionMethodId.length == 1 &&
-                    folder.coders[i].decompressionMethodId[0] == 0x21) {
-                // 21 - LZMA2
-                final int dictionarySizeBits = 0xff & folder.coders[i].properties[0];
-                if ((dictionarySizeBits & (~0x3f)) != 0) {
-                    throw new IOException("Unsupported LZMA2 property bits");
-                }
-                if (dictionarySizeBits > 40) {
-                    throw new IOException("Dictionary larger than 4GiB maximum size");
-                }
-                final int dictionarySize;
-                if (dictionarySizeBits == 40) {
-                    dictionarySize = 0xFFFFffff;
-                } else {
-                    dictionarySize = (2 | (dictionarySizeBits & 0x1)) << (dictionarySizeBits / 2 + 11);
-                }
-                inputStreamStack = new LZMA2InputStream(
-                      new BoundedRandomAccessFileInputStream(
-                              archive.packSizes[firstPackStreamIndex]),
-                              dictionarySize);
-                // FIXME: gives corrupt output:
-//            } else if (folder.coders[i].decompressionMethodId.length == 3 &&
-//                    folder.coders[i].decompressionMethodId[0] == 0x4 &&
-//                    folder.coders[i].decompressionMethodId[1] == 0x1 && 
-//                    folder.coders[i].decompressionMethodId[2] == 0x8) {
-//                // 04.. - Misc
-//                //    00 - Reserved
-//                //    01 - Zip
-//                //       00 - Copy (not used). Use {00} instead
-//                //       01 - Shrink
-//                //       06 - Implode
-//                //       08 - Deflate
-//                return new DeflaterInputStream(
-//                        new BoundedRandomAccessFileInputStream(
-//                                archive.packSizes[firstPackStreamIndex]),
-//                                new Deflater(Deflater.DEFAULT_COMPRESSION, true));
-            } else {
-                throw new IOException("Unsupported compression method " +
-                        Arrays.toString(folder.coders[i].decompressionMethodId));
-            }
+            inputStreamStack = Coders.addDecoder(inputStreamStack, coder, password);
         }
         if (folder.hasCrc) {
             return new CRC32VerifyingInputStream(inputStreamStack,
@@ -931,44 +887,6 @@ public class SevenZFile {
         return value;
     }
     
-    private class BoundedRandomAccessFileInputStream extends InputStream {
-        private long bytesRemaining;
-        
-        public BoundedRandomAccessFileInputStream(final long size) {
-            bytesRemaining = size;
-        }
-        
-        @Override
-        public int read() throws IOException {
-            if (bytesRemaining > 0) {
-                --bytesRemaining;
-                return file.read();
-            } else {
-                return -1;
-            }
-        }
-
-        @Override
-        public int read(byte[] b, int off, int len) throws IOException {
-            if (bytesRemaining == 0) {
-                return -1;
-            }
-            int bytesToRead = len;
-            if (bytesToRead > bytesRemaining) {
-                bytesToRead = (int) bytesRemaining;
-            }
-            final int bytesRead = file.read(b, off, bytesToRead);
-            if (bytesRead >= 0) {
-                bytesRemaining -= bytesRead;
-            }
-            return bytesRead;
-        }
-
-        @Override
-        public void close() {
-        }
-    }
-
     private static class BoundedInputStream extends InputStream {
         private InputStream is;
         private long bytesRemaining;
