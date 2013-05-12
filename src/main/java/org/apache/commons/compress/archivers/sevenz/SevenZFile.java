@@ -43,9 +43,9 @@ import org.apache.commons.compress.utils.CRC32VerifyingInputStream;
  * compression) isn't. So the only archives
  * that can be read are the following:
  * <pre>
- * 7z -mhc=off -mx=0 [-ppassword] archive.7z files
- * 7z -mhc=off -m0=LZMA2 [-ppassword] archive.7z files
- * 7z -mhc=off -m0=BZIP2 [-ppassword] archive.7z files
+ * 7z a -mhc=off -mx=0 [-ppassword] archive.7z files
+ * 7z a -mhc=off -m0=LZMA2 [-ppassword] archive.7z files
+ * 7z a -mhc=off -m0=BZIP2 [-ppassword] archive.7z files
  * </pre>
  * <p>
  * The format is very Windows/Intel specific,
