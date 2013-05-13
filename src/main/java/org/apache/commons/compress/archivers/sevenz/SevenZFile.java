@@ -401,9 +401,9 @@ public class SevenZFile {
         }
         
         final SubStreamsInfo subStreamsInfo = new SubStreamsInfo();
-        subStreamsInfo.unpackSizes = new long[(int)totalUnpackStreams];
-        subStreamsInfo.hasCrc = new BitSet((int)totalUnpackStreams);
-        subStreamsInfo.crcs = new int[(int)totalUnpackStreams];
+        subStreamsInfo.unpackSizes = new long[totalUnpackStreams];
+        subStreamsInfo.hasCrc = new BitSet(totalUnpackStreams);
+        subStreamsInfo.crcs = new int[totalUnpackStreams];
         
         int nextUnpackStream = 0;
         for (final Folder folder : archive.folders) {
@@ -432,9 +432,9 @@ public class SevenZFile {
         }
         
         if (nid == NID.kCRC) {
-            final BitSet hasMissingCrc = readAllOrBits(header, (int)numDigests);
-            final int[] missingCrcs = new int[(int)numDigests];
-            for (int i = 0; i < (int)numDigests; i++) {
+            final BitSet hasMissingCrc = readAllOrBits(header, numDigests);
+            final int[] missingCrcs = new int[numDigests];
+            for (int i = 0; i < numDigests; i++) {
                 if (hasMissingCrc.get(i)) {
                     missingCrcs[i] = Integer.reverseBytes(header.readInt());
                 }
