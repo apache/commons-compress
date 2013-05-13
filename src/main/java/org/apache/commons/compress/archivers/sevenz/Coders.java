@@ -149,8 +149,12 @@ class Coders {
                 try {
                     digest = MessageDigest.getInstance("SHA-256");
                 } catch (NoSuchAlgorithmException noSuchAlgorithmException) {
-                    throw new IOException("SHA-256 is unsupported by your Java implementation",
-                            noSuchAlgorithmException);
+                    IOException ioe = new IOException("SHA-256 is unsupported by your Java implementation");
+                    ioe.initCause(noSuchAlgorithmException);
+                    throw ioe;
+// TODO: simplify when Compress requires Java 1.6                
+//                    throw new IOException("SHA-256 is unsupported by your Java implementation",
+//                            noSuchAlgorithmException);
                 }
                 final byte[] extra = new byte[8];
                 for (long j = 0; j < (1L << numCyclesPower); j++) {
@@ -173,9 +177,14 @@ class Coders {
                 cipher.init(Cipher.DECRYPT_MODE, aesKey, new IvParameterSpec(iv));
                 return new CipherInputStream(in, cipher);
             } catch (GeneralSecurityException generalSecurityException) {
-                throw new IOException("Decryption error " +
-                        "(do you have the JCE Unlimited Strength Jurisdiction Policy Files installed?)",
-                        generalSecurityException);
+                IOException ioe = new IOException("Decryption error " +
+                        "(do you have the JCE Unlimited Strength Jurisdiction Policy Files installed?)");
+                ioe.initCause(generalSecurityException);
+                throw ioe;
+// TODO: simplify when Compress requires Java 1.6                
+//                throw new IOException("Decryption error " +
+//                        "(do you have the JCE Unlimited Strength Jurisdiction Policy Files installed?)",
+//                        generalSecurityException);
             }
         }
     }
