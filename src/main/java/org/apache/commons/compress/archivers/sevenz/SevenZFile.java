@@ -609,11 +609,17 @@ public class SevenZFile {
                 }
                 case NID.kEmptyFile: {
                     debug("  kEmptyFile");
+                    if (isEmptyStream == null) { // protect against NPE
+                        throw new IOException("Header format error: kEmptyStream must appear before kEmptyFile");
+                    }
                     isEmptyFile = readBits(header, isEmptyStream.cardinality());
                     break;
                 }
                 case NID.kAnti: {
                     debug("  kAnti");
+                    if (isEmptyStream == null) { // protect against NPE
+                        throw new IOException("Header format error: kEmptyStream must appear before kAnti");
+                    }
                     isAnti = readBits(header, isEmptyStream.cardinality());
                     break;
                 }
