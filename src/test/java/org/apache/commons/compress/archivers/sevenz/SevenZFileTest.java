@@ -20,6 +20,15 @@ package org.apache.commons.compress.archivers.sevenz;
 import org.apache.commons.compress.AbstractTestCase;
 
 public class SevenZFileTest extends AbstractTestCase {
+    public void testAllEmptyFilesArchive() throws Exception {
+        SevenZFile archive = new SevenZFile(getFile("7z-empty-mhc-off.7z"));
+        try {
+            assertNotNull(archive.getNextEntry());
+        } finally {
+            archive.close();
+        }
+    }
+    
     public void testHelloWorldHeaderCompressionOffCopy() throws Exception {
         checkHelloWorld("7z-hello-mhc-off-copy.7z");
     }

@@ -755,20 +755,22 @@ public class SevenZFile {
         final StreamMap streamMap = new StreamMap();
         
         int nextFolderPackStreamIndex = 0;
-        streamMap.folderFirstPackStreamIndex = new int[archive.folders.length];
-        for (int i = 0; i < archive.folders.length; i++) {
+        final int numFolders = (archive.folders != null) ? archive.folders.length : 0;
+        streamMap.folderFirstPackStreamIndex = new int[numFolders];
+        for (int i = 0; i < numFolders; i++) {
             streamMap.folderFirstPackStreamIndex[i] = nextFolderPackStreamIndex;
             nextFolderPackStreamIndex += archive.folders[i].packedStreams.length;
         }
         
         long nextPackStreamOffset = 0;
-        streamMap.packStreamOffsets = new long[archive.packSizes.length];
-        for (int i = 0; i < archive.packSizes.length; i++) {
+        final int numPackSizes = (archive.packSizes != null) ? archive.packSizes.length : 0;
+        streamMap.packStreamOffsets = new long[numPackSizes];
+        for (int i = 0; i < numPackSizes; i++) {
             streamMap.packStreamOffsets[i] = nextPackStreamOffset;
             nextPackStreamOffset += archive.packSizes[i]; 
         }
         
-        streamMap.folderFirstFileIndex = new int[archive.folders.length];
+        streamMap.folderFirstFileIndex = new int[numFolders];
         streamMap.fileFolderIndex = new int[archive.files.length];
         int nextFolderIndex = 0;
         int nextFolderUnpackStreamIndex = 0;
