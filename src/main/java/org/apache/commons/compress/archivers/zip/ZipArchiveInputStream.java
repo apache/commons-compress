@@ -334,10 +334,11 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                                         .HEADER_ID);
         current.usesZip64 = z64 != null;
         if (!current.hasDataDescriptor) {
-            if (current.usesZip64 && (cSize.equals(ZipLong.ZIP64_MAGIC)
+            if (z64 != null // same as current.usesZip64 but avoids NPE warning
+                    && (cSize.equals(ZipLong.ZIP64_MAGIC)
                                       || size.equals(ZipLong.ZIP64_MAGIC))
                 ) {
-                current.entry.setCompressedSize(z64.getCompressedSize() // z64 cannot be null here
+                current.entry.setCompressedSize(z64.getCompressedSize()
                                                 .getLongValue());
                 current.entry.setSize(z64.getSize().getLongValue());
             } else {
