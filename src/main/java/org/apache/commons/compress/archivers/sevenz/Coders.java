@@ -205,7 +205,7 @@ class Coders {
                 
                 @Override
                 public int read(byte[] b, int off, int len) throws IOException {
-                    return init().read();
+                    return init().read(b, off, len);
                 }
                 
                 @Override
