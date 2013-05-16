@@ -119,73 +119,99 @@ class Coders {
     static class AES256SHA256Decoder extends CoderBase {
         @Override
         InputStream decode(final InputStream in, final Coder coder,
-                String password) throws IOException {
-            final int byte0 = 0xff & coder.properties[0];
-            final int numCyclesPower = byte0 & 0x3f;
-            final int byte1 = 0xff & coder.properties[1];
-            final int ivSize = ((byte0 >> 6) & 1) + (byte1 & 0x0f);
-            final int saltSize = ((byte0 >> 7) & 1) + (byte1 >> 4);
-            //debug("numCyclesPower=" + numCyclesPower + ", saltSize=" + saltSize + ", ivSize=" + ivSize);
-            if (2 + saltSize + ivSize > coder.properties.length) {
-                throw new IOException("Salt size + IV size too long");
-            }
-            final byte[] salt = new byte[saltSize];
-            System.arraycopy(coder.properties, 2, salt, 0, saltSize);
-            final byte[] iv = new byte[16];
-            System.arraycopy(coder.properties, 2 + saltSize, iv, 0, ivSize);
-            
-            if (password == null) {
-                throw new IOException("Cannot read encrypted files without a password");
-            }
-            final byte[] passwordBytes = password.getBytes("UTF-16LE");
-            final byte[] aesKeyBytes;
-            if (numCyclesPower == 0x3f) {
-                aesKeyBytes = new byte[32];
-                System.arraycopy(salt, 0, aesKeyBytes, 0, saltSize);
-                System.arraycopy(passwordBytes, 0, aesKeyBytes, saltSize,
-                        Math.min(passwordBytes.length, aesKeyBytes.length - saltSize));
-            } else {
-                final MessageDigest digest;
-                try {
-                    digest = MessageDigest.getInstance("SHA-256");
-                } catch (NoSuchAlgorithmException noSuchAlgorithmException) {
-                    IOException ioe = new IOException("SHA-256 is unsupported by your Java implementation");
-                    ioe.initCause(noSuchAlgorithmException);
-                    throw ioe;
-// TODO: simplify when Compress requires Java 1.6                
-//                    throw new IOException("SHA-256 is unsupported by your Java implementation",
-//                            noSuchAlgorithmException);
-                }
-                final byte[] extra = new byte[8];
-                for (long j = 0; j < (1L << numCyclesPower); j++) {
-                    digest.update(salt);
-                    digest.update(passwordBytes);
-                    digest.update(extra);
-                    for (int k = 0; k < extra.length; k++) {
-                        ++extra[k];
-                        if (extra[k] != 0) {
-                            break;
+                final String password) throws IOException {
+            return new InputStream() {
+                private boolean isInitialized = false;
+                private CipherInputStream cipherInputStream = null;
+                
+                private CipherInputStream init() throws IOException {
+                    if (isInitialized) {
+                        return cipherInputStream;
+                    }
+                    final int byte0 = 0xff & coder.properties[0];
+                    final int numCyclesPower = byte0 & 0x3f;
+                    final int byte1 = 0xff & coder.properties[1];
+                    final int ivSize = ((byte0 >> 6) & 1) + (byte1 & 0x0f);
+                    final int saltSize = ((byte0 >> 7) & 1) + (byte1 >> 4);
+                    //debug("numCyclesPower=" + numCyclesPower + ", saltSize=" + saltSize + ", ivSize=" + ivSize);
+                    if (2 + saltSize + ivSize > coder.properties.length) {
+                        throw new IOException("Salt size + IV size too long");
+                    }
+                    final byte[] salt = new byte[saltSize];
+                    System.arraycopy(coder.properties, 2, salt, 0, saltSize);
+                    final byte[] iv = new byte[16];
+                    System.arraycopy(coder.properties, 2 + saltSize, iv, 0, ivSize);
+                    
+                    if (password == null) {
+                        throw new IOException("Cannot read encrypted files without a password");
+                    }
+                    final byte[] passwordBytes = password.getBytes("UTF-16LE");
+                    final byte[] aesKeyBytes;
+                    if (numCyclesPower == 0x3f) {
+                        aesKeyBytes = new byte[32];
+                        System.arraycopy(salt, 0, aesKeyBytes, 0, saltSize);
+                        System.arraycopy(passwordBytes, 0, aesKeyBytes, saltSize,
+                                Math.min(passwordBytes.length, aesKeyBytes.length - saltSize));
+                    } else {
+                        final MessageDigest digest;
+                        try {
+                            digest = MessageDigest.getInstance("SHA-256");
+                        } catch (NoSuchAlgorithmException noSuchAlgorithmException) {
+                            IOException ioe = new IOException("SHA-256 is unsupported by your Java implementation");
+                            ioe.initCause(noSuchAlgorithmException);
+                            throw ioe;
+        // TODO: simplify when Compress requires Java 1.6                
+//                            throw new IOException("SHA-256 is unsupported by your Java implementation",
+//                                    noSuchAlgorithmException);
                         }
+                        final byte[] extra = new byte[8];
+                        for (long j = 0; j < (1L << numCyclesPower); j++) {
+                            digest.update(salt);
+                            digest.update(passwordBytes);
+                            digest.update(extra);
+                            for (int k = 0; k < extra.length; k++) {
+                                ++extra[k];
+                                if (extra[k] != 0) {
+                                    break;
+                                }
+                            }
+                        }
+                        aesKeyBytes = digest.digest();
+                    }
+                    
+                    final SecretKey aesKey = new SecretKeySpec(aesKeyBytes, "AES");
+                    try {
+                        final Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+                        cipher.init(Cipher.DECRYPT_MODE, aesKey, new IvParameterSpec(iv));
+                        cipherInputStream = new CipherInputStream(in, cipher);
+                        isInitialized = true;
+                        return cipherInputStream;
+                    } catch (GeneralSecurityException generalSecurityException) {
+                        IOException ioe = new IOException("Decryption error " +
+                                "(do you have the JCE Unlimited Strength Jurisdiction Policy Files installed?)");
+                        ioe.initCause(generalSecurityException);
+                        throw ioe;
+        // TODO: simplify when Compress requires Java 1.6                
+//                        throw new IOException("Decryption error " +
+//                                "(do you have the JCE Unlimited Strength Jurisdiction Policy Files installed?)",
+//                                generalSecurityException);
                     }
                 }
-                aesKeyBytes = digest.digest();
-            }
-            
-            final SecretKey aesKey = new SecretKeySpec(aesKeyBytes, "AES");
-            try {
-                Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
-                cipher.init(Cipher.DECRYPT_MODE, aesKey, new IvParameterSpec(iv));
-                return new CipherInputStream(in, cipher);
-            } catch (GeneralSecurityException generalSecurityException) {
-                IOException ioe = new IOException("Decryption error " +
-                        "(do you have the JCE Unlimited Strength Jurisdiction Policy Files installed?)");
-                ioe.initCause(generalSecurityException);
-                throw ioe;
-// TODO: simplify when Compress requires Java 1.6                
-//                throw new IOException("Decryption error " +
-//                        "(do you have the JCE Unlimited Strength Jurisdiction Policy Files installed?)",
-//                        generalSecurityException);
-            }
+                
+                @Override
+                public int read() throws IOException {
+                    return init().read();
+                }
+                
+                @Override
+                public int read(byte[] b, int off, int len) throws IOException {
+                    return init().read();
+                }
+                
+                @Override
+                public void close() {
+                }
+            };
         }
     }
 }

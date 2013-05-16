@@ -21,7 +21,6 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.File;
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
@@ -927,11 +926,12 @@ public class SevenZFile {
         return value;
     }
     
-    private static class BoundedInputStream extends FilterInputStream {
+    private static class BoundedInputStream extends InputStream {
+        private final InputStream in;
         private long bytesRemaining;
         
         public BoundedInputStream(final InputStream in, final long size) {
-            super(in);
+            this.in = in;
             bytesRemaining = size;
         }
         
