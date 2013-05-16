@@ -17,18 +17,18 @@
  */
 package org.apache.commons.compress.utils;
 
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.CRC32;
 
-public class CRC32VerifyingInputStream extends FilterInputStream {
+public class CRC32VerifyingInputStream extends InputStream {
+    private final InputStream in;
     private long bytesRemaining;
     private final int expectedCrc32;
     private final CRC32 crc32 = new CRC32();
     
     public CRC32VerifyingInputStream(final InputStream in, final long size, final int expectedCrc32) {
-        super(in);
+        this.in = in;
         this.expectedCrc32 = expectedCrc32;
         this.bytesRemaining = size;
     }
