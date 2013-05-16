@@ -17,18 +17,18 @@
  */
 package org.apache.commons.compress.utils;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.CRC32;
 
-public class CRC32VerifyingInputStream extends InputStream {
-    private final InputStream is;
+public class CRC32VerifyingInputStream extends FilterInputStream {
     private long bytesRemaining;
     private final int expectedCrc32;
     private final CRC32 crc32 = new CRC32();
     
-    public CRC32VerifyingInputStream(final InputStream is, final long size, final int expectedCrc32) {
-        this.is = is;
+    public CRC32VerifyingInputStream(final InputStream in, final long size, final int expectedCrc32) {
+        super(in);
         this.expectedCrc32 = expectedCrc32;
         this.bytesRemaining = size;
     }
@@ -38,7 +38,7 @@ public class CRC32VerifyingInputStream extends InputStream {
         if (bytesRemaining <= 0) {
             return -1;
         }
-        int ret = is.read();
+        int ret = in.read();
         if (ret >= 0) {
             crc32.update(ret);
             --bytesRemaining;
@@ -56,7 +56,7 @@ public class CRC32VerifyingInputStream extends InputStream {
 
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
-        int ret = is.read(b, off, len);
+        int ret = in.read(b, off, len);
         if (ret >= 0) {
             crc32.update(b, off, ret);
             bytesRemaining -= ret;
@@ -79,6 +79,6 @@ public class CRC32VerifyingInputStream extends InputStream {
 
     @Override
     public void close() throws IOException {
-        is.close();
+        in.close();
     }
 }

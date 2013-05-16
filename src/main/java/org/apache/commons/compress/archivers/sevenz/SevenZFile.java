@@ -21,6 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.File;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
@@ -39,13 +40,13 @@ import org.apache.commons.compress.utils.CRC32VerifyingInputStream;
  * encryption types, but at the moment only
  * only Copy, LZMA2, BZIP2, and AES-256 + SHA-256
  * are supported, and archive header compression
- * (which always uses the unsupported LZMA
+ * (when it uses the unsupported LZMA
  * compression) isn't. So the only archives
  * that can be read are the following:
  * <pre>
- * 7z a -mhc=off -mx=0 [-ppassword] archive.7z files
- * 7z a -mhc=off -m0=LZMA2 [-ppassword] archive.7z files
- * 7z a -mhc=off -m0=BZIP2 [-ppassword] archive.7z files
+ * 7z a -mhc=off [-mhe=on] -mx=0 [-ppassword] archive.7z files
+ * 7z a -mhc=off [-mhe=on] -m0=LZMA2 [-ppassword] archive.7z files
+ * 7z a -mhc=off [-mhe=on] -m0=BZIP2 [-ppassword] archive.7z files
  * </pre>
  * <p>
  * The format is very Windows/Intel specific,
@@ -81,8 +82,9 @@ public class SevenZFile {
         (byte)'7', (byte)'z', (byte)0xBC, (byte)0xAF, (byte)0x27, (byte)0x1C
     };
     
-    public SevenZFile(final File filename) throws IOException {
+    public SevenZFile(final File filename, final String password) throws IOException {
         boolean succeeded = false;
+        this.password = password;
         this.file = new RandomAccessFile(filename, "r");
         try {
             archive = readHeaders();
@@ -94,9 +96,8 @@ public class SevenZFile {
         }
     }
     
-    public SevenZFile(final File filename, final String password) throws IOException {
-        this(filename);
-        this.password = password;
+    public SevenZFile(final File filename) throws IOException {
+        this(filename, null);
     }
 
     public void close() {
@@ -165,17 +166,21 @@ public class SevenZFile {
             throw new IOException("NextHeader CRC mismatch");
         }
         
-        final Archive archive = new Archive();
         final ByteArrayInputStream byteStream = new ByteArrayInputStream(nextHeader);
-        final DataInputStream nextHeaderInputStream = new DataInputStream(
+        DataInputStream nextHeaderInputStream = new DataInputStream(
                 byteStream);
+        Archive archive = new Archive();
         int nid = nextHeaderInputStream.readUnsignedByte();
         if (nid == NID.kEncodedHeader) {
-            readEncodedHeader(nextHeaderInputStream, archive);
+            nextHeaderInputStream = readEncodedHeader(nextHeaderInputStream, archive);
+            // Archive gets rebuilt with the new header
+            archive = new Archive();
             nid = nextHeaderInputStream.readUnsignedByte();
         }
         if (nid == NID.kHeader) {
             readHeader(nextHeaderInputStream, archive);
+        } else {
+            throw new IOException("Broken or unsupported archive: no Header");
         }
         return archive;
     }
@@ -240,14 +245,41 @@ public class SevenZFile {
         }
     }
     
-    private void readEncodedHeader(final DataInputStream header, final Archive archive) throws IOException {
+    private DataInputStream readEncodedHeader(final DataInputStream header, final Archive archive) throws IOException {
         debug("EncodedHeader");
 
         readStreamsInfo(header, archive);
         
-        // FIXME: and decompress it etc.
+        // FIXME: merge with buildDecodingStream()/buildDecoderStack() at some stage?
+        final Folder folder = archive.folders[0];
+        final int firstPackStreamIndex = 0;
+        final long folderOffset = SIGNATURE_HEADER_SIZE + archive.packPos +
+                0;
         
-        throw new IOException("LZMA compression unsupported, so files with compressed header cannot be read");
+        file.seek(folderOffset);
+        InputStream inputStreamStack = new BoundedRandomAccessFileInputStream(file,
+                archive.packSizes[firstPackStreamIndex]);
+        for (final Coder coder : folder.coders) {
+            if (coder.numInStreams != 1 || coder.numOutStreams != 1) {
+                throw new IOException("Multi input/output stream coders are not yet supported");
+            }
+            inputStreamStack = Coders.addDecoder(inputStreamStack, coder, password);
+        }
+        if (folder.hasCrc) {
+            inputStreamStack = new CRC32VerifyingInputStream(inputStreamStack,
+                    folder.getUnpackSize(), folder.crc);
+        }
+        final byte[] nextHeader = new byte[(int)folder.getUnpackSize()];
+        final DataInputStream nextHeaderInputStream = new DataInputStream(inputStreamStack);
+        try {
+            nextHeaderInputStream.readFully(nextHeader);
+        } finally {
+            nextHeaderInputStream.close();
+        }
+        return new DataInputStream(new ByteArrayInputStream(nextHeader));
+
+        
+        //throw new IOException("LZMA compression unsupported, so files with compressed header cannot be read");
         // FIXME: this extracts the header to an LZMA file which can then be
         // manually decompressed.
 //        long offset = SIGNATURE_HEADER_SIZE + archive.packPos;
@@ -895,12 +927,11 @@ public class SevenZFile {
         return value;
     }
     
-    private static class BoundedInputStream extends InputStream {
-        private InputStream is;
+    private static class BoundedInputStream extends FilterInputStream {
         private long bytesRemaining;
         
-        public BoundedInputStream(final InputStream is, final long size) {
-            this.is = is;
+        public BoundedInputStream(final InputStream in, final long size) {
+            super(in);
             bytesRemaining = size;
         }
         
@@ -908,7 +939,7 @@ public class SevenZFile {
         public int read() throws IOException {
             if (bytesRemaining > 0) {
                 --bytesRemaining;
-                return is.read();
+                return in.read();
             } else {
                 return -1;
             }
@@ -923,7 +954,7 @@ public class SevenZFile {
             if (bytesToRead > bytesRemaining) {
                 bytesToRead = (int) bytesRemaining;
             }
-            final int bytesRead = is.read(b, off, bytesToRead);
+            final int bytesRead = in.read(b, off, bytesToRead);
             if (bytesRead >= 0) {
                 bytesRemaining -= bytesRead;
             }
