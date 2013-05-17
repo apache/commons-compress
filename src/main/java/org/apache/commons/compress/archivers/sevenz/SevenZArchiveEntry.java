@@ -35,7 +35,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     private boolean isAntiItem;
     private boolean hasCreationDate;
     private boolean hasLastModifiedDate;
-    private boolean hasAcessDate;
+    private boolean hasAccessDate;
     private long creationDate;
     private long lastModifiedDate;
     private long accessDate;
@@ -140,16 +140,16 @@ public class SevenZArchiveEntry implements ArchiveEntry {
         this.lastModifiedDate = javaTimeToNtfsTime(lastModifiedDate);
     }
     
-    public boolean getHasAcessDate() {
-        return hasAcessDate;
+    public boolean getHasAccessDate() {
+        return hasAccessDate;
     }
 
-    public void setHasAcessDate(boolean hasAcessDate) {
-        this.hasAcessDate = hasAcessDate;
+    public void setHasAccessDate(boolean hasAcessDate) {
+        this.hasAccessDate = hasAcessDate;
     }
 
     public Date getAccessDate() {
-        if (hasAcessDate) {
+        if (hasAccessDate) {
             return ntfsTimeToJavaTime(accessDate);
         } else {
             throw new UnsupportedOperationException(

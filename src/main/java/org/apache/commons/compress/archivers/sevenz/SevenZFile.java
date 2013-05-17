@@ -703,8 +703,8 @@ public class SevenZFile {
                         throw new IOException("Unimplemented");
                     } else {
                         for (int i = 0; i < files.length; i++) {
-                            files[i].setHasAcessDate(timesDefined.get(i));
-                            if (files[i].getHasAcessDate()) {
+                            files[i].setHasAccessDate(timesDefined.get(i));
+                            if (files[i].getHasAccessDate()) {
                                 files[i].setAccessDate(Long.reverseBytes(header.readLong()));
                             }
                         }
