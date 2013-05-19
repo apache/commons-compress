@@ -25,6 +25,7 @@ import java.io.OutputStream;
 
 import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
 import org.apache.commons.compress.archivers.ar.ArArchiveOutputStream;
+import org.apache.commons.compress.archivers.arj.ArjArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveOutputStream;
 import org.apache.commons.compress.archivers.dump.DumpArchiveInputStream;
@@ -79,6 +80,11 @@ public class ArchiveStreamFactory {
      */
     public static final String AR = "ar";
     /**
+     * Constant used to identify the ARJ archive format.
+     * @since 1.6
+     */
+    public static final String ARJ = "arj";
+    /**
      * Constant used to identify the CPIO archive format.
      * @since 1.1
      */
@@ -110,8 +116,8 @@ public class ArchiveStreamFactory {
     private String entryEncoding = null;
 
     /**
-     * Returns the encoding to use for zip and tar files, or null for
-     * the default.
+     * Returns the encoding to use for arj, zip and tar files,
+     * or null for the default.
      *
      * @return entry encoding, or null
      * @since 1.5
@@ -121,8 +127,8 @@ public class ArchiveStreamFactory {
     }
 
     /**
-     * Sets the encoding to use for zip and tar files. Use null for
-     * the default.
+     * Sets the encoding to use for arj, zip and tar files.
+     * Use null for the default.
      *
      * @since 1.5
      */
@@ -133,7 +139,7 @@ public class ArchiveStreamFactory {
     /**
      * Create an archive input stream from an archiver name and an input stream.
      * 
-     * @param archiverName the archive name, i.e. "ar", "zip", "tar", "jar", "dump" or "cpio"
+     * @param archiverName the archive name, i.e. "ar", "arj", "zip", "tar", "jar", "dump" or "cpio"
      * @param in the input stream
      * @return the archive input stream
      * @throws ArchiveException if the archiver name is not known
@@ -153,6 +159,13 @@ public class ArchiveStreamFactory {
 
         if (AR.equalsIgnoreCase(archiverName)) {
             return new ArArchiveInputStream(in);
+        }
+        if (ARJ.equalsIgnoreCase(archiverName)) {
+            if (entryEncoding != null) {
+                return new ArjArchiveInputStream(in, entryEncoding);
+            } else {
+                return new ArjArchiveInputStream(in);
+            }
         }
         if (ZIP.equalsIgnoreCase(archiverName)) {
             if (entryEncoding != null) {
@@ -263,6 +276,8 @@ public class ArchiveStreamFactory {
                 return new ArArchiveInputStream(in);
             } else if (CpioArchiveInputStream.matches(signature, signatureLength)) {
                 return new CpioArchiveInputStream(in);
+            } else if (ArjArchiveInputStream.matches(signature, signatureLength)) {
+                return new ArjArchiveInputStream(in);
             }
 
             // Dump needs a bigger buffer to check the signature;
