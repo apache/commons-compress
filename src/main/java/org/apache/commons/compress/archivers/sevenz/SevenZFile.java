@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.zip.CRC32;
 
+import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.CRC32VerifyingInputStream;
 
 /**
@@ -924,45 +925,5 @@ public class SevenZFile {
             mask >>>= 1;
         }
         return value;
-    }
-    
-    private static class BoundedInputStream extends InputStream {
-        private final InputStream in;
-        private long bytesRemaining;
-        
-        public BoundedInputStream(final InputStream in, final long size) {
-            this.in = in;
-            bytesRemaining = size;
-        }
-        
-        @Override
-        public int read() throws IOException {
-            if (bytesRemaining > 0) {
-                --bytesRemaining;
-                return in.read();
-            } else {
-                return -1;
-            }
-        }
-
-        @Override
-        public int read(byte[] b, int off, int len) throws IOException {
-            if (bytesRemaining == 0) {
-                return -1;
-            }
-            int bytesToRead = len;
-            if (bytesToRead > bytesRemaining) {
-                bytesToRead = (int) bytesRemaining;
-            }
-            final int bytesRead = in.read(b, off, bytesToRead);
-            if (bytesRead >= 0) {
-                bytesRemaining -= bytesRead;
-            }
-            return bytesRead;
-        }
-
-        @Override
-        public void close() {
-        }
     }
 }
