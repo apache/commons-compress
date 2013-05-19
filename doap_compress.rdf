@@ -23,7 +23,7 @@
     <category rdf:resource="http://projects.apache.org/category/library"/>
     <license rdf:resource="http://usefulinc.com/doap/licenses/asl20"/>
     <bug-database rdf:resource="http://issues.apache.org/jira/browse/COMPRESS"/>
-    <download-page rdf:resource="http://commons.apache.org/downloads/download_compress.cgi"/>
+    <download-page rdf:resource="http://commons.apache.org/compress/download_compress.cgi"/>
     <asfext:pmc rdf:resource="http://commons.apache.org/"/>
     <shortdesc xml:lang="en">Commons Compress</shortdesc>
     <description xml:lang="en">Commons Compress: working with zip, ar, jar, bz2, cpio, tar, gz, dump, pack200 and xz files.</description>
