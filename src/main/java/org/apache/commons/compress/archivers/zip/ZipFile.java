@@ -534,8 +534,6 @@ public class ZipFile {
         // data offset will be filled later
         entries.put(ze, offset);
 
-        nameMap.put(ze.getName(), ze);
-
         byte[] cdExtraData = new byte[extraLen];
         archive.readFully(cdExtraData);
         ze.setCentralDirectoryExtra(cdExtraData);
@@ -889,12 +887,9 @@ public class ZipFile {
                 NameAndComment nc = entriesWithoutUTF8Flag.get(ze);
                 ZipUtil.setNameAndCommentFromExtraFields(ze, nc.name,
                                                          nc.comment);
-                if (!orig.equals(ze.getName())) {
-                    nameMap.remove(orig);
-                    nameMap.put(ze.getName(), ze);
-                }
             }
             entries.put(ze, offsetEntry);
+            nameMap.put(ze.getName(), ze);
         }
     }
 
