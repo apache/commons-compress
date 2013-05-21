@@ -204,7 +204,7 @@ public class ZipFileTest extends TestCase {
         }
     }
 
-    public void XtestDuplicateEntry() throws Exception {
+    public void testDuplicateEntry() throws Exception {
         File f = File.createTempFile("commons-compress-zipfiletest", ".zip");
         f.deleteOnExit();
         File f2 = File.createTempFile("commons-compress-zipfiletest", ".txt");
