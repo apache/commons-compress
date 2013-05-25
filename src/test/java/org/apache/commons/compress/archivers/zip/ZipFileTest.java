@@ -27,6 +27,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.zip.ZipEntry;
 
@@ -214,6 +215,12 @@ public class ZipFileTest extends TestCase {
         ZipArchiveEntry ze = zf.getEntry("test1.txt");
         assertNotNull(ze);
         assertNotNull(zf.getInputStream(ze));
+
+        int numberOfEntries = 0;
+        for (Iterator it = zf.getEntries("test1.txt"); it.hasNext(); it.next()) {
+            numberOfEntries++;
+        }
+        assertEquals(2, numberOfEntries);
     }
 
     /*
