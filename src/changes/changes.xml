@@ -49,6 +49,11 @@ The <action> type attribute can be add,update,fix,remove.
         TarBuffer.tryToConsumeSecondEOFRecord could throw a
         NullPointerException
       </action>
+      <action type="fix" date="2013-05-26" issue="COMPRESS-228">
+        Parsing of zip64 extra fields has become more lenient in order
+        to be able to read archives created by DotNetZip and maybe
+        other archivers as well.
+      </action>
     </release>
     <release version="1.5" date="2013-03-14"
              description="Release 1.5">
