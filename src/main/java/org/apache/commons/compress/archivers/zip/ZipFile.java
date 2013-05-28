@@ -25,7 +25,6 @@ import java.io.RandomAccessFile;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Deque;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -95,8 +94,8 @@ public class ZipFile {
     /**
      * Maps String to list of ZipArchiveEntrys, name -> actual entries.
      */
-    private final Map<String, Deque<ZipArchiveEntry>> nameMap =
-        new HashMap<String, Deque<ZipArchiveEntry>>(HASH_SIZE);
+    private final Map<String, List<ZipArchiveEntry>> nameMap =
+        new HashMap<String, List<ZipArchiveEntry>>(HASH_SIZE);
 
     private static final class OffsetEntry {
         private long headerOffset = -1;
@@ -308,8 +307,8 @@ public class ZipFile {
      * {@code null} if not present.
      */
     public ZipArchiveEntry getEntry(String name) {
-        Deque<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
-        return entriesOfThatName != null ? entriesOfThatName.getFirst() : null;
+        List<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
+        return entriesOfThatName != null ? entriesOfThatName.get(0) : null;
     }
 
     /**
@@ -322,7 +321,7 @@ public class ZipFile {
      * @since 1.6
      */
     public Iterator<ZipArchiveEntry> getEntries(String name) {
-        Deque<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
+        List<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
         return entriesOfThatName != null ? entriesOfThatName.iterator()
             : Collections.<ZipArchiveEntry>emptyList().iterator();
     }
@@ -927,12 +926,12 @@ public class ZipFile {
             }
 
             String name = ze.getName();
-            Deque<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
+            List<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
             if (entriesOfThatName == null) {
                 entriesOfThatName = new LinkedList<ZipArchiveEntry>();
                 nameMap.put(name, entriesOfThatName);
             }
-            entriesOfThatName.addLast(ze);
+            entriesOfThatName.add(ze);
         }
     }
 
