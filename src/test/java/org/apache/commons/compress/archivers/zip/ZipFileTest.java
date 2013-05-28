@@ -206,7 +206,7 @@ public class ZipFileTest extends TestCase {
     }
 
     /**
-     * @see https://issues.apache.org/jira/browse/COMPRESS-227
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-227"
      */
     public void testDuplicateEntry() throws Exception {
         File archive = getFile("COMPRESS-227.zip");
@@ -227,7 +227,7 @@ public class ZipFileTest extends TestCase {
     }
 
     /**
-     * @see https://issues.apache.org/jira/browse/COMPRESS-228
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-228"
      */
     public void testExcessDataInZip64ExtraField() throws Exception {
         File archive = getFile("COMPRESS-228.zip");
