@@ -53,7 +53,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
      * @param inputStream the underlying stream, whose ownership is taken
      * @param charset the charset used for file names and comments
      *   in the archive
-     * @throws IOException
+     * @throws ArchiveException
      */
     public ArjArchiveInputStream(final InputStream inputStream,
             final String charset) throws ArchiveException {
@@ -76,7 +76,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
      * Constructs the ArjInputStream, taking ownership of the inputStream that is passed in,
      * and using the CP437 character encoding.
      * @param inputStream the underlying stream, whose ownership is taken
-     * @throws IOException
+     * @throws ArchiveException
      */
     public ArjArchiveInputStream(final InputStream inputStream)
             throws ArchiveException {
