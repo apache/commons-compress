@@ -329,8 +329,13 @@
           (see <a href="#ZipArchiveOutputStream">above</a>).  If only
           the uncompressed size is
           known <code>ZipArchiveOutputStream</code> will assume the
-          compressed size will not be bigger that the compressed
+          compressed size will not be bigger than the uncompressed
           size.</p>
+
+        <p><code>ZipArchiveOutputStream</code>'s
+          <code>setUseZip64</code> can be used to control the behavior.
+          <code>Zip64Mode.AsNeeded</code> is the default behavior
+          described in the previous paragraph.</p>
 
         <p>If <code>ZipArchiveOutputStream</code> is writing to a
           non-seekable stream it has to decide whether to use Zip64
@@ -350,11 +355,6 @@
           of them to be too big to fit into the traditional
           limits.</p>
 
-        <p><code>ZipArchiveOutputStream</code>'s <code>setUseZip64</code>
-          can be used to control the change the default
-          behavior.  <code>Zip64Mode.AsNeeded</code> is the default
-          behavior described in the previous paragraph.</p>
-
         <p><code>Zip64Mode.Always</code> creates archives that use
           Zip64 extensions for all entries, even those that don't
           require them.  Such archives will be slightly bigger than
@@ -372,6 +372,12 @@
           with <code>RandomAccessFile</code>
           in <code>Zip64Mode.AsNeeded</code> mode if some of the
           entries had unknown sizes.</p>
+
+        <p>The <code>java.util.zip</code> package and the
+          <code>jar</code> command of Java5 and earlier can not read
+          Zip64 extensions and will fail if the archive contains any.
+          So if you intend to create archives that Java5 can consume
+          you must set the mode to <code>Zip64Mode.Never</code></p>
 
         <h4>Known Limitations</h4>
 
