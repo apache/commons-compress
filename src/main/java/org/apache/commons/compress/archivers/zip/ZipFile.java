@@ -368,9 +368,8 @@ public class ZipFile {
         if (!(ze instanceof Entry)) {
             return null;
         }
-        // checked just above
-        @SuppressWarnings("unchecked") OffsetEntry offsetEntry =
-            ((Entry) ze).getOffsetEntry();
+        // cast valididty is checked just above
+        OffsetEntry offsetEntry = ((Entry) ze).getOffsetEntry();
         ZipUtil.checkRequestedFeatures(ze);
         long start = offsetEntry.dataOffset;
         BoundedInputStream bis =
@@ -896,7 +895,7 @@ public class ZipFile {
         for (Iterator<ZipArchiveEntry> it = entries.iterator(); it.hasNext(); ) {
             // entries is filled in populateFromCentralDirectory and
             // never modified
-            @SuppressWarnings("unchecked") Entry ze = (Entry) it.next();
+            Entry ze = (Entry) it.next();
             OffsetEntry offsetEntry = ze.getOffsetEntry();
             long offset = offsetEntry.headerOffset;
             archive.seek(offset + LFH_OFFSET_FOR_FILENAME_LENGTH);
@@ -1038,10 +1037,8 @@ public class ZipFile {
                 return 0;
             }
 
-            @SuppressWarnings("unchecked") Entry ent1 =
-                e1 instanceof Entry ? (Entry) e1 : null;
-            @SuppressWarnings("unchecked") Entry ent2 =
-                e2 instanceof Entry ? (Entry) e2 : null;
+            Entry ent1 = e1 instanceof Entry ? (Entry) e1 : null;
+            Entry ent2 = e2 instanceof Entry ? (Entry) e2 : null;
             if (ent1 == null) {
                 return 1;
             }
@@ -1078,8 +1075,8 @@ public class ZipFile {
         @Override
         public boolean equals(Object other) {
             if (super.equals(other)) {
-                // super.equals would return false otherwise
-                @SuppressWarnings("unchecked") Entry otherEntry = (Entry) other;
+                // super.equals would return false if other were not an Entry
+                Entry otherEntry = (Entry) other;
                 return offsetEntry.headerOffset
                         == otherEntry.offsetEntry.headerOffset
                     && offsetEntry.dataOffset
