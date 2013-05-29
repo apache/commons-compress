@@ -94,8 +94,8 @@ public class ZipFile {
     /**
      * Maps String to list of ZipArchiveEntrys, name -> actual entries.
      */
-    private final Map<String, List<ZipArchiveEntry>> nameMap =
-        new HashMap<String, List<ZipArchiveEntry>>(HASH_SIZE);
+    private final Map<String, LinkedList<ZipArchiveEntry>> nameMap =
+        new HashMap<String, LinkedList<ZipArchiveEntry>>(HASH_SIZE);
 
     private static final class OffsetEntry {
         private long headerOffset = -1;
@@ -307,8 +307,8 @@ public class ZipFile {
      * {@code null} if not present.
      */
     public ZipArchiveEntry getEntry(String name) {
-        List<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
-        return entriesOfThatName != null ? entriesOfThatName.get(0) : null;
+        LinkedList<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
+        return entriesOfThatName != null ? entriesOfThatName.getFirst() : null;
     }
 
     /**
@@ -925,12 +925,12 @@ public class ZipFile {
             }
 
             String name = ze.getName();
-            List<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
+            LinkedList<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
             if (entriesOfThatName == null) {
                 entriesOfThatName = new LinkedList<ZipArchiveEntry>();
                 nameMap.put(name, entriesOfThatName);
             }
-            entriesOfThatName.add(ze);
+            entriesOfThatName.addLast(ze);
         }
     }
 
