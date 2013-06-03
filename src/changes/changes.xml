@@ -54,6 +54,12 @@ The <action> type attribute can be add,update,fix,remove.
         to be able to read archives created by DotNetZip and maybe
         other archivers as well.
       </action>
+      <action type="fix" date="2013-06-03" issue="COMPRESS-229"
+              due-to="Christoph Gysin">
+        TAR will now properly read the names of symbolic links with
+        long names that use the GNU variant to specify the long file
+        name.
+      </action>
     </release>
     <release version="1.5" date="2013-03-14"
              description="Release 1.5">
