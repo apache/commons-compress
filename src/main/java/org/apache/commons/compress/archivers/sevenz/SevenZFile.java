@@ -915,12 +915,12 @@ public class SevenZFile {
     private static long readUint64(final DataInput in) throws IOException {
         int firstByte = in.readUnsignedByte();
         int mask = 0x80;
-        int value = 0;
+        long value = 0;
         for (int i = 0; i < 8; i++) {
             if ((firstByte & mask) == 0) {
                 return value | ((firstByte & (mask - 1)) << (8 * i));
             }
-            int nextByte = in.readUnsignedByte();
+            long nextByte = in.readUnsignedByte();
             value |= (nextByte << (8 * i));
             mask >>>= 1;
         }
