@@ -676,6 +676,16 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     }
 
     /**
+     * Indicate if this entry is a GNU long linkname block
+     *
+     * @return true if this is a long name extension provided by GNU tar
+     */
+    public boolean isGNULongLinkEntry() {
+        return linkFlag == LF_GNUTYPE_LONGLINK
+            && name.equals(GNU_LONGLINK);
+    }
+
+    /**
      * Indicate if this entry is a GNU long name block
      *
      * @return true if this is a long name extension provided by GNU tar
