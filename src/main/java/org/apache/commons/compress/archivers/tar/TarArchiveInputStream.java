@@ -250,11 +250,23 @@ public class TarArchiveInputStream extends ArchiveInputStream {
 
         if (currEntry.isGNULongLinkEntry()) {
             byte[] longLinkData = getLongNameData();
+            if (longLinkData == null) {
+                // Bugzilla: 40334
+                // Malformed tar file - long link entry name not followed by
+                // entry
+                return null;
+            }
             currEntry.setLinkName(encoding.decode(longLinkData));
         }
 
         if (currEntry.isGNULongNameEntry()) {
             byte[] longNameData = getLongNameData();
+            if (longNameData == null) {
+                // Bugzilla: 40334
+                // Malformed tar file - long entry name not followed by
+                // entry
+                return null;
+            }
             currEntry.setName(encoding.decode(longNameData));
         }
 
