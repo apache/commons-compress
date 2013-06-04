@@ -316,14 +316,14 @@ public class ZipFile {
      * the archive's central directory.
      *
      * @param name name of the entry.
-     * @return the Iterator<ZipArchiveEntry> corresponding to the
+     * @return the Iterable<ZipArchiveEntry> corresponding to the
      * given name
      * @since 1.6
      */
-    public Iterator<ZipArchiveEntry> getEntries(String name) {
+    public Iterable<ZipArchiveEntry> getEntries(String name) {
         List<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
-        return entriesOfThatName != null ? entriesOfThatName.iterator()
-            : Collections.<ZipArchiveEntry>emptyList().iterator();
+        return entriesOfThatName != null ? entriesOfThatName
+            : Collections.<ZipArchiveEntry>emptyList();
     }
 
     /**
@@ -331,17 +331,17 @@ public class ZipFile {
      * appear within the archive.
      *
      * @param name name of the entry.
-     * @return the Iterator<ZipArchiveEntry> corresponding to the
+     * @return the Iterable<ZipArchiveEntry> corresponding to the
      * given name
      * @since 1.6
      */
-    public Iterator<ZipArchiveEntry> getEntriesInPhysicalOrder(String name) {
+    public Iterable<ZipArchiveEntry> getEntriesInPhysicalOrder(String name) {
         ZipArchiveEntry[] entriesOfThatName = new ZipArchiveEntry[0];
         if (nameMap.containsKey(name)) {
             entriesOfThatName = nameMap.get(name).toArray(entriesOfThatName);
             Arrays.sort(entriesOfThatName, OFFSET_COMPARATOR);
         }
-        return Arrays.asList(entriesOfThatName).iterator();
+        return Arrays.asList(entriesOfThatName);
     }
 
     /**

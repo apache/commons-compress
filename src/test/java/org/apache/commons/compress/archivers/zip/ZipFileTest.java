@@ -217,11 +217,9 @@ public class ZipFileTest extends TestCase {
         assertNotNull(zf.getInputStream(ze));
 
         int numberOfEntries = 0;
-        for (Iterator<ZipArchiveEntry> it = zf.getEntries("test1.txt");
-             it.hasNext(); ) {
+        for (ZipArchiveEntry entry : zf.getEntries("test1.txt")) {
             numberOfEntries++;
-            ze = it.next();
-            assertNotNull(zf.getInputStream(ze));
+            assertNotNull(zf.getInputStream(entry));
         }
         assertEquals(2, numberOfEntries);
     }
