@@ -76,7 +76,8 @@
             archivers where the <a href="zip.html">zip</a>
             implementation provides capabilities that go beyond the
             features found in java.util.zip.  As of Commons Compress
-            1.3 support for the dump, 7z and arj formats is read-only.</p>
+            1.6 support for the dump, 7z and arj formats is
+            read-only.</p>
 
           <p>The compress component provides abstract base classes for
             compressors and archivers together with factories that can

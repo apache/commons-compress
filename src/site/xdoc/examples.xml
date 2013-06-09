@@ -32,9 +32,10 @@
         compressed) archive are archiver formats.</p>
 
         <p>The compressor formats supported are gzip, bzip2, xz and
-        Pack200, the archiver formats are ar, cpio, dump (read-only),
-        tar, zip, 7z and arj.  Pack200 is a special case as it can only
-        compress JAR files.</p>
+        Pack200, the archiver formats are ar, cpio, tar and zip as
+        well as dump, 7z and arj for which we currently only support
+        reading.  Pack200 is a special case as it can only compress
+        JAR files.</p>
       </subsection>
 
       <subsection name="Common Notes">
@@ -426,6 +427,11 @@ xzIn.close();
 
       <subsection name="7z">
 
+        <p>Note that Commons Compress currently only supports
+        uncompressed entries or entries compressed using BZIP2 or
+        LZMA2 and no header compression at all.  Only AES-256/SHA-256
+        are supported for encryption.</p>
+
         <p>Uncompressing a given 7z archive (you would
           certainly add exception handling and make sure all streams
           get closed properly):</p>
@@ -440,6 +446,9 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
       </subsection>
 
       <subsection name="arj">
+
+        <p>Note that Commons Compress doesn't support compressed,
+        encrypted or multi-volume ARJ archives, yet.</p>
 
         <p>Uncompressing a given arj archive (you would
           certainly add exception handling and make sure all streams
