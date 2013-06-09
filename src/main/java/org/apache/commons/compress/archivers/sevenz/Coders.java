@@ -31,6 +31,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.tukaani.xz.LZMAInputStream;
 import org.tukaani.xz.LZMA2InputStream;
 
 class Coders {
@@ -47,6 +48,7 @@ class Coders {
     
     static CoderId[] coderTable = new CoderId[] {
         new CoderId(new byte[] { (byte)0x00 }, new CopyDecoder()),
+        new CoderId(new byte[] { (byte)0x03, (byte)0x01, (byte)0x01 }, new LZMADecoder()),
         new CoderId(new byte[] { (byte)0x21 }, new LZMA2Decoder()),
         // FIXME: gives corrupt output
         //new CoderId(new byte[] { (byte)0x04, (byte)0x01, (byte)0x08 }, new DeflateDecoder()),
@@ -95,6 +97,22 @@ class Coders {
                 dictionarySize = (2 | (dictionarySizeBits & 0x1)) << (dictionarySizeBits / 2 + 11);
             }
             return new LZMA2InputStream(in, dictionarySize);
+        }
+    }
+    
+    static class LZMADecoder extends CoderBase {
+        @Override
+        InputStream decode(final InputStream in, final Coder coder,
+                String password) throws IOException {
+            byte propsByte = coder.properties[0];
+            long dictSize = coder.properties[1];
+            for (int i = 1; i < 4; i++) {
+                dictSize |= (coder.properties[i + 1] << (8 * i));
+            }
+            if (dictSize > LZMAInputStream.DICT_SIZE_MAX) {
+                throw new IOException("Dictionary larger than 4GiB maximum size");
+            }
+            return new LZMAInputStream(in, -1, propsByte, (int) dictSize);
         }
     }
     
