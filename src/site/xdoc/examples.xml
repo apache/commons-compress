@@ -432,6 +432,15 @@ xzIn.close();
         LZMA2 and no header compression at all.  Only AES-256/SHA-256
         are supported for encryption.</p>
 
+        <p>Adding an entry to a 7z archive:</p>
+<source><![CDATA[
+SevenZOutputFile sevenZOutput = new SevenZOutputFile(file);
+SevenZArchiveEntry entry = sevenZOutput.createArchiveEntry(fileToArchive, name);
+sevenZOutput.putArchiveEntry(entry);
+sevenZOutput.write(contentOfEntry);
+sevenZOutput.closeArchiveEntry();
+]]></source>
+
         <p>Uncompressing a given 7z archive (you would
           certainly add exception handling and make sure all streams
           get closed properly):</p>
