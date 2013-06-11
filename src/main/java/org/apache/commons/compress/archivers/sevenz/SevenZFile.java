@@ -69,7 +69,7 @@ import org.apache.commons.compress.utils.CRC32VerifyingInputStream;
  */
 public class SevenZFile {
     private static final boolean DEBUG = false;
-    private static final int SIGNATURE_HEADER_SIZE = 32;
+    static final int SIGNATURE_HEADER_SIZE = 32;
     private RandomAccessFile file;
     private final Archive archive;
     private int currentEntryIndex = -1;
@@ -78,7 +78,7 @@ public class SevenZFile {
     private InputStream currentEntryInputStream = null;
     private String password;
         
-    private static final byte[] sevenZSignature = {
+    static final byte[] sevenZSignature = {
         (byte)'7', (byte)'z', (byte)0xBC, (byte)0xAF, (byte)0x27, (byte)0x1C
     };
     
