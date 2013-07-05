@@ -20,7 +20,7 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>28</version>
+    <version>32</version>
   </parent>
 
   <groupId>org.apache.commons</groupId>
@@ -35,8 +35,8 @@ These include: bzip2, gzip, pack200, xz and ar, cpio, jar, tar, zip, dump, 7z, a
   </description>
 
   <properties>
-    <maven.compile.source>1.5</maven.compile.source>
-    <maven.compile.target>1.5</maven.compile.target>
+    <maven.compiler.source>1.5</maven.compiler.source>
+    <maven.compiler.target>1.5</maven.compiler.target>
     <commons.componentid>compress</commons.componentid>
     <commons.jira.id>COMPRESS</commons.jira.id>
     <commons.jira.pid>12310904</commons.jira.pid>
@@ -199,7 +199,7 @@ These include: bzip2, gzip, pack200, xz and ar, cpio, jar, tar, zip, dump, 7z, a
         <version>2.5</version>
         <configuration>
           <minimumTokens>200</minimumTokens>
-          <targetJdk>${maven.compile.source}</targetJdk>
+          <targetJdk>${maven.compiler.source}</targetJdk>
           <rulesets>
             <ruleset>${basedir}/pmd-ruleset.xml</ruleset>
           </rulesets>
@@ -211,7 +211,7 @@ These include: bzip2, gzip, pack200, xz and ar, cpio, jar, tar, zip, dump, 7z, a
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration> 
           <quiet>true</quiet>
-          <source>${maven.compile.source}</source>
+          <source>${maven.compiler.source}</source>
           <encoding>${commons.encoding}</encoding>
           <docEncoding>${commons.docEncoding}</docEncoding>
           <linksource>true</linksource>
