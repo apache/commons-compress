@@ -44,6 +44,8 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
     /** Default block size */
     public static final int DEFAULT_BLKSIZE = (DEFAULT_RCDSIZE * 20);
 
+    private static final byte[] DEFAULT_EOF_RECORD = new byte[DEFAULT_RCDSIZE];
+
     // TODO make these final? (would need to change close() method)
     private InputStream     inStream;
     private OutputStream    outStream;
@@ -51,6 +53,7 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
     private final int             recordSize;
     private final int             recsPerBlock;
     private final byte[]          blockBuffer;
+    private final byte[]          eofRecord;
 
     private int             currBlkIdx;
     private int             currRecIdx;
@@ -119,6 +122,8 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
         this.recordSize = recordSize;
         this.recsPerBlock = (this.blockSize / this.recordSize);
         this.blockBuffer = new byte[this.blockSize];
+        this.eofRecord = recordSize == DEFAULT_RCDSIZE
+            ? DEFAULT_EOF_RECORD : new byte[recordSize];
 
         if (this.inStream != null) {
             this.currBlkIdx = -1;
@@ -153,14 +158,7 @@ class TarBuffer { // Not public, because only needed by the Tar IO streams
      * @return true if the record data is an End of Archive
      */
     public boolean isEOFRecord(byte[] record) {
-        if (record != null) {
-            for (int i = 0, sz = getRecordSize(); i < sz; ++i) {
-                if (record[i] != 0) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        return record == null || Arrays.equals(record, eofRecord);
     }
 
     /**
