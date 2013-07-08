@@ -80,6 +80,10 @@ The <action> type attribute can be add,update,fix,remove.
               due-to="BELUGA BEHR">
         Readabilty patch to TarArchiveInputStream.
       </action>
+      <action type="update" date="2013-07-08" issue="COMPRESS-233"
+              due-to="BELUGA BEHR">
+        Performance and readability patch to TarBuffer.
+      </action>
     </release>
     <release version="1.5" date="2013-03-14"
              description="Release 1.5">
