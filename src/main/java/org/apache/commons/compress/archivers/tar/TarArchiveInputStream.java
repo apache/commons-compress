@@ -233,7 +233,8 @@ public class TarArchiveInputStream extends ArchiveInputStream {
 
         byte[] headerBuf = getRecord();
 
-        if (hasHitEOF) {
+        if (headerBuf == null) {
+            /* hit EOF */
             currEntry = null;
             return null;
         }
@@ -324,28 +325,27 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * over any remaining data in the current entry, if there
      * is one, and place the input stream at the header of the
      * next entry.
-     * If there are no more entries in the archive, null will
-     * be returned to indicate that the end of the archive has
-     * been reached.
+     *
+     * <p>If there are no more entries in the archive, null will be
+     * returned to indicate that the end of the archive has been
+     * reached.  At the same time the {@code hasHitEOF} marker will be
+     * set to true.</p>
      *
      * @return The next header in the archive, or null.
      * @throws IOException on error
      */
     private byte[] getRecord() throws IOException {
-        if (hasHitEOF) {
-            return null;
-        }
-
-        byte[] headerBuf = buffer.readRecord();
-
-        if (buffer.isEOFRecord(headerBuf)) {
-            hasHitEOF = true;
-            if (headerBuf != null) {
+        byte[] headerBuf = null;
+        if (!hasHitEOF) {
+            headerBuf = buffer.readRecord();
+            hasHitEOF = buffer.isEOFRecord(headerBuf);
+            if (hasHitEOF && headerBuf != null) {
                 buffer.tryToConsumeSecondEOFRecord();
+                headerBuf = null;
             }
         }
 
-        return hasHitEOF ? null : headerBuf;
+        return headerBuf;
     }
 
     private void paxHeaders() throws IOException{
@@ -456,7 +456,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             TarArchiveSparseEntry entry;
             do {
                 byte[] headerBuf = getRecord();
-                if (hasHitEOF) {
+                if (headerBuf == null) {
                     currEntry = null;
                     break;
                 }
