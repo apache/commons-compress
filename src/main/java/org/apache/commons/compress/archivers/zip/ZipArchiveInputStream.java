@@ -113,38 +113,38 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
 
     private static final int LFH_LEN = 30;
     /*
-      local file header signature     4 bytes  (0x04034b50)
-      version needed to extract       2 bytes
-      general purpose bit flag        2 bytes
-      compression method              2 bytes
-      last mod file time              2 bytes
-      last mod file date              2 bytes
-      crc-32                          4 bytes
-      compressed size                 4 bytes
-      uncompressed size               4 bytes
-      file name length                2 bytes
-      extra field length              2 bytes
+      local file header signature     WORD
+      version needed to extract       SHORT
+      general purpose bit flag        SHORT
+      compression method              SHORT
+      last mod file time              SHORT
+      last mod file date              SHORT
+      crc-32                          WORD
+      compressed size                 WORD
+      uncompressed size               WORD
+      file name length                SHORT
+      extra field length              SHORT
     */
 
     private static final int CFH_LEN = 46;
     /*
-        central file header signature   4 bytes  (0x02014b50)
-        version made by                 2 bytes
-        version needed to extract       2 bytes
-        general purpose bit flag        2 bytes
-        compression method              2 bytes
-        last mod file time              2 bytes
-        last mod file date              2 bytes
-        crc-32                          4 bytes
-        compressed size                 4 bytes
-        uncompressed size               4 bytes
-        file name length                2 bytes
-        extra field length              2 bytes
-        file comment length             2 bytes
-        disk number start               2 bytes
-        internal file attributes        2 bytes
-        external file attributes        4 bytes
-        relative offset of local header 4 bytes
+        central file header signature   WORD
+        version made by                 SHORT
+        version needed to extract       SHORT
+        general purpose bit flag        SHORT
+        compression method              SHORT
+        last mod file time              SHORT
+        last mod file date              SHORT
+        crc-32                          WORD
+        compressed size                 WORD
+        uncompressed size               WORD
+        file name length                SHORT
+        extra field length              SHORT
+        file comment length             SHORT
+        disk number start               SHORT
+        internal file attributes        SHORT
+        external file attributes        WORD
+        relative offset of local header WORD
     */
 
     private static final long TWO_EXP_32 = ZIP64_MAGIC + 1;
@@ -860,20 +860,20 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     }
 
     // End of Central Directory Record
-    //   end of central dir signature    4 bytes  (0x06054b50)
-    //   number of this disk             2 bytes
+    //   end of central dir signature    WORD
+    //   number of this disk             SHORT
     //   number of the disk with the
-    //   start of the central directory  2 bytes
+    //   start of the central directory  SHORT
     //   total number of entries in the
-    //   central directory on this disk  2 bytes
+    //   central directory on this disk  SHORT
     //   total number of entries in
-    //   the central directory           2 bytes
-    //   size of the central directory   4 bytes
+    //   the central directory           SHORT
+    //   size of the central directory   WORD
     //   offset of start of central
     //   directory with respect to
-    //   the starting disk number        4 bytes
-    //   .ZIP file comment length        2 bytes
-    //   .ZIP file comment       (variable size)
+    //   the starting disk number        WORD
+    //   .ZIP file comment length        SHORT
+    //   .ZIP file comment               up to 64KB
     //
 
     /**
