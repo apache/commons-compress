@@ -76,6 +76,14 @@ The <action> type attribute can be add,update,fix,remove.
         The class now also provides two new methods to obtain all
         entries of a given name rather than just the first one.
       </action>
+      <action type="update" date="2013-07-08" issue="COMPRESS-232"
+              due-to="BELUGA BEHR">
+        Readabilty patch to TarArchiveInputStream.
+      </action>
+      <action type="update" date="2013-07-08" issue="COMPRESS-233"
+              due-to="BELUGA BEHR">
+        Performance and readability patch to TarBuffer.
+      </action>
     </release>
     <release version="1.5" date="2013-03-14"
              description="Release 1.5">
