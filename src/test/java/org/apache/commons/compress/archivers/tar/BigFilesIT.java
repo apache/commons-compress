@@ -22,6 +22,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.io.BufferedInputStream;
+import java.io.InputStream;
 import java.util.Random;
 
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
@@ -39,14 +41,42 @@ public class BigFilesIT {
         readFileBiggerThan8GByte("/8.posix.tar.gz");
     }
 
-    private void readFileBiggerThan8GByte(String name) throws Exception {
-        GzipCompressorInputStream in = null;
+    @Test
+    public void readFileHeadersOfArchiveBiggerThan8GByte() throws Exception {
+        InputStream in = null;
+        GzipCompressorInputStream gzin = null;
         TarArchiveInputStream tin = null;
         try {
-            in =
-                new GzipCompressorInputStream(BigFilesIT.class
-                                              .getResourceAsStream(name));
-            tin = new TarArchiveInputStream(in);
+            in = new BufferedInputStream(BigFilesIT.class
+                                         .getResourceAsStream("/8.posix.tar.gz")
+                                         );
+            gzin = new GzipCompressorInputStream(in);
+            tin = new TarArchiveInputStream(gzin);
+            TarArchiveEntry e = tin.getNextTarEntry();
+            assertNotNull(e);
+            assertNull(tin.getNextTarEntry());
+        } finally {
+            if (tin != null) {
+                tin.close();
+            }
+            if (gzin != null) {
+                gzin.close();
+            }
+            if (in != null) {
+                in.close();
+            }
+        }
+    }
+
+    private void readFileBiggerThan8GByte(String name) throws Exception {
+        InputStream in = null;
+        GzipCompressorInputStream gzin = null;
+        TarArchiveInputStream tin = null;
+        try {
+            in = new BufferedInputStream(BigFilesIT.class
+                                         .getResourceAsStream(name));
+            gzin = new GzipCompressorInputStream(in);
+            tin = new TarArchiveInputStream(gzin);
             TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertEquals(8200l * 1024 * 1024, e.getSize());
@@ -69,6 +99,9 @@ public class BigFilesIT {
         } finally {
             if (tin != null) {
                 tin.close();
+            }
+            if (gzin != null) {
+                gzin.close();
             }
             if (in != null) {
                 in.close();
