@@ -81,23 +81,16 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream {
         properties = props;
     }
 
-    /** {@inheritDoc} */
     @Override
     public void write(int b) throws IOException {
         streamBridge.write(b);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void write(byte[] b) throws IOException {
         streamBridge.write(b);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void write(byte[] b, int from, int length) throws IOException {
         streamBridge.write(b, from, length);

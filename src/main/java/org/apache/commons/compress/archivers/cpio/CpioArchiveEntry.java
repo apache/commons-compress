@@ -577,7 +577,6 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
         return this.mtime;
     }
 
-    /** {@inheritDoc} */
     public Date getLastModifiedDate() {
         return new Date(1000 * getTime());
     }

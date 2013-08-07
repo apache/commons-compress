@@ -34,9 +34,6 @@ class InMemoryCachingStreamBridge extends StreamBridge {
         super(new ByteArrayOutputStream());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     InputStream getInputView() throws IOException {
         return new ByteArrayInputStream(((ByteArrayOutputStream) out)

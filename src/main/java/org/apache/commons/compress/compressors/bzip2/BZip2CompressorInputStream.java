@@ -140,7 +140,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         setupBlock();
     }
 
-    /** {@inheritDoc} */
     @Override
     public int read() throws IOException {
         if (this.in != null) {

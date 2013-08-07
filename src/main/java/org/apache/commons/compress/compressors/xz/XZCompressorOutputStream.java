@@ -59,13 +59,11 @@ public class XZCompressorOutputStream extends CompressorOutputStream {
         out = new XZOutputStream(outputStream, new LZMA2Options(preset));
     }
 
-    /** {@inheritDoc} */
     @Override
     public void write(int b) throws IOException {
         out.write(b);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void write(byte[] buf, int off, int len) throws IOException {
         out.write(buf, off, len);
@@ -90,7 +88,6 @@ public class XZCompressorOutputStream extends CompressorOutputStream {
         out.finish();
     }
 
-    /** {@inheritDoc} */
     @Override
     public void close() throws IOException {
         out.close();

@@ -586,7 +586,6 @@ public class DumpArchiveEntry implements ArchiveEntry {
         this.name = name;
     }
 
-    /** {@inheritDoc} */
     public Date getLastModifiedDate() {
         return new Date(mtime);
     }
