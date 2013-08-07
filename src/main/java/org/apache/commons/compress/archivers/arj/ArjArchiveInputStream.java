@@ -91,18 +91,18 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         }
     }
     
-    private static final void debug(final String message) {
+    private static void debug(final String message) {
         if (DEBUG) {
             System.out.println(message);
         }
     }
     
-    private static final int read16(final DataInputStream in) throws IOException {
+    private static int read16(final DataInputStream in) throws IOException {
         final int value = in.readUnsignedShort();
         return Integer.reverseBytes(value) >>> 16;
     }
     
-    private final String readString(final DataInputStream in) throws IOException {
+    private String readString(final DataInputStream in) throws IOException {
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int nextByte;
         while ((nextByte = in.readUnsignedByte()) != 0) {
