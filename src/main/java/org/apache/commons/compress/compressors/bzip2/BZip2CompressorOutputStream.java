@@ -398,7 +398,6 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         init();
     }
 
-    /** {@inheritDoc} */
     @Override
     public void write(final int b) throws IOException {
         if (this.out != null) {

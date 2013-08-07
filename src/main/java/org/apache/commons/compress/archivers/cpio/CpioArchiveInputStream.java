@@ -445,7 +445,6 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         return total;
     }
 
-    /** {@inheritDoc} */
     @Override
     public ArchiveEntry getNextEntry() throws IOException {
         return getNextCPIOEntry();

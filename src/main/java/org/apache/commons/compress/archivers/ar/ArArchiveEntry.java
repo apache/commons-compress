@@ -115,12 +115,10 @@ public class ArArchiveEntry implements ArchiveEntry {
              0, 0, DEFAULT_MODE, inputFile.lastModified() / 1000);
     }
 
-    /** {@inheritDoc} */
     public long getSize() {
         return this.getLength();
     }
 
-    /** {@inheritDoc} */
     public String getName() {
         return name;
     }
@@ -144,7 +142,6 @@ public class ArArchiveEntry implements ArchiveEntry {
         return lastModified;
     }
 
-    /** {@inheritDoc} */
     public Date getLastModifiedDate() {
         return new Date(1000 * getLastModified());
     }
@@ -153,12 +150,10 @@ public class ArArchiveEntry implements ArchiveEntry {
         return length;
     }
 
-    /** {@inheritDoc} */
     public boolean isDirectory() {
         return false;
     }
 
-    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -167,7 +162,6 @@ public class ArArchiveEntry implements ArchiveEntry {
         return result;
     }
 
-    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

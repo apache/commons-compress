@@ -32,7 +32,6 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
         out = new GZIPOutputStream(outputStream);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void write(int b) throws IOException {
         out.write(b);

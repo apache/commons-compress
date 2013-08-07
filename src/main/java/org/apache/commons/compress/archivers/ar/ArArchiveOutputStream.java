@@ -69,7 +69,6 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         return header.length;
     }
 
-    /** {@inheritDoc} */
     @Override
     public void closeArchiveEntry() throws IOException {
         if(finished) {
@@ -84,7 +83,6 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         haveUnclosedEntry = false;
     }
 
-    /** {@inheritDoc} */
     @Override
     public void putArchiveEntry( final ArchiveEntry pEntry ) throws IOException {
         if(finished) {
@@ -215,7 +213,6 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         prevEntry = null;
     }
 
-    /** {@inheritDoc} */
     @Override
     public ArchiveEntry createArchiveEntry(File inputFile, String entryName)
             throws IOException {
@@ -225,7 +222,6 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         return new ArArchiveEntry(inputFile, entryName);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void finish() throws IOException {
         if(haveUnclosedEntry) {

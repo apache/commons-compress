@@ -39,9 +39,6 @@ class TempFileCachingStreamBridge extends StreamBridge {
         out = new FileOutputStream(f);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     InputStream getInputView() throws IOException {
         out.close();
