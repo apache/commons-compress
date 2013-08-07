@@ -127,11 +127,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      * @throws NullPointerException
      *             if <tt>in == null</tt>
      */
-    public BZip2CompressorInputStream(final InputStream in,
-                                      final boolean decompressConcatenated)
-            throws IOException {
-        super();
-
+    public BZip2CompressorInputStream(final InputStream in, final boolean decompressConcatenated) throws IOException {
         this.in = in;
         this.decompressConcatenated = decompressConcatenated;
 
@@ -990,8 +986,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         // ===============
 
         Data(int blockSize100k) {
-            super();
-
             this.ll8 = new byte[blockSize100k * BZip2Constants.BASEBLOCKSIZE];
         }
 

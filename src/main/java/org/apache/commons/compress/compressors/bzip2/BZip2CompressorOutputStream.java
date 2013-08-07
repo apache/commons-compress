@@ -376,18 +376,12 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
      * @see #MIN_BLOCKSIZE
      * @see #MAX_BLOCKSIZE
      */
-    public BZip2CompressorOutputStream(final OutputStream out,
-                                       final int blockSize)
-        throws IOException {
-        super();
-
+    public BZip2CompressorOutputStream(final OutputStream out, final int blockSize) throws IOException {
         if (blockSize < 1) {
-            throw new IllegalArgumentException("blockSize(" + blockSize
-                                               + ") < 1");
+            throw new IllegalArgumentException("blockSize(" + blockSize + ") < 1");
         }
         if (blockSize > 9) {
-            throw new IllegalArgumentException("blockSize(" + blockSize
-                                               + ") > 9");
+            throw new IllegalArgumentException("blockSize(" + blockSize + ") > 9");
         }
 
         this.blockSize100k = blockSize;
@@ -1326,8 +1320,6 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         int origPtr;
 
         Data(int blockSize100k) {
-            super();
-
             final int n = blockSize100k * BZip2Constants.BASEBLOCKSIZE;
             this.block = new byte[(n + 1 + NUM_OVERSHOOT_BYTES)];
             this.fmap = new int[n];
