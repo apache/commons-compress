@@ -60,7 +60,7 @@ public class TarUtils {
 
             public String decode(byte[] buffer) {
                 final int length = buffer.length;
-                StringBuffer result = new StringBuffer(length);
+                StringBuilder result = new StringBuilder(length);
 
                 for (int i = 0; i < length; ++i) {
                     byte b = buffer[i];

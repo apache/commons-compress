@@ -44,7 +44,7 @@ import org.apache.commons.compress.utils.ArchiveUtils;
  * while ((cpioEntry = cpioIn.getNextEntry()) != null) {
  *     System.out.println(cpioEntry.getName());
  *     int tmp;
- *     StringBuffer buf = new StringBuffer();
+ *     StringBuilder buf = new StringBuilder();
  *     while ((tmp = cpIn.read()) != -1) {
  *         buf.append((char) tmp);
  *     }
