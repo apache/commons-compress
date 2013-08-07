@@ -446,7 +446,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
     }
 
     @Override
-    public ArchiveEntry getNextEntry() throws IOException {
+    public CpioArchiveEntry getNextEntry() throws IOException {
         return getNextCPIOEntry();
     }
 
