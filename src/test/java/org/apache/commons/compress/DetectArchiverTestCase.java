@@ -26,6 +26,7 @@ import java.io.IOException;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
+import org.apache.commons.compress.archivers.arj.ArjArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
@@ -73,6 +74,10 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
         final ArchiveInputStream cpio = getStreamFor("bla.cpio");
         assertNotNull(cpio);
         assertTrue(cpio instanceof CpioArchiveInputStream);
+        
+        final ArchiveInputStream arj = getStreamFor("bla.arj");
+        assertNotNull(arj);
+        assertTrue(arj instanceof ArjArchiveInputStream);
 
 // Not yet implemented
 //        final ArchiveInputStream tgz = getStreamFor("bla.tgz");
