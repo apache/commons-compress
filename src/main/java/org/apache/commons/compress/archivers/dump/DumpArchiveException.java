@@ -35,7 +35,6 @@ public class DumpArchiveException extends IOException {
     }
 
     public DumpArchiveException(Throwable cause) {
-        super();
         initCause(cause);
     }
 
