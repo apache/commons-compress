@@ -372,6 +372,46 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         tin.close();
     }
 
+    public void testWriteLongDirectoryNameErrorMode() throws Exception {
+        String n = "01234567890123456789012345678901234567890123456789"
+                + "01234567890123456789012345678901234567890123456789"
+                + "01234567890123456789012345678901234567890123456789/";
+
+        try {
+            TarArchiveEntry t = new TarArchiveEntry(n);
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, "ASCII");
+            tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_ERROR);
+            tos.putArchiveEntry(t);
+            tos.closeArchiveEntry();
+            tos.close();
+            
+            fail("Truncated name didn't throw an exception");
+        } catch (RuntimeException e) {
+            // expected
+        }
+    }
+
+    public void testWriteLongDirectoryNameTruncateMode() throws Exception {
+        String n = "01234567890123456789012345678901234567890123456789"
+            + "01234567890123456789012345678901234567890123456789"
+            + "01234567890123456789012345678901234567890123456789/";
+        TarArchiveEntry t = new TarArchiveEntry(n);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, "ASCII");
+        tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_TRUNCATE);
+        tos.putArchiveEntry(t);
+        tos.closeArchiveEntry();
+        tos.close();
+        byte[] data = bos.toByteArray();
+        TarArchiveInputStream tin =
+            new TarArchiveInputStream(new ByteArrayInputStream(data));
+        TarArchiveEntry e = tin.getNextTarEntry();
+        assertEquals("Entry name", n.substring(0, TarConstants.NAMELEN) + "/", e.getName());
+        assertTrue("The entry is not a directory", e.isDirectory());
+        tin.close();
+    }
+
     /**
      * @see "https://issues.apache.org/jira/browse/COMPRESS-203"
      */
