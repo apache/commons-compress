@@ -21,6 +21,7 @@ package org.apache.commons.compress;
 import static org.apache.commons.compress.AbstractTestCase.getFile;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import junit.framework.TestCase;
@@ -30,6 +31,8 @@ import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.compress.compressors.pack200.Pack200CompressorInputStream;
+import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 
 public final class DetectCompressorTestCase extends TestCase {
 
@@ -37,19 +40,31 @@ public final class DetectCompressorTestCase extends TestCase {
         super(name);
     }
 
-    final ClassLoader classLoader = getClass().getClassLoader();
     final CompressorStreamFactory factory = new CompressorStreamFactory();
 
     public void testDetection() throws Exception {
-
-        final CompressorInputStream bzip2 = getStreamFor("bla.txt.bz2"); 
+        CompressorInputStream bzip2 = getStreamFor("bla.txt.bz2"); 
         assertNotNull(bzip2);
         assertTrue(bzip2 instanceof BZip2CompressorInputStream);
 
-        final CompressorInputStream gzip = getStreamFor("bla.tgz");
+        CompressorInputStream gzip = getStreamFor("bla.tgz");
         assertNotNull(gzip);
         assertTrue(gzip instanceof GzipCompressorInputStream);
+        
+        CompressorInputStream pack200 = getStreamFor("bla.pack");
+        assertNotNull(pack200);
+        assertTrue(pack200 instanceof Pack200CompressorInputStream);
 
+        CompressorInputStream xz = getStreamFor("bla.tar.xz");
+        assertNotNull(xz);
+        assertTrue(xz instanceof XZCompressorInputStream);
+
+        try {
+            factory.createCompressorInputStream(new ByteArrayInputStream(new byte[0]));
+            fail("No exception thrown for an empty input stream");
+        } catch (CompressorException e) {
+            // expected
+        }
     }
 
     private CompressorInputStream getStreamFor(String resource)
