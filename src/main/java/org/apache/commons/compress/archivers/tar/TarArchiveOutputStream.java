@@ -496,7 +496,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     private String stripTo7Bits(String name) {
         final int length = name.length();
-        StringBuffer result = new StringBuffer(length);
+        StringBuilder result = new StringBuilder(length);
         for (int i = 0; i < length; i++) {
             char stripped = (char) (name.charAt(i) & 0x7F);
             if (stripped != 0) { // would be read as Trailing null
@@ -520,7 +520,6 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         out.flush();
     }
 
-    /** {@inheritDoc} */
     @Override
     public ArchiveEntry createArchiveEntry(File inputFile, String entryName)
             throws IOException {

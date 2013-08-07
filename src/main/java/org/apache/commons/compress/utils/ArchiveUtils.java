@@ -41,7 +41,7 @@ public class ArchiveUtils {
      * @return the representation of the entry
      */
     public static String toString(ArchiveEntry entry){
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(entry.isDirectory()? 'd' : '-');// c.f. "ls -l" output
         String size = Long.toString((entry.getSize()));
         sb.append(' ');
