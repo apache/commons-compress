@@ -90,13 +90,11 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         } catch (IOException ignored) {
         }
     }
-    
+
     private static void debug(final String message) {
-        if (DEBUG) {
-            System.out.println(message);
-        }
+        System.out.println(message);
     }
-    
+
     private static int read16(final DataInputStream in) throws IOException {
         final int value = in.readUnsignedShort();
         return Integer.reverseBytes(value) >>> 16;
@@ -194,7 +192,9 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
             }
         }
         
-        debug(mainHeader.toString());
+        if (DEBUG) {
+            debug(mainHeader.toString());
+        }
         
         return mainHeader;
     }
@@ -256,7 +256,9 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         }
         localFileHeader.extendedHeaders = extendedHeaders.toArray(new byte[extendedHeaders.size()][]);
         
-        debug(localFileHeader.toString());
+        if (DEBUG) {
+            debug(localFileHeader.toString());
+        }
         
         return localFileHeader;
     }
