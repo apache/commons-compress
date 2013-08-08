@@ -70,7 +70,30 @@ public final class IOUtils {
         }
         return count;
     }
+    
+    /**
+     * Skips the given number of bytes by repeatedly invoking skip on
+     * the given input stream if necessary.
+     *
+     * <p>This method will only skip less than the requested number of
+     * bytes if the end of the input stream has been reached.</p>
 
+     * @param input stream to skip bytes in
+     * @param numToSkip the number of bytes to skip
+     * @return the number of bytes actually skipped
+     * @throws IOException
+     */
+    public static long skip(InputStream input, long numToSkip) throws IOException {
+        long available = numToSkip;
+        while (numToSkip > 0) {
+            long skipped = input.skip(numToSkip);
+            if (skipped == 0) {
+                break;
+            }
+            numToSkip -= skipped;
+        }
+        return (available - numToSkip);
+    }
 
     // toByteArray(InputStream) copied from:
     // commons/proper/io/trunk/src/main/java/org/apache/commons/io/IOUtils.java?revision=1428941

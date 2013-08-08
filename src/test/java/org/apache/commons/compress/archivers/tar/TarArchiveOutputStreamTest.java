@@ -482,7 +482,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         tos.closeArchiveEntry();
         tos.close();
         // test1.xml is small enough to fit into the default blockv size
-        assertEquals(TarBuffer.DEFAULT_BLKSIZE, f.length());
+        assertEquals(TarConstants.DEFAULT_BLKSIZE, f.length());
     }
 
 }
