@@ -230,5 +230,22 @@ public class ArchiveUtils {
             final byte[] buffer2, final int offset2, final int length2){
         return isEqual(buffer1, offset1, length1, buffer2, offset2, length2, true);
     }
-
+    
+    /**
+     * Returns true if the first N bytes of an array are all zero
+     * 
+     * @param a
+     *            The array to check
+     * @param size
+     *            The number of characters to check (not the size of the array)
+     * @return true if the first N bytes are zero
+     */
+    public static boolean isArrayZero(byte[] a, int size) {
+        for (int i = 0; i < size; i++) {
+            if (a[i] != 0) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

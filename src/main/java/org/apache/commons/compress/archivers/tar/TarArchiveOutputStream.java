@@ -67,9 +67,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     private final byte[]    recordBuf;
     private int       assemLen;
     private final byte[]    assemBuf;
-    protected final TarBuffer buffer;
     private int       longFileMode = LONGFILE_ERROR;
     private int       bigNumberMode = BIGNUMBER_ERROR;
+    private int recordsWritten;
+    private final int recordsPerBlock;
+    private final int recordSize;
 
     private boolean closed = false;
 
@@ -92,7 +94,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * @param os the output stream to use
      */
     public TarArchiveOutputStream(OutputStream os) {
-        this(os, TarBuffer.DEFAULT_BLKSIZE, TarBuffer.DEFAULT_RCDSIZE);
+        this(os, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE);
     }
 
     /**
@@ -102,7 +104,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * @since 1.4
      */
     public TarArchiveOutputStream(OutputStream os, String encoding) {
-        this(os, TarBuffer.DEFAULT_BLKSIZE, TarBuffer.DEFAULT_RCDSIZE, encoding);
+        this(os, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, encoding);
     }
 
     /**
@@ -111,7 +113,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * @param blockSize the block size to use
      */
     public TarArchiveOutputStream(OutputStream os, int blockSize) {
-        this(os, blockSize, TarBuffer.DEFAULT_RCDSIZE);
+        this(os, blockSize, TarConstants.DEFAULT_RCDSIZE);
     }
 
     /**
@@ -123,7 +125,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      */
     public TarArchiveOutputStream(OutputStream os, int blockSize,
                                   String encoding) {
-        this(os, blockSize, TarBuffer.DEFAULT_RCDSIZE, encoding);
+        this(os, blockSize, TarConstants.DEFAULT_RCDSIZE, encoding);
     }
 
     /**
@@ -149,10 +151,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         out = new CountingOutputStream(os);
         this.encoding = ZipEncodingHelper.getZipEncoding(encoding);
 
-        this.buffer = new TarBuffer(out, blockSize, recordSize);
         this.assemLen = 0;
         this.assemBuf = new byte[recordSize];
         this.recordBuf = new byte[recordSize];
+        this.recordSize = recordSize;
+        this.recordsPerBlock = blockSize / recordSize;
     }
 
     /**
@@ -217,7 +220,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         }
         writeEOFRecord();
         writeEOFRecord();
-        buffer.flushBlock();
+        padAsNeeded();
+        out.flush();
         finished = true;
     }
 
@@ -227,12 +231,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      */
     @Override
     public void close() throws IOException {
-        if(!finished) {
+        if (!finished) {
             finish();
         }
 
         if (!closed) {
-            buffer.close();
             out.close();
             closed = true;
         }
@@ -244,7 +247,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * @return The TarBuffer record size.
      */
     public int getRecordSize() {
-        return buffer.getRecordSize();
+        return this.recordSize;
     }
 
     /**
@@ -317,7 +320,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
         entry.writeEntryHeader(recordBuf, encoding,
                                bigNumberMode == BIGNUMBER_STAR);
-        buffer.writeRecord(recordBuf);
+        writeRecord(recordBuf);
 
         currBytes = 0;
 
@@ -353,7 +356,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 assemBuf[i] = 0;
             }
 
-            buffer.writeRecord(assemBuf);
+            writeRecord(assemBuf);
 
             currBytes += assemLen;
             assemLen = 0;
@@ -407,7 +410,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                                  assemLen);
                 System.arraycopy(wBuf, wOffset, recordBuf,
                                  assemLen, aLen);
-                buffer.writeRecord(recordBuf);
+                writeRecord(recordBuf);
 
                 currBytes += recordBuf.length;
                 wOffset += aLen;
@@ -438,7 +441,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 break;
             }
 
-            buffer.writeRecord(wBuf, wOffset);
+            writeRecord(wBuf, wOffset);
 
             int num = recordBuf.length;
 
@@ -512,7 +515,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      */
     private void writeEOFRecord() throws IOException {
         Arrays.fill(recordBuf, (byte) 0);
-        buffer.writeRecord(recordBuf);
+        writeRecord(recordBuf);
     }
 
     @Override
@@ -527,6 +530,55 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             throw new IOException("Stream has already been finished");
         }
         return new TarArchiveEntry(inputFile, entryName);
+    }
+    
+    /**
+     * Write an archive record to the archive.
+     *
+     * @param record The record data to write to the archive.
+     * @throws IOException on error
+     */
+    private void writeRecord(byte[] record) throws IOException {
+        if (record.length != recordSize) {
+            throw new IOException("record to write has length '"
+                                  + record.length
+                                  + "' which is not the record size of '"
+                                  + recordSize + "'");
+        }
+
+        out.write(record);
+        recordsWritten++;
+    }
+    
+    /**
+     * Write an archive record to the archive, where the record may be
+     * inside of a larger array buffer. The buffer must be "offset plus
+     * record size" long.
+     *
+     * @param buf The buffer containing the record data to write.
+     * @param offset The offset of the record data within buf.
+     * @throws IOException on error
+     */
+    private void writeRecord(byte[] buf, int offset) throws IOException {
+ 
+        if ((offset + recordSize) > buf.length) {
+            throw new IOException("record has length '" + buf.length
+                                  + "' with offset '" + offset
+                                  + "' which is less than the record size of '"
+                                  + recordSize + "'");
+        }
+
+        out.write(buf, offset, recordSize);
+        recordsWritten++;
+    }
+
+    private void padAsNeeded() throws IOException {
+        int start = recordsWritten % recordsPerBlock;
+        if (start != 0) {
+            for (int i = start; i < recordsPerBlock; i++) {
+                writeEOFRecord();
+            }
+        }
     }
 
     private void addPaxHeadersForBigNumbers(Map<String, String> paxHeaders,
