@@ -32,6 +32,7 @@ import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.CharsetNames;
+import org.apache.commons.compress.utils.IOUtils;
 
 public class TarArchiveOutputStreamTest extends AbstractTestCase {
 
@@ -465,6 +466,23 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         assertEquals(n, e.getName());
         assertTrue(e.isDirectory());
         tin.close();
+    }
+
+    public void testPadsOutputToFullBlockLength() throws Exception {
+        File f = File.createTempFile("commons-compress-padding", ".tar");
+        f.deleteOnExit();
+        FileOutputStream fos = new FileOutputStream(f);
+        TarArchiveOutputStream tos = new TarArchiveOutputStream(fos);
+        File file1 = getFile("test1.xml");
+        TarArchiveEntry sEntry = new TarArchiveEntry(file1);
+        tos.putArchiveEntry(sEntry);
+        FileInputStream in = new FileInputStream(file1);
+        IOUtils.copy(in, tos);
+        in.close();
+        tos.closeArchiveEntry();
+        tos.close();
+        // test1.xml is small enough to fit into the default blockv size
+        assertEquals(TarBuffer.DEFAULT_BLKSIZE, f.length());
     }
 
 }
