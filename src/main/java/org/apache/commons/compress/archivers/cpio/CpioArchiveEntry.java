@@ -596,7 +596,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @return TRUE if this entry is a block device.
      */
     public boolean isBlockDevice() {
-        return (this.mode & S_IFMT) == C_ISBLK;
+        return CpioUtil.fileType(mode) == C_ISBLK;
     }
 
     /**
@@ -605,7 +605,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @return TRUE if this entry is a character device.
      */
     public boolean isCharacterDevice() {
-        return (this.mode & S_IFMT) == C_ISCHR;
+        return CpioUtil.fileType(mode) == C_ISCHR;
     }
 
     /**
@@ -614,7 +614,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @return TRUE if this entry is a directory.
      */
     public boolean isDirectory() {
-        return (this.mode & S_IFMT) == C_ISDIR;
+        return CpioUtil.fileType(mode) == C_ISDIR;
     }
 
     /**
@@ -623,7 +623,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @return TRUE if this entry is a network device.
      */
     public boolean isNetwork() {
-        return (this.mode & S_IFMT) == C_ISNWK;
+        return CpioUtil.fileType(mode) == C_ISNWK;
     }
 
     /**
@@ -632,7 +632,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @return TRUE if this entry is a pipe.
      */
     public boolean isPipe() {
-        return (this.mode & S_IFMT) == C_ISFIFO;
+        return CpioUtil.fileType(mode) == C_ISFIFO;
     }
 
     /**
@@ -641,7 +641,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @return TRUE if this entry is a regular file.
      */
     public boolean isRegularFile() {
-        return (this.mode & S_IFMT) == C_ISREG;
+        return CpioUtil.fileType(mode) == C_ISREG;
     }
 
     /**
@@ -650,7 +650,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @return TRUE if this entry is a socket.
      */
     public boolean isSocket() {
-        return (this.mode & S_IFMT) == C_ISSOCK;
+        return CpioUtil.fileType(mode) == C_ISSOCK;
     }
 
     /**
@@ -659,7 +659,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @return TRUE if this entry is a symbolic link.
      */
     public boolean isSymbolicLink() {
-        return (this.mode & S_IFMT) == C_ISLNK;
+        return CpioUtil.fileType(mode) == C_ISLNK;
     }
 
     /**
