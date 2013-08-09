@@ -90,6 +90,11 @@ The <action> type attribute can be add,update,fix,remove.
         CpioArchiveInputStream failed to read archives created by
         Redline RPM.
       </action>
+      <action type="fix" date="2013-08-09" issue="COMPRESS-237"
+              due-to="Emmanuel Bourg">
+        TarArchiveOutputStream now properly handles link names that
+        are too long to fit into a traditional TAR header.
+      </action>
     </release>
     <release version="1.5" date="2013-03-14"
              description="Release 1.5">
