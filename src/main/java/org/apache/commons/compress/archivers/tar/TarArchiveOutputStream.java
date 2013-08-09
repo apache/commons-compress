@@ -272,12 +272,12 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         Map<String, String> paxHeaders = new HashMap<String, String>();
         final String entryName = entry.getName();
         boolean paxHeaderContainsPath = handleLongName(entryName, paxHeaders, "path",
-                                                       TarConstants.LF_GNUTYPE_LONGNAME);
+                                                       TarConstants.LF_GNUTYPE_LONGNAME, "file name");
 
         final String linkName = entry.getLinkName();
         boolean paxHeaderContainsLinkPath = linkName != null && linkName.length() > 0
             && handleLongName(linkName, paxHeaders, "linkpath",
-                              TarConstants.LF_GNUTYPE_LONGLINK);
+                              TarConstants.LF_GNUTYPE_LONGLINK, "link name");
 
         if (bigNumberMode == BIGNUMBER_POSIX) {
             addPaxHeadersForBigNumbers(paxHeaders, entry);
@@ -630,11 +630,12 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * @param paxHeaders current map of pax headers
      * @param paxHeaderName name of the pax header to write
      * @param linkType type of the GNU entry to write
+     * @param fieldName the name of the field
      * @return whether a pax header has been written.
      */
     private boolean handleLongName(String name,
                                    Map<String, String> paxHeaders,
-                                   String paxHeaderName, byte linkType)
+                                   String paxHeaderName, byte linkType, String fieldName)
         throws IOException {
         final ByteBuffer encodedName = encoding.encode(name);
         final int len = encodedName.limit() - encodedName.position();
@@ -646,8 +647,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             } else if (longFileMode == LONGFILE_GNU) {
                 // create a TarEntry for the LongLink, the contents
                 // of which are the link's name
-                TarArchiveEntry longLinkEntry =
-                    new TarArchiveEntry(TarConstants.GNU_LONGLINK, linkType);
+                TarArchiveEntry longLinkEntry = new TarArchiveEntry(TarConstants.GNU_LONGLINK, linkType);
 
                 longLinkEntry.setSize(len + 1); // +1 for NUL
                 putArchiveEntry(longLinkEntry);
@@ -655,7 +655,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 write(0); // NUL terminator
                 closeArchiveEntry();
             } else if (longFileMode != LONGFILE_TRUNCATE) {
-                throw new RuntimeException(paxHeaderName + " '" + name
+                throw new RuntimeException(fieldName + " '" + name
                                            + "' is too long ( > "
                                            + TarConstants.NAMELEN + " bytes)");
             }
