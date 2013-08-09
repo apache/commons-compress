@@ -468,6 +468,91 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         tin.close();
     }
 
+    /**
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-237"
+     */
+    public void testWriteLongLinkNameErrorMode() throws Exception {
+        String linkname = "01234567890123456789012345678901234567890123456789"
+                + "01234567890123456789012345678901234567890123456789"
+                + "01234567890123456789012345678901234567890123456789/test";
+        TarArchiveEntry entry = new TarArchiveEntry("test", TarArchiveEntry.LF_SYMLINK);
+        entry.setLinkName(linkname);
+        
+        try {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, "ASCII");
+            tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_ERROR);
+            tos.putArchiveEntry(entry);
+            tos.closeArchiveEntry();
+            tos.close();
+            
+            fail("Truncated link name didn't throw an exception");
+        } catch (RuntimeException e) {
+            // expected
+        }
+    }
+
+    public void testWriteLongLinkNameTruncateMode() throws Exception {
+        String linkname = "01234567890123456789012345678901234567890123456789"
+            + "01234567890123456789012345678901234567890123456789"
+            + "01234567890123456789012345678901234567890123456789/";
+        TarArchiveEntry entry = new TarArchiveEntry("test" , TarArchiveEntry.LF_SYMLINK);
+        entry.setLinkName(linkname);
+        
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, "ASCII");
+        tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_TRUNCATE);
+        tos.putArchiveEntry(entry);
+        tos.closeArchiveEntry();
+        tos.close();
+        
+        byte[] data = bos.toByteArray();
+        TarArchiveInputStream tin = new TarArchiveInputStream(new ByteArrayInputStream(data));
+        TarArchiveEntry e = tin.getNextTarEntry();
+        assertEquals("Link name", linkname.substring(0, TarConstants.NAMELEN), e.getLinkName());
+        tin.close();
+    }
+
+    /**
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-237"
+     */
+    public void testWriteLongLinkNameGnuMode() throws Exception {
+        testWriteLongLinkName(TarArchiveOutputStream.LONGFILE_GNU);
+    }
+
+    /**
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-237"
+     */
+    public void testWriteLongLinkNamePosixMode() throws Exception {
+        testWriteLongLinkName(TarArchiveOutputStream.LONGFILE_POSIX);
+    }
+
+    /**
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-237"
+     */
+    public void testWriteLongLinkName(int mode) throws Exception {
+        String linkname = "01234567890123456789012345678901234567890123456789"
+            + "01234567890123456789012345678901234567890123456789"
+            + "01234567890123456789012345678901234567890123456789/test";
+        TarArchiveEntry entry = new TarArchiveEntry("test", TarArchiveEntry.LF_SYMLINK);
+        entry.setLinkName(linkname);
+        
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, "ASCII");
+        tos.setLongFileMode(mode);
+        tos.putArchiveEntry(entry);
+        tos.closeArchiveEntry();
+        tos.close();
+        
+        byte[] data = bos.toByteArray();
+        TarArchiveInputStream tin = new TarArchiveInputStream(new ByteArrayInputStream(data));
+        TarArchiveEntry e = tin.getNextTarEntry();
+        assertEquals("Entry name", "test", e.getName());
+        assertEquals("Link name", linkname, e.getLinkName());
+        assertTrue("The entry is not a symbolic link", e.isSymbolicLink());
+        tin.close();
+    }
+
     public void testPadsOutputToFullBlockLength() throws Exception {
         File f = File.createTempFile("commons-compress-padding", ".tar");
         f.deleteOnExit();
