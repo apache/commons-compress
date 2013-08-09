@@ -623,7 +623,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      *   paxHeaderName parameter if longFileMode is POSIX</li>
      *   <li>it creates a GNU longlink entry who's type is given by
      *   the linkType parameter if longFileMode is GNU</li>
-     *   <li>throws an exception othewise.</li>
+     *   <li>it throws an exception if longFileMode is ERROR</li>
+     *   <li>it truncates the name if longFileMode is TRUNCATE</li>
      * </ul></p>
      *
      * @param name the name to write
