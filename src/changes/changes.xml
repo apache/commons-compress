@@ -71,7 +71,7 @@ The <action> type attribute can be add,update,fix,remove.
         name.
       </action>
       <action type="fix" date="2013-06-04" issue="COMPRESS-227">
-        ZipFile#getInoutStream could return null if the archive
+        ZipFile#getInputStream could return null if the archive
         contained duplicate entries.
         The class now also provides two new methods to obtain all
         entries of a given name rather than just the first one.
