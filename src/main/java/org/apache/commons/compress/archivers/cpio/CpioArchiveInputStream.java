@@ -24,7 +24,10 @@ import java.io.InputStream;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.ZipEncoding;
+import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ArchiveUtils;
+import org.apache.commons.compress.utils.CharsetNames;
 
 /**
  * CPIOArchiveInputStream is a stream for reading cpio streams. All formats of
@@ -85,19 +88,41 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
     private final int blockSize;
 
     /**
+     * The encoding to use for filenames and labels.
+     */
+    private final ZipEncoding encoding;
+
+    /**
      * Construct the cpio input stream with a blocksize of {@link
-     * CpioConstants#BLOCK_SIZE BLOCK_SIZE}.
+     * CpioConstants#BLOCK_SIZE BLOCK_SIZE} and expecting ASCII file
+     * names.
      * 
      * @param in
      *            The cpio stream
      */
     public CpioArchiveInputStream(final InputStream in) {
-        this(in, BLOCK_SIZE);
+        this(in, BLOCK_SIZE, CharsetNames.US_ASCII);
     }
 
     /**
-     * Construct the cpio input stream with a blocksize of {@link CpioConstants#BLOCK_SIZE BLOCK_SIZE}.
-     * Construct the cpio input stream.
+     * Construct the cpio input stream with a blocksize of {@link
+     * CpioConstants#BLOCK_SIZE BLOCK_SIZE}.
+     * 
+     * @param in
+     *            The cpio stream
+     * @param encoding
+     *            The encoding of file names to expect - use null for
+     *            the platform's default.
+     * @since 1.6
+     */
+    public CpioArchiveInputStream(final InputStream in, String encoding) {
+        this(in, BLOCK_SIZE, encoding);
+    }
+
+    /**
+     * Construct the cpio input stream with a blocksize of {@link
+     * CpioConstants#BLOCK_SIZE BLOCK_SIZE} expecting ASCII file
+     * names.
      * 
      * @param in
      *            The cpio stream
@@ -106,8 +131,25 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
      * @since 1.5
      */
     public CpioArchiveInputStream(final InputStream in, int blockSize) {
+        this(in, blockSize, CharsetNames.US_ASCII);
+    }
+
+    /**
+     * Construct the cpio input stream with a blocksize of {@link CpioConstants#BLOCK_SIZE BLOCK_SIZE}.
+     * 
+     * @param in
+     *            The cpio stream
+     * @param blockSize
+     *            The block size of the archive.
+     * @param encoding
+     *            The encoding of file names to expect - use null for
+     *            the platform's default.
+     * @since 1.6
+     */
+    public CpioArchiveInputStream(final InputStream in, int blockSize, String encoding) {
         this.in = in;
         this.blockSize = blockSize;
+        this.encoding = ZipEncodingHelper.getZipEncoding(encoding);
     }
 
     /**
@@ -405,9 +447,11 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
     }
 
     private String readCString(final int length) throws IOException {
-        byte tmpBuffer[] = new byte[length];
+        // don't include trailing NUL in file name to decode
+        byte tmpBuffer[] = new byte[length - 1];
         readFully(tmpBuffer, 0, tmpBuffer.length);
-        return new String(tmpBuffer, 0, tmpBuffer.length - 1); // TODO default charset?
+        this.in.read();
+        return encoding.decode(tmpBuffer);
     }
 
     /**

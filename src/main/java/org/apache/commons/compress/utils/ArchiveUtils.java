@@ -67,7 +67,7 @@ public class ArchiveUtils {
             String expected, byte[] buffer, int offset, int length){
         byte[] buffer1;
         try {
-            buffer1 = expected.getBytes("ASCII");
+            buffer1 = expected.getBytes(CharsetNames.US_ASCII);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e); // Should not happen
         }
@@ -94,7 +94,7 @@ public class ArchiveUtils {
      */
     public static byte[] toAsciiBytes(String inputString){
         try {
-            return inputString.getBytes("ASCII");
+            return inputString.getBytes(CharsetNames.US_ASCII);
         } catch (UnsupportedEncodingException e) {
            throw new RuntimeException(e); // Should never happen
         }
@@ -108,7 +108,7 @@ public class ArchiveUtils {
      */
     public static String toAsciiString(final byte[] inputBytes){
         try {
-            return new String(inputBytes, "ASCII");
+            return new String(inputBytes, CharsetNames.US_ASCII);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e); // Should never happen
         }
@@ -124,7 +124,7 @@ public class ArchiveUtils {
      */
     public static String toAsciiString(final byte[] inputBytes, int offset, int length){
         try {
-            return new String(inputBytes, offset, length, "ASCII");
+            return new String(inputBytes, offset, length, CharsetNames.US_ASCII);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e); // Should never happen
         }
