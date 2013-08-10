@@ -20,6 +20,8 @@ package org.apache.commons.compress.archivers.dump;
 
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.ZipEncoding;
+import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -38,6 +40,11 @@ import java.util.Stack;
  * Methods are provided to position at each successive entry in
  * the archive, and the read each entry as a normal input stream
  * using read().
+ *
+ * There doesn't seem to exist a hint on the encoding of string values
+ * in any piece documentation.  Given the main purpose of dump/restore
+ * is backing up a system it seems very likely the format uses the
+ * current default encoding of the system.
  *
  * @NotThreadSafe
  */
@@ -65,14 +72,34 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     private Queue<DumpArchiveEntry> queue;
 
     /**
-     * Constructor.
+     * The encoding to use for filenames and labels.
+     */
+    private final ZipEncoding encoding;
+
+    /**
+     * Constructor using the platform's default encoding for file
+     * names.
      *
      * @param is
      * @throws ArchiveException
      */
     public DumpArchiveInputStream(InputStream is) throws ArchiveException {
+        this(is, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param is
+     * @param encoding the encoding to use for file names, use null
+     * for the platform's default encoding
+     * @since 1.6
+     */
+    public DumpArchiveInputStream(InputStream is, String encoding)
+        throws ArchiveException {
         this.raw = new TapeInputStream(is);
         this.hasHitEOF = false;
+        this.encoding = ZipEncodingHelper.getZipEncoding(encoding);
 
         try {
             // read header, verify it's a dump archive.
@@ -83,7 +110,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
             }
 
             // get summary information
-            summary = new DumpArchiveSummary(headerBytes);
+            summary = new DumpArchiveSummary(headerBytes, this.encoding);
 
             // reset buffer with actual block size.
             raw.resetBlockSize(summary.getNTRec(), summary.isCompressed());
@@ -324,7 +351,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
                 byte type = blockBuffer[i + 6];
 
-                String name = new String(blockBuffer, i + 8, blockBuffer[i + 7]); // TODO default charset?
+                String name = DumpArchiveUtil.decode(encoding, blockBuffer, i + 8, blockBuffer[i + 7]);
 
                 if (".".equals(name) || "..".equals(name)) {
                     // do nothing...

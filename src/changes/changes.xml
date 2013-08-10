@@ -95,6 +95,10 @@ The <action> type attribute can be add,update,fix,remove.
         TarArchiveOutputStream now properly handles link names that
         are too long to fit into a traditional TAR header.
       </action>
+      <action type="add" date="2013-08-10">
+        DumpArchiveInputStream now supports an encoding parameter that
+        can be used to specify the default encoding of file names.
+      </action>
     </release>
     <release version="1.5" date="2013-03-14"
              description="Release 1.5">
