@@ -116,7 +116,7 @@ public class ArchiveStreamFactory {
     private String entryEncoding = null;
 
     /**
-     * Returns the encoding to use for arj, zip and tar files,
+     * Returns the encoding to use for arj, zip, dump and tar files,
      * or null for the default.
      *
      * @return entry encoding, or null
@@ -127,8 +127,8 @@ public class ArchiveStreamFactory {
     }
 
     /**
-     * Sets the encoding to use for arj, zip and tar files.
-     * Use null for the default.
+     * Sets the encoding to use for arj, zip, dump and tar files.  Use
+     * null for the default.
      *
      * @since 1.5
      */
@@ -188,7 +188,11 @@ public class ArchiveStreamFactory {
             return new CpioArchiveInputStream(in);
         }
         if (DUMP.equalsIgnoreCase(archiverName)) {
-            return new DumpArchiveInputStream(in);
+            if (entryEncoding != null) {
+                return new DumpArchiveInputStream(in, entryEncoding);
+            } else {
+                return new DumpArchiveInputStream(in);
+            }
         }
 
         throw new ArchiveException("Archiver: " + archiverName + " not found.");

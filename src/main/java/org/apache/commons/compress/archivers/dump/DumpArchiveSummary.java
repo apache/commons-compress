@@ -18,8 +18,10 @@
  */
 package org.apache.commons.compress.archivers.dump;
 
+import java.io.IOException;
 import java.util.Date;
 
+import org.apache.commons.compress.archivers.zip.ZipEncoding;
 
 /**
  * This class represents identifying information about a Dump archive volume.
@@ -41,15 +43,15 @@ public class DumpArchiveSummary {
     private int firstrec;
     private int ntrec;
 
-    DumpArchiveSummary(byte[] buffer) {
+    DumpArchiveSummary(byte[] buffer, ZipEncoding encoding) throws IOException {
         dumpDate = 1000L * DumpArchiveUtil.convert32(buffer, 4);
         previousDumpDate = 1000L * DumpArchiveUtil.convert32(buffer, 8);
         volume = DumpArchiveUtil.convert32(buffer, 12);
-        label = new String(buffer, 676, DumpArchiveConstants.LBLSIZE).trim(); // TODO default charset?
+        label = DumpArchiveUtil.decode(encoding, buffer, 676, DumpArchiveConstants.LBLSIZE).trim();
         level = DumpArchiveUtil.convert32(buffer, 692);
-        filesys = new String(buffer, 696, DumpArchiveConstants.NAMELEN).trim(); // TODO default charset?
-        devname = new String(buffer, 760, DumpArchiveConstants.NAMELEN).trim(); // TODO default charset?
-        hostname = new String(buffer, 824, DumpArchiveConstants.NAMELEN).trim(); // TODO default charset?
+        filesys = DumpArchiveUtil.decode(encoding, buffer, 696, DumpArchiveConstants.NAMELEN).trim();
+        devname = DumpArchiveUtil.decode(encoding, buffer, 760, DumpArchiveConstants.NAMELEN).trim();
+        hostname = DumpArchiveUtil.decode(encoding, buffer, 824, DumpArchiveConstants.NAMELEN).trim();
         flags = DumpArchiveUtil.convert32(buffer, 888);
         firstrec = DumpArchiveUtil.convert32(buffer, 892);
         ntrec = DumpArchiveUtil.convert32(buffer, 896);

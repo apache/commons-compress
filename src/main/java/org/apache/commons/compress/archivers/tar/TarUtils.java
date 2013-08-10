@@ -239,7 +239,15 @@ public class TarUtils {
     // Helper method to generate the exception message
     private static String exceptionMessage(byte[] buffer, final int offset,
             final int length, int current, final byte currentByte) {
-        String string = new String(buffer, offset, length); // TODO default charset?
+        // default charset is good enough for an exception message,
+        //
+        // the alternative was to modify parseOctal and
+        // parseOctalOrBinary to receive the ZipEncoding of the
+        // archive (deprecating the existing public methods, of
+        // course) and dealing with the fact that ZipEncoding#decode
+        // can throw an IOException which parseOctal* doesn't declare
+        String string = new String(buffer, offset, length);
+
         string=string.replaceAll("\0", "{NUL}"); // Replace NULs to allow string to be printed
         final String s = "Invalid byte "+currentByte+" at offset "+(current-offset)+" in '"+string+"' len="+length;
         return s;
