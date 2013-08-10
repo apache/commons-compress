@@ -97,7 +97,11 @@ The <action> type attribute can be add,update,fix,remove.
       </action>
       <action type="add" date="2013-08-10">
         DumpArchiveInputStream now supports an encoding parameter that
-        can be used to specify the default encoding of file names.
+        can be used to specify the encoding of file names.
+      </action>
+      <action type="add" date="2013-08-10">
+        The CPIO streams now support an encoding parameter that can be
+        used to specify the encoding of file names.
       </action>
     </release>
     <release version="1.5" date="2013-03-14"
