@@ -61,4 +61,49 @@ public class ArjArchiveEntry implements ArchiveEntry {
         return new Date(ZipUtil.dosToJavaTime(
                 0xffffFFFFL & localFileHeader.dateTimeModified));
     }
+
+    /**
+     * File mode of this entry.
+     *
+     * <p>The format depends on the host os that created the entry.</p>
+     */
+    public int getMode() {
+        return localFileHeader.fileAccessMode;
+    }
+
+    /**
+     * File mode of this entry as Unix stat value.
+     *
+     * <p>Will only be non-zero of the host os was UNIX.
+     */
+    public int getUnixMode() {
+        return getHostOs() == HostOs.UNIX ? getMode() : 0;
+    }
+
+    /**
+     * The operating system the archive has been created on.
+     * @see HostOs
+     */
+    public int getHostOs() {
+        return localFileHeader.hostOS;
+    }
+
+    /**
+     * The known values for HostOs.
+     */
+    public static class HostOs {
+        static final int DOS = 0;
+        static final int PRIMOS = 1;
+        static final int UNIX = 2;
+        static final int AMIGA = 3;
+        static final int MAC_OS = 4;
+        static final int OS_2 = 5;
+        static final int APPLE_GS = 6;
+        static final int ATARI_ST = 7;
+        static final int NEXT = 8;
+        static final int VAX_VMS = 9;
+        static final int WIN95 = 10;
+        static final int WIN32 = 11;
+    }
+    
 }
