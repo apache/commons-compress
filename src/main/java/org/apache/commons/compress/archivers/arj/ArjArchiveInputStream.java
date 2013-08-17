@@ -95,9 +95,22 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         System.out.println(message);
     }
 
-    private static int read16(final DataInputStream in) throws IOException {
+    private int read8(final DataInputStream in) throws IOException {
+        int value = in.readUnsignedByte();
+        count(1);
+        return value;
+    }
+
+    private int read16(final DataInputStream in) throws IOException {
         final int value = in.readUnsignedShort();
+        count(2);
         return Integer.reverseBytes(value) >>> 16;
+    }
+
+    private int read32(final DataInputStream in) throws IOException {
+        final int value = in.readInt();
+        count(4);
+        return Integer.reverseBytes(value);
     }
     
     private String readString(final DataInputStream in) throws IOException {
@@ -109,15 +122,21 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         return new String(buffer.toByteArray(), charset);
     }
     
+    private void readFully(final DataInputStream in, byte[] b)
+        throws IOException {
+        in.readFully(b);
+        count(b.length);
+    }
+    
     private byte[] readHeader() throws IOException {
         boolean found = false;
         byte[] basicHeaderBytes = null;
         do {
             int first = 0;
-            int second = in.readUnsignedByte();
+            int second = read8(in);
             do {
                 first = second;
-                second = in.readUnsignedByte();
+                second = read8(in);
             } while (first != ARJ_MAGIC_1 && second != ARJ_MAGIC_2);
             final int basicHeaderSize = read16(in);
             if (basicHeaderSize == 0) {
@@ -126,8 +145,8 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
             }
             if (basicHeaderSize <= 2600) {
                 basicHeaderBytes = new byte[basicHeaderSize];
-                in.readFully(basicHeaderBytes);
-                final int basicHeaderCrc32 = Integer.reverseBytes(in.readInt());
+                readFully(in, basicHeaderBytes);
+                final int basicHeaderCrc32 = read32(in);
                 final CRC32 crc32 = new CRC32();
                 crc32.update(basicHeaderBytes);
                 if (basicHeaderCrc32 == (int)crc32.getValue()) {
@@ -160,12 +179,13 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         mainHeader.securityVersion = firstHeader.readUnsignedByte();
         mainHeader.fileType = firstHeader.readUnsignedByte();
         mainHeader.reserved = firstHeader.readUnsignedByte();
-        mainHeader.dateTimeCreated = Integer.reverseBytes(firstHeader.readInt());
-        mainHeader.dateTimeModified = Integer.reverseBytes(firstHeader.readInt());
-        mainHeader.archiveSize = 0xffffFFFFL & Integer.reverseBytes(firstHeader.readInt());
-        mainHeader.securityEnvelopeFilePosition = Integer.reverseBytes(firstHeader.readInt());
+        mainHeader.dateTimeCreated = read32(firstHeader);
+        mainHeader.dateTimeModified = read32(firstHeader);
+        mainHeader.archiveSize = 0xffffFFFFL & read32(firstHeader);
+        mainHeader.securityEnvelopeFilePosition = read32(firstHeader);
         mainHeader.fileSpecPosition = read16(firstHeader);
         mainHeader.securityEnvelopeLength = read16(firstHeader);
+        pushedBackBytes(20); // count has already counted them via readFully
         mainHeader.encryptionVersion = firstHeader.readUnsignedByte();
         mainHeader.lastChapter = firstHeader.readUnsignedByte();
         
@@ -183,8 +203,8 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         final  int extendedHeaderSize = read16(in);
         if (extendedHeaderSize > 0) {
             mainHeader.extendedHeaderBytes = new byte[extendedHeaderSize];
-            in.readFully(mainHeader.extendedHeaderBytes);
-            final int extendedHeaderCrc32 = Integer.reverseBytes(in.readInt());
+            readFully(in, mainHeader.extendedHeaderBytes);
+            final int extendedHeaderCrc32 = read32(in);
             final CRC32 crc32 = new CRC32();
             crc32.update(mainHeader.extendedHeaderBytes);
             if (extendedHeaderCrc32 != (int)crc32.getValue()) {
@@ -221,20 +241,22 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         localFileHeader.method = firstHeader.readUnsignedByte();
         localFileHeader.fileType = firstHeader.readUnsignedByte();
         localFileHeader.reserved = firstHeader.readUnsignedByte();
-        localFileHeader.dateTimeModified = Integer.reverseBytes(firstHeader.readInt());
-        localFileHeader.compressedSize = 0xffffFFFFL & Integer.reverseBytes(firstHeader.readInt());
-        localFileHeader.originalSize = 0xffffFFFFL & Integer.reverseBytes(firstHeader.readInt());
-        localFileHeader.originalCrc32 = Integer.reverseBytes(firstHeader.readInt());
+        localFileHeader.dateTimeModified = read32(firstHeader);
+        localFileHeader.compressedSize = 0xffffFFFFL & read32(firstHeader);
+        localFileHeader.originalSize = 0xffffFFFFL & read32(firstHeader);
+        localFileHeader.originalCrc32 = read32(firstHeader);
         localFileHeader.fileSpecPosition = read16(firstHeader);
         localFileHeader.fileAccessMode = read16(firstHeader);
+        pushedBackBytes(20);
         localFileHeader.firstChapter = firstHeader.readUnsignedByte();
         localFileHeader.lastChapter = firstHeader.readUnsignedByte();
         
         try {
-            localFileHeader.extendedFilePosition = Integer.reverseBytes(firstHeader.readInt());
-            localFileHeader.dateTimeAccessed = Integer.reverseBytes(firstHeader.readInt());
-            localFileHeader.dateTimeCreated = Integer.reverseBytes(firstHeader.readInt());
-            localFileHeader.originalSizeEvenForVolumes = Integer.reverseBytes(firstHeader.readInt());
+            localFileHeader.extendedFilePosition = read32(firstHeader);
+            localFileHeader.dateTimeAccessed = read32(firstHeader);
+            localFileHeader.dateTimeCreated = read32(firstHeader);
+            localFileHeader.originalSizeEvenForVolumes = read32(firstHeader);
+            pushedBackBytes(16);
         } catch (EOFException eof) {
         }
         
@@ -245,8 +267,8 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         int extendedHeaderSize;
         while ((extendedHeaderSize = read16(in)) > 0) {
             final byte[] extendedHeaderBytes = new byte[extendedHeaderSize];
-            in.readFully(extendedHeaderBytes);
-            final int extendedHeaderCrc32 = Integer.reverseBytes(in.readInt());
+            readFully(in, extendedHeaderBytes);
+            final int extendedHeaderCrc32 = read32(in);
             final CRC32 crc32 = new CRC32();
             crc32.update(extendedHeaderBytes);
             if (extendedHeaderCrc32 != (int)crc32.getValue()) {
@@ -303,14 +325,6 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
     @Override
     public boolean canReadEntryData(ArchiveEntry ae) {
         return currentLocalFileHeader.method == LocalFileHeader.Methods.STORED;
-    }
-    
-    @Override
-    public int read() throws IOException {
-        if (currentLocalFileHeader.method != LocalFileHeader.Methods.STORED) {
-            throw new IOException("Unsupported compression method " + currentLocalFileHeader.method);
-        }
-        return currentInputStream.read();
     }
     
     @Override
