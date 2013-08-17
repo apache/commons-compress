@@ -92,18 +92,18 @@ public class ArjArchiveEntry implements ArchiveEntry {
      * The known values for HostOs.
      */
     public static class HostOs {
-        static final int DOS = 0;
-        static final int PRIMOS = 1;
-        static final int UNIX = 2;
-        static final int AMIGA = 3;
-        static final int MAC_OS = 4;
-        static final int OS_2 = 5;
-        static final int APPLE_GS = 6;
-        static final int ATARI_ST = 7;
-        static final int NEXT = 8;
-        static final int VAX_VMS = 9;
-        static final int WIN95 = 10;
-        static final int WIN32 = 11;
+        public static final int DOS = 0;
+        public static final int PRIMOS = 1;
+        public static final int UNIX = 2;
+        public static final int AMIGA = 3;
+        public static final int MAC_OS = 4;
+        public static final int OS_2 = 5;
+        public static final int APPLE_GS = 6;
+        public static final int ATARI_ST = 7;
+        public static final int NEXT = 8;
+        public static final int VAX_VMS = 9;
+        public static final int WIN95 = 10;
+        public static final int WIN32 = 11;
     }
     
 }
