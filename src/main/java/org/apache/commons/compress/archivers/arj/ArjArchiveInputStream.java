@@ -119,7 +119,11 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         while ((nextByte = in.readUnsignedByte()) != 0) {
             buffer.write(nextByte);
         }
-        return new String(buffer.toByteArray(), charset);
+        if (charset != null) {
+            return new String(buffer.toByteArray(), charset);
+        } else {
+            return new String(buffer.toByteArray());
+        }
     }
     
     private void readFully(final DataInputStream in, byte[] b)
