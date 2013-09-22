@@ -51,8 +51,7 @@ The <action> type attribute can be add,update,fix,remove.
       </action>
       <action type="add" date="2013-05-07" issue="COMPRESS-54"
               due-to="Damjan Jovanovic">
-        Added read-only support for 7z archives that don't use
-        LZMA compression.
+        Added support for 7z archives.
       </action>
       <action type="add" date="2013-05-19" issue="COMPRESS-226"
               due-to="Damjan Jovanovic">
