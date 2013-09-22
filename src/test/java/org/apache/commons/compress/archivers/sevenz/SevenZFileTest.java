@@ -20,6 +20,9 @@ package org.apache.commons.compress.archivers.sevenz;
 import org.apache.commons.compress.AbstractTestCase;
 
 public class SevenZFileTest extends AbstractTestCase {
+    private static String TEST2_CONTENT = "<?xml version = '1.0'?>\r\n<!DOCTYPE"
+        + " connections>\r\n<meinxml>\r\n\t<leer />\r\n</meinxml>\n";
+
     public void testAllEmptyFilesArchive() throws Exception {
         SevenZFile archive = new SevenZFile(getFile("7z-empty-mhc-off.7z"));
         try {
@@ -35,6 +38,27 @@ public class SevenZFileTest extends AbstractTestCase {
 
     public void testHelloWorldHeaderCompressionOffLZMA2() throws Exception {
         checkHelloWorld("7z-hello-mhc-off-lzma2.7z");
+    }
+
+    public void test7zUnarchive() throws Exception {
+        SevenZFile sevenZFile = new SevenZFile(getFile("bla.7z"));
+        try {
+            SevenZArchiveEntry entry = sevenZFile.getNextEntry();
+            assertEquals("test1.xml", entry.getName());
+            entry = sevenZFile.getNextEntry();
+            assertEquals("test2.xml", entry.getName());
+            byte[] contents = new byte[(int)entry.getSize()];
+            int off = 0;
+            while ((off < contents.length)) {
+                int bytesRead = sevenZFile.read(contents, off, contents.length - off);
+                assert(bytesRead >= 0);
+                off += bytesRead;
+            }
+            assertEquals(TEST2_CONTENT, new String(contents, "UTF-8"));
+            assertNull(sevenZFile.getNextEntry());
+        } finally {
+            sevenZFile.close();
+        }
     }
 
     private void checkHelloWorld(final String filename) throws Exception {

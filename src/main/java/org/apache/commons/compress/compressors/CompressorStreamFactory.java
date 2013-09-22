@@ -26,6 +26,7 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
+import org.apache.commons.compress.compressors.lzma.LZMACompressorInputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorOutputStream;
 import org.apache.commons.compress.compressors.xz.XZUtils;
@@ -82,6 +83,12 @@ public class CompressorStreamFactory {
      * @since 1.4
      */
     public static final String XZ = "xz";
+
+    /**
+     * Constant used to identify the LZMA compression method.
+     * @since 1.6
+     */
+    public static final String LZMA = "lzma";
 
     private boolean decompressConcatenated = false;
 
@@ -156,7 +163,7 @@ public class CompressorStreamFactory {
     /**
      * Create a compressor input stream from a compressor name and an input stream.
      * 
-     * @param name of the compressor, i.e. "gz", "bzip2", "xz", or "pack200"
+     * @param name of the compressor, i.e. "gz", "bzip2", "xz", "lzma", or "pack200"
      * @param in the input stream
      * @return compressor input stream
      * @throws CompressorException if the compressor name is not known
@@ -181,6 +188,10 @@ public class CompressorStreamFactory {
 
             if (XZ.equalsIgnoreCase(name)) {
                 return new XZCompressorInputStream(in);
+            }
+
+            if (LZMA.equalsIgnoreCase(name)) {
+                return new LZMACompressorInputStream(in);
             }
 
             if (PACK200.equalsIgnoreCase(name)) {
