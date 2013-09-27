@@ -39,16 +39,8 @@ import org.apache.commons.compress.utils.CharsetNames;
  * The 7z file format is a flexible container
  * that can contain many compression and
  * encryption types, but at the moment only
- * only Copy, LZMA2, BZIP2, and AES-256 + SHA-256
- * are supported, and archive header compression
- * (when it uses the unsupported LZMA
- * compression) isn't. So the only archives
- * that can be read are the following:
- * <pre>
- * 7z a -mhc=off [-mhe=on] -mx=0 [-ppassword] archive.7z files
- * 7z a -mhc=off [-mhe=on] -m0=LZMA2 [-ppassword] archive.7z files
- * 7z a -mhc=off [-mhe=on] -m0=BZIP2 [-ppassword] archive.7z files
- * </pre>
+ * only Copy, LZMA, LZMA2, BZIP2, and AES-256 + SHA-256
+ * are supported.
  * <p>
  * The format is very Windows/Intel specific,
  * so it uses little-endian byte order,
