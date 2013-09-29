@@ -62,7 +62,6 @@ public class SevenZOutputFile {
         final SevenZArchiveEntry entry = new SevenZArchiveEntry();
         entry.setDirectory(inputFile.isDirectory());
         entry.setName(entryName);
-        entry.setHasLastModifiedDate(true);
         entry.setLastModifiedDate(new Date(inputFile.lastModified()));
         return entry;
     }
