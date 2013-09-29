@@ -78,7 +78,10 @@
             implementation provides capabilities that go beyond the
             features found in java.util.zip.  As of Commons Compress
             1.6 support for the dump and arj formats is
-            read-only.</p>
+            read-only - 7z can read most compressed and encrypted
+            archives but only write uncompressed ones.  LZMA(2) supprt
+            in 7z requires <a href="http://tukaani.org/xz/java.html">XZ for
+            Java</a> as well.</p>
 
           <p>The compress component provides abstract base classes for
             compressors and archivers together with factories that can

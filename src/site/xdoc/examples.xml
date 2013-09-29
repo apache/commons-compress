@@ -31,13 +31,16 @@
         collect multiple entries inside a single (potentially
         compressed) archive are archiver formats.</p>
 
-        <p>The compressor formats supported are gzip, bzip2, xz, lzma and
-        Pack200, the archiver formats are ar, cpio, tar and zip as
-        well as dump, 7z and arj for which we currently only support
-        reading.  Pack200 is a special case as it can only compress
-        JAR files.</p>
+        <p>The compressor formats supported are gzip, bzip2, xz, lzma
+        and Pack200, the archiver formats are 7z, ar, arj, cpio, dump,
+        tar and zip.  Pack200 is a special case as it can only
+        compress JAR files.</p>
 
-        <p>We currently only provide read support for lzma as well.</p>
+        <p>We currently only provide read support for lzma, arj and
+        dump.  arj can only read uncompressed archives, 7z can read
+        archives with many compression and encryption algorithms
+        supported by 7z but can only write uncompressed and
+        unencrypted archives.</p>
       </subsection>
 
       <subsection name="Common Notes">
@@ -458,9 +461,10 @@ lzmaIn.close();
       <subsection name="7z">
 
         <p>Note that Commons Compress currently only supports
-        uncompressed entries or entries compressed using BZIP2 or
-        LZMA2 and no header compression at all.  Only AES-256/SHA-256
-        are supported for encryption.</p>
+        a subset of compression and encryption algorithms used for 7z
+        archives.  For reading only uncompressed entries of LZMA,
+        LZMA2, BZIP2 and AES-256/SHA-256 are supported.  Only
+        uncompressed and unencrypted archives can be written.</p>
 
         <p>Adding an entry to a 7z archive:</p>
 <source><![CDATA[
