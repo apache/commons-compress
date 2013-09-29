@@ -51,7 +51,8 @@ The <action> type attribute can be add,update,fix,remove.
       </action>
       <action type="add" date="2013-05-07" issue="COMPRESS-54"
               due-to="Damjan Jovanovic">
-        Added support for 7z archives.
+        Added support for 7z archives.  Most compression algorithms
+        can be read, but only uncompressed archives can be written.
       </action>
       <action type="add" date="2013-05-19" issue="COMPRESS-226"
               due-to="Damjan Jovanovic">
@@ -101,6 +102,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" date="2013-08-10">
         The CPIO streams now support an encoding parameter that can be
         used to specify the encoding of file names.
+      </action>
+      <action type="fix" date="2013-09-22" issue="COMPRESS-111">
+        Read-only support for LZMA standalone compression has been added.
       </action>
     </release>
     <release version="1.5" date="2013-03-14"
