@@ -112,6 +112,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
     
     public void setCreationDate(Date creationDate) {
+        hasCreationDate = creationDate != null;
         this.creationDate = javaTimeToNtfsTime(creationDate);
     }
 
@@ -137,6 +138,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
     
     public void setLastModifiedDate(Date lastModifiedDate) {
+        hasLastModifiedDate = lastModifiedDate != null;
         this.lastModifiedDate = javaTimeToNtfsTime(lastModifiedDate);
     }
     
@@ -162,6 +164,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
     
     public void setAccessDate(Date accessDate) {
+        hasAccessDate = accessDate != null;
         this.accessDate = javaTimeToNtfsTime(accessDate);
     }
 
