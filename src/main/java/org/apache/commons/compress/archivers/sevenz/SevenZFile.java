@@ -309,6 +309,9 @@ public class SevenZFile {
         if (nid == NID.kUnpackInfo) {
             readUnpackInfo(header, archive);
             nid = header.readUnsignedByte();
+        } else {
+            // archive without unpack/coders info
+            archive.folders = new Folder[0];
         }
         
         if (nid == NID.kSubStreamsInfo) {
