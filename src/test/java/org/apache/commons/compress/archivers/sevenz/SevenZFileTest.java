@@ -17,6 +17,7 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
+import java.io.File;
 import org.apache.commons.compress.AbstractTestCase;
 
 public class SevenZFileTest extends AbstractTestCase {
@@ -41,7 +42,15 @@ public class SevenZFileTest extends AbstractTestCase {
     }
 
     public void test7zUnarchive() throws Exception {
-        SevenZFile sevenZFile = new SevenZFile(getFile("bla.7z"));
+        test7zUnarchive(getFile("bla.7z"));
+    }
+
+    public void test7zDeflateUnarchive() throws Exception {
+        test7zUnarchive(getFile("bla.deflate.7z"));
+    }
+
+    private void test7zUnarchive(File f) throws Exception {
+        SevenZFile sevenZFile = new SevenZFile(f);
         try {
             SevenZArchiveEntry entry = sevenZFile.getNextEntry();
             assertEquals("test1.xml", entry.getName());
