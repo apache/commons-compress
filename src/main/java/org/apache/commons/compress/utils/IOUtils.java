@@ -77,7 +77,7 @@ public final class IOUtils {
      *
      * <p>This method will only skip less than the requested number of
      * bytes if the end of the input stream has been reached.</p>
-
+     *
      * @param input stream to skip bytes in
      * @param numToSkip the number of bytes to skip
      * @return the number of bytes actually skipped
@@ -93,6 +93,51 @@ public final class IOUtils {
             numToSkip -= skipped;
         }
         return (available - numToSkip);
+    }
+
+    /**
+     * Reads as much from input as possible to fill the given array.
+     *
+     * <p>This method may invoke read repeatedly to fill the array and
+     * only read less bytes than the length of the array if the end of
+     * the stream has been reached.</p>
+     *
+     * @param input stream to read from
+     * @param b buffer to fill
+     * @retun the number of bytes actually read
+     */
+    public static int readFully(InputStream input, byte[] b) throws IOException {
+        return readFully(input, b, 0, b.length);
+    }
+
+    /**
+     * Reads as much from input as possible to fill the given array
+     * with the given amount of bytes.
+     *
+     * <p>This method may invoke read repeatedly to read the bytes and
+     * only read less bytes than the requested length if the end of
+     * the stream has been reached.</p>
+     *
+     * @param input stream to read from
+     * @param b buffer to fill
+     * @param offset offset into the buffer to start filling at
+     * @param amount of bytes to read
+     * @retun the number of bytes actually read
+     */
+    public static int readFully(InputStream input, byte[] b, int offset, int len)
+        throws IOException {
+        if (len < 0 || offset < 0 || len + offset > b.length) {
+            throw new IndexOutOfBoundsException();
+        }
+        int count = 0, x = 0;
+        while (count != len) {
+            x = input.read(b, offset + count, len - count);
+            if (x == -1) {
+                break;
+            }
+            count += x;
+        }
+        return count;
     }
 
     // toByteArray(InputStream) copied from:

@@ -28,6 +28,7 @@ import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.CharsetNames;
+import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * CPIOArchiveInputStream is a stream for reading cpio streams. All formats of
@@ -330,19 +331,12 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
 
     private final int readFully(final byte[] b, final int off, final int len)
             throws IOException {
-        if (len < 0) {
-            throw new IndexOutOfBoundsException();
+        int count = IOUtils.readFully(in, b, off, len);
+        count(count);
+        if (count < len) {
+            throw new EOFException();
         }
-        int n = 0;
-        while (n < len) {
-            int count = this.in.read(b, off + n, len - n);
-            count(count);
-            if (count < 0) {
-                throw new EOFException();
-            }
-            n += count;
-        }
-        return n;
+        return count;
     }
 
     private long readBinaryLong(final int length, final boolean swapHalfWord)
