@@ -32,6 +32,7 @@ import org.apache.commons.compress.compressors.xz.XZCompressorOutputStream;
 import org.apache.commons.compress.compressors.xz.XZUtils;
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorInputStream;
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorOutputStream;
+import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * <p>Factory to create Compressor[In|Out]putStreams from names. To add other
@@ -133,7 +134,7 @@ public class CompressorStreamFactory {
         final byte[] signature = new byte[12];
         in.mark(signature.length);
         try {
-            int signatureLength = in.read(signature);
+            int signatureLength = IOUtils.readFully(in, signature);
             in.reset();
 
             if (BZip2CompressorInputStream.matches(signature, signatureLength)) {

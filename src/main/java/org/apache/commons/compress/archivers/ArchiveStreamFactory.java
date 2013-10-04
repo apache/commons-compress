@@ -35,6 +35,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * Factory to create Archive[In|Out]putStreams from names or the first bytes of
@@ -274,7 +275,7 @@ public class ArchiveStreamFactory {
         final byte[] signature = new byte[12];
         in.mark(signature.length);
         try {
-            int signatureLength = in.read(signature);
+            int signatureLength = IOUtils.readFully(in, signature);
             in.reset();
             if (ZipArchiveInputStream.matches(signature, signatureLength)) {
                 if (entryEncoding != null) {
@@ -295,7 +296,7 @@ public class ArchiveStreamFactory {
             // Dump needs a bigger buffer to check the signature;
             final byte[] dumpsig = new byte[32];
             in.mark(dumpsig.length);
-            signatureLength = in.read(dumpsig);
+            signatureLength = IOUtils.readFully(in, dumpsig);
             in.reset();
             if (DumpArchiveInputStream.matches(dumpsig, signatureLength)) {
                 return new DumpArchiveInputStream(in);
@@ -304,7 +305,7 @@ public class ArchiveStreamFactory {
             // Tar needs an even bigger buffer to check the signature; read the first block
             final byte[] tarheader = new byte[512];
             in.mark(tarheader.length);
-            signatureLength = in.read(tarheader);
+            signatureLength = IOUtils.readFully(in, tarheader);
             in.reset();
             if (TarArchiveInputStream.matches(tarheader, signatureLength)) {
                 if (entryEncoding != null) {
