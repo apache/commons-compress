@@ -17,12 +17,15 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.zip.Inflater;
+import java.util.zip.InflaterInputStream;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -50,8 +53,7 @@ class Coders {
         new CoderId(new byte[] { (byte)0x00 }, new CopyDecoder()),
         new CoderId(new byte[] { (byte)0x03, (byte)0x01, (byte)0x01 }, new LZMADecoder()),
         new CoderId(new byte[] { (byte)0x21 }, new LZMA2Decoder()),
-        // FIXME: gives corrupt output
-        //new CoderId(new byte[] { (byte)0x04, (byte)0x01, (byte)0x08 }, new DeflateDecoder()),
+        new CoderId(new byte[] { (byte)0x04, (byte)0x01, (byte)0x08 }, new DeflateDecoder()),
         new CoderId(new byte[] { (byte)0x04, (byte)0x02, (byte)0x02 }, new BZIP2Decoder()),
         new CoderId(new byte[] { (byte)0x06, (byte)0xf1, (byte)0x07, (byte)0x01 }, new AES256SHA256Decoder())
     };
@@ -116,15 +118,14 @@ class Coders {
         }
     }
     
-//    static class DeflateDecoder extends CoderBase {
-//        @Override
-//        InputStream decode(final InputStream in, final Coder coder, final String password)
-//                throws IOException {
-//            System.out.println("deflate prop count = " + (coder.properties == null ? -1 : coder.properties.length));
-//            return new DeflaterInputStream(in, new Deflater(Deflater.DEFAULT_COMPRESSION, true));
-//            //return new GZIPInputStream(in);
-//        }
-//    }
+    static class DeflateDecoder extends CoderBase {
+        @Override
+        InputStream decode(final InputStream in, final Coder coder, final String password)
+            throws IOException {
+            return new InflaterInputStream(new DummyByteAddingInputStream(in),
+                                           new Inflater(true));
+        }
+    }
 
     static class BZIP2Decoder extends CoderBase {
         @Override
@@ -230,6 +231,41 @@ class Coders {
                 public void close() {
                 }
             };
+        }
+    }
+
+    /**
+     * ZLIB requires an extra dummy byte.
+     *
+     * @see java.util.zip.Inflater#Inflater(boolean)
+     * @see org.apache.commons.compress.archivers.zip.ZipFile.BoundedInputStream
+     */
+    private static class DummyByteAddingInputStream extends FilterInputStream {
+        private boolean addDummyByte = true;
+
+        private DummyByteAddingInputStream(InputStream in) {
+            super(in);
+        }
+
+        @Override
+        public int read() throws IOException {
+            int result = super.read();
+            if (result == -1 && addDummyByte) {
+                addDummyByte = false;
+                result = 0;
+            }
+            return result;
+        }
+
+        @Override
+        public int read(byte[] b, int off, int len) throws IOException {
+            int result = super.read(b, off, len);
+            if (result == -1 && addDummyByte) {
+                addDummyByte = false;
+                b[off] = 0;
+                return 1;
+            }
+            return result;
         }
     }
 }
