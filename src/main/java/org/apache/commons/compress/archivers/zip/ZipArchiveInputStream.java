@@ -32,6 +32,7 @@ import java.util.zip.ZipException;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.utils.IOUtils;
 
 import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
@@ -674,13 +675,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     }
 
     private void readFully(byte[] b) throws IOException {
-        int count = 0, x = 0;
-        while (count != b.length) {
-            count += x = in.read(b, count, b.length - count);
-            if (x == -1) {
-                throw new EOFException();
-            }
-            count(x);
+        int count = IOUtils.readFully(in, b);
+        count(count);
+        if (count < b.length) {
+            throw new EOFException();
         }
     }
 
