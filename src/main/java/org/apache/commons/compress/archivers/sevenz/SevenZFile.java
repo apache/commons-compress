@@ -39,7 +39,7 @@ import org.apache.commons.compress.utils.CharsetNames;
  * The 7z file format is a flexible container
  * that can contain many compression and
  * encryption types, but at the moment only
- * only Copy, LZMA, LZMA2, BZIP2, and AES-256 + SHA-256
+ * only Copy, LZMA, LZMA2, BZIP2, Deflate and AES-256 + SHA-256
  * are supported.
  * <p>
  * The format is very Windows/Intel specific,
@@ -270,30 +270,6 @@ public class SevenZFile {
             nextHeaderInputStream.close();
         }
         return new DataInputStream(new ByteArrayInputStream(nextHeader));
-
-        
-        //throw new IOException("LZMA compression unsupported, so files with compressed header cannot be read");
-        // FIXME: this extracts the header to an LZMA file which can then be
-        // manually decompressed.
-//        long offset = SIGNATURE_HEADER_SIZE + archive.packPos;
-//        file.seek(offset);
-//        long unpackSize = archive.folders[0].getUnpackSize();
-//        byte[] packed = new byte[(int)archive.packSizes[0]];
-//        file.readFully(packed);
-//        
-//        FileOutputStream fos = new FileOutputStream(new File("/tmp/encodedHeader.7z"));
-//        fos.write(archive.folders[0].coders[0].properties);
-//        // size - assuming < 256
-//        fos.write((int)(unpackSize & 0xff));
-//        fos.write(0);
-//        fos.write(0);
-//        fos.write(0);
-//        fos.write(0);
-//        fos.write(0);
-//        fos.write(0);
-//        fos.write(0);
-//        fos.write(packed);
-//        fos.close();
     }
     
     private void readStreamsInfo(final DataInput header, final Archive archive) throws IOException {
