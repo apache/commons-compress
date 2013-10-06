@@ -113,7 +113,9 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     
     public void setCreationDate(Date creationDate) {
         hasCreationDate = creationDate != null;
-        this.creationDate = javaTimeToNtfsTime(creationDate);
+        if (hasCreationDate) {
+            this.creationDate = javaTimeToNtfsTime(creationDate);
+        }
     }
 
     public boolean getHasLastModifiedDate() {
@@ -139,7 +141,9 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     
     public void setLastModifiedDate(Date lastModifiedDate) {
         hasLastModifiedDate = lastModifiedDate != null;
-        this.lastModifiedDate = javaTimeToNtfsTime(lastModifiedDate);
+        if (hasLastModifiedDate) {
+            this.lastModifiedDate = javaTimeToNtfsTime(lastModifiedDate);
+        }
     }
     
     public boolean getHasAccessDate() {
@@ -165,7 +169,9 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     
     public void setAccessDate(Date accessDate) {
         hasAccessDate = accessDate != null;
-        this.accessDate = javaTimeToNtfsTime(accessDate);
+        if (hasAccessDate) {
+            this.accessDate = javaTimeToNtfsTime(accessDate);
+        }
     }
 
     public boolean getHasWindowsAttributes() {
