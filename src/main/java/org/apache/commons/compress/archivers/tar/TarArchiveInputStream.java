@@ -606,7 +606,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * 
      * @return The current Archive Entry
      */
-    public ArchiveEntry getCurrentEntry() {
+    public TarArchiveEntry getCurrentEntry() {
         return currEntry;
     }
 
