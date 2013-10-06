@@ -58,8 +58,9 @@ public class ArjArchiveEntry implements ArchiveEntry {
     }
 
     public Date getLastModifiedDate() {
-        return new Date(ZipUtil.dosToJavaTime(
-                0xffffFFFFL & localFileHeader.dateTimeModified));
+        long ts = isHostOsUnix() ? (localFileHeader.dateTimeModified * 1000l)
+            : ZipUtil.dosToJavaTime(0xFFFFFFFFL & localFileHeader.dateTimeModified);
+        return new Date(ts);
     }
 
     /**
@@ -77,7 +78,7 @@ public class ArjArchiveEntry implements ArchiveEntry {
      * <p>Will only be non-zero of the host os was UNIX.
      */
     public int getUnixMode() {
-        return getHostOs() == HostOs.UNIX ? getMode() : 0;
+        return isHostOsUnix() ? getMode() : 0;
     }
 
     /**
@@ -86,6 +87,14 @@ public class ArjArchiveEntry implements ArchiveEntry {
      */
     public int getHostOs() {
         return localFileHeader.hostOS;
+    }
+
+    /**
+     * Is the operating system the archive has been created on one
+     * that is considered a UNIX OS by arj?
+     */
+    public boolean isHostOsUnix() {
+        return getHostOs() == HostOs.UNIX || getHostOs() == HostOs.NEXT;
     }
 
     /**
