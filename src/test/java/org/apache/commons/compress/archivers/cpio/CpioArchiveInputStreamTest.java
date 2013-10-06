@@ -35,7 +35,7 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
         CpioArchiveEntry entry;
 
         StringBuilder result = new StringBuilder();
-        while ((entry = in.getNextEntry()) != null) {
+        while ((entry = (CpioArchiveEntry) in.getNextEntry()) != null) {
             result.append(entry.getName());
             int tmp;
             while ((tmp = in.read()) != -1) {
