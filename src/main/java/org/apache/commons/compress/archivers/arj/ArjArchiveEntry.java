@@ -28,6 +28,7 @@ import org.apache.commons.compress.archivers.zip.ZipUtil;
  * An entry in an ARJ archive.
  * 
  * @NotThreadSafe
+ * @since 1.6
  */
 public class ArjArchiveEntry implements ArchiveEntry {
     private final LocalFileHeader localFileHeader;
@@ -40,6 +41,11 @@ public class ArjArchiveEntry implements ArchiveEntry {
         this.localFileHeader = localFileHeader;
     }
 
+    /**
+     * Get this entry's name.
+     *
+     * @return This entry's name.
+     */
     public String getName() {
         if ((localFileHeader.arjFlags & LocalFileHeader.Flags.PATHSYM) != 0) {
             return localFileHeader.name.replaceAll("/",
@@ -49,14 +55,23 @@ public class ArjArchiveEntry implements ArchiveEntry {
         }
     }
 
+    /**
+     * Get this entry's file size.
+     *
+     * @return This entry's file size.
+     */
     public long getSize() {
         return localFileHeader.originalSize;
     }
 
+    /** True if the entry refers to a directory */
     public boolean isDirectory() {
         return localFileHeader.fileType == LocalFileHeader.FileTypes.DIRECTORY;
     }
 
+    /**
+     * The last modified date of the entry.
+     */
     public Date getLastModifiedDate() {
         long ts = isHostOsUnix() ? (localFileHeader.dateTimeModified * 1000l)
             : ZipUtil.dosToJavaTime(0xFFFFFFFFL & localFileHeader.dateTimeModified);

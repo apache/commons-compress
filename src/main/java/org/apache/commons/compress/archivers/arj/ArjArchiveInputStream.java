@@ -37,6 +37,7 @@ import org.apache.commons.compress.utils.CRC32VerifyingInputStream;
  * <p>
  * <a href="http://farmanager.com/svn/trunk/plugins/multiarc/arc.doc/arj.txt">Reference</a>
  * @NotThreadSafe
+ * @since 1.6
  */
 public class ArjArchiveInputStream extends ArchiveInputStream {
     private static final boolean DEBUG = false;
@@ -289,16 +290,31 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         return localFileHeader;
     }
     
+    /**
+     * Checks if the signature matches what is expected for an arj file.
+     *
+     * @param signature
+     *            the bytes to check
+     * @param length
+     *            the number of bytes to check
+     * @return true, if this stream is an arj archive stream, false otherwise
+     */
     public static boolean matches(final byte[] signature, final int length) {
         return length >= 2 &&
                 (0xff & signature[0]) == ARJ_MAGIC_1 &&
                 (0xff & signature[1]) == ARJ_MAGIC_2;
     }
     
+    /**
+     * Gets the archive's recorded name.
+     */
     public String getArchiveName() {
         return mainHeader.name;
     }
     
+    /**
+     * Gets the archive's comment.
+     */
     public String getArchiveComment() {
         return mainHeader.comment;
     }

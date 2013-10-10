@@ -59,6 +59,7 @@ import org.apache.commons.compress.utils.CharsetNames;
  * encryption isn't plausibly deniable.
  * 
  * @NotThreadSafe
+ * @since 1.6
  */
 public class SevenZFile {
     private static final boolean DEBUG = false;
@@ -75,6 +76,12 @@ public class SevenZFile {
         (byte)'7', (byte)'z', (byte)0xBC, (byte)0xAF, (byte)0x27, (byte)0x1C
     };
     
+    /**
+     * Reads a file as 7z archive
+     *
+     * @param filename the file to read
+     * @param password optional password if the archive is encrypted
+     */
     public SevenZFile(final File filename, final String password) throws IOException {
         boolean succeeded = false;
         this.password = password;
@@ -89,10 +96,18 @@ public class SevenZFile {
         }
     }
     
+    /**
+     * Reads a file as unecrypted 7z archive
+     *
+     * @param filename the file to read
+     */
     public SevenZFile(final File filename) throws IOException {
         this(filename, null);
     }
 
+    /**
+     * Closes the archive.
+     */
     public void close() {
         if (file != null) {
             try {
@@ -115,6 +130,13 @@ public class SevenZFile {
         }
     }
     
+    /**
+     * Returns the next Archive Entry in this archive.
+     *
+     * @return the next entry,
+     *         or {@code null} if there are no more entries
+     * @throws IOException if the next entry could not be read
+     */
     public SevenZArchiveEntry getNextEntry() throws IOException {
         if (currentEntryIndex >= (archive.files.length - 1)) {
             return null;
