@@ -33,6 +33,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 
 /**
  * Writes a 7z file.
+ * @since 1.6
  */
 public class SevenZOutputFile {
     private final RandomAccessFile file;
@@ -47,6 +48,9 @@ public class SevenZOutputFile {
         file.seek(SevenZFile.SIGNATURE_HEADER_SIZE);
     }
     
+    /**
+     * Closes the archive, calling {@link #finish} if necessary.
+     */
     public void close() {
         try {
             if (!finished) {
@@ -57,6 +61,15 @@ public class SevenZOutputFile {
         }
     }
     
+    /**
+     * Create an archive entry using the inputFile and entryName provided.
+     * 
+     * @param inputFile
+     * @param entryName 
+     * @return the ArchiveEntry set up with details from the file
+     * 
+     * @throws IOException
+     */
     public SevenZArchiveEntry createArchiveEntry(final File inputFile,
             final String entryName) throws IOException {
         final SevenZArchiveEntry entry = new SevenZArchiveEntry();
@@ -66,11 +79,24 @@ public class SevenZOutputFile {
         return entry;
     }
 
+    /**
+     * Records an archive entry to add.
+     *
+     * The caller must then write the content to the archive and call
+     * {@link #closeArchiveEntry()} to complete the process.
+     * 
+     * @param entry describes the entry
+     * @throws IOException
+     */
     public void putArchiveEntry(final ArchiveEntry archiveEntry) throws IOException {
         final SevenZArchiveEntry entry = (SevenZArchiveEntry) archiveEntry;
         files.add(entry);
     }
     
+    /**
+     * Closes the archive entry.
+     * @throws IOException
+     */
     public void closeArchiveEntry() throws IOException {
         final SevenZArchiveEntry entry = files.get(files.size() - 1);
         if (fileBytesWritten > 0) {
@@ -88,22 +114,44 @@ public class SevenZOutputFile {
         fileBytesWritten = 0;
     }
     
+    /**
+     * Writes a byte to the current archive entry.
+     * @param b The byte to be written.
+     * @throws IOException on error
+     */
     public void write(final int b) throws IOException {
         file.write(b);
         crc32.update(b);
         fileBytesWritten++;
     }
     
+    /**
+     * Writes a byte array to the current archive entry.
+     * @param b The byte array to be written.
+     * @throws IOException on error
+     */
     public void write(final byte[] b) throws IOException {
         write(b, 0, b.length);
     }
     
+    /**
+     * Writes part of a byte array to the current archive entry.
+     * @param b The byte array to be written.
+     * @param off offset into the array to start writing from
+     * @param len number of bytes to write
+     * @throws IOException on error
+     */
     public void write(final byte[] b, final int off, final int len) throws IOException {
         file.write(b, off, len);
         crc32.update(b, off, len);
         fileBytesWritten += len;
     }
     
+    /**
+     * Finishes the addition of entries to this archive, without closing it.
+     * 
+     * @throws IOException if archive is already closed.
+     */
     public void finish() throws IOException {
         if (finished) {
             throw new IOException("This archive has already been finished");

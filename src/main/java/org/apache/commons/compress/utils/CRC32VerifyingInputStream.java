@@ -21,6 +21,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.CRC32;
 
+/**
+ * A stream that verifies the CRC of the data read once the stream is
+ * exhausted.
+ * @NotThreadSafe
+ * @since 1.6
+ */
 public class CRC32VerifyingInputStream extends InputStream {
     private final InputStream in;
     private long bytesRemaining;
@@ -33,6 +39,12 @@ public class CRC32VerifyingInputStream extends InputStream {
         this.bytesRemaining = size;
     }
 
+    /**
+     * Reads a single byte from the stream
+     * @throws IOException if the underlying stream throws or the
+     * stream is exhausted and the CRC doesn't match the expected
+     * value
+     */
     @Override
     public int read() throws IOException {
         if (bytesRemaining <= 0) {
@@ -49,11 +61,23 @@ public class CRC32VerifyingInputStream extends InputStream {
         return ret;
     }
 
+    /**
+     * Reads a byte array from the stream
+     * @throws IOException if the underlying stream throws or the
+     * stream is exhausted and the CRC doesn't match the expected
+     * value
+     */
     @Override
     public int read(byte[] b) throws IOException {
         return read(b, 0, b.length);
     }
 
+    /**
+     * Reads from the stream into a byte array.
+     * @throws IOException if the underlying stream throws or the
+     * stream is exhausted and the CRC doesn't match the expected
+     * value
+     */
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
         int ret = in.read(b, off, len);
