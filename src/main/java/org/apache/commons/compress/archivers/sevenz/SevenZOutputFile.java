@@ -22,6 +22,7 @@ import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.zip.CRC32;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.utils.CountingOutputStream;
 
 /**
  * Writes a 7z file.
@@ -40,8 +42,10 @@ public class SevenZOutputFile {
     private final List<SevenZArchiveEntry> files = new ArrayList<SevenZArchiveEntry>();
     private int numNonEmptyStreams = 0;
     private CRC32 crc32 = new CRC32();
+    private CRC32 compressedCrc32 = new CRC32();
     private long fileBytesWritten = 0;
     private boolean finished = false;
+    private CountingOutputStream currentOutputStream;
     
     public SevenZOutputFile(final File filename) throws IOException {
         file = new RandomAccessFile(filename, "rw");
@@ -91,6 +95,7 @@ public class SevenZOutputFile {
     public void putArchiveEntry(final ArchiveEntry archiveEntry) throws IOException {
         final SevenZArchiveEntry entry = (SevenZArchiveEntry) archiveEntry;
         files.add(entry);
+        currentOutputStream = setupFileOutputStream();
     }
     
     /**
@@ -98,19 +103,26 @@ public class SevenZOutputFile {
      * @throws IOException
      */
     public void closeArchiveEntry() throws IOException {
+        currentOutputStream.flush();
+        currentOutputStream.close();
+
         final SevenZArchiveEntry entry = files.get(files.size() - 1);
         if (fileBytesWritten > 0) {
             entry.setHasStream(true);
             ++numNonEmptyStreams;
-            entry.setSize(fileBytesWritten);
+            entry.setSize(currentOutputStream.getBytesWritten());
+            entry.setCompressedSize(fileBytesWritten);
             entry.setCrc((int) crc32.getValue());
+            entry.setCompressedCrc((int) compressedCrc32.getValue());
             entry.setHasCrc(true);
         } else {
             entry.setHasStream(false);
             entry.setSize(0);
+            entry.setCompressedSize(0);
             entry.setHasCrc(false);
         }
         crc32.reset();
+        compressedCrc32.reset();
         fileBytesWritten = 0;
     }
     
@@ -120,9 +132,7 @@ public class SevenZOutputFile {
      * @throws IOException on error
      */
     public void write(final int b) throws IOException {
-        file.write(b);
-        crc32.update(b);
-        fileBytesWritten++;
+        currentOutputStream.write(b);
     }
     
     /**
@@ -131,7 +141,7 @@ public class SevenZOutputFile {
      * @throws IOException on error
      */
     public void write(final byte[] b) throws IOException {
-        write(b, 0, b.length);
+        currentOutputStream.write(b);
     }
     
     /**
@@ -142,9 +152,7 @@ public class SevenZOutputFile {
      * @throws IOException on error
      */
     public void write(final byte[] b, final int off, final int len) throws IOException {
-        file.write(b, off, len);
-        crc32.update(b, off, len);
-        fileBytesWritten += len;
+        currentOutputStream.write(b, off, len);
     }
     
     /**
@@ -193,6 +201,32 @@ public class SevenZOutputFile {
         file.write(startHeaderBytes);
     }
     
+    private CountingOutputStream setupFileOutputStream() throws IOException {
+        OutputStream out = new OutputStreamWrapper();
+        return new CountingOutputStream(Coders
+                                        .addEncoder(out, SevenZMethod.COPY,
+                                                    null)) {
+            @Override
+            public void write(final int b) throws IOException {
+                super.write(b);
+                crc32.update(b);
+            }
+    
+            @Override
+            public void write(final byte[] b) throws IOException {
+                super.write(b);
+                crc32.update(b);
+            }
+    
+            @Override
+            public void write(final byte[] b, final int off, final int len)
+                throws IOException {
+                super.write(b, off, len);
+                crc32.update(b, off, len);
+            }
+        };
+    }
+
     private void writeHeader(final DataOutput header) throws IOException {
         header.write(NID.kHeader);
         
@@ -214,7 +248,6 @@ public class SevenZOutputFile {
     }
     
     private void writePackInfo(final DataOutput header) throws IOException {
-        // FIXME: this needs to use the compressed sizes/CRCs when we start supporting compression.
         header.write(NID.kPackInfo);
         
         writeUint64(header, 0);
@@ -223,7 +256,7 @@ public class SevenZOutputFile {
         header.write(NID.kSize);
         for (final SevenZArchiveEntry entry : files) {
             if (entry.hasStream()) {
-                writeUint64(header, entry.getSize());
+                writeUint64(header, entry.getCompressedSize());
             }
         }
         
@@ -231,7 +264,7 @@ public class SevenZOutputFile {
         header.write(1);
         for (final SevenZArchiveEntry entry : files) {
             if (entry.hasStream()) {
-                header.writeInt(Integer.reverseBytes(entry.getCrc()));
+                header.writeInt(Integer.reverseBytes(entry.getCompressedCrc()));
             }
         }
         
@@ -242,7 +275,6 @@ public class SevenZOutputFile {
         header.write(NID.kUnpackInfo);
         
         header.write(NID.kFolder);
-        // FIXME: add real support for solid compression, and actual compression methods
         writeUint64(header, numNonEmptyStreams);
         header.write(0);
         for (int i = 0; i < numNonEmptyStreams; i++) {
@@ -268,9 +300,12 @@ public class SevenZOutputFile {
     }
     
     private void writeFolder(final DataOutput header) throws IOException {
+        // one coder
         writeUint64(header, 1);
-        header.write(1);
-        header.write(0);
+        byte[] id = SevenZMethod.COPY.getId();
+        // FIXME - deal with coder properties
+        header.write(id.length);
+        header.write(id);
     }
     
     private void writeSubStreamsInfo(final DataOutput header) throws IOException {
@@ -567,6 +602,36 @@ public class SevenZOutputFile {
         }
         if (length > 0 && shift > 0) {
             header.write(cache);
+        }
+    }
+
+    private class OutputStreamWrapper extends OutputStream {
+        @Override
+        public void write(final int b) throws IOException {
+            file.write(b);
+            compressedCrc32.update(b);
+            fileBytesWritten++;
+        }
+    
+        @Override
+        public void write(final byte[] b) throws IOException {
+            OutputStreamWrapper.this.write(b, 0, b.length);
+        }
+    
+        @Override
+        public void write(final byte[] b, final int off, final int len)
+            throws IOException {
+            file.write(b, off, len);
+            compressedCrc32.update(b, off, len);
+            fileBytesWritten += len;
+        }
+
+        @Override
+        public void flush() throws IOException {
+        }
+
+        @Override
+        public void close() throws IOException {
         }
     }
 }

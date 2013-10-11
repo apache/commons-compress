@@ -20,6 +20,7 @@ package org.apache.commons.compress.archivers.sevenz;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -49,6 +50,16 @@ class Coders {
                 Arrays.toString(coder.decompressionMethodId));
     }
     
+    static OutputStream addEncoder(final OutputStream out, final SevenZMethod method,
+                                   final String password) throws IOException {
+        for (final CoderId coderId : coderTable) {
+            if (coderId.method.equals(method)) {
+                return coderId.coder.encode(out, password);
+            }
+        }
+        throw new IOException("Unsupported compression method " + method);
+    }
+
     static CoderId[] coderTable = new CoderId[] {
         new CoderId(SevenZMethod.COPY, new CopyDecoder()),
         new CoderId(SevenZMethod.LZMA, new LZMADecoder()),
@@ -71,6 +82,9 @@ class Coders {
     static abstract class CoderBase {
         abstract InputStream decode(final InputStream in, final Coder coder,
                 String password) throws IOException;
+        OutputStream encode(final OutputStream out, final String password) {
+            throw new UnsupportedOperationException("method doesn't support writing");
+        }
     }
     
     static class CopyDecoder extends CoderBase {
@@ -79,8 +93,12 @@ class Coders {
                 String password) throws IOException {
             return in; 
         }
+        @Override
+        OutputStream encode(final OutputStream out, final String password) {
+            return out;
+        }
     }
-    
+
     static class LZMA2Decoder extends CoderBase {
         @Override
         InputStream decode(final InputStream in, final Coder coder,

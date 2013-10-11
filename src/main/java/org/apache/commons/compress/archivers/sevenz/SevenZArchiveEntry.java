@@ -43,8 +43,8 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     private boolean hasWindowsAttributes;
     private int windowsAttributes;
     private boolean hasCrc;
-    private int crc;
-    private long size;
+    private int crc, compressedCrc;
+    private long size, compressedSize;
     
     public SevenZArchiveEntry() {
     }
@@ -316,6 +316,20 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
+     * Gets the compressed CRC.
+     */
+    int getCompressedCrc() {
+        return compressedCrc;
+    }
+
+    /**
+     * Sets the compressed CRC.
+     */
+    void setCompressedCrc(int crc) {
+        this.compressedCrc = crc;
+    }
+
+    /**
      * Get this entry's file size.
      *
      * @return This entry's file size.
@@ -331,6 +345,24 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      */
     public void setSize(long size) {
         this.size = size;
+    }
+
+    /**
+     * Get this entry's compressed file size.
+     *
+     * @return This entry's compressed file size.
+     */
+    long getCompressedSize() {
+        return compressedSize;
+    }
+    
+    /**
+     * Set this entry's compressed file size.
+     *
+     * @param size This entry's new compressed file size.
+     */
+    void setCompressedSize(long size) {
+        this.compressedSize = size;
     }
 
     /**
