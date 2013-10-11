@@ -25,6 +25,8 @@ import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.zip.Deflater;
+import java.util.zip.DeflaterOutputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
@@ -35,6 +37,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.tukaani.xz.LZMAInputStream;
 import org.tukaani.xz.LZMA2InputStream;
 
@@ -82,7 +85,8 @@ class Coders {
     static abstract class CoderBase {
         abstract InputStream decode(final InputStream in, final Coder coder,
                 String password) throws IOException;
-        OutputStream encode(final OutputStream out, final String password) {
+        OutputStream encode(final OutputStream out, final String password)
+            throws IOException {
             throw new UnsupportedOperationException("method doesn't support writing");
         }
     }
@@ -143,6 +147,10 @@ class Coders {
             return new InflaterInputStream(new DummyByteAddingInputStream(in),
                                            new Inflater(true));
         }
+        @Override
+        OutputStream encode(final OutputStream out, final String password) {
+            return new DeflaterOutputStream(out, new Deflater(9, true));
+        }
     }
 
     static class BZIP2Decoder extends CoderBase {
@@ -150,6 +158,11 @@ class Coders {
         InputStream decode(final InputStream in, final Coder coder, final String password)
                 throws IOException {
             return new BZip2CompressorInputStream(in);
+        }
+        @Override
+        OutputStream encode(final OutputStream out, final String password)
+                throws IOException {
+            return new BZip2CompressorOutputStream(out);
         }
     }
 

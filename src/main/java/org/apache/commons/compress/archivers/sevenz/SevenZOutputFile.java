@@ -46,12 +46,20 @@ public class SevenZOutputFile {
     private long fileBytesWritten = 0;
     private boolean finished = false;
     private CountingOutputStream currentOutputStream;
+    private SevenZMethod contentCompression = SevenZMethod.COPY;
     
     public SevenZOutputFile(final File filename) throws IOException {
         file = new RandomAccessFile(filename, "rw");
         file.seek(SevenZFile.SIGNATURE_HEADER_SIZE);
     }
     
+    /**
+     * Sets the compression method to use for entry contents.
+     */
+    public void setContentCompression(SevenZMethod method) {
+        this.contentCompression = method;
+    }
+
     /**
      * Closes the archive, calling {@link #finish} if necessary.
      */
@@ -204,7 +212,8 @@ public class SevenZOutputFile {
     private CountingOutputStream setupFileOutputStream() throws IOException {
         OutputStream out = new OutputStreamWrapper();
         return new CountingOutputStream(Coders
-                                        .addEncoder(out, SevenZMethod.COPY,
+                                        .addEncoder(out,
+                                                    contentCompression,
                                                     null)) {
             @Override
             public void write(final int b) throws IOException {
@@ -302,7 +311,7 @@ public class SevenZOutputFile {
     private void writeFolder(final DataOutput header) throws IOException {
         // one coder
         writeUint64(header, 1);
-        byte[] id = SevenZMethod.COPY.getId();
+        byte[] id = contentCompression.getId();
         // FIXME - deal with coder properties
         header.write(id.length);
         header.write(id);
