@@ -41,7 +41,7 @@ class Coders {
     static InputStream addDecoder(final InputStream is,
             final Coder coder, final String password) throws IOException {
         for (final CoderId coderId : coderTable) {
-            if (Arrays.equals(coderId.id, coder.decompressionMethodId)) {
+            if (Arrays.equals(coderId.method.getId(), coder.decompressionMethodId)) {
                 return coderId.coder.decode(is, coder, password);
             }
         }
@@ -50,21 +50,21 @@ class Coders {
     }
     
     static CoderId[] coderTable = new CoderId[] {
-        new CoderId(new byte[] { (byte)0x00 }, new CopyDecoder()),
-        new CoderId(new byte[] { (byte)0x03, (byte)0x01, (byte)0x01 }, new LZMADecoder()),
-        new CoderId(new byte[] { (byte)0x21 }, new LZMA2Decoder()),
-        new CoderId(new byte[] { (byte)0x04, (byte)0x01, (byte)0x08 }, new DeflateDecoder()),
-        new CoderId(new byte[] { (byte)0x04, (byte)0x02, (byte)0x02 }, new BZIP2Decoder()),
-        new CoderId(new byte[] { (byte)0x06, (byte)0xf1, (byte)0x07, (byte)0x01 }, new AES256SHA256Decoder())
+        new CoderId(SevenZMethod.COPY, new CopyDecoder()),
+        new CoderId(SevenZMethod.LZMA, new LZMADecoder()),
+        new CoderId(SevenZMethod.LZMA2, new LZMA2Decoder()),
+        new CoderId(SevenZMethod.DEFLATE, new DeflateDecoder()),
+        new CoderId(SevenZMethod.BZIP2, new BZIP2Decoder()),
+        new CoderId(SevenZMethod.AES256SHA256, new AES256SHA256Decoder())
     };
     
     static class CoderId {
-        CoderId(final byte[] id, final CoderBase coder) {
-            this.id = id;
+        CoderId(SevenZMethod method, final CoderBase coder) {
+            this.method = method;
             this.coder = coder;
         }
 
-        final byte[] id;
+        final SevenZMethod method;
         final CoderBase coder;
     }
     
