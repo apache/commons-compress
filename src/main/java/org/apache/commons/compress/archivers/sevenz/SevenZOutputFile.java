@@ -54,7 +54,12 @@ public class SevenZOutputFile {
     }
     
     /**
-     * Sets the compression method to use for entry contents.
+     * Sets the compression method to use for entry contents - the
+     * default is LZMA2.
+     *
+     * <p>Currently only {@link SevenZMethod.COPY}, {@link
+     * SevenZMethod.LZMA2}, {@link SevenZMethod.BZIP2} and {@link
+     * SevenZMethod.DEFLATE} are supported.</p>
      */
     public void setContentCompression(SevenZMethod method) {
         this.contentCompression = method;

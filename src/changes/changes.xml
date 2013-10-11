@@ -52,7 +52,8 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" date="2013-05-07" issue="COMPRESS-54"
               due-to="Damjan Jovanovic">
         Added support for 7z archives.  Most compression algorithms
-        can be read, but only uncompressed archives can be written.
+        can be read and written, LZMA and encryption are only
+        supported when reading.
       </action>
       <action type="add" date="2013-05-19" issue="COMPRESS-226"
               due-to="Damjan Jovanovic">
@@ -109,7 +110,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" date="2013-10-04" issue="COMPRESS-239">
         The auto-detecting create*InputStream methods of Archive and
         CompressorStreamFactory could fail to detect the format of
-        blocking input stream.
+        blocking input streams.
       </action>
     </release>
     <release version="1.5" date="2013-03-14"
