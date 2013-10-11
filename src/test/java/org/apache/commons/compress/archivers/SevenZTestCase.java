@@ -33,6 +33,10 @@ public class SevenZTestCase extends AbstractTestCase {
         testSevenZArchiveCreation(SevenZMethod.COPY);
     }
     
+    public void testSevenZArchiveCreationUsingLZMA2() throws Exception {
+        testSevenZArchiveCreation(SevenZMethod.LZMA2);
+    }
+    
     public void testSevenZArchiveCreationUsingBZIP2() throws Exception {
         testSevenZArchiveCreation(SevenZMethod.BZIP2);
     }

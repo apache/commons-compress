@@ -17,6 +17,8 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
+import org.tukaani.xz.LZMA2Options;
+
 /**
  * The (partially) supported compression/encryption methods used in 7z archives.
  */
@@ -25,11 +27,21 @@ public enum SevenZMethod {
     COPY(new byte[] { (byte)0x00 }),
     /** LZMA - only supported when reading */
     LZMA(new byte[] { (byte)0x03, (byte)0x01, (byte)0x01 }),
-    /** LZMA2 - only supported when reading */
-    LZMA2(new byte[] { (byte)0x21 }),
-    /** Deflate - only supported when reading */
+    /** LZMA2 */
+    LZMA2(new byte[] { (byte)0x21 }) {
+        @Override
+        byte[] getProperties() {
+            int dictSize = LZMA2Options.DICT_SIZE_DEFAULT;
+            int lead = Integer.numberOfLeadingZeros(dictSize);
+            int secondBit = (dictSize >>> (30 - lead)) - 2;
+            return new byte[] {
+                (byte) ((19 - lead) * 2 + secondBit)
+            };
+        }
+    },
+    /** Deflate */
     DEFLATE(new byte[] { (byte)0x04, (byte)0x01, (byte)0x08 }),
-    /** BZIP2 - only supported when reading */
+    /** BZIP2 */
     BZIP2(new byte[] { (byte)0x04, (byte)0x02, (byte)0x02 }),
     /**
      * AES encryption with a key length of 256 bit using SHA256 for
@@ -47,6 +59,10 @@ public enum SevenZMethod {
         byte[] copy = new byte[id.length];
         System.arraycopy(id, 0, copy, 0, id.length);
         return copy;
+    }
+
+    byte[] getProperties() {
+        return new byte[0];
     }
 
 }
