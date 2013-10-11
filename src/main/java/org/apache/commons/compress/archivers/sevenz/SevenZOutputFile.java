@@ -46,7 +46,7 @@ public class SevenZOutputFile {
     private long fileBytesWritten = 0;
     private boolean finished = false;
     private CountingOutputStream currentOutputStream;
-    private SevenZMethod contentCompression = SevenZMethod.COPY;
+    private SevenZMethod contentCompression = SevenZMethod.LZMA2;
     
     public SevenZOutputFile(final File filename) throws IOException {
         file = new RandomAccessFile(filename, "rw");
@@ -312,9 +312,19 @@ public class SevenZOutputFile {
         // one coder
         writeUint64(header, 1);
         byte[] id = contentCompression.getId();
-        // FIXME - deal with coder properties
-        header.write(id.length);
+        byte[] properties = contentCompression.getProperties();
+
+        int codecFlags = id.length;
+        if (properties.length > 0) {
+            codecFlags |= 0x20;
+        }
+        header.write(codecFlags);
         header.write(id);
+
+        if (properties.length > 0) {
+            header.write(properties.length);
+            header.write(properties);
+        }
     }
     
     private void writeSubStreamsInfo(final DataOutput header) throws IOException {

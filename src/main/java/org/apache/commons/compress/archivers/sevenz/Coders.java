@@ -39,7 +39,6 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.tukaani.xz.LZMAInputStream;
-import org.tukaani.xz.LZMA2InputStream;
 
 class Coders {
     static InputStream addDecoder(final InputStream is,
@@ -103,27 +102,6 @@ class Coders {
         }
     }
 
-    static class LZMA2Decoder extends CoderBase {
-        @Override
-        InputStream decode(final InputStream in, final Coder coder,
-                String password) throws IOException {
-            final int dictionarySizeBits = 0xff & coder.properties[0];
-            if ((dictionarySizeBits & (~0x3f)) != 0) {
-                throw new IOException("Unsupported LZMA2 property bits");
-            }
-            if (dictionarySizeBits > 40) {
-                throw new IOException("Dictionary larger than 4GiB maximum size");
-            }
-            final int dictionarySize;
-            if (dictionarySizeBits == 40) {
-                dictionarySize = 0xFFFFffff;
-            } else {
-                dictionarySize = (2 | (dictionarySizeBits & 0x1)) << (dictionarySizeBits / 2 + 11);
-            }
-            return new LZMA2InputStream(in, dictionarySize);
-        }
-    }
-    
     static class LZMADecoder extends CoderBase {
         @Override
         InputStream decode(final InputStream in, final Coder coder,
