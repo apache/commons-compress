@@ -104,7 +104,7 @@ The <action> type attribute can be add,update,fix,remove.
         The CPIO streams now support an encoding parameter that can be
         used to specify the encoding of file names.
       </action>
-      <action type="fix" date="2013-09-22" issue="COMPRESS-111">
+      <action type="add" date="2013-09-22" issue="COMPRESS-111">
         Read-only support for LZMA standalone compression has been added.
       </action>
       <action type="fix" date="2013-10-04" issue="COMPRESS-239">
