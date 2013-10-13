@@ -20,6 +20,8 @@
 package org.apache.commons.compress.archivers.arj;
 
 import java.io.FileInputStream;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 import org.apache.commons.compress.AbstractTestCase;
 
@@ -42,8 +44,33 @@ public class ArjArchiveInputStreamTest extends AbstractTestCase {
             while ((tmp = in.read()) != -1) {
                 result.append((char) tmp);
             }
+            assertFalse(entry.isDirectory());
         }
         in.close();
         assertEquals(result.toString(), expected.toString());
+    }
+
+    public void testReadingOfAttributesDosVersion() throws Exception {
+        ArjArchiveInputStream in = new ArjArchiveInputStream(new FileInputStream(getFile("bla.arj")));
+        ArjArchiveEntry entry = in.getNextEntry();
+        assertEquals("test1.xml", entry.getName());
+        assertEquals(30, entry.getSize());
+        assertEquals(0, entry.getUnixMode());
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT+0000"));
+        cal.set(2008, 9, 6, 21, 50, 52);
+        cal.set(Calendar.MILLISECOND, 0);
+        assertEquals(cal.getTime(), entry.getLastModifiedDate());
+    }
+
+    public void testReadingOfAttributesUnixVersion() throws Exception {
+        ArjArchiveInputStream in = new ArjArchiveInputStream(new FileInputStream(getFile("bla.unix.arj")));
+        ArjArchiveEntry entry = in.getNextEntry();
+        assertEquals("test1.xml", entry.getName());
+        assertEquals(30, entry.getSize());
+        assertEquals(0664, entry.getUnixMode() & 07777 /* UnixStat.PERM_MASK */);
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT+0000"));
+        cal.set(2008, 9, 6, 21, 50, 52);
+        cal.set(Calendar.MILLISECOND, 0);
+        assertEquals(cal.getTime(), entry.getLastModifiedDate());
     }
 }
