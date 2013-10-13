@@ -1,117 +1,58 @@
               Apache Commons Compress 1.5 RELEASE NOTES
 
-Apache Commons Compress software defines an API for working with compression and archive formats.
-These include: bzip2, gzip, pack200 and ar, cpio, jar, tar, zip, dump.
+The Commons Compress team is pleased to announce the
+commons-compress-1.6 release!
 
-Release 1.5
+Apache Commons Compress software defines an API for working with
+compression and archive formats.  These include: bzip2, gzip, pack200,
+xz and ar, cpio, jar, tar, zip, dump, 7z, arj.
 
 Changes in this version include:
 
 New features:
-
-o CompressorStreamFactory has an option to create decompressing
-  streams that decompress the full input for formats that support
-  multiple concatenated streams.
-  Issue: COMPRESS-220.
+o Added support for 7z archives.  Most compression algorithms
+  can be read and written, LZMA and encryption are only
+  supported when reading.  Issue: COMPRESS-54. Thanks to Damjan Jovanovic. 
+o Added read-only support for ARJ archives that don't use
+  compression.  Issue: COMPRESS-226. Thanks to Damjan Jovanovic. 
+o DumpArchiveInputStream now supports an encoding parameter that
+  can be used to specify the encoding of file names. 
+o The CPIO streams now support an encoding parameter that can be
+  used to specify the encoding of file names. 
+o Read-only support for LZMA standalone compression has been added.
+  Issue: COMPRESS-111.
 
 Fixed Bugs:
-
-o Typo in CompressorStreamFactory Javadoc
-  Issue: COMPRESS-218.
-  Thanks to Gili.
-o ArchiveStreamFactory's tar stream detection created false positives
-  for AIFF files.
-  Issue: COMPRESS-191.
-  Thanks to Jukka Zitting.
-o XZ for Java didn't provide an OSGi bundle.  Compress' dependency on
-  it has now been marked optional so Compress itself can still be used
-  in an OSGi context.
-  Issue: COMPRESS-199.
-  Thanks to Jukka Zitting.
-o When specifying the encoding explicitly TarArchiveOutputStream would
-  write unreadable names in GNU mode or even cause errors in POSIX
-  mode for file names longer than 66 characters.
-  Issue: COMPRESS-200.
-  Thanks to Christian Schlichtherle.
-o Writing TAR PAX headers failed if the generated entry name ended
-  with a "/".
-  Issue: COMPRESS-203.
-o ZipArchiveInputStream sometimes failed to provide input to the
-  Inflater when it needed it, leading to reads returning 0.
-  Issue: COMPRESS-189.
-  Thanks to Daniel Lowe.
-o TarArchiveInputStream ignored the encoding for GNU long name
-  entries.
-  Issue: COMPRESS-212.
-o TarArchiveInputStream could leave the second EOF record inside the
-  stream it had just finished reading.
-  Issue: COMPRESS-206.
-  Thanks to Peter De Maeyer.
-o DumpArchiveInputStream no longer implicitly closes the original
-  input stream when it reaches the end of the archive.
-o ZipArchiveInputStream now consumes the remainder of the archive when
-  getNextZipEntry returns null.
-o Unit tests could fail if the source tree was checked out to a
-  directory tree containign spaces.
-  Issue: COMPRESS-205.
-  Thanks to Daniel Lowe.
-o Fixed a potential ArrayIndexOutOfBoundsException when reading STORED
-  entries from ZipArchiveInputStream.
-  Issue: COMPRESS-219.
-o CompressorStreamFactory can now be used without XZ for Java being
-  available.
-  Issue: COMPRESS-221.
+o TarBuffer.tryToConsumeSecondEOFRecord could throw a
+  NullPointerException  Issue: COMPRESS-223. Thanks to Jeremy Gustie. 
+o Parsing of zip64 extra fields has become more lenient in order
+  to be able to read archives created by DotNetZip and maybe
+  other archivers as well.  Issue: COMPRESS-228. 
+o TAR will now properly read the names of symbolic links with
+  long names that use the GNU variant to specify the long file
+  name.  Issue: COMPRESS-229. Thanks to Christoph Gysin. 
+o ZipFile#getInputStream could return null if the archive
+  contained duplicate entries.
+  The class now also provides two new methods to obtain all
+  entries of a given name rather than just the first one.
+  Issue: COMPRESS-227. 
+o CpioArchiveInputStream failed to read archives created by
+  Redline RPM.  Issue: COMPRESS-236. Thanks to Andrew Duffy. 
+o TarArchiveOutputStream now properly handles link names that
+  are too long to fit into a traditional TAR header.  Issue:
+  COMPRESS-237. Thanks to Emmanuel Bourg.
+o The auto-detecting create*InputStream methods of Archive and
+  CompressorStreamFactory could fail to detect the format of
+  blocking input streams.  Issue: COMPRESS-239. 
 
 Changes:
+o Readabilty patch to TarArchiveInputStream.  Issue:
+  COMPRESS-232. Thanks to BELUGA BEHR.
+o Performance improvements to TarArchiveInputStream, in
+  particular to the skip method.  Issue: COMPRESS-234. Thanks to BELUGA BEHR. 
 
-o Improved exception message if a zip archive cannot be read because
-  of an unsupported compression method.
-  Issue: COMPRESS-188.
-  Thanks to Harald Kuhn.
-o ArchiveStreamFactory has a setting for file name encoding that sets
-  up encoding for ZIP and TAR streams.
-  Issue: COMPRESS-192.
-  Thanks to Jukka Zitting.
-o TarArchiveEntry now has a method to verify its checksum.
-  Issue: COMPRESS-191.
-  Thanks to Jukka Zitting.
-o Split/spanned ZIP archives are now properly detected by
-  ArchiveStreamFactory but will cause an
-  UnsupportedZipFeatureException when read.
-o ZipArchiveInputStream now reads archives that start with a "PK00"
-  signature.  Archives with this signatures are created when the
-  archiver was willing to split the archive but in the end only needed
-  a single segment - so didn't split anything.
-  Issue: COMPRESS-208.
-o TarArchiveEntry has a new constructor that allows setting linkFlag
-  and preserveLeadingSlashes at the same time.
-  Issue: COMPRESS-201.
-o ChangeSetPerformer has a new perform overload that uses a ZipFile
-  instance as input.
-  Issue: COMPRESS-159.
-o Garbage collection pressure has been reduced by reusing temporary
-  byte arrays in classes.
-  Issue: COMPRESS-172.
-  Thanks to Thomas Mair.
-o Can now handle zip extra field 0x5455 - Extended Timestamp.
-  Issue: COMPRESS-210.
-  Thanks to Julius Davies.
-o handle zip extra field 0x7875 - Info Zip New Unix Extra Field.
-  Issue: COMPRESS-211.
-  Thanks to Julius Davies.
-o ZipShort, ZipLong, ZipEightByteInteger should implement Serializable
-  Issue: COMPRESS-213.
-  Thanks to Julius Davies.
-o better support for unix symlinks in ZipFile entries.
-  Issue: COMPRESS-214.
-  Thanks to Julius Davies.
-o ZipFile's initialization has been improved for non-Zip64 archives.
-  Issue: COMPRESS-215.
-  Thanks to Robin Power.
-o Updated XZ for Java dependency to 1.2 as this version provides
-  proper OSGi manifest attributes.
-
-For complete information on Commons Compress, including instructions on how to submit bug reports,
-patches, or suggestions for improvement, see the Apache Commons Compress website:
+For complete information on Commons Compress, including instructions
+on how to submit bug reports, patches, or suggestions for improvement,
+see the Apache Commons Compress website:
 
 http://commons.apache.org/compress/
