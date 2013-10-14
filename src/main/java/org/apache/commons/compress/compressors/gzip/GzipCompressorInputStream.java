@@ -210,7 +210,8 @@ public class GzipCompressorInputStream extends CompressorInputStream {
     }
 
     private void readToNull(DataInputStream inData) throws IOException {
-        while (inData.readUnsignedByte() != 0x00) {}
+        while (inData.readUnsignedByte() != 0x00) { // NOPMD
+        }
     }
 
     @Override
