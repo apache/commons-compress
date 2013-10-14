@@ -1,4 +1,4 @@
-              Apache Commons Compress 1.5 RELEASE NOTES
+              Apache Commons Compress 1.6 RELEASE NOTES
 
 The Commons Compress team is pleased to announce the
 commons-compress-1.6 release!
