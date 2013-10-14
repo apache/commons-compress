@@ -71,6 +71,16 @@ public class ArjArchiveEntry implements ArchiveEntry {
 
     /**
      * The last modified date of the entry.
+     *
+     * <p>Note the interpretation of time is different depending on
+     * the HostOS that has created the archive.  While an OS that is
+     * {@link #isHostOsUnix considered to be Unix} stores time in a
+     * timezone independent manner, other platforms only use the local
+     * time.  I.e. if an archive has been created at midnight UTC on a
+     * machine in timezone UTC this method will return midnight
+     * regardless of timezone if the archive has been created on a
+     * non-Unix system and a time taking the current timezone into
+     * account if the archive has beeen created on Unix.</p>
      */
     public Date getLastModifiedDate() {
         long ts = isHostOsUnix() ? (localFileHeader.dateTimeModified * 1000l)
