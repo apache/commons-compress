@@ -332,7 +332,7 @@ public class ArchiveStreamFactory {
                     if (tais != null) {
                         try {
                             tais.close();
-                        } catch (IOException ignored) {
+                        } catch (IOException ignored) { // NOPMD
                             // ignored
                         }
                     }

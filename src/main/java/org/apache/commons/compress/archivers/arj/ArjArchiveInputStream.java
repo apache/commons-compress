@@ -20,7 +20,6 @@ package org.apache.commons.compress.archivers.arj;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -85,11 +84,8 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
     }
     
     @Override
-    public void close() {
-        try {
-            in.close();
-        } catch (IOException ignored) {
-        }
+    public void close() throws IOException {
+        in.close();
     }
 
     private static void debug(final String message) {
@@ -194,14 +190,13 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         mainHeader.encryptionVersion = firstHeader.readUnsignedByte();
         mainHeader.lastChapter = firstHeader.readUnsignedByte();
         
-        try {
+        if (firstHeaderSize >= 33) {
             mainHeader.arjProtectionFactor = firstHeader.readUnsignedByte();
             mainHeader.arjFlags2 = firstHeader.readUnsignedByte();
             firstHeader.readUnsignedByte();
             firstHeader.readUnsignedByte();
-        } catch (EOFException eof) {
         }
-        
+
         mainHeader.name = readString(basicHeader);
         mainHeader.comment = readString(basicHeader);
         
@@ -256,15 +251,8 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         localFileHeader.firstChapter = firstHeader.readUnsignedByte();
         localFileHeader.lastChapter = firstHeader.readUnsignedByte();
         
-        try {
-            localFileHeader.extendedFilePosition = read32(firstHeader);
-            localFileHeader.dateTimeAccessed = read32(firstHeader);
-            localFileHeader.dateTimeCreated = read32(firstHeader);
-            localFileHeader.originalSizeEvenForVolumes = read32(firstHeader);
-            pushedBackBytes(16);
-        } catch (EOFException eof) {
-        }
-        
+        readExtraData(firstHeaderSize, firstHeader, localFileHeader);
+
         localFileHeader.name = readString(basicHeader);
         localFileHeader.comment = readString(basicHeader);
 
@@ -290,6 +278,20 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         return localFileHeader;
     }
     
+    private void readExtraData(int firstHeaderSize, DataInputStream firstHeader,
+                               LocalFileHeader localFileHeader) throws IOException {
+        if (firstHeaderSize >= 33) {
+            localFileHeader.extendedFilePosition = read32(firstHeader);
+            if (firstHeaderSize >= 45) {
+                localFileHeader.dateTimeAccessed = read32(firstHeader);
+                localFileHeader.dateTimeCreated = read32(firstHeader);
+                localFileHeader.originalSizeEvenForVolumes = read32(firstHeader);
+                pushedBackBytes(12);
+            }
+            pushedBackBytes(4);
+        }
+    }
+
     /**
      * Checks if the signature matches what is expected for an arj file.
      *
@@ -322,7 +324,8 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
     @Override
     public ArjArchiveEntry getNextEntry() throws IOException {
         if (currentInputStream != null) {
-            while (currentInputStream.read() >= 0) {
+            while (currentInputStream.read() >= 0) { // NOPMD
+                // drain current input
             }
             currentLocalFileHeader = null;
             currentInputStream = null;
