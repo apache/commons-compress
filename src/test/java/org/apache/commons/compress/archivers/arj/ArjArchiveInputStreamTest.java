@@ -56,8 +56,8 @@ public class ArjArchiveInputStreamTest extends AbstractTestCase {
         assertEquals("test1.xml", entry.getName());
         assertEquals(30, entry.getSize());
         assertEquals(0, entry.getUnixMode());
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT+0000"));
-        cal.set(2008, 9, 6, 21, 50, 52);
+        Calendar cal = Calendar.getInstance();
+        cal.set(2008, 9, 6, 23, 50, 52);
         cal.set(Calendar.MILLISECOND, 0);
         assertEquals(cal.getTime(), entry.getLastModifiedDate());
     }
