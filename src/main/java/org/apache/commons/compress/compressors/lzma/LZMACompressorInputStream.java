@@ -52,7 +52,7 @@ public class LZMACompressorInputStream extends CompressorInputStream {
     @Override
     public int read() throws IOException {
         int ret = in.read();
-        count(ret == -1 ? -1 : 1);
+        count(ret == -1 ? 0 : 1);
         return ret;
     }
 

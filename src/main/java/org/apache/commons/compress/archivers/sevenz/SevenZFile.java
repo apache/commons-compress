@@ -63,6 +63,9 @@ import org.apache.commons.compress.utils.CharsetNames;
  */
 public class SevenZFile {
     static final int SIGNATURE_HEADER_SIZE = 32;
+
+    private static final int DRAIN_BUF_SIZE = 64 * 1024;
+
     private RandomAccessFile file;
     private final Archive archive;
     private int currentEntryIndex = -1;
@@ -181,6 +184,7 @@ public class SevenZFile {
         }
         if (nid == NID.kHeader) {
             readHeader(nextHeaderInputStream, archive);
+            nextHeaderInputStream.close();
         } else {
             throw new IOException("Broken or unsupported archive: no Header");
         }
@@ -815,7 +819,7 @@ public class SevenZFile {
     
     private void drainPreviousEntry() throws IOException {
         if (currentEntryInputStream != null) {
-            final byte[] buffer = new byte[64*1024];
+            final byte[] buffer = new byte[DRAIN_BUF_SIZE];
             while (currentEntryInputStream.read(buffer) >= 0) { // NOPMD
             }
             currentEntryInputStream.close();
