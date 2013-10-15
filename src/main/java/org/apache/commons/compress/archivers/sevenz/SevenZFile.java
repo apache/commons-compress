@@ -62,7 +62,6 @@ import org.apache.commons.compress.utils.CharsetNames;
  * @since 1.6
  */
 public class SevenZFile {
-    private static final boolean DEBUG = false;
     static final int SIGNATURE_HEADER_SIZE = 32;
     private RandomAccessFile file;
     private final Archive archive;
@@ -121,18 +120,6 @@ public class SevenZFile {
         }
     }
     
-    private static void debug(String str) {
-        if (DEBUG) {
-            System.out.println(str);
-        }
-    }
-    
-    private static void debug(String fmt, Object... args) {
-        if (DEBUG) {
-            System.out.format(fmt, args);
-        }
-    }
-    
     /**
      * Returns the next Archive Entry in this archive.
      *
@@ -151,8 +138,6 @@ public class SevenZFile {
     }
     
     private Archive readHeaders(byte[] password) throws IOException {
-        debug("SignatureHeader");
-        
         final byte[] signature = new byte[6];
         file.readFully(signature);
         if (!Arrays.equals(signature, sevenZSignature)) {
@@ -161,8 +146,6 @@ public class SevenZFile {
         // 7zFormat.txt has it wrong - it's first major then minor
         final byte archiveVersionMajor = file.readByte();
         final byte archiveVersionMinor = file.readByte();
-        debug("  archiveVersion major=%d, minor=%d\n",
-                archiveVersionMajor, archiveVersionMinor);
         if (archiveVersionMajor != 0) {
             throw new IOException(String.format("Unsupported 7z version (%d,%d)",
                     archiveVersionMajor, archiveVersionMinor));
@@ -222,8 +205,6 @@ public class SevenZFile {
     }
     
     private void readHeader(final DataInput header, final Archive archive) throws IOException {
-        debug("Header");
-
         int nid = header.readUnsignedByte();
         
         if (nid == NID.kArchiveProperties) {
@@ -253,8 +234,6 @@ public class SevenZFile {
     
     private void readArchiveProperties(final DataInput input) throws IOException {
         // FIXME: the reference implementation just throws them away?
-        debug("ArchiveProperties");
-
         int nid =  input.readUnsignedByte();
         while (nid != NID.kEnd) {
             final long propertySize = readUint64(input);
@@ -266,8 +245,6 @@ public class SevenZFile {
     
     private DataInputStream readEncodedHeader(final DataInputStream header, final Archive archive,
                                               byte[] password) throws IOException {
-        debug("EncodedHeader");
-
         readStreamsInfo(header, archive);
         
         // FIXME: merge with buildDecodingStream()/buildDecoderStack() at some stage?
@@ -300,8 +277,6 @@ public class SevenZFile {
     }
     
     private void readStreamsInfo(final DataInput header, final Archive archive) throws IOException {
-        debug("StreamsInfo");
-        
         int nid = header.readUnsignedByte();
         
         if (nid == NID.kPackInfo) {
@@ -328,18 +303,13 @@ public class SevenZFile {
     }
     
     private void readPackInfo(final DataInput header, final Archive archive) throws IOException {
-        debug("PackInfo");
-        
         archive.packPos = readUint64(header);
         final long numPackStreams = readUint64(header);
-        debug("  " + numPackStreams + " pack streams");
-        
         int nid = header.readUnsignedByte();
         if (nid == NID.kSize) {
             archive.packSizes = new long[(int)numPackStreams];
             for (int i = 0; i < archive.packSizes.length; i++) {
                 archive.packSizes[i] = readUint64(header);
-                debug("  pack size %d is %d\n", i, archive.packSizes[i]);
             }
             nid = header.readUnsignedByte();
         }
@@ -362,14 +332,11 @@ public class SevenZFile {
     }
     
     private void readUnpackInfo(final DataInput header, final Archive archive) throws IOException {
-        debug("UnpackInfo");
-
         int nid = header.readUnsignedByte();
         if (nid != NID.kFolder) {
             throw new IOException("Expected kFolder, got " + nid);
         }
         final long numFolders = readUint64(header);
-        debug("  " + numFolders + " folders");
         final Folder[] folders = new Folder[(int)numFolders];
         archive.folders = folders;
         final int external = header.readUnsignedByte();
@@ -413,8 +380,6 @@ public class SevenZFile {
     }
     
     private void readSubStreamsInfo(final DataInput header, final Archive archive) throws IOException {
-        debug("SubStreamsInfo");
-        
         for (final Folder folder : archive.folders) {
             folder.numUnpackSubStreams = 1;
         }
@@ -528,15 +493,6 @@ public class SevenZFile {
                 coders[i].properties = new byte[(int)propertiesSize];
                 header.readFully(coders[i].properties);
             }
-            if (DEBUG) {
-                final StringBuilder methodStr = new StringBuilder();
-                for (final byte b : coders[i].decompressionMethodId) {
-                    methodStr.append(String.format("%02X", 0xff & b));
-                }
-                debug("  coder entry %d numInStreams=%d, numOutStreams=%d, method=%s, properties=%s\n", i,
-                        coders[i].numInStreams, coders[i].numOutStreams, methodStr.toString(),
-                        Arrays.toString(coders[i].properties));
-            }
             // would need to keep looping as above:
             while (moreAlternativeMethods) {
                 throw new IOException("Alternative methods are unsupported, please report. " +
@@ -556,7 +512,6 @@ public class SevenZFile {
             bindPairs[i] = new BindPair();
             bindPairs[i].inIndex = readUint64(header);
             bindPairs[i].outIndex = readUint64(header);
-            debug("  bind pair in=%d out=%d\n", bindPairs[i].inIndex, bindPairs[i].outIndex);
         }
         folder.bindPairs = bindPairs;
         
@@ -616,8 +571,6 @@ public class SevenZFile {
     }
     
     private void readFilesInfo(final DataInput header, final Archive archive) throws IOException {
-        debug("FilesInfo");
-
         final long numFiles = readUint64(header);
         final SevenZArchiveEntry[] files = new SevenZArchiveEntry[(int)numFiles];
         for (int i = 0; i < files.length; i++) {
@@ -634,12 +587,10 @@ public class SevenZFile {
             long size = readUint64(header);
             switch (propertyType) {
                 case NID.kEmptyStream: {
-                    debug("  kEmptyStream");
                     isEmptyStream = readBits(header, files.length);
                     break;
                 }
                 case NID.kEmptyFile: {
-                    debug("  kEmptyFile");
                     if (isEmptyStream == null) { // protect against NPE
                         throw new IOException("Header format error: kEmptyStream must appear before kEmptyFile");
                     }
@@ -647,7 +598,6 @@ public class SevenZFile {
                     break;
                 }
                 case NID.kAnti: {
-                    debug("  kAnti");
                     if (isEmptyStream == null) { // protect against NPE
                         throw new IOException("Header format error: kEmptyStream must appear before kAnti");
                     }
@@ -655,7 +605,6 @@ public class SevenZFile {
                     break;
                 }
                 case NID.kName: {
-                    debug("  kNames");
                     final int external = header.readUnsignedByte();
                     if (external != 0) {
                         throw new IOException("Not implemented");
@@ -680,7 +629,6 @@ public class SevenZFile {
                     break;
                 }
                 case NID.kCTime: {
-                    debug("  kCreationTime");
                     final BitSet timesDefined = readAllOrBits(header, files.length);
                     final int external = header.readUnsignedByte();
                     if (external != 0) {
@@ -696,7 +644,6 @@ public class SevenZFile {
                     break;
                 }
                 case NID.kATime: {
-                    debug("  kLastAccessTime");
                     final BitSet timesDefined = readAllOrBits(header, files.length);
                     final int external = header.readUnsignedByte();
                     if (external != 0) {
@@ -712,7 +659,6 @@ public class SevenZFile {
                     break;
                 }
                 case NID.kMTime: {
-                    debug("  kLastWriteTime");
                     final BitSet timesDefined = readAllOrBits(header, files.length);
                     final int external = header.readUnsignedByte();
                     if (external != 0) {
@@ -728,7 +674,6 @@ public class SevenZFile {
                     break;
                 }
                 case NID.kWinAttributes: {
-                    debug("  kWinAttributes");
                     final BitSet attributesDefined = readAllOrBits(header, files.length);
                     final int external = header.readUnsignedByte();
                     if (external != 0) {
@@ -744,11 +689,9 @@ public class SevenZFile {
                     break;
                 }
                 case NID.kStartPos: {
-                    debug("  kStartPos");
                     throw new IOException("kStartPos is unsupported, please report");
                 }
                 case NID.kDummy: {
-                    debug("  kDummy");
                     throw new IOException("kDummy is unsupported, please report");
                 }
                 

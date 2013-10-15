@@ -161,7 +161,6 @@ class Coders {
                     final int byte1 = 0xff & coder.properties[1];
                     final int ivSize = ((byte0 >> 6) & 1) + (byte1 & 0x0f);
                     final int saltSize = ((byte0 >> 7) & 1) + (byte1 >> 4);
-                    //debug("numCyclesPower=" + numCyclesPower + ", saltSize=" + saltSize + ", ivSize=" + ivSize);
                     if (2 + saltSize + ivSize > coder.properties.length) {
                         throw new IOException("Salt size + IV size too long");
                     }
