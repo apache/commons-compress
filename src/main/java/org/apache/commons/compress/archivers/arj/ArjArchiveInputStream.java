@@ -39,7 +39,6 @@ import org.apache.commons.compress.utils.CRC32VerifyingInputStream;
  * @since 1.6
  */
 public class ArjArchiveInputStream extends ArchiveInputStream {
-    private static final boolean DEBUG = false;
     private static final int ARJ_MAGIC_1 = 0x60;
     private static final int ARJ_MAGIC_2 = 0xEA;
     private final DataInputStream in;
@@ -86,10 +85,6 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
     @Override
     public void close() throws IOException {
         in.close();
-    }
-
-    private static void debug(final String message) {
-        System.out.println(message);
     }
 
     private int read8(final DataInputStream in) throws IOException {
@@ -212,10 +207,6 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
             }
         }
         
-        if (DEBUG) {
-            debug(mainHeader.toString());
-        }
-        
         return mainHeader;
     }
     
@@ -270,10 +261,6 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
             extendedHeaders.add(extendedHeaderBytes);
         }
         localFileHeader.extendedHeaders = extendedHeaders.toArray(new byte[extendedHeaders.size()][]);
-        
-        if (DEBUG) {
-            debug(localFileHeader.toString());
-        }
         
         return localFileHeader;
     }
