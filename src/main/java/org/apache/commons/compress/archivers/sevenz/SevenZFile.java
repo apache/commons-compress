@@ -110,13 +110,14 @@ public class SevenZFile {
     /**
      * Closes the archive.
      */
-    public void close() {
+    public void close() throws IOException {
         if (file != null) {
             try {
                 file.close();
-            } catch (IOException ignored) { // NOPMD
+            } finally {
+                file = null;
+                password = null;
             }
-            file = null;
         }
     }
     
