@@ -28,7 +28,7 @@ import org.tukaani.xz.LZMA2Options;
 
 class LZMA2Decoder extends Coders.CoderBase {
     @Override
-    InputStream decode(final InputStream in, final Coder coder, String password)
+    InputStream decode(final InputStream in, final Coder coder, byte[] password)
         throws IOException {
         final int dictionarySizeBits = 0xff & coder.properties[0];
         if ((dictionarySizeBits & (~0x3f)) != 0) {
@@ -47,7 +47,7 @@ class LZMA2Decoder extends Coders.CoderBase {
     }
 
     @Override
-    OutputStream encode(final OutputStream out, final String password)
+    OutputStream encode(final OutputStream out, final byte[] password)
         throws IOException {
         LZMA2Options options = new LZMA2Options();
         options.setDictSize(LZMA2Options.DICT_SIZE_DEFAULT);

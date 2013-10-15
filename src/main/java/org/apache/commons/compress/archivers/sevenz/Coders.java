@@ -42,7 +42,7 @@ import org.tukaani.xz.LZMAInputStream;
 
 class Coders {
     static InputStream addDecoder(final InputStream is,
-            final Coder coder, final String password) throws IOException {
+            final Coder coder, final byte[] password) throws IOException {
         for (final CoderId coderId : coderTable) {
             if (Arrays.equals(coderId.method.getId(), coder.decompressionMethodId)) {
                 return coderId.coder.decode(is, coder, password);
@@ -53,7 +53,7 @@ class Coders {
     }
     
     static OutputStream addEncoder(final OutputStream out, final SevenZMethod method,
-                                   final String password) throws IOException {
+                                   final byte[] password) throws IOException {
         for (final CoderId coderId : coderTable) {
             if (coderId.method.equals(method)) {
                 return coderId.coder.encode(out, password);
@@ -83,8 +83,8 @@ class Coders {
     
     static abstract class CoderBase {
         abstract InputStream decode(final InputStream in, final Coder coder,
-                String password) throws IOException;
-        OutputStream encode(final OutputStream out, final String password)
+                byte[] password) throws IOException;
+        OutputStream encode(final OutputStream out, final byte[] password)
             throws IOException {
             throw new UnsupportedOperationException("method doesn't support writing");
         }
@@ -93,11 +93,11 @@ class Coders {
     static class CopyDecoder extends CoderBase {
         @Override
         InputStream decode(final InputStream in, final Coder coder,
-                String password) throws IOException {
+                byte[] password) throws IOException {
             return in; 
         }
         @Override
-        OutputStream encode(final OutputStream out, final String password) {
+        OutputStream encode(final OutputStream out, final byte[] password) {
             return out;
         }
     }
@@ -105,7 +105,7 @@ class Coders {
     static class LZMADecoder extends CoderBase {
         @Override
         InputStream decode(final InputStream in, final Coder coder,
-                String password) throws IOException {
+                byte[] password) throws IOException {
             byte propsByte = coder.properties[0];
             long dictSize = coder.properties[1];
             for (int i = 1; i < 4; i++) {
@@ -120,25 +120,25 @@ class Coders {
     
     static class DeflateDecoder extends CoderBase {
         @Override
-        InputStream decode(final InputStream in, final Coder coder, final String password)
+        InputStream decode(final InputStream in, final Coder coder, final byte[] password)
             throws IOException {
             return new InflaterInputStream(new DummyByteAddingInputStream(in),
                                            new Inflater(true));
         }
         @Override
-        OutputStream encode(final OutputStream out, final String password) {
+        OutputStream encode(final OutputStream out, final byte[] password) {
             return new DeflaterOutputStream(out, new Deflater(9, true));
         }
     }
 
     static class BZIP2Decoder extends CoderBase {
         @Override
-        InputStream decode(final InputStream in, final Coder coder, final String password)
+        InputStream decode(final InputStream in, final Coder coder, final byte[] password)
                 throws IOException {
             return new BZip2CompressorInputStream(in);
         }
         @Override
-        OutputStream encode(final OutputStream out, final String password)
+        OutputStream encode(final OutputStream out, final byte[] password)
                 throws IOException {
             return new BZip2CompressorOutputStream(out);
         }
@@ -147,7 +147,7 @@ class Coders {
     static class AES256SHA256Decoder extends CoderBase {
         @Override
         InputStream decode(final InputStream in, final Coder coder,
-                final String password) throws IOException {
+                final byte[] passwordBytes) throws IOException {
             return new InputStream() {
                 private boolean isInitialized = false;
                 private CipherInputStream cipherInputStream = null;
@@ -170,10 +170,9 @@ class Coders {
                     final byte[] iv = new byte[16];
                     System.arraycopy(coder.properties, 2 + saltSize, iv, 0, ivSize);
                     
-                    if (password == null) {
+                    if (passwordBytes == null) {
                         throw new IOException("Cannot read encrypted files without a password");
                     }
-                    final byte[] passwordBytes = password.getBytes("UTF-16LE");
                     final byte[] aesKeyBytes;
                     if (numCyclesPower == 0x3f) {
                         aesKeyBytes = new byte[32];
