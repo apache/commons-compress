@@ -49,8 +49,16 @@ public class SevenZFileTest extends AbstractTestCase {
         test7zUnarchive(getFile("bla.deflate.7z"));
     }
 
+    public void test7zDecryptUnarchive() throws Exception {
+        test7zUnarchive(getFile("bla.encrypted.7z"), "foo".getBytes("UTF-16LE"));
+    }
+
     private void test7zUnarchive(File f) throws Exception {
-        SevenZFile sevenZFile = new SevenZFile(f);
+        test7zUnarchive(f, null);
+    }
+
+    private void test7zUnarchive(File f, byte[] password) throws Exception {
+        SevenZFile sevenZFile = new SevenZFile(f, password);
         try {
             SevenZArchiveEntry entry = sevenZFile.getNextEntry();
             assertEquals("test1.xml", entry.getName());

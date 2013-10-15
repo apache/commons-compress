@@ -70,7 +70,7 @@ public class SevenZFile {
     private int currentFolderIndex = -1;
     private InputStream currentFolderInputStream = null;
     private InputStream currentEntryInputStream = null;
-    private String password;
+    private byte[] password;
         
     static final byte[] sevenZSignature = {
         (byte)'7', (byte)'z', (byte)0xBC, (byte)0xAF, (byte)0x27, (byte)0x1C
@@ -80,14 +80,16 @@ public class SevenZFile {
      * Reads a file as 7z archive
      *
      * @param filename the file to read
-     * @param password optional password if the archive is encrypted
+     * @param password optional password if the archive is encrypted -
+     * the byte array is supposed to be the UTF16-LE encoded
+     * representation of the password.
      */
-    public SevenZFile(final File filename, final String password) throws IOException {
+    public SevenZFile(final File filename, final byte[] password) throws IOException {
         boolean succeeded = false;
-        this.password = password;
         this.file = new RandomAccessFile(filename, "r");
         try {
-            archive = readHeaders();
+            archive = readHeaders(password);
+            this.password = password;
             succeeded = true;
         } finally {
             if (!succeeded) {
@@ -147,7 +149,7 @@ public class SevenZFile {
         return entry;
     }
     
-    private Archive readHeaders() throws IOException {
+    private Archive readHeaders(byte[] password) throws IOException {
         debug("SignatureHeader");
         
         final byte[] signature = new byte[6];
@@ -187,7 +189,8 @@ public class SevenZFile {
         Archive archive = new Archive();
         int nid = nextHeaderInputStream.readUnsignedByte();
         if (nid == NID.kEncodedHeader) {
-            nextHeaderInputStream = readEncodedHeader(nextHeaderInputStream, archive);
+            nextHeaderInputStream =
+                readEncodedHeader(nextHeaderInputStream, archive, password);
             // Archive gets rebuilt with the new header
             archive = new Archive();
             nid = nextHeaderInputStream.readUnsignedByte();
@@ -260,7 +263,8 @@ public class SevenZFile {
         }
     }
     
-    private DataInputStream readEncodedHeader(final DataInputStream header, final Archive archive) throws IOException {
+    private DataInputStream readEncodedHeader(final DataInputStream header, final Archive archive,
+                                              byte[] password) throws IOException {
         debug("EncodedHeader");
 
         readStreamsInfo(header, archive);
