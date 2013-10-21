@@ -114,7 +114,6 @@ public class SevenZOutputFile {
     public void putArchiveEntry(final ArchiveEntry archiveEntry) throws IOException {
         final SevenZArchiveEntry entry = (SevenZArchiveEntry) archiveEntry;
         files.add(entry);
-        currentOutputStream = setupFileOutputStream();
     }
     
     /**
@@ -122,8 +121,10 @@ public class SevenZOutputFile {
      * @throws IOException
      */
     public void closeArchiveEntry() throws IOException {
-        currentOutputStream.flush();
-        currentOutputStream.close();
+        if (currentOutputStream != null) {
+            currentOutputStream.flush();
+            currentOutputStream.close();
+        }
 
         final SevenZArchiveEntry entry = files.get(files.size() - 1);
         if (fileBytesWritten > 0) {
@@ -140,6 +141,7 @@ public class SevenZOutputFile {
             entry.setCompressedSize(0);
             entry.setHasCrc(false);
         }
+        currentOutputStream = null;
         crc32.reset();
         compressedCrc32.reset();
         fileBytesWritten = 0;
@@ -151,7 +153,7 @@ public class SevenZOutputFile {
      * @throws IOException on error
      */
     public void write(final int b) throws IOException {
-        currentOutputStream.write(b);
+        getCurrentOutputStream().write(b);
     }
     
     /**
@@ -160,7 +162,7 @@ public class SevenZOutputFile {
      * @throws IOException on error
      */
     public void write(final byte[] b) throws IOException {
-        currentOutputStream.write(b);
+        getCurrentOutputStream().write(b);
     }
     
     /**
@@ -171,7 +173,7 @@ public class SevenZOutputFile {
      * @throws IOException on error
      */
     public void write(final byte[] b, final int off, final int len) throws IOException {
-        currentOutputStream.write(b, off, len);
+        getCurrentOutputStream().write(b, off, len);
     }
     
     /**
@@ -220,6 +222,18 @@ public class SevenZOutputFile {
         file.write(startHeaderBytes);
     }
     
+    /*
+     * Creation of output stream is deferred until data is actually
+     * written as some codecs might write header information even for
+     * empty streams and directories otherwise.
+     */
+    private OutputStream getCurrentOutputStream() throws IOException {
+        if (currentOutputStream == null) {
+            currentOutputStream = setupFileOutputStream();
+        }
+        return currentOutputStream;
+    }
+
     private CountingOutputStream setupFileOutputStream() throws IOException {
         OutputStream out = new OutputStreamWrapper();
         return new CountingOutputStream(Coders
