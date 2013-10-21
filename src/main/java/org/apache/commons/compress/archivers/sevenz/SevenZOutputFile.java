@@ -73,15 +73,14 @@ public class SevenZOutputFile {
 
     /**
      * Closes the archive, calling {@link #finish} if necessary.
+     * 
+     * @throws IOException
      */
-    public void close() {
-        try {
-            if (!finished) {
-                finish();
-            }
-            file.close();
-        } catch (IOException ioEx) { // NOPMD
+    public void close() throws IOException {
+        if (!finished) {
+            finish();
         }
+        file.close();
     }
     
     /**
