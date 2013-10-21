@@ -394,21 +394,20 @@ public class SevenZOutputFile {
     
     private void writeFileEmptyFiles(final DataOutput header) throws IOException {
         boolean hasEmptyFiles = false;
-        for (final SevenZArchiveEntry entry : files) {
-            if (!entry.hasStream() && !entry.isDirectory()) {
-                hasEmptyFiles = true;
-                break;
+        int emptyStreamCounter = 0;
+        final BitSet emptyFiles = new BitSet(0);
+        for (int i = 0; i < files.size(); i++) {
+            if (!files.get(i).hasStream()) {
+                boolean isDir = files.get(i).isDirectory();
+                emptyFiles.set(emptyStreamCounter++, !isDir);
+                hasEmptyFiles |= !isDir;
             }
         }
         if (hasEmptyFiles) {
             header.write(NID.kEmptyFile);
-            final BitSet emptyFiles = new BitSet(files.size());
-            for (int i = 0; i < files.size(); i++) {
-                emptyFiles.set(i, !files.get(i).hasStream() && !files.get(i).isDirectory());
-            }
             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
             final DataOutputStream out = new DataOutputStream(baos);
-            writeBits(out, emptyFiles, files.size());
+            writeBits(out, emptyFiles, emptyStreamCounter);
             out.flush();
             final byte[] contents = baos.toByteArray();
             writeUint64(header, contents.length);
@@ -418,21 +417,20 @@ public class SevenZOutputFile {
     
     private void writeFileAntiItems(final DataOutput header) throws IOException {
         boolean hasAntiItems = false;
-        for (final SevenZArchiveEntry entry : files) {
-            if (entry.isAntiItem()) {
-                hasAntiItems = true;
-                break;
+        final BitSet antiItems = new BitSet(0);
+        int antiItemCounter = 0;
+        for (int i = 0; i < files.size(); i++) {
+            if (!files.get(i).hasStream()) {
+                boolean isAnti = files.get(i).isAntiItem();
+                antiItems.set(antiItemCounter++, isAnti);
+                hasAntiItems |= isAnti;
             }
         }
         if (hasAntiItems) {
             header.write(NID.kAnti);
-            final BitSet antiItems = new BitSet(files.size());
-            for (int i = 0; i < files.size(); i++) {
-                antiItems.set(i, files.get(i).isAntiItem());
-            }
             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
             final DataOutputStream out = new DataOutputStream(baos);
-            writeBits(out, antiItems, files.size());
+            writeBits(out, antiItems, antiItemCounter);
             out.flush();
             final byte[] contents = baos.toByteArray();
             writeUint64(header, contents.length);
