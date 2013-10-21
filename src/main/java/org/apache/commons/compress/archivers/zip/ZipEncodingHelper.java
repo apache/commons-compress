@@ -23,10 +23,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.Charsets;
 
 /**
