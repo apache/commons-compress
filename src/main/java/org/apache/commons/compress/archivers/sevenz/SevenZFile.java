@@ -92,7 +92,12 @@ public class SevenZFile {
         this.file = new RandomAccessFile(filename, "r");
         try {
             archive = readHeaders(password);
-            this.password = password;
+            if (password != null) {
+                this.password = new byte[password.length];
+                System.arraycopy(password, 0, this.password, 0, password.length);
+            } else {
+                this.password = null;
+            }
             succeeded = true;
         } finally {
             if (!succeeded) {
@@ -121,6 +126,9 @@ public class SevenZFile {
                 file.close();
             } finally {
                 file = null;
+                if (password != null) {
+                    Arrays.fill(password, (byte) 0);
+                }
                 password = null;
             }
         }

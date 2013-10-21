@@ -658,10 +658,12 @@ public class SevenZOutputFile {
 
         @Override
         public void flush() throws IOException {
+            // no reason to flush a RandomAccessFile
         }
 
         @Override
         public void close() throws IOException {
+            // the file will be closed by the containing class's close method
         }
     }
 }

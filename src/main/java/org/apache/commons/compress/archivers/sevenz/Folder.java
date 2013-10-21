@@ -24,6 +24,7 @@ class Folder {
     /// List of coders used in this folder, eg. one for compression, one for encryption.
     Coder[] coders;
     /// Total number of input streams across all coders.
+    /// this field is currently unused but technically part of the 7z API
     long totalInputStreams;
     /// Total number of output streams across all coders.
     long totalOutputStreams;
