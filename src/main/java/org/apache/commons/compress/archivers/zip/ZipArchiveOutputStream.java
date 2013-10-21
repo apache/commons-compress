@@ -109,7 +109,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
     /**
      * General purpose flag, which indicates that filenames are
-     * written in utf-8.
+     * written in UTF-8.
      * @deprecated use {@link GeneralPurposeBit#UFT8_NAMES_FLAG} instead
      */
     @Deprecated

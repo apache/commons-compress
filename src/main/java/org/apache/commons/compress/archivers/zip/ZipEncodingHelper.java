@@ -214,7 +214,7 @@ public abstract class ZipEncodingHelper {
      */
     public static ZipEncoding getZipEncoding(String name) {
  
-        // fallback encoding is good enough for utf-8.
+        // fallback encoding is good enough for UTF-8.
         if (isUTF8(name)) {
             return UTF8_ZIP_ENCODING;
         }
