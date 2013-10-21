@@ -26,7 +26,7 @@ import java.nio.ByteBuffer;
  * A fallback ZipEncoding, which uses a java.io means to encode names.
  *
  * <p>This implementation is not suitable for encodings other than
- * utf-8, because java.io encodes unmappable character as question
+ * UTF-8, because java.io encodes unmappable character as question
  * marks leading to unreadable ZIP entries on some operating
  * systems.</p>
  * 
