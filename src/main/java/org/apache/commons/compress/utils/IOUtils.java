@@ -104,7 +104,8 @@ public final class IOUtils {
      *
      * @param input stream to read from
      * @param b buffer to fill
-     * @retun the number of bytes actually read
+     * @return the number of bytes actually read
+     * @throws IOException
      */
     public static int readFully(InputStream input, byte[] b) throws IOException {
         return readFully(input, b, 0, b.length);
@@ -121,8 +122,10 @@ public final class IOUtils {
      * @param input stream to read from
      * @param b buffer to fill
      * @param offset offset into the buffer to start filling at
-     * @param amount of bytes to read
-     * @retun the number of bytes actually read
+     * @param len of bytes to read
+     * @return the number of bytes actually read
+     * @throws IOException
+     *             if an I/O error has occurred
      */
     public static int readFully(InputStream input, byte[] b, int offset, int len)
         throws IOException {

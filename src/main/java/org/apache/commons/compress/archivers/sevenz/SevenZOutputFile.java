@@ -48,6 +48,12 @@ public class SevenZOutputFile {
     private CountingOutputStream currentOutputStream;
     private SevenZMethod contentCompression = SevenZMethod.LZMA2;
     
+    /**
+     * Opens file to write a 7z archive to.
+     *
+     * @param filename name of the file to write to
+     * @throws IOException if opening the file fails
+     */
     public SevenZOutputFile(final File filename) throws IOException {
         file = new RandomAccessFile(filename, "rw");
         file.seek(SevenZFile.SIGNATURE_HEADER_SIZE);
@@ -57,9 +63,9 @@ public class SevenZOutputFile {
      * Sets the compression method to use for entry contents - the
      * default is LZMA2.
      *
-     * <p>Currently only {@link SevenZMethod.COPY}, {@link
-     * SevenZMethod.LZMA2}, {@link SevenZMethod.BZIP2} and {@link
-     * SevenZMethod.DEFLATE} are supported.</p>
+     * <p>Currently only {@link SevenZMethod#COPY}, {@link
+     * SevenZMethod#LZMA2}, {@link SevenZMethod#BZIP2} and {@link
+     * SevenZMethod#DEFLATE} are supported.</p>
      */
     public void setContentCompression(SevenZMethod method) {
         this.contentCompression = method;
@@ -102,7 +108,7 @@ public class SevenZOutputFile {
      * The caller must then write the content to the archive and call
      * {@link #closeArchiveEntry()} to complete the process.
      * 
-     * @param entry describes the entry
+     * @param archiveEntry describes the entry
      * @throws IOException
      */
     public void putArchiveEntry(final ArchiveEntry archiveEntry) throws IOException {

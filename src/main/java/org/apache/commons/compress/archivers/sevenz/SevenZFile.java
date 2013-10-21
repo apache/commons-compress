@@ -85,6 +85,7 @@ public class SevenZFile {
      * @param password optional password if the archive is encrypted -
      * the byte array is supposed to be the UTF16-LE encoded
      * representation of the password.
+     * @throws IOException if reading the archive fails
      */
     public SevenZFile(final File filename, final byte[] password) throws IOException {
         boolean succeeded = false;
@@ -104,6 +105,7 @@ public class SevenZFile {
      * Reads a file as unecrypted 7z archive
      *
      * @param filename the file to read
+     * @throws IOException if reading the archive fails
      */
     public SevenZFile(final File filename) throws IOException {
         this(filename, null);
@@ -111,6 +113,7 @@ public class SevenZFile {
 
     /**
      * Closes the archive.
+     * @throws IOException if closing the file fails
      */
     public void close() throws IOException {
         if (file != null) {
@@ -846,14 +849,39 @@ public class SevenZFile {
         }
     }
     
+    /**
+     * Reads a byte of data.
+     * 
+     * @return the byte read, or -1 if end of input is reached
+     * @throws IOException
+     *             if an I/O error has occurred
+     */
     public int read() throws IOException {
         return currentEntryInputStream.read();
     }
     
+    /**
+     * Reads data into an array of bytes.
+     * 
+     * @param b the array to write data to
+     * @return the number of bytes read, or -1 if end of input is reached
+     * @throws IOException
+     *             if an I/O error has occurred
+     */
     public int read(byte[] b) throws IOException {
         return read(b, 0, b.length);
     }
     
+    /**
+     * Reads data into an array of bytes.
+     * 
+     * @param b the array to write data to
+     * @param off offset into the buffer to start filling at
+     * @param len of bytes to read
+     * @return the number of bytes read, or -1 if end of input is reached
+     * @throws IOException
+     *             if an I/O error has occurred
+     */
     public int read(byte[] b, int off, int len) throws IOException {
         return currentEntryInputStream.read(b, off, len);
     }
