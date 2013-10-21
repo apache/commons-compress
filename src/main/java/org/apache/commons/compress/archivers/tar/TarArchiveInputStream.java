@@ -581,7 +581,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         if (totalRead == -1) {
             hasHitEOF = true;
         } else {
-            entryOffset += (long) totalRead;
+            entryOffset += totalRead;
         }
 
         return totalRead;
