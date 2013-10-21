@@ -23,9 +23,11 @@ import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.compress.utils.CharsetNames;
+import org.apache.commons.compress.utils.Charsets;
 
 /**
  * Static helper functions for robustly encoding filenames in zip files. 
@@ -196,11 +198,6 @@ public abstract class ZipEncodingHelper {
     static final String UTF8 = "UTF8";
 
     /**
-     * variant name of the encoding UTF-8 used for comparisions.
-     */
-    private static final String UTF_DASH_8 = CharsetNames.UTF_8;
-
-    /**
      * name of the encoding UTF-8
      */
     static final ZipEncoding UTF8_ZIP_ENCODING = new FallbackZipEncoding(UTF8);
@@ -240,15 +237,24 @@ public abstract class ZipEncodingHelper {
     }
 
     /**
-     * Whether a given encoding - or the platform's default encoding
-     * if the parameter is null - is UTF-8.
+     * Returns whether a given encoding is UTF-8. If the given name is null, then check the platform's default encoding.
+     * 
+     * @param charsetName
+     *            If the given name is null, then check the platform's default encoding.
      */
-    static boolean isUTF8(String encoding) {
-        if (encoding == null) {
+    static boolean isUTF8(String charsetName) {
+        if (charsetName == null) {
             // check platform's default encoding
-            encoding = System.getProperty("file.encoding");
+            charsetName = System.getProperty("file.encoding");
         }
-        return UTF8.equalsIgnoreCase(encoding)
-            || UTF_DASH_8.equalsIgnoreCase(encoding);
+        if (Charsets.UTF_8.name().equalsIgnoreCase(charsetName)) {
+            return true;
+        }
+        for (String alias : Charsets.UTF_8.aliases()) {
+            if (alias.equalsIgnoreCase(charsetName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
