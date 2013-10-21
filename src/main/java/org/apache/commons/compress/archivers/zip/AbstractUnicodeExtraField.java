@@ -102,7 +102,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
     }
 
     /**
-     * @return The utf-8 encoded name.
+     * @return The UTF-8 encoded name.
      */
     public byte[] getUnicodeName() {
         byte[] b = null;
@@ -114,7 +114,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
     }
 
     /**
-     * @param unicodeName The utf-8 encoded name to set.
+     * @param unicodeName The UTF-8 encoded name to set.
      */
     public void setUnicodeName(byte[] unicodeName) {
         if (unicodeName != null) {

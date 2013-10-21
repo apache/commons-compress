@@ -41,7 +41,7 @@ public final class GeneralPurposeBit {
     private static final int STRONG_ENCRYPTION_FLAG = 1 << 6;
 
     /**
-     * Indicates that filenames are written in utf-8.
+     * Indicates that filenames are written in UTF-8.
      *
      * <p>The only reason this is public is that {@link
      * ZipArchiveOutputStream#EFS_FLAG} was public in Apache Commons
