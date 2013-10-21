@@ -42,7 +42,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
     private static final int ARJ_MAGIC_1 = 0x60;
     private static final int ARJ_MAGIC_2 = 0xEA;
     private final DataInputStream in;
-    private final String charset;
+    private final String charsetName;
     private final MainHeader mainHeader;
     private LocalFileHeader currentLocalFileHeader = null;
     private InputStream currentInputStream = null;
@@ -50,14 +50,14 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
     /**
      * Constructs the ArjInputStream, taking ownership of the inputStream that is passed in.
      * @param inputStream the underlying stream, whose ownership is taken
-     * @param charset the charset used for file names and comments
+     * @param charsetName the charset used for file names and comments
      *   in the archive
      * @throws ArchiveException
      */
     public ArjArchiveInputStream(final InputStream inputStream,
-            final String charset) throws ArchiveException {
+            final String charsetName) throws ArchiveException {
         in = new DataInputStream(inputStream);
-        this.charset = charset;
+        this.charsetName = charsetName;
         try {
             mainHeader = readMainHeader();
             if ((mainHeader.arjFlags & MainHeader.Flags.GARBLED) != 0) {
@@ -111,8 +111,8 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         while ((nextByte = in.readUnsignedByte()) != 0) {
             buffer.write(nextByte);
         }
-        if (charset != null) {
-            return new String(buffer.toByteArray(), charset);
+        if (charsetName != null) {
+            return new String(buffer.toByteArray(), charsetName);
         } else {
             return new String(buffer.toByteArray());
         }
