@@ -41,24 +41,24 @@ import java.nio.ByteBuffer;
  * @Immutable
  */
 class FallbackZipEncoding implements ZipEncoding {
-    private final String charset;
+    private final String charsetName;
 
     /**
      * Construct a fallback zip encoding, which uses the platform's
      * default charset.
      */
     public FallbackZipEncoding() {
-        this.charset = null;
+        this.charsetName = null;
     }
 
     /**
      * Construct a fallback zip encoding, which uses the given charset.
      * 
-     * @param charset The name of the charset or {@code null} for
+     * @param charsetName The name of the charset or {@code null} for
      *                the platform's default character set.
      */
-    public FallbackZipEncoding(String charset) {
-        this.charset = charset;
+    public FallbackZipEncoding(String charsetName) {
+        this.charsetName = charsetName;
     }
 
     /**
@@ -74,10 +74,10 @@ class FallbackZipEncoding implements ZipEncoding {
      * org.apache.commons.compress.archivers.zip.ZipEncoding#encode(java.lang.String)
      */
     public ByteBuffer encode(String name) throws IOException {
-        if (this.charset == null) { // i.e. use default charset, see no-args constructor
+        if (this.charsetName == null) { // i.e. use default charset, see no-args constructor
             return ByteBuffer.wrap(name.getBytes());
         } else {
-            return ByteBuffer.wrap(name.getBytes(this.charset));
+            return ByteBuffer.wrap(name.getBytes(this.charsetName));
         }
     }
 
@@ -86,10 +86,10 @@ class FallbackZipEncoding implements ZipEncoding {
      * org.apache.commons.compress.archivers.zip.ZipEncoding#decode(byte[])
      */
     public String decode(byte[] data) throws IOException {
-        if (this.charset == null) { // i.e. use default charset, see no-args constructor
+        if (this.charsetName == null) { // i.e. use default charset, see no-args constructor
             return new String(data);
         } else {
-            return new String(data,this.charset);
+            return new String(data,this.charsetName);
         }
     }
 }
