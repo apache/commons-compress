@@ -44,6 +44,10 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.6" date="not released, yet"
              description="Release 1.6">
+      <action type="fix" date="2013-10-21" issue="COMPRESS-240"
+              due-to="Gary Gregory">
+        ZipEncodingHelper.isUTF8(String) does not check all UTF-8 aliases.
+      </action>
       <action type="fix" date="2013-04-25" issue="COMPRESS-223"
               due-to="Jeremy Gustie">
         TarBuffer.tryToConsumeSecondEOFRecord could throw a
