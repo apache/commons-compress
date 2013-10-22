@@ -18,6 +18,7 @@
 package org.apache.commons.compress.archivers.sevenz;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import org.apache.commons.compress.AbstractTestCase;
@@ -67,8 +68,11 @@ public class SevenZOutputFileTest extends AbstractTestCase {
 
             entry = new SevenZArchiveEntry();
             entry.setName("dada");
+            entry.setHasWindowsAttributes(true);
+            entry.setWindowsAttributes(17);
             outArchive.putArchiveEntry(entry);
             outArchive.write(5);
+            outArchive.write(42);
             outArchive.closeArchiveEntry();
 
             outArchive.finish();
@@ -111,14 +115,60 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             entry = archive.getNextEntry();
             assert(entry != null);
             assertEquals("dada", entry.getName());
-            assertEquals(1, entry.getSize());
-            assertEquals(5, archive.read());
+            assertEquals(2, entry.getSize());
+            byte[] content = new byte[2];
+            assertEquals(2, archive.read(content));
+            assertEquals(5, content[0]);
+            assertEquals(42, content[1]);
+            assertEquals(17, entry.getWindowsAttributes());
 
             assert(archive.getNextEntry() == null);
         } finally {
             archive.close();
         }
 
+    }
+
+    public void testDirectoriesOnly() throws Exception {
+        File output = new File(dir, "dirs.7z");
+        SevenZOutputFile outArchive = new SevenZOutputFile(output);
+        try {
+            SevenZArchiveEntry entry = new SevenZArchiveEntry();
+            entry.setName("foo/");
+            entry.setDirectory(true);
+            outArchive.putArchiveEntry(entry);
+            outArchive.closeArchiveEntry();
+        } finally {
+            outArchive.close();
+        }
+
+        final SevenZFile archive = new SevenZFile(output);
+        try {
+            SevenZArchiveEntry entry = archive.getNextEntry();
+            assert(entry != null);
+            assertEquals("foo/", entry.getName());
+            assertTrue(entry.isDirectory());
+            assertFalse(entry.isAntiItem());
+
+            assert(archive.getNextEntry() == null);
+        } finally {
+            archive.close();
+        }
+
+    }
+
+    public void testCantFinishTwice() throws Exception {
+        File output = new File(dir, "finish.7z");
+        SevenZOutputFile outArchive = new SevenZOutputFile(output);
+        try {
+            outArchive.finish();
+            outArchive.finish();
+            fail("shouldn't be able to call finish twice");
+        } catch (IOException ex) {
+            assertEquals("This archive has already been finished", ex.getMessage());
+        } finally {
+            outArchive.close();
+        }
     }
 
 }
