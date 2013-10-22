@@ -18,6 +18,7 @@
 package org.apache.commons.compress.archivers.sevenz;
 
 import java.io.File;
+import java.io.IOException;
 import org.apache.commons.compress.AbstractTestCase;
 
 public class SevenZFileTest extends AbstractTestCase {
@@ -55,6 +56,16 @@ public class SevenZFileTest extends AbstractTestCase {
 
     private void test7zUnarchive(File f) throws Exception {
         test7zUnarchive(f, null);
+    }
+
+    public void testEncryptedArchiveRequiresPassword() throws Exception {
+        try {
+            SevenZFile sevenZFile = new SevenZFile(getFile("bla.encrypted.7z"));
+            fail("shouldn't decrypt without a password");
+        } catch (IOException ex) {
+            assertEquals("Cannot read encrypted files without a password",
+                         ex.getMessage());
+        }
     }
 
     private void test7zUnarchive(File f, byte[] password) throws Exception {

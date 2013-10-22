@@ -161,7 +161,7 @@ public class SevenZOutputFile {
      * @throws IOException on error
      */
     public void write(final byte[] b) throws IOException {
-        getCurrentOutputStream().write(b);
+        write(b, 0, b.length);
     }
     
     /**
@@ -172,7 +172,9 @@ public class SevenZOutputFile {
      * @throws IOException on error
      */
     public void write(final byte[] b, final int off, final int len) throws IOException {
-        getCurrentOutputStream().write(b, off, len);
+        if (len > 0) {
+            getCurrentOutputStream().write(b, off, len);
+        }
     }
     
     /**
