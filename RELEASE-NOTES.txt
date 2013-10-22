@@ -7,6 +7,13 @@ Apache Commons Compress software defines an API for working with
 compression and archive formats.  These include: bzip2, gzip, pack200,
 xz and ar, cpio, jar, tar, zip, dump, 7z, arj.
 
+Version 1.6 introduces a change to the internal API of the tar package
+that might break backwards compatibility in very rare cases.  The
+package private TarBuffer class along with the protected "buffer"
+members in TarArchive*Stream have been removed.  This change will only
+affect you if you have created a subclass of one of the stream classes
+and accessed the buffer member or directly used the TarBuffer class.
+
 Changes in this version include:
 
 New features:
