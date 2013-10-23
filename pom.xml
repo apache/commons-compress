@@ -25,7 +25,7 @@
 
   <groupId>org.apache.commons</groupId>
   <artifactId>commons-compress</artifactId>
-  <version>1.6-SNAPSHOT</version>
+  <version>1.6</version>
   <name>Apache Commons Compress</name>
   <url>http://commons.apache.org/proper/commons-compress/</url>
   <!-- The description is not indented to make it look better in the release notes -->
@@ -125,8 +125,8 @@ These include: bzip2, gzip, pack200, xz and ar, cpio, jar, tar, zip, dump, 7z, a
 
   <scm>
     <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/compress/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/compress/trunk</developerConnection>
-    <url>http://svn.apache.org/repos/asf/commons/proper/compress/trunk</url>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/compress/tags/COMPRESS-1.6</developerConnection>
+    <url>http://svn.apache.org/repos/asf/commons/proper/compress/tags/COMPRESS-1.6</url>
   </scm>
 
   <build>
