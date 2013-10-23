@@ -19,6 +19,9 @@ package org.apache.commons.compress.archivers.sevenz;
 
 import java.io.File;
 import java.io.IOException;
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.compress.AbstractTestCase;
 
 public class SevenZFileTest extends AbstractTestCase {
@@ -51,7 +54,9 @@ public class SevenZFileTest extends AbstractTestCase {
     }
 
     public void test7zDecryptUnarchive() throws Exception {
-        test7zUnarchive(getFile("bla.encrypted.7z"), "foo".getBytes("UTF-16LE"));
+        if (isStrongCryptoAvailable()) {
+            test7zUnarchive(getFile("bla.encrypted.7z"), "foo".getBytes("UTF-16LE"));
+        }
     }
 
     private void test7zUnarchive(File f) throws Exception {
@@ -106,5 +111,17 @@ public class SevenZFileTest extends AbstractTestCase {
         } finally {
             sevenZFile.close();
         }
+    }
+
+    private static boolean isStrongCryptoAvailable() {
+        try {
+            Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+            cipher.init(Cipher.DECRYPT_MODE,
+                        new SecretKeySpec(new byte[32], "AES"),
+                        new IvParameterSpec(new byte[16]));
+            return true;
+        } catch (Exception e) {
+        }
+        return false;
     }
 }
