@@ -19,9 +19,8 @@ package org.apache.commons.compress.archivers.sevenz;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.compress.AbstractTestCase;
 
 public class SevenZFileTest extends AbstractTestCase {
@@ -113,15 +112,7 @@ public class SevenZFileTest extends AbstractTestCase {
         }
     }
 
-    private static boolean isStrongCryptoAvailable() {
-        try {
-            Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
-            cipher.init(Cipher.DECRYPT_MODE,
-                        new SecretKeySpec(new byte[32], "AES"),
-                        new IvParameterSpec(new byte[16]));
-            return true;
-        } catch (Exception e) {
-        }
-        return false;
+    private static boolean isStrongCryptoAvailable() throws NoSuchAlgorithmException {
+        return Cipher.getMaxAllowedKeyLength("AES/ECB/PKCS5Padding") >= 256;
     }
 }
