@@ -57,11 +57,7 @@
           of changes see the <a href="changes-report.html">Changes
           Report</a>.</p>
 
-          <subsection name="What's new in 1.5?">
-            <p>The 1.5 release is a bug-fix release with important
-            fixes to the tar and zip packages.</p>
-          </subsection>
-          <subsection name="What's coming in 1.6?">
+          <subsection name="What's new in 1.6?">
             <ul>
               <li>Support for the 7z format.</li>
               <li>Read-only support for uncompressed ARJ
@@ -70,6 +66,7 @@
               format.</li>
             </ul>
           </subsection>
+          <!--subsection name="What's coming in 1.7?"-->
         </section>
 
         <section name="Documentation">
