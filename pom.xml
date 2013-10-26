@@ -167,7 +167,7 @@ These include: bzip2, gzip, pack200, lzma, xz and ar, cpio, jar, tar, zip, dump,
         <artifactId>maven-scm-publish-plugin</artifactId>
         <configuration>
           <ignorePathsToDelete>
-            <ignorePathToDelete>javadocs**</ignorePathToDelete>
+            <ignorePathToDelete>javadocs</ignorePathToDelete>
           </ignorePathsToDelete>
         </configuration>
       </plugin>
