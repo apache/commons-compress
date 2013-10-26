@@ -162,6 +162,15 @@ These include: bzip2, gzip, pack200, xz and ar, cpio, jar, tar, zip, dump, 7z, a
           </instructions>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-scm-publish-plugin</artifactId>
+        <configuration>
+          <ignorePathsToDelete>
+            <ignorePathToDelete>javadocs**</ignorePathToDelete>
+          </ignorePathsToDelete>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
