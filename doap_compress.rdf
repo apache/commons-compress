@@ -26,7 +26,7 @@
     <download-page rdf:resource="http://commons.apache.org/compress/download_compress.cgi"/>
     <asfext:pmc rdf:resource="http://commons.apache.org/"/>
     <shortdesc xml:lang="en">Commons Compress</shortdesc>
-    <description xml:lang="en">Commons Compress: working with zip, ar, jar, bz2, cpio, tar, gz, dump, pack200 and xz files.</description>
+    <description xml:lang="en">Commons Compress: working with zip, ar, jar, bz2, cpio, tar, gz, dump, pack200, lzma, 7z, arj and xz files.</description>
     <repository>
       <SVNRepository>
         <browse rdf:resource="http://svn.apache.org/repos/asf/commons/proper/compress/trunk"/>
