@@ -34,6 +34,8 @@
       <item name="Download"    href="/download_compress.cgi"/>
       <item name="Security Reports"    href="/security.html"/>
       <item name="Wiki"        href="http://wiki.apache.org/commons/Compress"/>
+      <item name="Javadoc 1.6" href="javadocs/api-1.6/index.html"/>
+      <item name="Javadoc SVN latest" href="apidocs/index.html"/>
     </menu>
   </body>
   
