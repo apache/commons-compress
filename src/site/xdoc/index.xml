@@ -51,7 +51,7 @@
         </section>
 
         <section name="Status">
-          <p>The current release is 1.5 and requires Java 5.</p>
+          <p>The current release is 1.6 and requires Java 5.</p>
 
           <p>Below we highlight some new features, for a full list
           of changes see the <a href="changes-report.html">Changes
