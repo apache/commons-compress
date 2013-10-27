@@ -52,19 +52,7 @@ class LZMA2Decoder extends Coders.CoderBase {
         LZMA2Options options = new LZMA2Options();
         options.setDictSize(LZMA2Options.DICT_SIZE_DEFAULT);
         FinishableOutputStream wrapped = new FinishableWrapperOutputStream(out);
-        return new FinishOnCloseStream(options.getOutputStream(wrapped));
+        return options.getOutputStream(wrapped);
     }
 
-    private static class FinishOnCloseStream extends FilterOutputStream {
-
-        private FinishOnCloseStream(FinishableOutputStream out) {
-            super(out);
-        }
-
-        @Override
-        public void close() throws IOException {
-            ((FinishableOutputStream) out).finish();
-            super.close();
-        }
-    }
 }
