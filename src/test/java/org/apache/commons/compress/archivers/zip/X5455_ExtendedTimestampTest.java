@@ -17,10 +17,14 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -30,11 +34,14 @@ import java.util.TimeZone;
 import java.util.zip.ZipException;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
+import static org.apache.commons.compress.AbstractTestCase.mkdir;
+import static org.apache.commons.compress.AbstractTestCase.rmdir;
 import static org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp.ACCESS_TIME_BIT;
 import static org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp.CREATE_TIME_BIT;
 import static org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp.MODIFY_TIME_BIT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -56,9 +63,18 @@ public class X5455_ExtendedTimestampTest {
      */
     private X5455_ExtendedTimestamp xf;
 
+    private File tmpDir;
+
     @Before
     public void before() {
         xf = new X5455_ExtendedTimestamp();
+    }
+
+    @After
+    public void removeTempFiles() {
+        if (tmpDir != null) {
+            rmdir(tmpDir);
+        }
     }
 
     @Test
@@ -387,6 +403,38 @@ public class X5455_ExtendedTimestampTest {
         parseReparse((byte) 71, MAX_TIME_SECONDS, (byte) 7, MOD_AC_CR_MAX, MOD_MAX);
         parseReparse((byte) 127, MAX_TIME_SECONDS, (byte) 7, MOD_AC_CR_MAX, MOD_MAX);
         parseReparse((byte) -1, MAX_TIME_SECONDS, (byte) 7, MOD_AC_CR_MAX, MOD_MAX);
+    }
+
+    @Test
+    public void testWriteReadRoundtrip() throws IOException {
+        tmpDir = mkdir("X5455");
+        File output = new File(tmpDir, "write_rewrite.zip");
+        final OutputStream out = new FileOutputStream(output);
+        Date d = new Date(97, 8, 24, 15, 10, 2);
+        ZipArchiveOutputStream os = null;
+        try {
+            os = new ZipArchiveOutputStream(out);
+            ZipArchiveEntry ze = new ZipArchiveEntry("foo");
+            xf.setModifyJavaTime(d);
+            xf.setFlags((byte) 1);
+            ze.addExtraField(xf);
+            os.putArchiveEntry(ze);
+            os.closeArchiveEntry();
+        } finally {
+            if (os != null) {
+                os.close();
+            }
+        }
+        out.close();
+        
+        ZipFile zf = new ZipFile(output);
+        ZipArchiveEntry ze = zf.getEntry("foo");
+        X5455_ExtendedTimestamp ext =
+            (X5455_ExtendedTimestamp) ze.getExtraField(X5455);
+        assertNotNull(ext);
+        assertTrue(ext.isBit0_modifyTimePresent());
+        assertEquals(d, ext.getModifyJavaTime());
+        zf.close();
     }
 
     private void parseReparse(
