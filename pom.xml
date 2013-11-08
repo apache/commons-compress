@@ -121,6 +121,9 @@ These include: bzip2, gzip, pack200, lzma, xz and ar, cpio, jar, tar, zip, dump,
     <contributor>
       <name>John Kodis</name>
     </contributor>
+    <contributor>
+      <name>BELUGA BEHR</name>
+    </contributor>
   </contributors>
 
   <scm>
