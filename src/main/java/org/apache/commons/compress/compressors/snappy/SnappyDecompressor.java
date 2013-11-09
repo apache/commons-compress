@@ -264,7 +264,7 @@ public class SnappyDecompressor {
     private void flushDecompressBuffer(final OutputStream os)
             throws IOException {
         os.write(decompressBuf, 0, this.blockSize);
-        System.arraycopy(decompressBuf, BLOCK_SIZE, decompressBuf, 0,
+        System.arraycopy(decompressBuf, blockSize, decompressBuf, 0,
                 this.blockSize);
         decompressBufIndex -= this.blockSize;
     }
