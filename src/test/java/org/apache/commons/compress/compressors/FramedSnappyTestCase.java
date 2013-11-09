@@ -1,0 +1,83 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package org.apache.commons.compress.compressors;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
+
+import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.compressors.snappy.FramedSnappyCompressorInputStream;
+import org.apache.commons.compress.utils.IOUtils;
+
+public final class FramedSnappyTestCase
+    extends AbstractTestCase {
+
+    public void testMatches() throws IOException {
+        assertFalse(FramedSnappyCompressorInputStream.matches(new byte[10], 10));
+        byte[] b = new byte[12];
+        final File input = getFile("bla.tar.sz");
+        FileInputStream in = new FileInputStream(input);
+        try {
+            IOUtils.readFully(in, b);
+        } finally {
+            in.close();
+        }
+        assertFalse(FramedSnappyCompressorInputStream.matches(b, 9));
+        assertTrue(FramedSnappyCompressorInputStream.matches(b, 10));
+        assertTrue(FramedSnappyCompressorInputStream.matches(b, 12));
+    }
+
+    public void testDefaultExtraction() throws IOException {
+        final File input = getFile("bla.tar.sz");
+        final File output = new File(dir, "bla.tar");
+        final FileInputStream is = new FileInputStream(input);
+        try {
+            final CompressorInputStream in =
+                new FramedSnappyCompressorInputStream(is);
+            FileOutputStream out = null;
+            try {
+                out = new FileOutputStream(output);
+                IOUtils.copy(in, out);
+            } finally {
+                if (out != null) {
+                    out.close();
+                }
+                in.close();
+            }
+        } finally {
+            is.close();
+        }
+        final File original = getFile("bla.tar");
+        final FileInputStream written = new FileInputStream(output);
+        try {
+            FileInputStream orig = new FileInputStream(original);
+            try {
+                assertTrue(Arrays.equals(IOUtils.toByteArray(written),
+                                         IOUtils.toByteArray(orig)));
+            } finally {
+                orig.close();
+            }
+        } finally {
+            written.close();
+        }
+    }
+}
