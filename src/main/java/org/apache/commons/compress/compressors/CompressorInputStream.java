@@ -42,9 +42,19 @@ public abstract class CompressorInputStream extends InputStream {
      * @param read the number of bytes read
      */
     protected void count(long read) {
-        if(read != -1) {
+        if (read != -1) {
             bytesRead = bytesRead + read;
         }
+    }
+
+    /**
+     * Decrements the counter of already read bytes.
+     * 
+     * @param pushedBack the number of bytes pushed back.
+     * @since 1.7
+     */
+    protected void pushedBackBytes(long pushedBack) {
+        bytesRead -= pushedBack;
     }
 
     /**

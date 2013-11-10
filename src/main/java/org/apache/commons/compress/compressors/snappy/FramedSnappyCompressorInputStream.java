@@ -136,7 +136,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
             endReached = true;
         } else if (type == STREAM_IDENTIFIER_TYPE) {
             in.unread(type);
-            count(-1);
+            pushedBackBytes(1);
             readStreamIdentifier();
             readNextBlock();
         } else if (type == PADDING_CHUNK_TYPE
@@ -166,9 +166,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
     private void readCrc() throws IOException {
         byte[] b = new byte[4];
         int read = IOUtils.readFully(in, b);
-        if (read > 0) {
-            count(read);
-        }
+        count(read);
         if (read != 4) {
             throw new IOException("premature end of stream");
         }
@@ -190,9 +188,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
     private void skipBlock() throws IOException {
         int size = readSize();
         long read = IOUtils.skip(in, size);
-        if (read > 0) {
-            count(read);
-        }
+        count(read);
         if (read != size) {
             throw new IOException("premature end of stream");
         }
@@ -201,9 +197,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
     private void readStreamIdentifier() throws IOException {
         byte[] b = new byte[10];
         int read = IOUtils.readFully(in, b);
-        if (read > 0) {
-            count(read);
-        }
+        count(read);
         if (10 != read || !matches(b, 10)) {
             throw new IOException("Not a framed Snappy stream");
         }
