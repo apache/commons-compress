@@ -135,8 +135,9 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
         if (endReached) {
             return -1;
         }
-        if (len > available()) {
-            fill(len - available());
+        final int avail = available();
+        if (len > avail) {
+            fill(len - avail);
         }
 
         int readable = Math.min(len, available());
@@ -149,7 +150,8 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
     }
 
     /**
-     * Try to fill the buffer with enoug bytes to satisfy the current read request.
+     * Try to fill the buffer with enough bytes to satisfy the current
+     * read request.
      *
      * @param len the number of uncompressed bytes to read
      */
@@ -245,12 +247,12 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
     /**
      * Slide buffer.
      *
-     * <p>Move all bytes of the buffer after the first block down
-     * tothe beginning of the buffer.</p>
+     * <p>Move all bytes of the buffer after the first block down to
+     * the beginning of the buffer.</p>
      */
     private void slideBuffer() {
         System.arraycopy(decompressBuf, blockSize, decompressBuf, 0,
-                blockSize);
+                         blockSize * 2);
         writeIndex -= blockSize;
         readIndex -= blockSize;
     }
@@ -309,7 +311,9 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
      */
     private boolean expandLiteral(final int length) throws IOException {
         int bytesRead = in.read(decompressBuf, writeIndex, length);
-        count(bytesRead);
+        if (bytesRead != -1) {
+            count(bytesRead);
+        }
         if (length != bytesRead) {
             throw new IOException("Premature end of stream");
         }
