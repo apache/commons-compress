@@ -90,12 +90,24 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
         return read;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public int available() throws IOException {
+        if (inUncompressedChunk) {
+            return Math.min(uncompressedBytesRemaining,
+                            in.available());
+        } else if (currentCompressedChunk != null) {
+            return currentCompressedChunk.available();
+        }
+        return 0;
+    }
+
     /**
      * Read from the current chunk into the given array.
      *
      * @return -1 if there is no current chunk or the number of bytes
-     * read from the current chunk (which may be -1 if the end od the
-     * chunk is reached.
+     * read from the current chunk (which may be -1 if the end of the
+     * chunk is reached).
      */
     private int readOnce(byte[] b, int off, int len) throws IOException {
         int read = -1;
@@ -142,6 +154,8 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
             readCrc();
             currentCompressedChunk =
                 new SnappyCompressorInputStream(new BoundedInputStream(in, size));
+            // constructor reads uncompressed size
+            count(currentCompressedChunk.getBytesRead());
         } else {
             // impossible as all potential byte values have been covered
             throw new IOException("unknown chunk type " + type
@@ -151,10 +165,13 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
 
     private void readCrc() throws IOException {
         byte[] b = new byte[4];
-        if (IOUtils.readFully(in, b) != 4) {
+        int read = IOUtils.readFully(in, b);
+        if (read > 0) {
+            count(read);
+        }
+        if (read != 4) {
             throw new IOException("premature end of stream");
         }
-        count(4);
     }
 
     private int readSize() throws IOException {
@@ -172,18 +189,24 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
 
     private void skipBlock() throws IOException {
         int size = readSize();
-        if (IOUtils.skip(in, size) != size) {
+        long read = IOUtils.skip(in, size);
+        if (read > 0) {
+            count(read);
+        }
+        if (read != size) {
             throw new IOException("premature end of stream");
         }
-        count(size);
     }
 
     private void readStreamIdentifier() throws IOException {
         byte[] b = new byte[10];
-        if (10 != IOUtils.readFully(in, b) || !matches(b, 10)) {
+        int read = IOUtils.readFully(in, b);
+        if (read > 0) {
+            count(read);
+        }
+        if (10 != read || !matches(b, 10)) {
             throw new IOException("Not a framed Snappy stream");
         }
-        count(10);
     }
 
     private int readOneByte() throws IOException {

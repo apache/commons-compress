@@ -57,6 +57,7 @@ public final class FramedSnappyTestCase
             try {
                 out = new FileOutputStream(output);
                 IOUtils.copy(in, out);
+                assertEquals(995, in.getBytesRead());
             } finally {
                 if (out != null) {
                     out.close();
