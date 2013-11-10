@@ -311,9 +311,7 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
      */
     private boolean expandLiteral(final int length) throws IOException {
         int bytesRead = in.read(decompressBuf, writeIndex, length);
-        if (bytesRead != -1) {
-            count(bytesRead);
-        }
+        count(bytesRead);
         if (length != bytesRead) {
             throw new IOException("Premature end of stream");
         }
