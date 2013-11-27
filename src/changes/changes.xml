@@ -48,6 +48,10 @@ The <action> type attribute can be add,update,fix,remove.
         SevenZOutputFile#closeArchiveEntry throws an exception when
         using LZMA2 compression on Java8.
       </action> 
+      <action issue="COMPRESS-244" type="fix" date="2013-11-27"
+              due-to="Nico Kruber">
+        7z reading of big 64bit values could be wrong.
+      </action> 
     </release>
     <release version="1.6" date="2013-10-26"
              description="Release 1.6">
