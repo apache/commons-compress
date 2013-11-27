@@ -895,6 +895,7 @@ public class SevenZFile {
     }
     
     private static long readUint64(final DataInput in) throws IOException {
+        // long rather than int as it might get shifted beyond the range of an int
         long firstByte = in.readUnsignedByte();
         int mask = 0x80;
         long value = 0;
