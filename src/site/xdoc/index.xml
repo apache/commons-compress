@@ -27,7 +27,7 @@
             <p>
                 The Apache Commons Compress library defines an API for
                 working with ar, cpio, Unix dump, tar, zip, gzip, XZ, Pack200,
-                bzip2, 7z, arj and lzma files.
+                bzip2, 7z, arj, lzma and Z files.
             </p>
             <p>
                 The code in this component has many origins:
@@ -78,7 +78,7 @@
             by <code>ArchiveEntry</code> instances which in turn
             usually correspond to single files or directories.</p>
 
-          <p>Currently the bzip2, Pack200, XZ, gzip and lzma formats are
+          <p>Currently the bzip2, Pack200, XZ, gzip, lzma and Z formats are
             supported as compressors where gzip support is mostly provided by
             the <code>java.util.zip</code> package and Pack200 support
             by the <code>java.util.jar</code> package of the Java

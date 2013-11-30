@@ -5,7 +5,7 @@ commons-compress-1.6 release!
 
 Apache Commons Compress software defines an API for working with
 compression and archive formats.  These include: bzip2, gzip, pack200,
-xz and ar, cpio, jar, tar, zip, dump, 7z, arj.
+xz and ar, cpio, jar, tar, zip, dump, 7z, arj, Z.
 
 Version 1.6 introduces changes to the internal API of the tar package that 
 break backwards compatibility in the following rare cases.  This version 
