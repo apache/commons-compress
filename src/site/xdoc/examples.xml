@@ -31,13 +31,13 @@
         collect multiple entries inside a single (potentially
         compressed) archive are archiver formats.</p>
 
-        <p>The compressor formats supported are gzip, bzip2, xz, lzma
-        and Pack200, the archiver formats are 7z, ar, arj, cpio, dump,
+        <p>The compressor formats supported are gzip, bzip2, xz, lzma,
+        Pack200a and Z, the archiver formats are 7z, ar, arj, cpio, dump,
         tar and zip.  Pack200 is a special case as it can only
         compress JAR files.</p>
 
-        <p>We currently only provide read support for lzma, arj and
-        dump.  arj can only read uncompressed archives, 7z can read
+        <p>We currently only provide read support for lzma, arj,
+        dump and Z.  arj can only read uncompressed archives, 7z can read
         archives with many compression and encryption algorithms
         supported by 7z but doesn't support encryption when writing
         archives.</p>
@@ -432,6 +432,27 @@ while (-1 != (n = xzIn.read(buffer))) {
 out.close();
 xzIn.close();
 ]]></source>
+      </subsection>
+      
+      <subsection name="Z">
+
+        <p>Uncompressing a given Z compressed file (you would
+          certainly add exception handling and make sure all streams
+          get closed properly):</p>
+<source><![CDATA[
+FileInputStream fin = new FileInputStream("archive.tar.Z");
+BufferedInputStream in = new BufferedInputStream(fin);
+FileOutputStream out = new FileOutputStream("archive.tar");
+ZCompressorInputStream zIn = new ZCompressorInputStream(in);
+final byte[] buffer = new byte[buffersize];
+int n = 0;
+while (-1 != (n = zIn.read(buffer))) {
+    out.write(buffer, 0, n);
+}
+out.close();
+zIn.close();
+]]></source>
+
       </subsection>
 
       <subsection name="lzma">
