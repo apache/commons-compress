@@ -21,6 +21,7 @@ package org.apache.commons.compress.compressors;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.compress.AbstractTestCase;
@@ -30,11 +31,28 @@ import org.apache.commons.compress.utils.IOUtils;
 public final class ZTestCase extends AbstractTestCase {
 
     public void testZUnarchive() throws Exception {
+        testUnarchive(new StreamWrapper<CompressorInputStream>() {
+            public CompressorInputStream wrap(InputStream is) throws IOException {
+                return new ZCompressorInputStream(is);
+            }
+        });
+    }
+
+    public void testZUnarchiveViaFactory() throws Exception {
+        testUnarchive(new StreamWrapper<CompressorInputStream>() {
+            public CompressorInputStream wrap(InputStream is) throws Exception {
+                return new CompressorStreamFactory()
+                    .createCompressorInputStream(CompressorStreamFactory.Z, is);
+            }
+        });
+    }
+
+    private void testUnarchive(StreamWrapper wrapper) throws Exception {
         final File input = getFile("bla.tar.Z");
         final File output = new File(dir, "bla.tar");
         final InputStream is = new FileInputStream(input);
         try {
-            final CompressorInputStream in = new ZCompressorInputStream(is);
+            final InputStream in = wrapper.wrap(is);
             FileOutputStream out = null;
             try {
                 out = new FileOutputStream(output);
@@ -49,4 +67,5 @@ public final class ZTestCase extends AbstractTestCase {
             is.close();
         }
     }
+
 }

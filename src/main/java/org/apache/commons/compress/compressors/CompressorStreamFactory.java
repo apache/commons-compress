@@ -32,6 +32,9 @@ import org.apache.commons.compress.compressors.xz.XZCompressorOutputStream;
 import org.apache.commons.compress.compressors.xz.XZUtils;
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorInputStream;
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorOutputStream;
+import org.apache.commons.compress.compressors.snappy.FramedSnappyCompressorInputStream;
+import org.apache.commons.compress.compressors.snappy.SnappyCompressorInputStream;
+import org.apache.commons.compress.compressors.z.ZCompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 
 /**
@@ -90,6 +93,24 @@ public class CompressorStreamFactory {
      * @since 1.6
      */
     public static final String LZMA = "lzma";
+
+    /**
+     * Constant used to identify the "framed" Snappy compression method.
+     * @since 1.7
+     */
+    public static final String SNAPPY_FRAMED = "snappy-framed";
+
+    /**
+     * Constant used to identify the "raw" Snappy compression method.
+     * @since 1.7
+     */
+    public static final String SNAPPY_RAW = "snappy-raw";
+
+    /**
+     * Constant used to identify the traditional Unix compress method.
+     * @since 1.7
+     */
+    public static final String Z = "z";
 
     private boolean decompressConcatenated = false;
 
@@ -154,6 +175,10 @@ public class CompressorStreamFactory {
                 return new Pack200CompressorInputStream(in);
             }
 
+            if (FramedSnappyCompressorInputStream.matches(signature, signatureLength)) {
+                return new FramedSnappyCompressorInputStream(in);
+            }
+
         } catch (IOException e) {
             throw new CompressorException("Failed to detect Compressor from InputStream.", e);
         }
@@ -164,7 +189,8 @@ public class CompressorStreamFactory {
     /**
      * Create a compressor input stream from a compressor name and an input stream.
      * 
-     * @param name of the compressor, i.e. "gz", "bzip2", "xz", "lzma", or "pack200"
+     * @param name of the compressor, i.e. "gz", "bzip2", "xz",
+     *        "lzma", "snappy-raw", "snappy-framed", "pack200", "z"
      * @param in the input stream
      * @return compressor input stream
      * @throws CompressorException if the compressor name is not known
@@ -197,6 +223,18 @@ public class CompressorStreamFactory {
 
             if (PACK200.equalsIgnoreCase(name)) {
                 return new Pack200CompressorInputStream(in);
+            }
+
+            if (SNAPPY_RAW.equalsIgnoreCase(name)) {
+                return new SnappyCompressorInputStream(in);
+            }
+
+            if (SNAPPY_FRAMED.equalsIgnoreCase(name)) {
+                return new FramedSnappyCompressorInputStream(in);
+            }
+
+            if (Z.equalsIgnoreCase(name)) {
+                return new ZCompressorInputStream(in);
             }
 
         } catch (IOException e) {
