@@ -30,6 +30,8 @@ import org.apache.commons.compress.utils.IOUtils;
 /**
  * CompressorInputStream for the framing Snappy format.
  *
+ * <p>Based on the "spec" in the version "Last revised: 2013-10-25"</p>
+ *
  * @see "http://code.google.com/p/snappy/source/browse/trunk/framing_format.txt"
  * @since 1.7
  */
