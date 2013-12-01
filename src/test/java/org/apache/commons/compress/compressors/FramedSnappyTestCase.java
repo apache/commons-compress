@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.snappy.FramedSnappyCompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 
@@ -72,6 +73,58 @@ public final class FramedSnappyTestCase
                 return new CompressorStreamFactory().createCompressorInputStream(is);
             }
         });
+    }
+
+    /**
+     * Something big enough to make buffers slide.
+     */
+    public void testLoremIpsum() throws Exception {
+        final FileInputStream isSz = new FileInputStream(getFile("lorem-ipsum.txt.sz"));
+        final File outputSz = new File(dir, "lorem-ipsum.1");
+        final File outputGz = new File(dir, "lorem-ipsum.2");
+        try {
+            CompressorInputStream in = new FramedSnappyCompressorInputStream(isSz);
+            FileOutputStream out = null;
+            try {
+                out = new FileOutputStream(outputSz);
+                IOUtils.copy(in, out);
+            } finally {
+                if (out != null) {
+                    out.close();
+                }
+                in.close();
+            }
+            final FileInputStream isGz = new FileInputStream(getFile("lorem-ipsum.txt.gz"));
+            try {
+                in = new GzipCompressorInputStream(isGz);
+                try {
+                    out = new FileOutputStream(outputGz);
+                    IOUtils.copy(in, out);
+                } finally {
+                    if (out != null) {
+                        out.close();
+                    }
+                    in.close();
+                }
+            } finally {
+                isGz.close();
+            }
+        } finally {
+            isSz.close();
+        }
+
+        final FileInputStream sz = new FileInputStream(outputSz);
+        try {
+            FileInputStream gz = new FileInputStream(outputGz);
+            try {
+                assertTrue(Arrays.equals(IOUtils.toByteArray(sz),
+                                         IOUtils.toByteArray(gz)));
+            } finally {
+                gz.close();
+            }
+        } finally {
+            sz.close();
+        }
     }
 
     private void testUnarchive(StreamWrapper<CompressorInputStream> wrapper) throws Exception {
