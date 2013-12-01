@@ -75,6 +75,10 @@ public class ZCompressorInputStream extends CompressorInputStream {
         clearEntries();
     }
     
+    public void close() throws IOException {
+        in.close();
+    }
+    
     private void clearEntries() {
         tableSize = (1 << 8);
         if (blockMode) {
@@ -139,7 +143,9 @@ public class ZCompressorInputStream extends CompressorInputStream {
 
     public int read() throws IOException {
         byte[] b = new byte[1];
-        int ret = read(b);
+        int ret;
+        while ((ret = read(b)) == 0) {
+        }
         if (ret < 0) {
             return ret;
         }
