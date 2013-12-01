@@ -120,24 +120,17 @@ public class ZCompressorInputStream extends CompressorInputStream {
     }
     
     private void addEntry(int previousEntry, byte character) throws IOException {
-        if (tableSize >= ((1 << codeSize) - 1)) {
-            if (tableSize == ((1 << codeSize) - 1)) {
-                if (codeSize < maxCodeSize) {
-                    reAlignReading();
-                    codeSize++;
-                    prefixes[tableSize] = previousEntry;
-                    characters[tableSize] = character;
-                    tableSize++;
-                } else {
-                    prefixes[tableSize] = previousEntry;
-                    characters[tableSize] = character;
-                    tableSize++;
-                }
-            }
-        } else {
+        final int maxTableSize = 1 << codeSize;
+        if (tableSize < maxTableSize) {
             prefixes[tableSize] = previousEntry;
             characters[tableSize] = character;
             tableSize++;
+        }
+        if (tableSize == maxTableSize) {
+            if (codeSize < maxCodeSize) {
+                reAlignReading();
+                codeSize++;
+            }
         }
     }
 
@@ -193,19 +186,6 @@ public class ZCompressorInputStream extends CompressorInputStream {
         //  +---+---+---+---+---+---+---+---+---+---+
         //  |<--------->|<------------->|<----->|<->|
         //     symbol        symbol      symbol  symbol
-        //
-        // Symbols are indexes into a table of table entries. Indexes
-        // sequentially increase up to the maximum size of the table.
-        // The bit count used by each index increases up to the minimum
-        // size needed the index the highest table entry.
-        //
-        // To construct a table entry for a symbol,
-        // we need the symbol's text, and the first character of the
-        // next symbol's text. When a symbol is the immediately previous
-        // table entry's symbol, that symbol's text is the previous symbol's text + 1 character.
-        //
-        // The compression process adds table entries after writing the symbol.
-        // Since adding entries can increase the code size, the 
         //
         final int code = readNextCode();
         if (code < 0) {
