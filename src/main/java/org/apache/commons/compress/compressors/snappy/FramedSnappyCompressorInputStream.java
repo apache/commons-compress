@@ -44,6 +44,12 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
     private static final int MAX_UNSKIPPABLE_TYPE = 0x7f;
     private static final int MAX_SKIPPABLE_TYPE = 0xfd;
 
+    private static final byte[] SZ_SIGNATURE = new byte[] {
+        (byte) STREAM_IDENTIFIER_TYPE, // tag
+        6, 0, 0, // length
+        's', 'N', 'a', 'P', 'p', 'Y'
+    };
+
     /** The underlying stream to read compressed data from */
     private final PushbackInputStream in;
 
@@ -75,6 +81,10 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
     /** {@inheritDoc} */
     @Override
     public void close() throws IOException {
+        if (currentCompressedChunk != null) {
+            currentCompressedChunk.close();
+            currentCompressedChunk = null;
+        }
         in.close();
     }
 
@@ -124,6 +134,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
             long before = currentCompressedChunk.getBytesRead();
             read = currentCompressedChunk.read(b, off, len);
             if (read == -1) {
+                currentCompressedChunk.close();
                 currentCompressedChunk = null;
             } else {
                 count(currentCompressedChunk.getBytesRead() - before);
@@ -217,7 +228,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
     /**
      * Checks if the signature matches what is expected for a .sz file.
      *
-     * <p>.sz files start with a chuck with tag 0xff and content sNaPpY.
+     * <p>.sz files start with a chunk with tag 0xff and content sNaPpY.</p>
      * 
      * @param signature the bytes to check
      * @param length    the number of bytes to check
@@ -225,21 +236,17 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
      */
     public static boolean matches(byte[] signature, int length) {
 
-        if (length < 10) {
+        if (length < SZ_SIGNATURE.length) {
             return false;
         }
 
         byte[] shortenedSig = signature;
-        if (signature.length > 10) {
-            shortenedSig = new byte[10];
-            System.arraycopy(signature, 0, shortenedSig, 0, 10);
+        if (signature.length > SZ_SIGNATURE.length) {
+            shortenedSig = new byte[SZ_SIGNATURE.length];
+            System.arraycopy(signature, 0, shortenedSig, 0, SZ_SIGNATURE.length);
         }
 
-        return Arrays.equals(shortenedSig, new byte[] {
-                (byte) STREAM_IDENTIFIER_TYPE, // tag
-                6, 0, 0, // length
-                's', 'N', 'a', 'P', 'p', 'Y'
-            });
+        return Arrays.equals(shortenedSig, SZ_SIGNATURE);
     }
 
 }
