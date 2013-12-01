@@ -18,10 +18,12 @@
  */
 package org.apache.commons.compress.compressors;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 
 import org.apache.commons.compress.AbstractTestCase;
@@ -46,13 +48,40 @@ public final class FramedSnappyTestCase
         assertTrue(FramedSnappyCompressorInputStream.matches(b, 12));
     }
 
-    public void testDefaultExtraction() throws IOException {
+    public void testDefaultExtraction() throws Exception {
+        testUnarchive(new StreamWrapper<CompressorInputStream>() {
+            public CompressorInputStream wrap(InputStream is) throws IOException {
+                return new FramedSnappyCompressorInputStream(is);
+            }
+        });
+    }
+
+    public void testDefaultExtractionViaFactory() throws Exception {
+        testUnarchive(new StreamWrapper<CompressorInputStream>() {
+            public CompressorInputStream wrap(InputStream is) throws Exception {
+                return new CompressorStreamFactory()
+                    .createCompressorInputStream(CompressorStreamFactory.SNAPPY_FRAMED,
+                                                 is);
+            }
+        });
+    }
+
+    public void testDefaultExtractionViaFactoryAutodetection() throws Exception {
+        testUnarchive(new StreamWrapper<CompressorInputStream>() {
+            public CompressorInputStream wrap(InputStream is) throws Exception {
+                return new CompressorStreamFactory().createCompressorInputStream(is);
+            }
+        });
+    }
+
+    private void testUnarchive(StreamWrapper<CompressorInputStream> wrapper) throws Exception {
         final File input = getFile("bla.tar.sz");
         final File output = new File(dir, "bla.tar");
         final FileInputStream is = new FileInputStream(input);
         try {
-            final CompressorInputStream in =
-                new FramedSnappyCompressorInputStream(is);
+            // the intermediate BufferedInputStream is there for mark
+            // support in the autodetection test
+            final CompressorInputStream in = wrapper.wrap(new BufferedInputStream(is));
             FileOutputStream out = null;
             try {
                 out = new FileOutputStream(output);
