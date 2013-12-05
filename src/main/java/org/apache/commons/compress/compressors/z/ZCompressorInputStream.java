@@ -41,7 +41,7 @@ public class ZCompressorInputStream extends CompressorInputStream {
     private int bitsCached = 0;
     private int bitsCachedSize = 0;
     private long totalCodesRead = 0;
-    private int previousEntry = -1;
+    private int previousCode = -1;
     private int tableSize = 0;
     private final int[] prefixes;
     private final byte[] characters;
@@ -119,10 +119,10 @@ public class ZCompressorInputStream extends CompressorInputStream {
         bitsCachedSize = 0;
     }
     
-    private void addEntry(int previousEntry, byte character) throws IOException {
+    private void addEntry(int previousCode, byte character) throws IOException {
         final int maxTableSize = 1 << codeSize;
         if (tableSize < maxTableSize) {
-            prefixes[tableSize] = previousEntry;
+            prefixes[tableSize] = previousCode;
             characters[tableSize] = character;
             tableSize++;
         }
@@ -194,21 +194,21 @@ public class ZCompressorInputStream extends CompressorInputStream {
             clearEntries();
             reAlignReading();
             codeSize = 9;
-            previousEntry = -1;
+            previousCode = -1;
             return 0;
         } else {
             boolean addedUnfinishedEntry = false;
             if (code == tableSize) {
                 // must be a repeat of the previous entry we haven't added yet
-                if (previousEntry == -1) {
+                if (previousCode == -1) {
                     // ... which isn't possible for the very first code
                     throw new IOException("The first code can't be a reference to code before itself");
                 }
                 byte firstCharacter = 0;
-                for (int last = previousEntry; last >= 0; last = prefixes[last]) {
+                for (int last = previousCode; last >= 0; last = prefixes[last]) {
                     firstCharacter = characters[last];
                 }
-                addEntry(previousEntry, firstCharacter);
+                addEntry(previousCode, firstCharacter);
                 addedUnfinishedEntry = true;
             } else if (code > tableSize) {
                 throw new IOException(String.format("Invalid %d bit code 0x%x", codeSize, code));
@@ -216,10 +216,10 @@ public class ZCompressorInputStream extends CompressorInputStream {
             for (int entry = code; entry >= 0; entry = prefixes[entry]) {
                 outputStack[--outputStackLocation] = characters[entry];
             }
-            if (previousEntry != -1 && !addedUnfinishedEntry) {
-                addEntry(previousEntry, outputStack[outputStackLocation]);
+            if (previousCode != -1 && !addedUnfinishedEntry) {
+                addEntry(previousCode, outputStack[outputStackLocation]);
             }
-            previousEntry = code;
+            previousCode = code;
             return outputStackLocation;
         }
     }
