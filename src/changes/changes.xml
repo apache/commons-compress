@@ -48,9 +48,17 @@ The <action> type attribute can be add,update,fix,remove.
         SevenZOutputFile#closeArchiveEntry throws an exception when
         using LZMA2 compression on Java8.
       </action> 
+      <action issue="COMPRESS-147" type="add" date="2013-11-07"
+              due-to="BELUGA BEHR">
+        Read-Only support for Snappy compression.
+      </action> 
       <action issue="COMPRESS-244" type="fix" date="2013-11-27"
               due-to="Nico Kruber">
         7z reading of big 64bit values could be wrong.
+      </action> 
+      <action issue="COMPRESS-243" type="add" date="2013-11-30"
+              due-to="Damjan Jovanovic">
+        Read-Only support for .Z compressed files.
       </action> 
       <action issue="COMPRESS-245" type="fix" date="2013-12-06">
         TarArchiveInputStream could fail to read an archive completely.
