@@ -385,7 +385,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
 
         byte[] record = new byte[recordSize];
 
-        int readNow = is.read(record);
+        int readNow = IOUtils.readFully(is, record);
         count(readNow);
         if (readNow != recordSize) {
             return null;

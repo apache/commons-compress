@@ -52,6 +52,9 @@ The <action> type attribute can be add,update,fix,remove.
               due-to="Nico Kruber">
         7z reading of big 64bit values could be wrong.
       </action> 
+      <action issue="COMPRESS-245" type="fix" date="2013-12-06">
+        TarArchiveInputStream could fail to read an archive completely.
+      </action> 
     </release>
     <release version="1.6" date="2013-10-26"
              description="Release 1.6">
