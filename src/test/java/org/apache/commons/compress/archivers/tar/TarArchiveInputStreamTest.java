@@ -33,6 +33,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.compress.utils.CharsetNames;
 import org.junit.Test;
@@ -181,6 +182,28 @@ public class TarArchiveInputStreamTest {
         assertArrayEquals(expected, actual);
         tar.close();
     }
+
+    @Test
+    public void readsArchiveCompletely_COMPRESS245() throws Exception {
+        InputStream is = TarArchiveInputStreamTest.class
+            .getResourceAsStream("/COMPRESS-245.tar.gz");
+        try {
+            InputStream gin = new GZIPInputStream(is);
+            TarArchiveInputStream tar = new TarArchiveInputStream(gin);
+            int count = 0;
+            TarArchiveEntry entry = tar.getNextTarEntry();
+            while (entry != null) {
+                count++;
+                entry = tar.getNextTarEntry();
+            }
+            assertEquals(31, count);
+        } catch (IOException e) {
+            fail("COMPRESS-245: " + e.getMessage());
+        } finally {
+            is.close();
+        }
+    }
+
 
     private TarArchiveInputStream getTestStream(String name) {
         return new TarArchiveInputStream(
