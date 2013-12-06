@@ -44,7 +44,7 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.7" date="not released, yet"
              description="Release 1.7">
-      <action issue="COMPRESS-241" type="fix" date="2012-03-27">
+      <action issue="COMPRESS-241" type="fix" date="2013-10-27">
         SevenZOutputFile#closeArchiveEntry throws an exception when
         using LZMA2 compression on Java8.
       </action> 
