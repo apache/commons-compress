@@ -134,46 +134,6 @@ public class ZCompressorInputStream extends CompressorInputStream {
         }
     }
 
-    public int read() throws IOException {
-        byte[] b = new byte[1];
-        int ret;
-        while ((ret = read(b)) == 0) {
-        }
-        if (ret < 0) {
-            return ret;
-        }
-        return 0xff & b[0];
-    }
-    
-    public int read(byte[] b, int off, int len) throws IOException {
-        int bytesRead = 0;
-        int remainingInStack = outputStack.length - outputStackLocation;
-        if (remainingInStack > 0) {
-            int maxLength = Math.min(remainingInStack, len);
-            System.arraycopy(outputStack, outputStackLocation, b, off, maxLength);
-            outputStackLocation += maxLength;
-            off += maxLength;
-            len -= maxLength;
-            bytesRead += maxLength;
-        }
-        while (len > 0) {
-            int result = decompressNextSymbol();
-            if (result < 0) {
-                return (bytesRead > 0) ? bytesRead : result;
-            }
-            remainingInStack = outputStack.length - outputStackLocation;
-            if (remainingInStack > 0) {
-                int maxLength = Math.min(remainingInStack, len);
-                System.arraycopy(outputStack, outputStackLocation, b, off, maxLength);
-                outputStackLocation += maxLength;
-                off += maxLength;
-                len -= maxLength;
-                bytesRead += maxLength;
-            }
-        }
-        return bytesRead;
-    }
-    
     private int decompressNextSymbol() throws IOException {
         //
         //                   table entry    table entry
@@ -222,5 +182,51 @@ public class ZCompressorInputStream extends CompressorInputStream {
             previousCode = code;
             return outputStackLocation;
         }
+    }
+    
+    public int read() throws IOException {
+        byte[] b = new byte[1];
+        int ret;
+        while ((ret = read(b)) == 0) {
+        }
+        if (ret < 0) {
+            return ret;
+        }
+        return 0xff & b[0];
+    }
+    
+    public int read(byte[] b, int off, int len) throws IOException {
+        int bytesRead = 0;
+        int remainingInStack = outputStack.length - outputStackLocation;
+        if (remainingInStack > 0) {
+            int maxLength = Math.min(remainingInStack, len);
+            System.arraycopy(outputStack, outputStackLocation, b, off, maxLength);
+            outputStackLocation += maxLength;
+            off += maxLength;
+            len -= maxLength;
+            bytesRead += maxLength;
+        }
+        while (len > 0) {
+            int result = decompressNextSymbol();
+            if (result < 0) {
+                if (bytesRead > 0) {
+                    count(bytesRead);
+                    return bytesRead;
+                } else {
+                    return result;
+                }
+            }
+            remainingInStack = outputStack.length - outputStackLocation;
+            if (remainingInStack > 0) {
+                int maxLength = Math.min(remainingInStack, len);
+                System.arraycopy(outputStack, outputStackLocation, b, off, maxLength);
+                outputStackLocation += maxLength;
+                off += maxLength;
+                len -= maxLength;
+                bytesRead += maxLength;
+            }
+        }
+        count(bytesRead);
+        return bytesRead;
     }
 }
