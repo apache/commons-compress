@@ -280,7 +280,8 @@
         <p>In most cases entries of an archive are not encrypted and
         are either not compressed at all or use the DEFLATED
         algorithm, Commons Compress' ZIP archiver will handle them
-        just fine.</p>
+        just fine. As of version 1.7, Commons Compress can also decompress
+        entries compressed with the UNSHRINKING algorithm.</p>
 
         <p>The ZIP specification allows for various other compression
         algorithms and also supports several different ways of
