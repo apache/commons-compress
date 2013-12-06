@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.commons.compress.compressors.z;
+package org.apache.commons.compress.archivers.zip;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,68 +24,46 @@ import java.io.InputStream;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 
 /**
- * Input stream that decompresses .Z files.
+ * Input stream that decompresses ZIP method 1 (unshrinking). A variation of the LZW algorithm, with some twists.
  * @NotThreadSafe
  * @since 1.7
  */
-public class ZCompressorInputStream extends CompressorInputStream {
-    private static final int MAGIC_1 = 0x1f;
-    private static final int MAGIC_2 = 0x9d;
-    private static final int BLOCK_MODE_MASK = 0x80;
-    private static final int MAX_CODE_SIZE_MASK = 0x1f;
+public class UnshrinkingInputStream extends CompressorInputStream {
     private final InputStream in;
-    private final boolean blockMode;
     private final int clearCode;
-    private final int maxCodeSize;
+    private final int MAX_CODE_SIZE = 13;
     private int codeSize = 9;
     private int bitsCached = 0;
     private int bitsCachedSize = 0;
-    private long totalCodesRead = 0;
     private int previousCode = -1;
     private int tableSize = 0;
     private final int[] prefixes;
     private final byte[] characters;
+    private final boolean[] isUsed;
     private final byte[] outputStack;
     private int outputStackLocation;
     
-    public ZCompressorInputStream(InputStream inputStream) throws IOException {
+    public UnshrinkingInputStream(InputStream inputStream) throws IOException {
         this.in = inputStream;
-        int firstByte = in.read();
-        int secondByte = in.read();
-        int thirdByte = in.read();
-        if (firstByte != MAGIC_1 || secondByte != MAGIC_2 || thirdByte < 0) {
-            throw new IOException("Input is not in .Z format");
-        }
-        blockMode = ((thirdByte & BLOCK_MODE_MASK) != 0);
-        maxCodeSize = thirdByte & MAX_CODE_SIZE_MASK;
-        if (blockMode) {
-            clearCode = (1 << (codeSize - 1));
-        } else {
-            clearCode = -1; // unused
-        }
-        final int maxTableSize = 1 << maxCodeSize;
+        clearCode = (1 << (codeSize - 1));
+        final int maxTableSize = 1 << MAX_CODE_SIZE;
         prefixes = new int[maxTableSize];
         characters = new byte[maxTableSize];
+        isUsed = new boolean[maxTableSize];
         outputStack = new byte[maxTableSize];
         outputStackLocation = maxTableSize;
         for (int i = 0; i < (1 << 8); i++) {
             prefixes[i] = -1;
             characters[i] = (byte)i;
+            isUsed[i] = true;
         }
-        clearEntries();
+        tableSize = clearCode + 1;
     }
     
     public void close() throws IOException {
         in.close();
     }
     
-    private void clearEntries() {
-        tableSize = (1 << 8);
-        if (blockMode) {
-            tableSize++;
-        }
-    }
-
     private int readNextCode() throws IOException {
         while (bitsCachedSize < codeSize) {
             final int nextByte = in.read();
@@ -99,37 +77,37 @@ public class ZCompressorInputStream extends CompressorInputStream {
         final int code = (bitsCached & mask);
         bitsCached >>>= codeSize;
         bitsCachedSize -= codeSize;
-        ++totalCodesRead;
         return code;
     }
     
-    private void reAlignReading() throws IOException {
-        // "compress" works in multiples of 8 symbols, each codeBits bits long.
-        // When codeBits changes, the remaining unused symbols in the current
-        // group of 8 are still written out, in the old codeSize,
-        // as garbage values (usually zeroes) that need to be skipped.
-        long codeReadsToThrowAway = 8 - (totalCodesRead % 8);
-        if (codeReadsToThrowAway == 8) {
-            codeReadsToThrowAway = 0;
-        }
-        for (long i = 0; i < codeReadsToThrowAway; i++) {
-            readNextCode();
-        }
-        bitsCached = 0;
-        bitsCachedSize = 0;
-    }
-    
-    private void addEntry(int previousCode, byte character) throws IOException {
-        final int maxTableSize = 1 << codeSize;
-        if (tableSize < maxTableSize) {
-            prefixes[tableSize] = previousCode;
-            characters[tableSize] = character;
+    private int addEntry(int previousCode, byte character) throws IOException {
+        final int maxTableSize = 1 << MAX_CODE_SIZE;
+        while ((tableSize < maxTableSize) && isUsed[tableSize]) {
             tableSize++;
         }
-        if (tableSize == maxTableSize) {
-            if (codeSize < maxCodeSize) {
-                reAlignReading();
-                codeSize++;
+        if (tableSize < maxTableSize) {
+            final int index = tableSize;
+            prefixes[tableSize] = previousCode;
+            characters[tableSize] = character;
+            isUsed[tableSize] = true;
+            tableSize++;
+            return index;
+        } else {
+            return -1;
+        }
+    }
+    
+    private void partialClear() throws IOException {
+        final boolean[] isParent = new boolean[1 << MAX_CODE_SIZE];
+        for (int i = 0; i < isUsed.length; i++) {
+            if (isUsed[i] && prefixes[i] != -1) {
+                isParent[prefixes[i]] = true;
+            }
+        }
+        for (int i = clearCode + 1; i < isParent.length; i++) {
+            if (!isParent[i]) {
+                isUsed[i] = false;
+                prefixes[i] = -1;
             }
         }
     }
@@ -150,15 +128,29 @@ public class ZCompressorInputStream extends CompressorInputStream {
         final int code = readNextCode();
         if (code < 0) {
             return -1;
-        } else if (blockMode && code == clearCode) {
-            clearEntries();
-            reAlignReading();
-            codeSize = 9;
-            previousCode = -1;
+        } else if (code == clearCode) {
+            final int subCode = readNextCode();
+            if (subCode < 0) {
+                throw new IOException("Unexpected EOF;");
+            } else if (subCode == 1) {
+                if (codeSize < MAX_CODE_SIZE) {
+                    codeSize++;
+                } else {
+                    throw new IOException("Attempt to increase code size beyond maximum");
+                }
+            } else if (subCode == 2) {
+                partialClear();
+                tableSize = clearCode + 1;
+            } else {
+                throw new IOException("Invalid clear code subcode " + subCode);
+            }
             return 0;
         } else {
             boolean addedUnfinishedEntry = false;
-            if (code == tableSize) {
+            final int effectiveCode;
+            if (isUsed[code]) {
+                effectiveCode = code;
+            } else {
                 // must be a repeat of the previous entry we haven't added yet
                 if (previousCode == -1) {
                     // ... which isn't possible for the very first code
@@ -168,12 +160,10 @@ public class ZCompressorInputStream extends CompressorInputStream {
                 for (int last = previousCode; last >= 0; last = prefixes[last]) {
                     firstCharacter = characters[last];
                 }
-                addEntry(previousCode, firstCharacter);
+                effectiveCode = addEntry(previousCode, firstCharacter);
                 addedUnfinishedEntry = true;
-            } else if (code > tableSize) {
-                throw new IOException(String.format("Invalid %d bit code 0x%x", codeSize, code));
             }
-            for (int entry = code; entry >= 0; entry = prefixes[entry]) {
+            for (int entry = effectiveCode; entry >= 0; entry = prefixes[entry]) {
                 outputStack[--outputStackLocation] = characters[entry];
             }
             if (previousCode != -1 && !addedUnfinishedEntry) {

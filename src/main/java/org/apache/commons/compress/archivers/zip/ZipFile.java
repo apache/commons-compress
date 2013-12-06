@@ -374,10 +374,12 @@ public class ZipFile {
         long start = offsetEntry.dataOffset;
         BoundedInputStream bis =
             new BoundedInputStream(start, ze.getCompressedSize());
-        switch (ze.getMethod()) {
-            case ZipEntry.STORED:
+        switch (ZipMethod.getMethodByCode(ze.getMethod())) {
+            case STORED:
                 return bis;
-            case ZipEntry.DEFLATED:
+            case UNSHRINKING:
+                return new UnshrinkingInputStream(bis);
+            case DEFLATED:
                 bis.addDummy();
                 final Inflater inflater = new Inflater(true);
                 return new InflaterInputStream(bis, inflater) {
