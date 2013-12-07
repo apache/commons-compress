@@ -142,10 +142,10 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
             if (basicHeaderSize <= 2600) {
                 basicHeaderBytes = new byte[basicHeaderSize];
                 readFully(in, basicHeaderBytes);
-                final int basicHeaderCrc32 = read32(in);
+                final long basicHeaderCrc32 = read32(in) & 0xFFFFFFFFL;
                 final CRC32 crc32 = new CRC32();
                 crc32.update(basicHeaderBytes);
-                if (basicHeaderCrc32 == (int)crc32.getValue()) {
+                if (basicHeaderCrc32 == crc32.getValue()) {
                     found = true;
                 }
             }
@@ -199,10 +199,10 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         if (extendedHeaderSize > 0) {
             mainHeader.extendedHeaderBytes = new byte[extendedHeaderSize];
             readFully(in, mainHeader.extendedHeaderBytes);
-            final int extendedHeaderCrc32 = read32(in);
+            final long extendedHeaderCrc32 = 0xffffFFFFL & read32(in);
             final CRC32 crc32 = new CRC32();
             crc32.update(mainHeader.extendedHeaderBytes);
-            if (extendedHeaderCrc32 != (int)crc32.getValue()) {
+            if (extendedHeaderCrc32 != crc32.getValue()) {
                 throw new IOException("Extended header CRC32 verification failure");
             }
         }
@@ -235,7 +235,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         localFileHeader.dateTimeModified = read32(firstHeader);
         localFileHeader.compressedSize = 0xffffFFFFL & read32(firstHeader);
         localFileHeader.originalSize = 0xffffFFFFL & read32(firstHeader);
-        localFileHeader.originalCrc32 = read32(firstHeader);
+        localFileHeader.originalCrc32 = 0xffffFFFFL & read32(firstHeader);
         localFileHeader.fileSpecPosition = read16(firstHeader);
         localFileHeader.fileAccessMode = read16(firstHeader);
         pushedBackBytes(20);
@@ -252,10 +252,10 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         while ((extendedHeaderSize = read16(in)) > 0) {
             final byte[] extendedHeaderBytes = new byte[extendedHeaderSize];
             readFully(in, extendedHeaderBytes);
-            final int extendedHeaderCrc32 = read32(in);
+            final long extendedHeaderCrc32 = 0xffffFFFFL & read32(in);
             final CRC32 crc32 = new CRC32();
             crc32.update(extendedHeaderBytes);
-            if (extendedHeaderCrc32 != (int)crc32.getValue()) {
+            if (extendedHeaderCrc32 != crc32.getValue()) {
                 throw new IOException("Extended header CRC32 verification failure");
             }
             extendedHeaders.add(extendedHeaderBytes);

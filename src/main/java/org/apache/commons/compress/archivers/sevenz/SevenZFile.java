@@ -165,7 +165,7 @@ public class SevenZFile {
                     archiveVersionMajor, archiveVersionMinor));
         }
 
-        final int startHeaderCrc = Integer.reverseBytes(file.readInt());
+        final long startHeaderCrc = 0xffffFFFFL & Integer.reverseBytes(file.readInt());
         final StartHeader startHeader = readStartHeader(startHeaderCrc);
         
         final int nextHeaderSizeInt = (int) startHeader.nextHeaderSize;
@@ -177,7 +177,7 @@ public class SevenZFile {
         file.readFully(nextHeader);
         final CRC32 crc = new CRC32();
         crc.update(nextHeader);
-        if (startHeader.nextHeaderCrc != (int) crc.getValue()) {
+        if (startHeader.nextHeaderCrc != crc.getValue()) {
             throw new IOException("NextHeader CRC mismatch");
         }
         
@@ -202,7 +202,7 @@ public class SevenZFile {
         return archive;
     }
     
-    private StartHeader readStartHeader(final int startHeaderCrc) throws IOException {
+    private StartHeader readStartHeader(final long startHeaderCrc) throws IOException {
         final StartHeader startHeader = new StartHeader();
         DataInputStream dataInputStream = null;
         try {
@@ -210,7 +210,7 @@ public class SevenZFile {
                     new BoundedRandomAccessFileInputStream(file, 20), 20, startHeaderCrc));
              startHeader.nextHeaderOffset = Long.reverseBytes(dataInputStream.readLong());
              startHeader.nextHeaderSize = Long.reverseBytes(dataInputStream.readLong());
-             startHeader.nextHeaderCrc = Integer.reverseBytes(dataInputStream.readInt());
+             startHeader.nextHeaderCrc = 0xffffFFFFL & Integer.reverseBytes(dataInputStream.readInt());
              return startHeader;
         } finally {
             if (dataInputStream != null) {
@@ -331,10 +331,10 @@ public class SevenZFile {
         
         if (nid == NID.kCRC) {
             archive.packCrcsDefined = readAllOrBits(header, (int)numPackStreams);
-            archive.packCrcs = new int[(int)numPackStreams];
+            archive.packCrcs = new long[(int)numPackStreams];
             for (int i = 0; i < (int)numPackStreams; i++) {
                 if (archive.packCrcsDefined.get(i)) {
-                    archive.packCrcs[i] = Integer.reverseBytes(header.readInt());
+                    archive.packCrcs[i] = 0xffffFFFFL & Integer.reverseBytes(header.readInt());
                 }
             }
             
@@ -380,7 +380,7 @@ public class SevenZFile {
             for (int i = 0; i < (int)numFolders; i++) {
                 if (crcsDefined.get(i)) {
                     folders[i].hasCrc = true;
-                    folders[i].crc = Integer.reverseBytes(header.readInt());
+                    folders[i].crc = 0xffffFFFFL & Integer.reverseBytes(header.readInt());
                 } else {
                     folders[i].hasCrc = false;
                 }
@@ -414,7 +414,7 @@ public class SevenZFile {
         final SubStreamsInfo subStreamsInfo = new SubStreamsInfo();
         subStreamsInfo.unpackSizes = new long[totalUnpackStreams];
         subStreamsInfo.hasCrc = new BitSet(totalUnpackStreams);
-        subStreamsInfo.crcs = new int[totalUnpackStreams];
+        subStreamsInfo.crcs = new long[totalUnpackStreams];
         
         int nextUnpackStream = 0;
         for (final Folder folder : archive.folders) {
@@ -444,10 +444,10 @@ public class SevenZFile {
         
         if (nid == NID.kCRC) {
             final BitSet hasMissingCrc = readAllOrBits(header, numDigests);
-            final int[] missingCrcs = new int[numDigests];
+            final long[] missingCrcs = new long[numDigests];
             for (int i = 0; i < numDigests; i++) {
                 if (hasMissingCrc.get(i)) {
-                    missingCrcs[i] = Integer.reverseBytes(header.readInt());
+                    missingCrcs[i] = 0xffffFFFFL & Integer.reverseBytes(header.readInt());
                 }
             }
             int nextCrc = 0;
@@ -725,7 +725,7 @@ public class SevenZFile {
                 files[i].setDirectory(false);
                 files[i].setAntiItem(false);
                 files[i].setHasCrc(archive.subStreamsInfo.hasCrc.get(nonEmptyFileCounter));
-                files[i].setCrc(archive.subStreamsInfo.crcs[nonEmptyFileCounter]);
+                files[i].setCrcValue(archive.subStreamsInfo.crcs[nonEmptyFileCounter]);
                 files[i].setSize(archive.subStreamsInfo.unpackSizes[nonEmptyFileCounter]);
                 ++nonEmptyFileCounter;
             } else {
@@ -821,7 +821,7 @@ public class SevenZFile {
                 currentFolderInputStream, file.getSize());
         if (file.getHasCrc()) {
             currentEntryInputStream = new CRC32VerifyingInputStream(
-                    fileStream, file.getSize(), file.getCrc());
+                    fileStream, file.getSize(), file.getCrcValue());
         } else {
             currentEntryInputStream = fileStream;
         }
