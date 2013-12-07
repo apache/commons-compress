@@ -152,6 +152,25 @@ public final class FramedSnappyTestCase
             }, out.toByteArray());
     }
 
+    public void testAvailable() throws Exception {
+        final FileInputStream isSz = new FileInputStream(getFile("mixed.txt.sz"));
+        try {
+            CompressorInputStream in = new FramedSnappyCompressorInputStream(isSz);
+            assertEquals(0, in.available()); // no chunk read so far
+            assertEquals('1', in.read());
+            assertEquals(3, in.available()); // remainder of first uncompressed block
+            assertEquals(3, in.read(new byte[5], 0, 3));
+            assertEquals('5', in.read());
+            assertEquals(4, in.available()); // remainder of literal
+            assertEquals(4, in.read(new byte[5], 0, 4));
+            assertEquals('5', in.read());
+            assertEquals(19, in.available()); // remainder of copy
+            in.close();
+        } finally {
+            isSz.close();
+        }
+    }
+
     private void testUnarchive(StreamWrapper<CompressorInputStream> wrapper) throws Exception {
         final File input = getFile("bla.tar.sz");
         final File output = new File(dir, "bla.tar");
