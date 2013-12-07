@@ -17,7 +17,6 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
-import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
