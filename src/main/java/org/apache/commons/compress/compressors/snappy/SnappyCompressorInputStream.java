@@ -287,7 +287,7 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
             length = readOneByte();
             length |= (readOneByte() << 8);
             length |= (readOneByte() << 16);
-            length |= (readOneByte() << 24);
+            length |= (((long) readOneByte()) << 24);
             break;
         default:
             length = b >> 2;
