@@ -231,7 +231,7 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
                 offset = readOneByte();
                 offset |= readOneByte() << 8;
                 offset |= readOneByte() << 16;
-                offset |= readOneByte() << 24;
+                offset |= ((long) readOneByte()) << 24;
 
                 if (expandCopy(offset, length)) {
                     return;
