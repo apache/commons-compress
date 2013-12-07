@@ -29,7 +29,7 @@ import java.util.zip.CRC32;
 public class CRC32VerifyingInputStream extends ChecksumVerifyingInputStream {
     
     public CRC32VerifyingInputStream(final InputStream in, final long size, final int expectedCrc32) {
-        super(new CRC32(), in, size, expectedCrc32);
+        this(in, size, expectedCrc32 & 0xFFFFffffl);
     }
 
     /**
