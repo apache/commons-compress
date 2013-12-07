@@ -164,7 +164,7 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
         while (readNow > 0) {
             final int b = readOneByte();
             int length = 0;
-            int offset = 0;
+            long offset = 0;
 
             switch (b & TAG_MASK) {
 
@@ -329,7 +329,7 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
      * backreferences that would go past the end of the block (offset > current
      * decompressed position), which is also nonsensical and thus not allowed.
      * 
-     * @param offset
+     * @param off
      *            The offset from the backward from the end of expanded stream
      * @param length
      *            The number of bytes to copy
@@ -339,10 +339,11 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
      *             buffer
      * @return True if the decompressed data should be flushed
      */
-    private boolean expandCopy(final int offset, int length) throws IOException {
-        if (offset > blockSize) {
+    private boolean expandCopy(final long off, int length) throws IOException {
+        if (off > blockSize) {
             throw new IOException("Offset is larger than block size");
         }
+        int offset = (int) off;
 
         if (offset == 1) {
             byte lastChar = decompressBuf[writeIndex - 1];
