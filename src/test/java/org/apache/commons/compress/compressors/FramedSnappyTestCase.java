@@ -21,6 +21,7 @@ package org.apache.commons.compress.compressors;
 import static org.junit.Assert.assertArrayEquals;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -168,6 +169,21 @@ public final class FramedSnappyTestCase
             in.close();
         } finally {
             isSz.close();
+        }
+    }
+
+    public void testUnskippableChunk() {
+        byte[] input = new byte[] {
+            (byte) 0xff, 6, 0, 0, 's', 'N', 'a', 'P', 'p', 'Y',
+            2, 2, 0, 0, 1, 1
+        };
+        try {
+            CompressorInputStream in =
+                new FramedSnappyCompressorInputStream(new ByteArrayInputStream(input));
+            in.read();
+            fail("expected an exception");
+        } catch (IOException ex) {
+            assertTrue(ex.getMessage().indexOf("unskippable chunk") > -1);
         }
     }
 
