@@ -17,7 +17,6 @@
  */
 package org.apache.commons.compress.utils;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.CRC32;
 
@@ -27,82 +26,10 @@ import java.util.zip.CRC32;
  * @NotThreadSafe
  * @since 1.6
  */
-public class CRC32VerifyingInputStream extends InputStream {
-    private final InputStream in;
-    private long bytesRemaining;
-    private final long expectedCrc32;
-    private final CRC32 crc32 = new CRC32();
+public class CRC32VerifyingInputStream extends ChecksumVerifyingInputStream {
     
     public CRC32VerifyingInputStream(final InputStream in, final long size, final long expectedCrc32) {
-        this.in = in;
-        this.expectedCrc32 = expectedCrc32;
-        this.bytesRemaining = size;
+        super(new CRC32(), in, size, expectedCrc32);
     }
 
-    /**
-     * Reads a single byte from the stream
-     * @throws IOException if the underlying stream throws or the
-     * stream is exhausted and the CRC doesn't match the expected
-     * value
-     */
-    @Override
-    public int read() throws IOException {
-        if (bytesRemaining <= 0) {
-            return -1;
-        }
-        int ret = in.read();
-        if (ret >= 0) {
-            crc32.update(ret);
-            --bytesRemaining;
-        }
-        if (bytesRemaining == 0 && expectedCrc32 != crc32.getValue()) {
-            throw new IOException("CRC32 verification failed");
-        }
-        return ret;
-    }
-
-    /**
-     * Reads a byte array from the stream
-     * @throws IOException if the underlying stream throws or the
-     * stream is exhausted and the CRC doesn't match the expected
-     * value
-     */
-    @Override
-    public int read(byte[] b) throws IOException {
-        return read(b, 0, b.length);
-    }
-
-    /**
-     * Reads from the stream into a byte array.
-     * @throws IOException if the underlying stream throws or the
-     * stream is exhausted and the CRC doesn't match the expected
-     * value
-     */
-    @Override
-    public int read(byte[] b, int off, int len) throws IOException {
-        int ret = in.read(b, off, len);
-        if (ret >= 0) {
-            crc32.update(b, off, ret);
-            bytesRemaining -= ret;
-        }
-        if (bytesRemaining <= 0 && expectedCrc32 != crc32.getValue()) {
-            throw new IOException("CRC32 verification failed");
-        }
-        return ret;
-    }
-
-    @Override
-    public long skip(long n) throws IOException {
-        // Can't really skip, we have to hash everything to verify the checksum
-        if (read() >= 0) {
-            return 1;
-        } else {
-            return 0;
-        }
-    }
-
-    @Override
-    public void close() throws IOException {
-        in.close();
-    }
 }

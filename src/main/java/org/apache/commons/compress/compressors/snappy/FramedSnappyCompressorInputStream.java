@@ -26,6 +26,7 @@ import java.util.Arrays;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.compress.utils.PureJavaCrc32C;
 
 /**
  * CompressorInputStream for the framing Snappy format.
@@ -36,6 +37,11 @@ import org.apache.commons.compress.utils.IOUtils;
  * @since 1.7
  */
 public class FramedSnappyCompressorInputStream extends CompressorInputStream {
+    /**
+     * package private for tests only.
+     */
+    static final long MASK_OFFSET = 0xa282ead8L;
+
     private static final int STREAM_IDENTIFIER_TYPE = 0xff;
     private static final int COMPRESSED_CHUNK_TYPE = 0;
     private static final int UNCOMPRESSED_CHUNK_TYPE = 1;
@@ -61,6 +67,8 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
     private boolean endReached, inUncompressedChunk;
 
     private int uncompressedBytesRemaining;
+    private long expectedChecksum = -1;
+    private PureJavaCrc32C checksum = new PureJavaCrc32C();
 
     /**
      * Constructs a new input stream that decompresses snappy-framed-compressed data
@@ -143,10 +151,14 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
                 count(currentCompressedChunk.getBytesRead() - before);
             }
         }
+        if (read > 0) {
+            checksum.update(b, off, read);
+        }
         return read;
     }
 
     private void readNextBlock() throws IOException {
+        verifyLastChecksumAndReset();
         inUncompressedChunk = false;
         int type = readOneByte();
         if (type == -1) {
@@ -167,10 +179,10 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
         } else if (type == UNCOMPRESSED_CHUNK_TYPE) {
             inUncompressedChunk = true;
             uncompressedBytesRemaining = readSize() - 4 /* CRC */;
-            readCrc();
+            expectedChecksum = unmask(readCrc());
         } else if (type == COMPRESSED_CHUNK_TYPE) {
-            int size = readSize() - 4 /* CRC */;
-            readCrc();
+            long size = readSize() - 4 /* CRC */;
+            expectedChecksum = unmask(readCrc());
             currentCompressedChunk =
                 new SnappyCompressorInputStream(new BoundedInputStream(in, size));
             // constructor reads uncompressed size
@@ -182,13 +194,26 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
         }
     }
 
-    private void readCrc() throws IOException {
+    private long readCrc() throws IOException {
         byte[] b = new byte[4];
         int read = IOUtils.readFully(in, b);
         count(read);
         if (read != 4) {
             throw new IOException("premature end of stream");
         }
+        long crc = 0;
+        for (int i = 0; i < 4; i++) {
+            crc |= (b[i] & 0xFFL) << (8 * i);
+        }
+        return crc;
+    }
+
+    static long unmask(long x) {
+        // ugly, maybe we should just have used ints and deal with the
+        // overflow
+        x -= MASK_OFFSET;
+        x &= 0xffffFFFFL;
+        return ((x >> 17) | (x << 15)) & 0xffffFFFFL;
     }
 
     private int readSize() throws IOException {
@@ -229,6 +254,14 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
             return b & 0xFF;
         }
         return -1;
+    }
+
+    private void verifyLastChecksumAndReset() throws IOException {
+        if (expectedChecksum >= 0 && expectedChecksum != checksum.getValue()) {
+            throw new IOException("Checksum verification failed");
+        }
+        expectedChecksum = -1;
+        checksum.reset();
     }
 
     /**
