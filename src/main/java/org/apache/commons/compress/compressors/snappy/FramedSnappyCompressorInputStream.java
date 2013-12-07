@@ -125,6 +125,9 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
         int read = -1;
         if (inUncompressedChunk) {
             int amount = Math.min(uncompressedBytesRemaining, len);
+            if (amount == 0) {
+                return -1;
+            }
             read = in.read(b, off, amount);
             if (read != -1) {
                 uncompressedBytesRemaining -= read;
@@ -144,6 +147,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
     }
 
     private void readNextBlock() throws IOException {
+        inUncompressedChunk = false;
         int type = readOneByte();
         if (type == -1) {
             endReached = true;
@@ -158,12 +162,14 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
             readNextBlock();
         } else if (type >= MIN_UNSKIPPABLE_TYPE && type <= MAX_UNSKIPPABLE_TYPE) {
             throw new IOException("unskippable chunk with type " + type
+                                  + " (hex " + Integer.toHexString(type) + ")"
                                   + " detected.");
         } else if (type == UNCOMPRESSED_CHUNK_TYPE) {
-            uncompressedBytesRemaining = readSize();
+            inUncompressedChunk = true;
+            uncompressedBytesRemaining = readSize() - 4 /* CRC */;
             readCrc();
         } else if (type == COMPRESSED_CHUNK_TYPE) {
-            int size = readSize();
+            int size = readSize() - 4 /* CRC */;
             readCrc();
             currentCompressedChunk =
                 new SnappyCompressorInputStream(new BoundedInputStream(in, size));

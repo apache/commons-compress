@@ -18,7 +18,10 @@
  */
 package org.apache.commons.compress.compressors;
 
+import static org.junit.Assert.assertArrayEquals;
+
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -117,14 +120,36 @@ public final class FramedSnappyTestCase
         try {
             FileInputStream gz = new FileInputStream(outputGz);
             try {
-                assertTrue(Arrays.equals(IOUtils.toByteArray(sz),
-                                         IOUtils.toByteArray(gz)));
+                assertArrayEquals(IOUtils.toByteArray(sz),
+                                  IOUtils.toByteArray(gz));
             } finally {
                 gz.close();
             }
         } finally {
             sz.close();
         }
+    }
+
+    public void testRemainingChunkTypes() throws Exception {
+        final FileInputStream isSz = new FileInputStream(getFile("mixed.txt.sz"));
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            CompressorInputStream in = new FramedSnappyCompressorInputStream(isSz);
+            IOUtils.copy(in, out);
+            out.close();
+        } finally {
+            isSz.close();
+        }
+
+        assertArrayEquals(new byte[] { '1', '2', '3', '4',
+                                       '5', '6', '7', '8', '9',
+                                       '5', '6', '7', '8', '9',
+                                       '5', '6', '7', '8', '9',
+                                       '5', '6', '7', '8', '9',
+                                       '5', '6', '7', '8', '9', 10,
+                                       '1', '2', '3', '4',
+                                       '1', '2', '3', '4',
+            }, out.toByteArray());
     }
 
     private void testUnarchive(StreamWrapper<CompressorInputStream> wrapper) throws Exception {
@@ -154,8 +179,8 @@ public final class FramedSnappyTestCase
         try {
             FileInputStream orig = new FileInputStream(original);
             try {
-                assertTrue(Arrays.equals(IOUtils.toByteArray(written),
-                                         IOUtils.toByteArray(orig)));
+                assertArrayEquals(IOUtils.toByteArray(written),
+                                  IOUtils.toByteArray(orig));
             } finally {
                 orig.close();
             }
