@@ -30,10 +30,10 @@ import java.util.zip.CRC32;
 public class CRC32VerifyingInputStream extends InputStream {
     private final InputStream in;
     private long bytesRemaining;
-    private final int expectedCrc32;
+    private final long expectedCrc32;
     private final CRC32 crc32 = new CRC32();
     
-    public CRC32VerifyingInputStream(final InputStream in, final long size, final int expectedCrc32) {
+    public CRC32VerifyingInputStream(final InputStream in, final long size, final long expectedCrc32) {
         this.in = in;
         this.expectedCrc32 = expectedCrc32;
         this.bytesRemaining = size;
@@ -55,7 +55,7 @@ public class CRC32VerifyingInputStream extends InputStream {
             crc32.update(ret);
             --bytesRemaining;
         }
-        if (bytesRemaining == 0 && expectedCrc32 != (int)crc32.getValue()) {
+        if (bytesRemaining == 0 && expectedCrc32 != crc32.getValue()) {
             throw new IOException("CRC32 verification failed");
         }
         return ret;
@@ -85,7 +85,7 @@ public class CRC32VerifyingInputStream extends InputStream {
             crc32.update(b, off, ret);
             bytesRemaining -= ret;
         }
-        if (bytesRemaining <= 0 && expectedCrc32 != (int)crc32.getValue()) {
+        if (bytesRemaining <= 0 && expectedCrc32 != crc32.getValue()) {
             throw new IOException("CRC32 verification failed");
         }
         return ret;

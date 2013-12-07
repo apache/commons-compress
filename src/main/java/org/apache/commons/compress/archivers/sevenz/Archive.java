@@ -27,7 +27,7 @@ class Archive {
     /// Whether each particular packed streams has a CRC.
     BitSet packCrcsDefined;
     /// CRCs for each packed stream, valid only if that packed stream has one.
-    int[] packCrcs;
+    long[] packCrcs;
     /// Properties of solid compression blocks.
     Folder[] folders;
     /// Temporary properties for non-empty files (subsumed into the files array later).

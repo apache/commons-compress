@@ -37,7 +37,7 @@ class Folder {
     /// Whether the folder has a CRC.
     boolean hasCrc;
     /// The CRC, if present.
-    int crc;
+    long crc;
     /// The number of unpack substreams, one per non-empty file in this folder.
     int numUnpackSubStreams;
 

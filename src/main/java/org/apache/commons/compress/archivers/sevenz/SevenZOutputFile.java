@@ -131,8 +131,8 @@ public class SevenZOutputFile {
             ++numNonEmptyStreams;
             entry.setSize(currentOutputStream.getBytesWritten());
             entry.setCompressedSize(fileBytesWritten);
-            entry.setCrc((int) crc32.getValue());
-            entry.setCompressedCrc((int) compressedCrc32.getValue());
+            entry.setCrcValue(crc32.getValue());
+            entry.setCompressedCrcValue(compressedCrc32.getValue());
             entry.setHasCrc(true);
         } else {
             entry.setHasStream(false);
@@ -219,7 +219,7 @@ public class SevenZOutputFile {
         final byte[] startHeaderBytes = startHeaderBaos.toByteArray();
         crc32.reset();
         crc32.update(startHeaderBytes);
-        file.writeInt(Integer.reverseBytes((int)crc32.getValue()));
+        file.writeInt(Integer.reverseBytes((int) crc32.getValue()));
         file.write(startHeaderBytes);
     }
     
@@ -299,7 +299,7 @@ public class SevenZOutputFile {
         header.write(1);
         for (final SevenZArchiveEntry entry : files) {
             if (entry.hasStream()) {
-                header.writeInt(Integer.reverseBytes(entry.getCompressedCrc()));
+                header.writeInt(Integer.reverseBytes((int) entry.getCompressedCrcValue()));
             }
         }
         
@@ -327,7 +327,7 @@ public class SevenZOutputFile {
         header.write(1);
         for (final SevenZArchiveEntry entry : files) {
             if (entry.hasStream()) {
-                header.writeInt(Integer.reverseBytes(entry.getCrc()));
+                header.writeInt(Integer.reverseBytes((int) entry.getCrcValue()));
             }
         }
         

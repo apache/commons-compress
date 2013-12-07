@@ -43,7 +43,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     private boolean hasWindowsAttributes;
     private int windowsAttributes;
     private boolean hasCrc;
-    private int crc, compressedCrc;
+    private long crc, compressedCrc;
     private long size, compressedSize;
     
     public SevenZArchiveEntry() {
@@ -303,29 +303,65 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Gets the CRC.
+     * @deprecated use getCrcValue instead.
      */
     public int getCrc() {
-        return crc;
+        return (int) crc;
     }
 
     /**
      * Sets the CRC.
+     * @deprecated use setCrcValue instead.
      */
     public void setCrc(int crc) {
         this.crc = crc;
     }
 
     /**
+     * Gets the CRC.
+     * @since Compress 1.7
+     */
+    public long getCrcValue() {
+        return crc;
+    }
+
+    /**
+     * Sets the CRC.
+     * @since Compress 1.7
+     */
+    public void setCrcValue(long crc) {
+        this.crc = crc;
+    }
+
+    /**
      * Gets the compressed CRC.
+     * @deprecated use getCompressedCrcValue instead.
      */
     int getCompressedCrc() {
+        return (int) compressedCrc;
+    }
+
+    /**
+     * Sets the compressed CRC.
+     * @deprecated use setCompressedCrcValue instead.
+     */
+    void setCompressedCrc(int crc) {
+        this.compressedCrc = crc;
+    }
+
+    /**
+     * Gets the compressed CRC.
+     * @since Compress 1.7
+     */
+    long getCompressedCrcValue() {
         return compressedCrc;
     }
 
     /**
      * Sets the compressed CRC.
+     * @since Compress 1.7
      */
-    void setCompressedCrc(int crc) {
+    void setCompressedCrcValue(long crc) {
         this.compressedCrc = crc;
     }
 
