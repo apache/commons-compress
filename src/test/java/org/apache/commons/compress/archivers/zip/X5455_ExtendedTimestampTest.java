@@ -437,6 +437,27 @@ public class X5455_ExtendedTimestampTest {
         zf.close();
     }
 
+    public void testBitsAreSetWithTime() {
+        xf.setModifyJavaTime(new Date(1111));
+        assertTrue(xf.isBit0_modifyTimePresent());
+        assertEquals(1, xf.getFlags());
+        xf.setAccessJavaTime(new Date(2222));
+        assertTrue(xf.isBit1_accessTimePresent());
+        assertEquals(3, xf.getFlags());
+        xf.setCreateJavaTime(new Date(3333));
+        assertTrue(xf.isBit2_createTimePresent());
+        assertEquals(7, xf.getFlags());
+        xf.setModifyJavaTime(null);
+        assertFalse(xf.isBit0_modifyTimePresent());
+        assertEquals(6, xf.getFlags());
+        xf.setAccessJavaTime(null);
+        assertFalse(xf.isBit1_accessTimePresent());
+        assertEquals(4, xf.getFlags());
+        xf.setCreateJavaTime(null);
+        assertFalse(xf.isBit2_createTimePresent());
+        assertEquals(0, xf.getFlags());
+    }
+
     private void parseReparse(
             final ZipLong time,
             final byte[] expectedLocal,
@@ -458,10 +479,10 @@ public class X5455_ExtendedTimestampTest {
         System.arraycopy(almostExpectedCentral, 0, expectedCentral, 0, almostExpectedCentral.length);
         expectedCentral[0] = expectedFlags;
 
-        xf.setFlags(providedFlags);
         xf.setModifyTime(time);
         xf.setAccessTime(time);
         xf.setCreateTime(time);
+        xf.setFlags(providedFlags);
         byte[] result = xf.getLocalFileDataData();
         assertTrue(Arrays.equals(expectedLocal, result));
 
@@ -482,10 +503,10 @@ public class X5455_ExtendedTimestampTest {
         }
 
         // Do the same as above, but with Central Directory data:
-        xf.setFlags(providedFlags);
         xf.setModifyTime(time);
         xf.setAccessTime(time);
         xf.setCreateTime(time);
+        xf.setFlags(providedFlags);
         result = xf.getCentralDirectoryData();
         assertTrue(Arrays.equals(expectedCentral, result));
 
