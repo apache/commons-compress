@@ -63,6 +63,13 @@ The <action> type attribute can be add,update,fix,remove.
       <action issue="COMPRESS-245" type="fix" date="2013-12-06">
         TarArchiveInputStream could fail to read an archive completely.
       </action> 
+      <action issue="COMPRESS-242" type="fix" date="2013-12-08">
+        The time-setters in X5455_ExtendedTimestamp now set the
+        corresponding flags explicitly - i.e. they set the bit if the
+        valus is not-null and reset it otherwise.  This may cause
+        incompatibilities if you use setFlags to unset a bit and later
+        set the time to a non-null value - the flag will now be set.
+      </action> 
     </release>
     <release version="1.6" date="2013-10-26"
              description="Release 1.6">
