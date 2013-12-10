@@ -366,6 +366,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         if (ae instanceof ZipArchiveEntry) {
             ZipArchiveEntry ze = (ZipArchiveEntry) ae;
             return ZipUtil.canHandleEntryData(ze)
+                && ze.getMethod() == ZipMethod.UNSHRINKING.getCode()
                 && supportsDataDescriptorFor(ze);
 
         }
@@ -394,6 +395,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
 
             if (current.entry.getMethod() == ZipArchiveOutputStream.STORED) {
                 return readStored(buffer, start, length);
+            }
+            if (current.entry.getMethod() == ZipMethod.UNSHRINKING.getCode()) {
+                throw new UnsupportedZipFeatureException(ZipMethod.UNSHRINKING,
+                                                         current.entry);
             }
             return readDeflated(buffer, start, length);
         }
