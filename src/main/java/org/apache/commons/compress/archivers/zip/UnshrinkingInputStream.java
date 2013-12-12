@@ -28,7 +28,7 @@ import org.apache.commons.compress.compressors.CompressorInputStream;
  * @NotThreadSafe
  * @since 1.7
  */
-public class UnshrinkingInputStream extends CompressorInputStream {
+class UnshrinkingInputStream extends CompressorInputStream {
     private final InputStream in;
     private final int clearCode;
     private final int MAX_CODE_SIZE = 13;
