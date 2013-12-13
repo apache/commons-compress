@@ -29,7 +29,7 @@ import org.apache.commons.compress.utils.CharsetNames;
 /**
  * Test zip encodings.
  */
-public class TestZipEncodings extends TestCase {
+public class ZipEncodingTest extends TestCase {
     private static final String UNENC_STRING = "\u2016";
 
     // stress test for internal grow method.
@@ -106,14 +106,13 @@ public class TestZipEncodings extends TestCase {
         doSimpleEncodingTest("Cp1252",b);
     }
 
-    private static final void assertEquals(byte[] expected, ByteBuffer actual) {
+    private static void assertEquals(byte[] expected, ByteBuffer actual) {
 
         assertEquals(expected.length, actual.limit());
 
-        for (int i = 0; i < expected.length; ++i) {
-
+        for (byte anExpected : expected) {
             byte a = actual.get();
-            assertEquals(expected[i], a);
+            assertEquals(anExpected, a);
         }
 
     }
