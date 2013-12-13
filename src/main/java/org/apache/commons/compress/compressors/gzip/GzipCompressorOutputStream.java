@@ -57,6 +57,16 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
         out.write(b, from, length);
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @since 1.7
+     */
+    @Override
+    public void flush() throws IOException {
+        out.flush();
+    }
+
     @Override
     public void close() throws IOException {
         out.close();
