@@ -58,6 +58,15 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
     }
 
     /**
+     * Finishes writing compressed data to the underlying stream without closing it.
+     * 
+     * @since 1.7
+     */
+    public void finish() throws IOException {
+        out.finish();
+    }
+
+    /**
      * {@inheritDoc}
      * 
      * @since 1.7
