@@ -55,9 +55,7 @@ public abstract class AbstractLZWInputStream extends CompressorInputStream {
     
     @Override
     public int read() throws IOException {
-        int ret;
-        while ((ret = read(oneByte)) == 0) { // NOPMD
-        }
+        int ret = read(oneByte);
         if (ret < 0) {
             return ret;
         }
