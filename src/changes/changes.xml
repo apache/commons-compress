@@ -60,6 +60,10 @@ The <action> type attribute can be add,update,fix,remove.
               due-to="Damjan Jovanovic">
         Read-Only support for .Z compressed files.
       </action> 
+      <action type="add" date="2013-12-06" due-to="Damjan Jovanovic">
+        ZipFile now supports reading entries compressed using the
+        SHRINKING method.
+      </action> 
       <action issue="COMPRESS-245" type="fix" date="2013-12-06">
         TarArchiveInputStream could fail to read an archive completely.
       </action> 

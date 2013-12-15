@@ -19,8 +19,10 @@
 package org.apache.commons.compress.archivers.zip;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
+import static org.junit.Assert.assertArrayEquals;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -32,6 +34,7 @@ import java.util.TreeMap;
 import java.util.zip.ZipEntry;
 
 import junit.framework.TestCase;
+import org.apache.commons.compress.utils.IOUtils;
 
 public class ZipFileTest extends TestCase {
     private ZipFile zf = null;
@@ -234,6 +237,26 @@ public class ZipFileTest extends TestCase {
 
         ZipArchiveEntry ze = zf.getEntry("src/main/java/org/apache/commons/compress/archivers/zip/ZipFile.java");
         assertEquals(26101, ze.getSize());
+    }
+
+    public void testUnshrinking() throws Exception {
+        zf = new ZipFile(getFile("SHRUNK.ZIP"));
+        ZipArchiveEntry test = zf.getEntry("TEST1.XML");
+        FileInputStream original = new FileInputStream(getFile("test1.xml"));
+        try {
+            assertArrayEquals(IOUtils.toByteArray(original),
+                              IOUtils.toByteArray(zf.getInputStream(test)));
+        } finally {
+            original.close();
+        }
+        test = zf.getEntry("TEST2.XML");
+        original = new FileInputStream(getFile("test2.xml"));
+        try {
+            assertArrayEquals(IOUtils.toByteArray(original),
+                              IOUtils.toByteArray(zf.getInputStream(test)));
+        } finally {
+            original.close();
+        }
     }
 
     /*
