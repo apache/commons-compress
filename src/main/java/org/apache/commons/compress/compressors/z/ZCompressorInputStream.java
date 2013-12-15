@@ -21,35 +21,22 @@ package org.apache.commons.compress.compressors.z;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.compress.compressors.CompressorInputStream;
-
 /**
  * Input stream that decompresses .Z files.
  * @NotThreadSafe
  * @since 1.7
  */
-public class ZCompressorInputStream extends CompressorInputStream {
+public class ZCompressorInputStream extends AbstractLZWInputStream {
     private static final int MAGIC_1 = 0x1f;
     private static final int MAGIC_2 = 0x9d;
     private static final int BLOCK_MODE_MASK = 0x80;
     private static final int MAX_CODE_SIZE_MASK = 0x1f;
-    private final InputStream in;
     private final boolean blockMode;
-    private final int clearCode;
     private final int maxCodeSize;
-    private int codeSize = 9;
-    private int bitsCached = 0;
-    private int bitsCachedSize = 0;
     private long totalCodesRead = 0;
-    private int previousCode = -1;
-    private int tableSize = 0;
-    private final int[] prefixes;
-    private final byte[] characters;
-    private final byte[] outputStack;
-    private int outputStackLocation;
     
     public ZCompressorInputStream(InputStream inputStream) throws IOException {
-        this.in = inputStream;
+        super(inputStream);
         int firstByte = in.read();
         int secondByte = in.read();
         int thirdByte = in.read();
@@ -59,24 +46,10 @@ public class ZCompressorInputStream extends CompressorInputStream {
         blockMode = ((thirdByte & BLOCK_MODE_MASK) != 0);
         maxCodeSize = thirdByte & MAX_CODE_SIZE_MASK;
         if (blockMode) {
-            clearCode = (1 << (codeSize - 1));
-        } else {
-            clearCode = -1; // unused
+            setClearCode(codeSize);
         }
-        final int maxTableSize = 1 << maxCodeSize;
-        prefixes = new int[maxTableSize];
-        characters = new byte[maxTableSize];
-        outputStack = new byte[maxTableSize];
-        outputStackLocation = maxTableSize;
-        for (int i = 0; i < (1 << 8); i++) {
-            prefixes[i] = -1;
-            characters[i] = (byte)i;
-        }
+        initializeTables(maxCodeSize);
         clearEntries();
-    }
-    
-    public void close() throws IOException {
-        in.close();
     }
     
     private void clearEntries() {
@@ -86,20 +59,12 @@ public class ZCompressorInputStream extends CompressorInputStream {
         }
     }
 
-    private int readNextCode() throws IOException {
-        while (bitsCachedSize < codeSize) {
-            final int nextByte = in.read();
-            if (nextByte < 0) {
-                return nextByte;
-            }
-            bitsCached |= (nextByte << bitsCachedSize);
-            bitsCachedSize += 8;
+    @Override
+    protected int readNextCode() throws IOException {
+        int code = super.readNextCode();
+        if (code >= 0) {
+            ++totalCodesRead;
         }
-        final int mask = (1 << codeSize) - 1;
-        final int code = (bitsCached & mask);
-        bitsCached >>>= codeSize;
-        bitsCachedSize -= codeSize;
-        ++totalCodesRead;
         return code;
     }
     
@@ -119,22 +84,19 @@ public class ZCompressorInputStream extends CompressorInputStream {
         bitsCachedSize = 0;
     }
     
-    private void addEntry(int previousCode, byte character) throws IOException {
+    @Override
+    protected int addEntry(int previousCode, byte character) throws IOException {
         final int maxTableSize = 1 << codeSize;
-        if (tableSize < maxTableSize) {
-            prefixes[tableSize] = previousCode;
-            characters[tableSize] = character;
-            tableSize++;
+        int r = addEntry(previousCode, character, maxTableSize);
+        if (tableSize == maxTableSize && codeSize < maxCodeSize) {
+            reAlignReading();
+            codeSize++;
         }
-        if (tableSize == maxTableSize) {
-            if (codeSize < maxCodeSize) {
-                reAlignReading();
-                codeSize++;
-            }
-        }
+        return r;
     }
 
-    private int decompressNextSymbol() throws IOException {
+    @Override
+    protected int decompressNextSymbol() throws IOException {
         //
         //                   table entry    table entry
         //                  _____________   _____
@@ -159,74 +121,13 @@ public class ZCompressorInputStream extends CompressorInputStream {
         } else {
             boolean addedUnfinishedEntry = false;
             if (code == tableSize) {
-                // must be a repeat of the previous entry we haven't added yet
-                if (previousCode == -1) {
-                    // ... which isn't possible for the very first code
-                    throw new IOException("The first code can't be a reference to its preceding code");
-                }
-                byte firstCharacter = 0;
-                for (int last = previousCode; last >= 0; last = prefixes[last]) {
-                    firstCharacter = characters[last];
-                }
-                addEntry(previousCode, firstCharacter);
+                addRepeatOfPreviousCode();
                 addedUnfinishedEntry = true;
             } else if (code > tableSize) {
                 throw new IOException(String.format("Invalid %d bit code 0x%x", codeSize, code));
             }
-            for (int entry = code; entry >= 0; entry = prefixes[entry]) {
-                outputStack[--outputStackLocation] = characters[entry];
-            }
-            if (previousCode != -1 && !addedUnfinishedEntry) {
-                addEntry(previousCode, outputStack[outputStackLocation]);
-            }
-            previousCode = code;
-            return outputStackLocation;
+            return expandCodeToOutputStack(code, addedUnfinishedEntry);
         }
     }
     
-    public int read() throws IOException {
-        byte[] b = new byte[1];
-        int ret;
-        while ((ret = read(b)) == 0) {
-        }
-        if (ret < 0) {
-            return ret;
-        }
-        return 0xff & b[0];
-    }
-    
-    public int read(byte[] b, int off, int len) throws IOException {
-        int bytesRead = 0;
-        int remainingInStack = outputStack.length - outputStackLocation;
-        if (remainingInStack > 0) {
-            int maxLength = Math.min(remainingInStack, len);
-            System.arraycopy(outputStack, outputStackLocation, b, off, maxLength);
-            outputStackLocation += maxLength;
-            off += maxLength;
-            len -= maxLength;
-            bytesRead += maxLength;
-        }
-        while (len > 0) {
-            int result = decompressNextSymbol();
-            if (result < 0) {
-                if (bytesRead > 0) {
-                    count(bytesRead);
-                    return bytesRead;
-                } else {
-                    return result;
-                }
-            }
-            remainingInStack = outputStack.length - outputStackLocation;
-            if (remainingInStack > 0) {
-                int maxLength = Math.min(remainingInStack, len);
-                System.arraycopy(outputStack, outputStackLocation, b, off, maxLength);
-                outputStackLocation += maxLength;
-                off += maxLength;
-                len -= maxLength;
-                bytesRead += maxLength;
-            }
-        }
-        count(bytesRead);
-        return bytesRead;
-    }
 }

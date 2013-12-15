@@ -21,84 +21,43 @@ package org.apache.commons.compress.archivers.zip;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.compress.compressors.CompressorInputStream;
+import org.apache.commons.compress.compressors.z.AbstractLZWInputStream;
 
 /**
  * Input stream that decompresses ZIP method 1 (unshrinking). A variation of the LZW algorithm, with some twists.
  * @NotThreadSafe
  * @since 1.7
  */
-class UnshrinkingInputStream extends CompressorInputStream {
-    private final InputStream in;
-    private final int clearCode;
-    private final int MAX_CODE_SIZE = 13;
-    private int codeSize = 9;
-    private int bitsCached = 0;
-    private int bitsCachedSize = 0;
-    private int previousCode = -1;
-    private int tableSize = 0;
-    private final int[] prefixes;
-    private final byte[] characters;
+class UnshrinkingInputStream extends AbstractLZWInputStream {
+    private static final int MAX_CODE_SIZE = 13;
+    private static final int MAX_TABLE_SIZE = 1 << MAX_CODE_SIZE;
     private final boolean[] isUsed;
-    private final byte[] outputStack;
-    private int outputStackLocation;
     
     public UnshrinkingInputStream(InputStream inputStream) throws IOException {
-        this.in = inputStream;
-        clearCode = (1 << (codeSize - 1));
-        final int maxTableSize = 1 << MAX_CODE_SIZE;
-        prefixes = new int[maxTableSize];
-        characters = new byte[maxTableSize];
-        isUsed = new boolean[maxTableSize];
-        outputStack = new byte[maxTableSize];
-        outputStackLocation = maxTableSize;
+        super(inputStream);
+        setClearCode(codeSize);
+        initializeTables(MAX_CODE_SIZE);
+        isUsed = new boolean[prefixes.length];
         for (int i = 0; i < (1 << 8); i++) {
-            prefixes[i] = -1;
-            characters[i] = (byte)i;
             isUsed[i] = true;
         }
         tableSize = clearCode + 1;
     }
-    
-    public void close() throws IOException {
-        in.close();
-    }
-    
-    private int readNextCode() throws IOException {
-        while (bitsCachedSize < codeSize) {
-            final int nextByte = in.read();
-            if (nextByte < 0) {
-                return nextByte;
-            }
-            bitsCached |= (nextByte << bitsCachedSize);
-            bitsCachedSize += 8;
-        }
-        final int mask = (1 << codeSize) - 1;
-        final int code = (bitsCached & mask);
-        bitsCached >>>= codeSize;
-        bitsCachedSize -= codeSize;
-        return code;
-    }
-    
-    private int addEntry(int previousCode, byte character) throws IOException {
-        final int maxTableSize = 1 << MAX_CODE_SIZE;
-        while ((tableSize < maxTableSize) && isUsed[tableSize]) {
+
+    @Override
+    protected int addEntry(int previousCode, byte character) throws IOException {
+        while ((tableSize < MAX_TABLE_SIZE) && isUsed[tableSize]) {
             tableSize++;
         }
-        if (tableSize < maxTableSize) {
-            final int index = tableSize;
-            prefixes[tableSize] = previousCode;
-            characters[tableSize] = character;
-            isUsed[tableSize] = true;
-            tableSize++;
-            return index;
-        } else {
-            return -1;
+        int idx = addEntry(previousCode, character, MAX_TABLE_SIZE);
+        if (idx >= 0) {
+            isUsed[idx] = true;
         }
+        return idx;
     }
     
     private void partialClear() throws IOException {
-        final boolean[] isParent = new boolean[1 << MAX_CODE_SIZE];
+        final boolean[] isParent = new boolean[MAX_TABLE_SIZE];
         for (int i = 0; i < isUsed.length; i++) {
             if (isUsed[i] && prefixes[i] != -1) {
                 isParent[prefixes[i]] = true;
@@ -112,7 +71,8 @@ class UnshrinkingInputStream extends CompressorInputStream {
         }
     }
 
-    private int decompressNextSymbol() throws IOException {
+    @Override
+    protected int decompressNextSymbol() throws IOException {
         //
         //                   table entry    table entry
         //                  _____________   _____
@@ -147,76 +107,12 @@ class UnshrinkingInputStream extends CompressorInputStream {
             return 0;
         } else {
             boolean addedUnfinishedEntry = false;
-            final int effectiveCode;
-            if (isUsed[code]) {
-                effectiveCode = code;
-            } else {
-                // must be a repeat of the previous entry we haven't added yet
-                if (previousCode == -1) {
-                    // ... which isn't possible for the very first code
-                    throw new IOException("The first code can't be a reference to its preceding code");
-                }
-                byte firstCharacter = 0;
-                for (int last = previousCode; last >= 0; last = prefixes[last]) {
-                    firstCharacter = characters[last];
-                }
-                effectiveCode = addEntry(previousCode, firstCharacter);
+            int effectiveCode = code;
+            if (!isUsed[code]) {
+                effectiveCode = addRepeatOfPreviousCode();
                 addedUnfinishedEntry = true;
             }
-            for (int entry = effectiveCode; entry >= 0; entry = prefixes[entry]) {
-                outputStack[--outputStackLocation] = characters[entry];
-            }
-            if (previousCode != -1 && !addedUnfinishedEntry) {
-                addEntry(previousCode, outputStack[outputStackLocation]);
-            }
-            previousCode = code;
-            return outputStackLocation;
+            return expandCodeToOutputStack(effectiveCode, addedUnfinishedEntry);
         }
-    }
-    
-    public int read() throws IOException {
-        byte[] b = new byte[1];
-        int ret;
-        while ((ret = read(b)) == 0) {
-        }
-        if (ret < 0) {
-            return ret;
-        }
-        return 0xff & b[0];
-    }
-    
-    public int read(byte[] b, int off, int len) throws IOException {
-        int bytesRead = 0;
-        int remainingInStack = outputStack.length - outputStackLocation;
-        if (remainingInStack > 0) {
-            int maxLength = Math.min(remainingInStack, len);
-            System.arraycopy(outputStack, outputStackLocation, b, off, maxLength);
-            outputStackLocation += maxLength;
-            off += maxLength;
-            len -= maxLength;
-            bytesRead += maxLength;
-        }
-        while (len > 0) {
-            int result = decompressNextSymbol();
-            if (result < 0) {
-                if (bytesRead > 0) {
-                    count(bytesRead);
-                    return bytesRead;
-                } else {
-                    return result;
-                }
-            }
-            remainingInStack = outputStack.length - outputStackLocation;
-            if (remainingInStack > 0) {
-                int maxLength = Math.min(remainingInStack, len);
-                System.arraycopy(outputStack, outputStackLocation, b, off, maxLength);
-                outputStackLocation += maxLength;
-                off += maxLength;
-                len -= maxLength;
-                bytesRead += maxLength;
-            }
-        }
-        count(bytesRead);
-        return bytesRead;
     }
 }
