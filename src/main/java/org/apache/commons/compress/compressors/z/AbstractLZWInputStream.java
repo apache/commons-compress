@@ -64,35 +64,17 @@ public abstract class AbstractLZWInputStream extends CompressorInputStream {
     
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
-        int bytesRead = 0;
-        int remainingInStack = outputStack.length - outputStackLocation;
-        if (remainingInStack > 0) {
-            int maxLength = Math.min(remainingInStack, len);
-            System.arraycopy(outputStack, outputStackLocation, b, off, maxLength);
-            outputStackLocation += maxLength;
-            off += maxLength;
-            len -= maxLength;
-            bytesRead += maxLength;
-        }
-        while (len > 0) {
+        int bytesRead = readFromStack(b, off, len);
+        while (len - bytesRead > 0) {
             int result = decompressNextSymbol();
             if (result < 0) {
                 if (bytesRead > 0) {
                     count(bytesRead);
                     return bytesRead;
-                } else {
-                    return result;
                 }
+                return result;
             }
-            remainingInStack = outputStack.length - outputStackLocation;
-            if (remainingInStack > 0) {
-                int maxLength = Math.min(remainingInStack, len);
-                System.arraycopy(outputStack, outputStackLocation, b, off, maxLength);
-                outputStackLocation += maxLength;
-                off += maxLength;
-                len -= maxLength;
-                bytesRead += maxLength;
-            }
+            bytesRead += readFromStack(b, off + bytesRead, len - bytesRead);
         }
         count(bytesRead);
         return bytesRead;
@@ -195,5 +177,16 @@ public abstract class AbstractLZWInputStream extends CompressorInputStream {
         }
         previousCode = code;
         return outputStackLocation;
+    }
+
+    private int readFromStack(byte[] b, int off, int len) {
+        int remainingInStack = outputStack.length - outputStackLocation;
+        if (remainingInStack > 0) {
+            int maxLength = Math.min(remainingInStack, len);
+            System.arraycopy(outputStack, outputStackLocation, b, off, maxLength);
+            outputStackLocation += maxLength;
+            return maxLength;
+        }
+        return 0;
     }
 }
