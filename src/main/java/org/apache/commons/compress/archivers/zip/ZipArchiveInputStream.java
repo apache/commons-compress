@@ -489,7 +489,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             try {
                 read = inf.inflate(buffer, start, length);
             } catch (DataFormatException e) {
-                throw new ZipException(e.getMessage());
+                throw (IOException) new ZipException(e.getMessage()).initCause(e);
             }
         } while (read == 0 && inf.needsInput());
         return read;
