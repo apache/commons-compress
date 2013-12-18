@@ -199,7 +199,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                                  boolean allowStoredEntriesWithDataDescriptor) {
         zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
         this.useUnicodeExtraFields = useUnicodeExtraFields;
-        in = new PushbackInputStream(inputStream, buf.buf.length);
+        in = new PushbackInputStream(inputStream, buf.capacity());
         this.allowStoredEntriesWithDataDescriptor =
             allowStoredEntriesWithDataDescriptor;
     }
@@ -423,23 +423,22 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             return -1;
         }
 
-        if (buf.offsetInBuffer >= buf.lengthOfLastRead) {
-            buf.offsetInBuffer = 0;
-            if ((buf.lengthOfLastRead = in.read(buf.buf)) == -1) {
+        if (buf.position >= buf.limit) {
+            buf.position = 0;
+            if ((buf.limit = in.read(buf.array)) == -1) {
                 return -1;
             }
-            count(buf.lengthOfLastRead);
-            current.bytesReadFromStream += buf.lengthOfLastRead;
+            count(buf.limit);
+            current.bytesReadFromStream += buf.limit;
         }
 
-        int availableBytesInBuffer = buf.lengthOfLastRead - buf.offsetInBuffer;
-        int toRead = Math.min(availableBytesInBuffer, length);
+        int toRead = Math.min(buf.remaining(), length);
         if ((csize - current.bytesRead) < toRead) {
             // if it is smaller than toRead then it fits into an int
             toRead = (int) (csize - current.bytesRead);
         }
-        System.arraycopy(buf.buf, buf.offsetInBuffer, buffer, start, toRead);
-        buf.offsetInBuffer += toRead;
+        System.arraycopy(buf.array, buf.position, buffer, start, toRead);
+        buf.position += toRead;
         current.bytesRead += toRead;
         crc.update(buffer, start, toRead);
         return toRead;
@@ -458,7 +457,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                 throw new ZipException("This archive needs a preset dictionary"
                                        + " which is not supported by Commons"
                                        + " Compress.");
-            } else if (buf.lengthOfLastRead == -1) {
+            } else if (buf.limit == -1) {
                 throw new IOException("Truncated ZIP file");
             }
         }
@@ -476,8 +475,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         do {
             if (inf.needsInput()) {
                 fill();
-                if (buf.lengthOfLastRead > 0) {
-                    current.bytesReadFromStream += buf.lengthOfLastRead;
+                if (buf.limit > 0) {
+                    current.bytesReadFromStream += buf.limit;
                 } else {
                     break;
                 }
@@ -609,7 +608,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
 
             // Pushback any required bytes
             if (diff > 0) {
-                pushback(buf.buf, buf.lengthOfLastRead - diff, diff);
+                pushback(buf.array, buf.limit - diff, diff);
             }
         }
 
@@ -632,8 +631,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         long remaining = current.entry.getCompressedSize()
             - current.bytesReadFromStream;
         while (remaining > 0) {
-            long n = in.read(buf.buf, 0, (int) Math.min(buf.buf.length,
-                                                        remaining));
+            long n = in.read(buf.array, 0, (int) Math.min(buf.capacity(), remaining));
             if (n < 0) {
                 throw new EOFException(
                                        "Truncated ZIP entry: " + current.entry.getName());
@@ -673,9 +671,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         if (closed) {
             throw new IOException("The stream is closed");
         }
-        if ((buf.lengthOfLastRead = in.read(buf.buf)) > 0) {
-            count(buf.lengthOfLastRead);
-            inf.setInput(buf.buf, 0, buf.lengthOfLastRead);
+        if ((buf.limit = in.read(buf.array)) > 0) {
+            count(buf.limit);
+            inf.setInput(buf.array, 0, buf.limit);
         }
     }
 
@@ -763,7 +761,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         int ddLen = current.usesZip64 ? WORD + 2 * DWORD : 3 * WORD;
 
         while (!done) {
-            int r = in.read(buf.buf, off,
+            int r = in.read(buf.array, off,
                             ZipArchiveOutputStream.BUFFER_SIZE - off);
             if (r <= 0) {
                 // read the whole archive without ever finding a
@@ -771,7 +769,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                 throw new IOException("Truncated ZIP file");
             }
             if (r + off < 4) {
-                // buf is too small to check for a signature, loop
+                // buffer too small to check for a signature, loop
                 off += r;
                 continue;
             }
@@ -805,14 +803,14 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         boolean done = false;
         int readTooMuch = 0;
         for (int i = 0; !done && i < lastRead - 4; i++) {
-            if (buf.buf[i] == LFH[0] && buf.buf[i + 1] == LFH[1]) {
-                if ((buf.buf[i + 2] == LFH[2] && buf.buf[i + 3] == LFH[3])
-                    || (buf.buf[i] == CFH[2] && buf.buf[i + 3] == CFH[3])) {
+            if (buf.array[i] == LFH[0] && buf.array[i + 1] == LFH[1]) {
+                if ((buf.array[i + 2] == LFH[2] && buf.array[i + 3] == LFH[3])
+                    || (buf.array[i] == CFH[2] && buf.array[i + 3] == CFH[3])) {
                     // found a LFH or CFH:
                     readTooMuch = offset + lastRead - i - expectedDDLen;
                     done = true;
                 }
-                else if (buf.buf[i + 2] == DD[2] && buf.buf[i + 3] == DD[3]) {
+                else if (buf.array[i + 2] == DD[2] && buf.array[i + 3] == DD[3]) {
                     // found DD:
                     readTooMuch = offset + lastRead - i;
                     done = true;
@@ -822,9 +820,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                     //   descriptor
                     // * copy the remaining bytes to cache
                     // * read data descriptor
-                    pushback(buf.buf, offset + lastRead - readTooMuch,
+                    pushback(buf.array, offset + lastRead - readTooMuch,
                              readTooMuch);
-                    bos.write(buf.buf, 0, i);
+                    bos.write(buf.array, 0, i);
                     readDataDescriptor();
                 }
             }
@@ -845,8 +843,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                                int lastRead, int expecteDDLen) {
         final int cacheable = offset + lastRead - expecteDDLen - 3;
         if (cacheable > 0) {
-            bos.write(buf.buf, 0, cacheable);
-            System.arraycopy(buf.buf, cacheable, buf.buf, 0,
+            bos.write(buf.array, 0, cacheable);
+            System.arraycopy(buf.array, cacheable, buf.array, 0,
                              expecteDDLen + 3);
             offset = expecteDDLen + 3;
         } else {
@@ -1013,27 +1011,49 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
      * Contains a temporary buffer used to read from the wrapped
      * stream together with some information needed for internal
      * housekeeping.
+     * 
+     * This class is similar to a java.nio.ByteBuffer but can't be replaced,
+     * because the limit contains the length of the last read operation and
+     * when the end of the stream is reached the limit is thus set to -1.
+     * This is not allowed for a ByteBuffer.
      */
     private static final class Buffer {
         /**
          * Buffer used as temporary buffer when reading from the stream.
          */
-        private final byte[] buf = new byte[ZipArchiveOutputStream.BUFFER_SIZE];
+        private final byte[] array = new byte[ZipArchiveOutputStream.BUFFER_SIZE];
+
         /**
-         * {@link #buf buf} may contain data the client hasnt read, yet,
+         * {@link #array array} may contain data the client hasnt read, yet,
          * this is the first byte that hasn't been read so far.
          */
-        private int offsetInBuffer = 0;
+        private int position = 0;
+
         /**
-         * Number of bytes read from the wrapped stream into {@link #buf
-         * buf} with the last read operation.
+         * Number of bytes read from the wrapped stream into {@link #array
+         * array} with the last read operation.
          */
-        private int lengthOfLastRead = 0;
+        private int limit = 0;
+
         /**
          * Reset internal housekeeping.
          */
         private void reset() {
-            offsetInBuffer = lengthOfLastRead = 0;
+            position = limit = 0;
+        }
+
+        /**
+         * Returns the number of bytes left to read.
+         */
+        private int remaining() {
+            return limit - position;
+        }
+
+        /**
+         * Returns the length of the buffer.
+         */
+        private int capacity() {
+            return array.length;
         }
     }
 }
