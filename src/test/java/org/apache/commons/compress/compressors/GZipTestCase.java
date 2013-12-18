@@ -34,8 +34,6 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipParameters;
 import org.apache.commons.compress.utils.IOUtils;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.output.NullOutputStream;
 import org.junit.Assert;
 
 public final class GZipTestCase extends AbstractTestCase {
@@ -156,7 +154,13 @@ public final class GZipTestCase extends AbstractTestCase {
     }
 
     public void testInteroperabilityWithGzipCompressorInputStream() throws Exception {
-        byte[] content = FileUtils.readFileToByteArray(getFile("test3.xml"));
+        FileInputStream fis = new FileInputStream(getFile("test3.xml"));
+        byte[] content;
+        try {
+            content = IOUtils.toByteArray(fis);
+        } finally {
+            fis.close();
+        }
         
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
 
@@ -178,7 +182,13 @@ public final class GZipTestCase extends AbstractTestCase {
     }
 
     public void testInteroperabilityWithGZIPInputStream() throws Exception {
-        byte[] content = FileUtils.readFileToByteArray(getFile("test3.xml"));
+        FileInputStream fis = new FileInputStream(getFile("test3.xml"));
+        byte[] content;
+        try {
+            content = IOUtils.toByteArray(fis);
+        } finally {
+            fis.close();
+        }
         
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
 
@@ -217,7 +227,13 @@ public final class GZipTestCase extends AbstractTestCase {
     }
 
     private void testExtraFlags(int compressionLevel, int flag) throws Exception {
-        byte[] content = FileUtils.readFileToByteArray(getFile("test3.xml"));
+        FileInputStream fis = new FileInputStream(getFile("test3.xml"));
+        byte[] content;
+        try {
+            content = IOUtils.toByteArray(fis);
+        } finally {
+            fis.close();
+        }
         
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         
@@ -244,7 +260,7 @@ public final class GZipTestCase extends AbstractTestCase {
     }
     
     public void testOverWrite() throws Exception {
-        GzipCompressorOutputStream out = new GzipCompressorOutputStream(new NullOutputStream());
+        GzipCompressorOutputStream out = new GzipCompressorOutputStream(new ByteArrayOutputStream());
         out.close();
         try {
             out.write(0);
