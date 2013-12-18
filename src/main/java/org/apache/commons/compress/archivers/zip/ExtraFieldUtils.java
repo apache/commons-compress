@@ -176,9 +176,9 @@ public class ExtraFieldUtils {
                 }
                 v.add(ze);
             } catch (InstantiationException ie) {
-                throw new ZipException(ie.getMessage());
+                throw (ZipException) new ZipException(ie.getMessage()).initCause(ie);
             } catch (IllegalAccessException iae) {
-                throw new ZipException(iae.getMessage());
+                throw (ZipException) new ZipException(iae.getMessage()).initCause(iae);
             }
             start += (length + WORD);
         }
