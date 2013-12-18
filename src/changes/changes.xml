@@ -44,10 +44,6 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.7" date="not released, yet"
              description="Release 1.7">
-      <action issue="COMPRESS-250" type="add" date="2012-12-16" due-to="Emmanuel Bourg">
-        GzipCompressorOutputStream now supports setting the compression level and the header metadata
-        (filename, comment, modification time, operating system and extra flags)
-      </action>
       <action issue="COMPRESS-241" type="fix" date="2013-10-27">
         SevenZOutputFile#closeArchiveEntry throws an exception when
         using LZMA2 compression on Java8.
@@ -78,6 +74,10 @@ The <action> type attribute can be add,update,fix,remove.
         incompatibilities if you use setFlags to unset a bit and later
         set the time to a non-null value - the flag will now be set.
       </action> 
+      <action issue="COMPRESS-250" type="add" date="2012-12-16" due-to="Emmanuel Bourg">
+        GzipCompressorOutputStream now supports setting the compression level and the header metadata
+        (filename, comment, modification time, operating system and extra flags)
+      </action>
     </release>
     <release version="1.6" date="2013-10-26"
              description="Release 1.6">
