@@ -86,7 +86,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
         ByteBuffer buffer = ByteBuffer.allocate(10);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.putShort((short) GZIPInputStream.GZIP_MAGIC);
-        buffer.put((byte) 8); // compression method (8: deflate)
+        buffer.put((byte) Deflater.DEFLATED); // compression method (8: deflate)
         buffer.put((byte) ((filename != null ? FNAME : 0) | (comment != null ? FCOMMENT : 0))); // flags
         buffer.putInt((int) (parameters.getModificationTime() / 1000));
         
