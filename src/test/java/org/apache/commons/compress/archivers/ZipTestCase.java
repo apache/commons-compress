@@ -32,6 +32,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.apache.commons.compress.archivers.zip.ZipMethod;
 import org.apache.commons.compress.utils.IOUtils;
 
 public final class ZipTestCase extends AbstractTestCase {
@@ -139,12 +140,16 @@ public final class ZipTestCase extends AbstractTestCase {
      * >COMPRESS-93</a>.
      */
     public void testSupportedCompressionMethod() throws IOException {
+        /*
         ZipFile bla = new ZipFile(getFile("bla.zip"));
         assertTrue(bla.canReadEntryData(bla.getEntry("test1.xml")));
         bla.close();
-
+        */
+        
         ZipFile moby = new ZipFile(getFile("moby.zip"));
-        assertFalse(moby.canReadEntryData(moby.getEntry("README")));
+        ZipArchiveEntry entry = moby.getEntry("README");
+        assertEquals("method", ZipMethod.TOKENIZATION.getCode(), entry.getMethod());
+        assertFalse(moby.canReadEntryData(entry));
         moby.close();
     }
 
@@ -162,6 +167,7 @@ public final class ZipTestCase extends AbstractTestCase {
             new ZipArchiveInputStream(new FileInputStream(getFile("moby.zip")));
         try {
             ZipArchiveEntry entry = zip.getNextZipEntry();
+            assertEquals("method", ZipMethod.TOKENIZATION.getCode(), entry.getMethod());
             assertEquals("README", entry.getName());
             assertFalse(zip.canReadEntryData(entry));
             try {

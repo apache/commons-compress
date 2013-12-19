@@ -741,7 +741,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     @Override
     public boolean canWriteEntryData(ArchiveEntry ae) {
         if (ae instanceof ZipArchiveEntry) {
-            return ZipUtil.canHandleEntryData((ZipArchiveEntry) ae);
+            ZipArchiveEntry zae = (ZipArchiveEntry) ae;
+            return zae.getMethod() != ZipMethod.IMPLODING.getCode() && ZipUtil.canHandleEntryData(zae);
         }
         return false;
     }
