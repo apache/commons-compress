@@ -271,10 +271,16 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         }
 
         processZip64Extra(size, cSize);
-        
-        if (current.entry.getCompressedSize() != -1 
-                && current.entry.getMethod() == ZipMethod.UNSHRINKING.getCode()) {
-            current.in = new UnshrinkingInputStream(new BoundedInputStream(in, current.entry.getCompressedSize()));
+
+        if (current.entry.getCompressedSize() != -1) {
+            if (current.entry.getMethod() == ZipMethod.UNSHRINKING.getCode()) {
+                current.in = new UnshrinkingInputStream(new BoundedInputStream(in, current.entry.getCompressedSize()));
+            } else if (current.entry.getMethod() == ZipMethod.IMPLODING.getCode()) {
+                current.in = new ExplodingInputStream(
+                        current.entry.getGeneralPurposeBit().getSlidingDictionarySize(),
+                        current.entry.getGeneralPurposeBit().getNumberOfShannonFanoTrees(),
+                        new BoundedInputStream(in, current.entry.getCompressedSize()));
+            }
         }
         
         entriesRead++;
@@ -374,7 +380,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             read = readStored(buffer, offset, length);
         } else if (current.entry.getMethod() == ZipArchiveOutputStream.DEFLATED) {
             read = readDeflated(buffer, offset, length);
-        } else if (current.entry.getMethod() == ZipMethod.UNSHRINKING.getCode()) {
+        } else if (current.entry.getMethod() == ZipMethod.UNSHRINKING.getCode()
+                || current.entry.getMethod() == ZipMethod.IMPLODING.getCode()) {
             read = current.in.read(buffer, offset, length);
         } else {
             throw new UnsupportedZipFeatureException(ZipMethod.getMethodByCode(current.entry.getMethod()),

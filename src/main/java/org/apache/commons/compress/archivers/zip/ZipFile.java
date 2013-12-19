@@ -17,6 +17,7 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import java.io.BufferedInputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
@@ -378,6 +379,9 @@ public class ZipFile {
                 return bis;
             case UNSHRINKING:
                 return new UnshrinkingInputStream(bis);
+            case IMPLODING:
+                return new ExplodingInputStream(ze.getGeneralPurposeBit().getSlidingDictionarySize(),
+                        ze.getGeneralPurposeBit().getNumberOfShannonFanoTrees(), new BufferedInputStream(bis));
             case DEFLATED:
                 bis.addDummy();
                 final Inflater inflater = new Inflater(true);

@@ -303,6 +303,7 @@ public abstract class ZipUtil {
     private static boolean supportsMethodOf(ZipArchiveEntry entry) {
         return entry.getMethod() == ZipEntry.STORED
             || entry.getMethod() == ZipMethod.UNSHRINKING.getCode()
+            || entry.getMethod() == ZipMethod.IMPLODING.getCode()
             || entry.getMethod() == ZipEntry.DEFLATED;
     }
 
