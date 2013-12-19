@@ -95,6 +95,11 @@ These include: bzip2, gzip, pack200, lzma, xz and ar, cpio, jar, tar, zip, dump,
       <id>damjan</id>
       <email>damjan at apache.org</email>
     </developer>
+    <developer>
+      <name>Emmanuel Bourg</name>
+      <id>ebourg</id>
+      <email>ebourg at apache.org</email>
+    </developer>
   </developers>
 
   <contributors>
