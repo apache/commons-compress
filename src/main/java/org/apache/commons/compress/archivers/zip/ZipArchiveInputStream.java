@@ -384,26 +384,31 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         }
 
         // avoid int overflow, check null buffer
-        if (offset <= buffer.length && length >= 0 && offset >= 0
-            && buffer.length - offset >= length) {
-            ZipUtil.checkRequestedFeatures(current.entry);
-            if (!supportsDataDescriptorFor(current.entry)) {
-                throw new UnsupportedZipFeatureException(UnsupportedZipFeatureException
-                                                         .Feature
-                                                         .DATA_DESCRIPTOR,
-                                                         current.entry);
-            }
-
-            if (current.entry.getMethod() == ZipArchiveOutputStream.STORED) {
-                return readStored(buffer, offset, length);
-            }
-            if (current.entry.getMethod() == ZipMethod.UNSHRINKING.getCode()) {
-                throw new UnsupportedZipFeatureException(ZipMethod.UNSHRINKING,
-                                                         current.entry);
-            }
-            return readDeflated(buffer, offset, length);
+        if (offset > buffer.length || length < 0 || offset < 0 || buffer.length - offset < length) {
+            throw new ArrayIndexOutOfBoundsException();
         }
-        throw new ArrayIndexOutOfBoundsException();
+        
+        ZipUtil.checkRequestedFeatures(current.entry);
+        if (!supportsDataDescriptorFor(current.entry)) {
+            throw new UnsupportedZipFeatureException(UnsupportedZipFeatureException.Feature.DATA_DESCRIPTOR,
+                    current.entry);
+        }
+
+        int read;
+        if (current.entry.getMethod() == ZipArchiveOutputStream.STORED) {
+            read = readStored(buffer, offset, length);
+        } else if (current.entry.getMethod() == ZipArchiveOutputStream.DEFLATED) {
+            read = readDeflated(buffer, offset, length);
+        } else {
+            throw new UnsupportedZipFeatureException(ZipMethod.getMethodByCode(current.entry.getMethod()),
+                    current.entry);
+        }
+        
+        if (read >= 0) {
+            crc.update(buffer, offset, read);
+        }
+        
+        return read;
     }
 
     /**
@@ -443,7 +448,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         }
         buf.get(buffer, offset, toRead);
         current.bytesRead += toRead;
-        crc.update(buffer, offset, toRead);
         return toRead;
     }
 
@@ -464,7 +468,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                 throw new IOException("Truncated ZIP file");
             }
         }
-        crc.update(buffer, offset, read);
         return read;
     }
 
