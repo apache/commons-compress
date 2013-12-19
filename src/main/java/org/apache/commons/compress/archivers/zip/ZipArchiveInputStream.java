@@ -342,7 +342,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         if (ae instanceof ZipArchiveEntry) {
             ZipArchiveEntry ze = (ZipArchiveEntry) ae;
             return ZipUtil.canHandleEntryData(ze)
-                && ze.getMethod() != ZipMethod.UNSHRINKING.getCode()
                 && supportsDataDescriptorFor(ze);
 
         }

@@ -129,6 +129,7 @@ public class ZipArchiveInputStreamTest {
         
         ZipArchiveEntry entry = in.getNextZipEntry();
         assertEquals("method", ZipMethod.UNSHRINKING.getCode(), entry.getMethod());
+        assertTrue(in.canReadEntryData(entry));
         
         FileInputStream original = new FileInputStream(getFile("test1.xml"));
         try {
@@ -139,6 +140,7 @@ public class ZipArchiveInputStreamTest {
         
         entry = in.getNextZipEntry();
         assertEquals("method", ZipMethod.UNSHRINKING.getCode(), entry.getMethod());
+        assertTrue(in.canReadEntryData(entry));
         
         original = new FileInputStream(getFile("test2.xml"));
         try {
