@@ -79,11 +79,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     private final Inflater inf = new Inflater(true);
 
     /**
-     * Calculates checkusms for all entries.
-     */
-    private final CRC32 crc = new CRC32();
-
-    /**
      * Buffer used to read from the wrapped stream.
      */
     private final ByteBuffer buf = ByteBuffer.allocate(ZipArchiveOutputStream.BUFFER_SIZE);
@@ -405,7 +400,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         }
         
         if (read >= 0) {
-            crc.update(buffer, offset, read);
+            current.crc.update(buffer, offset, read);
         }
         
         return read;
@@ -626,7 +621,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
 
         inf.reset();
         buf.clear().flip();
-        crc.reset();
         current = null;
         lastStoredEntry = null;
     }
@@ -741,9 +735,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
      * DEFLATED.
      */
     private boolean supportsDataDescriptorFor(ZipArchiveEntry entry) {
-        return allowStoredEntriesWithDataDescriptor ||
-            !entry.getGeneralPurposeBit().usesDataDescriptor()
-            || entry.getMethod() == ZipEntry.DEFLATED;
+        return allowStoredEntriesWithDataDescriptor
+                || !entry.getGeneralPurposeBit().usesDataDescriptor()
+                || entry.getMethod() == ZipEntry.DEFLATED;
     }
 
     /**
@@ -988,23 +982,28 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
      * currently being read.
      */
     private static final class CurrentEntry {
+
         /**
          * Current ZIP entry.
          */
         private final ZipArchiveEntry entry = new ZipArchiveEntry();
+
         /**
          * Does the entry use a data descriptor?
          */
         private boolean hasDataDescriptor;
+
         /**
          * Does the entry have a ZIP64 extended information extra field.
          */
         private boolean usesZip64;
+
         /**
          * Number of bytes of entry content read by the client if the
          * entry is STORED.
          */
         private long bytesRead;
+
         /**
          * Number of bytes of entry content read so from the stream.
          *
@@ -1013,5 +1012,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
          * end of the entry has been reached.</p>
          */
         private long bytesReadFromStream;
+
+        /**
+         * The checksum calculated as the current entry is read.
+         */
+        private final CRC32 crc = new CRC32();
     }
 }
