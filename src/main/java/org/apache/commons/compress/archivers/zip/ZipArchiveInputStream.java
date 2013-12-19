@@ -702,8 +702,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
      * DEFLATED.
      */
     private boolean supportsDataDescriptorFor(ZipArchiveEntry entry) {
-        return allowStoredEntriesWithDataDescriptor
-                || !entry.getGeneralPurposeBit().usesDataDescriptor()
+        return !entry.getGeneralPurposeBit().usesDataDescriptor()
+
+                || (allowStoredEntriesWithDataDescriptor && entry.getMethod() == ZipEntry.STORED)
                 || entry.getMethod() == ZipEntry.DEFLATED;
     }
 
