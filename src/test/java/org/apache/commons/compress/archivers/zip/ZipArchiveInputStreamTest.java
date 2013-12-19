@@ -27,6 +27,8 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.IOException;
+
+import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Test;
 
 public class ZipArchiveInputStreamTest {
@@ -118,6 +120,31 @@ public class ZipArchiveInputStreamTest {
                 extractZipInputStream(new ZipArchiveInputStream(in));
             }
             zae = in.getNextZipEntry();
+        }
+    }
+
+    @Test
+    public void testUnshrinkEntry() throws Exception {
+        ZipArchiveInputStream in = new ZipArchiveInputStream(new FileInputStream(getFile("SHRUNK.ZIP")));
+        
+        ZipArchiveEntry entry = in.getNextZipEntry();
+        assertEquals("method", ZipMethod.UNSHRINKING.getCode(), entry.getMethod());
+        
+        FileInputStream original = new FileInputStream(getFile("test1.xml"));
+        try {
+            assertArrayEquals(IOUtils.toByteArray(original), IOUtils.toByteArray(in));
+        } finally {
+            original.close();
+        }
+        
+        entry = in.getNextZipEntry();
+        assertEquals("method", ZipMethod.UNSHRINKING.getCode(), entry.getMethod());
+        
+        original = new FileInputStream(getFile("test2.xml"));
+        try {
+            assertArrayEquals(IOUtils.toByteArray(original), IOUtils.toByteArray(in));
+        } finally {
+            original.close();
         }
     }
 }
