@@ -271,6 +271,12 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         }
 
         processZip64Extra(size, cSize);
+        
+        if (current.entry.getCompressedSize() != -1 
+                && current.entry.getMethod() == ZipMethod.UNSHRINKING.getCode()) {
+            current.in = new UnshrinkingInputStream(new BoundedInputStream(in, current.entry.getCompressedSize()));
+        }
+        
         entriesRead++;
         return current.entry;
     }
@@ -369,6 +375,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             read = readStored(buffer, offset, length);
         } else if (current.entry.getMethod() == ZipArchiveOutputStream.DEFLATED) {
             read = readDeflated(buffer, offset, length);
+        } else if (current.entry.getMethod() == ZipMethod.UNSHRINKING.getCode()) {
+            read = current.in.read(buffer, offset, length);
         } else {
             throw new UnsupportedZipFeatureException(ZipMethod.getMethodByCode(current.entry.getMethod()),
                     current.entry);
@@ -970,5 +978,88 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
          * The checksum calculated as the current entry is read.
          */
         private final CRC32 crc = new CRC32();
+
+        /**
+         * The input stream decompressing the data for shrunk and imploded entries.
+         */
+        private InputStream in;
+    }
+
+    /**
+     * Bounded input stream adapted from commons-io
+     */
+    private class BoundedInputStream extends InputStream {
+
+        /** the wrapped input stream */
+        private final InputStream in;
+
+        /** the max length to provide */
+        private final long max;
+
+        /** the number of bytes already returned */
+        private long pos = 0;
+    
+        /**
+         * Creates a new <code>BoundedInputStream</code> that wraps the given input
+         * stream and limits it to a certain size.
+         *
+         * @param in The wrapped input stream
+         * @param size The maximum number of bytes to return
+         */
+        public BoundedInputStream(final InputStream in, final long size) {
+            this.max = size;
+            this.in = in;
+        }
+
+        @Override
+        public int read() throws IOException {
+            if (max >= 0 && pos >= max) {
+                return -1;
+            }
+            final int result = in.read();
+            pos++;
+            count(1);
+            current.bytesReadFromStream++;
+            return result;
+        }
+
+        @Override
+        public int read(final byte[] b) throws IOException {
+            return this.read(b, 0, b.length);
+        }
+
+        @Override
+        public int read(final byte[] b, final int off, final int len) throws IOException {
+            if (max >= 0 && pos >= max) {
+                return -1;
+            }
+            final long maxRead = max >= 0 ? Math.min(len, max - pos) : len;
+            final int bytesRead = in.read(b, off, (int) maxRead);
+
+            if (bytesRead == -1) {
+                return -1;
+            }
+
+            pos += bytesRead;
+            count(bytesRead);
+            current.bytesReadFromStream += bytesRead;
+            return bytesRead;
+        }
+
+        @Override
+        public long skip(final long n) throws IOException {
+            final long toSkip = max >= 0 ? Math.min(n, max - pos) : n;
+            final long skippedBytes = in.skip(toSkip);
+            pos += skippedBytes;
+            return skippedBytes;
+        }
+    
+        @Override
+        public int available() throws IOException {
+            if (max >= 0 && pos >= max) {
+                return 0;
+            }
+            return in.available();
+        }
     }
 }
