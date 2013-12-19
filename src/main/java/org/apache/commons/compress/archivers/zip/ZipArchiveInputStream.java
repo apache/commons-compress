@@ -375,7 +375,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     }
 
     @Override
-    public int read(byte[] buffer, int start, int length) throws IOException {
+    public int read(byte[] buffer, int offset, int length) throws IOException {
         if (closed) {
             throw new IOException("The stream is closed");
         }
@@ -384,8 +384,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         }
 
         // avoid int overflow, check null buffer
-        if (start <= buffer.length && length >= 0 && start >= 0
-            && buffer.length - start >= length) {
+        if (offset <= buffer.length && length >= 0 && offset >= 0
+            && buffer.length - offset >= length) {
             ZipUtil.checkRequestedFeatures(current.entry);
             if (!supportsDataDescriptorFor(current.entry)) {
                 throw new UnsupportedZipFeatureException(UnsupportedZipFeatureException
@@ -395,13 +395,13 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             }
 
             if (current.entry.getMethod() == ZipArchiveOutputStream.STORED) {
-                return readStored(buffer, start, length);
+                return readStored(buffer, offset, length);
             }
             if (current.entry.getMethod() == ZipMethod.UNSHRINKING.getCode()) {
                 throw new UnsupportedZipFeatureException(ZipMethod.UNSHRINKING,
                                                          current.entry);
             }
-            return readDeflated(buffer, start, length);
+            return readDeflated(buffer, offset, length);
         }
         throw new ArrayIndexOutOfBoundsException();
     }
@@ -409,14 +409,14 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     /**
      * Implementation of read for STORED entries.
      */
-    private int readStored(byte[] buffer, int start, int length)
+    private int readStored(byte[] buffer, int offset, int length)
         throws IOException {
 
         if (current.hasDataDescriptor) {
             if (lastStoredEntry == null) {
                 readStoredEntry();
             }
-            return lastStoredEntry.read(buffer, start, length);
+            return lastStoredEntry.read(buffer, offset, length);
         }
 
         long csize = current.entry.getSize();
@@ -441,18 +441,18 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             // if it is smaller than toRead then it fits into an int
             toRead = (int) (csize - current.bytesRead);
         }
-        buf.get(buffer, start, toRead);
+        buf.get(buffer, offset, toRead);
         current.bytesRead += toRead;
-        crc.update(buffer, start, toRead);
+        crc.update(buffer, offset, toRead);
         return toRead;
     }
 
     /**
      * Implementation of read for DEFLATED entries.
      */
-    private int readDeflated(byte[] buffer, int start, int length)
+    private int readDeflated(byte[] buffer, int offset, int length)
         throws IOException {
-        int read = readFromInflater(buffer, start, length);
+        int read = readFromInflater(buffer, offset, length);
         if (read <= 0) {
             if (inf.finished()) {
                 return -1;
@@ -464,7 +464,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                 throw new IOException("Truncated ZIP file");
             }
         }
-        crc.update(buffer, start, read);
+        crc.update(buffer, offset, read);
         return read;
     }
 
@@ -472,7 +472,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
      * Potentially reads more bytes to fill the inflater's buffer and
      * reads from it.
      */
-    private int readFromInflater(byte[] buffer, int start, int length)
+    private int readFromInflater(byte[] buffer, int offset, int length)
         throws IOException {
         int read = 0;
         do {
@@ -487,7 +487,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                 }
             }
             try {
-                read = inf.inflate(buffer, start, length);
+                read = inf.inflate(buffer, offset, length);
             } catch (DataFormatException e) {
                 throw (IOException) new ZipException(e.getMessage()).initCause(e);
             }
