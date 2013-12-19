@@ -348,7 +348,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         if (closed) {
             throw new IOException("The stream is closed");
         }
-        if (inf.finished() || current == null) {
+
+        if (current == null) {
             return -1;
         }
 
