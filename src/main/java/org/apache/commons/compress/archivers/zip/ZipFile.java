@@ -29,7 +29,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -898,10 +897,10 @@ public class ZipFile implements Closeable {
     private void resolveLocalFileHeaderData(Map<ZipArchiveEntry, NameAndComment>
                                             entriesWithoutUTF8Flag)
         throws IOException {
-        for (Iterator<ZipArchiveEntry> it = entries.iterator(); it.hasNext(); ) {
+        for (ZipArchiveEntry zipArchiveEntry : entries) {
             // entries is filled in populateFromCentralDirectory and
             // never modified
-            Entry ze = (Entry) it.next();
+            Entry ze = (Entry) zipArchiveEntry;
             OffsetEntry offsetEntry = ze.getOffsetEntry();
             long offset = offsetEntry.headerOffset;
             archive.seek(offset + LFH_OFFSET_FOR_FILENAME_LENGTH);

@@ -563,8 +563,8 @@ public class TarUtils {
     public static long computeCheckSum(final byte[] buf) {
         long sum = 0;
 
-        for (int i = 0; i < buf.length; ++i) {
-            sum += BYTE_MASK & buf[i];
+        for (byte element : buf) {
+            sum += BYTE_MASK & element;
         }
 
         return sum;
