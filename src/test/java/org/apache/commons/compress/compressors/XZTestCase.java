@@ -33,7 +33,7 @@ public final class XZTestCase extends AbstractTestCase {
 
     public void testXZCreation()  throws Exception {
         long max = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax();
-        System.out.println("XZTestCase: HeapMax="+max+" bytes "+((double)max/(1024*1024))+" MB");
+        System.out.println("XZTestCase: HeapMax="+max+" bytes "+(double)max/(1024*1024)+" MB");
         final File input = getFile("test1.xml");
         final File output = new File(dir, "test1.xml.xz");
         final OutputStream out = new FileOutputStream(output);

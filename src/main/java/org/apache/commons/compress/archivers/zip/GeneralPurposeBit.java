@@ -182,8 +182,8 @@ public final class GeneralPurposeBit {
         b.useUTF8ForNames((generalPurposeFlag & UFT8_NAMES_FLAG) != 0);
         b.useStrongEncryption((generalPurposeFlag & STRONG_ENCRYPTION_FLAG) != 0);
         b.useEncryption((generalPurposeFlag & ENCRYPTION_FLAG) != 0);
-        b.slidingDictionarySize = ((generalPurposeFlag & SLIDING_DICTIONARY_SIZE_FLAG) != 0) ? 8192 : 4096;
-        b.numberOfShannonFanoTrees = ((generalPurposeFlag & NUMBER_OF_SHANNON_FANO_TREES_FLAG) != 0) ? 3 : 2;
+        b.slidingDictionarySize = (generalPurposeFlag & SLIDING_DICTIONARY_SIZE_FLAG) != 0 ? 8192 : 4096;
+        b.numberOfShannonFanoTrees = (generalPurposeFlag & NUMBER_OF_SHANNON_FANO_TREES_FLAG) != 0 ? 3 : 2;
         return b;
     }
 

@@ -259,7 +259,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
 
     @Override
     public int hashCode() {
-        int hc = (-1234567 * version);
+        int hc = -1234567 * version;
         // Since most UID's and GID's are below 65,536, this is (hopefully!)
         // a nice way to make sure typical UID and GID values impact the hash
         // as much as possible.

@@ -143,7 +143,7 @@ public class SevenZFile implements Closeable {
      * @throws IOException if the next entry could not be read
      */
     public SevenZArchiveEntry getNextEntry() throws IOException {
-        if (currentEntryIndex >= (archive.files.length - 1)) {
+        if (currentEntryIndex >= archive.files.length - 1) {
             return null;
         }
         ++currentEntryIndex;
@@ -424,7 +424,7 @@ public class SevenZFile implements Closeable {
             }
             long sum = 0;
             if (nid == NID.kSize) {
-                for (int i = 0; i < (folder.numUnpackSubStreams - 1); i++) {
+                for (int i = 0; i < folder.numUnpackSubStreams - 1; i++) {
                     final long size = readUint64(header);
                     subStreamsInfo.unpackSizes[nextUnpackStream++] = size;
                     sum += size;
@@ -489,9 +489,9 @@ public class SevenZFile implements Closeable {
             coders[i] = new Coder();
             int bits = header.readUnsignedByte();
             final int idSize = bits & 0xf;
-            final boolean isSimple = ((bits & 0x10) == 0);
-            final boolean hasAttributes = ((bits & 0x20) != 0);
-            final boolean moreAlternativeMethods = ((bits & 0x80) != 0);
+            final boolean isSimple = (bits & 0x10) == 0;
+            final boolean hasAttributes = (bits & 0x20) != 0;
+            final boolean moreAlternativeMethods = (bits & 0x80) != 0;
             
             coders[i].decompressionMethodId = new byte[idSize];
             header.readFully(coders[i].decompressionMethodId);
@@ -625,7 +625,7 @@ public class SevenZFile implements Closeable {
                     if (external != 0) {
                         throw new IOException("Not implemented");
                     } else {
-                        if (((size - 1) & 1) != 0) {
+                        if ((size - 1 & 1) != 0) {
                             throw new IOException("File names length invalid");
                         }
                         final byte[] names = new byte[(int)(size - 1)];
@@ -721,7 +721,7 @@ public class SevenZFile implements Closeable {
         int nonEmptyFileCounter = 0;
         int emptyFileCounter = 0;
         for (int i = 0; i < files.length; i++) {
-            files[i].setHasStream((isEmptyStream == null) ? true : !isEmptyStream.get(i));
+            files[i].setHasStream(isEmptyStream == null ? true : !isEmptyStream.get(i));
             if (files[i].hasStream()) {
                 files[i].setDirectory(false);
                 files[i].setAntiItem(false);
@@ -730,8 +730,8 @@ public class SevenZFile implements Closeable {
                 files[i].setSize(archive.subStreamsInfo.unpackSizes[nonEmptyFileCounter]);
                 ++nonEmptyFileCounter;
             } else {
-                files[i].setDirectory((isEmptyFile == null) ? true : !isEmptyFile.get(emptyFileCounter));
-                files[i].setAntiItem((isAnti == null) ? false : isAnti.get(emptyFileCounter));
+                files[i].setDirectory(isEmptyFile == null ? true : !isEmptyFile.get(emptyFileCounter));
+                files[i].setAntiItem(isAnti == null ? false : isAnti.get(emptyFileCounter));
                 files[i].setHasCrc(false);
                 files[i].setSize(0);
                 ++emptyFileCounter;
@@ -745,7 +745,7 @@ public class SevenZFile implements Closeable {
         final StreamMap streamMap = new StreamMap();
         
         int nextFolderPackStreamIndex = 0;
-        final int numFolders = (archive.folders != null) ? archive.folders.length : 0;
+        final int numFolders = archive.folders != null ? archive.folders.length : 0;
         streamMap.folderFirstPackStreamIndex = new int[numFolders];
         for (int i = 0; i < numFolders; i++) {
             streamMap.folderFirstPackStreamIndex[i] = nextFolderPackStreamIndex;
@@ -753,7 +753,7 @@ public class SevenZFile implements Closeable {
         }
         
         long nextPackStreamOffset = 0;
-        final int numPackSizes = (archive.packSizes != null) ? archive.packSizes.length : 0;
+        final int numPackSizes = archive.packSizes != null ? archive.packSizes.length : 0;
         streamMap.packStreamOffsets = new long[numPackSizes];
         for (int i = 0; i < numPackSizes; i++) {
             streamMap.packStreamOffsets[i] = nextPackStreamOffset;
@@ -902,10 +902,10 @@ public class SevenZFile implements Closeable {
         long value = 0;
         for (int i = 0; i < 8; i++) {
             if ((firstByte & mask) == 0) {
-                return value | ((firstByte & (mask - 1)) << (8 * i));
+                return value | (firstByte & mask - 1) << 8 * i;
             }
             long nextByte = in.readUnsignedByte();
-            value |= (nextByte << (8 * i));
+            value |= nextByte << 8 * i;
             mask >>>= 1;
         }
         return value;

@@ -259,7 +259,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         }
         final int ret = this.input.read(b, off, toRead);
         count(ret);
-        offset += (ret > 0 ? ret : 0);
+        offset += ret > 0 ? ret : 0;
         return ret;
     }
 

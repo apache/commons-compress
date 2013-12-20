@@ -92,7 +92,7 @@ public final class IOUtils {
             }
             numToSkip -= skipped;
         }
-        return (available - numToSkip);
+        return available - numToSkip;
     }
 
     /**

@@ -202,7 +202,7 @@ public final class ZipTestCase extends AbstractTestCase {
 
             ZipArchiveEntry entry = null;
             while((entry = (ZipArchiveEntry)in.getNextEntry()) != null) {
-                results.add((entry.getName()));
+                results.add(entry.getName());
 
                 ArchiveInputStream nestedIn = new ArchiveStreamFactory().createArchiveInputStream("zip", in);
                 ZipArchiveEntry nestedEntry = null;

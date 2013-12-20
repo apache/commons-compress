@@ -222,7 +222,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         this.name = name;
         this.mode = isDir ? DEFAULT_DIR_MODE : DEFAULT_FILE_MODE;
         this.linkFlag = isDir ? LF_DIR : LF_NORMAL;
-        this.modTime = (new Date()).getTime() / MILLIS_PER_SECOND;
+        this.modTime = new Date().getTime() / MILLIS_PER_SECOND;
         this.userName = "";
     }
 
@@ -897,7 +897,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     private int writeEntryHeaderField(long value, byte[] outbuf, int offset,
                                       int length, boolean starMode) {
         if (!starMode && (value < 0
-                          || value >= (1l << (3 * (length - 1))))) {
+                          || value >= 1l << 3 * (length - 1))) {
             // value doesn't fit into field when written as octal
             // number, will be written to PAX header or causes an
             // error
@@ -1030,8 +1030,8 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
                     char ch2 = fileName.charAt(1);
 
                     if (ch2 == ':'
-                        && ((ch1 >= 'a' && ch1 <= 'z')
-                            || (ch1 >= 'A' && ch1 <= 'Z'))) {
+                        && (ch1 >= 'a' && ch1 <= 'z'
+                            || ch1 >= 'A' && ch1 <= 'Z')) {
                         fileName = fileName.substring(2);
                     }
                 }

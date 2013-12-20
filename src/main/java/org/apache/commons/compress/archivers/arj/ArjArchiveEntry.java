@@ -83,7 +83,7 @@ public class ArjArchiveEntry implements ArchiveEntry {
      * account if the archive has beeen created on Unix.</p>
      */
     public Date getLastModifiedDate() {
-        long ts = isHostOsUnix() ? (localFileHeader.dateTimeModified * 1000l)
+        long ts = isHostOsUnix() ? localFileHeader.dateTimeModified * 1000l
             : ZipUtil.dosToJavaTime(0xFFFFFFFFL & localFileHeader.dateTimeModified);
         return new Date(ts);
     }
