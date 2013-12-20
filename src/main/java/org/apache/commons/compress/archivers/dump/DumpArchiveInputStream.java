@@ -165,13 +165,13 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      * Read CLRI (deleted inode) segment.
      */
     private void readCLRI() throws IOException {
-        byte[] readBuf = raw.readRecord();
+        byte[] buffer = raw.readRecord();
 
-        if (!DumpArchiveUtil.verify(readBuf)) {
+        if (!DumpArchiveUtil.verify(buffer)) {
             throw new InvalidFormatException();
         }
 
-        active = DumpArchiveEntry.parse(readBuf);
+        active = DumpArchiveEntry.parse(buffer);
 
         if (DumpArchiveConstants.SEGMENT_TYPE.CLRI != active.getHeaderType()) {
             throw new InvalidFormatException();
@@ -189,13 +189,13 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      * Read BITS segment.
      */
     private void readBITS() throws IOException {
-        byte[] readBuf = raw.readRecord();
+        byte[] buffer = raw.readRecord();
 
-        if (!DumpArchiveUtil.verify(readBuf)) {
+        if (!DumpArchiveUtil.verify(buffer)) {
             throw new InvalidFormatException();
         }
 
-        active = DumpArchiveEntry.parse(readBuf);
+        active = DumpArchiveEntry.parse(buffer);
 
         if (DumpArchiveConstants.SEGMENT_TYPE.BITS != active.getHeaderType()) {
             throw new InvalidFormatException();
