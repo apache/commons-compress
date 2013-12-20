@@ -27,6 +27,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
 
     private File output;
 
+    @Override
     public void tearDown() throws Exception {
         if (output != null && !output.delete()) {
             output.deleteOnExit();
