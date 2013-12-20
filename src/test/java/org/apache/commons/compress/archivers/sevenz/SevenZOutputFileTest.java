@@ -32,6 +32,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         if (output != null && !output.delete()) {
             output.deleteOnExit();
         }
+        super.tearDown();
     }
 
     public void testDirectoriesAndEmptyFiles() throws Exception {
