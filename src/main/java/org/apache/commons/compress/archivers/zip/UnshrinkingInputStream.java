@@ -56,7 +56,7 @@ class UnshrinkingInputStream extends AbstractLZWInputStream {
         return idx;
     }
     
-    private void partialClear() throws IOException {
+    private void partialClear() {
         final boolean[] isParent = new boolean[MAX_TABLE_SIZE];
         for (int i = 0; i < isUsed.length; i++) {
             if (isUsed[i] && prefixes[i] != -1) {
