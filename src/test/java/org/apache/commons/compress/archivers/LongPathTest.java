@@ -101,6 +101,7 @@ public class LongPathTest extends AbstractTestCase {
         return suite;
     }
 
+    @Override
     protected String getExpectedString(ArchiveEntry entry) {
         if (entry instanceof TarArchiveEntry) {
             TarArchiveEntry tarEntry = (TarArchiveEntry) entry;
