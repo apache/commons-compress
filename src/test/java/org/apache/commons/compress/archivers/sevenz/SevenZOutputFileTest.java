@@ -274,12 +274,12 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         assertEquals("foo/" + index + ".txt", entry.getName());
         assertEquals(false, entry.isDirectory());
         if (entry.getSize() == 0) {
-            return false;
+            return Boolean.FALSE;
         }
         assertEquals(1, entry.getSize());
         assertEquals(17, archive.read());
         assertEquals(-1, archive.read());
-        return true;
+        return Boolean.TRUE;
     }
 
 }
