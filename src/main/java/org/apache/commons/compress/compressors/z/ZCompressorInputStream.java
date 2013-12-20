@@ -20,13 +20,14 @@ package org.apache.commons.compress.compressors.z;
 
 import java.io.IOException;
 import java.io.InputStream;
+import org.apache.commons.compress.compressors.z._internal_.InternalLZWInputStream;
 
 /**
  * Input stream that decompresses .Z files.
  * @NotThreadSafe
  * @since 1.7
  */
-public class ZCompressorInputStream extends AbstractLZWInputStream {
+public class ZCompressorInputStream extends InternalLZWInputStream {
     private static final int MAGIC_1 = 0x1f;
     private static final int MAGIC_2 = 0x9d;
     private static final int BLOCK_MODE_MASK = 0x80;
@@ -59,6 +60,12 @@ public class ZCompressorInputStream extends AbstractLZWInputStream {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * <p><strong>This method is only protected for technical reasons
+     * and is not part of Commons Compress' published API.  It may
+     * change without warning.</strong></p>
+     */
     @Override
     protected int readNextCode() throws IOException {
         int code = super.readNextCode();
@@ -84,6 +91,12 @@ public class ZCompressorInputStream extends AbstractLZWInputStream {
         bitsCachedSize = 0;
     }
     
+    /**
+     * {@inheritDoc}
+     * <p><strong>This method is only protected for technical reasons
+     * and is not part of Commons Compress' published API.  It may
+     * change without warning.</strong></p>
+     */
     @Override
     protected int addEntry(int previousCode, byte character) throws IOException {
         final int maxTableSize = 1 << codeSize;
@@ -95,6 +108,12 @@ public class ZCompressorInputStream extends AbstractLZWInputStream {
         return r;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p><strong>This method is only protected for technical reasons
+     * and is not part of Commons Compress' published API.  It may
+     * change without warning.</strong></p>
+     */
     @Override
     protected int decompressNextSymbol() throws IOException {
         //

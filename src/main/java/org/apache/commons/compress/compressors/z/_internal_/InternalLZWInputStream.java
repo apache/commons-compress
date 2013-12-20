@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.commons.compress.compressors.z;
+package org.apache.commons.compress.compressors.z._internal_;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,10 +26,14 @@ import org.apache.commons.compress.compressors.CompressorInputStream;
 /**
  * Base-class for traditional Unix ".Z" compression and the
  * Unshrinking method of ZIP archive.
+ *
+ * <p><strong>This class is only public for technical reasons and is
+ * not part of Commons Compress' published API.  It may change without
+ * warning.</strong></p>
  * @NotThreadSafe
  * @since 1.7
  */
-public abstract class AbstractLZWInputStream extends CompressorInputStream {
+public abstract class InternalLZWInputStream extends CompressorInputStream {
     private final byte[] oneByte = new byte[1];
 
     protected final InputStream in;
@@ -44,7 +48,7 @@ public abstract class AbstractLZWInputStream extends CompressorInputStream {
     private byte[] outputStack;
     private int outputStackLocation;
 
-    public AbstractLZWInputStream(InputStream inputStream) throws IOException {
+    protected InternalLZWInputStream(InputStream inputStream) throws IOException {
         this.in = inputStream;
     }
 
