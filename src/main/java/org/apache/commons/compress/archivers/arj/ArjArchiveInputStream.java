@@ -87,28 +87,28 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         in.close();
     }
 
-    private int read8(final DataInputStream in) throws IOException {
-        int value = in.readUnsignedByte();
+    private int read8(final DataInputStream dataIn) throws IOException {
+        int value = dataIn.readUnsignedByte();
         count(1);
         return value;
     }
 
-    private int read16(final DataInputStream in) throws IOException {
-        final int value = in.readUnsignedShort();
+    private int read16(final DataInputStream dataIn) throws IOException {
+        final int value = dataIn.readUnsignedShort();
         count(2);
         return Integer.reverseBytes(value) >>> 16;
     }
 
-    private int read32(final DataInputStream in) throws IOException {
-        final int value = in.readInt();
+    private int read32(final DataInputStream dataIn) throws IOException {
+        final int value = dataIn.readInt();
         count(4);
         return Integer.reverseBytes(value);
     }
     
-    private String readString(final DataInputStream in) throws IOException {
+    private String readString(final DataInputStream dataIn) throws IOException {
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int nextByte;
-        while ((nextByte = in.readUnsignedByte()) != 0) {
+        while ((nextByte = dataIn.readUnsignedByte()) != 0) {
             buffer.write(nextByte);
         }
         if (charsetName != null) {
@@ -118,9 +118,9 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         }
     }
     
-    private void readFully(final DataInputStream in, byte[] b)
+    private void readFully(final DataInputStream dataIn, byte[] b)
         throws IOException {
-        in.readFully(b);
+        dataIn.readFully(b);
         count(b.length);
     }
     
@@ -167,47 +167,47 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         final DataInputStream firstHeader = new DataInputStream(
                 new ByteArrayInputStream(firstHeaderBytes));
         
-        final MainHeader mainHeader = new MainHeader();
-        mainHeader.archiverVersionNumber = firstHeader.readUnsignedByte();
-        mainHeader.minVersionToExtract = firstHeader.readUnsignedByte();
-        mainHeader.hostOS = firstHeader.readUnsignedByte();
-        mainHeader.arjFlags = firstHeader.readUnsignedByte();
-        mainHeader.securityVersion = firstHeader.readUnsignedByte();
-        mainHeader.fileType = firstHeader.readUnsignedByte();
-        mainHeader.reserved = firstHeader.readUnsignedByte();
-        mainHeader.dateTimeCreated = read32(firstHeader);
-        mainHeader.dateTimeModified = read32(firstHeader);
-        mainHeader.archiveSize = 0xffffFFFFL & read32(firstHeader);
-        mainHeader.securityEnvelopeFilePosition = read32(firstHeader);
-        mainHeader.fileSpecPosition = read16(firstHeader);
-        mainHeader.securityEnvelopeLength = read16(firstHeader);
+        final MainHeader hdr = new MainHeader();
+        hdr.archiverVersionNumber = firstHeader.readUnsignedByte();
+        hdr.minVersionToExtract = firstHeader.readUnsignedByte();
+        hdr.hostOS = firstHeader.readUnsignedByte();
+        hdr.arjFlags = firstHeader.readUnsignedByte();
+        hdr.securityVersion = firstHeader.readUnsignedByte();
+        hdr.fileType = firstHeader.readUnsignedByte();
+        hdr.reserved = firstHeader.readUnsignedByte();
+        hdr.dateTimeCreated = read32(firstHeader);
+        hdr.dateTimeModified = read32(firstHeader);
+        hdr.archiveSize = 0xffffFFFFL & read32(firstHeader);
+        hdr.securityEnvelopeFilePosition = read32(firstHeader);
+        hdr.fileSpecPosition = read16(firstHeader);
+        hdr.securityEnvelopeLength = read16(firstHeader);
         pushedBackBytes(20); // count has already counted them via readFully
-        mainHeader.encryptionVersion = firstHeader.readUnsignedByte();
-        mainHeader.lastChapter = firstHeader.readUnsignedByte();
+        hdr.encryptionVersion = firstHeader.readUnsignedByte();
+        hdr.lastChapter = firstHeader.readUnsignedByte();
         
         if (firstHeaderSize >= 33) {
-            mainHeader.arjProtectionFactor = firstHeader.readUnsignedByte();
-            mainHeader.arjFlags2 = firstHeader.readUnsignedByte();
+            hdr.arjProtectionFactor = firstHeader.readUnsignedByte();
+            hdr.arjFlags2 = firstHeader.readUnsignedByte();
             firstHeader.readUnsignedByte();
             firstHeader.readUnsignedByte();
         }
 
-        mainHeader.name = readString(basicHeader);
-        mainHeader.comment = readString(basicHeader);
+        hdr.name = readString(basicHeader);
+        hdr.comment = readString(basicHeader);
         
         final  int extendedHeaderSize = read16(in);
         if (extendedHeaderSize > 0) {
-            mainHeader.extendedHeaderBytes = new byte[extendedHeaderSize];
-            readFully(in, mainHeader.extendedHeaderBytes);
+            hdr.extendedHeaderBytes = new byte[extendedHeaderSize];
+            readFully(in, hdr.extendedHeaderBytes);
             final long extendedHeaderCrc32 = 0xffffFFFFL & read32(in);
             final CRC32 crc32 = new CRC32();
-            crc32.update(mainHeader.extendedHeaderBytes);
+            crc32.update(hdr.extendedHeaderBytes);
             if (extendedHeaderCrc32 != crc32.getValue()) {
                 throw new IOException("Extended header CRC32 verification failure");
             }
         }
         
-        return mainHeader;
+        return hdr;
     }
     
     private LocalFileHeader readLocalFileHeader() throws IOException {
