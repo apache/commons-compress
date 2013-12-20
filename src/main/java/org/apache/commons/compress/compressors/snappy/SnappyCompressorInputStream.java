@@ -105,7 +105,7 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
     /** {@inheritDoc} */
     @Override
     public int read() throws IOException {
-        return read(oneByte, 0, 1) == -1 ? -1 : (oneByte[0] & 0xFF);
+        return read(oneByte, 0, 1) == -1 ? -1 : oneByte[0] & 0xFF;
     }
 
     /** {@inheritDoc} */
@@ -269,17 +269,17 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
             break;
         case 61:
             length = readOneByte();
-            length |= (readOneByte() << 8);
+            length |= readOneByte() << 8;
             break;
         case 62:
             length = readOneByte();
-            length |= (readOneByte() << 8);
-            length |= (readOneByte() << 16);
+            length |= readOneByte() << 8;
+            length |= readOneByte() << 16;
             break;
         case 63:
             length = readOneByte();
-            length |= (readOneByte() << 8);
-            length |= (readOneByte() << 16);
+            length |= readOneByte() << 8;
+            length |= readOneByte() << 16;
             length |= (((long) readOneByte()) << 24);
             break;
         default:
@@ -310,7 +310,7 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
         }
 
         writeIndex += length;
-        return (writeIndex >= (2 * this.blockSize));
+        return writeIndex >= 2 * this.blockSize;
     }
 
     /**
@@ -364,7 +364,7 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
                 writeIndex += pad;
             }
         }
-        return (writeIndex >= (2 * this.blockSize));
+        return writeIndex >= 2 * this.blockSize;
     }
 
     /**
