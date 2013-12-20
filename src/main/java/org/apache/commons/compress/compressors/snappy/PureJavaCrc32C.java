@@ -18,7 +18,7 @@
  * Some portions of this file Copyright (c) 2004-2006 Intel Corportation
  * and licensed under the BSD license.
  */
-package org.apache.commons.compress.utils;
+package org.apache.commons.compress.compressors.snappy;
 
 import java.util.zip.Checksum;
 
@@ -32,7 +32,7 @@ import java.util.zip.Checksum;
  * @NotThreadSafe
  * @since 1.7
  */
-public class PureJavaCrc32C implements Checksum {
+class PureJavaCrc32C implements Checksum {
 
   /** the current CRC value, bit-flipped */
   private int crc;
