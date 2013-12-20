@@ -78,10 +78,8 @@ class BitStream {
      * @return The next bit (0 or 1) or -1 if the end of the stream has been reached
      */
     int nextBit() throws IOException {
-        if (bitCacheSize == 0) {
-            if (!fillCache()) {
-                return -1;
-            }
+        if (bitCacheSize == 0 && !fillCache()) {
+            return -1;
         }
 
         int bit = (int) (bitCache & 1); // extract the right most bit
@@ -99,10 +97,8 @@ class BitStream {
      * @return The value formed by the n bits, or -1 if the end of the stream has been reached
      */
     int nextBits(final int n) throws IOException {
-        if (bitCacheSize < n) {
-            if (!fillCache()) {
-                return -1;
-            }
+        if (bitCacheSize < n && !fillCache()) {
+            return -1;
         }
 
         final int bits = (int) (bitCache & MASKS[n]); // extract the right most bits
