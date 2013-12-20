@@ -81,6 +81,10 @@ The <action> type attribute can be add,update,fix,remove.
       <action issue="COMPRESS-115" type="add" date="2012-12-19" due-to="Emmanuel Bourg">
         ZipFile and ZipArchiveInputStream now support reading entries compressed using the IMPLODE method.
       </action>
+      <action type="add" date="2013-12-20">
+        ZipFile and the 7z file classes now implement Closeable and
+        can be used in try-with-resources constructs.
+      </action> 
     </release>
     <release version="1.6" date="2013-10-26"
              description="Release 1.6">

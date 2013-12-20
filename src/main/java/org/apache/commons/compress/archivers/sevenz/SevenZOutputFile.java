@@ -18,6 +18,7 @@
 package org.apache.commons.compress.archivers.sevenz;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -37,7 +38,7 @@ import org.apache.commons.compress.utils.CountingOutputStream;
  * Writes a 7z file.
  * @since 1.6
  */
-public class SevenZOutputFile {
+public class SevenZOutputFile implements Closeable {
     private final RandomAccessFile file;
     private final List<SevenZArchiveEntry> files = new ArrayList<SevenZArchiveEntry>();
     private int numNonEmptyStreams = 0;

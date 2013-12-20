@@ -18,6 +18,7 @@
 package org.apache.commons.compress.archivers.sevenz;
 
 import java.io.ByteArrayInputStream;
+import java.io.Closeable;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.File;
@@ -61,7 +62,7 @@ import org.apache.commons.compress.utils.CharsetNames;
  * @NotThreadSafe
  * @since 1.6
  */
-public class SevenZFile {
+public class SevenZFile implements Closeable {
     static final int SIGNATURE_HEADER_SIZE = 32;
 
     private static final int DRAIN_BUF_SIZE = 64 * 1024;
