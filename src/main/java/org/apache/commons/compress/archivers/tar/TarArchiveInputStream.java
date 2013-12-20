@@ -193,7 +193,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     @Override
     public long skip(long numToSkip) throws IOException {
 
-        long available = (entrySize - entryOffset);
+        long available = entrySize - entryOffset;
         numToSkip = Math.min(numToSkip, available);
 
         long skipped = IOUtils.skip(is, numToSkip); 
