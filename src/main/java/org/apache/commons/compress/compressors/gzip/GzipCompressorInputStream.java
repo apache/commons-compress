@@ -216,7 +216,7 @@ public class GzipCompressorInputStream extends CompressorInputStream {
 
     @Override
     public int read() throws IOException {
-        return read(oneByte, 0, 1) == -1 ? -1 : (oneByte[0] & 0xFF);
+        return read(oneByte, 0, 1) == -1 ? -1 : oneByte[0] & 0xFF;
     }
 
     /**
