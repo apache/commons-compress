@@ -625,7 +625,7 @@ public class SevenZFile implements Closeable {
                     if (external != 0) {
                         throw new IOException("Not implemented");
                     } else {
-                        if ((size - 1 & 1) != 0) {
+                        if (((size - 1) & 1) != 0) {
                             throw new IOException("File names length invalid");
                         }
                         final byte[] names = new byte[(int)(size - 1)];
@@ -902,10 +902,10 @@ public class SevenZFile implements Closeable {
         long value = 0;
         for (int i = 0; i < 8; i++) {
             if ((firstByte & mask) == 0) {
-                return value | (firstByte & mask - 1) << 8 * i;
+                return value | ((firstByte & (mask - 1)) << (8 * i));
             }
             long nextByte = in.readUnsignedByte();
-            value |= nextByte << 8 * i;
+            value |= (nextByte << (8 * i));
             mask >>>= 1;
         }
         return value;
