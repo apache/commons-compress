@@ -152,8 +152,8 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         if (temp.endsWith("/")) { // GNU terminator
             temp = temp.substring(0, temp.length() - 1);
         } else if (isGNULongName(temp)) {
-            int offset = Integer.parseInt(temp.substring(1));// get the offset
-            temp = getExtendedName(offset); // convert to the long name
+            int off = Integer.parseInt(temp.substring(1));// get the offset
+            temp = getExtendedName(off); // convert to the long name
         } else if (isBSDLongName(temp)) {
             temp = getBSDLongName(temp);
             // entry length contained the length of the file name in
