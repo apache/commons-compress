@@ -128,9 +128,9 @@ public class ArchiveStreamFactory {
     }
 
     /**
-     * Sets the encoding to use for arj, zip, dump, cpio and tar
-     * files.  Use null for the default.
-     *
+     * Sets the encoding to use for arj, zip, dump, cpio and tar files. Use null for the default.
+     * 
+     * @param entryEncoding the entry encoding, null uses the default.
      * @since 1.5
      */
     public void setEntryEncoding(String entryEncoding) {
