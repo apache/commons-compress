@@ -29,7 +29,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.zip.ZipEntry;
 
