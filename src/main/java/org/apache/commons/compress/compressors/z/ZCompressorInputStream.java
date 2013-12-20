@@ -43,7 +43,7 @@ public class ZCompressorInputStream extends AbstractLZWInputStream {
         if (firstByte != MAGIC_1 || secondByte != MAGIC_2 || thirdByte < 0) {
             throw new IOException("Input is not in .Z format");
         }
-        blockMode = ((thirdByte & BLOCK_MODE_MASK) != 0);
+        blockMode = (thirdByte & BLOCK_MODE_MASK) != 0;
         maxCodeSize = thirdByte & MAX_CODE_SIZE_MASK;
         if (blockMode) {
             setClearCode(codeSize);
@@ -53,7 +53,7 @@ public class ZCompressorInputStream extends AbstractLZWInputStream {
     }
     
     private void clearEntries() {
-        tableSize = (1 << 8);
+        tableSize = 1 << 8;
         if (blockMode) {
             tableSize++;
         }
