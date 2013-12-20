@@ -742,7 +742,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     public boolean canWriteEntryData(ArchiveEntry ae) {
         if (ae instanceof ZipArchiveEntry) {
             ZipArchiveEntry zae = (ZipArchiveEntry) ae;
-            return zae.getMethod() != ZipMethod.IMPLODING.getCode() && ZipUtil.canHandleEntryData(zae);
+            return zae.getMethod() != ZipMethod.IMPLODING.getCode()
+                && zae.getMethod() != ZipMethod.UNSHRINKING.getCode()
+                && ZipUtil.canHandleEntryData(zae);
         }
         return false;
     }
