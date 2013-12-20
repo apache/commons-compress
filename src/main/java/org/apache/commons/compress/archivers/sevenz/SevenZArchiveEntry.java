@@ -305,6 +305,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * Gets the CRC.
      * @deprecated use getCrcValue instead.
      */
+    @Deprecated
     public int getCrc() {
         return (int) crc;
     }
@@ -313,6 +314,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * Sets the CRC.
      * @deprecated use setCrcValue instead.
      */
+    @Deprecated
     public void setCrc(int crc) {
         this.crc = crc;
     }
@@ -337,6 +339,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * Gets the compressed CRC.
      * @deprecated use getCompressedCrcValue instead.
      */
+    @Deprecated
     int getCompressedCrc() {
         return (int) compressedCrc;
     }
@@ -345,6 +348,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * Sets the compressed CRC.
      * @deprecated use setCompressedCrcValue instead.
      */
+    @Deprecated
     void setCompressedCrc(int crc) {
         this.compressedCrc = crc;
     }
