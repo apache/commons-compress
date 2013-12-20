@@ -24,7 +24,7 @@ import javax.crypto.Cipher;
 import org.apache.commons.compress.AbstractTestCase;
 
 public class SevenZFileTest extends AbstractTestCase {
-    private static String TEST2_CONTENT = "<?xml version = '1.0'?>\r\n<!DOCTYPE"
+    private static final String TEST2_CONTENT = "<?xml version = '1.0'?>\r\n<!DOCTYPE"
         + " connections>\r\n<meinxml>\r\n\t<leer />\r\n</meinxml>\n";
 
     public void testAllEmptyFilesArchive() throws Exception {
