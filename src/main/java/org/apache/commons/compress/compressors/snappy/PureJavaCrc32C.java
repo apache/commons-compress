@@ -42,18 +42,15 @@ class PureJavaCrc32C implements Checksum {
     reset();
   }
 
-  @Override
   public long getValue() {
     long ret = crc;
     return (~ret) & 0xffffffffL;
   }
 
-  @Override
   public void reset() {
     crc = 0xffffffff;
   }
 
-  @Override
   public void update(byte[] b, int off, int len) {
     int localCrc = crc;
 
@@ -94,7 +91,6 @@ class PureJavaCrc32C implements Checksum {
     crc = localCrc;
   }
 
-  @Override
   final public void update(int b) {
     crc = (crc >>> 8) ^ T[T8_0_start + ((crc ^ b) & 0xff)];
   }
