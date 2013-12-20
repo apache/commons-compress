@@ -26,7 +26,6 @@ import java.util.Arrays;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.IOUtils;
-import org.apache.commons.compress.utils.PureJavaCrc32C;
 
 /**
  * CompressorInputStream for the framing Snappy format.
