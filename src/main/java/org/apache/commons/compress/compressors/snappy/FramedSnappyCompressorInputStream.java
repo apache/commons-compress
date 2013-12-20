@@ -32,7 +32,7 @@ import org.apache.commons.compress.utils.IOUtils;
  *
  * <p>Based on the "spec" in the version "Last revised: 2013-10-25"</p>
  *
- * @see "http://code.google.com/p/snappy/source/browse/trunk/framing_format.txt"
+ * @see <a href="http://code.google.com/p/snappy/source/browse/trunk/framing_format.txt">Snappy framing format description</a>
  * @since 1.7
  */
 public class FramedSnappyCompressorInputStream extends CompressorInputStream {

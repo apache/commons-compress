@@ -34,7 +34,7 @@ import org.apache.commons.compress.compressors.CompressorInputStream;
  * doesn't contain offsets bigger than 32k which is the default block
  * size used by this class.</p>
  *
- * @see "http://code.google.com/p/snappy/source/browse/trunk/format_description.txt"
+ * @see <a href="http://code.google.com/p/snappy/source/browse/trunk/format_description.txt">Snappy compressed format description</a>
  * @since 1.7
  */
 public class SnappyCompressorInputStream extends CompressorInputStream {
@@ -48,15 +48,10 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
     /** Buffer to write decompressed bytes to for back-references */
     private final byte[] decompressBuf;
 
-    /** 
-     * One behind the index of the last byte in the buffer that was
-     * written
-     */
+    /** One behind the index of the last byte in the buffer that was written */
     private int writeIndex;
 
-    /**
-     * Index of the next byte to be read.
-     */
+    /** Index of the next byte to be read. */
     private int readIndex;
 
     /** The actual block size specified */
@@ -68,9 +63,7 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
     /** The size of the uncompressed data */
     private final int size;
 
-    /**
-     * Number of uncompressed bytes still to be read.
-     */
+    /** Number of uncompressed bytes still to be read. */
     private int uncompressedBytesRemaining;
 
     // used in no-arg read method
