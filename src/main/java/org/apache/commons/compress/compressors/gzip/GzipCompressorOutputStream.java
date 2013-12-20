@@ -52,7 +52,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
     private final Deflater deflater;
 
     /** The buffer receiving the compressed data from the deflater */
-    private final byte[] buffer = new byte[512];
+    private final byte[] deflateBuffer = new byte[512];
 
     /** Indicates if the stream has been closed */
     private boolean closed;
@@ -161,9 +161,9 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
     }
 
     private void deflate() throws IOException {
-        int length = deflater.deflate(buffer, 0, buffer.length);
+        int length = deflater.deflate(deflateBuffer, 0, deflateBuffer.length);
         if (length > 0) {
-            out.write(buffer, 0, length);
+            out.write(deflateBuffer, 0, length);
         }
     }
 
