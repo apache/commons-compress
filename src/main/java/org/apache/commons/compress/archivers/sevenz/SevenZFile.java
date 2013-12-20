@@ -905,7 +905,7 @@ public class SevenZFile implements Closeable {
                 return value | ((firstByte & (mask - 1)) << (8 * i));
             }
             long nextByte = in.readUnsignedByte();
-            value |= (nextByte << (8 * i));
+            value |= nextByte << (8 * i);
             mask >>>= 1;
         }
         return value;
