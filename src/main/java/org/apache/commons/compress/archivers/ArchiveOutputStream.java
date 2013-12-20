@@ -163,10 +163,12 @@ public abstract class ArchiveOutputStream extends OutputStream {
      * <p>Some archive formats support variants or details that are
      * not supported (yet).</p>
      *
-     * <p>This implementation always returns true.
+     * @param archiveEntry
+     *            the entry to test
+     * @return This implementation always returns true.
      * @since 1.1
      */
-    public boolean canWriteEntryData(ArchiveEntry ae) {
+    public boolean canWriteEntryData(ArchiveEntry archiveEntry) {
         return true;
     }
 }
