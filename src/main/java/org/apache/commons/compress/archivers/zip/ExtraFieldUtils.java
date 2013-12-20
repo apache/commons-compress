@@ -134,7 +134,7 @@ public class ExtraFieldUtils {
         LOOP:
         while (start <= data.length - WORD) {
             ZipShort headerId = new ZipShort(data, start);
-            int length = (new ZipShort(data, start + 2)).getValue();
+            int length = new ZipShort(data, start + 2).getValue();
             if (start + WORD + length > data.length) {
                 switch(onUnparseableData.getKey()) {
                 case UnparseableExtraField.THROW_KEY:
@@ -180,7 +180,7 @@ public class ExtraFieldUtils {
             } catch (IllegalAccessException iae) {
                 throw (ZipException) new ZipException(iae.getMessage()).initCause(iae);
             }
-            start += (length + WORD);
+            start += length + WORD;
         }
 
         ZipExtraField[] result = new ZipExtraField[v.size()];
@@ -212,7 +212,7 @@ public class ExtraFieldUtils {
                              0, result, start + 2, 2);
             byte[] local = data[i].getLocalFileDataData();
             System.arraycopy(local, 0, result, start + WORD, local.length);
-            start += (local.length + WORD);
+            start += local.length + WORD;
         }
         if (lastIsUnparseableHolder) {
             byte[] local = data[data.length - 1].getLocalFileDataData();
@@ -245,7 +245,7 @@ public class ExtraFieldUtils {
                              0, result, start + 2, 2);
             byte[] local = data[i].getCentralDirectoryData();
             System.arraycopy(local, 0, result, start + WORD, local.length);
-            start += (local.length + WORD);
+            start += local.length + WORD;
         }
         if (lastIsUnparseableHolder) {
             byte[] local = data[data.length - 1].getCentralDirectoryData();

@@ -77,7 +77,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         if (prevEntry == null || !haveUnclosedEntry){
             throw new IOException("No current entry to close");
         }
-        if ((entryOffset % 2) != 0) {
+        if (entryOffset % 2 != 0) {
             out.write('\n'); // Pad byte
         }
         haveUnclosedEntry = false;
@@ -147,7 +147,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         }
 
         offset = fill(offset, 16, ' ');
-        final String m = "" + (pEntry.getLastModified());
+        final String m = "" + pEntry.getLastModified();
         if (m.length() > 12) {
             throw new IOException("modified too long");
         }

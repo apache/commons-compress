@@ -197,7 +197,7 @@ public class TarUtils {
         if (negative) {
             // 2's complement
             val--;
-            val ^= ((long) Math.pow(2, (length - 1) * 8) - 1);
+            val ^= (long) Math.pow(2, (length - 1) * 8) - 1;
         }
         return negative ? -val : val;
     }

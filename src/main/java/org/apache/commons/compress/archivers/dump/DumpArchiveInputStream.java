@@ -134,7 +134,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         queue = new PriorityQueue<DumpArchiveEntry>(10,
                 new Comparator<DumpArchiveEntry>() {
                     public int compare(DumpArchiveEntry p, DumpArchiveEntry q) {
-                        if ((p.getOriginalName() == null) || (q.getOriginalName() == null)) {
+                        if (p.getOriginalName() == null || q.getOriginalName() == null) {
                             return Integer.MAX_VALUE;
                         }
 
@@ -321,14 +321,14 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         boolean first = true;
 
         while (first ||
-                (DumpArchiveConstants.SEGMENT_TYPE.ADDR == entry.getHeaderType())) {
+                DumpArchiveConstants.SEGMENT_TYPE.ADDR == entry.getHeaderType()) {
             // read the header that we just peeked at.
             if (!first) {
                 raw.readRecord();
             }
 
             if (!names.containsKey(Integer.valueOf(entry.getIno())) &&
-                    (DumpArchiveConstants.SEGMENT_TYPE.INODE == entry.getHeaderType())) {
+                    DumpArchiveConstants.SEGMENT_TYPE.INODE == entry.getHeaderType()) {
                 pending.put(Integer.valueOf(entry.getIno()), entry);
             }
 
@@ -344,7 +344,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
             int reclen = 0;
 
-            for (int i = 0; (i < (datalen - 8)) && (i < (size - 8));
+            for (int i = 0; i < datalen - 8 && i < size - 8;
                     i += reclen) {
                 int ino = DumpArchiveUtil.convert32(blockBuffer, i);
                 reclen = DumpArchiveUtil.convert16(blockBuffer, i + 4);
@@ -461,20 +461,20 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     public int read(byte[] buf, int off, int len) throws IOException {
         int totalRead = 0;
 
-        if (hasHitEOF || isClosed || (entryOffset >= entrySize)) {
+        if (hasHitEOF || isClosed || entryOffset >= entrySize) {
             return -1;
         }
 
-        if ((len + entryOffset) > entrySize) {
+        if (len + entryOffset > entrySize) {
             len = (int) (entrySize - entryOffset);
         }
 
         while (len > 0) {
-            int sz = (len > (readBuf.length - recordOffset))
-                ? (readBuf.length - recordOffset) : len;
+            int sz = len > readBuf.length - recordOffset
+                ? readBuf.length - recordOffset : len;
 
             // copy any data we have
-            if ((recordOffset + sz) <= readBuf.length) {
+            if (recordOffset + sz <= readBuf.length) {
                 System.arraycopy(readBuf, recordOffset, buf, off, sz);
                 totalRead += sz;
                 recordOffset += sz;

@@ -369,7 +369,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      */
     @Override
     public void write(byte[] wBuf, int wOffset, int numToWrite) throws IOException {
-        if ((currBytes + numToWrite) > currSize) {
+        if (currBytes + numToWrite > currSize) {
             throw new IOException("request to write '" + numToWrite
                                   + "' bytes exceeds size in header of '"
                                   + currSize + "' bytes for entry '"
@@ -385,7 +385,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         }
 
         if (assemLen > 0) {
-            if ((assemLen + numToWrite) >= recordBuf.length) {
+            if (assemLen + numToWrite >= recordBuf.length) {
                 int aLen = recordBuf.length - assemLen;
 
                 System.arraycopy(assemBuf, 0, recordBuf, 0,
@@ -543,7 +543,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      */
     private void writeRecord(byte[] buf, int offset) throws IOException {
  
-        if ((offset + recordSize) > buf.length) {
+        if (offset + recordSize > buf.length) {
             throw new IOException("record has length '" + buf.length
                                   + "' with offset '" + offset
                                   + "' which is less than the record size of '"
