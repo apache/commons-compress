@@ -264,6 +264,8 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
             writeBinaryLong(MAGIC_OLD_BINARY, 2, swapHalfWord);
             writeOldBinaryEntry(e, swapHalfWord);
             break;
+        default:
+            throw new IOException("unknown format " + e.getFormat());
         }
     }
 

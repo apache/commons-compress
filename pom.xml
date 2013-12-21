@@ -207,7 +207,7 @@ These include: bzip2, gzip, pack200, lzma, xz and ar, cpio, jar, tar, zip, dump,
         <!-- generate a code coverage report -->
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cobertura-maven-plugin</artifactId>
-        <version>2.5.1</version>
+        <version>2.6</version>
       </plugin>
       <plugin>
         <!-- generate the PMD reports -->
@@ -258,7 +258,7 @@ These include: bzip2, gzip, pack200, lzma, xz and ar, cpio, jar, tar, zip, dump,
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>2.3.2</version>
+        <version>2.5.3</version>
         <configuration>
           <threshold>Normal</threshold>
           <effort>Default</effort>
