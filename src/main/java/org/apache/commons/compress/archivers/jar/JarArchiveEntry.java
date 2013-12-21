@@ -87,19 +87,4 @@ public class JarArchiveEntry extends ZipArchiveEntry {
         return null;
     }
 
-    /* 
-     * We can chose between Findbugs complaining about
-     * http://findbugs.sourceforge.net/bugDescriptions.html#EQ_DOESNT_OVERRIDE_EQUALS
-     * or PMD stating "Overriding method merely calls super" - so far
-     * the choice is to make Findbugs happy.
-     */
-    @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
 }

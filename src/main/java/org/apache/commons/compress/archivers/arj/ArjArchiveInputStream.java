@@ -114,6 +114,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         if (charsetName != null) {
             return new String(buffer.toByteArray(), charsetName);
         } else {
+            // intentionally using the default encoding as that's the contract for a null charsetName
             return new String(buffer.toByteArray());
         }
     }
