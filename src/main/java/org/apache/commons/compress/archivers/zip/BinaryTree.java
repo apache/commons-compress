@@ -82,7 +82,7 @@ class BinaryTree {
      * @return the value decoded, or -1 if the end of the stream is reached
      */
     public int read(BitStream stream) throws IOException {
-        short currentIndex = 0;
+        int currentIndex = 0;
 
         while (true) {
             int bit = stream.nextBit();
@@ -90,7 +90,7 @@ class BinaryTree {
                 return -1;
             }
 
-            short childIndex = (short) (2 * currentIndex + 1 + bit);
+            int childIndex = 2 * currentIndex + 1 + bit;
             int value = tree[childIndex];
             if (value == NODE) {
                 // consume the next bit
