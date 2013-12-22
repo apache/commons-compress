@@ -57,6 +57,10 @@ public class ExplodeSupportTest extends TestCase {
         testArchiveWithImplodeCompression("target/test-classes/archives/imploding-8Kdict-3trees.zip", "LICENSE.TXT");
     }
 
+    public void XtestTikaTestArchive() throws IOException {
+        testArchiveWithImplodeCompression("target/test-classes/tika-moby.zip", "README");
+    }
+
     private void testZipStreamWithImplodeCompression(String filename, String entryName) throws IOException {
         ZipArchiveInputStream zin = new ZipArchiveInputStream(new FileInputStream(new File(filename)));
         ZipArchiveEntry entry = zin.getNextZipEntry();
@@ -82,4 +86,9 @@ public class ExplodeSupportTest extends TestCase {
     public void testZipStreamWithImplodeCompression8K3Trees() throws IOException {
         testZipStreamWithImplodeCompression("target/test-classes/archives/imploding-8Kdict-3trees.zip", "LICENSE.TXT");
     }
+
+    public void XtestTikaTestStream() throws IOException {
+        testZipStreamWithImplodeCompression("target/test-classes/tika-moby.zip", "README");
+    }
+
 }
