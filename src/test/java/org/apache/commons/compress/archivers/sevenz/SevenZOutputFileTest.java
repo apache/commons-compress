@@ -218,12 +218,14 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         int nonEmptyModulus = numberOfNonEmptyFiles != 0
             ? numberOfFiles / numberOfNonEmptyFiles
             : numberOfFiles + 1;
+        int nonEmptyFilesAdded = 0;
         output = new File(dir, "COMPRESS252-" + numberOfFiles + "-" + numberOfNonEmptyFiles + ".7z");
         SevenZOutputFile archive = new SevenZOutputFile(output);
         try {
             addDir(archive);
             for (int i = 0; i < numberOfFiles; i++) {
-                addFile(archive, i, (i + 1) % nonEmptyModulus == 0);
+                addFile(archive, i,
+                        (i + 1) % nonEmptyModulus == 0 && nonEmptyFilesAdded++ < numberOfNonEmptyFiles);
             }
         } finally {
             archive.close();
