@@ -57,8 +57,8 @@ public class ExplodeSupportTest extends TestCase {
         testArchiveWithImplodeCompression("target/test-classes/archives/imploding-8Kdict-3trees.zip", "LICENSE.TXT");
     }
 
-    public void XtestTikaTestArchive() throws IOException {
-        testArchiveWithImplodeCompression("target/test-classes/tika-moby.zip", "README");
+    public void testTikaTestArchive() throws IOException {
+        testArchiveWithImplodeCompression("target/test-classes/moby-imploded.zip", "README");
     }
 
     private void testZipStreamWithImplodeCompression(String filename, String entryName) throws IOException {
@@ -87,8 +87,8 @@ public class ExplodeSupportTest extends TestCase {
         testZipStreamWithImplodeCompression("target/test-classes/archives/imploding-8Kdict-3trees.zip", "LICENSE.TXT");
     }
 
-    public void XtestTikaTestStream() throws IOException {
-        testZipStreamWithImplodeCompression("target/test-classes/tika-moby.zip", "README");
+    public void testTikaTestStream() throws IOException {
+        testZipStreamWithImplodeCompression("target/test-classes/moby-imploded.zip", "README");
     }
 
 }
