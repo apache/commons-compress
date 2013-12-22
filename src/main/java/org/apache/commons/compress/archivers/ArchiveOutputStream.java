@@ -43,11 +43,6 @@ import java.io.OutputStream;
  *   <li> optionally write additional data, provided format supports it,</li>
  *   <li>{@link #close()}.</li>
  * </ul>
- * 
- * <p>
- * Example usage:<br/>
- * TBA
- * </p>
  */
 public abstract class ArchiveOutputStream extends OutputStream {
 

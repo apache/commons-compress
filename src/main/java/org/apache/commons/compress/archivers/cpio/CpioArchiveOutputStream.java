@@ -35,14 +35,13 @@ import org.apache.commons.compress.utils.CharsetNames;
  * CPIOArchiveOutputStream is a stream for writing CPIO streams. All formats of
  * CPIO are supported (old ASCII, old binary, new portable format and the new
  * portable format with CRC).
- * <p/>
- * <p/>
- * An entry can be written by creating an instance of CpioArchiveEntry and fill
+ *
+ * <p>An entry can be written by creating an instance of CpioArchiveEntry and fill
  * it with the necessary values and put it into the CPIO stream. Afterwards
  * write the contents of the file into the CPIO stream. Either close the stream
- * by calling finish() or put a next entry into the cpio stream.
- * <p/>
- * <code><pre>
+ * by calling finish() or put a next entry into the cpio stream.</p>
+ *
+ * <pre>
  * CpioArchiveOutputStream out = new CpioArchiveOutputStream(
  *         new FileOutputStream(new File("test.cpio")));
  * CpioArchiveEntry entry = new CpioArchiveEntry();
@@ -54,13 +53,13 @@ import org.apache.commons.compress.utils.CharsetNames;
  * out.putArchiveEntry(entry);
  * out.write(testContents.getBytes());
  * out.close();
- * </pre></code>
- * <p/>
- * Note: This implementation should be compatible to cpio 2.5
+ * </pre>
+ *
+ * <p>Note: This implementation should be compatible to cpio 2.5</p>
  * 
- * This class uses mutable fields and is not considered threadsafe.
+ * <p>This class uses mutable fields and is not considered threadsafe.</p>
  * 
- * based on code from the jRPM project (jrpm.sourceforge.net)
+ * <p>based on code from the jRPM project (jrpm.sourceforge.net)</p>
  */
 public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         CpioConstants {

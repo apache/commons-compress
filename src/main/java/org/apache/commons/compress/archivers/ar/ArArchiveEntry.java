@@ -26,7 +26,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 /**
  * Represents an archive entry in the "ar" format.
  * 
- * Each AR archive starts with "!<arch>" followed by a LF. After these 8 bytes
+ * Each AR archive starts with "!&lt;arch&gt;" followed by a LF. After these 8 bytes
  * the archive entries are listed. The format of an entry header is as it follows:
  * 
  * <pre>

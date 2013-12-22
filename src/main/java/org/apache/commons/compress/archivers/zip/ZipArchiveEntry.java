@@ -32,8 +32,7 @@ import java.util.zip.ZipException;
  * access to the internal and external file attributes.
  *
  * <p>The extra data is expected to follow the recommendation of
- * {@link <a href="http://www.pkware.com/documents/casestudies/APPNOTE.TXT">
- * APPNOTE.txt</a>}:</p>
+ * <a href="http://www.pkware.com/documents/casestudies/APPNOTE.TXT">APPNOTE.TXT</a>:</p>
  * <ul>
  *   <li>the extra byte array consists of a sequence of extra fields</li>
  *   <li>each extra fields starts by a two byte header id followed by

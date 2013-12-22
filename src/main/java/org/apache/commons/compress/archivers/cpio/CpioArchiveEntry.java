@@ -141,7 +141,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * N.B. does not handle the cpio "tar" format
  * </p>
  * @NotThreadSafe
- * @see "http://people.freebsd.org/~kientzle/libarchive/man/cpio.5.txt"
+ * @see <a href="http://people.freebsd.org/~kientzle/libarchive/man/cpio.5.txt">http://people.freebsd.org/~kientzle/libarchive/man/cpio.5.txt</a>
  */
 public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
 
@@ -192,14 +192,14 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * 
      * @param format
      *            The cpio format for this entry.
-     * <br/>
-     * Possible format values are:
      * <p>
-     * CpioConstants.FORMAT_NEW<br/>
-     * CpioConstants.FORMAT_NEW_CRC<br/>
-     * CpioConstants.FORMAT_OLD_BINARY<br/>
-     * CpioConstants.FORMAT_OLD_ASCII<br/>
-     * 
+     * Possible format values are:
+     * <pre>
+     * CpioConstants.FORMAT_NEW
+     * CpioConstants.FORMAT_NEW_CRC
+     * CpioConstants.FORMAT_OLD_BINARY
+     * CpioConstants.FORMAT_OLD_ASCII
+     * </pre>
      */
     public CpioArchiveEntry(final short format) {
         switch (format) {
@@ -243,13 +243,14 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      *            The cpio format for this entry.
      * @param name
      *            The name of this entry.
-     * <br/>
-     * Possible format values are:
      * <p>
-     * CpioConstants.FORMAT_NEW<br/>
-     * CpioConstants.FORMAT_NEW_CRC<br/>
-     * CpioConstants.FORMAT_OLD_BINARY<br/>
-     * CpioConstants.FORMAT_OLD_ASCII<br/>
+     * Possible format values are:
+     * <pre>
+     * CpioConstants.FORMAT_NEW
+     * CpioConstants.FORMAT_NEW_CRC
+     * CpioConstants.FORMAT_OLD_BINARY
+     * CpioConstants.FORMAT_OLD_ASCII
+     * </pre>
      * 
      * @since 1.1
      */
@@ -281,13 +282,14 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      *            The name of this entry.
      * @param size
      *            The size of this entry
-     * <br/>
-     * Possible format values are:
      * <p>
-     * CpioConstants.FORMAT_NEW<br/>
-     * CpioConstants.FORMAT_NEW_CRC<br/>
-     * CpioConstants.FORMAT_OLD_BINARY<br/>
-     * CpioConstants.FORMAT_OLD_ASCII<br/>
+     * Possible format values are:
+     * <pre>
+     * CpioConstants.FORMAT_NEW
+     * CpioConstants.FORMAT_NEW_CRC
+     * CpioConstants.FORMAT_OLD_BINARY
+     * CpioConstants.FORMAT_OLD_ASCII
+     * </pre>
      * 
      * @since 1.1
      */
@@ -321,13 +323,14 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      *            The file to gather information from.
      * @param entryName
      *            The name of this entry.
-     * <br/>
-     * Possible format values are:
      * <p>
-     * CpioConstants.FORMAT_NEW<br/>
-     * CpioConstants.FORMAT_NEW_CRC<br/>
-     * CpioConstants.FORMAT_OLD_BINARY<br/>
-     * CpioConstants.FORMAT_OLD_ASCII<br/>
+     * Possible format values are:
+     * <pre>
+     * CpioConstants.FORMAT_NEW
+     * CpioConstants.FORMAT_NEW_CRC
+     * CpioConstants.FORMAT_OLD_BINARY
+     * CpioConstants.FORMAT_OLD_ASCII
+     * </pre>
      * 
      * @since 1.1
      */
@@ -664,7 +667,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
 
     /**
      * Set the checksum. The checksum is calculated by adding all bytes of a
-     * file to transfer (crc += buf[pos] & 0xFF).
+     * file to transfer (crc += buf[pos] &amp; 0xFF).
      * 
      * @param chksum
      *            The checksum to set.

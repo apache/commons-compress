@@ -161,7 +161,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Set the long file mode.
      * This can be LONGFILE_ERROR(0), LONGFILE_TRUNCATE(1) or LONGFILE_GNU(2).
-     * This specifies the treatment of long file names (names >= TarConstants.NAMELEN).
+     * This specifies the treatment of long file names (names &gt;= TarConstants.NAMELEN).
      * Default is LONGFILE_ERROR.
      * @param longFileMode the mode to use
      */

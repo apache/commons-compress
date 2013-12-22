@@ -264,7 +264,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
     }
 
     /**
-     * Checks if the signature matches ASCII "!<arch>" followed by a single LF
+     * Checks if the signature matches ASCII "!&lt;arch&gt;" followed by a single LF
      * control character
      * 
      * @param signature

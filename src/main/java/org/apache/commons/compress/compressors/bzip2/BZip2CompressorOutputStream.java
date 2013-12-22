@@ -52,9 +52,7 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
  * &lt;code&gt;65k + (5 * blocksize)&lt;/code&gt;.
  * </pre>
  *
- * <table width="100%" border="1">
- * <colgroup> <col width="33%" /> <col width="33%" /> <col width="33%" />
- * </colgroup>
+ * <table width="100%" border="1" summary="Memory usage by blocksize">
  * <tr>
  * <th colspan="3">Memory usage by blocksize</th>
  * </tr>
@@ -369,7 +367,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
      * @throws IOException
      *             if an I/O error occurs in the specified stream.
      * @throws IllegalArgumentException
-     *             if <code>(blockSize < 1) || (blockSize > 9)</code>.
+     *             if <code>(blockSize &lt; 1) || (blockSize &gt; 9)</code>.
      * @throws NullPointerException
      *             if <code>out == null</code>.
      *
