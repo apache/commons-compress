@@ -205,6 +205,14 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         testCompress252(9, 2);
     }
 
+    public void testTwentyNineEmptyFiles() throws Exception {
+        testCompress252(29, 0);
+    }
+
+    public void testTwentyNineFilesSomeNotEmpty() throws Exception {
+        testCompress252(29, 7);
+    }
+
     private void testCompress252(int numberOfFiles, int numberOfNonEmptyFiles)
         throws Exception {
         int nonEmptyModulus = numberOfNonEmptyFiles != 0
