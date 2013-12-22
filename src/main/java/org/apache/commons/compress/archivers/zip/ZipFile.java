@@ -316,7 +316,7 @@ public class ZipFile implements Closeable {
      * the archive's central directory.
      *
      * @param name name of the entry.
-     * @return the Iterable<ZipArchiveEntry> corresponding to the
+     * @return the Iterable&lt;ZipArchiveEntry&gt; corresponding to the
      * given name
      * @since 1.6
      */
@@ -331,7 +331,7 @@ public class ZipFile implements Closeable {
      * appear within the archive.
      *
      * @param name name of the entry.
-     * @return the Iterable<ZipArchiveEntry> corresponding to the
+     * @return the Iterable&lt;ZipArchiveEntry&gt; corresponding to the
      * given name
      * @since 1.6
      */

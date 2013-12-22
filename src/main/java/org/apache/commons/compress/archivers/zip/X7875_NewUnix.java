@@ -27,10 +27,10 @@ import static org.apache.commons.compress.archivers.zip.ZipUtil.signedByteToUnsi
 import static org.apache.commons.compress.archivers.zip.ZipUtil.unsignedIntToSignedByte;
 
 /**
- * An extra field that stores UNIX UID/GID data (owner & group ownership) for a given
+ * An extra field that stores UNIX UID/GID data (owner &amp; group ownership) for a given
  * zip entry.  We're using the field definition given in Info-Zip's source archive:
  * zip-3.0.tar.gz/proginfo/extrafld.txt
- * <p/>
+ *
  * <pre>
  * Value         Size        Description
  * -----         ----        -----------

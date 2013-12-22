@@ -34,17 +34,17 @@ import org.apache.commons.compress.utils.IOUtils;
  * CPIOArchiveInputStream is a stream for reading cpio streams. All formats of
  * cpio are supported (old ascii, old binary, new portable format and the new
  * portable format with crc).
- * <p/>
- * <p/>
+ *
+ * <p>
  * The stream can be read by extracting a cpio entry (containing all
  * informations about a entry) and afterwards reading from the stream the file
  * specified by the entry.
- * <p/>
- * <code><pre>
+ * </p>
+ * <pre>
  * CPIOArchiveInputStream cpioIn = new CPIOArchiveInputStream(
  *         new FileInputStream(new File(&quot;test.cpio&quot;)));
  * CPIOArchiveEntry cpioEntry;
- * <p/>
+ *
  * while ((cpioEntry = cpioIn.getNextEntry()) != null) {
  *     System.out.println(cpioEntry.getName());
  *     int tmp;
@@ -55,13 +55,13 @@ import org.apache.commons.compress.utils.IOUtils;
  *     System.out.println(buf.toString());
  * }
  * cpioIn.close();
- * </pre></code>
- * <p/>
+ * </pre>
+ * <p>
  * Note: This implementation should be compatible to cpio 2.5
  * 
- * This class uses mutable fields and is not considered to be threadsafe.
+ * <p>This class uses mutable fields and is not considered to be threadsafe.
  * 
- * Based on code from the jRPM project (jrpm.sourceforge.net)
+ * <p>Based on code from the jRPM project (jrpm.sourceforge.net)
  */
 
 public class CpioArchiveInputStream extends ArchiveInputStream implements
@@ -156,7 +156,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
     /**
      * Returns 0 after EOF has reached for the current entry data, otherwise
      * always return 1.
-     * <p/>
+     * <p>
      * Programs should not count on this method to return the actual number of
      * bytes that could be read without blocking.
      * 
@@ -457,7 +457,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
      * @throws IOException
      *             if an I/O error has occurred
      * @throws IllegalArgumentException
-     *             if n < 0
+     *             if n &lt; 0
      */
     @Override
     public long skip(final long n) throws IOException {

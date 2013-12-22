@@ -31,7 +31,6 @@ import java.util.zip.ZipException;
  * allows one to store additional timestamps, and, in addition, the timestamps
  * are stored using per-second granularity (zip's default behaviour can only store
  * timestamps to the nearest <em>even</em> second).
- * <p/>
  * </p><p>
  * Unfortunately, 32 (unsigned) bits can only store dates up to the year 2106,
  * and so this extra field will eventually be obsolete.  Enjoy it while it lasts!
@@ -148,10 +147,10 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     /**
      * Length of the extra field in the local file data - without
      * Header-ID or length specifier.
-     * <p/>
-     * For X5455 the central length is often smaller than the
+     *
+     * <p>For X5455 the central length is often smaller than the
      * local length, because central cannot contain access or create
-     * timestamps.
+     * timestamps.</p>
      *
      * @return a <code>ZipShort</code> for the length of the data of this extra field
      */

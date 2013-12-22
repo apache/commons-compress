@@ -105,29 +105,29 @@ public enum ZipMethod {
     /**
      * Compression Method 9 for enhanced deflate.
      * 
-     * @see "http://www.winzip.com/wz54.htm"
+     * @see <a href="http://www.winzip.com/wz54.htm">http://www.winzip.com/wz54.htm</a>
      */
     ENHANCED_DEFLATED(9),
 
     /**
      * PKWARE Data Compression Library Imploding.
      * 
-     * @see "http://www.winzip.com/wz54.htm"
+     * @see <a href="http://www.winzip.com/wz54.htm">http://www.winzip.com/wz54.htm</a>
      */
     PKWARE_IMPLODING(10),
 
     /**
      * Compression Method 12 for bzip2.
      * 
-     * @see "http://www.winzip.com/wz54.htm"
+     * @see <a href="http://www.winzip.com/wz54.htm">http://www.winzip.com/wz54.htm</a>
      */
     BZIP2(12),
 
     /**
      * Compression Method 14 for LZMA.
      * 
-     * @see "http://www.7-zip.org/sdk.html"
-     * @see "http://www.winzip.com/wz54.htm"
+     * @see <a href="http://www.7-zip.org/sdk.html">http://www.7-zip.org/sdk.html</a>
+     * @see <a href="http://www.winzip.com/wz54.htm">http://www.winzip.com/wz54.htm</a>
      */
     LZMA(14),
 
@@ -135,21 +135,21 @@ public enum ZipMethod {
     /**
      * Compression Method 96 for Jpeg compression.
      * 
-     * @see "http://www.winzip.com/wz54.htm"
+     * @see <a href="http://www.winzip.com/wz54.htm">http://www.winzip.com/wz54.htm</a>
      */
     JPEG(96),
 
     /**
      * Compression Method 97 for WavPack.
      * 
-     * @see "http://www.winzip.com/wz54.htm"
+     * @see <a href="http://www.winzip.com/wz54.htm">http://www.winzip.com/wz54.htm</a>
      */
     WAVPACK(97),
 
     /**
      * Compression Method 98 for PPMd.
      * 
-     * @see "http://www.winzip.com/wz54.htm"
+     * @see <a href="http://www.winzip.com/wz54.htm">http://www.winzip.com/wz54.htm</a>
      */
     PPMD(98),
 
@@ -157,7 +157,7 @@ public enum ZipMethod {
     /**
      * Compression Method 99 for AES encryption.
      * 
-     * @see "http://www.winzip.com/wz54.htm"
+     * @see <a href="http://www.winzip.com/wz54.htm">http://www.winzip.com/wz54.htm</a>
      */
     AES_ENCRYPTED(99),
 

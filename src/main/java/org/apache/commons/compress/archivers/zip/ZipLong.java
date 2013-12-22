@@ -81,7 +81,7 @@ public final class ZipLong implements Cloneable, Serializable {
         new ZipLong(0X30304B50L);
 
     /**
-     * Archive extra data record signature.</p>
+     * Archive extra data record signature.
      * @since 1.5
      */
     public static final ZipLong AED_SIG = new ZipLong(0X08064B50L);
