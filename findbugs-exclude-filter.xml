@@ -75,7 +75,7 @@
   <!-- Reason: exception in close swallowed in order to re-throw original in caller -->
   <Match>
     <Class name="org.apache.commons.compress.utils.IOUtils" />
-    <Method name="&lt;closeQuietly&gt;" />
+    <Method name="closeQuietly" />
     <Bug pattern="DE_MIGHT_IGNORE" />
   </Match>
 
