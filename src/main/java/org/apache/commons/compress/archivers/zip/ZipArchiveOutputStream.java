@@ -33,6 +33,7 @@ import java.util.zip.ZipException;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
+import org.apache.commons.compress.utils.IOUtils;
 
 import static org.apache.commons.compress.archivers.zip.ZipConstants.DATA_DESCRIPTOR_MIN_VERSION;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
@@ -269,14 +270,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             _raf = new RandomAccessFile(file, "rw");
             _raf.setLength(0);
         } catch (IOException e) {
-            if (_raf != null) {
-                try {
-                    _raf.close();
-                } catch (IOException inner) { // NOPMD
-                    // ignore
-                }
-                _raf = null;
-            }
+            IOUtils.closeQuietly(_raf);
+            _raf = null;
             o = new FileOutputStream(file);
         }
         out = o;
