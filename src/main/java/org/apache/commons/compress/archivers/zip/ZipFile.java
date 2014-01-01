@@ -219,12 +219,8 @@ public class ZipFile implements Closeable {
             success = true;
         } finally {
             if (!success) {
-                try {
-                    closed = true;
-                    archive.close();
-                } catch (IOException e2) { // NOPMD
-                    // swallow, throw the original exception instead
-                }
+                closed = true;
+                IOUtils.closeQuietly(archive);
             }
         }
     }
@@ -257,13 +253,7 @@ public class ZipFile implements Closeable {
      * @param zipfile file to close, can be null
      */
     public static void closeQuietly(ZipFile zipfile) {
-        if (zipfile != null) {
-            try {
-                zipfile.close();
-            } catch (IOException e) { // NOPMD
-                //ignore, that's why the method is called "quietly"
-            }
-        }
+        IOUtils.closeQuietly(zipfile);
     }
 
     /**

@@ -329,13 +329,7 @@ public class ArchiveStreamFactory {
                     // autodetection, simply not a TAR
                     // ignored
                 } finally {
-                    if (tais != null) {
-                        try {
-                            tais.close();
-                        } catch (IOException ignored) { // NOPMD
-                            // ignored
-                        }
-                    }
+                    IOUtils.closeQuietly(tais);
                 }
             }
         } catch (IOException e) {

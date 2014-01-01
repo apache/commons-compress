@@ -19,6 +19,7 @@
 package org.apache.commons.compress.utils;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -165,5 +166,19 @@ public final class IOUtils {
         final ByteArrayOutputStream output = new ByteArrayOutputStream();
         copy(input, output);
         return output.toByteArray();
+    }
+
+    /**
+     * Closes the given Closeable and swallows any IOException that may occur.
+     * @param c Closeable to close, can be null
+     * @since 1.7
+     */
+    public static void closeQuietly(Closeable c) {
+        if (c != null) {
+            try {
+                c.close();
+            } catch (IOException ignored) { // NOPMD
+            }
+        }
     }
 }
