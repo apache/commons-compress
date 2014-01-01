@@ -197,12 +197,11 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
      *             occurred
      */
     private void closeEntry() throws IOException {
-        ensureOpen();
-        while (read(this.tmpbuf, 0, this.tmpbuf.length) != -1) { // NOPMD
+        // the skip implementation of this class will not skip more
+        // than Integer.MAX_VALUE bytes
+        while (skip((long) Integer.MAX_VALUE) == Integer.MAX_VALUE) { // NOPMD
             // do nothing
         }
-
-        this.entryEOF = true;
     }
 
     /**

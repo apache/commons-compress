@@ -80,6 +80,11 @@
     <Method name="closeEntry" />
     <Bug pattern="SR_NOT_CHECKED" />
   </Match>
+  <Match>
+    <Class name="org.apache.commons.compress.archivers.tar.TarArchiveInputStream" />
+    <Method name="getNextTarEntry" />
+    <Bug pattern="SR_NOT_CHECKED" />
+  </Match>
 
   <!-- Reason: trying to delete a temporary file that has deleteOnExit set
        anyway -->

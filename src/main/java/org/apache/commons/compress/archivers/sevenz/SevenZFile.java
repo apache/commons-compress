@@ -32,6 +32,7 @@ import java.util.zip.CRC32;
 import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.CRC32VerifyingInputStream;
 import org.apache.commons.compress.utils.CharsetNames;
+import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * Reads a 7z file, using RandomAccessFile under
@@ -64,8 +65,6 @@ import org.apache.commons.compress.utils.CharsetNames;
  */
 public class SevenZFile implements Closeable {
     static final int SIGNATURE_HEADER_SIZE = 32;
-
-    private static final int DRAIN_BUF_SIZE = 64 * 1024;
 
     private RandomAccessFile file;
     private final Archive archive;
@@ -831,9 +830,8 @@ public class SevenZFile implements Closeable {
     
     private void drainPreviousEntry() throws IOException {
         if (currentEntryInputStream != null) {
-            final byte[] buffer = new byte[DRAIN_BUF_SIZE];
-            while (currentEntryInputStream.read(buffer) >= 0) { // NOPMD
-            }
+            // return value ignored as IOUtils.skip ensures the stream is drained completely
+            IOUtils.skip(currentEntryInputStream, Long.MAX_VALUE);
             currentEntryInputStream.close();
             currentEntryInputStream = null;
         }
