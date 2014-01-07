@@ -23,6 +23,9 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 /**
  * THIS CLASS WILL CERTAINLY NOT STAY HERE.
@@ -67,6 +70,23 @@ final class IOUtils {
         long count=0;
         while (-1 != (n = input.read(buffer))) {
             output.write(buffer, 0, n);
+            count += n;
+        }
+        return count;
+    }
+    
+    public static long copy(final ReadableByteChannel input, final WritableByteChannel output) throws IOException {
+        return copy(input, output, 4096);
+    }
+
+    public static long copy(final ReadableByteChannel input, final WritableByteChannel output, int buffersize) throws IOException {
+        ByteBuffer buffer = ByteBuffer.allocate(buffersize);
+        int n = 0;
+        long count=0;
+        while (-1 != (n = input.read(buffer))) {
+            buffer.flip();
+            output.write(buffer);
+            buffer.clear();
             count += n;
         }
         return count;
