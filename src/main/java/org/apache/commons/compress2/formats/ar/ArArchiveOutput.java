@@ -27,7 +27,7 @@ import org.apache.commons.compress2.archivers.ArchiveEntryParameters;
 import org.apache.commons.compress2.archivers.spi.AbstractArchiveOutput;
 
 /**
- * Implements the "ar" archive format as an output stream.
+ * Implements the "ar" archive format.
  * 
  * @NotThreadSafe
  */

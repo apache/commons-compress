@@ -18,13 +18,20 @@
  */
 package org.apache.commons.compress2.archivers;
 
+import java.io.IOException;
 import java.nio.channels.ReadableByteChannel;
 
 /**
  * A channel that reads {@link ArchiveEntry}s.
  * @NotThreadSafe
  */
-public interface ArchiveInput<A extends ArchiveEntry> extends ReadableByteChannel, Iterable<A> {
+public interface ArchiveInput<A extends ArchiveEntry> extends ReadableByteChannel {
+
+    /**
+     * Obtains the next entry.
+     * @return the next entry or null if the end of the channel has been reached.
+     */
+    A next() throws IOException;
 
     /**
      * Whether this channel is able to read the contents of the given entry.
