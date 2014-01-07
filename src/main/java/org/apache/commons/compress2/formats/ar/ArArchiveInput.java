@@ -166,7 +166,7 @@ public class ArArchiveInput extends AbstractArchiveInput<ArArchiveEntry> {
 
         currentEntry = new ArArchiveEntry(new ArchiveEntryParameters().withName(temp).withSize(len)
                                           .withOwnerInformation(new OwnerInformation(userId, asInt(ID_BUF, true)))
-                                          .withLastModifiedDate(new Date(asLong(LAST_MODIFIED_BUF))),
+                                          .withLastModifiedDate(new Date(asLong(LAST_MODIFIED_BUF) * 1000)),
                                           asInt(FILE_MODE_BUF, 8));
         return currentEntry;
     }
