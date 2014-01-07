@@ -84,4 +84,27 @@ public class OwnerInformation {
         return groupId;
     }
 
+    @Override
+    public int hashCode() {
+        return 17 * groupId + userId;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        OwnerInformation other = (OwnerInformation) obj;
+        return userId == other.userId
+            && groupId == other.groupId
+            && equals(userName, other.userName)
+            && equals(groupName, other.groupName);
+    }
+
+    private static boolean equals(Object o1, Object o2) {
+        return o1 == null ? o2 == null : o1.equals(o2);
+    }
 }
