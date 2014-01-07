@@ -24,6 +24,7 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.compress2.archivers.ArchiveEntryParameters;
+import org.apache.commons.compress2.archivers.OwnerInformation;
 import org.apache.commons.compress2.archivers.spi.AbstractArchiveOutput;
 
 /**
@@ -159,14 +160,14 @@ public class ArArchiveOutput extends AbstractArchiveOutput<ArArchiveEntry> {
         offset += write(m);
 
         offset = fill(offset, 28, (byte) ' ');
-        final String u = "" + pEntry.getOwnerInformation().getUserId();
+        final String u = "" + getUserId(pEntry.getOwnerInformation());
         if (u.length() > 6) {
             throw new IOException("userid too long");
         }
         offset += write(u);
 
         offset = fill(offset, 34, (byte) ' ');
-        final String g = "" + pEntry.getOwnerInformation().getGroupId();
+        final String g = "" + getGroupId(pEntry.getOwnerInformation());
         if (g.length() > 6) {
             throw new IOException("groupid too long");
         }
@@ -237,5 +238,13 @@ public class ArArchiveOutput extends AbstractArchiveOutput<ArArchiveEntry> {
     @Override
     public boolean isOpen() {
         return out.isOpen();
+    }
+
+    private int getUserId(OwnerInformation info) {
+        return info == null ? 0 : info.getUserId();
+    }
+
+    private int getGroupId(OwnerInformation info) {
+        return info == null ? 0 : info.getGroupId();
     }
 }
