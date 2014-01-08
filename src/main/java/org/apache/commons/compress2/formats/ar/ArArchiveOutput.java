@@ -221,8 +221,8 @@ public class ArArchiveOutput extends AbstractArchiveOutput<ArArchiveEntry> {
     @Override
     public void finish() throws IOException {
         if (haveUnclosedEntry) {
-            throw new IOException("This archive contains unclosed entries.");
-        } else if(finished) {
+            closeEntry();
+        } else if (finished) {
             throw new IOException("This archive has already been finished");
         }
         finished = true;

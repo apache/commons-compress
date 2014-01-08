@@ -69,7 +69,7 @@ public interface ArchiveOutput<A extends ArchiveEntry> extends Closeable {
      *
      * <p>Additional data can be written, if the format supports it.<p>
      * 
-     * @throws IOException if the user forgets to close the last entry.
+     * @throws IOException
      */
     void finish() throws IOException;
 
