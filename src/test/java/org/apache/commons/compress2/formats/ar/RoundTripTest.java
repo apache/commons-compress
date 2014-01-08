@@ -58,12 +58,12 @@ public class RoundTripTest {
 
             final WritableByteChannel out = new FileOutputStream(output).getChannel();
             final ArArchiveOutput os = new ArArchiveOutput(out);
-            os.putEntry(os.createEntry(ArchiveEntryParameters.fromFile(file1)));
-            IOUtils.copy(new FileInputStream(file1).getChannel(), os);
+            IOUtils.copy(new FileInputStream(file1).getChannel(),
+                         os.putEntry(os.createEntry(ArchiveEntryParameters.fromFile(file1))));
             os.closeEntry();
 
-            os.putEntry(os.createEntry(ArchiveEntryParameters.fromFile(file2)));
-            IOUtils.copy(new FileInputStream(file2).getChannel(), os);
+            IOUtils.copy(new FileInputStream(file2).getChannel(),
+                         os.putEntry(os.createEntry(ArchiveEntryParameters.fromFile(file2))));
             os.closeEntry();
             os.close();
             out.close();
@@ -78,7 +78,7 @@ public class RoundTripTest {
         File target = new File(dir, entry.getName());
         final WritableByteChannel out = new FileOutputStream(target).getChannel();
 
-        IOUtils.copy(in, out);
+        IOUtils.copy(in.getChannel(), out);
 
         out.close();
         in.close();

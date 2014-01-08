@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress2.archivers;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
 
@@ -25,7 +26,7 @@ import java.nio.channels.WritableByteChannel;
  * A channel that writes {@link ArchiveEntry}s.
  * @NotThreadSafe
  */
-public interface ArchiveOutput<A extends ArchiveEntry> extends WritableByteChannel {
+public interface ArchiveOutput<A extends ArchiveEntry> extends Closeable {
 
     /**
      * Creates an ArchiveEntry for the given parameters.
@@ -52,9 +53,10 @@ public interface ArchiveOutput<A extends ArchiveEntry> extends WritableByteChann
      * process.</p>
      * 
      * @param entry describes the entry
+     * @return a channel to write the entry's contents to
      * @throws IOException
      */
-    void putEntry(A entry) throws IOException;
+    WritableByteChannel putEntry(A entry) throws IOException;
     
     /**
      * Closes the archive entry, writing any trailer information that may be required.

@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress2.archivers;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.nio.channels.ReadableByteChannel;
 
@@ -25,13 +26,20 @@ import java.nio.channels.ReadableByteChannel;
  * A channel that reads {@link ArchiveEntry}s.
  * @NotThreadSafe
  */
-public interface ArchiveInput<A extends ArchiveEntry> extends ReadableByteChannel {
+public interface ArchiveInput<A extends ArchiveEntry> extends Closeable {
 
     /**
      * Obtains the next entry.
      * @return the next entry or null if the end of the channel has been reached.
      */
     A next() throws IOException;
+
+    /**
+     * Obtains a channel the contents of the current entry can be read from.
+     * @return a channel to read the entry's contents from
+     */
+    // TODO use some sort of Tuple or Map.Entry<A, ReadableByteChannel> and combine with next() ?
+    ReadableByteChannel getChannel();
 
     /**
      * Whether this channel is able to read the contents of the given entry.

@@ -87,7 +87,7 @@ public class ArArchiveOutput extends AbstractArchiveOutput<ArArchiveEntry> {
     }
 
     @Override
-    public void putEntry(final ArArchiveEntry entry) throws IOException {
+    public WritableByteChannel putEntry(final ArArchiveEntry entry) throws IOException {
         if (finished) {
             throw new IOException("Stream has already been finished");
         }
@@ -110,6 +110,7 @@ public class ArArchiveOutput extends AbstractArchiveOutput<ArArchiveEntry> {
 
         entryOffset = 0;
         haveUnclosedEntry = true;
+        return new CurrentChannel();
     }
 
     private long fill( final long pOffset, final long pNewOffset, byte pFill ) throws IOException { 
@@ -124,14 +125,14 @@ public class ArArchiveOutput extends AbstractArchiveOutput<ArArchiveEntry> {
                 b.put(pFill);
             }
             b.flip();
-            write(b);
+            new CurrentChannel().write(b);
         }
 
         return pNewOffset;
     }
 
     private long write( final String data ) throws IOException {
-        return write(StandardCharsets.US_ASCII.encode(data));
+        return new CurrentChannel().write(StandardCharsets.US_ASCII.encode(data));
     }
 
     private long writeEntryHeader( final ArArchiveEntry pEntry ) throws IOException {
@@ -200,14 +201,6 @@ public class ArArchiveOutput extends AbstractArchiveOutput<ArArchiveEntry> {
         return offset;
     }
 
-    @Override
-    public int write(ByteBuffer b) throws IOException {
-        int len = out.write(b);
-        count(len);
-        entryOffset += len;
-        return len;
-    }
-
     /**
      * Calls finish if necessary, and then closes the nested Channel
      */
@@ -235,16 +228,31 @@ public class ArArchiveOutput extends AbstractArchiveOutput<ArArchiveEntry> {
         finished = true;
     }
 
-    @Override
-    public boolean isOpen() {
-        return out.isOpen();
-    }
-
     private int getUserId(OwnerInformation info) {
         return info == null ? 0 : info.getUserId();
     }
 
     private int getGroupId(OwnerInformation info) {
         return info == null ? 0 : info.getGroupId();
+    }
+
+    private class CurrentChannel implements WritableByteChannel {
+        @Override
+        public int write(ByteBuffer b) throws IOException {
+            int len = out.write(b);
+            count(len);
+            entryOffset += len;
+            return len;
+        }
+
+        @Override
+        public boolean isOpen() {
+            return out.isOpen();
+        }
+
+        @Override
+        public void close() {
+            // NO-OP
+        }
     }
 }

@@ -226,18 +226,8 @@ public class ArArchiveInput extends AbstractArchiveInput<ArArchiveEntry> {
     }
 
     @Override
-    public boolean isOpen() {
-        return !closed;
-    }
-
-    @Override
-    public int read(ByteBuffer b) throws IOException {
-        byte[] tmp = new byte[b.remaining()];
-        int read = wrappedStream.read(tmp);
-        if (read > 0) {
-            b.put(tmp, 0, read);
-        }
-        return read;
+    public ReadableByteChannel getChannel() {
+        return Channels.newChannel(wrappedStream);
     }
 
     private class WrappedStream extends FilterInputStream {
