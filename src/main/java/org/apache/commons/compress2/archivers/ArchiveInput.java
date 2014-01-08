@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.nio.channels.ReadableByteChannel;
 
 /**
- * A channel that reads {@link ArchiveEntry}s.
+ * Reads {@link ArchiveEntry}s.
  * @NotThreadSafe
  */
 public interface ArchiveInput<A extends ArchiveEntry> extends Closeable {

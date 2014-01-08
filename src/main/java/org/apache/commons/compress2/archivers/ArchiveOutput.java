@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
 
 /**
- * A channel that writes {@link ArchiveEntry}s.
+ * Writes {@link ArchiveEntry}s.
  * @NotThreadSafe
  */
 public interface ArchiveOutput<A extends ArchiveEntry> extends Closeable {
