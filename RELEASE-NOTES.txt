@@ -1,62 +1,47 @@
-              Apache Commons Compress 1.6 RELEASE NOTES
+              Apache Commons Compress 1.7 RELEASE NOTES
 
 The Commons Compress team is pleased to announce the
-commons-compress-1.6 release!
+commons-compress-1.7 release!
 
 Apache Commons Compress software defines an API for working with
 compression and archive formats.  These include: bzip2, gzip, pack200,
-xz and ar, cpio, jar, tar, zip, dump, 7z, arj, Z.
-
-Version 1.6 introduces changes to the internal API of the tar package that 
-break backwards compatibility in the following rare cases.  This version 
-removes the package private TarBuffer class along with the protected "buffer" 
-members in TarArchiveInputStream and TarArchiveOutputStream.  This change will 
-only affect you if you have created a subclass of one of the stream classes 
-and accessed the buffer member or directly used the TarBuffer class.
+lzma, xz, Snappy, traditional Unix Compress and ar, cpio, jar, tar,
+zip, dump, 7z, arj.
 
 Changes in this version include:
 
 New features:
-o Added support for 7z archives.  Most compression algorithms
-  can be read and written, LZMA and encryption are only
-  supported when reading.  Issue: COMPRESS-54. Thanks to Damjan Jovanovic. 
-o Added read-only support for ARJ archives that don't use
-  compression.  Issue: COMPRESS-226. Thanks to Damjan Jovanovic. 
-o DumpArchiveInputStream now supports an encoding parameter that
-  can be used to specify the encoding of file names. 
-o The CPIO streams now support an encoding parameter that can be
-  used to specify the encoding of file names. 
-o Read-only support for LZMA standalone compression has been added.
-  Issue: COMPRESS-111.
+o Read-Only support for Snappy compression.
+  Issue: COMPRESS-147. Thanks to BELUGA BEHR.
+o Read-Only support for .Z compressed files.
+  Issue: COMPRESS-243. Thanks to Damjan Jovanovic.
+o ZipFile and ZipArchiveInputStream now support reading entries
+  compressed using the SHRINKING method. Thanks to Damjan Jovanovic.
+o GzipCompressorOutputStream now supports setting the compression
+  level and the header metadata (filename, comment, modification time,
+  operating system and extra flags)
+  Issue: COMPRESS-250. Thanks to Emmanuel Bourg.
+o ZipFile and ZipArchiveInputStream now support reading entries
+  compressed using the IMPLODE method.
+  Issue: COMPRESS-115. Thanks to Emmanuel Bourg.
+o ZipFile and the 7z file classes now implement Closeable and can be
+  used in try-with-resources constructs.
 
 Fixed Bugs:
-o TarBuffer.tryToConsumeSecondEOFRecord could throw a
-  NullPointerException  Issue: COMPRESS-223. Thanks to Jeremy Gustie. 
-o Parsing of zip64 extra fields has become more lenient in order
-  to be able to read archives created by DotNetZip and maybe
-  other archivers as well.  Issue: COMPRESS-228. 
-o TAR will now properly read the names of symbolic links with
-  long names that use the GNU variant to specify the long file
-  name.  Issue: COMPRESS-229. Thanks to Christoph Gysin. 
-o ZipFile#getInputStream could return null if the archive
-  contained duplicate entries.
-  The class now also provides two new methods to obtain all
-  entries of a given name rather than just the first one.
-  Issue: COMPRESS-227. 
-o CpioArchiveInputStream failed to read archives created by
-  Redline RPM.  Issue: COMPRESS-236. Thanks to Andrew Duffy. 
-o TarArchiveOutputStream now properly handles link names that
-  are too long to fit into a traditional TAR header.  Issue:
-  COMPRESS-237. Thanks to Emmanuel Bourg.
-o The auto-detecting create*InputStream methods of Archive and
-  CompressorStreamFactory could fail to detect the format of
-  blocking input streams.  Issue: COMPRESS-239. 
-
-Changes:
-o Readabilty patch to TarArchiveInputStream.  Issue:
-  COMPRESS-232. Thanks to BELUGA BEHR.
-o Performance improvements to TarArchiveInputStream, in
-  particular to the skip method.  Issue: COMPRESS-234. Thanks to BELUGA BEHR. 
+o SevenZOutputFile#closeArchiveEntry throws an exception when using
+  LZMA2 compression on Java8.  Issue: COMPRESS-241.
+o 7z reading of big 64bit values could be wrong.
+  Issue: COMPRESS-244. Thanks to Nico Kruber.
+o TarArchiveInputStream could fail to read an archive completely.
+  Issue: COMPRESS-245.
+o The time-setters in X5455_ExtendedTimestamp now set the
+  corresponding flags explicitly - i.e. they set the bit if the valus
+  is not-null and reset it otherwise.  This may cause
+  incompatibilities if you use setFlags to unset a bit and later set
+  the time to a non-null value - the flag will now be set.
+  Issue: COMPRESS-242.
+o SevenZOutputFile would create invalid archives if more than six
+  empty files or directories were included.  Issue: COMPRESS-252.
 
 For complete information on Commons Compress, including instructions
 on how to submit bug reports, patches, or suggestions for improvement,
