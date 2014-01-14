@@ -64,7 +64,7 @@ public class ZCompressorInputStream extends InternalLZWInputStream {
      * {@inheritDoc}
      * <p><strong>This method is only protected for technical reasons
      * and is not part of Commons Compress' published API.  It may
-     * change without warning.</strong></p>
+     * change or disappear without warning.</strong></p>
      */
     @Override
     protected int readNextCode() throws IOException {
@@ -95,7 +95,7 @@ public class ZCompressorInputStream extends InternalLZWInputStream {
      * {@inheritDoc}
      * <p><strong>This method is only protected for technical reasons
      * and is not part of Commons Compress' published API.  It may
-     * change without warning.</strong></p>
+     * change or disappear without warning.</strong></p>
      */
     @Override
     protected int addEntry(int previousCode, byte character) throws IOException {
@@ -112,7 +112,7 @@ public class ZCompressorInputStream extends InternalLZWInputStream {
      * {@inheritDoc}
      * <p><strong>This method is only protected for technical reasons
      * and is not part of Commons Compress' published API.  It may
-     * change without warning.</strong></p>
+     * change or disappear without warning.</strong></p>
      */
     @Override
     protected int decompressNextSymbol() throws IOException {

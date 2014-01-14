@@ -24,12 +24,13 @@ import java.io.InputStream;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 
 /**
- * Base-class for traditional Unix ".Z" compression and the
- * Unshrinking method of ZIP archive.
+ * <strong>This class is only public for technical reasons and is not
+ * part of Commons Compress' published API - it may change or
+ * disappear without warning.</strong>
  *
- * <p><strong>This class is only public for technical reasons and is
- * not part of Commons Compress' published API.  It may change without
- * warning.</strong></p>
+ * <p>Base-class for traditional Unix ".Z" compression and the
+ * Unshrinking method of ZIP archive.</p>
+ *
  * @NotThreadSafe
  * @since 1.7
  */

@@ -253,7 +253,6 @@ These include: bzip2, gzip, pack200, lzma, xz and ar, cpio, jar, tar, zip, dump,
               <head>This class is thread-safe</head>
             </tag>
           </tags>
-          <excludePackageNames>*._internal</excludePackageNames>
         </configuration> 
       </plugin>
       <plugin>
