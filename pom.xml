@@ -41,7 +41,7 @@ These include: bzip2, gzip, pack200, lzma, xz, Snappy, traditional Unix Compress
     <commons.jira.id>COMPRESS</commons.jira.id>
     <commons.jira.pid>12310904</commons.jira.pid>
     <!-- configuration bits for cutting a release candidate -->
-    <commons.release.version>1.6</commons.release.version>
+    <commons.release.version>${project.version}</commons.release.version>
     <commons.rc.version>RC1</commons.rc.version>
   </properties>
 
