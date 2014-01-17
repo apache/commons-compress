@@ -45,7 +45,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
             .createArchiveOutputStream(ArchiveStreamFactory.TAR, fos);
 
         File file1 = getFile("test1.xml");
-        TarArchiveEntry sEntry = new TarArchiveEntry(file1);
+        TarArchiveEntry sEntry = new TarArchiveEntry(file1, file1.getName());
         tarOut.putArchiveEntry(sEntry);
 
         FileInputStream in = new FileInputStream(file1);
@@ -559,14 +559,14 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         FileOutputStream fos = new FileOutputStream(f);
         TarArchiveOutputStream tos = new TarArchiveOutputStream(fos);
         File file1 = getFile("test1.xml");
-        TarArchiveEntry sEntry = new TarArchiveEntry(file1);
+        TarArchiveEntry sEntry = new TarArchiveEntry(file1, file1.getName());
         tos.putArchiveEntry(sEntry);
         FileInputStream in = new FileInputStream(file1);
         IOUtils.copy(in, tos);
         in.close();
         tos.closeArchiveEntry();
         tos.close();
-        // test1.xml is small enough to fit into the default blockv size
+        // test1.xml is small enough to fit into the default block size
         assertEquals(TarConstants.DEFAULT_BLKSIZE, f.length());
     }
 
