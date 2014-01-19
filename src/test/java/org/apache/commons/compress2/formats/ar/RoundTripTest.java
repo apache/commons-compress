@@ -30,10 +30,13 @@ import java.nio.channels.WritableByteChannel;
 import java.util.Locale;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import org.apache.commons.compress2.archivers.ArchiveEntryParameters;
+import org.apache.commons.compress2.archivers.ArchiveInput;
+import org.apache.commons.compress2.archivers.ArchiveOutput;
 
 public class RoundTripTest {
 
@@ -50,8 +53,8 @@ public class RoundTripTest {
     }
 
     @Test
-    public void testArUnarchive() throws Exception {
-        final File output = new File(dir, "bla.ar");
+    public void testRoundtripUsingConstructors() throws Exception {
+        final File output = new File(dir, "constructors.ar");
         {
             final File file1 = getFile("test1.xml");
             final File file2 = getFile("test2.xml");
@@ -73,16 +76,98 @@ public class RoundTripTest {
         final File input = output;
         final ReadableByteChannel is = new FileInputStream(input).getChannel();
         final ArArchiveInput in = new ArArchiveInput(is);
-        final ArArchiveEntry entry = in.next();
+        ArArchiveEntry entry = in.next();
+        Assert.assertEquals("test1.xml", entry.getName());
 
         File target = new File(dir, entry.getName());
         final WritableByteChannel out = new FileOutputStream(target).getChannel();
 
         IOUtils.copy(in.getChannel(), out);
-
         out.close();
+
+        entry = in.next();
+        Assert.assertEquals("test2.xml", entry.getName());
+
         in.close();
         is.close();
+    }
+
+    @Test
+    public void testRoundtripUsingFormatInstanceAndChannels() throws Exception {
+        ArArchiveFormat format = new ArArchiveFormat();
+        final File output = new File(dir, "format-channels.ar");
+        {
+            final File file1 = getFile("test1.xml");
+            final File file2 = getFile("test2.xml");
+
+            final WritableByteChannel out = new FileOutputStream(output).getChannel();
+            final ArchiveOutput<ArArchiveEntry> os = format.writeTo(out, null);
+            IOUtils.copy(new FileInputStream(file1).getChannel(),
+                         os.putEntry(os.createEntry(ArchiveEntryParameters.fromFile(file1))));
+            os.closeEntry();
+
+            IOUtils.copy(new FileInputStream(file2).getChannel(),
+                         os.putEntry(os.createEntry(ArchiveEntryParameters.fromFile(file2))));
+            os.closeEntry();
+            os.close();
+            out.close();
+        }
+
+        // UnArArchive Operation
+        final File input = output;
+        final ReadableByteChannel is = new FileInputStream(input).getChannel();
+        final ArchiveInput<ArArchiveEntry> in = format.readFrom(is, null);
+        ArArchiveEntry entry = in.next();
+        Assert.assertEquals("test1.xml", entry.getName());
+
+        File target = new File(dir, entry.getName());
+        final WritableByteChannel out = new FileOutputStream(target).getChannel();
+
+        IOUtils.copy(in.getChannel(), out);
+        out.close();
+
+        entry = in.next();
+        Assert.assertEquals("test2.xml", entry.getName());
+
+        in.close();
+        is.close();
+    }
+
+    @Test
+    public void testRoundtripUsingFormatInstanceAndFiles() throws Exception {
+        ArArchiveFormat format = new ArArchiveFormat();
+        final File output = new File(dir, "format-files.ar");
+        {
+            final File file1 = getFile("test1.xml");
+            final File file2 = getFile("test2.xml");
+
+            final ArchiveOutput<ArArchiveEntry> os = format.writeTo(output, null);
+            IOUtils.copy(new FileInputStream(file1).getChannel(),
+                         os.putEntry(os.createEntry(ArchiveEntryParameters.fromFile(file1))));
+            os.closeEntry();
+
+            IOUtils.copy(new FileInputStream(file2).getChannel(),
+                         os.putEntry(os.createEntry(ArchiveEntryParameters.fromFile(file2))));
+            os.closeEntry();
+            os.close();
+        }
+
+        // UnArArchive Operation
+        final File input = output;
+        final ArchiveInput<ArArchiveEntry> in = format.readFrom(input, null);
+        ArArchiveEntry entry = in.next();
+        Assert.assertEquals("test1.xml", entry.getName());
+
+        File target = new File(dir, entry.getName());
+        final WritableByteChannel out = new FileOutputStream(target).getChannel();
+
+        IOUtils.copy(in.getChannel(), out);
+        out.close();
+
+        entry = in.next();
+        Assert.assertEquals("test2.xml", entry.getName());
+
+        in.close();
     }
 
     public static File mkdir(String name) throws IOException {
