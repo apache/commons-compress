@@ -271,50 +271,6 @@ public class ArArchiveInput extends AbstractArchiveInput<ArArchiveEntry> {
         }
     }
 
-    /**
-     * Checks if the signature matches ASCII "!&lt;arch&gt;" followed by a single LF
-     * control character
-     * 
-     * @param signature
-     *            the bytes to check
-     * @param length
-     *            the number of bytes to check
-     * @return true, if this stream is an Ar archive stream, false otherwise
-     */
-    public static boolean matches(byte[] signature, int length) {
-        // 3c21 7261 6863 0a3e
-
-        if (length < 8) {
-            return false;
-        }
-        if (signature[0] != 0x21) {
-            return false;
-        }
-        if (signature[1] != 0x3c) {
-            return false;
-        }
-        if (signature[2] != 0x61) {
-            return false;
-        }
-        if (signature[3] != 0x72) {
-            return false;
-        }
-        if (signature[4] != 0x63) {
-            return false;
-        }
-        if (signature[5] != 0x68) {
-            return false;
-        }
-        if (signature[6] != 0x3e) {
-            return false;
-        }
-        if (signature[7] != 0x0a) {
-            return false;
-        }
-
-        return true;
-    }
-
     static final String BSD_LONGNAME_PREFIX = "#1/";
     private static final int BSD_LONGNAME_PREFIX_LEN =
         BSD_LONGNAME_PREFIX.length();
