@@ -23,7 +23,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.Channel;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 //import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.util.Collections;
@@ -100,7 +101,8 @@ public abstract class AbstractArchiveFormat<A extends ArchiveEntry> implements A
      * <p>This implementation always throws an UnsupportedOperationException.</p>
      */
     @Override
-    public ArchiveInput<A> readFrom(Channel channel, Charset charset) throws IOException, UnsupportedOperationException {
+    public ArchiveInput<A> readFrom(ReadableByteChannel channel, Charset charset)
+        throws IOException, UnsupportedOperationException {
         throw new UnsupportedOperationException("this format cannot read from non-seekable channels");
     }
     /**
@@ -132,7 +134,8 @@ public abstract class AbstractArchiveFormat<A extends ArchiveEntry> implements A
      * <p>This implementation always throws an UnsupportedOperationException.</p>
      */
     @Override
-    public ArchiveOutput<A> writeTo(Channel channel, Charset charset) throws IOException, UnsupportedOperationException {
+    public ArchiveOutput<A> writeTo(WritableByteChannel channel, Charset charset)
+        throws IOException, UnsupportedOperationException {
         throw new UnsupportedOperationException("this format is read-only");
     }
     /**

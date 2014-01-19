@@ -19,7 +19,8 @@
 package org.apache.commons.compress2.archivers;
 
 import java.nio.ByteBuffer;
-import java.nio.channels.Channel;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
 import java.io.File;
 import java.io.IOException;
@@ -91,7 +92,8 @@ public interface ArchiveFormat<A extends ArchiveEntry> {
      * @throws IOException
      * @throws UnsupportedOperationException if this format cannot read from non-seekable channels.
      */
-    ArchiveInput<A> readFrom(Channel channel, Charset charset) throws IOException, UnsupportedOperationException;
+    ArchiveInput<A> readFrom(ReadableByteChannel channel, Charset charset)
+        throws IOException, UnsupportedOperationException;
     /**
      * Reads an archive assuming the given charset for entry names.
      * @param file the file to read from
@@ -121,7 +123,8 @@ public interface ArchiveFormat<A extends ArchiveEntry> {
      * @throws UnsupportedOperationException if this format cannot write to non-seekable channels or doesn't support
      * writing at all.
      */
-    ArchiveOutput<A> writeTo(Channel channel, Charset charset) throws IOException, UnsupportedOperationException;
+    ArchiveOutput<A> writeTo(WritableByteChannel channel, Charset charset)
+        throws IOException, UnsupportedOperationException;
     /**
      * Writes an archive using the given charset for entry names.
      * @param file the file to write to
