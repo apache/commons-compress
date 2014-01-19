@@ -27,6 +27,7 @@ import java.nio.channels.Channel;
 //import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.util.Collections;
+import org.apache.commons.compress2.archivers.ArchiveEntry;
 import org.apache.commons.compress2.archivers.ArchiveFormat;
 import org.apache.commons.compress2.archivers.ArchiveInput;
 import org.apache.commons.compress2.archivers.ArchiveOutput;
@@ -36,7 +37,7 @@ import org.apache.commons.compress2.archivers.RandomAccessArchiveInput;
  * Base class implementations may use.
  * @Immutable
  */
-public abstract class AbstractArchiveFormat implements ArchiveFormat {
+public abstract class AbstractArchiveFormat<A extends ArchiveEntry> implements ArchiveFormat<A> {
 
     /**
      * {@inheritDoc}
@@ -99,7 +100,7 @@ public abstract class AbstractArchiveFormat implements ArchiveFormat {
      * <p>This implementation always throws an UnsupportedOperationException.</p>
      */
     @Override
-    public ArchiveInput readFrom(Channel channel, Charset charset) throws IOException, UnsupportedOperationException {
+    public ArchiveInput<A> readFrom(Channel channel, Charset charset) throws IOException, UnsupportedOperationException {
         throw new UnsupportedOperationException("this format cannot read from non-seekable channels");
     }
     /**
@@ -108,7 +109,7 @@ public abstract class AbstractArchiveFormat implements ArchiveFormat {
      * #readFrom(File, Charset)} otherwise.</p>
      */
     @Override
-    public ArchiveInput readFrom(File file, Charset charset) throws IOException {
+    public ArchiveInput<A> readFrom(File file, Charset charset) throws IOException {
         if (supportsRandomAccessInput()) {
             return readWithRandomAccessFrom(file, charset);
         }
@@ -121,7 +122,7 @@ public abstract class AbstractArchiveFormat implements ArchiveFormat {
      * <p>This implementation always throws an UnsupportedOperationException.</p>
      */
     @Override
-    public RandomAccessArchiveInput readWithRandomAccessFrom(File file, Charset charset)
+    public RandomAccessArchiveInput<A> readWithRandomAccessFrom(File file, Charset charset)
         throws IOException, UnsupportedOperationException {
         throw new UnsupportedOperationException("this format cannot doesn't support random access");
     }
@@ -131,7 +132,7 @@ public abstract class AbstractArchiveFormat implements ArchiveFormat {
      * <p>This implementation always throws an UnsupportedOperationException.</p>
      */
     @Override
-    public ArchiveOutput writeTo(Channel channel, Charset charset) throws IOException, UnsupportedOperationException {
+    public ArchiveOutput<A> writeTo(Channel channel, Charset charset) throws IOException, UnsupportedOperationException {
         throw new UnsupportedOperationException("this format is read-only");
     }
     /**
@@ -139,7 +140,7 @@ public abstract class AbstractArchiveFormat implements ArchiveFormat {
      * <p>This implementation always delegates to {@link #writeTo(Channel, Charset)}.</p>
      */
     @Override
-    public ArchiveOutput writeTo(File file, Charset charset) throws IOException, UnsupportedOperationException {
+    public ArchiveOutput<A> writeTo(File file, Charset charset) throws IOException, UnsupportedOperationException {
         // TODO use FileChannel.open in Java7
         return writeTo(new FileOutputStream(file).getChannel(), charset);
     }
