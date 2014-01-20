@@ -42,7 +42,10 @@ The <action> type attribute can be add,update,fix,remove.
     <title>commons-compress</title>
   </properties>
   <body>
-    <release version="1.7" date="not released, yet"
+    <release version="1.8" date="not released, yet"
+             description="Release 1.8">
+    </release>
+    <release version="1.7" date="2014-01-20"
              description="Release 1.7">
       <action issue="COMPRESS-241" type="fix" date="2013-10-27">
         SevenZOutputFile#closeArchiveEntry throws an exception when
