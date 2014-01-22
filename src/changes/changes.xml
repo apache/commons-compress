@@ -48,6 +48,11 @@ The <action> type attribute can be add,update,fix,remove.
         BZip2CompressorInputStream read fewer bytes than possible from
         a truncated stream.
       </action> 
+      <action issue="COMPRESS-253" type="fix" date="2014-01-22">
+        SevenZFile failed claiming the dictionary was too large when
+        archives used LZMA compression for headers and content and
+        certain non-default dictinary sizes.
+      </action>
     </release>
     <release version="1.7" date="2014-01-20"
              description="Release 1.7">
