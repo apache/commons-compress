@@ -206,15 +206,15 @@ public class CompressorStreamFactory {
         try {
 
             if (GZIP.equalsIgnoreCase(name)) {
-                return new GzipCompressorInputStream(in);
+                return new GzipCompressorInputStream(in, decompressConcatenated);
             }
 
             if (BZIP2.equalsIgnoreCase(name)) {
-                return new BZip2CompressorInputStream(in);
+                return new BZip2CompressorInputStream(in, decompressConcatenated);
             }
 
             if (XZ.equalsIgnoreCase(name)) {
-                return new XZCompressorInputStream(in);
+                return new XZCompressorInputStream(in, decompressConcatenated);
             }
 
             if (LZMA.equalsIgnoreCase(name)) {
