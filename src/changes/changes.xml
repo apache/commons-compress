@@ -53,6 +53,10 @@ The <action> type attribute can be add,update,fix,remove.
         archives used LZMA compression for headers and content and
         certain non-default dictinary sizes.
       </action>
+      <action issue="COMPRESS-259" type="fix" date="2014-01-24">
+        CompressorStreamFactory.createCompressorInputStream with
+        explicit compression did not honor decompressConcatenated
+      </action>
     </release>
     <release version="1.7" date="2014-01-20"
              description="Release 1.7">
