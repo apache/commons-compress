@@ -70,14 +70,6 @@ public interface ArchiveFormat<A extends ArchiveEntry> {
      */
     int getNumberOfBytesRequiredForAutodetection() throws UnsupportedOperationException;
     /**
-     * Lists formats that must not be consulted before this format during content-based detection.
-     *
-     * <p>For example JAR would return ZIP here so it first has a chance to claim the archive for itself.</p>
-     *
-     * @return the names of the formats (as returned by {@link #getName}) that must not be consulted before this format during content-based detection.
-     */
-    Iterable<String> formatsToConsultLater();
-    /**
      * Verifies the given input is readable by this format.
      * @param probe a buffer holding at least {@link #getNumberOfBytesRequiredForAutodetection} bytes
      * @return whether the input is readable by this format

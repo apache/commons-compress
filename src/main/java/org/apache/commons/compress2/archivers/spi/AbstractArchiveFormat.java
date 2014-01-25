@@ -27,7 +27,6 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 //import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
-import java.util.Collections;
 import org.apache.commons.compress2.archivers.ArchiveEntry;
 import org.apache.commons.compress2.archivers.ArchiveFormat;
 import org.apache.commons.compress2.archivers.ArchiveInput;
@@ -78,14 +77,6 @@ public abstract class AbstractArchiveFormat<A extends ArchiveEntry> implements A
     @Override
     public int getNumberOfBytesRequiredForAutodetection() throws UnsupportedOperationException {
         throw new UnsupportedOperationException("this format doesn't support content-based detection");
-    }
-    /**
-     * {@inheritDoc}
-     * <p>This implementation always returns an empty collection.</p>
-     */
-    @Override
-    public Iterable<String> formatsToConsultLater() {
-        return Collections.emptyList();
     }
     /**
      * {@inheritDoc}
