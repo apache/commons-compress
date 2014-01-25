@@ -18,13 +18,18 @@
  */
 package org.apache.commons.compress2.archivers;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Loads ArchiveFormats defined as "services" from {@code
@@ -113,10 +118,11 @@ public class Archivers implements Iterable<ArchiveFormat<? extends ArchiveEntry>
     }
 
     private void fillMap() throws ServiceConfigurationError {
-        // TODO make that a TreeMap sorted for auto-detection order
+        Set<ArchiveFormat> ts = new TreeSet<ArchiveFormat>(SORT_FOR_AUTO_DETECTION);
+        ts.addAll(asList(formatLoader));
         Map<String, ArchiveFormat<? extends ArchiveEntry>> a =
-            new HashMap<String, ArchiveFormat<? extends ArchiveEntry>>();
-        for (ArchiveFormat<? extends ArchiveEntry> f : formatLoader) {
+            new LinkedHashMap<String, ArchiveFormat<? extends ArchiveEntry>>();
+        for (ArchiveFormat<? extends ArchiveEntry> f : ts) {
             a.put(f.getName(), f);
         }
         archivers = Collections.unmodifiableMap(a);
@@ -167,6 +173,29 @@ public class Archivers implements Iterable<ArchiveFormat<? extends ArchiveEntry>
             }
         };
     }
+
+    private static <T> List<T> asList(Iterable<T> i) {
+        List<T> l = new ArrayList<T>();
+        for (T t : i) {
+            l.add(t);
+        }
+        return l;
+    }
+
+    private Comparator<ArchiveFormat> SORT_FOR_AUTO_DETECTION = new Comparator<ArchiveFormat>() {
+        public int compare(ArchiveFormat a1, ArchiveFormat a2) {
+            if (a1.supportsAutoDetection() && a2.supportsAutoDetection()) {
+                return a1.getNumberOfBytesRequiredForAutodetection() - a2.getNumberOfBytesRequiredForAutodetection();
+            }
+            if (!a1.supportsAutoDetection() && !a2.supportsAutoDetection()) {
+                return 0;
+            }
+            if (a1.supportsAutoDetection()) {
+                return -1;
+            }
+            return 1;
+        }
+    };
 
     private static class FilteringIterator<T> implements Iterator<T> {
         private final Iterator<T> i;
