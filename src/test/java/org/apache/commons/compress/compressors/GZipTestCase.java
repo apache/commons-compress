@@ -269,4 +269,33 @@ public final class GZipTestCase extends AbstractTestCase {
             // expected
         }
     }
+
+    public void testMetadataRoundTrip() throws Exception {
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+                
+        GzipParameters parameters = new GzipParameters();
+        parameters.setCompressionLevel(Deflater.BEST_COMPRESSION);
+        parameters.setModificationTime(123456000);
+        parameters.setOperatingSystem(13);
+        parameters.setFilename("test3.xml");
+        parameters.setComment("Umlaute möglich?");
+        GzipCompressorOutputStream out = new GzipCompressorOutputStream(bout, parameters);
+        FileInputStream fis = new FileInputStream(getFile("test3.xml"));
+        try {
+            IOUtils.copy(fis, out);
+        } finally {
+            fis.close();
+            out.close();
+        }
+        
+        GzipCompressorInputStream input =
+            new GzipCompressorInputStream(new ByteArrayInputStream(bout.toByteArray()));
+        input.close();
+        GzipParameters readParams = input.getMetaData();
+        assertEquals(Deflater.BEST_COMPRESSION, readParams.getCompressionLevel());
+        assertEquals(123456000, readParams.getModificationTime());
+        assertEquals(13, readParams.getOperatingSystem());
+        assertEquals("test3.xml", readParams.getFilename());
+        assertEquals("Umlaute möglich?", readParams.getComment());
+    }
 }

@@ -57,6 +57,11 @@ The <action> type attribute can be add,update,fix,remove.
         CompressorStreamFactory.createCompressorInputStream with
         explicit compression did not honor decompressConcatenated
       </action>
+      <action issue="COMPRESS-260" type="add" date="2014-02-20">
+        GzipCompressorInputStream now provides access to the same
+        metadata that can be provided via GzipParameters when writing
+        a gzip stream.
+      </action>
     </release>
     <release version="1.7" date="2014-01-20"
              description="Release 1.7">
