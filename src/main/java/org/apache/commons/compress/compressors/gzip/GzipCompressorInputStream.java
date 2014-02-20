@@ -30,6 +30,7 @@ import java.util.zip.Inflater;
 import java.util.zip.CRC32;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
+import org.apache.commons.compress.utils.CharsetNames;
 
 /**
  * Input stream that decompresses .gz files.
@@ -208,12 +209,14 @@ public class GzipCompressorInputStream extends CompressorInputStream {
 
         // Original file name
         if ((flg & FNAME) != 0) {
-            parameters.setFilename(new String(readToNull(inData), "ISO-8859-1"));
+            parameters.setFilename(new String(readToNull(inData),
+                                              CharsetNames.ISO_8859_1));
         }
 
         // Comment
         if ((flg & FCOMMENT) != 0) {
-            parameters.setComment(new String(readToNull(inData), "ISO-8859-1"));
+            parameters.setComment(new String(readToNull(inData),
+                                             CharsetNames.ISO_8859_1));
         }
 
         // Header "CRC16" which is actually a truncated CRC32 (which isn't

@@ -28,6 +28,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.compress.compressors.CompressorOutputStream;
+import org.apache.commons.compress.utils.CharsetNames;
 
 /**
  * Compressed output stream using the gzip format. This implementation improves
@@ -105,12 +106,12 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
         out.write(buffer.array());
         
         if (filename != null) {
-            out.write(filename.getBytes("ISO-8859-1"));
+            out.write(filename.getBytes(CharsetNames.ISO_8859_1));
             out.write(0);
         }
         
         if (comment != null) {
-            out.write(comment.getBytes("ISO-8859-1"));
+            out.write(comment.getBytes(CharsetNames.ISO_8859_1));
             out.write(0);
         }
     }
