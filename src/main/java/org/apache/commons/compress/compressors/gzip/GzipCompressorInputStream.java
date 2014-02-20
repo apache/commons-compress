@@ -18,12 +18,14 @@
  */
 package org.apache.commons.compress.compressors.gzip;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.EOFException;
 import java.io.InputStream;
 import java.io.DataInputStream;
 import java.io.BufferedInputStream;
 import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 import java.util.zip.CRC32;
 
@@ -79,6 +81,8 @@ public class GzipCompressorInputStream extends CompressorInputStream {
     // used in no-arg read method
     private final byte[] oneByte = new byte[1];
 
+    private final GzipParameters parameters = new GzipParameters();
+
     /**
      * Constructs a new input stream that decompresses gzip-compressed data
      * from the specified input stream.
@@ -132,6 +136,16 @@ public class GzipCompressorInputStream extends CompressorInputStream {
         init(true);
     }
 
+    /**
+     * Provides the stream's meta data - may change with each stream
+     * when decompressing concatenated streams.
+     * @return the stream's meta data
+     * @since 1.8
+     */
+    public GzipParameters getMetaData() {
+        return parameters;
+    }
+
     private boolean init(boolean isFirstMember) throws IOException {
         assert isFirstMember || decompressConcatenated;
 
@@ -154,7 +168,7 @@ public class GzipCompressorInputStream extends CompressorInputStream {
         // Parsing the rest of the header may throw EOFException.
         DataInputStream inData = new DataInputStream(in);
         int method = inData.readUnsignedByte();
-        if (method != 8) {
+        if (method != Deflater.DEFLATED) {
             throw new IOException("Unsupported compression method "
                                   + method + " in the .gz header");
         }
@@ -165,9 +179,19 @@ public class GzipCompressorInputStream extends CompressorInputStream {
                     "Reserved flags are set in the .gz header");
         }
 
-        inData.readInt(); // mtime, ignored
-        inData.readUnsignedByte(); // extra flags, ignored
-        inData.readUnsignedByte(); // operating system, ignored
+        parameters.setModificationTime(readLittleEndianInt(inData) * 1000);
+        switch (inData.readUnsignedByte()) { // extra flags
+        case 2:
+            parameters.setCompressionLevel(Deflater.BEST_COMPRESSION);
+            break;
+        case 4:
+            parameters.setCompressionLevel(Deflater.BEST_SPEED);
+            break;
+        default:
+            // ignored for now
+            break;
+        }
+        parameters.setOperatingSystem(inData.readUnsignedByte());
 
         // Extra field, ignored
         if ((flg & FEXTRA) != 0) {
@@ -182,14 +206,14 @@ public class GzipCompressorInputStream extends CompressorInputStream {
             }
         }
 
-        // Original file name, ignored
+        // Original file name
         if ((flg & FNAME) != 0) {
-            readToNull(inData);
+            parameters.setFilename(new String(readToNull(inData), "ISO-8859-1"));
         }
 
-        // Comment, ignored
+        // Comment
         if ((flg & FCOMMENT) != 0) {
-            readToNull(inData);
+            parameters.setComment(new String(readToNull(inData), "ISO-8859-1"));
         }
 
         // Header "CRC16" which is actually a truncated CRC32 (which isn't
@@ -209,9 +233,20 @@ public class GzipCompressorInputStream extends CompressorInputStream {
         return true;
     }
 
-    private void readToNull(DataInputStream inData) throws IOException {
-        while (inData.readUnsignedByte() != 0x00) { // NOPMD
+    private byte[] readToNull(DataInputStream inData) throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        int b = 0;
+        while ((b = inData.readUnsignedByte()) != 0x00) { // NOPMD
+            bos.write(b);
         }
+        return bos.toByteArray();
+    }
+
+    private int readLittleEndianInt(DataInputStream inData) throws IOException {
+        return inData.readUnsignedByte()
+            | (inData.readUnsignedByte() << 8)
+            | (inData.readUnsignedByte() << 16)
+            | (inData.readUnsignedByte() << 24);
     }
 
     @Override
