@@ -156,8 +156,8 @@ public class ZipArchiveInputStreamTest {
      * <a href="https://issues.apache.org/jira/browse/COMPRESS-264"
      * >COMPRESS-264</a>.
      */
-    //@Test
-    public void testCompress264() throws Exception {
+    @Test
+    public void testReadingOfFirstStoredEntry() throws Exception {
         ZipArchiveInputStream in = new ZipArchiveInputStream(new FileInputStream(getFile("COMPRESS-264.zip")));
         
         try {
