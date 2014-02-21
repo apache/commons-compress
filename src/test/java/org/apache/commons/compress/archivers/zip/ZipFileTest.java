@@ -258,6 +258,20 @@ public class ZipFileTest extends TestCase {
         }
     }
 
+    /**
+     * Test case for 
+     * <a href="https://issues.apache.org/jira/browse/COMPRESS-264"
+     * >COMPRESS-264</a>.
+     */
+    public void testCompress264() throws Exception {
+        File archive = getFile("COMPRESS-264.zip");
+        zf = new ZipFile(archive);
+        ZipArchiveEntry ze = zf.getEntry("test.txt");
+        assertEquals(5, ze.getSize());
+        assertArrayEquals(new byte[] {'d', 'a', 't', 'a', '\n'},
+                          IOUtils.toByteArray(zf.getInputStream(ze)));
+    }
+
     /*
      * ordertest.zip has been handcrafted.
      *
