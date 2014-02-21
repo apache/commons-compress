@@ -422,8 +422,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             }
             buf.limit(l);
 
-            count(buf.limit());
-            current.bytesReadFromStream += buf.limit();
+            count(l);
+            current.bytesReadFromStream += l;
         }
 
         int toRead = Math.min(buf.remaining(), length);
@@ -771,7 +771,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
 
     /**
      * Checks whether the current buffer contains the signature of a
-     * &quot;data decsriptor&quot;, &quot;local file header&quot; or
+     * &quot;data descriptor&quot;, &quot;local file header&quot; or
      * &quot;central directory entry&quot;.
      *
      * <p>If it contains such a signature, reads the data descriptor
