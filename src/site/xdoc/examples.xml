@@ -487,6 +487,8 @@ lzmaIn.close();
         LZMA2, BZIP2 and Deflate are supported - reading also supports
         LZMA and AES-256/SHA-256.</p>
 
+        <p>Multipart archives are not supported at all.</p>
+
         <p>Adding an entry to a 7z archive:</p>
 <source><![CDATA[
 SevenZOutputFile sevenZOutput = new SevenZOutputFile(file);
