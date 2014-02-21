@@ -47,8 +47,12 @@ public class TarUtilsTest extends TestCase {
         long value; 
         byte [] buffer;
         final long MAX_OCTAL  = 077777777777L; // Allowed 11 digits
-        final String maxOctal = "77777777777 "; // Maximum valid octal
+        final long MAX_OCTAL_OVERFLOW  = 0777777777777L; // in fact 12 for some implementations
+        final String maxOctal = "777777777777"; // Maximum valid octal
         buffer = maxOctal.getBytes(CharsetNames.UTF_8);
+        value = TarUtils.parseOctal(buffer,0, buffer.length);
+        assertEquals(MAX_OCTAL_OVERFLOW, value);
+        buffer[buffer.length - 1] = ' ';
         value = TarUtils.parseOctal(buffer,0, buffer.length);
         assertEquals(MAX_OCTAL, value);
         buffer[buffer.length-1]=0;
@@ -86,12 +90,6 @@ public class TarUtilsTest extends TestCase {
         try {
             TarUtils.parseOctal(buffer,0, buffer.length);
             fail("Expected IllegalArgumentException");
-        } catch (IllegalArgumentException expected) {
-        }
-        buffer = "77777777777".getBytes(CharsetNames.UTF_8); // Invalid input - no trailer
-        try {
-            TarUtils.parseOctal(buffer,0, buffer.length);
-            fail("Expected IllegalArgumentException - no trailer");
         } catch (IllegalArgumentException expected) {
         }
         buffer = " 0 07 ".getBytes(CharsetNames.UTF_8); // Invalid - embedded space
