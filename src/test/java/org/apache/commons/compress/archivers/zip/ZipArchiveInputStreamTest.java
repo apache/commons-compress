@@ -149,4 +149,24 @@ public class ZipArchiveInputStreamTest {
             original.close();
         }
     }
+
+
+    /**
+     * Test case for 
+     * <a href="https://issues.apache.org/jira/browse/COMPRESS-264"
+     * >COMPRESS-264</a>.
+     */
+    //@Test
+    public void testCompress264() throws Exception {
+        ZipArchiveInputStream in = new ZipArchiveInputStream(new FileInputStream(getFile("COMPRESS-264.zip")));
+        
+        try {
+            ZipArchiveEntry ze = in.getNextZipEntry();
+            assertEquals(5, ze.getSize());
+            assertArrayEquals(new byte[] {'d', 'a', 't', 'a', '\n'},
+                              IOUtils.toByteArray(in));
+        } finally {
+            in.close();
+        }
+    }
 }
