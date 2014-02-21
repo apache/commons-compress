@@ -62,6 +62,11 @@ The <action> type attribute can be add,update,fix,remove.
         metadata that can be provided via GzipParameters when writing
         a gzip stream.
       </action>
+      <action issue="COMPRESS-262" type="fix" date="2014-02-21">
+        TarArchiveInputStream will now read archives created by tar
+        implementations that encode big numbers by not adding a
+        trailing NUL.
+      </action>
     </release>
     <release version="1.7" date="2014-01-20"
              description="Release 1.7">
