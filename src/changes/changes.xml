@@ -67,6 +67,11 @@ The <action> type attribute can be add,update,fix,remove.
         implementations that encode big numbers by not adding a
         trailing NUL.
       </action>
+      <action issue="COMPRESS-264" type="fix" date="2014-02-21">
+        ZipArchiveInputStream would return NUL bytes for the first 512
+        bytes of a STORED entry if it was the very first entry of the
+        archive.
+      </action>
     </release>
     <release version="1.7" date="2014-01-20"
              description="Release 1.7">

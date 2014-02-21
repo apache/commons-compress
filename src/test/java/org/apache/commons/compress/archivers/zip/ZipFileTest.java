@@ -263,7 +263,7 @@ public class ZipFileTest extends TestCase {
      * <a href="https://issues.apache.org/jira/browse/COMPRESS-264"
      * >COMPRESS-264</a>.
      */
-    public void testCompress264() throws Exception {
+    public void testReadingOfFirstStoredEntry() throws Exception {
         File archive = getFile("COMPRESS-264.zip");
         zf = new ZipFile(archive);
         ZipArchiveEntry ze = zf.getEntry("test.txt");
