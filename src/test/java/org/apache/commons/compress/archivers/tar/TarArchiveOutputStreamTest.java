@@ -485,6 +485,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
             new TarArchiveInputStream(new ByteArrayInputStream(data));
         TarArchiveEntry e = tin.getNextTarEntry();
         assertEquals(n, e.getName());
+        assertFalse(e.isDirectory());
         tin.close();
     }
 
