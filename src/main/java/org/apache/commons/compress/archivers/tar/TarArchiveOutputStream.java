@@ -443,11 +443,6 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         if (name.length() >= TarConstants.NAMELEN) {
             name = name.substring(0, TarConstants.NAMELEN - 1);
         }
-        while (name.endsWith("/")) {
-            // TarEntry's constructor would think this is a directory
-            // and not allow any data to be written
-            name = name.substring(0, name.length() - 1);
-        }
         TarArchiveEntry pex = new TarArchiveEntry(name,
                                                   TarConstants.LF_PAX_EXTENDED_HEADER_LC);
 
@@ -484,11 +479,23 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         StringBuilder result = new StringBuilder(length);
         for (int i = 0; i < length; i++) {
             char stripped = (char) (name.charAt(i) & 0x7F);
-            if (stripped != 0) { // would be read as Trailing null
+            if (shouldBeReplaced(stripped)) {
+                result.append("_");
+            } else {
                 result.append(stripped);
             }
         }
         return result.toString();
+    }
+
+    /**
+     * @return true if the character could lead to problems when used
+     * inside a TarArchiveEntry name for a PAX header.
+     */
+    private boolean shouldBeReplaced(char c) {
+        return c == 0 // would be read as Trailing null
+            || c == '/' // when used as last character TAE will consider the PAX header a directory
+            || c == '\\'; // same as '/' as slashes get "normalized" on Windows
     }
 
     /**

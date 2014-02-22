@@ -469,6 +469,27 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
     }
 
     /**
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-265"
+     */
+    public void testWriteNonAsciiNameWithUnfortunateNamePosixMode() throws Exception {
+        String n = "f\u00f6\u00f6\u00dc";
+        TarArchiveEntry t = new TarArchiveEntry(n);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
+        tos.setAddPaxHeadersForNonAsciiNames(true);
+        tos.putArchiveEntry(t);
+        tos.closeArchiveEntry();
+        tos.close();
+        byte[] data = bos.toByteArray();
+        TarArchiveInputStream tin =
+            new TarArchiveInputStream(new ByteArrayInputStream(data));
+        TarArchiveEntry e = tin.getNextTarEntry();
+        assertEquals(n, e.getName());
+        assertFalse(e.isDirectory());
+        tin.close();
+    }
+
+    /**
      * @see "https://issues.apache.org/jira/browse/COMPRESS-237"
      */
     public void testWriteLongLinkNameErrorMode() throws Exception {
