@@ -88,6 +88,20 @@ public class SevenZFileTest extends AbstractTestCase {
         }
     }
 
+    public void testSignatureCheck() {
+        assertTrue(SevenZFile.matches(SevenZFile.sevenZSignature,
+                                      SevenZFile.sevenZSignature.length));
+        assertTrue(SevenZFile.matches(SevenZFile.sevenZSignature,
+                                      SevenZFile.sevenZSignature.length + 1));
+        assertFalse(SevenZFile.matches(SevenZFile.sevenZSignature,
+                                      SevenZFile.sevenZSignature.length - 1));
+        assertFalse(SevenZFile.matches(new byte[] { 1, 2, 3, 4, 5, 6 }, 6));
+        assertTrue(SevenZFile.matches(new byte[] { '7', 'z', (byte) 0xBC,
+                                                   (byte) 0xAF, 0x27, 0x1C}, 6));
+        assertFalse(SevenZFile.matches(new byte[] { '7', 'z', (byte) 0xBC,
+                                                    (byte) 0xAF, 0x27, 0x1D}, 6));
+    }
+
     private void test7zUnarchive(File f, byte[] password) throws Exception {
         SevenZFile sevenZFile = new SevenZFile(f, password);
         try {
