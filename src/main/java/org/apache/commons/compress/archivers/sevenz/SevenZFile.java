@@ -908,4 +908,27 @@ public class SevenZFile implements Closeable {
         }
         return value;
     }
+
+    /**
+     * Checks if the signature matches what is expected for a 7z file.
+     *
+     * @param signature
+     *            the bytes to check
+     * @param length
+     *            the number of bytes to check
+     * @return true, if this is the signature of a 7z archive.
+     * @since 1.8
+     */
+    public static boolean matches(byte[] signature, int length) {
+        if (length < sevenZSignature.length) {
+            return false;
+        }
+
+        for (int i = 0; i < sevenZSignature.length; i++) {
+            if (signature[i] != sevenZSignature[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
