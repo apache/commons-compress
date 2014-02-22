@@ -77,6 +77,13 @@ The <action> type attribute can be add,update,fix,remove.
         backslashes or certain non-ASCII characters in their name
         TarArchiveOutputStream could fail.
       </action>
+      <action issue="COMPRESS-267" type="fix" date="2014-02-22">
+        ArchiveStreamFactory now throws a StreamingNotSupported - a
+        new subclass of ArchiveException - if it is asked to read from
+        or write to a stream and Commons Compress doesn't support
+        streaming for the format.  This currently only applies to the
+        7z format.
+      </action>
     </release>
     <release version="1.7" date="2014-01-20"
              description="Release 1.7">
