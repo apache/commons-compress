@@ -72,6 +72,11 @@ The <action> type attribute can be add,update,fix,remove.
         bytes of a STORED entry if it was the very first entry of the
         archive.
       </action>
+      <action issue="COMPRESS-265" type="fix" date="2014-02-22">
+        When writing PAX/POSIX headers for TAR entries with
+        backslashes or certain non-ASCII characters in their name
+        TarArchiveOutputStream could fail.
+      </action>
     </release>
     <release version="1.7" date="2014-01-20"
              description="Release 1.7">
