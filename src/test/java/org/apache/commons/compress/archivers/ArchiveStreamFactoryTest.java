@@ -18,11 +18,13 @@
  */
 package org.apache.commons.compress.archivers;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
@@ -76,6 +78,43 @@ public class ArchiveStreamFactoryTest {
                 fail("created an input stream for a non-archive");
             } catch (ArchiveException ae) {
                 assertTrue(ae.getMessage().startsWith("No Archiver found"));
+            } finally {
+                bis.close();
+            }
+    	} finally {
+            fis.close();
+    	}
+    }
+
+    @Test(expected = StreamingNotSupportedException.class)
+    public void cantRead7zFromStream() throws Exception {
+        new ArchiveStreamFactory()
+            .createArchiveInputStream(ArchiveStreamFactory.SEVEN_Z,
+                                      new ByteArrayInputStream(new byte[0]));
+    }
+
+    @Test(expected = StreamingNotSupportedException.class)
+    public void cantWrite7zToStream() throws Exception {
+        new ArchiveStreamFactory()
+            .createArchiveOutputStream(ArchiveStreamFactory.SEVEN_Z,
+                                       new ByteArrayOutputStream());
+    }
+
+    /**
+     * Test case for 
+     * <a href="https://issues.apache.org/jira/browse/COMPRESS-267"
+     * >COMPRESS-267</a>.
+     */
+    @Test
+    public void detectsAndThrowsFor7z() throws Exception {
+    	FileInputStream fis = new FileInputStream("src/test/resources/bla.7z");
+    	try {
+            InputStream bis = new BufferedInputStream(fis);
+            try {
+                new ArchiveStreamFactory().createArchiveInputStream(bis);
+                fail("Expected a StreamingNotSupportedException");
+            } catch (StreamingNotSupportedException ex) {
+                assertEquals(ArchiveStreamFactory.SEVEN_Z, ex.getFormat());
             } finally {
                 bis.close();
             }

@@ -31,6 +31,7 @@ import org.apache.commons.compress.archivers.cpio.CpioArchiveOutputStream;
 import org.apache.commons.compress.archivers.dump.DumpArchiveInputStream;
 import org.apache.commons.compress.archivers.jar.JarArchiveInputStream;
 import org.apache.commons.compress.archivers.jar.JarArchiveOutputStream;
+import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
@@ -110,6 +111,11 @@ public class ArchiveStreamFactory {
      * @since 1.1
      */
     public static final String ZIP = "zip";
+    /**
+     * Constant used to identify the 7z archive format.
+     * @since 1.8
+     */
+    public static final String SEVEN_Z = "7z";
 
     /**
      * Entry encoding, null for the default.
@@ -144,6 +150,8 @@ public class ArchiveStreamFactory {
      * @param in the input stream
      * @return the archive input stream
      * @throws ArchiveException if the archiver name is not known
+     * @throws StreamingNotSupportedException if the format cannot be
+     * read from a stream
      * @throws IllegalArgumentException if the archiver name or stream is null
      */
     public ArchiveInputStream createArchiveInputStream(
@@ -199,6 +207,9 @@ public class ArchiveStreamFactory {
                 return new DumpArchiveInputStream(in);
             }
         }
+        if (SEVEN_Z.equalsIgnoreCase(archiverName)) {
+            throw new StreamingNotSupportedException(SEVEN_Z);
+        }
 
         throw new ArchiveException("Archiver: " + archiverName + " not found.");
     }
@@ -210,6 +221,8 @@ public class ArchiveStreamFactory {
      * @param out the output stream
      * @return the archive output stream
      * @throws ArchiveException if the archiver name is not known
+     * @throws StreamingNotSupportedException if the format cannot be
+     * written to a stream
      * @throws IllegalArgumentException if the archiver name or stream is null
      */
     public ArchiveOutputStream createArchiveOutputStream(
@@ -249,6 +262,9 @@ public class ArchiveStreamFactory {
                 return new CpioArchiveOutputStream(out);
             }
         }
+        if (SEVEN_Z.equalsIgnoreCase(archiverName)) {
+            throw new StreamingNotSupportedException(SEVEN_Z);
+        }
         throw new ArchiveException("Archiver: " + archiverName + " not found.");
     }
 
@@ -260,6 +276,8 @@ public class ArchiveStreamFactory {
      * @param in the input stream
      * @return the archive input stream
      * @throws ArchiveException if the archiver name is not known
+     * @throws StreamingNotSupportedException if the format cannot be
+     * read from a stream
      * @throws IllegalArgumentException if the stream is null or does not support mark
      */
     public ArchiveInputStream createArchiveInputStream(final InputStream in)
@@ -291,6 +309,8 @@ public class ArchiveStreamFactory {
                 return new CpioArchiveInputStream(in);
             } else if (ArjArchiveInputStream.matches(signature, signatureLength)) {
                 return new ArjArchiveInputStream(in);
+            } else if (SevenZFile.matches(signature, signatureLength)) {
+                throw new StreamingNotSupportedException(SEVEN_Z);
             }
 
             // Dump needs a bigger buffer to check the signature;
