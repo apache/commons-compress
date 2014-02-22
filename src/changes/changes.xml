@@ -51,7 +51,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action issue="COMPRESS-253" type="fix" date="2014-01-22">
         SevenZFile failed claiming the dictionary was too large when
         archives used LZMA compression for headers and content and
-        certain non-default dictinary sizes.
+        certain non-default dictionary sizes.
       </action>
       <action issue="COMPRESS-259" type="fix" date="2014-01-24">
         CompressorStreamFactory.createCompressorInputStream with
@@ -117,14 +117,14 @@ The <action> type attribute can be add,update,fix,remove.
         incompatibilities if you use setFlags to unset a bit and later
         set the time to a non-null value - the flag will now be set.
       </action> 
-      <action issue="COMPRESS-250" type="add" date="2012-12-16" due-to="Emmanuel Bourg">
+      <action issue="COMPRESS-250" type="add" date="2013-12-16" due-to="Emmanuel Bourg">
         GzipCompressorOutputStream now supports setting the compression level and the header metadata
         (filename, comment, modification time, operating system and extra flags)
       </action>
-      <action issue="COMPRESS-115" type="add" date="2012-12-19" due-to="Emmanuel Bourg">
+      <action issue="COMPRESS-115" type="add" date="2013-12-19" due-to="Emmanuel Bourg">
         ZipFile and ZipArchiveInputStream now support reading entries compressed using the IMPLODE method.
       </action>
-      <action issue="COMPRESS-252" type="fix" date="2012-12-20">
+      <action issue="COMPRESS-252" type="fix" date="2013-12-20">
         SevenZOutputFile would create invalid archives if more than
         six empty files or directories were included.
       </action>
