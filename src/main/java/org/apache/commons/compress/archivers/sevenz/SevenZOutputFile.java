@@ -381,7 +381,7 @@ public class SevenZOutputFile implements Closeable {
         writeFileATimes(header);
         writeFileMTimes(header);
         writeFileWindowsAttributes(header);
-        header.write(0);
+        header.write(NID.kEnd);
     }
     
     private void writeFileEmptyStreams(final DataOutput header) throws IOException {
