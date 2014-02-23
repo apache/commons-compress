@@ -27,8 +27,10 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.LinkedList;
 import java.util.zip.CRC32;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -47,7 +49,7 @@ public class SevenZOutputFile implements Closeable {
     private long fileBytesWritten = 0;
     private boolean finished = false;
     private CountingOutputStream currentOutputStream;
-    private SevenZMethod contentCompression = SevenZMethod.LZMA2;
+    private Iterable<SevenZMethod> contentMethods = Collections.singletonList(SevenZMethod.LZMA2);
     
     /**
      * Opens file to write a 7z archive to.
@@ -67,9 +69,29 @@ public class SevenZOutputFile implements Closeable {
      * <p>Currently only {@link SevenZMethod#COPY}, {@link
      * SevenZMethod#LZMA2}, {@link SevenZMethod#BZIP2} and {@link
      * SevenZMethod#DEFLATE} are supported.</p>
+     *
+     * <p>This is a short form for passing a single-element iterable
+     * to {@link #setContentMethods}.</p>
      */
     public void setContentCompression(SevenZMethod method) {
-        this.contentCompression = method;
+        setContentMethods(Collections.singletonList(method));
+    }
+
+    /**
+     * Sets the (compression) methods to use for entry contents - the
+     * default is LZMA2.
+     *
+     * <p>Currently only {@link SevenZMethod#COPY}, {@link
+     * SevenZMethod#LZMA2}, {@link SevenZMethod#BZIP2} and {@link
+     * SevenZMethod#DEFLATE} are supported.</p>
+     *
+     * <p>The methods will be consulted in iteration order to create
+     * the final output.</p>
+     *
+     * @since 1.8
+     */
+    public void setContentMethods(Iterable<SevenZMethod> methods) {
+        this.contentMethods = methods;
     }
 
     /**
@@ -238,10 +260,10 @@ public class SevenZOutputFile implements Closeable {
 
     private CountingOutputStream setupFileOutputStream() throws IOException {
         OutputStream out = new OutputStreamWrapper();
-        return new CountingOutputStream(Coders
-                                        .addEncoder(out,
-                                                    contentCompression,
-                                                    null)) {
+        for (SevenZMethod m : reverse(contentMethods)) {
+            out = Coders.addEncoder(out, m, null);
+        }
+        return new CountingOutputStream(out) {
             @Override
             public void write(final int b) throws IOException {
                 super.write(b);
@@ -261,6 +283,14 @@ public class SevenZOutputFile implements Closeable {
                 crc32.update(b, off, len);
             }
         };
+    }
+
+    private static <T> Iterable<T> reverse(Iterable<T> i) {
+        LinkedList<T> l = new LinkedList();
+        for (T t : i) {
+            l.addFirst(t);
+        }
+        return l;
     }
 
     private void writeHeader(final DataOutput header) throws IOException {
@@ -336,22 +366,28 @@ public class SevenZOutputFile implements Closeable {
     }
     
     private void writeFolder(final DataOutput header) throws IOException {
-        // one coder
-        writeUint64(header, 1);
-        byte[] id = contentCompression.getId();
-        byte[] properties = contentCompression.getProperties();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        int numCoders = 0;
+        for (SevenZMethod m : contentMethods) {
+            numCoders++;
+            byte[] id = m.getId();
+            byte[] properties = m.getProperties();
 
-        int codecFlags = id.length;
-        if (properties.length > 0) {
-            codecFlags |= 0x20;
-        }
-        header.write(codecFlags);
-        header.write(id);
+            int codecFlags = id.length;
+            if (properties.length > 0) {
+                codecFlags |= 0x20;
+            }
+            bos.write(codecFlags);
+            bos.write(id);
 
-        if (properties.length > 0) {
-            header.write(properties.length);
-            header.write(properties);
+            if (properties.length > 0) {
+                bos.write(properties.length);
+                bos.write(properties);
+            }
         }
+
+        writeUint64(header, numCoders);
+        header.write(bos.toByteArray());
     }
     
     private void writeSubStreamsInfo(final DataOutput header) throws IOException {
