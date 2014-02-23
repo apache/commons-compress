@@ -46,12 +46,21 @@ class LZMA2Decoder extends Coders.CoderBase {
     }
 
     @Override
-    OutputStream encode(final OutputStream out, final byte[] password)
+    OutputStream encode(final OutputStream out, final Object opts)
         throws IOException {
-        LZMA2Options options = new LZMA2Options();
-        options.setDictSize(LZMA2Options.DICT_SIZE_DEFAULT);
+        LZMA2Options options = getOptions(opts);
         FinishableOutputStream wrapped = new FinishableWrapperOutputStream(out);
         return options.getOutputStream(wrapped);
     }
 
+    private LZMA2Options getOptions(Object opts) throws IOException {
+        if (opts instanceof LZMA2Options) {
+            return (LZMA2Options) opts;
+        } else if (opts != null) {
+            throw new IllegalArgumentException("LZMA2 method only supports LZMA2Options objects as option");
+        }
+        LZMA2Options options = new LZMA2Options();
+        options.setDictSize(LZMA2Options.DICT_SIZE_DEFAULT);
+        return options;
+    }
 }

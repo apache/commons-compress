@@ -30,13 +30,21 @@ public enum SevenZMethod {
     /** LZMA2 */
     LZMA2(new byte[] { (byte)0x21 }) {
         @Override
-        byte[] getProperties() {
-            int dictSize = LZMA2Options.DICT_SIZE_DEFAULT;
+        byte[] getProperties(Object opts) {
+            int dictSize = getDictSize(opts);
             int lead = Integer.numberOfLeadingZeros(dictSize);
             int secondBit = (dictSize >>> (30 - lead)) - 2;
             return new byte[] {
                 (byte) ((19 - lead) * 2 + secondBit)
             };
+        }
+        int getDictSize(Object opts) {
+            if (opts instanceof LZMA2Options) {
+                return ((LZMA2Options) opts).getDictSize();
+            } else if (opts != null) {
+                throw new IllegalArgumentException("LZMA2 method only supports LZMA2Options objects as option");
+            }
+            return LZMA2Options.DICT_SIZE_DEFAULT;
         }
     },
     /** Deflate */
@@ -61,7 +69,10 @@ public enum SevenZMethod {
         return copy;
     }
 
-    byte[] getProperties() {
+    /**
+     * @param opts options requested for the given entry
+     */
+    byte[] getProperties(Object opts) {
         return new byte[0];
     }
 
