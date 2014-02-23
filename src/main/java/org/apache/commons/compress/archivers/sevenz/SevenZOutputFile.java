@@ -297,7 +297,7 @@ public class SevenZOutputFile implements Closeable {
         }
         
         header.write(NID.kCRC);
-        header.write(1);
+        header.write(1); // "allAreDefined" == true
         for (final SevenZArchiveEntry entry : files) {
             if (entry.hasStream()) {
                 header.writeInt(Integer.reverseBytes((int) entry.getCompressedCrcValue()));
@@ -325,7 +325,7 @@ public class SevenZOutputFile implements Closeable {
         }
         
         header.write(NID.kCRC);
-        header.write(1);
+        header.write(1); // "allAreDefined" == true
         for (final SevenZArchiveEntry entry : files) {
             if (entry.hasStream()) {
                 header.writeInt(Integer.reverseBytes((int) entry.getCrcValue()));
@@ -490,7 +490,7 @@ public class SevenZOutputFile implements Closeable {
                 }
                 writeBits(out, cTimes, files.size());
             } else {
-                out.write(1);
+                out.write(1); // "allAreDefined" == true
             }
             out.write(0);
             for (final SevenZArchiveEntry entry : files) {
@@ -526,7 +526,7 @@ public class SevenZOutputFile implements Closeable {
                 }
                 writeBits(out, aTimes, files.size());
             } else {
-                out.write(1);
+                out.write(1); // "allAreDefined" == true
             }
             out.write(0);
             for (final SevenZArchiveEntry entry : files) {
@@ -562,7 +562,7 @@ public class SevenZOutputFile implements Closeable {
                 }
                 writeBits(out, mTimes, files.size());
             } else {
-                out.write(1);
+                out.write(1); // "allAreDefined" == true
             }
             out.write(0);
             for (final SevenZArchiveEntry entry : files) {
@@ -598,7 +598,7 @@ public class SevenZOutputFile implements Closeable {
                 }
                 writeBits(out, attributes, files.size());
             } else {
-                out.write(1);
+                out.write(1); // "allAreDefined" == true
             }
             out.write(0);
             for (final SevenZArchiveEntry entry : files) {
