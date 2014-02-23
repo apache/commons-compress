@@ -53,10 +53,10 @@ class Coders {
     }
     
     static OutputStream addEncoder(final OutputStream out, final SevenZMethod method,
-                                   final byte[] password) throws IOException {
+                                   Object options) throws IOException {
         for (final CoderId coderId : coderTable) {
             if (coderId.method.equals(method)) {
-                return coderId.coder.encode(out, password);
+                return coderId.coder.encode(out, options);
             }
         }
         throw new IOException("Unsupported compression method " + method);
@@ -84,7 +84,7 @@ class Coders {
     static abstract class CoderBase {
         abstract InputStream decode(final InputStream in, final Coder coder,
                 byte[] password) throws IOException;
-        OutputStream encode(final OutputStream out, final byte[] password)
+        OutputStream encode(final OutputStream out, final Object options)
             throws IOException {
             throw new UnsupportedOperationException("method doesn't support writing");
         }
@@ -97,7 +97,7 @@ class Coders {
             return in; 
         }
         @Override
-        OutputStream encode(final OutputStream out, final byte[] password) {
+        OutputStream encode(final OutputStream out, final Object _) {
             return out;
         }
     }
@@ -126,7 +126,7 @@ class Coders {
                                            new Inflater(true));
         }
         @Override
-        OutputStream encode(final OutputStream out, final byte[] password) {
+        OutputStream encode(final OutputStream out, final Object options) {
             return new DeflaterOutputStream(out, new Deflater(9, true));
         }
     }
@@ -138,7 +138,7 @@ class Coders {
             return new BZip2CompressorInputStream(in);
         }
         @Override
-        OutputStream encode(final OutputStream out, final byte[] password)
+        OutputStream encode(final OutputStream out, final Object _)
                 throws IOException {
             return new BZip2CompressorOutputStream(out);
         }

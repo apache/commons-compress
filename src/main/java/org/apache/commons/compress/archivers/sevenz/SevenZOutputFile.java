@@ -370,24 +370,28 @@ public class SevenZOutputFile implements Closeable {
         int numCoders = 0;
         for (SevenZMethod m : contentMethods) {
             numCoders++;
-            byte[] id = m.getId();
-            byte[] properties = m.getProperties();
-
-            int codecFlags = id.length;
-            if (properties.length > 0) {
-                codecFlags |= 0x20;
-            }
-            bos.write(codecFlags);
-            bos.write(id);
-
-            if (properties.length > 0) {
-                bos.write(properties.length);
-                bos.write(properties);
-            }
+            writeSingleCodec(m, bos);
         }
 
         writeUint64(header, numCoders);
         header.write(bos.toByteArray());
+    }
+
+    private void writeSingleCodec(SevenZMethod m, OutputStream bos) throws IOException {
+        byte[] id = m.getId();
+        byte[] properties = m.getProperties(null);
+
+        int codecFlags = id.length;
+        if (properties.length > 0) {
+            codecFlags |= 0x20;
+        }
+        bos.write(codecFlags);
+        bos.write(id);
+
+        if (properties.length > 0) {
+            bos.write(properties.length);
+            bos.write(properties);
+        }
     }
     
     private void writeSubStreamsInfo(final DataOutput header) throws IOException {
