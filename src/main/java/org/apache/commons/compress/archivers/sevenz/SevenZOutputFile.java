@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 import java.util.zip.CRC32;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -49,7 +50,8 @@ public class SevenZOutputFile implements Closeable {
     private long fileBytesWritten = 0;
     private boolean finished = false;
     private CountingOutputStream currentOutputStream;
-    private Iterable<SevenZMethod> contentMethods = Collections.singletonList(SevenZMethod.LZMA2);
+    private Iterable<? extends Entry<SevenZMethod, ?>> contentMethods =
+            Collections.singletonList(new FakeEntry(SevenZMethod.LZMA2));
     
     /**
      * Opens file to write a 7z archive to.
@@ -74,7 +76,7 @@ public class SevenZOutputFile implements Closeable {
      * to {@link #setContentMethods}.</p>
      */
     public void setContentCompression(SevenZMethod method) {
-        setContentMethods(Collections.singletonList(method));
+        setContentMethods(Collections.singletonList(new FakeEntry(method)));
     }
 
     /**
@@ -90,7 +92,7 @@ public class SevenZOutputFile implements Closeable {
      *
      * @since 1.8
      */
-    public void setContentMethods(Iterable<SevenZMethod> methods) {
+    public void setContentMethods(Iterable<? extends Entry<SevenZMethod, ?>> methods) {
         this.contentMethods = methods;
     }
 
@@ -260,8 +262,8 @@ public class SevenZOutputFile implements Closeable {
 
     private CountingOutputStream setupFileOutputStream() throws IOException {
         OutputStream out = new OutputStreamWrapper();
-        for (SevenZMethod m : reverse(contentMethods)) {
-            out = Coders.addEncoder(out, m, null);
+        for (Entry<SevenZMethod, ?> m : reverse(contentMethods)) {
+            out = Coders.addEncoder(out, m.getKey(), m.getValue());
         }
         return new CountingOutputStream(out) {
             @Override
@@ -368,7 +370,7 @@ public class SevenZOutputFile implements Closeable {
     private void writeFolder(final DataOutput header) throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         int numCoders = 0;
-        for (SevenZMethod m : contentMethods) {
+        for (Entry<SevenZMethod, ?> m : contentMethods) {
             numCoders++;
             writeSingleCodec(m, bos);
         }
@@ -377,9 +379,9 @@ public class SevenZOutputFile implements Closeable {
         header.write(bos.toByteArray());
     }
 
-    private void writeSingleCodec(SevenZMethod m, OutputStream bos) throws IOException {
-        byte[] id = m.getId();
-        byte[] properties = m.getProperties(null);
+    private void writeSingleCodec(Entry<SevenZMethod, ?> m, OutputStream bos) throws IOException {
+        byte[] id = m.getKey().getId();
+        byte[] properties = m.getKey().getProperties(m.getValue());
 
         int codecFlags = id.length;
         if (properties.length > 0) {
@@ -717,6 +719,22 @@ public class SevenZOutputFile implements Closeable {
         @Override
         public void close() throws IOException {
             // the file will be closed by the containing class's close method
+        }
+    }
+
+    private static class FakeEntry implements Entry<SevenZMethod, Object> {
+        private final SevenZMethod m;
+        FakeEntry(SevenZMethod m) {
+            this.m = m;
+        }
+        public SevenZMethod getKey() {
+            return m;
+        }
+        public Object getValue() {
+            return null;
+        }
+        public Object setValue(Object o) {
+            return null;
         }
     }
 }
