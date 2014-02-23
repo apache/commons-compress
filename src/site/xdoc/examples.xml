@@ -489,6 +489,12 @@ lzmaIn.close();
 
         <p>Multipart archives are not supported at all.</p>
 
+        <p>Currently solid compression - compressing multiple files
+        as a single block to benefit from patterns repeating accross
+        files - is only supported when reading archives.  This also
+        means compression ratio will likely be worse when using
+        Commons Compress.</p>
+
         <p>Adding an entry to a 7z archive:</p>
 <source><![CDATA[
 SevenZOutputFile sevenZOutput = new SevenZOutputFile(file);
