@@ -380,7 +380,8 @@ public class SevenZOutputFile implements Closeable {
 
     private void writeSingleCodec(SevenZMethodConfiguration m, OutputStream bos) throws IOException {
         byte[] id = m.getMethod().getId();
-        byte[] properties = m.getMethod().getProperties(m.getOptions());
+        byte[] properties = Coders.findByMethod(m.getMethod())
+            .getOptionsAsProperties(m.getOptions());
 
         int codecFlags = id.length;
         if (properties.length > 0) {
