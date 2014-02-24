@@ -28,7 +28,7 @@ public enum SevenZMethod {
     /** LZMA - only supported when reading */
     LZMA(new byte[] { (byte)0x03, (byte)0x01, (byte)0x01 }),
     /** LZMA2 */
-    LZMA2(new byte[] { (byte)0x21 }, LZMA2Options.class) {
+    LZMA2(new byte[] { (byte)0x21 }) {
         @Override
         byte[] getProperties(Object opts) {
             int dictSize = getDictSize(opts);
@@ -56,11 +56,9 @@ public enum SevenZMethod {
     AES256SHA256(new byte[] { (byte)0x06, (byte)0xf1, (byte)0x07, (byte)0x01 });
 
     private final byte[] id;
-    private final Class<?>[] acceptableOptions;
 
-    private SevenZMethod(byte[] id, Class<?>... acceptableOptions) {
+    private SevenZMethod(byte[] id) {
         this.id = id;
-        this.acceptableOptions = acceptableOptions;
     }
 
     byte[] getId() {
@@ -74,18 +72,6 @@ public enum SevenZMethod {
      */
     byte[] getProperties(Object opts) {
         return new byte[0];
-    }
-
-    /**
-     * @return whether this method can extract options from the given object.
-     */
-    boolean canAcceptOptions(Object opts) {
-        for (Class<?> c : acceptableOptions) {
-            if (c.isInstance(opts)) {
-                return true;
-            }
-        }
-        return false;
     }
 
 }

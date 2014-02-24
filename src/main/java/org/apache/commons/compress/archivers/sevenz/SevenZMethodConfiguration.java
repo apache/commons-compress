@@ -43,7 +43,7 @@ public class SevenZMethodConfiguration {
     public SevenZMethodConfiguration(SevenZMethod method, Object options) {
         this.method = method;
         this.options = options;
-        if (options != null && !method.canAcceptOptions(options)) {
+        if (options != null && !Coders.findByMethod(method).canAcceptOptions(options)) {
             throw new IllegalArgumentException("The " + method + " method doesn't support options of type "
                                                + options.getClass());
         }

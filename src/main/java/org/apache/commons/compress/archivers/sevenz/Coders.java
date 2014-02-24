@@ -41,6 +41,15 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream
 import org.tukaani.xz.LZMAInputStream;
 
 class Coders {
+    static CoderBase findByMethod(SevenZMethod method) {
+        for (final CoderId coderId : coderTable) {
+            if (coderId.method.equals(method)) {
+                return coderId.coder;
+            }
+        }
+        return null;
+    }
+
     static InputStream addDecoder(final InputStream is,
             final Coder coder, final byte[] password) throws IOException {
         for (final CoderId coderId : coderTable) {
@@ -54,12 +63,11 @@ class Coders {
     
     static OutputStream addEncoder(final OutputStream out, final SevenZMethod method,
                                    Object options) throws IOException {
-        for (final CoderId coderId : coderTable) {
-            if (coderId.method.equals(method)) {
-                return coderId.coder.encode(out, options);
-            }
+        CoderBase cb = findByMethod(method);
+        if (cb == null) {
+            throw new IOException("Unsupported compression method " + method);
         }
-        throw new IOException("Unsupported compression method " + method);
+        return cb.encode(out, options);
     }
 
     static CoderId[] coderTable = new CoderId[] {
@@ -82,6 +90,24 @@ class Coders {
     }
     
     static abstract class CoderBase {
+        private final Class<?>[] acceptableOptions;
+
+        protected CoderBase(Class<?>... acceptableOptions) {
+            this.acceptableOptions = acceptableOptions;
+        }
+
+        /**
+         * @return whether this method can extract options from the given object.
+         */
+        boolean canAcceptOptions(Object opts) {
+            for (Class<?> c : acceptableOptions) {
+                if (c.isInstance(opts)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         abstract InputStream decode(final InputStream in, final Coder coder,
                 byte[] password) throws IOException;
         OutputStream encode(final OutputStream out, final Object options)
