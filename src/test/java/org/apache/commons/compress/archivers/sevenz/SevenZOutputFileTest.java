@@ -20,8 +20,11 @@ package org.apache.commons.compress.archivers.sevenz;
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.ArrayList;
 import org.apache.commons.compress.AbstractTestCase;
+import org.tukaani.xz.LZMA2Options;
 
 public class SevenZOutputFileTest extends AbstractTestCase {
 
@@ -36,7 +39,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
     }
 
     public void testDirectoriesAndEmptyFiles() throws Exception {
-        File output = new File(dir, "empties.7z");
+        output = new File(dir, "empties.7z");
 
         Date accessDate = new Date();
         Calendar cal = Calendar.getInstance();
@@ -132,7 +135,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
     }
 
     public void testDirectoriesOnly() throws Exception {
-        File output = new File(dir, "dirs.7z");
+        output = new File(dir, "dirs.7z");
         SevenZOutputFile outArchive = new SevenZOutputFile(output);
         try {
             SevenZArchiveEntry entry = new SevenZArchiveEntry();
@@ -160,7 +163,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
     }
 
     public void testCantFinishTwice() throws Exception {
-        File output = new File(dir, "finish.7z");
+        output = new File(dir, "finish.7z");
         SevenZOutputFile outArchive = new SevenZOutputFile(output);
         try {
             outArchive.finish();
@@ -211,6 +214,60 @@ public class SevenZOutputFileTest extends AbstractTestCase {
 
     public void testTwentyNineFilesSomeNotEmpty() throws Exception {
         testCompress252(29, 7);
+    }
+
+    public void testCopyRoundtrip() throws Exception {
+        testRoundTrip(SevenZMethod.COPY);
+    }
+
+    public void testBzip2Roundtrip() throws Exception {
+        testRoundTrip(SevenZMethod.BZIP2);
+    }
+
+    public void testLzma2Roundtrip() throws Exception {
+        testRoundTrip(SevenZMethod.LZMA2);
+    }
+
+    public void testDeflateRoundtrip() throws Exception {
+        testRoundTrip(SevenZMethod.DEFLATE);
+    }
+
+    public void testStackOfContentCompressions() throws Exception {
+        output = new File(dir, "multiple-methods.7z");
+        ArrayList<SevenZMethodConfiguration> methods = new ArrayList<SevenZMethodConfiguration>();
+        methods.add(new SevenZMethodConfiguration(SevenZMethod.LZMA2));
+        methods.add(new SevenZMethodConfiguration(SevenZMethod.COPY));
+        methods.add(new SevenZMethodConfiguration(SevenZMethod.DEFLATE));
+        methods.add(new SevenZMethodConfiguration(SevenZMethod.BZIP2));
+        createAndReadBack(output, methods);
+    }
+
+    public void testDeflateWithConfiguration() throws Exception {
+        output = new File(dir, "deflate-options.7z");
+        // Deflater.BEST_SPEED
+        createAndReadBack(output, Collections
+                          .singletonList(new SevenZMethodConfiguration(SevenZMethod.DEFLATE, 1)));
+    }
+
+    public void testBzip2WithConfiguration() throws Exception {
+        output = new File(dir, "bzip2-options.7z");
+        // 400k block size
+        createAndReadBack(output, Collections
+                          .singletonList(new SevenZMethodConfiguration(SevenZMethod.BZIP2, 4)));
+    }
+
+    public void testLzma2WithIntConfiguration() throws Exception {
+        output = new File(dir, "bzip2-options.7z");
+        // 16 MB dictionary
+        createAndReadBack(output, Collections
+                          .singletonList(new SevenZMethodConfiguration(SevenZMethod.LZMA2, 16 << 20)));
+    }
+
+    public void testLzma2WithOptionsConfiguration() throws Exception {
+        output = new File(dir, "bzip2-options.7z");
+        LZMA2Options opts = new LZMA2Options(9);
+        createAndReadBack(output, Collections
+                          .singletonList(new SevenZMethodConfiguration(SevenZMethod.LZMA2, opts)));
     }
 
     private void testCompress252(int numberOfFiles, int numberOfNonEmptyFiles)
@@ -272,7 +329,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         SevenZArchiveEntry entry = new SevenZArchiveEntry();
         entry.setName("foo/" + index + ".txt");
         archive.putArchiveEntry(entry);
-        archive.write(nonEmpty ? new byte[] { 17 } : new byte[0]);
+        archive.write(nonEmpty ? new byte[] { 'A' } : new byte[0]);
         archive.closeArchiveEntry();
     }
 
@@ -287,9 +344,32 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             return Boolean.FALSE;
         }
         assertEquals(1, entry.getSize());
-        assertEquals(17, archive.read());
+        assertEquals('A', archive.read());
         assertEquals(-1, archive.read());
         return Boolean.TRUE;
     }
 
+    private void testRoundTrip(SevenZMethod method) throws Exception {
+        output = new File(dir, method + "-roundtrip.7z");
+        ArrayList<SevenZMethodConfiguration> methods = new ArrayList<SevenZMethodConfiguration>();
+        methods.add(new SevenZMethodConfiguration(method));
+        createAndReadBack(output, methods);
+    }
+
+    private void createAndReadBack(File output, Iterable<SevenZMethodConfiguration> methods) throws Exception {
+        SevenZOutputFile outArchive = new SevenZOutputFile(output);
+        outArchive.setContentMethods(methods);
+        try {
+            addFile(outArchive, 0, true);
+        } finally {
+            outArchive.close();
+        }
+
+        SevenZFile archive = new SevenZFile(output);
+        try {
+            assertEquals(Boolean.TRUE, verifyFile(archive, 0));
+        } finally {
+            archive.close();
+        }
+    }
 }
