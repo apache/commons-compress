@@ -29,8 +29,11 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.zip.CRC32;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -49,8 +52,10 @@ public class SevenZOutputFile implements Closeable {
     private long fileBytesWritten = 0;
     private boolean finished = false;
     private CountingOutputStream currentOutputStream;
+    private CountingOutputStream[] additionalCountingStreams;
     private Iterable<? extends SevenZMethodConfiguration> contentMethods =
             Collections.singletonList(new SevenZMethodConfiguration(SevenZMethod.LZMA2));
+    private Map<SevenZArchiveEntry, long[]> additionalSizes = new HashMap<SevenZArchiveEntry, long[]>();
     
     /**
      * Opens file to write a 7z archive to.
@@ -92,7 +97,7 @@ public class SevenZOutputFile implements Closeable {
      * @since 1.8
      */
     public void setContentMethods(Iterable<? extends SevenZMethodConfiguration> methods) {
-        this.contentMethods = methods;
+        this.contentMethods = reverse(methods);
     }
 
     /**
@@ -158,6 +163,13 @@ public class SevenZOutputFile implements Closeable {
             entry.setCrcValue(crc32.getValue());
             entry.setCompressedCrcValue(compressedCrc32.getValue());
             entry.setHasCrc(true);
+            if (additionalCountingStreams != null) {
+                long[] sizes = new long[additionalCountingStreams.length];
+                for (int i = 0; i < additionalCountingStreams.length; i++) {
+                    sizes[i] = additionalCountingStreams[i].getBytesWritten();
+                }
+                additionalSizes.put(entry, sizes);
+            }
         } else {
             entry.setHasStream(false);
             entry.setSize(0);
@@ -165,6 +177,7 @@ public class SevenZOutputFile implements Closeable {
             entry.setHasCrc(false);
         }
         currentOutputStream = null;
+        additionalCountingStreams = null;
         crc32.reset();
         compressedCrc32.reset();
         fileBytesWritten = 0;
@@ -261,8 +274,19 @@ public class SevenZOutputFile implements Closeable {
 
     private CountingOutputStream setupFileOutputStream() throws IOException {
         OutputStream out = new OutputStreamWrapper();
-        for (SevenZMethodConfiguration m : reverse(contentMethods)) {
+        ArrayList<CountingOutputStream> moreStreams = new ArrayList<CountingOutputStream>();
+        boolean first = true;
+        for (SevenZMethodConfiguration m : contentMethods) {
+            if (!first) {
+                CountingOutputStream cos = new CountingOutputStream(out);
+                moreStreams.add(cos);
+                out = cos;
+            }
             out = Coders.addEncoder(out, m.getMethod(), m.getOptions());
+            first = false;
+        }
+        if (!moreStreams.isEmpty()) {
+            additionalCountingStreams = moreStreams.toArray(new CountingOutputStream[moreStreams.size()]);
         }
         return new CountingOutputStream(out) {
             @Override
@@ -351,6 +375,12 @@ public class SevenZOutputFile implements Closeable {
         header.write(NID.kCodersUnpackSize);
         for (final SevenZArchiveEntry entry : files) {
             if (entry.hasStream()) {
+                long[] moreSizes = additionalSizes.get(entry);
+                if (moreSizes != null) {
+                    for (long s : moreSizes) {
+                        writeUint64(header, s);
+                    }
+                }
                 writeUint64(header, entry.getSize());
             }
         }
@@ -376,6 +406,10 @@ public class SevenZOutputFile implements Closeable {
 
         writeUint64(header, numCoders);
         header.write(bos.toByteArray());
+        for (int i = 0; i < numCoders - 1; i++) {
+            writeUint64(header, i + 1);
+            writeUint64(header, i);
+        }
     }
 
     private void writeSingleCodec(SevenZMethodConfiguration m, OutputStream bos) throws IOException {
