@@ -17,6 +17,8 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
+import java.util.LinkedList;
+
 /**
  * The unit of solid compression.
  */
@@ -40,6 +42,23 @@ class Folder {
     long crc;
     /// The number of unpack substreams, one per non-empty file in this folder.
     int numUnpackSubStreams;
+
+    /**
+     * Sorts Coders using bind pairs.
+     * <p>The first coder reads from the packed stream (we currently
+     * only support single input stream decoders), the second reads
+     * from the output of the first and so on.</p>
+     */
+    Iterable<Coder> getOrderedCoders() {
+        LinkedList<Coder> l = new LinkedList<Coder>();
+        int current = (int) packedStreams[0]; // more that 2^31 coders?
+        while (current != -1) {
+            l.addLast(coders[current]);
+            int pair = findBindPairForOutStream(current);
+            current = pair != -1 ? (int) bindPairs[pair].inIndex : -1;
+        }
+        return l;
+    }
 
     int findBindPairForInStream(final int index) {
         for (int i = 0; i < bindPairs.length; i++) {
