@@ -57,6 +57,23 @@ class LZMA2Decoder extends Coders.CoderBase {
         return options.getOutputStream(wrapped);
     }
 
+    @Override
+    byte[] getOptionsAsProperties(Object opts) {
+        int dictSize = getDictSize(opts);
+        int lead = Integer.numberOfLeadingZeros(dictSize);
+        int secondBit = (dictSize >>> (30 - lead)) - 2;
+        return new byte[] {
+            (byte) ((19 - lead) * 2 + secondBit)
+        };
+    }
+
+    private int getDictSize(Object opts) {
+        if (opts instanceof LZMA2Options) {
+            return ((LZMA2Options) opts).getDictSize();
+        }
+        return LZMA2Options.DICT_SIZE_DEFAULT;
+    }
+
     private LZMA2Options getOptions(Object opts) throws IOException {
         if (opts instanceof LZMA2Options) {
             return (LZMA2Options) opts;

@@ -17,8 +17,6 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
-import org.tukaani.xz.LZMA2Options;
-
 /**
  * The (partially) supported compression/encryption methods used in 7z archives.
  */
@@ -28,23 +26,7 @@ public enum SevenZMethod {
     /** LZMA - only supported when reading */
     LZMA(new byte[] { (byte)0x03, (byte)0x01, (byte)0x01 }),
     /** LZMA2 */
-    LZMA2(new byte[] { (byte)0x21 }) {
-        @Override
-        byte[] getProperties(Object opts) {
-            int dictSize = getDictSize(opts);
-            int lead = Integer.numberOfLeadingZeros(dictSize);
-            int secondBit = (dictSize >>> (30 - lead)) - 2;
-            return new byte[] {
-                (byte) ((19 - lead) * 2 + secondBit)
-            };
-        }
-        private int getDictSize(Object opts) {
-            if (opts instanceof LZMA2Options) {
-                return ((LZMA2Options) opts).getDictSize();
-            }
-            return LZMA2Options.DICT_SIZE_DEFAULT;
-        }
-    },
+    LZMA2(new byte[] { (byte)0x21 }),
     /** Deflate */
     DEFLATE(new byte[] { (byte)0x04, (byte)0x01, (byte)0x08 }),
     /** BZIP2 */
@@ -65,13 +47,6 @@ public enum SevenZMethod {
         byte[] copy = new byte[id.length];
         System.arraycopy(id, 0, copy, 0, id.length);
         return copy;
-    }
-
-    /**
-     * @param opts options requested for the given entry
-     */
-    byte[] getProperties(Object opts) {
-        return new byte[0];
     }
 
 }

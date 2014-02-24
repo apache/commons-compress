@@ -91,6 +91,7 @@ class Coders {
     
     static abstract class CoderBase {
         private final Class<?>[] acceptableOptions;
+        private static final byte[] NONE = new byte[0];
 
         protected CoderBase(Class<?>... acceptableOptions) {
             this.acceptableOptions = acceptableOptions;
@@ -106,6 +107,13 @@ class Coders {
                 }
             }
             return false;
+        }
+
+        /**
+         * @return property-bytes to write in a Folder block
+         */
+        byte[] getOptionsAsProperties(Object options) {
+            return NONE;
         }
 
         abstract InputStream decode(final InputStream in, final Coder coder,
