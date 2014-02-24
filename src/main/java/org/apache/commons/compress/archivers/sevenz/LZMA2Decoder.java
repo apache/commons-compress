@@ -26,6 +26,10 @@ import org.tukaani.xz.LZMA2InputStream;
 import org.tukaani.xz.LZMA2Options;
 
 class LZMA2Decoder extends Coders.CoderBase {
+    LZMA2Decoder() {
+        super(LZMA2Options.class);
+    }
+
     @Override
     InputStream decode(final InputStream in, final Coder coder, byte[] password)
         throws IOException {
