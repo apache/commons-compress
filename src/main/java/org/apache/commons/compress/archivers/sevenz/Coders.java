@@ -122,6 +122,14 @@ class Coders {
             throws IOException {
             throw new UnsupportedOperationException("method doesn't support writing");
         }
+
+        /**
+         * If the option represents a number, return its integer
+         * value, otherwise return the given default value.
+         */
+        protected int numberOptionOrDefault(Object options, int defaultValue) {
+            return options instanceof Number ? ((Number) options).intValue() : defaultValue;
+        }
     }
     
     static class CopyDecoder extends CoderBase {
@@ -153,6 +161,10 @@ class Coders {
     }
     
     static class DeflateDecoder extends CoderBase {
+        DeflateDecoder() {
+            super(Number.class);
+        }
+
         @Override
         InputStream decode(final InputStream in, final Coder coder, final byte[] password)
             throws IOException {
@@ -161,20 +173,26 @@ class Coders {
         }
         @Override
         OutputStream encode(final OutputStream out, final Object options) {
-            return new DeflaterOutputStream(out, new Deflater(9, true));
+            int level = numberOptionOrDefault(options, 9);
+            return new DeflaterOutputStream(out, new Deflater(level, true));
         }
     }
 
     static class BZIP2Decoder extends CoderBase {
+        BZIP2Decoder() {
+            super(Number.class);
+        }
+
         @Override
         InputStream decode(final InputStream in, final Coder coder, final byte[] password)
                 throws IOException {
             return new BZip2CompressorInputStream(in);
         }
         @Override
-        OutputStream encode(final OutputStream out, final Object _)
+        OutputStream encode(final OutputStream out, final Object options)
                 throws IOException {
-            return new BZip2CompressorOutputStream(out);
+            int blockSize = numberOptionOrDefault(options, BZip2CompressorOutputStream.MAX_BLOCKSIZE);
+            return new BZip2CompressorOutputStream(out, blockSize);
         }
     }
 

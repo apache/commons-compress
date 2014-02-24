@@ -36,6 +36,24 @@ public class SevenZMethodConfigurationTest {
                              .getOptions());
     }
 
+    @Test
+    public void shouldAllowNumberForLZMA2() {
+        Assert.assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA2, 42)
+                             .getOptions());
+    }
+
+    @Test
+    public void shouldAllowNumberForBzip2() {
+        Assert.assertNotNull(new SevenZMethodConfiguration(SevenZMethod.BZIP2, 42)
+                             .getOptions());
+    }
+
+    @Test
+    public void shouldAllowNumberForDeflate() {
+        Assert.assertNotNull(new SevenZMethodConfiguration(SevenZMethod.DEFLATE, 42)
+                             .getOptions());
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void shouldNotAllowStringOptionsForLZMA2() {
         new SevenZMethodConfiguration(SevenZMethod.LZMA2, "");
