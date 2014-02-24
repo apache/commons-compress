@@ -271,7 +271,7 @@ public class SevenZFile implements Closeable {
         file.seek(folderOffset);
         InputStream inputStreamStack = new BoundedRandomAccessFileInputStream(file,
                 archive.packSizes[firstPackStreamIndex]);
-        for (final Coder coder : folder.coders) {
+        for (final Coder coder : folder.getOrderedCoders()) {
             if (coder.numInStreams != 1 || coder.numOutStreams != 1) {
                 throw new IOException("Multi input/output stream coders are not yet supported");
             }
@@ -842,7 +842,7 @@ public class SevenZFile implements Closeable {
         file.seek(folderOffset);
         InputStream inputStreamStack = new BoundedRandomAccessFileInputStream(file,
                 archive.packSizes[firstPackStreamIndex]);
-        for (final Coder coder : folder.coders) {
+        for (final Coder coder : folder.getOrderedCoders()) {
             if (coder.numInStreams != 1 || coder.numOutStreams != 1) {
                 throw new IOException("Multi input/output stream coders are not yet supported");
             }
