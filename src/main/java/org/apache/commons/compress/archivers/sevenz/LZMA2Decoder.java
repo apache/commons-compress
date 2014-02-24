@@ -27,7 +27,7 @@ import org.tukaani.xz.LZMA2Options;
 
 class LZMA2Decoder extends Coders.CoderBase {
     LZMA2Decoder() {
-        super(LZMA2Options.class);
+        super(LZMA2Options.class, Number.class);
     }
 
     @Override
@@ -71,7 +71,7 @@ class LZMA2Decoder extends Coders.CoderBase {
         if (opts instanceof LZMA2Options) {
             return ((LZMA2Options) opts).getDictSize();
         }
-        return LZMA2Options.DICT_SIZE_DEFAULT;
+        return numberOptionOrDefault(opts);
     }
 
     private LZMA2Options getOptions(Object opts) throws IOException {
@@ -79,7 +79,11 @@ class LZMA2Decoder extends Coders.CoderBase {
             return (LZMA2Options) opts;
         }
         LZMA2Options options = new LZMA2Options();
-        options.setDictSize(LZMA2Options.DICT_SIZE_DEFAULT);
+        options.setDictSize(numberOptionOrDefault(opts));
         return options;
+    }
+
+    private int numberOptionOrDefault(Object opts) {
+        return numberOptionOrDefault(opts, LZMA2Options.DICT_SIZE_DEFAULT);
     }
 }
