@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Map.Entry;
 import java.util.zip.CRC32;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -50,8 +49,8 @@ public class SevenZOutputFile implements Closeable {
     private long fileBytesWritten = 0;
     private boolean finished = false;
     private CountingOutputStream currentOutputStream;
-    private Iterable<? extends Entry<SevenZMethod, ?>> contentMethods =
-            Collections.singletonList(new FakeEntry(SevenZMethod.LZMA2));
+    private Iterable<? extends SevenZMethodConfiguration> contentMethods =
+            Collections.singletonList(new SevenZMethodConfiguration(SevenZMethod.LZMA2));
     
     /**
      * Opens file to write a 7z archive to.
@@ -76,7 +75,7 @@ public class SevenZOutputFile implements Closeable {
      * to {@link #setContentMethods}.</p>
      */
     public void setContentCompression(SevenZMethod method) {
-        setContentMethods(Collections.singletonList(new FakeEntry(method)));
+        setContentMethods(Collections.singletonList(new SevenZMethodConfiguration(method)));
     }
 
     /**
@@ -92,7 +91,7 @@ public class SevenZOutputFile implements Closeable {
      *
      * @since 1.8
      */
-    public void setContentMethods(Iterable<? extends Entry<SevenZMethod, ?>> methods) {
+    public void setContentMethods(Iterable<? extends SevenZMethodConfiguration> methods) {
         this.contentMethods = methods;
     }
 
@@ -262,8 +261,8 @@ public class SevenZOutputFile implements Closeable {
 
     private CountingOutputStream setupFileOutputStream() throws IOException {
         OutputStream out = new OutputStreamWrapper();
-        for (Entry<SevenZMethod, ?> m : reverse(contentMethods)) {
-            out = Coders.addEncoder(out, m.getKey(), m.getValue());
+        for (SevenZMethodConfiguration m : reverse(contentMethods)) {
+            out = Coders.addEncoder(out, m.getMethod(), m.getOptions());
         }
         return new CountingOutputStream(out) {
             @Override
@@ -288,7 +287,7 @@ public class SevenZOutputFile implements Closeable {
     }
 
     private static <T> Iterable<T> reverse(Iterable<T> i) {
-        LinkedList<T> l = new LinkedList();
+        LinkedList<T> l = new LinkedList<T>();
         for (T t : i) {
             l.addFirst(t);
         }
@@ -370,7 +369,7 @@ public class SevenZOutputFile implements Closeable {
     private void writeFolder(final DataOutput header) throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         int numCoders = 0;
-        for (Entry<SevenZMethod, ?> m : contentMethods) {
+        for (SevenZMethodConfiguration m : contentMethods) {
             numCoders++;
             writeSingleCodec(m, bos);
         }
@@ -379,9 +378,9 @@ public class SevenZOutputFile implements Closeable {
         header.write(bos.toByteArray());
     }
 
-    private void writeSingleCodec(Entry<SevenZMethod, ?> m, OutputStream bos) throws IOException {
-        byte[] id = m.getKey().getId();
-        byte[] properties = m.getKey().getProperties(m.getValue());
+    private void writeSingleCodec(SevenZMethodConfiguration m, OutputStream bos) throws IOException {
+        byte[] id = m.getMethod().getId();
+        byte[] properties = m.getMethod().getProperties(m.getOptions());
 
         int codecFlags = id.length;
         if (properties.length > 0) {
@@ -719,22 +718,6 @@ public class SevenZOutputFile implements Closeable {
         @Override
         public void close() throws IOException {
             // the file will be closed by the containing class's close method
-        }
-    }
-
-    private static class FakeEntry implements Entry<SevenZMethod, Object> {
-        private final SevenZMethod m;
-        FakeEntry(SevenZMethod m) {
-            this.m = m;
-        }
-        public SevenZMethod getKey() {
-            return m;
-        }
-        public Object getValue() {
-            return null;
-        }
-        public Object setValue(Object o) {
-            return null;
         }
     }
 }

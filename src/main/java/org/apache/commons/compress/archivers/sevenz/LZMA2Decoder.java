@@ -56,8 +56,6 @@ class LZMA2Decoder extends Coders.CoderBase {
     private LZMA2Options getOptions(Object opts) throws IOException {
         if (opts instanceof LZMA2Options) {
             return (LZMA2Options) opts;
-        } else if (opts != null) {
-            throw new IllegalArgumentException("LZMA2 method only supports LZMA2Options objects as option");
         }
         LZMA2Options options = new LZMA2Options();
         options.setDictSize(LZMA2Options.DICT_SIZE_DEFAULT);
