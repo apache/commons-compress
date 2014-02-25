@@ -19,6 +19,18 @@ package org.apache.commons.compress.archivers.sevenz;
 
 /**
  * Combines a SevenZMethod with configuration options for the method.
+ *
+ * <p>The exact type and interpretation of options depends on the
+ * method being configured.  Currently supported are:</p>
+ *
+ * <table>
+ * <tr><th>Method</th><th>Option Type</th><th>Description</th></tr>
+ * <tr><td>BZIP2</td><td>Number</td><td>Block Size - an number between 1 and 9</td></tr>
+ * <tr><td>DEFLATE</td><td>Number</td><td>Compression Level - an number between 1 and 9</td></tr>
+ * <tr><td>LZMA2</td><td>Number</td><td>Dictionary Size - a number between 4096 and 768 MiB (768 &lt;&lt; 20)</td></tr>
+ * <tr><td>LZMA2</td><td>org.tukaani.xz.LZMA2Options</td><td>Whole set of LZMA2 options.</td></tr>
+ * </table>
+ *
  * @Immutable
  * @since 1.8
  */

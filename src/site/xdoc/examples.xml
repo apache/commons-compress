@@ -489,11 +489,24 @@ lzmaIn.close();
 
         <p>Multipart archives are not supported at all.</p>
 
+        <p>7z archives can use multiple compression and encryption
+        methods as well as filters combined as a pipeline of methods
+        for its entries.  Prior to Compress 1.8 you could only specify
+        a single method when creating archives - reading archives
+        using more than one method has been possible before.  Starting
+        with Compress 1.8 it is possible to configure the full
+        pipeline using the <code>setContentMethods</code> method of
+        <code>SevenZOutputFile</code>.  Methods are specified in the
+        order they appear inside the pipeline when creating the
+        archive, you can also specify certain parameters for some of
+        the methods - see the Javadocs of
+        <code>SevenZMethodConfiguration</code> for details.</p>
+
         <p>Currently solid compression - compressing multiple files
         as a single block to benefit from patterns repeating accross
         files - is only supported when reading archives.  This also
         means compression ratio will likely be worse when using
-        Commons Compress.</p>
+        Commons Compress compared to the native 7z executable.</p>
 
         <p>Adding an entry to a 7z archive:</p>
 <source><![CDATA[

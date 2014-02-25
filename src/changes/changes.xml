@@ -84,6 +84,11 @@ The <action> type attribute can be add,update,fix,remove.
         streaming for the format.  This currently only applies to the
         7z format.
       </action>
+      <action issue="COMPRESS-266" type="add" date="2014-02-25">
+        SevenZOutputFile now supports chaining multiple
+        compression/encryption/filter methods and passing options to
+        the methods.
+      </action>
     </release>
     <release version="1.7" date="2014-01-20"
              description="Release 1.7">
