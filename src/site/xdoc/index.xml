@@ -64,8 +64,14 @@
               format used for <code>.Z</code> files.</li>
             </ul>
           </subsection>
-          <!--subsection name="What's coming in 1.8?">
-          </subsection-->
+          <subsection name="What's coming in 1.8?">
+            <ul>
+              <li>Bug fixes to the tar, zip and 7z packages</li>
+              <li>Access to metadata when reading gzip streams</li>
+              <li>Finer grained control over the methods used when
+              creating 7z archives</li>
+            </ul>
+          </subsection>
         </section>
 
         <section name="Documentation">
