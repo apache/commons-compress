@@ -310,14 +310,6 @@ public class SevenZOutputFile implements Closeable {
         };
     }
 
-    private static <T> Iterable<T> reverse(Iterable<T> i) {
-        LinkedList<T> l = new LinkedList<T>();
-        for (T t : i) {
-            l.addFirst(t);
-        }
-        return l;
-    }
-
     private Iterable<? extends SevenZMethodConfiguration> getContentMethods(SevenZArchiveEntry entry) {
         Iterable<? extends SevenZMethodConfiguration> ms = entry.getContentMethods();
         return ms == null ? contentMethods : ms;
@@ -729,6 +721,14 @@ public class SevenZOutputFile implements Closeable {
         if (shift != 7) {
             header.write(cache);
         }
+    }
+
+    private static <T> Iterable<T> reverse(Iterable<T> i) {
+        LinkedList<T> l = new LinkedList<T>();
+        for (T t : i) {
+            l.addFirst(t);
+        }
+        return l;
     }
 
     private class OutputStreamWrapper extends OutputStream {
