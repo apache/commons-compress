@@ -45,21 +45,22 @@ public class SevenZFileTest extends AbstractTestCase {
     }
 
     public void test7zUnarchive() throws Exception {
-        test7zUnarchive(getFile("bla.7z"));
+        test7zUnarchive(getFile("bla.7z"), SevenZMethod.LZMA);
     }
 
     public void test7zDeflateUnarchive() throws Exception {
-        test7zUnarchive(getFile("bla.deflate.7z"));
+        test7zUnarchive(getFile("bla.deflate.7z"), SevenZMethod.DEFLATE);
     }
 
     public void test7zDecryptUnarchive() throws Exception {
         if (isStrongCryptoAvailable()) {
-            test7zUnarchive(getFile("bla.encrypted.7z"), "foo".getBytes("UTF-16LE"));
+            test7zUnarchive(getFile("bla.encrypted.7z"), SevenZMethod.LZMA, // stack LZMA + AES
+                            "foo".getBytes("UTF-16LE"));
         }
     }
 
-    private void test7zUnarchive(File f) throws Exception {
-        test7zUnarchive(f, null);
+    private void test7zUnarchive(File f, SevenZMethod m) throws Exception {
+        test7zUnarchive(f, m, null);
     }
 
     public void testEncryptedArchiveRequiresPassword() throws Exception {
@@ -102,13 +103,15 @@ public class SevenZFileTest extends AbstractTestCase {
                                                     (byte) 0xAF, 0x27, 0x1D}, 6));
     }
 
-    private void test7zUnarchive(File f, byte[] password) throws Exception {
+    private void test7zUnarchive(File f, SevenZMethod m, byte[] password) throws Exception {
         SevenZFile sevenZFile = new SevenZFile(f, password);
         try {
             SevenZArchiveEntry entry = sevenZFile.getNextEntry();
             assertEquals("test1.xml", entry.getName());
+            assertEquals(m, entry.getContentMethods().iterator().next().getMethod());
             entry = sevenZFile.getNextEntry();
             assertEquals("test2.xml", entry.getName());
+            assertEquals(m, entry.getContentMethods().iterator().next().getMethod());
             byte[] contents = new byte[(int)entry.getSize()];
             int off = 0;
             while ((off < contents.length)) {

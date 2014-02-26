@@ -49,6 +49,14 @@ class Coders {
         }
         return null;
     }
+    static SevenZMethod findBySignature(byte[] sig) {
+        for (final CoderId coderId : coderTable) {
+            if (Arrays.equals(coderId.method.getId(), sig)) {
+                return coderId.method;
+            }
+        }
+        return null;
+    }
 
     static InputStream addDecoder(final InputStream is,
             final Coder coder, final byte[] password) throws IOException {
