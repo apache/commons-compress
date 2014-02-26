@@ -18,7 +18,9 @@
 package org.apache.commons.compress.archivers.sevenz;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.TimeZone;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -45,6 +47,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     private boolean hasCrc;
     private long crc, compressedCrc;
     private long size, compressedSize;
+    private Iterable<? extends SevenZMethodConfiguration> contentMethods;
     
     public SevenZArchiveEntry() {
     }
@@ -403,6 +406,44 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      */
     void setCompressedSize(long size) {
         this.compressedSize = size;
+    }
+
+    /**
+     * Sets the (compression) methods to use for entry's content - the
+     * default is LZMA2.
+     *
+     * <p>Currently only {@link SevenZMethod#COPY}, {@link
+     * SevenZMethod#LZMA2}, {@link SevenZMethod#BZIP2} and {@link
+     * SevenZMethod#DEFLATE} are supported.</p>
+     *
+     * <p>The methods will be consulted in iteration order to create
+     * the final output.</p>
+     *
+     * @since 1.8
+     */
+    public void setContentMethods(Iterable<? extends SevenZMethodConfiguration> methods) {
+        LinkedList<SevenZMethodConfiguration> l = new LinkedList<SevenZMethodConfiguration>();
+        for (SevenZMethodConfiguration m : methods) {
+            l.addLast(m);
+        }
+        this.contentMethods = Collections.unmodifiableList(l);
+    }
+
+    /**
+     * Gets the (compression) methods to use for entry's content - the
+     * default is LZMA2.
+     *
+     * <p>Currently only {@link SevenZMethod#COPY}, {@link
+     * SevenZMethod#LZMA2}, {@link SevenZMethod#BZIP2} and {@link
+     * SevenZMethod#DEFLATE} are supported.</p>
+     *
+     * <p>The methods will be consulted in iteration order to create
+     * the final output.</p>
+     *
+     * @since 1.8
+     */
+    public Iterable<? extends SevenZMethodConfiguration> getContentMethods() {
+        return contentMethods;
     }
 
     /**
