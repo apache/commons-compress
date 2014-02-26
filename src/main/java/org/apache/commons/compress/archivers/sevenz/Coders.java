@@ -49,24 +49,15 @@ class Coders {
         }
         return null;
     }
-    static SevenZMethod findBySignature(byte[] sig) {
-        for (final CoderId coderId : coderTable) {
-            if (Arrays.equals(coderId.method.getId(), sig)) {
-                return coderId.method;
-            }
-        }
-        return null;
-    }
 
     static InputStream addDecoder(final InputStream is,
             final Coder coder, final byte[] password) throws IOException {
-        for (final CoderId coderId : coderTable) {
-            if (Arrays.equals(coderId.method.getId(), coder.decompressionMethodId)) {
-                return coderId.coder.decode(is, coder, password);
-            }
+        CoderBase cb = findByMethod(SevenZMethod.byId(coder.decompressionMethodId));
+        if (cb == null) {
+            throw new IOException("Unsupported compression method " +
+                                  Arrays.toString(coder.decompressionMethodId));
         }
-        throw new IOException("Unsupported compression method " +
-                Arrays.toString(coder.decompressionMethodId));
+        return cb.decode(is, coder, password);
     }
     
     static OutputStream addEncoder(final OutputStream out, final SevenZMethod method,

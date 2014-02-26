@@ -17,6 +17,8 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
+import java.util.Arrays;
+
 /**
  * The (partially) supported compression/encryption methods used in 7z archives.
  */
@@ -49,4 +51,12 @@ public enum SevenZMethod {
         return copy;
     }
 
+    static SevenZMethod byId(byte[] id) {
+        for (SevenZMethod m : SevenZMethod.class.getEnumConstants()) {
+            if (Arrays.equals(m.id, id)) {
+                return m;
+            }
+        }
+        return null;
+    }
 }

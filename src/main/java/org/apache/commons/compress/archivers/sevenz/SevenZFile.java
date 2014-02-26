@@ -849,7 +849,7 @@ public class SevenZFile implements Closeable {
             if (coder.numInStreams != 1 || coder.numOutStreams != 1) {
                 throw new IOException("Multi input/output stream coders are not yet supported");
             }
-            SevenZMethod method = Coders.findBySignature(coder.decompressionMethodId);
+            SevenZMethod method = SevenZMethod.byId(coder.decompressionMethodId);
             methods.addFirst(new SevenZMethodConfiguration(method));
             inputStreamStack = Coders.addDecoder(inputStreamStack, coder, password);
         }
