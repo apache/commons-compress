@@ -55,6 +55,13 @@ abstract class CoderBase {
     }
 
     /**
+     * @return configuration options that have been used to create the given InputStream from the given Coder
+     */
+    Object getOptionsFromCoder(Coder coder, InputStream in) {
+        return null;
+    }
+
+    /**
      * @return a stream that reads from in using the configured coder and password.
      */
     abstract InputStream decode(final InputStream in, final Coder coder, byte[] password) throws IOException;

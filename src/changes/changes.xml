@@ -93,6 +93,10 @@ The <action> type attribute can be add,update,fix,remove.
         The (compression) method(s) can now be specified per entry in
         SevenZOutputFile.
       </action>
+      <action issue="COMPRESS-258" type="add" date="2014-02-26">
+        SevenZArchiveEntry "knows" which method(s) have been used to
+        write it to the archive.
+      </action>
     </release>
     <release version="1.7" date="2014-01-20"
              description="Release 1.7">

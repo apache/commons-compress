@@ -20,6 +20,7 @@ package org.apache.commons.compress.archivers.sevenz;
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import javax.crypto.Cipher;
 import org.apache.commons.compress.AbstractTestCase;
 
@@ -101,6 +102,31 @@ public class SevenZFileTest extends AbstractTestCase {
                                                    (byte) 0xAF, 0x27, 0x1C}, 6));
         assertFalse(SevenZFile.matches(new byte[] { '7', 'z', (byte) 0xBC,
                                                     (byte) 0xAF, 0x27, 0x1D}, 6));
+    }
+
+    public void testReadingBackLZMA2DictSize() throws Exception {
+        File output = new File(dir, "lzma2-dictsize.7z");
+        SevenZOutputFile outArchive = new SevenZOutputFile(output);
+        try {
+            outArchive.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.LZMA2, 1 << 20)));
+            SevenZArchiveEntry entry = new SevenZArchiveEntry();
+            entry.setName("foo.txt");
+            outArchive.putArchiveEntry(entry);
+            outArchive.write(new byte[] { 'A' });
+            outArchive.closeArchiveEntry();
+        } finally {
+            outArchive.close();
+        }
+
+        SevenZFile archive = new SevenZFile(output);
+        try {
+            SevenZArchiveEntry entry = archive.getNextEntry();
+            SevenZMethodConfiguration m = entry.getContentMethods().iterator().next();
+            assertEquals(SevenZMethod.LZMA2, m.getMethod());
+            assertEquals(1 << 20, m.getOptions());
+        } finally {
+            archive.close();
+        }
     }
 
     private void test7zUnarchive(File f, SevenZMethod m, byte[] password) throws Exception {
