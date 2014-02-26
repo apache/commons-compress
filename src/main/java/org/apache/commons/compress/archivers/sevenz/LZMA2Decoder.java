@@ -31,22 +31,13 @@ class LZMA2Decoder extends CoderBase {
     }
 
     @Override
-    InputStream decode(final InputStream in, final Coder coder, byte[] password)
-        throws IOException {
-        final int dictionarySizeBits = 0xff & coder.properties[0];
-        if ((dictionarySizeBits & (~0x3f)) != 0) {
-            throw new IOException("Unsupported LZMA2 property bits");
+    InputStream decode(final InputStream in, final Coder coder, byte[] password) throws IOException {
+        try {
+            int dictionarySize = getDictionarySize(coder);
+            return new LZMA2InputStream(in, dictionarySize);
+        } catch (IllegalArgumentException ex) {
+            throw new IOException(ex.getMessage());
         }
-        if (dictionarySizeBits > 40) {
-            throw new IOException("Dictionary larger than 4GiB maximum size");
-        }
-        final int dictionarySize;
-        if (dictionarySizeBits == 40) {
-            dictionarySize = 0xFFFFffff;
-        } else {
-            dictionarySize = (2 | (dictionarySizeBits & 0x1)) << (dictionarySizeBits / 2 + 11);
-        }
-        return new LZMA2InputStream(in, dictionarySize);
     }
 
     @Override
@@ -67,11 +58,30 @@ class LZMA2Decoder extends CoderBase {
         };
     }
 
+    @Override
+    Object getOptionsFromCoder(Coder coder, InputStream in) {
+        return getDictionarySize(coder);
+    }
+
     private int getDictSize(Object opts) {
         if (opts instanceof LZMA2Options) {
             return ((LZMA2Options) opts).getDictSize();
         }
         return numberOptionOrDefault(opts);
+    }
+
+    private int getDictionarySize(Coder coder) throws IllegalArgumentException {
+        final int dictionarySizeBits = 0xff & coder.properties[0];
+        if ((dictionarySizeBits & (~0x3f)) != 0) {
+            throw new IllegalArgumentException("Unsupported LZMA2 property bits");
+        }
+        if (dictionarySizeBits > 40) {
+            throw new IllegalArgumentException("Dictionary larger than 4GiB maximum size");
+        }
+        if (dictionarySizeBits == 40) {
+            return 0xFFFFffff;
+        }
+        return (2 | (dictionarySizeBits & 0x1)) << (dictionarySizeBits / 2 + 11);
     }
 
     private LZMA2Options getOptions(Object opts) throws IOException {

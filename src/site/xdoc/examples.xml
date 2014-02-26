@@ -502,6 +502,13 @@ lzmaIn.close();
         the methods - see the Javadocs of
         <code>SevenZMethodConfiguration</code> for details.</p>
 
+        <p>When reading entries from an archive the
+        <code>getContentMethods</code> method of
+        <code>SevenZArchiveEntry</code> will properly represent the
+        compression/encryption/filter methods but may fail to
+        determine the configuration options used.  As of Compress 1.8
+        only the dictionary size used for LZMA2 can be read.</p>
+
         <p>Currently solid compression - compressing multiple files
         as a single block to benefit from patterns repeating accross
         files - is only supported when reading archives.  This also
