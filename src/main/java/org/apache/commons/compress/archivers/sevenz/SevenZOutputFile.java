@@ -69,7 +69,7 @@ public class SevenZOutputFile implements Closeable {
     }
     
     /**
-     * Sets the compression method to use for entry contents - the
+     * Sets the default compression method to use for entry contents - the
      * default is LZMA2.
      *
      * <p>Currently only {@link SevenZMethod#COPY}, {@link
@@ -84,7 +84,7 @@ public class SevenZOutputFile implements Closeable {
     }
 
     /**
-     * Sets the (compression) methods to use for entry contents - the
+     * Sets the default (compression) methods to use for entry contents - the
      * default is LZMA2.
      *
      * <p>Currently only {@link SevenZMethod#COPY}, {@link
@@ -276,7 +276,7 @@ public class SevenZOutputFile implements Closeable {
         OutputStream out = new OutputStreamWrapper();
         ArrayList<CountingOutputStream> moreStreams = new ArrayList<CountingOutputStream>();
         boolean first = true;
-        for (SevenZMethodConfiguration m : contentMethods) {
+        for (SevenZMethodConfiguration m : getContentMethods(files.get(files.size() - 1))) {
             if (!first) {
                 CountingOutputStream cos = new CountingOutputStream(out);
                 moreStreams.add(cos);
@@ -316,6 +316,11 @@ public class SevenZOutputFile implements Closeable {
             l.addFirst(t);
         }
         return l;
+    }
+
+    private Iterable<? extends SevenZMethodConfiguration> getContentMethods(SevenZArchiveEntry entry) {
+        Iterable<? extends SevenZMethodConfiguration> ms = entry.getContentMethods();
+        return ms == null ? contentMethods : ms;
     }
 
     private void writeHeader(final DataOutput header) throws IOException {
@@ -368,10 +373,12 @@ public class SevenZOutputFile implements Closeable {
         header.write(NID.kFolder);
         writeUint64(header, numNonEmptyStreams);
         header.write(0);
-        for (int i = 0; i < numNonEmptyStreams; i++) {
-            writeFolder(header);
+        for (SevenZArchiveEntry entry : files) {
+            if (entry.hasStream()) {
+                writeFolder(header, entry);
+            }
         }
-        
+
         header.write(NID.kCodersUnpackSize);
         for (final SevenZArchiveEntry entry : files) {
             if (entry.hasStream()) {
@@ -396,10 +403,10 @@ public class SevenZOutputFile implements Closeable {
         header.write(NID.kEnd);
     }
     
-    private void writeFolder(final DataOutput header) throws IOException {
+    private void writeFolder(final DataOutput header, SevenZArchiveEntry entry) throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         int numCoders = 0;
-        for (SevenZMethodConfiguration m : contentMethods) {
+        for (SevenZMethodConfiguration m : getContentMethods(entry)) {
             numCoders++;
             writeSingleCodec(m, bos);
         }
