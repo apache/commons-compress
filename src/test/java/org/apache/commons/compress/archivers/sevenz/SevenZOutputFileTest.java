@@ -19,10 +19,12 @@ package org.apache.commons.compress.archivers.sevenz;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.ArrayList;
+import java.util.Iterator;
 import org.apache.commons.compress.AbstractTestCase;
 import org.tukaani.xz.LZMA2Options;
 
@@ -257,17 +259,38 @@ public class SevenZOutputFileTest extends AbstractTestCase {
     }
 
     public void testLzma2WithIntConfiguration() throws Exception {
-        output = new File(dir, "bzip2-options.7z");
+        output = new File(dir, "lzma2-options.7z");
         // 1 MB dictionary
         createAndReadBack(output, Collections
                           .singletonList(new SevenZMethodConfiguration(SevenZMethod.LZMA2, 1 << 20)));
     }
 
     public void testLzma2WithOptionsConfiguration() throws Exception {
-        output = new File(dir, "bzip2-options2.7z");
+        output = new File(dir, "lzma2-options2.7z");
         LZMA2Options opts = new LZMA2Options(1);
         createAndReadBack(output, Collections
                           .singletonList(new SevenZMethodConfiguration(SevenZMethod.LZMA2, opts)));
+    }
+
+    public void testArchiveWithMixedMethods() throws Exception {
+        output = new File(dir, "mixed-methods.7z");
+        SevenZOutputFile outArchive = new SevenZOutputFile(output);
+        try {
+            addFile(outArchive, 0, true);
+            addFile(outArchive, 1, true, Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.BZIP2)));
+        } finally {
+            outArchive.close();
+        }
+
+        SevenZFile archive = new SevenZFile(output);
+        try {
+            assertEquals(Boolean.TRUE,
+                         verifyFile(archive, 0, Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.LZMA2))));
+            assertEquals(Boolean.TRUE,
+                         verifyFile(archive, 1, Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.BZIP2))));
+        } finally {
+            archive.close();
+        }
     }
 
     private void testCompress252(int numberOfFiles, int numberOfNonEmptyFiles)
@@ -326,14 +349,25 @@ public class SevenZOutputFileTest extends AbstractTestCase {
 
     private void addFile(SevenZOutputFile archive, int index, boolean nonEmpty)
         throws Exception {
+        addFile(archive, index, nonEmpty, null);
+    }
+
+    private void addFile(SevenZOutputFile archive, int index, boolean nonEmpty, Iterable<SevenZMethodConfiguration> methods)
+        throws Exception {
         SevenZArchiveEntry entry = new SevenZArchiveEntry();
         entry.setName("foo/" + index + ".txt");
+        entry.setContentMethods(methods);
         archive.putArchiveEntry(entry);
         archive.write(nonEmpty ? new byte[] { 'A' } : new byte[0]);
         archive.closeArchiveEntry();
     }
 
     private Boolean verifyFile(SevenZFile archive, int index) throws Exception {
+        return verifyFile(archive, index, null);
+    }
+
+    private Boolean verifyFile(SevenZFile archive, int index,
+                               Iterable<SevenZMethodConfiguration> methods) throws Exception {
         SevenZArchiveEntry entry = archive.getNextEntry();
         if (entry == null) {
             return null;
@@ -346,6 +380,9 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         assertEquals(1, entry.getSize());
         assertEquals('A', archive.read());
         assertEquals(-1, archive.read());
+        if (methods != null) {
+            assertContentMethodsEquals(methods, entry.getContentMethods());
+        }
         return Boolean.TRUE;
     }
 
@@ -367,9 +404,23 @@ public class SevenZOutputFileTest extends AbstractTestCase {
 
         SevenZFile archive = new SevenZFile(output);
         try {
-            assertEquals(Boolean.TRUE, verifyFile(archive, 0));
+            assertEquals(Boolean.TRUE, verifyFile(archive, 0, methods));
         } finally {
             archive.close();
         }
+    }
+
+    private static void assertContentMethodsEquals(Iterable<? extends SevenZMethodConfiguration> expected,
+                                                   Iterable<? extends SevenZMethodConfiguration> actual) {
+        assertNotNull(actual);
+        Iterator<? extends SevenZMethodConfiguration> expectedIter = expected.iterator();
+        Iterator<? extends SevenZMethodConfiguration> actualIter = actual.iterator();
+        while (expectedIter.hasNext()) {
+            assertTrue(actualIter.hasNext());
+            SevenZMethodConfiguration expConfig = expectedIter.next();
+            SevenZMethodConfiguration actConfig = actualIter.next();
+            assertEquals(expConfig.getMethod(), actConfig.getMethod());
+        }
+        assertFalse(actualIter.hasNext());
     }
 }

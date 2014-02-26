@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.LinkedList;
 import java.util.zip.CRC32;
 
 import org.apache.commons.compress.utils.BoundedInputStream;
@@ -800,9 +801,11 @@ public class SevenZFile implements Closeable {
                     new ByteArrayInputStream(new byte[0]), 0);
             return;
         }
+        final SevenZArchiveEntry file = archive.files[currentEntryIndex];
         if (currentFolderIndex == folderIndex) {
             // need to advance the folder input stream past the current file
             drainPreviousEntry();
+            file.setContentMethods(archive.files[currentEntryIndex - 1].getContentMethods());
         } else {
             currentFolderIndex = folderIndex;
             if (currentFolderInputStream != null) {
@@ -814,9 +817,8 @@ public class SevenZFile implements Closeable {
             final int firstPackStreamIndex = archive.streamMap.folderFirstPackStreamIndex[folderIndex];
             final long folderOffset = SIGNATURE_HEADER_SIZE + archive.packPos +
                     archive.streamMap.packStreamOffsets[firstPackStreamIndex];
-            currentFolderInputStream = buildDecoderStack(folder, folderOffset, firstPackStreamIndex);
+            currentFolderInputStream = buildDecoderStack(folder, folderOffset, firstPackStreamIndex, file);
         }
-        final SevenZArchiveEntry file = archive.files[currentEntryIndex];
         final InputStream fileStream = new BoundedInputStream(
                 currentFolderInputStream, file.getSize());
         if (file.getHasCrc()) {
@@ -838,16 +840,20 @@ public class SevenZFile implements Closeable {
     }
     
     private InputStream buildDecoderStack(final Folder folder, final long folderOffset,
-            final int firstPackStreamIndex) throws IOException {
+                final int firstPackStreamIndex, SevenZArchiveEntry entry) throws IOException {
         file.seek(folderOffset);
         InputStream inputStreamStack = new BoundedRandomAccessFileInputStream(file,
                 archive.packSizes[firstPackStreamIndex]);
+        LinkedList<SevenZMethodConfiguration> methods = new LinkedList<SevenZMethodConfiguration>();
         for (final Coder coder : folder.getOrderedCoders()) {
             if (coder.numInStreams != 1 || coder.numOutStreams != 1) {
                 throw new IOException("Multi input/output stream coders are not yet supported");
             }
+            SevenZMethod method = Coders.findBySignature(coder.decompressionMethodId);
+            methods.addFirst(new SevenZMethodConfiguration(method));
             inputStreamStack = Coders.addDecoder(inputStreamStack, coder, password);
         }
+        entry.setContentMethods(methods);
         if (folder.hasCrc) {
             return new CRC32VerifyingInputStream(inputStreamStack,
                     folder.getUnpackSize(), folder.crc);
