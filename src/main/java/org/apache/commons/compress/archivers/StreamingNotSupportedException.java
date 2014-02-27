@@ -24,6 +24,9 @@ package org.apache.commons.compress.archivers;
  * @since 1.8
  */
 public class StreamingNotSupportedException extends ArchiveException {
+    
+    private static final long serialVersionUID = 1L;
+    
     private final String format;
 
     /**
