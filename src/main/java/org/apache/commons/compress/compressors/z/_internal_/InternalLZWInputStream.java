@@ -49,7 +49,7 @@ public abstract class InternalLZWInputStream extends CompressorInputStream {
     private byte[] outputStack;
     private int outputStackLocation;
 
-    protected InternalLZWInputStream(InputStream inputStream) throws IOException {
+    protected InternalLZWInputStream(InputStream inputStream) {
         this.in = inputStream;
     }
 
