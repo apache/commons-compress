@@ -19,8 +19,8 @@
 package org.apache.commons.compress.archivers;
 
 /**
- * Exception thrown by ArchiveStreamFactory if a format is
- * requested/detected that doesn't support streaming.
+ * Exception thrown by ArchiveStreamFactory if a format is requested/detected that doesn't support streaming.
+ * 
  * @since 1.8
  */
 public class StreamingNotSupportedException extends ArchiveException {
@@ -31,6 +31,7 @@ public class StreamingNotSupportedException extends ArchiveException {
 
     /**
      * Creates a new StreamingNotSupportedException.
+     * 
      * @param format the format that has been requested/detected.
      */
     public StreamingNotSupportedException(String format) {
@@ -40,6 +41,7 @@ public class StreamingNotSupportedException extends ArchiveException {
 
     /**
      * Returns the format that has been requested/detected.
+     * 
      * @return the format that has been requested/detected.
      */
     public String getFormat() {
