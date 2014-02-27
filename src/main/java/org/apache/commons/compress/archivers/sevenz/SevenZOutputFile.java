@@ -46,15 +46,15 @@ public class SevenZOutputFile implements Closeable {
     private final RandomAccessFile file;
     private final List<SevenZArchiveEntry> files = new ArrayList<SevenZArchiveEntry>();
     private int numNonEmptyStreams = 0;
-    private CRC32 crc32 = new CRC32();
-    private CRC32 compressedCrc32 = new CRC32();
+    private final CRC32 crc32 = new CRC32();
+    private final CRC32 compressedCrc32 = new CRC32();
     private long fileBytesWritten = 0;
     private boolean finished = false;
     private CountingOutputStream currentOutputStream;
     private CountingOutputStream[] additionalCountingStreams;
     private Iterable<? extends SevenZMethodConfiguration> contentMethods =
             Collections.singletonList(new SevenZMethodConfiguration(SevenZMethod.LZMA2));
-    private Map<SevenZArchiveEntry, long[]> additionalSizes = new HashMap<SevenZArchiveEntry, long[]>();
+    private final Map<SevenZArchiveEntry, long[]> additionalSizes = new HashMap<SevenZArchiveEntry, long[]>();
     
     /**
      * Opens file to write a 7z archive to.

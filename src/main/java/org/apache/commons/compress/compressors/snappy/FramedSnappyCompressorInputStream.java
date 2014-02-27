@@ -67,7 +67,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
 
     private int uncompressedBytesRemaining;
     private long expectedChecksum = -1;
-    private PureJavaCrc32C checksum = new PureJavaCrc32C();
+    private final PureJavaCrc32C checksum = new PureJavaCrc32C();
 
     /**
      * Constructs a new input stream that decompresses snappy-framed-compressed data
