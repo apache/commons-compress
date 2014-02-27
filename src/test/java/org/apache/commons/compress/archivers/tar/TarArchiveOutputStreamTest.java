@@ -496,7 +496,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         String linkname = "01234567890123456789012345678901234567890123456789"
                 + "01234567890123456789012345678901234567890123456789"
                 + "01234567890123456789012345678901234567890123456789/test";
-        TarArchiveEntry entry = new TarArchiveEntry("test", TarArchiveEntry.LF_SYMLINK);
+        TarArchiveEntry entry = new TarArchiveEntry("test", TarConstants.LF_SYMLINK);
         entry.setLinkName(linkname);
         
         try {
@@ -517,7 +517,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         String linkname = "01234567890123456789012345678901234567890123456789"
             + "01234567890123456789012345678901234567890123456789"
             + "01234567890123456789012345678901234567890123456789/";
-        TarArchiveEntry entry = new TarArchiveEntry("test" , TarArchiveEntry.LF_SYMLINK);
+        TarArchiveEntry entry = new TarArchiveEntry("test" , TarConstants.LF_SYMLINK);
         entry.setLinkName(linkname);
         
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -555,7 +555,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         String linkname = "01234567890123456789012345678901234567890123456789"
             + "01234567890123456789012345678901234567890123456789"
             + "01234567890123456789012345678901234567890123456789/test";
-        TarArchiveEntry entry = new TarArchiveEntry("test", TarArchiveEntry.LF_SYMLINK);
+        TarArchiveEntry entry = new TarArchiveEntry("test", TarConstants.LF_SYMLINK);
         entry.setLinkName(linkname);
         
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
