@@ -53,7 +53,7 @@ class DeltaDecoder extends CoderBase {
 
     @Override
     Object getOptionsFromCoder(Coder coder, InputStream in) {
-        return getOptionsFromCoder(coder);
+        return Integer.valueOf(getOptionsFromCoder(coder));
     }
 
     private int getOptionsFromCoder(Coder coder) {
