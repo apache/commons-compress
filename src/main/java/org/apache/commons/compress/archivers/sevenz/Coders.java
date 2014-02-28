@@ -18,6 +18,7 @@
 package org.apache.commons.compress.archivers.sevenz;
 
 import java.io.FilterInputStream;
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -31,8 +32,15 @@ import java.util.zip.InflaterInputStream;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
+import org.tukaani.xz.ARMOptions;
+import org.tukaani.xz.ARMThumbOptions;
+import org.tukaani.xz.FilterOptions;
+import org.tukaani.xz.FinishableOutputStream;
 import org.tukaani.xz.FinishableWrapperOutputStream;
+import org.tukaani.xz.IA64Options;
 import org.tukaani.xz.LZMAInputStream;
+import org.tukaani.xz.PowerPCOptions;
+import org.tukaani.xz.SPARCOptions;
 import org.tukaani.xz.X86Options;
 
 class Coders {
@@ -43,7 +51,12 @@ class Coders {
             put(SevenZMethod.DEFLATE, new DeflateDecoder());
             put(SevenZMethod.BZIP2, new BZIP2Decoder());
             put(SevenZMethod.AES256SHA256, new AES256SHA256Decoder());
-            put(SevenZMethod.X86, new X86Decoder());
+            put(SevenZMethod.BCJ_X86_FILTER, new BCJDecoder(new X86Options()));
+            put(SevenZMethod.BCJ_PPC_FILTER, new BCJDecoder(new PowerPCOptions()));
+            put(SevenZMethod.BCJ_IA64_FILTER, new BCJDecoder(new IA64Options()));
+            put(SevenZMethod.BCJ_ARM_FILTER, new BCJDecoder(new ARMOptions()));
+            put(SevenZMethod.BCJ_ARM_THUMB_FILTER, new BCJDecoder(new ARMThumbOptions()));
+            put(SevenZMethod.BCJ_SPARC_FILTER, new BCJDecoder(new SPARCOptions()));
         }};
 
     static CoderBase findByMethod(SevenZMethod method) {
@@ -97,15 +110,25 @@ class Coders {
         }
     }
     
-    static class X86Decoder extends CoderBase {
+    static class BCJDecoder extends CoderBase {
+        private final FilterOptions opts;
+        BCJDecoder(FilterOptions opts) {
+            this.opts = opts;
+        }
+
         @Override
         InputStream decode(final InputStream in, final Coder coder,
                 byte[] password) throws IOException {
-            return new X86Options().getInputStream(in);
+            return opts.getInputStream(in);
         }
         @Override
         OutputStream encode(final OutputStream out, final Object _) {
-            return new X86Options().getOutputStream(new FinishableWrapperOutputStream(out));
+            final FinishableOutputStream fo = opts.getOutputStream(new FinishableWrapperOutputStream(out));
+            return new FilterOutputStream(fo) {
+                @Override
+                public void flush() {
+                }
+            };
         }
     }
     
