@@ -57,7 +57,7 @@ public class PythonTruncatedBzip2Test {
         DATA = out.toByteArray();
 
         // Drop the eos_magic field (6 bytes) and CRC (4 bytes).
-        TRUNCATED_DATA = Arrays.copyOfRange(DATA, 0, DATA.length - 10);
+        TRUNCATED_DATA = copyOfRange(DATA, 0, DATA.length - 10);
     }
 
     @Before
@@ -91,7 +91,7 @@ public class PythonTruncatedBzip2Test {
         ByteBuffer buffer = ByteBuffer.allocate(length);
         bz2Channel.read(buffer);
 
-        assertArrayEquals(Arrays.copyOfRange(TEXT.getBytes(), 0, length),
+        assertArrayEquals(copyOfRange(TEXT.getBytes(), 0, length),
                 buffer.array());
 
         // subsequent read should throw
@@ -109,5 +109,14 @@ public class PythonTruncatedBzip2Test {
         BZip2CompressorInputStream bZin = new BZip2CompressorInputStream(bin, true);
 
         return Channels.newChannel(bZin);
+    }
+
+    // Helper method since Arrays#copyOfRange is Java 1.6+
+    // Does not check parameters, so may fail if they are incompatible
+    private static byte[] copyOfRange(byte[] original, int from, int to) {
+        int length = to - from;
+        byte buff[] = new byte[length];
+        System.arraycopy(original, from, buff, 0, length);
+        return buff;
     }
 }
