@@ -31,7 +31,9 @@ import java.util.zip.InflaterInputStream;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
+import org.tukaani.xz.FinishableWrapperOutputStream;
 import org.tukaani.xz.LZMAInputStream;
+import org.tukaani.xz.X86Options;
 
 class Coders {
     private static final Map<SevenZMethod, CoderBase> CODER_MAP = new HashMap<SevenZMethod, CoderBase>() {{
@@ -41,6 +43,7 @@ class Coders {
             put(SevenZMethod.DEFLATE, new DeflateDecoder());
             put(SevenZMethod.BZIP2, new BZIP2Decoder());
             put(SevenZMethod.AES256SHA256, new AES256SHA256Decoder());
+            put(SevenZMethod.X86, new X86Decoder());
         }};
 
     static CoderBase findByMethod(SevenZMethod method) {
@@ -91,6 +94,18 @@ class Coders {
                 throw new IOException("Dictionary larger than 4GiB maximum size");
             }
             return new LZMAInputStream(in, -1, propsByte, (int) dictSize);
+        }
+    }
+    
+    static class X86Decoder extends CoderBase {
+        @Override
+        InputStream decode(final InputStream in, final Coder coder,
+                byte[] password) throws IOException {
+            return new X86Options().getInputStream(in);
+        }
+        @Override
+        OutputStream encode(final OutputStream out, final Object _) {
+            return new X86Options().getOutputStream(new FinishableWrapperOutputStream(out));
         }
     }
     
