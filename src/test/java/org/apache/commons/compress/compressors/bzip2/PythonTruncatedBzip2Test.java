@@ -28,8 +28,6 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.util.Arrays;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
