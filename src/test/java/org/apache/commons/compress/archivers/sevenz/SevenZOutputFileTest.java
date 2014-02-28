@@ -234,6 +234,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         testRoundTrip(SevenZMethod.DEFLATE);
     }
 
+    /* must wait for XZ for Java > 1.4
     public void testBCJX86Roundtrip() throws Exception {
         testFilterRoundTrip(new SevenZMethodConfiguration(SevenZMethod.BCJ_X86_FILTER));
     }
@@ -257,6 +258,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
     public void testBCJSparcRoundtrip() throws Exception {
         testFilterRoundTrip(new SevenZMethodConfiguration(SevenZMethod.BCJ_SPARC_FILTER));
     }
+    */
 
     public void testStackOfContentCompressions() throws Exception {
         output = new File(dir, "multiple-methods.7z");
@@ -418,7 +420,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
     }
 
     private void testFilterRoundTrip(SevenZMethodConfiguration method) throws Exception {
-        output = new File(dir, method + "-roundtrip.7z");
+        output = new File(dir, method.getMethod() + "-roundtrip.7z");
         ArrayList<SevenZMethodConfiguration> methods = new ArrayList<SevenZMethodConfiguration>();
         methods.add(method);
         methods.add(new SevenZMethodConfiguration(SevenZMethod.LZMA2));
