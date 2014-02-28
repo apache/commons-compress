@@ -44,7 +44,10 @@ import org.tukaani.xz.SPARCOptions;
 import org.tukaani.xz.X86Options;
 
 class Coders {
-    private static final Map<SevenZMethod, CoderBase> CODER_MAP = new HashMap<SevenZMethod, CoderBase>() {{
+    private static final Map<SevenZMethod, CoderBase> CODER_MAP = new HashMap<SevenZMethod, CoderBase>() {
+
+        private static final long serialVersionUID = 1664829131806520867L;
+    {
             put(SevenZMethod.COPY, new CopyDecoder());
             put(SevenZMethod.LZMA, new LZMADecoder());
             put(SevenZMethod.LZMA2, new LZMA2Decoder());
