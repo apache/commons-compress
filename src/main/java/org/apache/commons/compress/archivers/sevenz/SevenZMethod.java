@@ -42,18 +42,12 @@ public enum SevenZMethod {
      * BCJ x86 version 1.
      * @since 1.8
      */
-    X86(new byte[] { 0x03, 0x03, 0x01, 0x03 }, new byte[] { 0x04 });
+    X86(new byte[] { 0x03, 0x03, 0x01, 0x03 });
 
     private final byte[] id;
-    private final byte[] alternativeId;
 
     private SevenZMethod(byte[] id) {
-        this(id, null);
-    }
-
-    private SevenZMethod(byte[] id, byte[] alternativeId) {
         this.id = id;
-        this.alternativeId = alternativeId;
     }
 
     byte[] getId() {
@@ -64,8 +58,7 @@ public enum SevenZMethod {
 
     static SevenZMethod byId(byte[] id) {
         for (SevenZMethod m : SevenZMethod.class.getEnumConstants()) {
-            if (Arrays.equals(m.id, id)
-                || (m.alternativeId != null && Arrays.equals(m.alternativeId, id))) {
+            if (Arrays.equals(m.id, id)) {
                 return m;
             }
         }
