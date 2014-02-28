@@ -97,6 +97,9 @@ The <action> type attribute can be add,update,fix,remove.
         SevenZArchiveEntry "knows" which method(s) have been used to
         write it to the archive.
       </action>
+      <action type="add" date="2014-02-28">
+        The 7z package now supports the delta filter as method.
+      </action>
     </release>
     <release version="1.7" date="2014-01-20"
              description="Release 1.7">

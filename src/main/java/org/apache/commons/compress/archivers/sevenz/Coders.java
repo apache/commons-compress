@@ -57,6 +57,7 @@ class Coders {
             put(SevenZMethod.BCJ_ARM_FILTER, new BCJDecoder(new ARMOptions()));
             put(SevenZMethod.BCJ_ARM_THUMB_FILTER, new BCJDecoder(new ARMThumbOptions()));
             put(SevenZMethod.BCJ_SPARC_FILTER, new BCJDecoder(new SPARCOptions()));
+            put(SevenZMethod.DELTA_FILTER, new DeltaDecoder());
         }};
 
     static CoderBase findByMethod(SevenZMethod method) {

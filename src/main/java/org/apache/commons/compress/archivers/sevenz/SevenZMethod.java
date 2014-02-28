@@ -78,7 +78,12 @@ public enum SevenZMethod {
      * BCJ Sparc platform.
      * @since 1.8
      */
-    BCJ_SPARC_FILTER(new byte[] { 0x03, 0x03, 0x08, 0x05 });
+    BCJ_SPARC_FILTER(new byte[] { 0x03, 0x03, 0x08, 0x05 }),
+    /**
+     * Delta filter.
+     * @since 1.8
+     */
+    DELTA_FILTER(new byte[] { 0x03 });
 
     private final byte[] id;
 

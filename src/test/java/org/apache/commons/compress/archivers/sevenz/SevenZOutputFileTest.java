@@ -260,6 +260,10 @@ public class SevenZOutputFileTest extends AbstractTestCase {
     }
     */
 
+    public void testDeltaRoundtrip() throws Exception {
+        testFilterRoundTrip(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER));
+    }
+
     public void testStackOfContentCompressions() throws Exception {
         output = new File(dir, "multiple-methods.7z");
         ArrayList<SevenZMethodConfiguration> methods = new ArrayList<SevenZMethodConfiguration>();
