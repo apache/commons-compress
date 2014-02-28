@@ -129,6 +129,32 @@ public class SevenZFileTest extends AbstractTestCase {
         }
     }
 
+    public void testReadingBackDeltaDistance() throws Exception {
+        File output = new File(dir, "delta-distance.7z");
+        SevenZOutputFile outArchive = new SevenZOutputFile(output);
+        try {
+            outArchive.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER, 32),
+                                                       new SevenZMethodConfiguration(SevenZMethod.LZMA2)));
+            SevenZArchiveEntry entry = new SevenZArchiveEntry();
+            entry.setName("foo.txt");
+            outArchive.putArchiveEntry(entry);
+            outArchive.write(new byte[] { 'A' });
+            outArchive.closeArchiveEntry();
+        } finally {
+            outArchive.close();
+        }
+
+        SevenZFile archive = new SevenZFile(output);
+        try {
+            SevenZArchiveEntry entry = archive.getNextEntry();
+            SevenZMethodConfiguration m = entry.getContentMethods().iterator().next();
+            assertEquals(SevenZMethod.DELTA_FILTER, m.getMethod());
+            assertEquals(32, m.getOptions());
+        } finally {
+            archive.close();
+        }
+    }
+
     private void test7zUnarchive(File f, SevenZMethod m, byte[] password) throws Exception {
         SevenZFile sevenZFile = new SevenZFile(f, password);
         try {
