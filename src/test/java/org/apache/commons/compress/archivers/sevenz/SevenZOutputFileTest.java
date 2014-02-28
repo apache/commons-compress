@@ -234,6 +234,30 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         testRoundTrip(SevenZMethod.DEFLATE);
     }
 
+    public void testBCJX86Roundtrip() throws Exception {
+        testFilterRoundTrip(new SevenZMethodConfiguration(SevenZMethod.BCJ_X86_FILTER));
+    }
+
+    public void testBCJARMRoundtrip() throws Exception {
+        testFilterRoundTrip(new SevenZMethodConfiguration(SevenZMethod.BCJ_ARM_FILTER));
+    }
+
+    public void testBCJARMThumbRoundtrip() throws Exception {
+        testFilterRoundTrip(new SevenZMethodConfiguration(SevenZMethod.BCJ_ARM_THUMB_FILTER));
+    }
+
+    public void testBCJIA64Roundtrip() throws Exception {
+        testFilterRoundTrip(new SevenZMethodConfiguration(SevenZMethod.BCJ_IA64_FILTER));
+    }
+
+    public void testBCJPPCRoundtrip() throws Exception {
+        testFilterRoundTrip(new SevenZMethodConfiguration(SevenZMethod.BCJ_PPC_FILTER));
+    }
+
+    public void testBCJSparcRoundtrip() throws Exception {
+        testFilterRoundTrip(new SevenZMethodConfiguration(SevenZMethod.BCJ_SPARC_FILTER));
+    }
+
     public void testStackOfContentCompressions() throws Exception {
         output = new File(dir, "multiple-methods.7z");
         ArrayList<SevenZMethodConfiguration> methods = new ArrayList<SevenZMethodConfiguration>();
@@ -390,6 +414,14 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         output = new File(dir, method + "-roundtrip.7z");
         ArrayList<SevenZMethodConfiguration> methods = new ArrayList<SevenZMethodConfiguration>();
         methods.add(new SevenZMethodConfiguration(method));
+        createAndReadBack(output, methods);
+    }
+
+    private void testFilterRoundTrip(SevenZMethodConfiguration method) throws Exception {
+        output = new File(dir, method + "-roundtrip.7z");
+        ArrayList<SevenZMethodConfiguration> methods = new ArrayList<SevenZMethodConfiguration>();
+        methods.add(method);
+        methods.add(new SevenZMethodConfiguration(SevenZMethod.LZMA2));
         createAndReadBack(output, methods);
     }
 
