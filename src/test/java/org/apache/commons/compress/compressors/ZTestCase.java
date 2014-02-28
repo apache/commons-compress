@@ -47,7 +47,7 @@ public final class ZTestCase extends AbstractTestCase {
         });
     }
 
-    private void testUnarchive(StreamWrapper wrapper) throws Exception {
+    private void testUnarchive(StreamWrapper<CompressorInputStream> wrapper) throws Exception {
         final File input = getFile("bla.tar.Z");
         final File output = new File(dir, "bla.tar");
         final InputStream is = new FileInputStream(input);
