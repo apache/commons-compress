@@ -123,7 +123,14 @@ class Coders {
         @Override
         InputStream decode(final InputStream in, final Coder coder,
                 byte[] password) throws IOException {
-            return opts.getInputStream(in);
+            try {
+                return opts.getInputStream(in);
+            } catch (AssertionError e) {
+                IOException ex = new IOException("BCJ filter needs XZ for Java > 1.4 - see "
+                                                 + "http://commons.apache.org/proper/commons-compress/limitations.html#7Z");
+                ex.initCause(e);
+                throw ex;
+            }
         }
         @Override
         OutputStream encode(final OutputStream out, final Object _) {
