@@ -112,6 +112,9 @@
           <ul>
             <li>The <a href="examples.html">examples page</a> contains
             more detailed information and some examples.</li>
+            <li>The <a href="limitations.html">known limitations and
+            problems</a> page lists the currently known problems
+            grouped by the format they apply to.</li>
             <li>The <a href="apidocs/index.html">Javadoc</a> of the latest SVN</li>
             <li>The <a href="http://svn.apache.org/viewvc/commons/proper/compress/">SVN
                 repository</a> can be browsed.</li>
