@@ -25,7 +25,7 @@
      Commons Compress&#x2122; grouped by the archiving/compression
      format they apply to.</p>
 
-     <section name="7z">
+     <section name="7Z">
        <ul>
          <li>only <code>File</code>s are supported as input/output,
          not streams.  In Compress 1.7
