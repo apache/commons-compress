@@ -30,6 +30,15 @@ import org.tukaani.xz.LZMA2Options;
 
 public class SevenZOutputFileTest extends AbstractTestCase {
 
+    private static final boolean XZ_BCJ_IS_BUGGY;
+
+    static {
+        final String version = org.tukaani.xz.XZ.class.getPackage().getImplementationVersion();
+        XZ_BCJ_IS_BUGGY=version.equals("1.4");
+        if (XZ_BCJ_IS_BUGGY) {
+            System.out.println("XZ version is " + version + " - skipping BCJ tests");
+        }
+    }
     private File output;
 
     @Override
@@ -234,31 +243,37 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         testRoundTrip(SevenZMethod.DEFLATE);
     }
 
-    /* must wait for XZ for Java > 1.4
+    /* must wait for XZ for Java > 1.4 */
     public void testBCJX86Roundtrip() throws Exception {
+        if (XZ_BCJ_IS_BUGGY) { return; }
         testFilterRoundTrip(new SevenZMethodConfiguration(SevenZMethod.BCJ_X86_FILTER));
     }
 
     public void testBCJARMRoundtrip() throws Exception {
+        if (XZ_BCJ_IS_BUGGY) { return; }
         testFilterRoundTrip(new SevenZMethodConfiguration(SevenZMethod.BCJ_ARM_FILTER));
     }
 
     public void testBCJARMThumbRoundtrip() throws Exception {
+        if (XZ_BCJ_IS_BUGGY) { return; }
         testFilterRoundTrip(new SevenZMethodConfiguration(SevenZMethod.BCJ_ARM_THUMB_FILTER));
     }
 
     public void testBCJIA64Roundtrip() throws Exception {
+        if (XZ_BCJ_IS_BUGGY) { return; }
         testFilterRoundTrip(new SevenZMethodConfiguration(SevenZMethod.BCJ_IA64_FILTER));
     }
 
     public void testBCJPPCRoundtrip() throws Exception {
+        if (XZ_BCJ_IS_BUGGY) { return; }
         testFilterRoundTrip(new SevenZMethodConfiguration(SevenZMethod.BCJ_PPC_FILTER));
     }
 
     public void testBCJSparcRoundtrip() throws Exception {
+        if (XZ_BCJ_IS_BUGGY) { return; }
         testFilterRoundTrip(new SevenZMethodConfiguration(SevenZMethod.BCJ_SPARC_FILTER));
     }
-    */
+    /**/
 
     public void testDeltaRoundtrip() throws Exception {
         testFilterRoundTrip(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER));
