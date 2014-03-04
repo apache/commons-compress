@@ -337,17 +337,15 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     public CpioArchiveEntry(final short format, File inputFile,
                             String entryName) {
         this(format, entryName, inputFile.isFile() ? inputFile.length() : 0);
-        long mode=0;
         if (inputFile.isDirectory()){
-            mode |= C_ISDIR;
+            setMode(C_ISDIR);
         } else if (inputFile.isFile()){
-            mode |= C_ISREG;
+            setMode(C_ISREG);
         } else {
             throw new IllegalArgumentException("Cannot determine type of file "
                                                + inputFile.getName());
         }
         // TODO set other fields as needed
-        setMode(mode);
         setTime(inputFile.lastModified() / 1000);
     }
 
