@@ -243,7 +243,6 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         testRoundTrip(SevenZMethod.DEFLATE);
     }
 
-    /* must wait for XZ for Java > 1.4 */
     public void testBCJX86Roundtrip() throws Exception {
         if (XZ_BCJ_IS_BUGGY) { return; }
         testFilterRoundTrip(new SevenZMethodConfiguration(SevenZMethod.BCJ_X86_FILTER));
@@ -273,7 +272,6 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         if (XZ_BCJ_IS_BUGGY) { return; }
         testFilterRoundTrip(new SevenZMethodConfiguration(SevenZMethod.BCJ_SPARC_FILTER));
     }
-    /**/
 
     public void testDeltaRoundtrip() throws Exception {
         testFilterRoundTrip(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER));

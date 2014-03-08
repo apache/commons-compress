@@ -102,7 +102,7 @@ The <action> type attribute can be add,update,fix,remove.
       </action>
       <action issue="COMPRESS-257" type="add" date="2014-03-03">
         The 7z package now supports BCJ filters for several platforms.
-        You will need a version of XZ for Java > 1.4 to read archives
+        You will need a version of XZ for Java >= 1.5 to read archives
         using BCJ, though.
       </action>
     </release>
