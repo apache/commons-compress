@@ -69,7 +69,8 @@
               <li>Bug fixes to the tar, zip and 7z packages</li>
               <li>Access to metadata when reading gzip streams</li>
               <li>Finer grained control over the methods used when
-              creating 7z archives</li>
+              creating 7z archives and support for some the most
+              important filter methods used in 7z archives.</li>
             </ul>
           </subsection>
         </section>
