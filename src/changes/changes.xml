@@ -42,7 +42,10 @@ The <action> type attribute can be add,update,fix,remove.
     <title>commons-compress</title>
   </properties>
   <body>
-    <release version="1.8" date="not released, yet"
+    <release version="1.9" date="not released yet"
+             description="Release 1.9">
+    </release>
+    <release version="1.8" date="2014-03-12"
              description="Release 1.8">
       <action issue="COMPRESS-253" type="fix" date="2014-01-20">
         BZip2CompressorInputStream read fewer bytes than possible from
