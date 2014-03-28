@@ -384,7 +384,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
     private ArArchiveEntry readGNUStringTable(byte[] length) throws IOException {
         int bufflen = asInt(length); // Assume length will fit in an int
         namebuffer = new byte[bufflen];
-        int read = read(namebuffer, 0, bufflen);
+        int read = IOUtils.readFully(this, namebuffer, 0, bufflen);
         if (read != bufflen){
             throw new IOException("Failed to read complete // record: expected="
                                   + bufflen + " read=" + read);

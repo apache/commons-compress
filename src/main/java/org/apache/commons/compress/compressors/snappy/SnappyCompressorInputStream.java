@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
+import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * CompressorInputStream for the raw Snappy format.
@@ -303,7 +304,7 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
      * @return True if the decompressed data should be flushed
      */
     private boolean expandLiteral(final int length) throws IOException {
-        int bytesRead = in.read(decompressBuf, writeIndex, length);
+        int bytesRead = IOUtils.readFully(in, decompressBuf, writeIndex, length);
         count(bytesRead);
         if (length != bytesRead) {
             throw new IOException("Premature end of stream");
