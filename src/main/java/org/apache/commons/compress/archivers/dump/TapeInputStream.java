@@ -238,6 +238,8 @@ class TapeInputStream extends FilterInputStream {
     public byte[] readRecord() throws IOException {
         byte[] result = new byte[recordSize];
 
+        // the read implementation will loop internally as long as
+        // input is available
         if (-1 == read(result, 0, result.length)) {
             throw new ShortFileException();
         }
