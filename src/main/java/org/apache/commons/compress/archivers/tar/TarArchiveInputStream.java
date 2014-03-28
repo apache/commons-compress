@@ -418,7 +418,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                             String keyword = coll.toString(CharsetNames.UTF_8);
                             // Get rest of entry
                             byte[] rest = new byte[len - read];
-                            int got = i.read(rest);
+                            int got = IOUtils.readFully(i, rest);
                             if (got != len - read){
                                 throw new IOException("Failed to read "
                                                       + "Paxheader. Expected "
