@@ -47,6 +47,10 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" date="2014-03-19">
         The dependency on org.tukaani:xz is now marked as optional.
       </action>
+      <action type="fix" date="2014-03-28" issue="COMPRESS-270">
+        The snappy, ar and tar inputstreams might fail to read from a
+        non-buffered stream in certain cases.
+      </action>
     </release>
     <release version="1.8" date="2014-03-12"
              description="Release 1.8">
