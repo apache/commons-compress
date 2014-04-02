@@ -93,7 +93,7 @@ class Coders {
             return in; 
         }
         @Override
-        OutputStream encode(final OutputStream out, final Object _) {
+        OutputStream encode(final OutputStream out, final Object options) {
             return out;
         }
     }
@@ -133,7 +133,7 @@ class Coders {
             }
         }
         @Override
-        OutputStream encode(final OutputStream out, final Object _) {
+        OutputStream encode(final OutputStream out, final Object options) {
             final FinishableOutputStream fo = opts.getOutputStream(new FinishableWrapperOutputStream(out));
             return new FilterOutputStream(fo) {
                 @Override
