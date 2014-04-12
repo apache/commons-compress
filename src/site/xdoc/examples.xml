@@ -83,7 +83,9 @@ CompressorInputStream input = new CompressorStreamFactory()
 
         <p>Note that there is no way to detect the lzma format so only
         the two-arg version of
-        <code>createCompressorInputStream</code> can be used.</p>
+        <code>createCompressorInputStream</code> can be used.  Prior
+        to Compress 1.9 the .Z format hasn't been auto-detected
+        either.</p>
 
       </subsection>
 
