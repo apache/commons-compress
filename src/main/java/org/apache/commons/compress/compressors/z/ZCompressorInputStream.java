@@ -149,4 +149,20 @@ public class ZCompressorInputStream extends InternalLZWInputStream {
         }
     }
     
+    /**
+     * Checks if the signature matches what is expected for a Unix compress file.
+     * 
+     * @param signature
+     *            the bytes to check
+     * @param length
+     *            the number of bytes to check
+     * @return true, if this stream is a Unix compress compressed
+     * stream, false otherwise
+     * 
+     * @since 1.9
+     */
+    public static boolean matches(byte[] signature, int length) {
+        return length > 3 && signature[0] == MAGIC_1 && signature[1] == (byte) MAGIC_2;
+    }
+
 }
