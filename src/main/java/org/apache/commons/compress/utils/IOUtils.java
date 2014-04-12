@@ -30,6 +30,9 @@ import java.io.OutputStream;
  */
 public final class IOUtils {
 
+    private static final int COPY_BUF_SIZE = 8024;
+    private static final int SKIP_BUF_SIZE = 4096;
+
     /** Private constructor to prevent instantiation of this utility class. */
     private IOUtils(){
     }
@@ -46,7 +49,7 @@ public final class IOUtils {
      *             if an error occurs
      */
     public static long copy(final InputStream input, final OutputStream output) throws IOException {
-        return copy(input, output, 8024);
+        return copy(input, output, COPY_BUF_SIZE);
     }
 
     /**
@@ -76,6 +79,10 @@ public final class IOUtils {
      * Skips the given number of bytes by repeatedly invoking skip on
      * the given input stream if necessary.
      *
+     * <p>In a case where the stream's skip() method returns 0 before
+     * the requested number of bytes has been skip this implementation
+     * will fall back to using the read() method.</p>
+     *
      * <p>This method will only skip less than the requested number of
      * bytes if the end of the input stream has been reached.</p>
      *
@@ -92,6 +99,18 @@ public final class IOUtils {
                 break;
             }
             numToSkip -= skipped;
+        }
+            
+        if (numToSkip > 0) {
+            byte[] skipBuf = new byte[SKIP_BUF_SIZE];
+            while (numToSkip > 0) {
+                int read = readFully(input, skipBuf, 0,
+                                     (int) Math.min(numToSkip, SKIP_BUF_SIZE));
+                if (read < 1) {
+                    break;
+                }
+                numToSkip -= read;
+            }
         }
         return available - numToSkip;
     }
