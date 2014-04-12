@@ -179,6 +179,10 @@ public class CompressorStreamFactory {
                 return new FramedSnappyCompressorInputStream(in);
             }
 
+            if (ZCompressorInputStream.matches(signature, signatureLength)) {
+                return new ZCompressorInputStream(in);
+            }
+
         } catch (IOException e) {
             throw new CompressorException("Failed to detect Compressor from InputStream.", e);
         }

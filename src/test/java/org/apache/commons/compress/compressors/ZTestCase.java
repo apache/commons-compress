@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress.compressors;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -45,6 +46,26 @@ public final class ZTestCase extends AbstractTestCase {
                     .createCompressorInputStream(CompressorStreamFactory.Z, is);
             }
         });
+    }
+
+    public void testZUnarchiveViaAutoDetection() throws Exception {
+        testUnarchive(new StreamWrapper<CompressorInputStream>() {
+            public CompressorInputStream wrap(InputStream is) throws Exception {
+                return new CompressorStreamFactory()
+                    .createCompressorInputStream(new BufferedInputStream(is));
+            }
+        });
+    }
+
+    public void testMatches() throws Exception {
+        assertFalse(ZCompressorInputStream.matches(new byte[] { 1, 2, 3, 4 }, 4));
+        assertFalse(ZCompressorInputStream.matches(new byte[] { 0x1f, 2, 3, 4 }, 4));
+        assertFalse(ZCompressorInputStream.matches(new byte[] { 1, (byte)0x9d, 3, 4 },
+                                                   4));
+        assertFalse(ZCompressorInputStream.matches(new byte[] { 0x1f, (byte) 0x9d, 3, 4 },
+                                                   3));
+        assertTrue(ZCompressorInputStream.matches(new byte[] { 0x1f, (byte) 0x9d, 3, 4 },
+                                                  4));
     }
 
     private void testUnarchive(StreamWrapper<CompressorInputStream> wrapper) throws Exception {

@@ -51,6 +51,10 @@ The <action> type attribute can be add,update,fix,remove.
         The snappy, ar and tar inputstreams might fail to read from a
         non-buffered stream in certain cases.
       </action>
+      <action type="add" date="2014-04-12" issue="COMPRESS-272">
+        CompressorStreamFactory can now auto-detect Unix compress
+        (".Z") streams.
+      </action>
     </release>
     <release version="1.8" date="2014-03-12"
              description="Release 1.8">
