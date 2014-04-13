@@ -67,6 +67,10 @@ The <action> type attribute can be add,update,fix,remove.
         ArjArchiveInputStream#canReadEntryData tested the current
         entry of the stream rather than its argument.
       </action>
+      <action type="fix" date="2014-04-13" issue="COMPRESS-274">
+        ChangeSet#delete and deleteDir now properly deal with unnamed
+        entries.
+      </action>
     </release>
     <release version="1.8" date="2014-03-12"
              description="Release 1.8">
