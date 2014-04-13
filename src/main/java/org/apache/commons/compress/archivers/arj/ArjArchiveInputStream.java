@@ -341,6 +341,9 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
     
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
+        if (currentLocalFileHeader == null) {
+            throw new IllegalStateException("No current arj entry");
+        }
         if (currentLocalFileHeader.method != LocalFileHeader.Methods.STORED) {
             throw new IOException("Unsupported compression method " + currentLocalFileHeader.method);
         }

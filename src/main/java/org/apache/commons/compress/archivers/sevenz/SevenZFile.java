@@ -871,6 +871,9 @@ public class SevenZFile implements Closeable {
      *             if an I/O error has occurred
      */
     public int read() throws IOException {
+        if (currentEntryInputStream == null) {
+            throw new IllegalStateException("No current 7z entry");
+        }
         return currentEntryInputStream.read();
     }
     
@@ -897,6 +900,9 @@ public class SevenZFile implements Closeable {
      *             if an I/O error has occurred
      */
     public int read(byte[] b, int off, int len) throws IOException {
+        if (currentEntryInputStream == null) {
+            throw new IllegalStateException("No current 7z entry");
+        }
         return currentEntryInputStream.read(b, off, len);
     }
     

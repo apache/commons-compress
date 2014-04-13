@@ -753,6 +753,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     @Override
     public void write(byte[] b, int offset, int length) throws IOException {
+        if (entry == null) {
+            throw new IllegalStateException("No current entry");
+        }
         ZipUtil.checkRequestedFeatures(entry.entry);
         entry.hasWritten = true;
         if (entry.entry.getMethod() == DEFLATED) {

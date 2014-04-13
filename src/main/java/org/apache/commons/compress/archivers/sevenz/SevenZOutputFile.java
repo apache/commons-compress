@@ -181,7 +181,7 @@ public class SevenZOutputFile implements Closeable {
         compressedCrc32.reset();
         fileBytesWritten = 0;
     }
-    
+
     /**
      * Writes a byte to the current archive entry.
      * @param b The byte to be written.
@@ -272,6 +272,10 @@ public class SevenZOutputFile implements Closeable {
     }
 
     private CountingOutputStream setupFileOutputStream() throws IOException {
+        if (files.isEmpty()) {
+            throw new IllegalStateException("No current 7z entry");
+        }
+
         OutputStream out = new OutputStreamWrapper();
         ArrayList<CountingOutputStream> moreStreams = new ArrayList<CountingOutputStream>();
         boolean first = true;
