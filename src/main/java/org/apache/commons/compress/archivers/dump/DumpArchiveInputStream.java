@@ -465,6 +465,10 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
             return -1;
         }
 
+        if (active == null) {
+            throw new IllegalStateException("No current dump entry");
+        }
+
         if (len + entryOffset > entrySize) {
             len = (int) (entrySize - entryOffset);
         }

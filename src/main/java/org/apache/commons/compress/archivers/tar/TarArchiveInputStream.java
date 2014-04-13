@@ -573,6 +573,10 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             return -1;
         }
 
+        if (currEntry == null) {
+            throw new IllegalStateException("No current tar entry");
+        }
+
         numToRead = Math.min(numToRead, available());
         
         totalRead = is.read(buf, offset, numToRead);

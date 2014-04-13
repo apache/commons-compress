@@ -265,7 +265,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      */
     @Override
     public void putArchiveEntry(ArchiveEntry archiveEntry) throws IOException {
-        if(finished) {
+        if (finished) {
             throw new IOException("Stream has already been finished");
         }
         TarArchiveEntry entry = (TarArchiveEntry) archiveEntry;
@@ -369,6 +369,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      */
     @Override
     public void write(byte[] wBuf, int wOffset, int numToWrite) throws IOException {
+        if (!haveUnclosedEntry) {
+            throw new IllegalStateException("No current tar entry");
+        }
         if (currBytes + numToWrite > currSize) {
             throw new IOException("request to write '" + numToWrite
                                   + "' bytes exceeds size in header of '"
