@@ -122,6 +122,10 @@ public class ArjArchiveEntry implements ArchiveEntry {
         return getHostOs() == HostOs.UNIX || getHostOs() == HostOs.NEXT;
     }
 
+    int getMethod() {
+        return localFileHeader.method;
+    }
+
     /**
      * The known values for HostOs.
      */

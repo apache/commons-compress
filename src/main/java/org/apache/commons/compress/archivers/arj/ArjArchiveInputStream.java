@@ -333,12 +333,13 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
             return null;
         }
     }
-    
+
     @Override
     public boolean canReadEntryData(ArchiveEntry ae) {
-        return currentLocalFileHeader.method == LocalFileHeader.Methods.STORED;
+        return ae instanceof ArjArchiveEntry
+            && ((ArjArchiveEntry) ae).getMethod() == LocalFileHeader.Methods.STORED;
     }
-    
+
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
         if (currentLocalFileHeader == null) {

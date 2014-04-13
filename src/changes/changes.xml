@@ -63,6 +63,10 @@ The <action> type attribute can be add,update,fix,remove.
         ArchiveStreams now validate there is a current entry before
         rreading or writing entry data.
       </action>
+      <action type="fix" date="2014-04-13">
+        ArjArchiveInputStream#canReadEntryData tested the current
+        entry of the stream rather than its argument.
+      </action>
     </release>
     <release version="1.8" date="2014-03-12"
              description="Release 1.8">
