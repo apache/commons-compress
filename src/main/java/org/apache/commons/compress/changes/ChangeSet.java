@@ -133,12 +133,16 @@ public final class ChangeSet {
         }
         String source = pChange.targetFile();
 
-        if (!changes.isEmpty()) {
+        if (source != null && !changes.isEmpty()) {
             for (Iterator<Change> it = changes.iterator(); it.hasNext();) {
                 Change change = it.next();
                 if (change.type() == Change.TYPE_ADD
                         && change.getEntry() != null) {
                     String target = change.getEntry().getName();
+
+                    if (target == null) {
+                        continue;
+                    }
 
                     if (Change.TYPE_DELETE == pChange.type() && source.equals(target)) {
                         it.remove();
