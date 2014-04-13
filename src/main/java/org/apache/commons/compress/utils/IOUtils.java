@@ -32,6 +32,7 @@ public final class IOUtils {
 
     private static final int COPY_BUF_SIZE = 8024;
     private static final int SKIP_BUF_SIZE = 4096;
+    private static final byte[] SKIP_BUF = new byte[SKIP_BUF_SIZE];
 
     /** Private constructor to prevent instantiation of this utility class. */
     private IOUtils(){
@@ -101,16 +102,13 @@ public final class IOUtils {
             numToSkip -= skipped;
         }
             
-        if (numToSkip > 0) {
-            byte[] skipBuf = new byte[SKIP_BUF_SIZE];
-            while (numToSkip > 0) {
-                int read = readFully(input, skipBuf, 0,
-                                     (int) Math.min(numToSkip, SKIP_BUF_SIZE));
-                if (read < 1) {
-                    break;
-                }
-                numToSkip -= read;
+        while (numToSkip > 0) {
+            int read = readFully(input, SKIP_BUF, 0,
+                                 (int) Math.min(numToSkip, SKIP_BUF_SIZE));
+            if (read < 1) {
+                break;
             }
+            numToSkip -= read;
         }
         return available - numToSkip;
     }
