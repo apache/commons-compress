@@ -55,11 +55,11 @@ The <action> type attribute can be add,update,fix,remove.
         CompressorStreamFactory can now auto-detect Unix compress
         (".Z") streams.
       </action>
-      <action type="add" date="2014-04-12" issue="COMPRESS-277">
+      <action type="fix" date="2014-04-12" issue="COMPRESS-277">
         IOUtils#skip might skip fewer bytes than requested even though
         more could be read from the stream.
       </action>
-      <action type="add" date="2014-04-13" issue="COMPRESS-276">
+      <action type="fix" date="2014-04-13" issue="COMPRESS-276">
         ArchiveStreams now validate there is a current entry before
         rreading or writing entry data.
       </action>
