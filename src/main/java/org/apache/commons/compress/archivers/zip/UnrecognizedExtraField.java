@@ -69,7 +69,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
      * @return the length of the local data
      */
     public ZipShort getLocalFileDataLength() {
-        return new ZipShort(localData.length);
+        return new ZipShort(localData != null ? localData.length : 0);
     }
 
     /**

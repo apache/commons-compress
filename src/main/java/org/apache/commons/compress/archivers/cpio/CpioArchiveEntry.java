@@ -469,7 +469,10 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      */
     public int getHeaderPadCount(){
         if (this.alignmentBoundary == 0) { return 0; }
-        int size = this.headerSize+this.name.length()+1; // Name has terminating null
+        int size = this.headerSize + 1;  // Name has terminating null
+        if (name != null) {
+            size += name.length();
+        }
         int remain = size % this.alignmentBoundary;
         if (remain > 0){
             return this.alignmentBoundary - remain;

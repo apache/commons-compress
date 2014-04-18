@@ -143,7 +143,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
         if (data == null) {
             assembleData();
         }
-        return new ZipShort(data.length);
+        return new ZipShort(data != null ? data.length : 0);
     }
 
     public byte[] getLocalFileDataData() {

@@ -210,13 +210,18 @@ public class ExtraFieldUtils {
                              0, result, start, 2);
             System.arraycopy(data[i].getLocalFileDataLength().getBytes(),
                              0, result, start + 2, 2);
+            start += WORD;
             byte[] local = data[i].getLocalFileDataData();
-            System.arraycopy(local, 0, result, start + WORD, local.length);
-            start += local.length + WORD;
+            if (local != null) {
+                System.arraycopy(local, 0, result, start, local.length);
+                start += local.length;
+            }
         }
         if (lastIsUnparseableHolder) {
             byte[] local = data[data.length - 1].getLocalFileDataData();
-            System.arraycopy(local, 0, result, start, local.length);
+            if (local != null) {
+                System.arraycopy(local, 0, result, start, local.length);
+            }
         }
         return result;
     }
@@ -243,13 +248,18 @@ public class ExtraFieldUtils {
                              0, result, start, 2);
             System.arraycopy(data[i].getCentralDirectoryLength().getBytes(),
                              0, result, start + 2, 2);
+            start += WORD;
             byte[] local = data[i].getCentralDirectoryData();
-            System.arraycopy(local, 0, result, start + WORD, local.length);
-            start += local.length + WORD;
+            if (local != null) {
+                System.arraycopy(local, 0, result, start, local.length);
+                start += local.length;
+            }
         }
         if (lastIsUnparseableHolder) {
             byte[] local = data[data.length - 1].getCentralDirectoryData();
-            System.arraycopy(local, 0, result, start, local.length);
+            if (local != null) {
+                System.arraycopy(local, 0, result, start, local.length);
+            }
         }
         return result;
     }

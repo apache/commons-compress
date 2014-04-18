@@ -71,6 +71,9 @@ The <action> type attribute can be add,update,fix,remove.
         ChangeSet#delete and deleteDir now properly deal with unnamed
         entries.
       </action>
+      <action type="fix" date="2014-04-13" issue="COMPRESS-273">
+        Added a few null checks to improve robustness.
+      </action>
     </release>
     <release version="1.8" date="2014-03-12"
              description="Release 1.8">
