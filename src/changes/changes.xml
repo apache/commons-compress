@@ -74,6 +74,10 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" date="2014-04-18" issue="COMPRESS-273">
         Added a few null checks to improve robustness.
       </action>
+      <action type="fix" date="2014-04-19" issue="COMPRESS-278">
+        TarArchiveInputStream failed to read archives with empty
+        gid/uid fields.
+      </action>
     </release>
     <release version="1.8" date="2014-03-12"
              description="Release 1.8">
