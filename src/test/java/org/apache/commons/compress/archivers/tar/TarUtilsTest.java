@@ -64,6 +64,9 @@ public class TarUtilsTest extends TestCase {
         buffer=new byte[]{0,' '};
         value = TarUtils.parseOctal(buffer,0, buffer.length);
         assertEquals(0, value);
+        buffer=new byte[]{' ',0};
+        value = TarUtils.parseOctal(buffer,0, buffer.length);
+        assertEquals(0, value);
     }
 
     public void testParseOctalInvalid() throws Exception{
@@ -78,12 +81,6 @@ public class TarUtilsTest extends TestCase {
         try {
             TarUtils.parseOctal(buffer,0, buffer.length);
             fail("Expected IllegalArgumentException - should be at least 2 bytes long");
-        } catch (IllegalArgumentException expected) {
-        }
-        buffer=new byte[]{' ',0,0,0}; // not all NULs
-        try {
-            TarUtils.parseOctal(buffer,0, buffer.length);
-            fail("Expected IllegalArgumentException - not all NULs");
         } catch (IllegalArgumentException expected) {
         }
         buffer = "abcdef ".getBytes(CharsetNames.UTF_8); // Invalid input

@@ -130,10 +130,6 @@ public class TarUtils {
             end--;
             trailer = buffer[end - 1];
         }
-        if (start == end) {
-            throw new IllegalArgumentException(
-                    exceptionMessage(buffer, offset, length, start, trailer));
-        }
 
         for ( ;start < end; start++) {
             final byte currentByte = buffer[start];
