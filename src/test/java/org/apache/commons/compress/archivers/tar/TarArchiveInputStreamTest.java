@@ -19,6 +19,8 @@
 package org.apache.commons.compress.archivers.tar;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
+import static org.apache.commons.compress.AbstractTestCase.mkdir;
+import static org.apache.commons.compress.AbstractTestCase.rmdir;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -26,7 +28,9 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
@@ -36,6 +40,7 @@ import java.util.TimeZone;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.compress.utils.CharsetNames;
+import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Test;
 
 public class TarArchiveInputStreamTest {
@@ -204,6 +209,29 @@ public class TarArchiveInputStreamTest {
         }
     }
 
+    @Test(expected = IOException.class)
+    public void shouldThrowAnExceptionOnTruncatedEntries() throws Exception {
+        File dir = mkdir("COMPRESS-279");
+        TarArchiveInputStream is = getTestStream("/COMPRESS-279.tar");
+        FileOutputStream out = null;
+        try {
+            TarArchiveEntry entry = is.getNextTarEntry();
+            int count = 0;
+            while (entry != null) {
+                out = new FileOutputStream(new File(dir, String.valueOf(count)));
+                IOUtils.copy(is, out);
+                out.close();
+                out = null;
+                count++;
+                entry = is.getNextTarEntry();
+            }
+        } finally {
+            is.close();
+            if (out != null) {
+                out.close();
+            }
+        }
+    }
 
     private TarArchiveInputStream getTestStream(String name) {
         return new TarArchiveInputStream(
