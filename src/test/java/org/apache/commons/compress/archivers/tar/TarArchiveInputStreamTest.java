@@ -230,6 +230,7 @@ public class TarArchiveInputStreamTest {
             if (out != null) {
                 out.close();
             }
+            rmdir(dir);
         }
     }
 
