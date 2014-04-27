@@ -20,7 +20,7 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>32</version>
+    <version>34</version>
   </parent>
 
   <groupId>org.apache.commons</groupId>
@@ -35,8 +35,8 @@ These include: bzip2, gzip, pack200, lzma, xz and ar, cpio, jar, tar, zip, dump,
   </description>
 
   <properties>
-    <maven.compiler.source>1.5</maven.compiler.source>
-    <maven.compiler.target>1.5</maven.compiler.target>
+    <maven.compiler.source>1.7</maven.compiler.source>
+    <maven.compiler.target>1.7</maven.compiler.target>
     <commons.componentid>compress</commons.componentid>
     <commons.jira.id>COMPRESS</commons.jira.id>
     <commons.jira.pid>12310904</commons.jira.pid>

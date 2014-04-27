@@ -19,14 +19,13 @@
 package org.apache.commons.compress2.archivers.spi;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
-//import java.nio.channels.FileChannel;
+import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.nio.file.StandardOpenOption;
 import org.apache.commons.compress2.archivers.ArchiveEntry;
 import org.apache.commons.compress2.archivers.ArchiveFormat;
 import org.apache.commons.compress2.archivers.ArchiveInput;
@@ -107,8 +106,7 @@ public abstract class AbstractArchiveFormat<A extends ArchiveEntry> implements A
             return readWithRandomAccessFrom(file, charset);
         }
 
-        // TODO use FileChannel.open in Java7
-        return readFrom(new FileInputStream(file).getChannel(), charset);
+        return readFrom(FileChannel.open(file.toPath(), StandardOpenOption.READ), charset);
     }
     /**
      * {@inheritDoc}
@@ -135,7 +133,8 @@ public abstract class AbstractArchiveFormat<A extends ArchiveEntry> implements A
      */
     @Override
     public ArchiveOutput<A> writeTo(File file, Charset charset) throws IOException, UnsupportedOperationException {
-        // TODO use FileChannel.open in Java7
-        return writeTo(new FileOutputStream(file).getChannel(), charset);
+        return writeTo(FileChannel.open(file.toPath(), StandardOpenOption.WRITE, StandardOpenOption.CREATE,
+                                        StandardOpenOption.TRUNCATE_EXISTING),
+                       charset);
     }
 }
