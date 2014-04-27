@@ -78,6 +78,11 @@ The <action> type attribute can be add,update,fix,remove.
         TarArchiveInputStream failed to read archives with empty
         gid/uid fields.
       </action>
+      <action type="fix" date="2014-04-27" issue="COMPRESS-279">
+        TarArchiveInputStream now again throws an exception when it
+        encounters a truncated archive while reading from the last
+        entry.
+      </action>
     </release>
     <release version="1.8" date="2014-03-12"
              description="Release 1.8">
