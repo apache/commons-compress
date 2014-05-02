@@ -180,23 +180,28 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         return (int) (entrySize - entryOffset);
     }
 
+    
     /**
-     * Skip bytes in the input buffer. This skips bytes in the
-     * current entry's data, not the entire archive, and will
-     * stop at the end of the current entry's data if the number
-     * to skip extends beyond that point.
-     *
-     * @param numToSkip The number of bytes to skip.
-     * @return the number actually skipped
-     * @throws IOException on error
+     * Skips over and discards <code>n</code> bytes of data from this input
+     * stream. The <code>skip</code> method may, for a variety of reasons, end
+     * up skipping over some smaller number of bytes, possibly <code>0</code>.
+     * This may result from any of a number of conditions; reaching end of file
+     * or end of entry before <code>n</code> bytes have been skipped; are only
+     * two possibilities. The actual number of bytes skipped is returned. If
+     * <code>n</code> is negative, no bytes are skipped.
+     * 
+     * 
+     * @param n
+     *            the number of bytes to be skipped.
+     * @return the actual number of bytes skipped.
+     * @exception IOException
+     *                if some other I/O error occurs.
      */
     @Override
-    public long skip(long numToSkip) throws IOException {
+    public long skip(final long n) throws IOException {
 
-        long available = entrySize - entryOffset;
-        numToSkip = Math.min(numToSkip, available);
-
-        long skipped = IOUtils.skip(is, numToSkip); 
+        final long available = entrySize - entryOffset;
+        final long skipped = is.skip(Math.min(n, available)); 
         count(skipped);
         entryOffset += skipped;
         return skipped;
@@ -229,7 +234,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
 
         if (currEntry != null) {
             /* Skip will only go to the end of the current entry */
-            skip(Long.MAX_VALUE);
+            IOUtils.skip(this, Long.MAX_VALUE);
 
             /* skip to the end of the last record */
             skipRecordPadding();

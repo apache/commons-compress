@@ -83,6 +83,11 @@ The <action> type attribute can be add,update,fix,remove.
         encounters a truncated archive while reading from the last
         entry.
       </action>
+      <action type="fix" date="2014-05-02" issue="COMPRESS-280"
+              due-to="BELUGA BEHR">
+        Adapted TarArchiveInputStream#skip to the modified
+        IOUtils#skip method.
+      </action>
     </release>
     <release version="1.8" date="2014-03-12"
              description="Release 1.8">
