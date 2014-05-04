@@ -199,6 +199,9 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      */
     @Override
     public long skip(final long n) throws IOException {
+        if (n <= 0) {
+            return 0;
+        }
 
         final long available = entrySize - entryOffset;
         final long skipped = is.skip(Math.min(n, available)); 
