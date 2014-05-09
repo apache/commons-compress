@@ -42,8 +42,8 @@ The <action> type attribute can be add,update,fix,remove.
     <title>commons-compress</title>
   </properties>
   <body>
-    <release version="1.9" date="not released yet"
-             description="Release 1.9">
+    <release version="1.8.1" date="not released yet"
+             description="Release 1.8.1">
       <action type="update" date="2014-03-19">
         The dependency on org.tukaani:xz is now marked as optional.
       </action>

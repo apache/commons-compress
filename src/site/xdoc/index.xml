@@ -66,8 +66,13 @@
               important filter methods used in 7z archives.</li>
             </ul>
           </subsection>
-          <!--subsection name="What's coming in 1.9?">
-          </subsection-->
+          <subsection name="What's coming in 1.8.1?">
+            <p>Compress 1.8.1 will be a bug fix release with fixes for
+            the tar, ar and snappy formats as well as the
+            <code>IOUtils</code> class.  In addition
+            <code>CompressorStreamFactory</code> can now autodetect
+            the .Z compress format.</p>
+          </subsection>
         </section>
 
         <section name="Documentation">
