@@ -279,6 +279,7 @@ These include: bzip2, gzip, pack200, lzma, xz, Snappy, traditional Unix Compress
             <exclude>.pmd</exclude>
             <exclude>.gitignore</exclude>
             <exclude>.gitattributes</exclude>
+            <exclude>.projectile</exclude>
           </excludes>
         </configuration>
       </plugin>
