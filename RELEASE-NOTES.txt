@@ -1,67 +1,43 @@
-              Apache Commons Compress 1.8 RELEASE NOTES
-
-The Commons Compress team is pleased to announce the
-commons-compress-1.8 release!
+              Apache Apache Commons Compress 1.8.1 RELEASE NOTES
 
 Apache Commons Compress software defines an API for working with
 compression and archive formats.  These include: bzip2, gzip, pack200,
 lzma, xz, Snappy, traditional Unix Compress and ar, cpio, jar, tar,
 zip, dump, 7z, arj.
 
+Release 1.8.1
+
 Changes in this version include:
 
 New features:
-o GzipCompressorInputStream now provides access to the same
-  metadata that can be provided via GzipParameters when writing
-  a gzip stream.
-  Issue: COMPRESS-260. 
-o SevenZOutputFile now supports chaining multiple
-  compression/encryption/filter methods and passing options to
-  the methods.
-  Issue: COMPRESS-266. 
-o The (compression) method(s) can now be specified per entry in
-  SevenZOutputFile.
-  Issue: COMPRESS-261. 
-o SevenZArchiveEntry "knows" which method(s) have been used to
-  write it to the archive.
-  Issue: COMPRESS-258. 
-o The 7z package now supports the delta filter as method. 
-o The 7z package now supports BCJ filters for several platforms.
-  You will need a version >= 1.5 of XZ for Java to read archives
-  using BCJ, though.
-  Issue: COMPRESS-257. 
+o COMPRESS-272:  CompressorStreamFactory can now auto-detect Unix compress
+                 (".Z") streams. 
 
 Fixed Bugs:
-o BZip2CompressorInputStream read fewer bytes than possible from
-  a truncated stream.
-  Issue: COMPRESS-253. 
-o SevenZFile failed claiming the dictionary was too large when
-  archives used LZMA compression for headers and content and
-  certain non-default dictionary sizes.
-  Issue: COMPRESS-253. 
-o CompressorStreamFactory.createCompressorInputStream with
-  explicit compression did not honor decompressConcatenated
-  Issue: COMPRESS-259. 
-o TarArchiveInputStream will now read archives created by tar
-  implementations that encode big numbers by not adding a
-  trailing NUL.
-  Issue: COMPRESS-262. 
-o ZipArchiveInputStream would return NUL bytes for the first 512
-  bytes of a STORED entry if it was the very first entry of the
-  archive.
-  Issue: COMPRESS-264. 
-o When writing PAX/POSIX headers for TAR entries with
-  backslashes or certain non-ASCII characters in their name
-  TarArchiveOutputStream could fail.
-  Issue: COMPRESS-265. 
-o ArchiveStreamFactory now throws a StreamingNotSupported - a
-  new subclass of ArchiveException - if it is asked to read from
-  or write to a stream and Commons Compress doesn't support
-  streaming for the format.  This currently only applies to the
-  7z format.
-  Issue: COMPRESS-267. 
+o COMPRESS-270:  The snappy, ar and tar inputstreams might fail to read from a
+                 non-buffered stream in certain cases. 
+o COMPRESS-277:  IOUtils#skip might skip fewer bytes than requested even though
+                 more could be read from the stream. 
+o COMPRESS-276:  ArchiveStreams now validate there is a current entry before
+                 rreading or writing entry data. 
+o ArjArchiveInputStream#canReadEntryData tested the current
+                 entry of the stream rather than its argument. 
+o COMPRESS-274:  ChangeSet#delete and deleteDir now properly deal with unnamed
+                 entries. 
+o COMPRESS-273:  Added a few null checks to improve robustness. 
+o COMPRESS-278:  TarArchiveInputStream failed to read archives with empty
+                 gid/uid fields. 
+o COMPRESS-279:  TarArchiveInputStream now again throws an exception when it
+                 encounters a truncated archive while reading from the last
+                 entry. 
+o COMPRESS-280:  Adapted TarArchiveInputStream#skip to the modified
+                 IOUtils#skip method. Thanks to BELUGA BEHR. 
 
-For complete information on Commons Compress, including instructions
+Changes:
+o The dependency on org.tukaani:xz is now marked as optional. 
+
+ 
+For complete information on Apache Commons Compress, including instructions
 on how to submit bug reports, patches, or suggestions for improvement,
 see the Apache Commons Compress website:
 
