@@ -27,6 +27,9 @@
 
      <section name="7Z">
        <ul>
+         <li>the format requires the otherwise optional <a
+         href="http://tukaani.org/xz/java.html">XZ for Java</a>
+         library.</li>
          <li>only <code>File</code>s are supported as input/output,
          not streams.  In Compress 1.7
          <code>ArchiveStreamFactory</code> will not auto-detect 7z
@@ -97,6 +100,9 @@
      </section>
      <section name="LZMA">
        <ul>
+         <li>the format requires the otherwise optional <a
+         href="http://tukaani.org/xz/java.html">XZ for Java</a>
+         library.</li>
          <li>read-only support</li>
        </ul>
      </section>
@@ -119,7 +125,11 @@
        </ul>
      </section>
      <section name="XZ">
-       <p>We are not aware of any problems.</p>
+       <ul>
+         <li>the format requires the otherwise optional <a
+         href="http://tukaani.org/xz/java.html">XZ for Java</a>
+         library.</li>
+       </ul>
      </section>
      <section name="Z">
        <ul>
