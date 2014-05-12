@@ -19,7 +19,7 @@ o COMPRESS-270:  The snappy, ar and tar inputstreams might fail to read from a
 o COMPRESS-277:  IOUtils#skip might skip fewer bytes than requested even though
                  more could be read from the stream. 
 o COMPRESS-276:  ArchiveStreams now validate there is a current entry before
-                 rreading or writing entry data. 
+                 reading or writing entry data. 
 o ArjArchiveInputStream#canReadEntryData tested the current
                  entry of the stream rather than its argument. 
 o COMPRESS-274:  ChangeSet#delete and deleteDir now properly deal with unnamed
