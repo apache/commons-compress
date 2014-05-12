@@ -61,7 +61,7 @@ The <action> type attribute can be add,update,fix,remove.
       </action>
       <action type="fix" date="2014-04-13" issue="COMPRESS-276">
         ArchiveStreams now validate there is a current entry before
-        rreading or writing entry data.
+        reading or writing entry data.
       </action>
       <action type="fix" date="2014-04-13">
         ArjArchiveInputStream#canReadEntryData tested the current
