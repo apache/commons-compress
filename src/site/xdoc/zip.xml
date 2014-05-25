@@ -73,6 +73,9 @@
           <li>may return several entries with the same name.</li>
           <li>will not return internal or external attributes.</li>
           <li>may return incomplete extra field data.</li>
+          <li>may return unknown sizes and CRC values for entries
+          until the next entry has been reached if the archive uses
+          the data descriptor feature (see below).</li>
         </ul>
 
         <p><code>ZipArchiveInputStream</code> shares these limitations

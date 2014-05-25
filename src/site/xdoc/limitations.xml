@@ -140,6 +140,13 @@
      </section>
      <section name="ZIP">
        <ul>
+         <li><code>ZipArchiveInputStream</code> is limited and may
+         even return false contents in some cases, use
+         <code>ZipFile</code> whenever possible.  See <a
+         href="zip.html#ZipArchiveInputStream_vs_ZipFile">the ZIP
+         documentation page</a> for details.  This limitation is a
+         result of streaming data vs using random access and not a
+         limitation of Compress' specific implementation.</li>
          <li>only a subset of compression methods are supported,
          including the most common STORED and DEFLATEd.  IMPLODE and
          SHRINK support is read-only.</li>
