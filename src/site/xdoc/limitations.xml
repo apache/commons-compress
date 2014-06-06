@@ -151,6 +151,10 @@
          including the most common STORED and DEFLATEd.  IMPLODE and
          SHRINK support is read-only.</li>
          <li>no support for encryption or multi-volume archives</li>
+         <li>In versions prior to Compress 1.6 ZipArchiveEntries read
+         from an archive will contain non-zero millisecond values when
+         using Java8 rather than the expected two-second
+         granularity.</li>
          <li>Compress 1.7 has a known bug where the very first entry
          of an archive will not be read correctly by
          <code>ZipArchiveInputStream</code> if it used the STORED
