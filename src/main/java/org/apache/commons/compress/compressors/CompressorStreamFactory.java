@@ -24,6 +24,8 @@ import java.io.OutputStream;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
+import org.apache.commons.compress.compressors.deflate.DeflateCompressorInputStream;
+import org.apache.commons.compress.compressors.deflate.DeflateCompressorOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.compressors.lzma.LZMACompressorInputStream;
@@ -111,6 +113,12 @@ public class CompressorStreamFactory {
      * @since 1.7
      */
     public static final String Z = "z";
+
+    /**
+     * Constant used to identify the Deflate compress method.
+     * @since 1.9
+     */
+    public static final String DEFLATE = "deflate";
 
     private boolean decompressConcatenated = false;
 
@@ -241,6 +249,10 @@ public class CompressorStreamFactory {
                 return new ZCompressorInputStream(in);
             }
 
+            if (DEFLATE.equalsIgnoreCase(name)) {
+                return new DeflateCompressorInputStream(in);
+            }
+
         } catch (IOException e) {
             throw new CompressorException(
                     "Could not create CompressorInputStream.", e);
@@ -281,6 +293,10 @@ public class CompressorStreamFactory {
 
             if (PACK200.equalsIgnoreCase(name)) {
                 return new Pack200CompressorOutputStream(out);
+            }
+
+            if (DEFLATE.equalsIgnoreCase(name)) {
+                return new DeflateCompressorOutputStream(out);
             }
 
         } catch (IOException e) {
