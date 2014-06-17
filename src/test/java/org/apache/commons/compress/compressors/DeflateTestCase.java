@@ -53,7 +53,7 @@ public final class DeflateTestCase extends AbstractTestCase {
             out.close();
         }
     }
-    
+
     /**
      * Tests the creation of a "raw" DEFLATE archive (without zlib header)
      * 
@@ -64,8 +64,8 @@ public final class DeflateTestCase extends AbstractTestCase {
         final File output = new File(dir, "test1.xml.deflate");
         final OutputStream out = new FileOutputStream(output);
         try {
-        	DeflateParameters params = new DeflateParameters();
-        	params.setZlibHeaderPresent(false);
+            DeflateParameters params = new DeflateParameters();
+            params.setWithZlibHeader(false);
             final CompressorOutputStream cos = new DeflateCompressorOutputStream(out, params);
             try {
                 IOUtils.copy(new FileInputStream(input), cos);
@@ -103,7 +103,7 @@ public final class DeflateTestCase extends AbstractTestCase {
             is.close();
         }
     }
-    
+
     /**
      * Tests the extraction of a "raw" DEFLATE archive (without zlib header)
      * 
@@ -114,8 +114,8 @@ public final class DeflateTestCase extends AbstractTestCase {
         final File output = new File(dir, "bla.tar");
         final InputStream is = new FileInputStream(input);
         try {
-        	DeflateParameters params = new DeflateParameters();
-        	params.setZlibHeaderPresent(false);
+            DeflateParameters params = new DeflateParameters();
+            params.setWithZlibHeader(false);
             final CompressorInputStream in = new DeflateCompressorInputStream(is, params);
             FileOutputStream out = null;
             try {

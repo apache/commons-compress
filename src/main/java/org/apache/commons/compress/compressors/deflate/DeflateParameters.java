@@ -27,23 +27,33 @@ import java.util.zip.Deflater;
  */
 public class DeflateParameters {
 
-    private boolean zlibHeaderPresent = true;
+    private boolean zlibHeader = true;
     private int compressionLevel = Deflater.DEFAULT_COMPRESSION;
 
-    public boolean isZlibHeaderPresent() {
-        return zlibHeaderPresent;
+    /**
+     * Whether or not the zlib header shall be written (when
+     * compressing) or expected (when decompressing).
+     */
+    public boolean withZlibHeader() {
+        return zlibHeader;
     }
 
     /**
      * Sets the zlib header presence parameter.
-     * This affects whether or not the zlib header will be written (when compressing) or expected (when decompressing).
      *
-     * @param zlibHeaderPresent
+     * <p>This affects whether or not the zlib header will be written
+     * (when compressing) or expected (when decompressing).</p>
+     *
+     * @param zlibHeader
      */
-    public void setZlibHeaderPresent(boolean zlibHeaderPresent) {
-        this.zlibHeaderPresent = zlibHeaderPresent;
+    public void setWithZlibHeader(boolean zlibHeader) {
+        this.zlibHeader = zlibHeader;
     }
 
+    /**
+     * The compression level.
+     * @see #setCompressionLevel
+     */
     public int getCompressionLevel() {
         return compressionLevel;
     }

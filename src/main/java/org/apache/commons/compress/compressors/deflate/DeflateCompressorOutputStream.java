@@ -44,7 +44,7 @@ public class DeflateCompressorOutputStream extends CompressorOutputStream {
      */
     public DeflateCompressorOutputStream(OutputStream outputStream,
                                          DeflateParameters parameters) throws IOException {
-        this.out = new DeflaterOutputStream(outputStream, new Deflater(parameters.getCompressionLevel(), !parameters.isZlibHeaderPresent()));
+        this.out = new DeflaterOutputStream(outputStream, new Deflater(parameters.getCompressionLevel(), !parameters.withZlibHeader()));
     }
 
     @Override

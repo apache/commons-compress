@@ -52,7 +52,7 @@ public class DeflateCompressorInputStream extends CompressorInputStream {
      */
     public DeflateCompressorInputStream(InputStream inputStream,
                                         DeflateParameters parameters) {
-        in = new InflaterInputStream(inputStream, new Inflater(!parameters.isZlibHeaderPresent()));
+        in = new InflaterInputStream(inputStream, new Inflater(!parameters.withZlibHeader()));
     }
     
     /** {@inheritDoc} */
