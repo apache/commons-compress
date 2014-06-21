@@ -211,6 +211,25 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     }
 
     /**
+     * Since we do not support marking just yet, we return false.
+     *
+     * @return False.
+     */
+    @Override
+    public boolean markSupported() {
+        return false;
+    }
+
+    /**
+     * Since we do not support marking just yet, we do nothing.
+     *
+     * @param markLimit The limit to mark.
+     */
+    @Override
+    public void mark(int markLimit) {
+    }
+
+    /**
      * Since we do not support marking just yet, we do nothing.
      */
     @Override
@@ -425,18 +444,19 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                         if (ch == '='){ // end of keyword
                             String keyword = coll.toString(CharsetNames.UTF_8);
                             // Get rest of entry
-                            byte[] rest = new byte[len - read];
+                            final int restLen = len - read;
+                            byte[] rest = new byte[restLen];
                             int got = IOUtils.readFully(i, rest);
-                            if (got != len - read){
+                            if (got != restLen) {
                                 throw new IOException("Failed to read "
                                                       + "Paxheader. Expected "
-                                                      + (len - read)
+                                                      + restLen
                                                       + " bytes, read "
                                                       + got);
                             }
                             // Drop trailing NL
                             String value = new String(rest, 0,
-                                                      len - read - 1, CharsetNames.UTF_8);
+                                                      restLen - 1, CharsetNames.UTF_8);
                             headers.put(keyword, value);
                             break;
                         }
