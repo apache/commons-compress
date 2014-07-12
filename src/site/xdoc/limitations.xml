@@ -77,6 +77,12 @@
      <section name="CPIO">
        <p>We are not aware of any problems.</p>
      </section>
+     <section name="DEFLATE">
+       <ul>
+         <li>CompressorStreamFactory is not able to auto-detect
+         streams using DEFLATE compression.</li>
+       </ul>
+     </section>
      <section name="DUMP">
        <ul>
          <li>read-only support</li>

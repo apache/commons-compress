@@ -32,9 +32,9 @@
         compressed) archive are archiver formats.</p>
 
         <p>The compressor formats supported are gzip, bzip2, xz, lzma,
-        Pack200a and Z, the archiver formats are 7z, ar, arj, cpio, dump,
-        tar and zip.  Pack200 is a special case as it can only
-        compress JAR files.</p>
+        Pack200, DEFLATE and Z, the archiver formats are 7z, ar, arj,
+        cpio, dump, tar and zip.  Pack200 is a special case as it can
+        only compress JAR files.</p>
 
         <p>We currently only provide read support for lzma, arj,
         dump and Z.  arj can only read uncompressed archives, 7z can read
@@ -478,6 +478,26 @@ while (-1 != (n = xzIn.read(buffer))) {
 }
 out.close();
 lzmaIn.close();
+]]></source>
+      </subsection>
+
+      <subsection name="DEFLATE">
+
+        <p>Uncompressing a given DEFLATE compressed file (you would
+          certainly add exception handling and make sure all streams
+          get closed properly):</p>
+<source><![CDATA[
+FileInputStream fin = new FileInputStream("some-file");
+BufferedInputStream in = new BufferedInputStream(fin);
+FileOutputStream out = new FileOutputStream("archive.tar");
+DeflateCompressorInputStream defIn = new DeflateCompressorInputStream(in);
+final byte[] buffer = new byte[buffersize];
+int n = 0;
+while (-1 != (n = defIn.read(buffer))) {
+    out.write(buffer, 0, n);
+}
+out.close();
+defIn.close();
 ]]></source>
       </subsection>
 

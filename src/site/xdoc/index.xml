@@ -27,7 +27,7 @@
             <p>
                 The Apache Commons Compress library defines an API for
                 working with ar, cpio, Unix dump, tar, zip, gzip, XZ, Pack200,
-                bzip2, 7z, arj, lzma, snappy and Z files.
+                bzip2, 7z, arj, lzma, snappy, DEFLATE and Z files.
             </p>
             <p>
                 The code in this component has many origins:
@@ -64,8 +64,11 @@
             <code>CompressorStreamFactory</code> can now autodetect
             the .Z compress format.</p>
           </subsection>
-          <!--subsection name="What's coming in 1.9?">
-          </subsection-->
+          <subsection name="What's coming in 1.9?">
+            <ul>
+              <li>support for raw DEFLATE streams</li>
+            </ul>
+          </subsection>
         </section>
 
         <section name="Documentation">
