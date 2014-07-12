@@ -363,9 +363,9 @@ bzIn.close();
 
       <subsection name="gzip">
 
-        <p>The implementation of this package is provided by
-          the <code>java.util.zip</code> package of the Java class
-          library.</p>
+        <p>The implementation of the DEFLATE/INFLATE code used by this
+        package is provided by the <code>java.util.zip</code> package
+        of the Java class library.</p>
 
         <p>Uncompressing a given gzip compressed file (you would
           certainly add exception handling and make sure all streams
@@ -482,6 +482,10 @@ lzmaIn.close();
       </subsection>
 
       <subsection name="DEFLATE">
+
+        <p>The implementation of the DEFLATE/INFLATE code used by this
+        package is provided by the <code>java.util.zip</code> package
+        of the Java class library.</p>
 
         <p>Uncompressing a given DEFLATE compressed file (you would
           certainly add exception handling and make sure all streams
