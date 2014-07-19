@@ -69,7 +69,6 @@
        </ul>
      </section>
      <section name="BZIP2">
-       <p>We are not aware of any problems.</p>
        <p>Versions of Compress prior to 1.4.1 are vulnerable to a
        possible denial of service attack, see the <a
        href="security.html">Security Reports</a> page for details.</p>
@@ -79,7 +78,7 @@
      </section>
      <section name="DEFLATE">
        <ul>
-         <li>CompressorStreamFactory is not able to auto-detect
+         <li><code>CompressorStreamFactory</code> is not able to auto-detect
          streams using DEFLATE compression.</li>
        </ul>
      </section>
@@ -139,8 +138,9 @@
      </section>
      <section name="Z">
        <ul>
-         <li>In Compress 1.7 and 1.8 CompressorStreamFactory is not
-         able to auto-detect streams using .Z compression.</li>
+         <li>In Compress 1.7 and 1.8
+         <code>CompressorStreamFactory</code> is not able to
+         auto-detect streams using .Z compression.</li>
          <li>read-only support</li>
        </ul>
      </section>
@@ -157,10 +157,10 @@
          including the most common STORED and DEFLATEd.  IMPLODE and
          SHRINK support is read-only.</li>
          <li>no support for encryption or multi-volume archives</li>
-         <li>In versions prior to Compress 1.6 ZipArchiveEntries read
-         from an archive will contain non-zero millisecond values when
-         using Java8 rather than the expected two-second
-         granularity.</li>
+         <li>In versions prior to Compress 1.6
+         <code>ZipArchiveEntries</code> read from an archive will
+         contain non-zero millisecond values when using Java8 rather
+         than the expected two-second granularity.</li>
          <li>Compress 1.7 has a known bug where the very first entry
          of an archive will not be read correctly by
          <code>ZipArchiveInputStream</code> if it used the STORED
