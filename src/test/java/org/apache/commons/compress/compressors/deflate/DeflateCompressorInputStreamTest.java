@@ -80,7 +80,6 @@ public class DeflateCompressorInputStreamTest {
         try {
             DeflateCompressorInputStream in =
                 new DeflateCompressorInputStream(is);
-            // tar header starts with filename "test1.xml"
             IOUtils.toByteArray(in);
             Assert.assertEquals(-1, in.read());
             in.close();
