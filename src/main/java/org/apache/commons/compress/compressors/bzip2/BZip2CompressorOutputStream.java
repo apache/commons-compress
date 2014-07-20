@@ -29,7 +29,7 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
  * <p>
  * The compression requires large amounts of memory. Thus you should call the
  * {@link #close() close()} method as soon as possible, to force
- * <tt>BZip2CompressorOutputStream</tt> to release the allocated memory.
+ * {@code BZip2CompressorOutputStream} to release the allocated memory.
  * </p>
  *
  * <p> You can shrink the amount of allocated memory and maybe raise
@@ -109,7 +109,7 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
  * </table>
  *
  * <p>
- * For decompression <tt>BZip2CompressorInputStream</tt> allocates less memory if the
+ * For decompression {@code BZip2CompressorInputStream} allocates less memory if the
  * bzipped input is smaller than one block.
  * </p>
  *
@@ -126,12 +126,12 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     implements BZip2Constants {
 
     /**
-     * The minimum supported blocksize <tt> == 1</tt>.
+     * The minimum supported blocksize {@code  == 1}.
      */
     public static final int MIN_BLOCKSIZE = 1;
 
     /**
-     * The maximum supported blocksize <tt> == 9</tt>.
+     * The maximum supported blocksize {@code  == 9}.
      */
     public static final int MAX_BLOCKSIZE = 9;
 
@@ -328,12 +328,12 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
      *
      * @return The blocksize, between {@link #MIN_BLOCKSIZE} and
      *         {@link #MAX_BLOCKSIZE} both inclusive. For a negative
-     *         <tt>inputLength</tt> this method returns <tt>MAX_BLOCKSIZE</tt>
+     *         {@code inputLength} this method returns {@code MAX_BLOCKSIZE}
      *         always.
      *
      * @param inputLength
      *            The length of the data which will be compressed by
-     *            <tt>BZip2CompressorOutputStream</tt>.
+     *            {@code BZip2CompressorOutputStream}.
      */
     public static int chooseBlockSize(long inputLength) {
         return (inputLength > 0) ? (int) Math
@@ -341,7 +341,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     }
 
     /**
-     * Constructs a new <tt>BZip2CompressorOutputStream</tt> with a blocksize of 900k.
+     * Constructs a new {@code BZip2CompressorOutputStream} with a blocksize of 900k.
      *
      * @param out 
      *            the destination stream.
@@ -357,7 +357,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     }
 
     /**
-     * Constructs a new <tt>BZip2CompressorOutputStream</tt> with specified blocksize.
+     * Constructs a new {@code BZip2CompressorOutputStream} with specified blocksize.
      *
      * @param out
      *            the destination stream.
