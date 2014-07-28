@@ -202,6 +202,7 @@ public class TarArchiveInputStreamTest {
                 entry = tar.getNextTarEntry();
             }
             assertEquals(31, count);
+            tar.close();
         } catch (IOException e) {
             fail("COMPRESS-245: " + e.getMessage());
         } finally {

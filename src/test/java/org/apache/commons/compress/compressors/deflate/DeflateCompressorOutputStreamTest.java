@@ -34,6 +34,7 @@ public class DeflateCompressorOutputStreamTest {
         cos.flush();
         cos.finish();
         Assert.assertTrue(bos.toByteArray().length > 0);
+        cos.close();
     }
 
 }
