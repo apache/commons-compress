@@ -47,6 +47,7 @@ public class ExplodeSupportTest extends TestCase {
         out.flush();
 
         assertEquals("CRC32", entry.getCrc(), out.getChecksum().getValue());
+        zip.close();
     }
 
     public void testArchiveWithImplodeCompression4K2Trees() throws IOException {

@@ -60,6 +60,7 @@ public class ArjArchiveInputStreamTest extends AbstractTestCase {
         cal.set(2008, 9, 6, 23, 50, 52);
         cal.set(Calendar.MILLISECOND, 0);
         assertEquals(cal.getTime(), entry.getLastModifiedDate());
+        in.close();
     }
 
     public void testReadingOfAttributesUnixVersion() throws Exception {
@@ -72,5 +73,6 @@ public class ArjArchiveInputStreamTest extends AbstractTestCase {
         cal.set(2008, 9, 6, 21, 50, 52);
         cal.set(Calendar.MILLISECOND, 0);
         assertEquals(cal.getTime(), entry.getLastModifiedDate());
+        in.close();
     }
 }
