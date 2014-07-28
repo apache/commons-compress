@@ -54,6 +54,7 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
         int count = 0;
         while ((entry = (CpioArchiveEntry) in.getNextEntry()) != null) {
             count++;
+            assertNotNull(entry);
         }
         in.close();
 
