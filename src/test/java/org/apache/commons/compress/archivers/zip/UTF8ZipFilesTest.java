@@ -330,7 +330,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
                 } else if (ze.getName().endsWith("_for_Dollar.txt")) {
                     assertUnicodeName(ze, EURO_FOR_DOLLAR_TXT, encoding);
                 } else if (!ze.getName().equals(ASCII_TXT)) {
-                    throw new AssertionError("Urecognized ZIP entry with name ["
+                    throw new AssertionError("Unrecognized ZIP entry with name ["
                                              + ze.getName() + "] found.");
                 }
             }
