@@ -116,7 +116,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Sets whether this is an "anti-item" used in differential backups,
      * meaning it should delete the same file from a previous backup.
-     * @param isAntiItem true if it is an ait-item, false otherwise 
+     * @param isAntiItem true if it is an anti-item, false otherwise 
      */
     public void setAntiItem(boolean isAntiItem) {
         this.isAntiItem = isAntiItem;
@@ -414,7 +414,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      *
      * <p>Currently only {@link SevenZMethod#COPY}, {@link
      * SevenZMethod#LZMA2}, {@link SevenZMethod#BZIP2} and {@link
-     * SevenZMethod#DEFLATE} are supported.</p>
+     * SevenZMethod#DEFLATE} are supported when writing archives.</p>
      *
      * <p>The methods will be consulted in iteration order to create
      * the final output.</p>
@@ -439,7 +439,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      *
      * <p>Currently only {@link SevenZMethod#COPY}, {@link
      * SevenZMethod#LZMA2}, {@link SevenZMethod#BZIP2} and {@link
-     * SevenZMethod#DEFLATE} are supported.</p>
+     * SevenZMethod#DEFLATE} are supported when writing archives.</p>
      *
      * <p>The methods will be consulted in iteration order to create
      * the final output.</p>
