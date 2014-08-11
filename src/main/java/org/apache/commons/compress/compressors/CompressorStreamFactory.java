@@ -174,11 +174,6 @@ public class CompressorStreamFactory {
                 return new GzipCompressorInputStream(in, decompressConcatenated);
             }
 
-            if (XZUtils.isXZCompressionAvailable() &&
-                XZCompressorInputStream.matches(signature, signatureLength)) {
-                return new XZCompressorInputStream(in, decompressConcatenated);
-            }
-
             if (Pack200CompressorInputStream.matches(signature, signatureLength)) {
                 return new Pack200CompressorInputStream(in);
             }
@@ -189,6 +184,11 @@ public class CompressorStreamFactory {
 
             if (ZCompressorInputStream.matches(signature, signatureLength)) {
                 return new ZCompressorInputStream(in);
+            }
+
+            if (XZUtils.isXZCompressionAvailable() &&
+                XZCompressorInputStream.matches(signature, signatureLength)) {
+                return new XZCompressorInputStream(in, decompressConcatenated);
             }
 
         } catch (IOException e) {
