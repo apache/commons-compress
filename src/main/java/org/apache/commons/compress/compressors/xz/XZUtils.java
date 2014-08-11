@@ -30,6 +30,15 @@ import org.apache.commons.compress.compressors.FileNameUtil;
 public class XZUtils {
 
     private static final FileNameUtil fileNameUtil;
+    /**
+     * XZ Header Magic Bytes begin a XZ file.
+     *
+     * <p>This is a copy of {@code org.tukaani.xz.XZ.HEADER_MAGIC} in
+     * XZ for Java version 1.5.</p>
+     */
+    private static final byte[] HEADER_MAGIC = {
+        (byte) 0xFD, '7', 'z', 'X', 'Z', '\0'
+    };
 
     static {
         Map<String, String> uncompressSuffix = new HashMap<String, String>();
@@ -41,6 +50,32 @@ public class XZUtils {
 
     /** Private constructor to prevent instantiation of this utility class. */
     private XZUtils() {
+    }
+
+    /**
+     * Checks if the signature matches what is expected for a .xz file.
+     *
+     * <p>This is more or less a copy of the version found in {@link
+     * XZCompressorInputStream} but doesn't depend on the presence of
+     * XZ for Java.</p>
+     *
+     * @param   signature     the bytes to check
+     * @param   length        the number of bytes to check
+     * @return  true if signature matches the .xz magic bytes, false otherwise
+     * @since 1.9
+     */
+    public static boolean matches(byte[] signature, int length) {
+        if (length < HEADER_MAGIC.length) {
+            return false;
+        }
+
+        for (int i = 0; i < HEADER_MAGIC.length; ++i) {
+            if (signature[i] != HEADER_MAGIC[i]) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

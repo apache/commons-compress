@@ -186,8 +186,8 @@ public class CompressorStreamFactory {
                 return new ZCompressorInputStream(in);
             }
 
-            if (XZUtils.isXZCompressionAvailable() &&
-                XZCompressorInputStream.matches(signature, signatureLength)) {
+            if (XZUtils.matches(signature, signatureLength) &&
+                XZUtils.isXZCompressionAvailable()) {
                 return new XZCompressorInputStream(in, decompressConcatenated);
             }
 
