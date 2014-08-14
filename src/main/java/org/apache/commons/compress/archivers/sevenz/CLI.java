@@ -66,8 +66,10 @@ public class CLI {
                 throws IOException {
                 File outFile = new File(entry.getName());
                 if (entry.isDirectory()) {
-                    System.out.println("creating " + outFile);
-                    outFile.mkdirs();
+                    if (!outFile.isDirectory() && !outFile.mkdirs()) {
+                        throw new IOException("Cannot create directory " + outFile);
+                    }
+                    System.out.println("created directory " + outFile);
                     return;
                 }
 
