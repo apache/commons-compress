@@ -73,7 +73,7 @@ public class CLI {
 
                 System.out.println("extracting to " + outFile);
                 File parent = outFile.getParentFile();
-                if (!parent.exists() && !parent.mkdirs()) {
+                if (parent != null && !parent.exists() && !parent.mkdirs()) {
                     throw new IOException("Cannot create " + parent);
                 }
                 FileOutputStream fos = new FileOutputStream(outFile);
