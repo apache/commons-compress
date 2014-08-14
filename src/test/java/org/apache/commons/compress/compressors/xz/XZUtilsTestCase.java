@@ -16,11 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.commons.compress.compressors;
+package org.apache.commons.compress.compressors.xz;
 
 import junit.framework.TestCase;
-
-import org.apache.commons.compress.compressors.xz.XZUtils;
 
 public class XZUtilsTestCase extends TestCase {
 
@@ -74,6 +72,32 @@ public class XZUtilsTestCase extends TestCase {
         assertTrue(XZUtils.matches(data, 7));
         data[5] = '0';
         assertFalse(XZUtils.matches(data, 6));
+    }
+
+    public void testCachingIsEnabledByDefaultAndXZIsPresent() {
+        assertEquals(1, XZUtils.getCachedXZAvailability());
+        assertTrue(XZUtils.isXZCompressionAvailable());
+    }
+
+    public void testCanTurnOffCaching() {
+        try {
+            XZUtils.setCacheXZAvailablity(false);
+            assertEquals(2, XZUtils.getCachedXZAvailability());
+            assertTrue(XZUtils.isXZCompressionAvailable());
+        } finally {
+            XZUtils.setCacheXZAvailablity(true);
+        }
+    }
+
+    public void testTurningOnCachingReEvaluatesAvailability() {
+        try {
+            XZUtils.setCacheXZAvailablity(false);
+            assertEquals(2, XZUtils.getCachedXZAvailability());
+            XZUtils.setCacheXZAvailablity(true);
+            assertEquals(1, XZUtils.getCachedXZAvailability());
+        } finally {
+            XZUtils.setCacheXZAvailablity(true);
+        }
     }
 
 }

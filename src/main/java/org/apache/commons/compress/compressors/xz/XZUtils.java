@@ -171,4 +171,9 @@ public class XZUtils {
             cachedXZAvailability.set(hasXz ? CACHED_AVAILABLE : CACHED_UNAVAILABLE);
         }
     }
+
+    // only exists to support unit tests
+    static int getCachedXZAvailability() {
+        return cachedXZAvailability.get();
+    }
 }
