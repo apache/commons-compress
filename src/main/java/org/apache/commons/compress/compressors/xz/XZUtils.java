@@ -20,6 +20,7 @@ package org.apache.commons.compress.compressors.xz;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.compress.compressors.FileNameUtil;
 
 /**
@@ -30,6 +31,7 @@ import org.apache.commons.compress.compressors.FileNameUtil;
 public class XZUtils {
 
     private static final FileNameUtil fileNameUtil;
+
     /**
      * XZ Header Magic Bytes begin a XZ file.
      *
@@ -40,12 +42,24 @@ public class XZUtils {
         (byte) 0xFD, '7', 'z', 'X', 'Z', '\0'
     };
 
+    private static final int DONT_CACHE = 2;
+    private static final int CACHED_AVAILABLE = 1;
+    private static final int CACHED_UNAVAILABLE = 0;
+
+    private static final AtomicInteger cachedXZAvailability;
+
     static {
         Map<String, String> uncompressSuffix = new HashMap<String, String>();
         uncompressSuffix.put(".txz", ".tar");
         uncompressSuffix.put(".xz", "");
         uncompressSuffix.put("-xz", "");
         fileNameUtil = new FileNameUtil(uncompressSuffix, ".xz");
+        cachedXZAvailability = new AtomicInteger(DONT_CACHE);
+        try {
+            Class.forName("org.osgi.framework.BundleEvent");
+        } catch (Exception ex) {
+            setCacheXZAvailablity(true);
+        }
     }
 
     /** Private constructor to prevent instantiation of this utility class. */
@@ -83,6 +97,14 @@ public class XZUtils {
      * @since 1.5
      */
     public static boolean isXZCompressionAvailable() {
+        final int cachedResult = cachedXZAvailability.get();
+        if (cachedResult != DONT_CACHE) {
+            return cachedResult == CACHED_AVAILABLE;
+        }
+        return internalIsXZCompressionAvailable();
+    }
+
+    private static boolean internalIsXZCompressionAvailable() {
         try {
             XZCompressorInputStream.matches(null, 0);
             return true;
@@ -134,4 +156,19 @@ public class XZUtils {
         return fileNameUtil.getCompressedFilename(filename);
     }
 
+    /**
+     * Whether to cache the result of the XZ for Java check.
+     *
+     * <p>This defaults to {@code false} in an OSGi environment and {@code true} otherwise.</p>
+     * @param doCache whether to cache the result
+     * @since 1.9
+     */
+    public static void setCacheXZAvailablity(boolean doCache) {
+        if (!doCache) {
+            cachedXZAvailability.set(DONT_CACHE);
+        } else if (cachedXZAvailability.get() == DONT_CACHE) {
+            final boolean hasXz = internalIsXZCompressionAvailable();
+            cachedXZAvailability.set(hasXz ? CACHED_AVAILABLE : CACHED_UNAVAILABLE);
+        }
+    }
 }
