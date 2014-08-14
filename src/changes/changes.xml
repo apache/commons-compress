@@ -48,6 +48,10 @@ The <action> type attribute can be add,update,fix,remove.
               due-to="Matthias Stevens">
         Added support for DEFLATE streams without any gzip framing.
       </action>
+      <action type="fix" date="2014-08-14" issue="COMPRESS-287">
+        When reading 7z files unknown file properties and properties
+        of type kDummy are now ignored.
+      </action>
     </release>
 
     <release version="1.8.1" date="2014-05-14"

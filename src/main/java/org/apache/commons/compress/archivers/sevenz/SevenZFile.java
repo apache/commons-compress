@@ -244,7 +244,7 @@ public class SevenZFile implements Closeable {
         }
         
         if (nid != NID.kEnd) {
-            throw new IOException("Badly terminated header");
+            throw new IOException("Badly terminated header, found " + nid);
         }
     }
     
@@ -708,13 +708,21 @@ public class SevenZFile implements Closeable {
                     throw new IOException("kStartPos is unsupported, please report");
                 }
                 case NID.kDummy: {
-                    throw new IOException("kDummy is unsupported, please report");
+                    // 7z 9.20 asserts the content is all zeros and ignores the property
+                    // Compress up to 1.8.1 would throw an exception, now we ignore it (see COMPRESS-287
+                    
+                    if (skipBytesFully(header, size) < size) {
+                        throw new IOException("Incomplete kDummy property");
+                    }
+                    break;
                 }
-                
+
                 default: {
-                    throw new IOException("Unknown property " + propertyType);
-                    // FIXME: Should actually:
-                    //header.skipBytes((int)size);
+                    // Compress up to 1.8.1 would throw an exception, now we ignore it (see COMPRESS-287
+                    if (skipBytesFully(header, size) < size) {
+                        throw new IOException("Incomplete property of type " + propertyType);
+                    }
+                    break;
                 }
             }
         }
@@ -943,5 +951,29 @@ public class SevenZFile implements Closeable {
             }
         }
         return true;
+    }
+
+    private static long skipBytesFully(DataInput input, long bytesToSkip) throws IOException {
+        if (bytesToSkip < 1) {
+            return 0;
+        }
+        long skipped = 0;
+        while (bytesToSkip > Integer.MAX_VALUE) {
+            long skippedNow = skipBytesFully(input, Integer.MAX_VALUE);
+            if (skippedNow == 0) {
+                return skipped;
+            }
+            skipped += skippedNow;
+            bytesToSkip -= skippedNow;
+        }
+        while (bytesToSkip > 0) {
+            int skippedNow = input.skipBytes((int) bytesToSkip);
+            if (skippedNow == 0) {
+                return skipped;
+            }
+            skipped += skippedNow;
+            bytesToSkip -= skippedNow;
+        }
+        return skipped;
     }
 }
