@@ -96,6 +96,7 @@ public class CLI {
                         }
                         off += bytesRead;
                     }
+                    fos.write(contents);
                 } finally {
                     fos.close();
                 }
