@@ -36,4 +36,20 @@ class Archive {
     SevenZArchiveEntry[] files;
     /// Mapping between folders, files and streams.
     StreamMap streamMap;
+
+    @Override
+    public String toString() {
+        return "Archive with packed streams starting at offset " + packPos
+            + ", " + lengthOf(packSizes) + " pack sizes, " + lengthOf(packCrcs)
+            + " CRCs, " + lengthOf(folders) + " folders, " + lengthOf(files)
+            + " files and " + streamMap;
+    }
+
+    private static String lengthOf(long[] a) {
+        return a == null ? "(null)" : String.valueOf(a.length); 
+    }
+
+    private static String lengthOf(Object[] a) {
+        return a == null ? "(null)" : String.valueOf(a.length); 
+    }
 }
