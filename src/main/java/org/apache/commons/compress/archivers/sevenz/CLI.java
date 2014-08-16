@@ -23,6 +23,8 @@ import java.io.IOException;
 
 public class CLI {
 
+    private static final byte[] BUF = new byte[8192];
+
     private static enum Mode {
         LIST("Analysing") {
             public void takeAction(SevenZFile archive, SevenZArchiveEntry entry) {
@@ -80,23 +82,21 @@ public class CLI {
                 }
                 FileOutputStream fos = new FileOutputStream(outFile);
                 try {
-                    byte[] contents = new byte[(int) entry.getSize()];
-                    int off = 0;
-                    while (off < contents.length) {
-                        int bytesRead = archive.read(contents, off,
-                                                     contents.length - off);
-                        System.err.println("read at offset " + off + " returned "
-                                           + bytesRead + " bytes.");
+                    final long total = entry.getSize();
+                    long off = 0;
+                    while (off < total) {
+                        int toRead = (int) Math.min(total - off, BUF.length);
+                        int bytesRead = archive.read(BUF, 0, toRead);
                         if (bytesRead < 1) {
                             throw new IOException("reached end of entry "
                                                   + entry.getName()
                                                   + " after " + off
                                                   + " bytes, expected "
-                                                  + contents.length);
+                                                  + total);
                         }
                         off += bytesRead;
+                        fos.write(BUF, 0, bytesRead);
                     }
-                    fos.write(contents);
                 } finally {
                     fos.close();
                 }
