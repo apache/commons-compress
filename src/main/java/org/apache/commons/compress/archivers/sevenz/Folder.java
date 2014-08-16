@@ -40,7 +40,9 @@ class Folder {
     boolean hasCrc;
     /// The CRC, if present.
     long crc;
-    /// The number of unpack substreams, one per non-empty file in this folder.
+    /// The number of unpack substreams, product of the number of
+    /// output streams and the nuber of non-empty files in this
+    /// folder.
     int numUnpackSubStreams;
 
     /**
@@ -88,6 +90,16 @@ class Folder {
             }
         }
         return 0;
+    }
+
+    @Override
+    public String toString() {
+        return "Folder with " + coders.length + " coders, " + totalInputStreams
+            + " input streams, " + totalOutputStreams + " output streams, "
+            + bindPairs.length + " bind pairs, " + packedStreams.length
+            + " packed streams, " + unpackSizes.length + " unpack sizes, "
+            + (hasCrc ? "with CRC " + crc : "without CRC")
+            + " and " + numUnpackSubStreams + " unpack streams";
     }
 }
 
