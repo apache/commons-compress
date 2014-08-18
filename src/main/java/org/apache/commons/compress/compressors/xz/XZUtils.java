@@ -42,11 +42,11 @@ public class XZUtils {
         (byte) 0xFD, '7', 'z', 'X', 'Z', '\0'
     };
 
-    private static final int DONT_CACHE = 2;
-    private static final int CACHED_AVAILABLE = 1;
-    private static final int CACHED_UNAVAILABLE = 0;
+    static enum CachedAvailability {
+        DONT_CACHE, CACHED_AVAILABLE, CACHED_UNAVAILABLE
+    }
 
-    private static final AtomicInteger cachedXZAvailability;
+    private static volatile CachedAvailability cachedXZAvailability;
 
     static {
         Map<String, String> uncompressSuffix = new HashMap<String, String>();
@@ -54,7 +54,7 @@ public class XZUtils {
         uncompressSuffix.put(".xz", "");
         uncompressSuffix.put("-xz", "");
         fileNameUtil = new FileNameUtil(uncompressSuffix, ".xz");
-        cachedXZAvailability = new AtomicInteger(DONT_CACHE);
+        cachedXZAvailability = CachedAvailability.DONT_CACHE;
         try {
             Class.forName("org.osgi.framework.BundleEvent");
         } catch (Exception ex) {
@@ -97,9 +97,9 @@ public class XZUtils {
      * @since 1.5
      */
     public static boolean isXZCompressionAvailable() {
-        final int cachedResult = cachedXZAvailability.get();
-        if (cachedResult != DONT_CACHE) {
-            return cachedResult == CACHED_AVAILABLE;
+        final CachedAvailability cachedResult = cachedXZAvailability;
+        if (cachedResult != CachedAvailability.DONT_CACHE) {
+            return cachedResult == CachedAvailability.CACHED_AVAILABLE;
         }
         return internalIsXZCompressionAvailable();
     }
@@ -165,15 +165,16 @@ public class XZUtils {
      */
     public static void setCacheXZAvailablity(boolean doCache) {
         if (!doCache) {
-            cachedXZAvailability.set(DONT_CACHE);
-        } else if (cachedXZAvailability.get() == DONT_CACHE) {
+            cachedXZAvailability = CachedAvailability.DONT_CACHE;
+        } else if (cachedXZAvailability == CachedAvailability.DONT_CACHE) {
             final boolean hasXz = internalIsXZCompressionAvailable();
-            cachedXZAvailability.set(hasXz ? CACHED_AVAILABLE : CACHED_UNAVAILABLE);
+            cachedXZAvailability = hasXz ? CachedAvailability.CACHED_AVAILABLE
+                : CachedAvailability.CACHED_UNAVAILABLE;
         }
     }
 
     // only exists to support unit tests
-    static int getCachedXZAvailability() {
-        return cachedXZAvailability.get();
+    static CachedAvailability getCachedXZAvailability() {
+        return cachedXZAvailability;
     }
 }

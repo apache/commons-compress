@@ -852,6 +852,10 @@ public class SevenZFile implements Closeable {
         file.seek(folderOffset);
         InputStream inputStreamStack = new BoundedRandomAccessFileInputStream(file,
                 archive.packSizes[firstPackStreamIndex]);
+        writeOut(inputStreamStack);
+        file.seek(folderOffset);
+        inputStreamStack = new BoundedRandomAccessFileInputStream(file,
+                archive.packSizes[firstPackStreamIndex]);
         LinkedList<SevenZMethodConfiguration> methods = new LinkedList<SevenZMethodConfiguration>();
         for (final Coder coder : folder.getOrderedCoders()) {
             if (coder.numInStreams != 1 || coder.numOutStreams != 1) {
@@ -868,6 +872,15 @@ public class SevenZFile implements Closeable {
                     folder.getUnpackSize(), folder.crc);
         } else {
             return inputStreamStack;
+        }
+    }
+
+    private static void writeOut(InputStream in) throws IOException {
+        java.io.OutputStream out = new java.io.FileOutputStream("raw");
+        try {
+            IOUtils.copy(in, out);
+        } finally {
+            out.close();
         }
     }
     
