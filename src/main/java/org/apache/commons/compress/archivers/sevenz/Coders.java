@@ -67,14 +67,14 @@ class Coders {
         return CODER_MAP.get(method);
     }
 
-    static InputStream addDecoder(final InputStream is,
+    static InputStream addDecoder(final InputStream is, long uncompressedLength,
             final Coder coder, final byte[] password) throws IOException {
         CoderBase cb = findByMethod(SevenZMethod.byId(coder.decompressionMethodId));
         if (cb == null) {
             throw new IOException("Unsupported compression method " +
                                   Arrays.toString(coder.decompressionMethodId));
         }
-        return cb.decode(is, coder, password);
+        return cb.decode(is, uncompressedLength, coder, password);
     }
     
     static OutputStream addEncoder(final OutputStream out, final SevenZMethod method,
@@ -88,8 +88,8 @@ class Coders {
 
     static class CopyDecoder extends CoderBase {
         @Override
-        InputStream decode(final InputStream in, final Coder coder,
-                byte[] password) throws IOException {
+        InputStream decode(final InputStream in, long uncompressedLength,
+                final Coder coder, byte[] password) throws IOException {
             return in; 
         }
         @Override
@@ -100,8 +100,8 @@ class Coders {
 
     static class LZMADecoder extends CoderBase {
         @Override
-        InputStream decode(final InputStream in, final Coder coder,
-                byte[] password) throws IOException {
+        InputStream decode(final InputStream in, long uncompressedLength,
+                final Coder coder, byte[] password) throws IOException {
             byte propsByte = coder.properties[0];
             long dictSize = coder.properties[1];
             for (int i = 1; i < 4; i++) {
@@ -110,7 +110,7 @@ class Coders {
             if (dictSize > LZMAInputStream.DICT_SIZE_MAX) {
                 throw new IOException("Dictionary larger than 4GiB maximum size");
             }
-            return new LZMAInputStream(in, -1, propsByte, (int) dictSize);
+            return new LZMAInputStream(in, uncompressedLength, propsByte, (int) dictSize);
         }
     }
     
@@ -121,8 +121,8 @@ class Coders {
         }
 
         @Override
-        InputStream decode(final InputStream in, final Coder coder,
-                byte[] password) throws IOException {
+        InputStream decode(final InputStream in, long uncompressedLength,
+                final Coder coder, byte[] password) throws IOException {
             try {
                 return opts.getInputStream(in);
             } catch (AssertionError e) {
@@ -149,7 +149,8 @@ class Coders {
         }
 
         @Override
-        InputStream decode(final InputStream in, final Coder coder, final byte[] password)
+        InputStream decode(final InputStream in, long uncompressedLength,
+                final Coder coder, final byte[] password)
             throws IOException {
             return new InflaterInputStream(new DummyByteAddingInputStream(in),
                                            new Inflater(true));
@@ -167,7 +168,8 @@ class Coders {
         }
 
         @Override
-        InputStream decode(final InputStream in, final Coder coder, final byte[] password)
+        InputStream decode(final InputStream in, long uncompressedLength,
+                final Coder coder, final byte[] password)
                 throws IOException {
             return new BZip2CompressorInputStream(in);
         }

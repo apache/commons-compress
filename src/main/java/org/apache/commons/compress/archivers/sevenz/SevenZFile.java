@@ -276,7 +276,8 @@ public class SevenZFile implements Closeable {
             if (coder.numInStreams != 1 || coder.numOutStreams != 1) {
                 throw new IOException("Multi input/output stream coders are not yet supported");
             }
-            inputStreamStack = Coders.addDecoder(inputStreamStack, coder, password);
+            inputStreamStack = Coders.addDecoder(inputStreamStack, folder.getUnpackSizeForCoder(coder),
+                    coder, password);
         }
         if (folder.hasCrc) {
             inputStreamStack = new CRC32VerifyingInputStream(inputStreamStack,
@@ -858,7 +859,8 @@ public class SevenZFile implements Closeable {
                 throw new IOException("Multi input/output stream coders are not yet supported");
             }
             SevenZMethod method = SevenZMethod.byId(coder.decompressionMethodId);
-            inputStreamStack = Coders.addDecoder(inputStreamStack, coder, password);
+            inputStreamStack = Coders.addDecoder(inputStreamStack, folder.getUnpackSizeForCoder(coder),
+                    coder, password);
             methods.addFirst(new SevenZMethodConfiguration(method,
                      Coders.findByMethod(method).getOptionsFromCoder(coder, inputStreamStack)));
         }
