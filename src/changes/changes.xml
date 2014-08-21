@@ -52,6 +52,10 @@ The <action> type attribute can be add,update,fix,remove.
         When reading 7z files unknown file properties and properties
         of type kDummy are now ignored.
       </action>
+      <action type="fix" date="2014-08-21" issue="COMPRESS-286">
+        Expanding 7z archives using LZMA compression could cause an
+        EOFException.
+      </action>
     </release>
 
     <release version="1.8.1" date="2014-05-14"

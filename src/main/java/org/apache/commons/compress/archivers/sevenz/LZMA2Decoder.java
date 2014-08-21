@@ -32,7 +32,8 @@ class LZMA2Decoder extends CoderBase {
     }
 
     @Override
-    InputStream decode(final InputStream in, final Coder coder, byte[] password) throws IOException {
+    InputStream decode(final InputStream in, long uncompressedLength,
+            final Coder coder, byte[] password) throws IOException {
         try {
             int dictionarySize = getDictionarySize(coder);
             return new LZMA2InputStream(in, dictionarySize);

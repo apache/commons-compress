@@ -92,6 +92,17 @@ class Folder {
         return 0;
     }
 
+    long getUnpackSizeForCoder(Coder coder) {
+        if (coders != null) {
+            for (int i = 0; i < coders.length; i++) {
+                if (coders[i] == coder) {
+                    return unpackSizes[i];
+                }
+            }
+        }
+        return 0;
+    }
+
     @Override
     public String toString() {
         return "Folder with " + coders.length + " coders, " + totalInputStreams

@@ -30,7 +30,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 class AES256SHA256Decoder extends CoderBase {
     @Override
-    InputStream decode(final InputStream in, final Coder coder, final byte[] passwordBytes) throws IOException {
+    InputStream decode(final InputStream in, long uncompressedLength,
+            final Coder coder, final byte[] passwordBytes) throws IOException {
         return new InputStream() {
             private boolean isInitialized = false;
             private CipherInputStream cipherInputStream = null;
