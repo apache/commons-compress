@@ -74,8 +74,6 @@ public class GzipCompressorInputStream extends CompressorInputStream {
     // CRC32 from uncompressed data
     private final CRC32 crc = new CRC32();
 
-    private long memberSize;
-
     // True once everything has been decompressed
     private boolean endReached = false;
 
@@ -231,7 +229,6 @@ public class GzipCompressorInputStream extends CompressorInputStream {
         // Reset
         inf.reset();
         crc.reset();
-        memberSize = 0;
 
         return true;
     }
@@ -292,7 +289,6 @@ public class GzipCompressorInputStream extends CompressorInputStream {
             }
 
             crc.update(b, off, ret);
-            memberSize += ret;
             off += ret;
             len -= ret;
             size += ret;
@@ -326,7 +322,7 @@ public class GzipCompressorInputStream extends CompressorInputStream {
                 // Uncompressed size modulo 2^32 (ISIZE in the spec)
                 long isize = readLittleEndianInt(inData);
 
-                if (isize != (memberSize & 0xffffffffl)) {
+                if (isize != (inf.getBytesWritten() & 0xffffffffl)) {
                     throw new IOException("Gzip-compressed data is corrupt"
                                           + "(uncompressed size mismatch)");
                 }
