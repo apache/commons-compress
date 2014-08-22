@@ -74,7 +74,7 @@ public class GzipCompressorInputStream extends CompressorInputStream {
     // CRC32 from uncompressed data
     private final CRC32 crc = new CRC32();
 
-    private int memberSize;
+    private long memberSize;
 
     // True once everything has been decompressed
     private boolean endReached = false;
@@ -245,11 +245,11 @@ public class GzipCompressorInputStream extends CompressorInputStream {
         return bos.toByteArray();
     }
 
-    private int readLittleEndianInt(DataInputStream inData) throws IOException {
+    private long readLittleEndianInt(DataInputStream inData) throws IOException {
         return inData.readUnsignedByte()
             | (inData.readUnsignedByte() << 8)
             | (inData.readUnsignedByte() << 16)
-            | (inData.readUnsignedByte() << 24);
+            | (((long) inData.readUnsignedByte()) << 24);
     }
 
     @Override
@@ -316,10 +316,7 @@ public class GzipCompressorInputStream extends CompressorInputStream {
                 DataInputStream inData = new DataInputStream(in);
 
                 // CRC32
-                long crcStored = 0;
-                for (int i = 0; i < 4; ++i) {
-                    crcStored |= (long)inData.readUnsignedByte() << (i * 8);
-                }
+                long crcStored = readLittleEndianInt(inData);
 
                 if (crcStored != crc.getValue()) {
                     throw new IOException("Gzip-compressed data is corrupt "
@@ -327,12 +324,9 @@ public class GzipCompressorInputStream extends CompressorInputStream {
                 }
 
                 // Uncompressed size modulo 2^32 (ISIZE in the spec)
-                int isize = 0;
-                for (int i = 0; i < 4; ++i) {
-                    isize |= inData.readUnsignedByte() << (i * 8);
-                }
+                long isize = readLittleEndianInt(inData);
 
-                if (isize != memberSize) {
+                if (isize != (memberSize & 0xffffffffl)) {
                     throw new IOException("Gzip-compressed data is corrupt"
                                           + "(uncompressed size mismatch)");
                 }
