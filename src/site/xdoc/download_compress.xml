@@ -88,7 +88,7 @@ limitations under the License.
       </form>
 
       <p>
-        The <a href="http://www.apache.org/dist/commons/KEYS">KEYS</a>
+        The <a href="https://www.apache.org/dist/commons/KEYS">KEYS</a>
         link links to the code signing keys used to sign the product.
         The <code>PGP</code> link downloads the OpenPGP compatible signature from our main site.
         The <code>MD5</code> link downloads the checksum from the main site.
@@ -100,13 +100,13 @@ limitations under the License.
         <table>
           <tr>
               <td><a href="[preferred]/commons/compress/binaries/commons-compress-1.8.1-bin.tar.gz">commons-compress-1.8.1-bin.tar.gz</a></td>
-              <td><a href="http://www.apache.org/dist/commons/compress/binaries/commons-compress-1.8.1-bin.tar.gz.md5">md5</a></td>
-              <td><a href="http://www.apache.org/dist/commons/compress/binaries/commons-compress-1.8.1-bin.tar.gz.asc">pgp</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.8.1-bin.tar.gz.md5">md5</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.8.1-bin.tar.gz.asc">pgp</a></td>
           </tr>
           <tr>
               <td><a href="[preferred]/commons/compress/binaries/commons-compress-1.8.1-bin.zip">commons-compress-1.8.1-bin.zip</a></td>
-              <td><a href="http://www.apache.org/dist/commons/compress/binaries/commons-compress-1.8.1-bin.zip.md5">md5</a></td>
-              <td><a href="http://www.apache.org/dist/commons/compress/binaries/commons-compress-1.8.1-bin.zip.asc">pgp</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.8.1-bin.zip.md5">md5</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.8.1-bin.zip.asc">pgp</a></td>
           </tr>
         </table>
       </subsection>
@@ -114,13 +114,13 @@ limitations under the License.
         <table>
           <tr>
               <td><a href="[preferred]/commons/compress/source/commons-compress-1.8.1-src.tar.gz">commons-compress-1.8.1-src.tar.gz</a></td>
-              <td><a href="http://www.apache.org/dist/commons/compress/source/commons-compress-1.8.1-src.tar.gz.md5">md5</a></td>
-              <td><a href="http://www.apache.org/dist/commons/compress/source/commons-compress-1.8.1-src.tar.gz.asc">pgp</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.8.1-src.tar.gz.md5">md5</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.8.1-src.tar.gz.asc">pgp</a></td>
           </tr>
           <tr>
               <td><a href="[preferred]/commons/compress/source/commons-compress-1.8.1-src.zip">commons-compress-1.8.1-src.zip</a></td>
-              <td><a href="http://www.apache.org/dist/commons/compress/source/commons-compress-1.8.1-src.zip.md5">md5</a></td>
-              <td><a href="http://www.apache.org/dist/commons/compress/source/commons-compress-1.8.1-src.zip.asc">pgp</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.8.1-src.zip.md5">md5</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.8.1-src.zip.asc">pgp</a></td>
           </tr>
         </table>
       </subsection>
