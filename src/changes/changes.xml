@@ -56,6 +56,12 @@ The <action> type attribute can be add,update,fix,remove.
         Expanding 7z archives using LZMA compression could cause an
         EOFException.
       </action>
+      <action type="update" date="2014-08-31" issue="COMPRESS-285">
+        Checking for XZ for Java may be expensive.  The result will
+        now be cached outside of an OSGi environment.  You can use the
+        new XZUtils#setCacheXZAvailability to overrride this default
+        behavior.
+      </action>
     </release>
 
     <release version="1.8.1" date="2014-05-14"
