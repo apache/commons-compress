@@ -188,7 +188,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
     private byte[] writePaxHeader(Map<String, String> m) throws Exception {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, "ASCII");
-        tos.writePaxHeaders("foo", m);
+        tos.writePaxHeaders(new TarArchiveEntry("x"), "foo", m);
 
         // add a dummy entry so data gets written
         TarArchiveEntry t = new TarArchiveEntry("foo");

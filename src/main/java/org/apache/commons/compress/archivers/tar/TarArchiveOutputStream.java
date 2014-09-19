@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.io.StringWriter;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -297,7 +298,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         }
 
         if (paxHeaders.size() > 0) {
-            writePaxHeaders(entryName, paxHeaders);
+            writePaxHeaders(entry, entryName, paxHeaders);
         }
 
         entry.writeEntryHeader(recordBuf, encoding,
@@ -440,7 +441,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * Writes a PAX extended header with the given map as contents.
      * @since 1.4
      */
-    void writePaxHeaders(String entryName,
+    void writePaxHeaders(TarArchiveEntry entry,
+                         String entryName,
                          Map<String, String> headers) throws IOException {
         String name = "./PaxHeaders.X/" + stripTo7Bits(entryName);
         if (name.length() >= TarConstants.NAMELEN) {
@@ -448,6 +450,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         }
         TarArchiveEntry pex = new TarArchiveEntry(name,
                                                   TarConstants.LF_PAX_EXTENDED_HEADER_LC);
+        transferModTime(entry, pex);
 
         StringWriter w = new StringWriter();
         for (Map.Entry<String, String> h : headers.entrySet()) {
@@ -662,7 +665,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 TarArchiveEntry longLinkEntry = new TarArchiveEntry(TarConstants.GNU_LONGLINK, linkType);
 
                 longLinkEntry.setSize(len + 1); // +1 for NUL
-                longLinkEntry.setModTime(entry.getModTime());
+                transferModTime(entry, longLinkEntry);
                 putArchiveEntry(longLinkEntry);
                 write(encodedName.array(), encodedName.arrayOffset(), len);
                 write(0); // NUL terminator
@@ -674,5 +677,14 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             }
         }
         return false;
+    }
+
+    private void transferModTime(TarArchiveEntry from, TarArchiveEntry to) {
+        Date fromModTime = from.getModTime();
+        long fromModTimeSeconds = fromModTime.getTime() / 1000;
+        if (fromModTimeSeconds < 0 || fromModTimeSeconds > TarConstants.MAXSIZE) {
+            fromModTime = new Date(0);
+        }
+        to.setModTime(fromModTime);
     }
 }

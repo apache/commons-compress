@@ -64,9 +64,10 @@ The <action> type attribute can be add,update,fix,remove.
       </action>
       <action type="fix" date="2014-09-19" issue="COMPRESS-289"
               due-to="Bob Robertson">
-        Long-Name and -link entries in TAR archives always had the
-        current time as last modfication time, creating archives that
-        are different at a byte level each time an archive was built.
+        Long-Name and -link or PAX-header entries in TAR archives
+        always had the current time as last modfication time, creating
+        archives that are different at a byte level each time an
+        archive was built.
       </action>
     </release>
 
