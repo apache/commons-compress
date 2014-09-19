@@ -271,12 +271,12 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         TarArchiveEntry entry = (TarArchiveEntry) archiveEntry;
         Map<String, String> paxHeaders = new HashMap<String, String>();
         final String entryName = entry.getName();
-        boolean paxHeaderContainsPath = handleLongName(entryName, paxHeaders, "path",
+        boolean paxHeaderContainsPath = handleLongName(entry, entryName, paxHeaders, "path",
                                                        TarConstants.LF_GNUTYPE_LONGNAME, "file name");
 
         final String linkName = entry.getLinkName();
         boolean paxHeaderContainsLinkPath = linkName != null && linkName.length() > 0
-            && handleLongName(linkName, paxHeaders, "linkpath",
+            && handleLongName(entry, linkName, paxHeaders, "linkpath",
                               TarConstants.LF_GNUTYPE_LONGLINK, "link name");
 
         if (bigNumberMode == BIGNUMBER_POSIX) {
@@ -637,6 +637,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      *   <li>it truncates the name if longFileMode is TRUNCATE</li>
      * </ul></p>
      *
+     * @param entry entry the name belongs to
      * @param name the name to write
      * @param paxHeaders current map of pax headers
      * @param paxHeaderName name of the pax header to write
@@ -644,7 +645,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * @param fieldName the name of the field
      * @return whether a pax header has been written.
      */
-    private boolean handleLongName(String name,
+    private boolean handleLongName(TarArchiveEntry entry , String name,
                                    Map<String, String> paxHeaders,
                                    String paxHeaderName, byte linkType, String fieldName)
         throws IOException {
@@ -661,6 +662,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 TarArchiveEntry longLinkEntry = new TarArchiveEntry(TarConstants.GNU_LONGLINK, linkType);
 
                 longLinkEntry.setSize(len + 1); // +1 for NUL
+                longLinkEntry.setModTime(entry.getModTime());
                 putArchiveEntry(longLinkEntry);
                 write(encodedName.array(), encodedName.arrayOffset(), len);
                 write(0); // NUL terminator
