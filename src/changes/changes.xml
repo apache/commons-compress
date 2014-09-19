@@ -62,6 +62,12 @@ The <action> type attribute can be add,update,fix,remove.
         new XZUtils#setCacheXZAvailability to overrride this default
         behavior.
       </action>
+      <action type="fix" date="2014-09-19" issue="COMPRESS-289"
+              due-to="Bob Robertson">
+        Long-Name and -link entries in TAR archives always had the
+        current time as last modfication time, creating archives that
+        are different at a byte level each time an archive was built.
+      </action>
     </release>
 
     <release version="1.8.1" date="2014-05-14"
