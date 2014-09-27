@@ -27,6 +27,7 @@ public class CLI {
 
     private static enum Mode {
         LIST("Analysing") {
+            @Override
             public void takeAction(SevenZFile archive, SevenZArchiveEntry entry) {
                 System.out.print(entry.getName());
                 if (entry.isDirectory()) {
@@ -64,6 +65,7 @@ public class CLI {
             }
         },
         EXTRACT("Extracting") {
+            @Override
             public void takeAction(SevenZFile archive, SevenZArchiveEntry entry) 
                 throws IOException {
                 File outFile = new File(entry.getName());
