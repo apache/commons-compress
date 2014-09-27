@@ -45,6 +45,7 @@ public class IOUtilsTest {
         skip(new StreamWrapper() {
                 public InputStream wrap(InputStream toWrap) {
                     return new FilterInputStream(toWrap) {
+                        @Override
                         public long skip(long s) {
                             return 0;
                         }
@@ -59,6 +60,7 @@ public class IOUtilsTest {
                 public InputStream wrap(final InputStream toWrap) {
                     return new FilterInputStream(toWrap) {
                         boolean skipped;
+                        @Override
                         public long skip(long s) throws IOException {
                             if (!skipped) {
                                 toWrap.skip(5);
