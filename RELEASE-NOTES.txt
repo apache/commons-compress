@@ -2,12 +2,47 @@
 
 Apache Commons Compress software defines an API for working with
 compression and archive formats.  These include: bzip2, gzip, pack200,
-lzma, xz, Snappy, traditional Unix Compress and ar, cpio, jar, tar,
-zip, dump, 7z, arj.
+lzma, xz, Snappy, traditional Unix Compress, DEFLATE and ar, cpio,
+jar, tar, zip, dump, 7z, arj.
+
+Release 1.9
+-----------
+
+New features:
+o Added support for DEFLATE streams without any gzip framing.
+  Issue: COMPRESS-263.
+  Thanks to Matthias Stevens.
+
+Fixed Bugs:
+o When reading 7z files unknown file properties and properties of type
+  kDummy are now ignored.
+  Issue: COMPRESS-287.
+o Expanding 7z archives using LZMA compression could cause an
+  EOFException.
+  Issue: COMPRESS-286. 
+o Long-Name and -link or PAX-header entries in TAR archives always had
+  the current time as last modfication time, creating archives that
+  are different at the byte level each time an archive was built.
+  Issue: COMPRESS-289.
+  Thanks to Bob Robertson.
+
+Changes:
+o Checking for XZ for Java may be expensive.  The result will now be
+  cached outside of an OSGi environment.  You can use the new
+  XZUtils#setCacheXZAvailability to overrride this default behavior.
+  Issue: COMPRESS-285.
+
+For complete information on Apache Commons Compress, including instructions
+on how to submit bug reports, patches, or suggestions for improvement,
+see the Apache Commons Compress website:
+
+http://commons.apache.org/compress/
+
+Old Release Notes
+=================
 
 Release 1.8.1
-
-Changes in this version include:
+-------------
 
 New features:
 o COMPRESS-272:  CompressorStreamFactory can now auto-detect Unix compress
@@ -35,15 +70,6 @@ o COMPRESS-280:  Adapted TarArchiveInputStream#skip to the modified
 
 Changes:
 o The dependency on org.tukaani:xz is now marked as optional. 
-
-For complete information on Apache Commons Compress, including instructions
-on how to submit bug reports, patches, or suggestions for improvement,
-see the Apache Commons Compress website:
-
-http://commons.apache.org/compress/
-
-Old Release Notes
-=================
 
 Release 1.8
 -----------
