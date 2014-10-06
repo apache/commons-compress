@@ -1,4 +1,4 @@
-              Apache Apache Commons Compress 1.8.1 RELEASE NOTES
+              Apache Apache Commons Compress RELEASE NOTES
 
 Apache Commons Compress software defines an API for working with
 compression and archive formats.  These include: bzip2, gzip, pack200,
