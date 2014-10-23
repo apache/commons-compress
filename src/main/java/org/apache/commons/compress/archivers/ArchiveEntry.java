@@ -30,24 +30,24 @@ public interface ArchiveEntry {
      * 
      * @return The name of this entry in the archive.
      */
-    public String getName();
+    String getName();
 
     /**
      * Gets the uncompressed size of this entry. May be -1 (SIZE_UNKNOWN) if the size is unknown
      * 
      * @return the uncompressed size of this entry.
      */
-    public long getSize();
+    long getSize();
 
     /** Special value indicating that the size is unknown */
-    public static final long SIZE_UNKNOWN = -1;
+    static final long SIZE_UNKNOWN = -1;
 
     /**
      * Returns true if this entry refers to a directory.
      * 
      * @return true if this entry refers to a directory.
      */
-    public boolean isDirectory();
+    boolean isDirectory();
 
     /**
      * Gets the last modified date of this entry.
@@ -55,5 +55,5 @@ public interface ArchiveEntry {
      * @return the last modified date of this entry.
      * @since 1.1
      */
-    public Date getLastModifiedDate();
+    Date getLastModifiedDate();
 }
