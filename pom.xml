@@ -103,6 +103,11 @@ Unix Compress, DEFLATE and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <id>ebourg</id>
       <email>ebourg at apache.org</email>
     </developer>
+    <developer>
+      <name>Gary Gregory</name>
+      <id>ggregory</id>
+      <email>ggregory at apache.org</email>
+    </developer>
   </developers>
 
   <contributors>
