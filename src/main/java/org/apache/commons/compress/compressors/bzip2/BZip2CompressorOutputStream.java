@@ -1268,7 +1268,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         this.nMTF = wr + 1;
     }
 
-    static final class Data extends Object {
+    static final class Data {
 
         // with blockSize 900k
         /* maps unsigned byte => "does it occur in block" */
