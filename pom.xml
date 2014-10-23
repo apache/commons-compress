@@ -221,7 +221,7 @@ Unix Compress, DEFLATE and ar, cpio, jar, tar, zip, dump, 7z, arj.
         <!-- generate the PMD reports -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
-        <version>2.5</version>
+        <version>3.2</version>
         <configuration>
           <minimumTokens>200</minimumTokens>
           <targetJdk>${maven.compiler.source}</targetJdk>
