@@ -24,11 +24,11 @@
     xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd">
   <description>Standard Ruleset but excluding the "no octal
     constants" rule</description>
-  <rule ref="rulesets/basic.xml">
+  <rule ref="rulesets/java/basic.xml">
     <exclude name="AvoidUsingOctalValues"/>
   </rule>
-  <rule ref="rulesets/finalizers.xml"/>
-  <rule ref="rulesets/imports.xml"/>
-  <rule ref="rulesets/unusedcode.xml"/>
-  <rule ref="rulesets/braces.xml"/>
+  <rule ref="rulesets/java/finalizers.xml"/>
+  <rule ref="rulesets/java/imports.xml"/>
+  <rule ref="rulesets/java/unusedcode.xml"/>
+  <rule ref="rulesets/java/braces.xml"/>
 </ruleset>
