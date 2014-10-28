@@ -20,21 +20,22 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteOrder;
 
-import org.apache.commons.compress.compressors.z._internal_.InternalLZWInputStream;
+import org.apache.commons.compress.compressors.lzw.LZWInputStream;
 
 /**
  * Input stream that decompresses ZIP method 1 (unshrinking). A variation of the LZW algorithm, with some twists.
  * @NotThreadSafe
  * @since 1.7
  */
-class UnshrinkingInputStream extends InternalLZWInputStream {
+class UnshrinkingInputStream extends LZWInputStream {
     private static final int MAX_CODE_SIZE = 13;
     private static final int MAX_TABLE_SIZE = 1 << MAX_CODE_SIZE;
     private final boolean[] isUsed;
     
     public UnshrinkingInputStream(InputStream inputStream) throws IOException {
-        super(inputStream);
+        super(inputStream, ByteOrder.LITTLE_ENDIAN);
         setClearCode(codeSize);
         initializeTables(MAX_CODE_SIZE);
         isUsed = new boolean[prefixes.length];

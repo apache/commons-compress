@@ -16,32 +16,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.commons.compress.compressors.z._internal_;
+package org.apache.commons.compress.compressors.lzw;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteOrder;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
+import org.apache.commons.compress.utils.BitInputStream;
 
 /**
- * <strong>This class is only public for technical reasons and is not
- * part of Commons Compress' published API - it may change or
- * disappear without warning.</strong>
- *
- * <p>Base-class for traditional Unix ".Z" compression and the
- * Unshrinking method of ZIP archive.</p>
+ * <p>Generic LZW implementation. It is used internally for
+ * the Z decompressor and the Unshrinking Zip file compression method,
+ * but may be useful for third-party projects in implementing their own LZW variations.</p>
  *
  * @NotThreadSafe
- * @since 1.7
+ * @since 1.10
  */
-public abstract class InternalLZWInputStream extends CompressorInputStream {
+public abstract class LZWInputStream extends CompressorInputStream {
     private final byte[] oneByte = new byte[1];
 
-    protected final InputStream in;
+    protected final BitInputStream in;
     protected int clearCode = -1;
     protected int codeSize = 9;
-    protected int bitsCached = 0;
-    protected int bitsCachedSize = 0;
+    protected byte previousCodeFirstChar;
     protected int previousCode = -1;
     protected int tableSize = 0;
     protected int[] prefixes;
@@ -49,8 +47,8 @@ public abstract class InternalLZWInputStream extends CompressorInputStream {
     private byte[] outputStack;
     private int outputStackLocation;
 
-    protected InternalLZWInputStream(InputStream inputStream) {
-        this.in = inputStream;
+    protected LZWInputStream(final InputStream inputStream, final ByteOrder byteOrder) {
+        this.in = new BitInputStream(inputStream, byteOrder);
     }
 
     @Override
@@ -123,19 +121,7 @@ public abstract class InternalLZWInputStream extends CompressorInputStream {
      * Reads the next code from the stream.
      */
     protected int readNextCode() throws IOException {
-        while (bitsCachedSize < codeSize) {
-            final int nextByte = in.read();
-            if (nextByte < 0) {
-                return nextByte;
-            }
-            bitsCached |= (nextByte << bitsCachedSize);
-            bitsCachedSize += 8;
-        }
-        final int mask = (1 << codeSize) - 1;
-        final int code = (bitsCached & mask);
-        bitsCached >>>= codeSize;
-        bitsCachedSize -= codeSize;
-        return code;
+        return in.readBits(codeSize);
     }
     
     /**
@@ -144,11 +130,9 @@ public abstract class InternalLZWInputStream extends CompressorInputStream {
      */
     protected int addEntry(int previousCode, byte character, int maxTableSize) {
         if (tableSize < maxTableSize) {
-            final int index = tableSize;
             prefixes[tableSize] = previousCode;
             characters[tableSize] = character;
-            tableSize++;
-            return index;
+            return tableSize++;
         }
         return -1;
     }
@@ -161,11 +145,7 @@ public abstract class InternalLZWInputStream extends CompressorInputStream {
             // can't have a repeat for the very first code
             throw new IOException("The first code can't be a reference to its preceding code");
         }
-        byte firstCharacter = 0;
-        for (int last = previousCode; last >= 0; last = prefixes[last]) {
-            firstCharacter = characters[last];
-        }
-        return addEntry(previousCode, firstCharacter);
+        return addEntry(previousCode, previousCodeFirstChar);
     }
 
     /**
@@ -181,6 +161,7 @@ public abstract class InternalLZWInputStream extends CompressorInputStream {
             addEntry(previousCode, outputStack[outputStackLocation]);
         }
         previousCode = code;
+        previousCodeFirstChar = outputStack[outputStackLocation];
         return outputStackLocation;
     }
 
