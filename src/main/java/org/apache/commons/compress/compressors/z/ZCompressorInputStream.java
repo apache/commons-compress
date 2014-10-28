@@ -20,14 +20,16 @@ package org.apache.commons.compress.compressors.z;
 
 import java.io.IOException;
 import java.io.InputStream;
-import org.apache.commons.compress.compressors.z._internal_.InternalLZWInputStream;
+import java.nio.ByteOrder;
+
+import org.apache.commons.compress.compressors.lzw.LZWInputStream;
 
 /**
  * Input stream that decompresses .Z files.
  * @NotThreadSafe
  * @since 1.7
  */
-public class ZCompressorInputStream extends InternalLZWInputStream {
+public class ZCompressorInputStream extends LZWInputStream {
     private static final int MAGIC_1 = 0x1f;
     private static final int MAGIC_2 = 0x9d;
     private static final int BLOCK_MODE_MASK = 0x80;
@@ -37,10 +39,10 @@ public class ZCompressorInputStream extends InternalLZWInputStream {
     private long totalCodesRead = 0;
     
     public ZCompressorInputStream(InputStream inputStream) throws IOException {
-        super(inputStream);
-        int firstByte = in.read();
-        int secondByte = in.read();
-        int thirdByte = in.read();
+        super(inputStream, ByteOrder.LITTLE_ENDIAN);
+        int firstByte = in.readBits(8);
+        int secondByte = in.readBits(8);
+        int thirdByte = in.readBits(8);
         if (firstByte != MAGIC_1 || secondByte != MAGIC_2 || thirdByte < 0) {
             throw new IOException("Input is not in .Z format");
         }
@@ -87,8 +89,7 @@ public class ZCompressorInputStream extends InternalLZWInputStream {
         for (long i = 0; i < codeReadsToThrowAway; i++) {
             readNextCode();
         }
-        bitsCached = 0;
-        bitsCachedSize = 0;
+        in.clearBitCache();
     }
     
     /**
