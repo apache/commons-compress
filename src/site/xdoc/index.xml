@@ -62,8 +62,16 @@
               <li>support for raw DEFLATE streams</li>
             </ul>
           </subsection>
-          <!--subsection name="What's coming in 1.10?">
-          </subsection-->
+          <subsection name="What's coming in 1.10?">
+            <ul>
+              <li>the old
+              <code>org.apache.commons.compress.compressors.z._internal_</code>
+              now is
+              <code>org.apache.commons.compress.compressors.lzw</code>
+              and the code is now an official part of Commons
+              Compress' API.</li>
+            </ul>
+          </subsection>
         </section>
 
         <section name="Documentation">
