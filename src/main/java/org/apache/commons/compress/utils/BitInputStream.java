@@ -49,12 +49,26 @@ public class BitInputStream implements Closeable {
         in.close();
     }
     
+    /**
+     * Clears the cache of bits that have been read from the
+     * underlying stream but not yet provided via {@link #readBits}.
+     */
     public void clearBitCache() {
         bitsCached = 0;
         bitsCachedSize = 0;
     }
     
+    /**
+     * Returns at most 32 bits read from the underlying stream.
+     *
+     * @param count the number of bits to read, must be a positive
+     * number not bigger than 32.
+     * @return the bits concatenated as an integer using the stream's byte order.
+     */
     public int readBits(final int count) throws IOException {
+        if (count < 0 || count > 32) {
+            throw new IllegalArgumentException("count must be between 0 and 32");
+        }
         while (bitsCachedSize < count) {
             final int nextByte = in.read();
             if (nextByte < 0) {
