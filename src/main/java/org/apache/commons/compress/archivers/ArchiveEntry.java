@@ -40,7 +40,7 @@ public interface ArchiveEntry {
     long getSize();
 
     /** Special value indicating that the size is unknown */
-    static final long SIZE_UNKNOWN = -1;
+    long SIZE_UNKNOWN = -1;
 
     /**
      * Returns true if this entry refers to a directory.
