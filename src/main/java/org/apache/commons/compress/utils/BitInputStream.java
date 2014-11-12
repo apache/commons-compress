@@ -59,14 +59,15 @@ public class BitInputStream implements Closeable {
     }
     
     /**
-     * Returns at most 32 bits read from the underlying stream.
+     * Returns at most 31 bits read from the underlying stream.
      *
      * @param count the number of bits to read, must be a positive
-     * number not bigger than 32.
+     * number not bigger than 31.
      * @return the bits concatenated as an integer using the stream's byte order.
+     *         -1 if the end of the underlying stream has been reached
      */
     public int readBits(final int count) throws IOException {
-        if (count < 0 || count > 32) {
+        if (count < 0 || count > 31) {
             throw new IllegalArgumentException("count must be between 0 and 32");
         }
         while (bitsCachedSize < count) {
