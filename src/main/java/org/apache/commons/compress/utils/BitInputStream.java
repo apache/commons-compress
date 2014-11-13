@@ -29,6 +29,15 @@ import java.nio.ByteOrder;
  * @NotThreadSafe
  */
 public class BitInputStream implements Closeable {
+    private static final int MAXIMUM_CACHE_SIZE = 31; // bits in int minus sign bit
+    private static final int[] MASKS = new int[MAXIMUM_CACHE_SIZE + 1];
+
+    static {
+        for (int i = 1; i <= MAXIMUM_CACHE_SIZE; i++) {
+            MASKS[i] = (MASKS[i - 1] << 1) + 1;
+        }
+    }
+
     private final InputStream in;
     private final ByteOrder byteOrder;
     private int bitsCached = 0;
@@ -67,8 +76,8 @@ public class BitInputStream implements Closeable {
      *         -1 if the end of the underlying stream has been reached
      */
     public int readBits(final int count) throws IOException {
-        if (count < 0 || count > 31) {
-            throw new IllegalArgumentException("count must be between 0 and 32");
+        if (count < 0 || count > MAXIMUM_CACHE_SIZE) {
+            throw new IllegalArgumentException("count must be between 0 and " + MAXIMUM_CACHE_SIZE);
         }
         while (bitsCachedSize < count) {
             final int nextByte = in.read();
@@ -84,13 +93,12 @@ public class BitInputStream implements Closeable {
             bitsCachedSize += 8;
         }
         
-        final int mask = (1 << count) - 1;
         final int bitsOut;
         if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
-            bitsOut = (bitsCached & mask);
+            bitsOut = (bitsCached & MASKS[count]);
             bitsCached >>>= count;
         } else {
-            bitsOut = (bitsCached >> (bitsCachedSize - count)) & mask;
+            bitsOut = (bitsCached >> (bitsCachedSize - count)) & MASKS[count];
         }
         bitsCachedSize -= count;
         return bitsOut;
