@@ -78,7 +78,7 @@ public class BitInputStream implements Closeable {
      */
     public int readBits(final int count) throws IOException {
         if (count < 0 || count > MAXIMUM_CACHE_SIZE) {
-            throw new IllegalArgumentException("count must not be negative or bigger than " + MAXIMUM_CACHE_SIZE);
+            throw new IllegalArgumentException("count must not be negative or greater than " + MAXIMUM_CACHE_SIZE);
         }
         while (bitsCachedSize < count) {
             final int nextByte = in.read();
