@@ -48,6 +48,7 @@ public class ZCompressorInputStream extends LZWInputStream {
         }
         blockMode = (thirdByte & BLOCK_MODE_MASK) != 0;
         maxCodeSize = thirdByte & MAX_CODE_SIZE_MASK;
+        System.err.println("starting with maxCodeSize " + maxCodeSize + ", in block mode? " + blockMode); 
         if (blockMode) {
             setClearCode(codeSize);
         }
@@ -105,6 +106,7 @@ public class ZCompressorInputStream extends LZWInputStream {
         if (tableSize == maxTableSize && codeSize < maxCodeSize) {
             reAlignReading();
             codeSize++;
+            System.err.println("codeSize grew to " + codeSize);
         }
         return r;
     }
@@ -136,6 +138,7 @@ public class ZCompressorInputStream extends LZWInputStream {
             clearEntries();
             reAlignReading();
             codeSize = 9;
+            System.err.println("codeSize reset to 9 after reading clearCode");
             previousCode = -1;
             return 0;
         } else {
