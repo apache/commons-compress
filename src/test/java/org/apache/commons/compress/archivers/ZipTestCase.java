@@ -18,22 +18,14 @@
  */
 package org.apache.commons.compress.archivers;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.compress.AbstractTestCase;
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
-import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
-import org.apache.commons.compress.archivers.zip.ZipFile;
-import org.apache.commons.compress.archivers.zip.ZipMethod;
+import org.apache.commons.compress.archivers.zip.*;
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.Assert;
 
 public final class ZipTestCase extends AbstractTestCase {
     /**
@@ -292,6 +284,82 @@ public final class ZipTestCase extends AbstractTestCase {
             tryHardToDelete(tmp[1]);
             rmdir(tmp[0]);
         }
+    }
+    String first_payload = "ABBA";
+    String second_payload = "AAAAAAAAAAAA";
+    ZipArchiveEntryPredicate allFilesPredicate = new ZipArchiveEntryPredicate() {
+        public boolean test(ZipArchiveEntry zipArchiveEntry) {
+            return true;
+        }
+    };
+
+
+    public void testCopyRawEntriesFromFile
+            ()
+            throws IOException {
+
+        File[] tmp = createTempDirAndFile();
+        File reference = createReferenceFile(tmp[0]);
+
+        File a1 = File.createTempFile("src1.", ".zip", tmp[0]);
+        createFirstEntry(new ZipArchiveOutputStream(a1)).close();
+
+        File a2 = File.createTempFile("src2.", ".zip", tmp[0]);
+        createSecondEntry(new ZipArchiveOutputStream(a2)).close();
+
+        ZipFile zf1 = new ZipFile(a1);
+        ZipFile zf2 = new ZipFile(a2);
+        File fileResult = File.createTempFile("file-actual.", ".zip", tmp[0]);
+        ZipArchiveOutputStream zos2 = new ZipArchiveOutputStream(fileResult);
+        zf1.copyRawEntries(zos2, allFilesPredicate);
+        zf2.copyRawEntries(zos2, allFilesPredicate);
+        zos2.close();
+        assertSameFileContents(reference, fileResult);
+        zf1.close();
+        zf2.close();
+    }
+
+    private File createReferenceFile(File directory) throws IOException {
+        File reference = File.createTempFile("expected.", ".zip", directory);
+        ZipArchiveOutputStream zos = new ZipArchiveOutputStream(reference);
+        createFirstEntry(zos);
+        createSecondEntry(zos);
+        zos.close();
+        return reference;
+    }
+
+    private ZipArchiveOutputStream createFirstEntry(ZipArchiveOutputStream zos) throws IOException {
+        createArchiveEntry(first_payload, zos, "file1.txt");
+        return zos;
+    }
+
+    private ZipArchiveOutputStream createSecondEntry(ZipArchiveOutputStream zos) throws IOException {
+        createArchiveEntry(second_payload, zos, "file2.txt");
+        return zos;
+    }
+
+
+    private void assertSameFileContents(File expectedFile, File actualFile) throws IOException {
+        int size = (int) Math.max(expectedFile.length(), actualFile.length());
+        byte[] expected = new byte[size];
+        byte[] actual = new byte[size];
+        final FileInputStream expectedIs = new FileInputStream(expectedFile);
+        final FileInputStream actualIs = new FileInputStream(actualFile);
+        IOUtils.readFully(expectedIs, expected);
+        IOUtils.readFully(actualIs, actual);
+        expectedIs.close();
+        actualIs.close();
+        Assert.assertArrayEquals(expected, actual);
+    }
+
+
+    private void createArchiveEntry(String payload, ZipArchiveOutputStream zos, String name)
+            throws IOException {
+        ZipArchiveEntry in = new ZipArchiveEntry(name);
+        zos.putArchiveEntry(in);
+
+        zos.write(payload.getBytes());
+        zos.closeArchiveEntry();
     }
 
     public void testFileEntryFromFile() throws Exception {

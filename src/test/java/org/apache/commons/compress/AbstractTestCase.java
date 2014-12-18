@@ -392,8 +392,7 @@ public abstract class AbstractTestCase extends TestCase {
      * element of the two element array).
      */
     protected File[] createTempDirAndFile() throws IOException {
-        File tmpDir = mkdir("testdir");
-        tmpDir.deleteOnExit();
+        File tmpDir = createTempDir();
         File tmpFile = File.createTempFile("testfile", "", tmpDir);
         tmpFile.deleteOnExit();
         FileOutputStream fos = new FileOutputStream(tmpFile);
@@ -403,6 +402,12 @@ public abstract class AbstractTestCase extends TestCase {
         } finally {
             fos.close();
         }
+    }
+
+    protected File createTempDir() throws IOException {
+        File tmpDir = mkdir("testdir");
+        tmpDir.deleteOnExit();
+        return tmpDir;
     }
 
     protected void closeQuietly(Closeable closeable){

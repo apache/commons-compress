@@ -20,9 +20,11 @@ package org.apache.commons.compress.archivers.zip;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -432,6 +434,46 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     @Override
     public void closeArchiveEntry() throws IOException {
+        preClose();
+
+        flushDeflater();
+
+        long bytesWritten = written - entry.dataStart;
+        long realCrc = crc.getValue();
+        crc.reset();
+
+        doCloseEntry(realCrc, bytesWritten);
+    }
+
+    /**
+     * Writes all necessary data for this entry.
+     *
+     * @throws IOException            on error
+     * @throws Zip64RequiredException if the entry's uncompressed or
+     *                                compressed size exceeds 4 GByte and {@link #setUseZip64}
+     *                                is {@link Zip64Mode#Never}.
+     */
+    private void closeCopiedEntry() throws IOException {
+        preClose();
+        long realCrc = entry.entry.getCrc();
+        entry.bytesRead = entry.entry.getSize();
+        doCloseEntry(realCrc, entry.entry.getCompressedSize());
+    }
+
+    private void doCloseEntry(long realCrc, long bytesWritten) throws IOException {
+        final Zip64Mode effectiveMode = getEffectiveZip64Mode(entry.entry);
+        final boolean actuallyNeedsZip64 =
+                handleSizesAndCrc(bytesWritten, realCrc, effectiveMode);
+
+        if (raf != null) {
+            rewriteSizesAndCrc(actuallyNeedsZip64);
+        }
+
+        writeDataDescriptor(entry.entry);
+        entry = null;
+    }
+
+    private void preClose() throws IOException {
         if (finished) {
             throw new IOException("Stream has already been finished");
         }
@@ -443,23 +485,23 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         if (!entry.hasWritten) {
             write(EMPTY, 0, 0);
         }
+    }
 
-        flushDeflater();
-
-        final Zip64Mode effectiveMode = getEffectiveZip64Mode(entry.entry);
-        long bytesWritten = written - entry.dataStart;
-        long realCrc = crc.getValue();
-        crc.reset();
-
-        final boolean actuallyNeedsZip64 =
-            handleSizesAndCrc(bytesWritten, realCrc, effectiveMode);
-
-        if (raf != null) {
-            rewriteSizesAndCrc(actuallyNeedsZip64);
-        }
-
-        writeDataDescriptor(entry.entry);
-        entry = null;
+    /**
+     * Adds an archive entry with a raw input stream.
+     *
+     * The entry is put and closed immediately.
+     *
+     * @param entry The archive entry to add
+     * @param rawStream The raw input stream of a different entry. May be compressed/encrypted.
+     * @throws IOException If copying fails
+     */
+    public void addRawArchiveEntry(ZipArchiveEntry entry, InputStream rawStream)
+            throws IOException {
+        ZipArchiveEntry ae = new ZipArchiveEntry((java.util.zip.ZipEntry)entry);
+        putArchiveEntry(ae);
+        copyFromZipInputStream(rawStream);
+        closeCopiedEntry();
     }
 
     /**
@@ -766,6 +808,25 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         }
         crc.update(b, offset, length);
         count(length);
+    }
+
+    private void copyFromZipInputStream(InputStream src) throws IOException {
+        if (entry == null) {
+            throw new IllegalStateException("No current entry");
+        }
+        ZipUtil.checkRequestedFeatures(entry.entry);
+        entry.hasWritten = true;
+        byte[] tmpBuf = new byte[4096];
+        int length = src.read( tmpBuf );
+        while ( length >= 0 )
+        {
+            writeOut( tmpBuf, 0, length );
+            written += length;
+            crc.update( tmpBuf, 0, length );
+
+            count( length );
+            length = src.read( tmpBuf );
+        }
     }
 
     /**

@@ -346,6 +346,44 @@ public class ZipFile implements Closeable {
     }
 
     /**
+     * Expose the raw stream of the archive entry (compressed form)
+     * <p/>
+     * This method does not relate to how/if we understand the payload in the
+     * stream, since we really only intend to move it on to somewhere else.
+     *
+     * @param ze The entry to get the stream for
+     * @return The raw input stream containing (possibly) compressed data.
+     */
+    private InputStream getRawInputStream(ZipArchiveEntry ze) {
+        if (!(ze instanceof Entry)) {
+            return null;
+        }
+        OffsetEntry offsetEntry = ((Entry) ze).getOffsetEntry();
+        long start = offsetEntry.dataOffset;
+        return new BoundedInputStream(start, ze.getCompressedSize());
+    }
+
+
+    /**
+     * Transfer selected entries from this zipfile to a given #ZipArchiveOutputStream.
+     * Compression and all other attributes will be as in this file.
+     * This method transfers entries based on the central directory of the zip file.
+     *
+     * @param target The zipArchiveOutputStream to write the entries to
+     * @param predicate A predicate that selects which entries to write
+     */
+    public void copyRawEntries(ZipArchiveOutputStream target, ZipArchiveEntryPredicate predicate)
+            throws IOException {
+        Enumeration<ZipArchiveEntry> src = getEntriesInPhysicalOrder();
+        while (src.hasMoreElements()) {
+            ZipArchiveEntry entry = src.nextElement();
+            if (predicate.test( entry)) {
+                target.addRawArchiveEntry(entry, getRawInputStream(entry));
+            }
+        }
+    }
+
+    /**
      * Returns an InputStream for reading the contents of the given entry.
      *
      * @param ze the entry to get the stream for.
