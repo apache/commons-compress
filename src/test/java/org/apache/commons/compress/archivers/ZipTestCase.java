@@ -294,6 +294,18 @@ public final class ZipTestCase extends AbstractTestCase {
     };
 
 
+    public void testCloneZipOutputStream( ) throws IOException {
+        File tempDir = createTempDir();
+        File fred = new File(tempDir, "fred");
+        ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(fred);
+        File frank = new File(tempDir, "frank");
+        ZipArchiveOutputStream actual = zipArchiveOutputStream.cloneWith(frank);
+        zipArchiveOutputStream.close();
+        actual.close();
+        assertTrue( fred.exists());
+        assertTrue( frank.exists());
+    }
+
     public void testCopyRawEntriesFromFile
             ()
             throws IOException {
