@@ -52,6 +52,11 @@ The <action> type attribute can be add,update,fix,remove.
         of the API that is officially supported.  This will break
         existing code that uses the old package.
       </action>
+      <action type="fix" date="2014-12-22" issue="COMPRESS-297">
+        ZipFile logs a warning in its finalizer when its constructor
+        has thrown an exception reading the file - for example if the
+        file doesn't exist.
+      </action>
     </release>
 
     <release version="1.9" date="2014-10-09"

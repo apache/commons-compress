@@ -134,7 +134,7 @@ public class ZipFile implements Closeable {
     /**
      * Whether the file is closed.
      */
-    private boolean closed;
+    private boolean closed = true;
 
     // cached buffers - must only be used locally in the class (COMPRESS-172 - reduce garbage collection)
     private final byte[] DWORD_BUF = new byte[DWORD];
@@ -218,8 +218,8 @@ public class ZipFile implements Closeable {
             resolveLocalFileHeaderData(entriesWithoutUTF8Flag);
             success = true;
         } finally {
+            closed = !success;
             if (!success) {
-                closed = true;
                 IOUtils.closeQuietly(archive);
             }
         }
