@@ -505,24 +505,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Make a copy of this stream with all its settings, but point to a new file.
-     * Used for scatter/gather operations to make several streams from a user-supplied master.
-     *
-     * @param newFile The file to use for the copy of this stream
-     * @return A copy of this stream
-     */
-    public ZipArchiveOutputStream cloneWith(File newFile) throws IOException {
-        ZipArchiveOutputStream zos = new ZipArchiveOutputStream(newFile);
-        zos.setCreateUnicodeExtraFields(createUnicodeExtraFields);
-        zos.setMethod(method);
-        zos.setEncoding(encoding);
-        zos.setFallbackToUTF8(fallbackToUTF8);
-        zos.setUseLanguageEncodingFlag(useUTF8Flag);
-        zos.setUseZip64(zip64Mode);
-        return zos;
-    }
-
-    /**
      * Ensures all bytes sent to the deflater are written to the stream.
      */
     private void flushDeflater() throws IOException {
