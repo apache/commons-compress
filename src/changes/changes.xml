@@ -52,6 +52,12 @@ The <action> type attribute can be add,update,fix,remove.
         of the API that is officially supported.  This will break
         existing code that uses the old package.
       </action>
+      <action type="add" date="2014-12-18" issue="COMPRESS-295"
+              due-to="Kristian Rosenvold">
+        New methods in ZipArchiveOutputStream and ZipFile allows
+        entries to be copied from one archive to another without
+        having to re-compress them.
+      </action>
       <action type="fix" date="2014-12-22" issue="COMPRESS-297">
         ZipFile logs a warning in its finalizer when its constructor
         has thrown an exception reading the file - for example if the
