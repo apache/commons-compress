@@ -44,6 +44,18 @@ public class ZipLongTest extends TestCase {
     }
 
     /**
+     * Test conversion to bytes.
+     */
+    public void testPut() {
+        byte[] arr = new byte[5];
+        ZipLong.putLong(0x12345678, arr, 1);
+        assertEquals("first byte getBytes", 0x78, arr[1]);
+        assertEquals("second byte getBytes", 0x56, arr[2]);
+        assertEquals("third byte getBytes", 0x34, arr[3]);
+        assertEquals("fourth byte getBytes", 0x12, arr[4]);
+    }
+
+    /**
      * Test conversion from bytes.
      */
     public void testFromBytes() {
