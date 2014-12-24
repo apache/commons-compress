@@ -41,6 +41,18 @@ public class ZipShortTest extends TestCase {
         assertEquals("second byte getBytes", 0x12, result[1]);
     }
 
+
+    /**
+     * Test conversion to bytes.
+     */
+    public void testPut() {
+        byte[] arr = new byte[3];
+        ZipShort.putShort(0x1234, arr, 1);
+        assertEquals("first byte getBytes", 0x34, arr[1]);
+        assertEquals("second byte getBytes", 0x12, arr[2]);
+    }
+
+
     /**
      * Test conversion from bytes.
      */

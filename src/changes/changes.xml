@@ -44,6 +44,18 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.10" date="not released, yet"
              description="Release 1.10">
+      <action type="add" date="2014-12-24"
+              due-to="Kristian Rosenvold">
+        Cut overall object instantiation in half by changing file
+        header generation algorithm, for a 10-15 percent performance
+        improvement.
+
+        Also extracted two private methods createLocalFileHeader
+        and createCentralFileHeader in ZipArchiveOutputStream.
+        These may have some interesting additional usages in the
+        near future.
+      </action>
+
       <action type="update" date="2014-10-28"
               due-to="Damjan Jovanovic">
         Moved the package

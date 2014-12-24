@@ -86,6 +86,22 @@ public class ZipUtilTest extends TestCase {
         assertEquals(b10,b2[0]); // first byte should still be the same
     }
 
+    public void testOutsideCalendar(){
+        byte[] b1 = ZipUtil.toDosTime(160441200000L); // 1.1..1975
+        assertEquals(0, b1[0]);
+        assertEquals(33, b1[1]);
+        assertEquals(0, b1[2]);
+        assertEquals(0, b1[3]);
+    }
+
+    public void testInsideCalendar(){
+        byte[] b1 = ZipUtil.toDosTime(476096400000L); // 1.1.1985, 10:00 am
+        assertEquals(0, b1[0]);
+        assertEquals(80, b1[1]);
+        assertEquals(65, b1[2]);
+        assertEquals(10, b1[3]);
+    }
+
     public void testReverse() {
         byte[][] bTest = new byte[6][];
         bTest[0] = new byte[]{};
