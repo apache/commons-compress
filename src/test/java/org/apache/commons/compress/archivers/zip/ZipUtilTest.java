@@ -24,6 +24,7 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class ZipUtilTest extends TestCase {
 
@@ -92,6 +93,16 @@ public class ZipUtilTest extends TestCase {
         assertEquals(33, b1[1]);
         assertEquals(0, b1[2]);
         assertEquals(0, b1[3]);
+    }
+
+    public void testInsideCalendar(){
+        TimeZone tz = TimeZone.getDefault();
+        long date = 476092800000L; // 1.1.1985, 09:00 am GMT
+        byte[] b1 = ZipUtil.toDosTime(date + tz.getOffset(date));
+        assertEquals(0, b1[0]);
+        assertEquals(80, b1[1]);
+        assertEquals(65, b1[2]);
+        assertEquals(10, b1[3]);
     }
 
     public void testReverse() {
