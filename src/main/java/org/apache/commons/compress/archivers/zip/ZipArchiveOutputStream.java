@@ -1125,21 +1125,21 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
         handleZip64Extra(ze, lfhOffset, needsZip64Extra);
 
-        byte[] centralFileHeader = createCentralFileHeader(ze, getName(ze), lfhOffset);
+        byte[] centralFileHeader = createCentralFileHeader(ze, getName(ze), lfhOffset,
+                                                           needsZip64Extra);
         writeOut(centralFileHeader);
         written += centralFileHeader.length;
     }
+
     /**
      * Writes the central file header entry.
      * @param ze the entry to write
      * @param name The encoded name
      * @param lfhOffset Local file header offset for this file
      * @throws IOException on error
-     * @throws Zip64RequiredException if the archive's size exceeds 4
-     * GByte and {@link Zip64Mode #setUseZip64} is {@link
-     * Zip64Mode#Never}.
      */
-    private byte[] createCentralFileHeader(ZipArchiveEntry ze, ByteBuffer name, long lfhOffset) throws IOException {
+    private byte[] createCentralFileHeader(ZipArchiveEntry ze, ByteBuffer name, long lfhOffset,
+                                           boolean needsZip64Extra) throws IOException {
         byte[] extra = ze.getCentralDirectoryExtra();
 
         // file comment length
@@ -1153,21 +1153,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         byte[] buf = new byte[len];
 
         System.arraycopy(CFH_SIG,  0, buf, CFH_SIG_OFFSET, WORD);
-
-        final boolean needsZip64Extra = hasZip64Extra(ze)
-                || ze.getCompressedSize() >= ZIP64_MAGIC
-                || ze.getSize() >= ZIP64_MAGIC
-                || lfhOffset >= ZIP64_MAGIC;
-
-        if (needsZip64Extra && zip64Mode == Zip64Mode.Never) {
-            // must be the offset that is too big, otherwise an
-            // exception would have been throw in putArchiveEntry or
-            // closeArchiveEntry
-            throw new Zip64RequiredException(Zip64RequiredException
-                    .ARCHIVE_TOO_BIG_MESSAGE);
-        }
-
-        // todo: Do in caller !  handleZip64Extra(ze, lfhOffset, needsZip64Extra);
 
         // version made by
         // CheckStyle:MagicNumber OFF
