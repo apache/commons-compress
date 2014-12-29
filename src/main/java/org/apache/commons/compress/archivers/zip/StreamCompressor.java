@@ -92,6 +92,28 @@ public abstract class StreamCompressor {
     }
 
     /**
+     * Create a stream compressor with the given compression level.
+     *
+     * @param compressionLevel The #Deflater compression level
+     * @param bs The #ScatterGatherBackingStore to receive output
+     * @return A stream compressor
+     */
+    public static StreamCompressor create(int compressionLevel, ScatterGatherBackingStore bs) {
+        final Deflater deflater = new Deflater(compressionLevel, true);
+        return new ScatterGatherBackingStoreCompressor(deflater, bs);
+    }
+
+    /**
+     * Create a stream compressor with the default compression level.
+     *
+     * @param bs The #ScatterGatherBackingStore to receive output
+     * @return A stream compressor
+     */
+    public static StreamCompressor create( ScatterGatherBackingStore bs) {
+        return create(Deflater.DEFAULT_COMPRESSION, bs);
+    }
+
+    /**
      * The crc32 of the last deflated file
      * @return the crc32
      */
@@ -196,6 +218,20 @@ public abstract class StreamCompressor {
     }
 
     protected abstract void writeOut(byte[] data, int offset, int length) throws IOException ;
+
+    private static final class ScatterGatherBackingStoreCompressor extends StreamCompressor {
+        private final ScatterGatherBackingStore bs;
+
+        public ScatterGatherBackingStoreCompressor(Deflater deflater, ScatterGatherBackingStore bs) {
+            super(deflater);
+            this.bs = bs;
+        }
+
+        protected final void writeOut(byte[] data, int offset, int length)
+                throws IOException {
+                bs.writeOut(data, offset, length);
+        }
+    }
 
     private static final class OutputStreamCompressor extends StreamCompressor {
         private final OutputStream os;
