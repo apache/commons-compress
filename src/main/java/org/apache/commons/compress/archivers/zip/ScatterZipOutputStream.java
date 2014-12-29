@@ -44,8 +44,10 @@ import java.util.zip.Deflater;
  *
  * @since 1.10
  */
-public abstract class ScatterZipOutputStream  {
+public class ScatterZipOutputStream  {
     private final Queue<CompressedEntry> items = new ConcurrentLinkedQueue<CompressedEntry>();
+    private final ScatterGatherBackingStore backingStore;
+    private final StreamCompressor streamCompressor;
 
     private static class CompressedEntry {
         final ZipArchiveEntry entry;
@@ -71,6 +73,12 @@ public abstract class ScatterZipOutputStream  {
         }
     }
 
+    public ScatterZipOutputStream(ScatterGatherBackingStore backingStore,
+                                  StreamCompressor streamCompressor) {
+        this.backingStore = backingStore;
+        this.streamCompressor = streamCompressor;
+    }
+
     /**
      * Add an archive entry to this scatter stream.
      *
@@ -80,10 +88,11 @@ public abstract class ScatterZipOutputStream  {
      * @throws IOException    If writing fails
      */
     public void addArchiveEntry(ZipArchiveEntry zipArchiveEntry, InputStream payload, int method) throws IOException {
-        StreamCompressor sc = getStreamCompressor();
-        sc.deflate(payload, method);
+        streamCompressor.deflate(payload, method);
         payload.close();
-        items.add(new CompressedEntry(zipArchiveEntry, sc.getCrc32(), sc.getBytesWritten(), method, sc.getBytesRead()));
+        items.add(new CompressedEntry(zipArchiveEntry, streamCompressor.getCrc32(),
+                                      streamCompressor.getBytesWritten(), method,
+                                      streamCompressor.getBytesRead()));
     }
 
     /**
@@ -93,8 +102,8 @@ public abstract class ScatterZipOutputStream  {
      * @throws IOException If writing fails
      */
     public void writeTo(ZipArchiveOutputStream target) throws IOException {
-        closeBackingStorage();
-        InputStream data = getInputStream();
+        backingStore.close();
+        InputStream data = backingStore.getInputStream();
         for (CompressedEntry compressedEntry : items) {
             final BoundedInputStream rawStream = new BoundedInputStream(data, compressedEntry.compressedSize);
             target.addRawArchiveEntry(compressedEntry.transferToArchiveEntry(), rawStream);
@@ -102,30 +111,6 @@ public abstract class ScatterZipOutputStream  {
         }
         data.close();
     }
-
-    /**
-     * Returns a stream compressor that can be used to compress the data.
-     * <p/>
-     * This method is expected to return the same instance every time.
-     *
-     * @return The stream compressor
-     * @throws FileNotFoundException
-     */
-    protected abstract StreamCompressor getStreamCompressor() throws FileNotFoundException;
-
-    /**
-     * An input stream that contains the scattered payload
-     *
-     * @return An InputStream, should be closed by the caller of this method.
-     * @throws IOException when something fails
-     */
-    protected abstract InputStream getInputStream() throws IOException;
-
-
-    /**
-     * Closes whatever storage is backing this scatter stream
-     */
-    protected abstract void closeBackingStorage() throws IOException;
 
     /**
      * Create a ScatterZipOutputStream with default compression level that is backed by a file
@@ -147,33 +132,8 @@ public abstract class ScatterZipOutputStream  {
      * @throws FileNotFoundException
      */
     public static ScatterZipOutputStream fileBased(File file, int compressionLevel) throws FileNotFoundException {
-        return new FileScatterOutputStream(file, compressionLevel);
-    }
-
-    private static class FileScatterOutputStream extends ScatterZipOutputStream {
-        final File target;
-        private StreamCompressor streamDeflater;
-        final FileOutputStream os;
-
-        FileScatterOutputStream(File target, int compressionLevel) throws FileNotFoundException {
-            this.target = target;
-            os = new FileOutputStream(target);
-            streamDeflater = StreamCompressor.create(compressionLevel, os);
-        }
-
-        @Override
-        protected StreamCompressor getStreamCompressor() throws FileNotFoundException {
-            return streamDeflater;
-        }
-
-        @Override
-        protected InputStream getInputStream() throws IOException {
-            return new FileInputStream(target);
-        }
-
-        @SuppressWarnings("ResultOfMethodCallIgnored")
-        public void closeBackingStorage() throws IOException {
-            os.close();
-        }
+        ScatterGatherBackingStore bs = new FileBasedScatterGatherBackingStore(file);
+        StreamCompressor sc = StreamCompressor.create(compressionLevel, bs);
+        return new ScatterZipOutputStream(bs, sc);
     }
 }
