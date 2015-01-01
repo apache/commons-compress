@@ -305,8 +305,7 @@ public final class ZipTestCase extends AbstractTestCase {
         }
     };
 
-    public void testCopyRawEntriesFromFile
-            ()
+    public void testCopyRawEntriesFromFile()
             throws IOException {
 
         File[] tmp = createTempDirAndFile();
