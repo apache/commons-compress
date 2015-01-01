@@ -27,7 +27,7 @@ import java.io.InputStream;
  *
  * @since 1.10
  */
-interface ScatterGatherBackingStore extends Closeable {
+public interface ScatterGatherBackingStore extends Closeable {
 
     /**
      * An input stream that contains the scattered payload

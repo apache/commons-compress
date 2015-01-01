@@ -29,11 +29,11 @@ import java.io.InputStream;
  *
  * @since 1.10
  */
-class FileBasedScatterGatherBackingStore implements ScatterGatherBackingStore {
+public class FileBasedScatterGatherBackingStore implements ScatterGatherBackingStore {
     private final File target;
     private final FileOutputStream os;
 
-    FileBasedScatterGatherBackingStore(File target) throws FileNotFoundException {
+    public FileBasedScatterGatherBackingStore(File target) throws FileNotFoundException {
         this.target = target;
         os = new FileOutputStream(target);
     }
