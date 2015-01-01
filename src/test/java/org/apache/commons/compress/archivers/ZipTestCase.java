@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress.archivers;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream; 	
 import java.io.FileOutputStream; 	
@@ -26,6 +27,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -326,6 +328,25 @@ public final class ZipTestCase extends AbstractTestCase {
         assertSameFileContents(reference, fileResult);
         zf1.close();
         zf2.close();
+    }
+
+    public void testUnixModeInAddRaw() throws IOException {
+
+        File[] tmp = createTempDirAndFile();
+
+        File a1 = File.createTempFile("unixModeBits.", ".zip", tmp[0]);
+        ZipArchiveOutputStream zos = new ZipArchiveOutputStream(a1);
+
+        ZipArchiveEntry archiveEntry = new ZipArchiveEntry("fred");
+        archiveEntry.setUnixMode(0664);
+        archiveEntry.setMethod(ZipEntry.DEFLATED);
+        zos.addRawArchiveEntry(archiveEntry, new ByteArrayInputStream("fud".getBytes()));
+        zos.close();
+
+        ZipFile zf1 = new ZipFile(a1);
+        ZipArchiveEntry fred = zf1.getEntry("fred");
+        assertEquals(0664, fred.getUnixMode());
+        zf1.close();
     }
 
     private File createReferenceFile(File directory) throws IOException {
