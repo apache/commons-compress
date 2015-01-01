@@ -70,6 +70,8 @@
               <code>org.apache.commons.compress.compressors.lzw</code>
               and the code is now an official part of Commons
               Compress' API.</li>
+              <li>A new class in the zip package can create archives
+              while compressing different entries in parallel.</li>
             </ul>
           </subsection>
         </section>
