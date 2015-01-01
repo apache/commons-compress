@@ -525,7 +525,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     public void addRawArchiveEntry(ZipArchiveEntry entry, InputStream rawStream)
             throws IOException {
         ZipArchiveEntry ae = new ZipArchiveEntry((java.util.zip.ZipEntry)entry);
-        ae.setUnixMode( entry.getUnixMode());
+        int unixMode = entry.getUnixMode();
+        if (unixMode > 0){
+            ae.setUnixMode(unixMode);
+        }
         putArchiveEntry(ae);
         copyFromZipInputStream(rawStream);
         closeCopiedEntry();
