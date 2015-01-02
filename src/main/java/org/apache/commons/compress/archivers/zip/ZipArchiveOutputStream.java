@@ -921,6 +921,14 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     static final byte[] ZIP64_EOCD_LOC_SIG = ZipLong.getBytes(0X07064B50L);
 
     /**
+     * Writes next block of compressed data to the output stream.
+     * @throws IOException on error
+     */
+    protected final void deflate() throws IOException {
+        streamCompressor.deflate();
+    }
+
+    /**
      * Writes the local file header entry
      * @param ze the entry to write
      * @throws IOException on error
