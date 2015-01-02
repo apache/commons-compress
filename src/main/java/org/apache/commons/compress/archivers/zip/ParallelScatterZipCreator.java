@@ -40,14 +40,13 @@ import java.util.zip.Deflater;
 public class ParallelScatterZipCreator {
     private List<ScatterZipOutputStream> streams = Collections.synchronizedList(new ArrayList<ScatterZipOutputStream>());
     private final ExecutorService es;
+    private final ScatterGatherBackingStoreSupplier defaultSupplier;
 
     private final long startedAt = System.currentTimeMillis();
     private long compressionDoneAt = 0;
     private long scatterDoneAt;
 
-    static ScatterGatherBackingStoreSupplier defaultSupplier = new DefaultSupplier();
-
-    static class DefaultSupplier implements ScatterGatherBackingStoreSupplier {
+    private static class DefaultSupplier implements ScatterGatherBackingStoreSupplier {
         AtomicInteger storeNum = new AtomicInteger(0);
 
         public ScatterGatherBackingStore get() throws IOException {
@@ -64,7 +63,7 @@ public class ParallelScatterZipCreator {
     }
 
 
-    ThreadLocal<ScatterZipOutputStream> tlScatterStreams = new ThreadLocal<ScatterZipOutputStream>() {
+    private ThreadLocal<ScatterZipOutputStream> tlScatterStreams = new ThreadLocal<ScatterZipOutputStream>() {
         @Override
         protected ScatterZipOutputStream initialValue() {
             try {
@@ -90,6 +89,7 @@ public class ParallelScatterZipCreator {
      * @param nThreads the number of threads to use in parallel.
      */
     public ParallelScatterZipCreator(int nThreads) {
+        defaultSupplier = new DefaultSupplier();
         es = Executors.newFixedThreadPool(nThreads);
     }
 
