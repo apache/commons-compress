@@ -31,11 +31,11 @@ import java.util.zip.Deflater;
 
 /**
  * Creates a zip in parallel by using multiple threadlocal #ScatterZipOutputStream instances.
- * <p/>
+ * <p>
  * Note that this class generally makes no guarantees about the order of things written to
  * the output file. Things that need to come in a specific order (manifests, directories)
  * must be handled by the client of this class, usually by writing these things to the
- * #ZipArchiveOutputStream *before* calling #writeTo on this class.
+ * #ZipArchiveOutputStream *before* calling #writeTo on this class.</p>
  */
 public class ParallelScatterZipCreator {
     private List<ScatterZipOutputStream> streams = Collections.synchronizedList(new ArrayList<ScatterZipOutputStream>());
@@ -95,8 +95,9 @@ public class ParallelScatterZipCreator {
 
     /**
      * Adds an archive entry to this archive.
-     * <p/>
+     * <p>
      * This method is expected to be called from a single client thread
+     * </p>
      *
      * @param zipArchiveEntry The entry to add. Compression method
      * @param source          The source input stream supplier
@@ -119,9 +120,10 @@ public class ParallelScatterZipCreator {
 
     /**
      * Write the contents this to the target #ZipArchiveOutputStream.
-     * <p/>
+     * <p>
      * It may be beneficial to write things like directories and manifest files to the targetStream
      * before calling this method.
+     * </p>
      *
      * @param targetStream The ZipArchiveOutputStream to receive the contents of the scatter streams
      * @throws IOException          If writing fails

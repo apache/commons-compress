@@ -48,7 +48,7 @@ public class DeflateCompressorInputStream extends CompressorInputStream {
      * from the specified input stream.
      *
      * @param       inputStream where to read the compressed data
-     * @param       compressor parameters
+     * @param       parameters parameters
      */
     public DeflateCompressorInputStream(InputStream inputStream,
                                         DeflateParameters parameters) {

@@ -279,7 +279,7 @@ Unix Compress, DEFLATE and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>2.5.5</version>
+        <version>3.0.0</version>
         <configuration>
           <threshold>Normal</threshold>
           <effort>Default</effort>

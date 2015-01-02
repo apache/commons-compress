@@ -23,7 +23,7 @@ package org.apache.commons.compress.archivers.sevenz;
  * <p>The exact type and interpretation of options depends on the
  * method being configured.  Currently supported are:</p>
  *
- * <table>
+ * <table summary="Options">
  * <tr><th>Method</th><th>Option Type</th><th>Description</th></tr>
  * <tr><td>BZIP2</td><td>Number</td><td>Block Size - an number between 1 and 9</td></tr>
  * <tr><td>DEFLATE</td><td>Number</td><td>Compression Level - an number between 1 and 9</td></tr>
