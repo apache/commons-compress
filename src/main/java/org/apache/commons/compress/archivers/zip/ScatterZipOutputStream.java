@@ -100,7 +100,7 @@ public class ScatterZipOutputStream  {
      * @throws IOException If writing fails
      */
     public void writeTo(ZipArchiveOutputStream target) throws IOException {
-        backingStore.close();
+        backingStore.closeForWriting();
         InputStream data = backingStore.getInputStream();
         for (CompressedEntry compressedEntry : items) {
             final BoundedInputStream rawStream = new BoundedInputStream(data, compressedEntry.compressedSize);

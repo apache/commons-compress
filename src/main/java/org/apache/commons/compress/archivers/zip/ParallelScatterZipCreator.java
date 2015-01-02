@@ -20,7 +20,6 @@ package org.apache.commons.compress.archivers.zip;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -28,6 +27,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.Deflater;
+
+import static java.util.Collections.synchronizedList;
 
 /**
  * Creates a zip in parallel by using multiple threadlocal #ScatterZipOutputStream instances.
@@ -38,7 +39,8 @@ import java.util.zip.Deflater;
  * #ZipArchiveOutputStream *before* calling #writeTo on this class.</p>
  */
 public class ParallelScatterZipCreator {
-    private List<ScatterZipOutputStream> streams = Collections.synchronizedList(new ArrayList<ScatterZipOutputStream>());
+    private List<ScatterZipOutputStream> streams = synchronizedList(new ArrayList<ScatterZipOutputStream>());
+    private List<ScatterGatherBackingStore> backingStores = synchronizedList(new ArrayList<ScatterGatherBackingStore>());
     private final ExecutorService es;
     private final ScatterGatherBackingStoreSupplier defaultSupplier;
 
@@ -55,13 +57,13 @@ public class ParallelScatterZipCreator {
         }
     }
 
-    public static ScatterZipOutputStream createDeferred(ScatterGatherBackingStoreSupplier scatterGatherBackingStoreSupplier)
+    private ScatterZipOutputStream createDeferred(ScatterGatherBackingStoreSupplier scatterGatherBackingStoreSupplier)
             throws IOException {
         ScatterGatherBackingStore bs = scatterGatherBackingStoreSupplier.get();
+        backingStores.add( bs);
         StreamCompressor sc = StreamCompressor.create(Deflater.DEFAULT_COMPRESSION, bs);
         return new ScatterZipOutputStream(bs, sc);
     }
-
 
     private ThreadLocal<ScatterZipOutputStream> tlScatterStreams = new ThreadLocal<ScatterZipOutputStream>() {
         @Override
@@ -141,7 +143,10 @@ public class ParallelScatterZipCreator {
         }
 
         scatterDoneAt = System.currentTimeMillis();
-        // Maybe close ScatterZipOS. We should do something to get rid of tempfiles.
+
+        for (ScatterGatherBackingStore backingStore : backingStores) {
+            backingStore.close();
+        }
     }
 
     /**

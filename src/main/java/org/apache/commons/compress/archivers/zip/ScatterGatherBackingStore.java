@@ -22,8 +22,12 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Abstraction over a scatter-output zip archives can be written to
- * with a method to gather all content from an InputStream later on.
+ * <p></p>Abstraction over a scatter-output zip archives can be written to
+ * with a method to gather all content from an InputStream later on.</p>
+ *
+ * <p>It is the responsibility of the allocator of an instance of this class
+ * to close this. Closing it should clear off any allocated structures
+ * and preferably delete files.</p>
  *
  * @since 1.10
  */
@@ -45,5 +49,10 @@ public interface ScatterGatherBackingStore extends Closeable {
      * @param length the amount of data to write
      * @throws IOException when something fails
      */
-    void writeOut(byte[] data, int offset, int length) throws IOException ;
+    void writeOut(byte[] data, int offset, int length) throws IOException;
+
+    /**
+     * Closes this backing store for further writing.
+     */
+    void closeForWriting() throws IOException;
 }
