@@ -138,6 +138,9 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         setInternalAttributes(entry.getInternalAttributes());
         setExternalAttributes(entry.getExternalAttributes());
         setExtraFields(entry.getExtraFields(true));
+        setPlatform(entry.platform);
+        setGeneralPurposeBit(entry.gpb == null ? null : 
+                             (GeneralPurposeBit) entry.gpb.clone());
     }
 
     /**

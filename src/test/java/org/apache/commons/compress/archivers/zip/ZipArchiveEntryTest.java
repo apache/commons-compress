@@ -253,4 +253,13 @@ public class ZipArchiveEntryTest extends TestCase {
         assertFalse(entry1.equals(entry3));
         assertFalse(entry2.equals(entry3));
     }
+
+    public void testCopyConstructor() throws Exception {
+        ZipArchiveEntry archiveEntry = new ZipArchiveEntry("fred");
+        archiveEntry.setUnixMode(0664);
+        archiveEntry.setMethod(ZipEntry.DEFLATED);
+        archiveEntry.getGeneralPurposeBit().useStrongEncryption(true);
+        ZipArchiveEntry copy = new ZipArchiveEntry(archiveEntry);
+        assertEquals(archiveEntry, copy);
+    }
 }
