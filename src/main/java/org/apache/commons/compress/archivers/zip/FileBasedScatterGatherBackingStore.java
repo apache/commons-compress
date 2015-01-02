@@ -43,11 +43,15 @@ public class FileBasedScatterGatherBackingStore implements ScatterGatherBackingS
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public void close() throws IOException {
+    public void closeForWriting() throws IOException {
         os.close();
     }
 
     public void writeOut(byte[] data, int offset, int length) throws IOException {
         os.write(data, offset, length);
+    }
+
+    public void close() throws IOException {
+        target.delete();
     }
 }
