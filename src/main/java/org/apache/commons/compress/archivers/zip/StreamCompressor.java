@@ -31,7 +31,7 @@ import java.util.zip.Deflater;
  *
  * @since 1.10
  */
-abstract class StreamCompressor implements Closeable {
+public abstract class StreamCompressor implements Closeable {
 
     /*
      * Apparently Deflater.setInput gets slowed down a lot on Sun JVMs
