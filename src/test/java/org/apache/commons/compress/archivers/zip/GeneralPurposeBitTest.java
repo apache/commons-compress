@@ -81,7 +81,7 @@ public class GeneralPurposeBitTest extends TestCase {
         assertTrue(Arrays.equals(flags, b.encode()));
     }
 
-    public void testStringEncryption() {
+    public void testStrongEncryption() {
         byte[] flags = new byte[] {(byte) 65, (byte) 0};
         assertTrue(GeneralPurposeBit.parse(flags, 0).usesStrongEncryption());
         GeneralPurposeBit b = new GeneralPurposeBit();
@@ -93,4 +93,11 @@ public class GeneralPurposeBitTest extends TestCase {
         assertFalse(GeneralPurposeBit.parse(flags, 0).usesStrongEncryption());
     }
 
+    public void testClone() {
+        GeneralPurposeBit b = new GeneralPurposeBit();
+        b.useStrongEncryption(true);
+        b.useUTF8ForNames(true);
+        assertEquals(b, b.clone());
+        assertNotSame(b, b.clone());
+    }
 }
