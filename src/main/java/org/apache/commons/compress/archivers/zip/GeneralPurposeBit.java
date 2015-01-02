@@ -221,6 +221,7 @@ public final class GeneralPurposeBit implements Cloneable {
             && g.dataDescriptorFlag == dataDescriptorFlag;
     }
 
+    @Override
     public Object clone() {
         try {
             return super.clone();
