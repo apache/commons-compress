@@ -42,7 +42,7 @@ public class ParallelScatterZipCreator {
     private List<ScatterZipOutputStream> streams = synchronizedList(new ArrayList<ScatterZipOutputStream>());
     private List<ScatterGatherBackingStore> backingStores = synchronizedList(new ArrayList<ScatterGatherBackingStore>());
     private final ExecutorService es;
-    private final ScatterGatherBackingStoreSupplier defaultSupplier;
+    private final ScatterGatherBackingStoreSupplier supplier;
 
     private final long startedAt = System.currentTimeMillis();
     private long compressionDoneAt = 0;
@@ -69,7 +69,7 @@ public class ParallelScatterZipCreator {
         @Override
         protected ScatterZipOutputStream initialValue() {
             try {
-                ScatterZipOutputStream scatterStream = createDeferred(defaultSupplier);
+                ScatterZipOutputStream scatterStream = createDeferred(supplier);
                 streams.add(scatterStream);
                 return scatterStream;
             } catch (IOException e) {
@@ -91,7 +91,17 @@ public class ParallelScatterZipCreator {
      * @param nThreads the number of threads to use in parallel.
      */
     public ParallelScatterZipCreator(int nThreads) {
-        defaultSupplier = new DefaultSupplier();
+        this( nThreads, new DefaultSupplier());
+    }
+
+    /**
+     * Create a ParallelScatterZipCreator
+     *
+     * @param nThreads the number of threads to use in parallel.
+     * @param backingStoreSupplier The supplier of backing store which shall be used
+     */
+    public ParallelScatterZipCreator(int nThreads, ScatterGatherBackingStoreSupplier backingStoreSupplier) {
+        supplier = backingStoreSupplier;
         es = Executors.newFixedThreadPool(nThreads);
     }
 
@@ -140,6 +150,7 @@ public class ParallelScatterZipCreator {
 
         for (ScatterZipOutputStream scatterStream : streams) {
             scatterStream.writeTo(targetStream);
+            scatterStream.close();
         }
 
         scatterDoneAt = System.currentTimeMillis();
