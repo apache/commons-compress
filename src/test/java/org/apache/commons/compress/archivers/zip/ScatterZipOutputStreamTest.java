@@ -36,10 +36,12 @@ public class ScatterZipOutputStreamTest {
         final byte[] A_PAYLOAD = "XAAY".getBytes();
 
         ZipArchiveEntry zab = new ZipArchiveEntry("b.txt");
-        scatterZipOutputStream.addArchiveEntry(zab, new ByteArrayInputStream(B_PAYLOAD), ZipArchiveEntry.DEFLATED);
+        ByteArrayInputStream payload = new ByteArrayInputStream(B_PAYLOAD);
+        scatterZipOutputStream.addArchiveEntry(zab, payload, ZipArchiveEntry.DEFLATED);
 
         ZipArchiveEntry zae = new ZipArchiveEntry("a.txt");
-        scatterZipOutputStream.addArchiveEntry(zae, new ByteArrayInputStream(A_PAYLOAD), ZipArchiveEntry.DEFLATED);
+        ByteArrayInputStream payload1 = new ByteArrayInputStream(A_PAYLOAD);
+        scatterZipOutputStream.addArchiveEntry(zae, payload1, ZipArchiveEntry.DEFLATED);
 
         File target = File.createTempFile("scattertest", ".zip");
         ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(target);

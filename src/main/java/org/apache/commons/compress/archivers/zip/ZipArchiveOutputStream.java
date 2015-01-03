@@ -845,7 +845,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
 
 
-
+    final byte[] copyBuffer = new byte[16384];
 
     private void copyFromZipInputStream(InputStream src) throws IOException {
         if (entry == null) {
@@ -853,11 +853,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         }
         ZipUtil.checkRequestedFeatures(entry.entry);
         entry.hasWritten = true;
-        byte[] tmpBuf = new byte[4096];
         int length;
-        while ((length = src.read( tmpBuf )) >= 0 )
+        while ((length = src.read(copyBuffer)) >= 0 )
         {
-            streamCompressor.writeCounted(tmpBuf, 0, length);
+            streamCompressor.writeCounted(copyBuffer, 0, length);
             count( length );
         }
     }
