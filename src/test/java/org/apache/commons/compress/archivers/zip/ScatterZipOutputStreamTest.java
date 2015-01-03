@@ -45,6 +45,7 @@ public class ScatterZipOutputStreamTest {
         ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(target);
         scatterZipOutputStream.writeTo( outputStream);
         outputStream.close();
+        scatterZipOutputStream.close();
 
         ZipFile zf = new ZipFile(target);
         final ZipArchiveEntry b_entry = zf.getEntries("b.txt").iterator().next();

@@ -20,6 +20,7 @@ package org.apache.commons.compress.archivers.zip;
 
 import org.apache.commons.compress.utils.BoundedInputStream;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -42,7 +43,7 @@ import java.util.zip.Deflater;
  *
  * @since 1.10
  */
-public class ScatterZipOutputStream  {
+public class ScatterZipOutputStream implements Closeable {
     private final Queue<CompressedEntry> items = new ConcurrentLinkedQueue<CompressedEntry>();
     private final ScatterGatherBackingStore backingStore;
     private final StreamCompressor streamCompressor;
@@ -108,6 +109,15 @@ public class ScatterZipOutputStream  {
             rawStream.close();
         }
         data.close();
+    }
+
+
+    /**
+     * Closes this stream, freeing all resources involved in the creation of this stream.
+     * @throws IOException If closing fails
+     */
+    public void close() throws IOException {
+        backingStore.close();
     }
 
     /**
