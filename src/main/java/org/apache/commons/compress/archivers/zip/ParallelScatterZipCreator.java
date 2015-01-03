@@ -19,6 +19,7 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -40,7 +41,6 @@ import static java.util.Collections.synchronizedList;
  */
 public class ParallelScatterZipCreator {
     private List<ScatterZipOutputStream> streams = synchronizedList(new ArrayList<ScatterZipOutputStream>());
-    private List<ScatterGatherBackingStore> backingStores = synchronizedList(new ArrayList<ScatterGatherBackingStore>());
     private final ExecutorService es;
     private final ScatterGatherBackingStoreSupplier supplier;
 
@@ -60,7 +60,6 @@ public class ParallelScatterZipCreator {
     private ScatterZipOutputStream createDeferred(ScatterGatherBackingStoreSupplier scatterGatherBackingStoreSupplier)
             throws IOException {
         ScatterGatherBackingStore bs = scatterGatherBackingStoreSupplier.get();
-        backingStores.add( bs);
         StreamCompressor sc = StreamCompressor.create(Deflater.DEFAULT_COMPRESSION, bs);
         return new ScatterZipOutputStream(bs, sc);
     }
@@ -122,7 +121,12 @@ public class ParallelScatterZipCreator {
         es.submit(new Callable<ScatterZipOutputStream>() {
             public ScatterZipOutputStream call() throws Exception {
                 ScatterZipOutputStream streamToUse = tlScatterStreams.get();
-                streamToUse.addArchiveEntry(zipArchiveEntry, source.get(), method);
+                InputStream payload = source.get();
+                try {
+                    streamToUse.addArchiveEntry(zipArchiveEntry, payload, method);
+                } finally {
+                    payload.close();
+                }
                 return streamToUse;
             }
 
@@ -154,10 +158,6 @@ public class ParallelScatterZipCreator {
         }
 
         scatterDoneAt = System.currentTimeMillis();
-
-        for (ScatterGatherBackingStore backingStore : backingStores) {
-            backingStore.close();
-        }
     }
 
     /**

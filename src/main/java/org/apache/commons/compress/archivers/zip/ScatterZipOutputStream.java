@@ -82,13 +82,12 @@ public class ScatterZipOutputStream implements Closeable {
      * Add an archive entry to this scatter stream.
      *
      * @param zipArchiveEntry The entry to write
-     * @param payload         The content to write for the entry
+     * @param payload         The content to write for the entry. The caller is responsible for closing this.
      * @param method          The compression method
      * @throws IOException    If writing fails
      */
     public void addArchiveEntry(ZipArchiveEntry zipArchiveEntry, InputStream payload, int method) throws IOException {
         streamCompressor.deflate(payload, method);
-        payload.close();
         items.add(new CompressedEntry(zipArchiveEntry, streamCompressor.getCrc32(),
                                       streamCompressor.getBytesWritten(), method,
                                       streamCompressor.getBytesRead()));
