@@ -89,7 +89,7 @@ public class ScatterZipOutputStream implements Closeable {
     public void addArchiveEntry(ZipArchiveEntry zipArchiveEntry, InputStream payload, int method) throws IOException {
         streamCompressor.deflate(payload, method);
         items.add(new CompressedEntry(zipArchiveEntry, streamCompressor.getCrc32(),
-                                      streamCompressor.getBytesWritten(), method,
+                                      streamCompressor.getBytesWrittenForLastEntry(), method,
                                       streamCompressor.getBytesRead()));
     }
 

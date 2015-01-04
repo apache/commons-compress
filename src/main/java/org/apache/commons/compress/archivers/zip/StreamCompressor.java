@@ -46,7 +46,7 @@ public abstract class StreamCompressor implements Closeable {
 
     private final CRC32 crc = new CRC32();
 
-    private long writtenToOutputStream = 0;
+    private long writtenToOutputStreamForLastEntry = 0;
     private long sourcePayloadLength = 0;
     private long totalWrittenToOutputStream = 0;
 
@@ -132,12 +132,12 @@ public abstract class StreamCompressor implements Closeable {
     }
 
     /**
-     * The number of bytes written to the output
+     * The number of bytes written to the output for the last entry
      *
      * @return The number of bytes, never negative
      */
-    public long getBytesWritten() {
-        return writtenToOutputStream;
+    public long getBytesWrittenForLastEntry() {
+        return writtenToOutputStreamForLastEntry;
     }
 
     /**
@@ -181,7 +181,7 @@ public abstract class StreamCompressor implements Closeable {
      * @throws IOException on error
      */
     long write(byte[] b, int offset, int length, int method) throws IOException {
-        long current = writtenToOutputStream;
+        long current = writtenToOutputStreamForLastEntry;
         crc.update(b, offset, length);
         if (method == ZipArchiveEntry.DEFLATED) {
             writeDeflated(b, offset, length);
@@ -189,7 +189,7 @@ public abstract class StreamCompressor implements Closeable {
             writeCounted(b, offset, length);
         }
         sourcePayloadLength += length;
-        return writtenToOutputStream - current;
+        return writtenToOutputStreamForLastEntry - current;
     }
 
 
@@ -197,7 +197,7 @@ public abstract class StreamCompressor implements Closeable {
         crc.reset();
         def.reset();
         sourcePayloadLength = 0;
-        writtenToOutputStream = 0;
+        writtenToOutputStreamForLastEntry = 0;
     }
 
     public void close() throws IOException {
@@ -252,7 +252,7 @@ public abstract class StreamCompressor implements Closeable {
 
     public void writeCounted(byte[] data, int offset, int length) throws IOException {
         writeOut(data, offset, length);
-        writtenToOutputStream += length;
+        writtenToOutputStreamForLastEntry += length;
         totalWrittenToOutputStream += length;
     }
 
