@@ -618,9 +618,11 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         }
 
         if (hasZip64Extra(entry.entry)) {
+            ByteBuffer name = getName(entry.entry);
+            int nameLen = name.limit() - name.position();
             // seek to ZIP64 extra, skip header and size information
             raf.seek(entry.localDataStart + 3 * WORD + 2 * SHORT
-                     + getName(entry.entry).limit() + 2 * SHORT);
+                     + nameLen + 2 * SHORT);
             // inside the ZIP64 extra uncompressed size comes
             // first, unlike the LFH, CD or data descriptor
             writeOut(ZipEightByteInteger.getBytes(entry.entry.getSize()));
@@ -952,7 +954,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private byte[] createLocalFileHeader(ZipArchiveEntry ze, ByteBuffer name, boolean encodable)  {
 
         byte[] extra = ze.getLocalFileDataExtra();
-        int len= LFH_FILENAME_OFFSET + name.limit() + extra.length;
+        final int nameLen = name.limit() - name.position();
+        int len= LFH_FILENAME_OFFSET + nameLen + extra.length;
         byte[] buf = new byte[len];
 
         System.arraycopy(LFH_SIG,  0, buf, LFH_SIG_OFFSET, WORD);
@@ -999,13 +1002,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             }
         }
         // file name length
-        putShort(name.limit(), buf, LFH_FILENAME_LENGTH_OFFSET);
+        putShort(nameLen, buf, LFH_FILENAME_LENGTH_OFFSET);
 
         // extra field length
         putShort(extra.length, buf, LFH_EXTRA_LENGTH_OFFSET);
 
         // file name
-        final int nameLen = name.limit() - name.position();
         System.arraycopy( name.array(), name.arrayOffset(), buf, LFH_FILENAME_OFFSET, nameLen);
 
         System.arraycopy(extra, 0, buf, LFH_FILENAME_OFFSET + nameLen, extra.length);
@@ -1117,7 +1119,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         }
 
         ByteBuffer commentB = getEntryEncoding(ze).encode(comm);
-        int len= CFH_FILENAME_OFFSET + name.limit() + extra.length + commentB.limit();
+        final int nameLen = name.limit() - name.position();
+        final int commentLen = commentB.limit() - commentB.position();
+        int len= CFH_FILENAME_OFFSET + nameLen + extra.length + commentLen;
         byte[] buf = new byte[len];
 
         System.arraycopy(CFH_SIG,  0, buf, CFH_SIG_OFFSET, WORD);
@@ -1152,12 +1156,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             putLong(ze.getSize(), buf, CFH_ORIGINAL_SIZE_OFFSET);
         }
 
-        putShort(name.limit(), buf, CFH_FILENAME_LENGTH_OFFSET);
+        putShort(nameLen, buf, CFH_FILENAME_LENGTH_OFFSET);
 
         // extra field length
         putShort(extra.length, buf, CFH_EXTRA_LENGTH_OFFSET);
 
-        putShort(commentB.limit(), buf, CFH_COMMENT_LENGTH_OFFSET);
+        putShort(commentLen, buf, CFH_COMMENT_LENGTH_OFFSET);
 
         // disk number start
         System.arraycopy(ZERO,  0, buf, CFH_DISK_NUMBER_OFFSET, SHORT);
@@ -1172,16 +1176,15 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         putLong(Math.min(lfhOffset, ZIP64_MAGIC), buf, CFH_LFH_OFFSET);
 
         // file name
-        System.arraycopy(name.array(), name.arrayOffset(), buf, CFH_FILENAME_OFFSET, name.limit() - name.position());
+        System.arraycopy(name.array(), name.arrayOffset(), buf, CFH_FILENAME_OFFSET, nameLen);
 
-        int extraStart = CFH_FILENAME_OFFSET + name.limit();
+        int extraStart = CFH_FILENAME_OFFSET + nameLen;
         System.arraycopy(extra, 0, buf, extraStart, extra.length);
 
-        int commentLength = commentB.limit() - commentB.position();
-        int commentStart = extraStart + commentLength;
+        int commentStart = extraStart + commentLen;
 
         // file comment
-        System.arraycopy(commentB.array(), commentB.arrayOffset(), buf, commentStart, commentLength);
+        System.arraycopy(commentB.array(), commentB.arrayOffset(), buf, commentStart, commentLen);
         return buf;
     }
 
@@ -1246,8 +1249,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
         // ZIP file comment
         ByteBuffer data = this.zipEncoding.encode(comment);
-        writeCounted(ZipShort.getBytes(data.limit()));
-        streamCompressor.writeCounted(data.array(), data.arrayOffset(), data.limit() - data.position());
+        int dataLen = data.limit() - data.position();
+        writeCounted(ZipShort.getBytes(dataLen));
+        streamCompressor.writeCounted(data.array(), data.arrayOffset(), dataLen);
     }
 
     private static final byte[] ONE = ZipLong.getBytes(1L);
