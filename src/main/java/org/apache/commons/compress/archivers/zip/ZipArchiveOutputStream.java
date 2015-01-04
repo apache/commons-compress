@@ -1278,7 +1278,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             return;
         }
 
-        long offset = streamCompressor.getBytesWritten();
+        long offset = streamCompressor.getTotalBytesWritten();
 
         writeOut(ZIP64_EOCD_SIG);
         // size, we don't have any variable length as we don't support
