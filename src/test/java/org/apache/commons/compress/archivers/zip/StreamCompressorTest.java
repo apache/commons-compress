@@ -35,7 +35,7 @@ public class StreamCompressorTest {
         sc.deflate(new ByteArrayInputStream("A".getBytes()), ZipEntry.STORED);
         sc.deflate(new ByteArrayInputStream("BAD".getBytes()), ZipEntry.STORED);
         assertEquals(3, sc.getBytesRead());
-        assertEquals(3, sc.getBytesWritten());
+        assertEquals(3, sc.getBytesWrittenForLastEntry());
         assertEquals(344750961, sc.getCrc32());
         sc.deflate(new ByteArrayInputStream("CAFE".getBytes()), ZipEntry.STORED);
         assertEquals("ABADCAFE", baos.toString());
@@ -47,7 +47,7 @@ public class StreamCompressorTest {
         StreamCompressor sc = StreamCompressor.create( baos);
         sc.deflate(new ByteArrayInputStream("AAAAAABBBBBB".getBytes()), ZipEntry.DEFLATED);
         assertEquals(12, sc.getBytesRead());
-        assertEquals(8, sc.getBytesWritten());
+        assertEquals(8, sc.getBytesWrittenForLastEntry());
         assertEquals(3299542, sc.getCrc32());
 
         final byte[] actuals = baos.toByteArray();
