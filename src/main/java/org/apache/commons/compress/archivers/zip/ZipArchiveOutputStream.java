@@ -17,6 +17,7 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,6 +26,7 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -431,9 +433,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         }
 
         cdOffset = streamCompressor.getTotalBytesWritten();
-        for (ZipArchiveEntry ze : entries) {
-            writeCentralFileHeader(ze);
-        }
+        writeCentralDirectoryInChunks();
+
         cdLength = streamCompressor.getTotalBytesWritten() - cdOffset;
         writeZip64CentralDirectory();
         writeCentralDirectoryEnd();
@@ -441,6 +442,25 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         entries.clear();
         streamCompressor.close();
         finished = true;
+    }
+
+    private void writeCentralDirectoryInChunks() throws IOException {
+        int NUM_PER_WRITE = 1000;
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(70 * NUM_PER_WRITE);
+        Iterator<ZipArchiveEntry> iterator = entries.iterator();
+        ZipArchiveEntry ze;
+        int count = 0;
+        while (iterator.hasNext()){
+            ze = iterator.next();
+            byteArrayOutputStream.write(createCentralFileHeader(ze));
+            count++;
+            if (count > NUM_PER_WRITE){
+                writeCounted( byteArrayOutputStream.toByteArray());
+                byteArrayOutputStream.reset();
+                count = 0;
+            }
+        }
+        writeCounted( byteArrayOutputStream.toByteArray());
     }
 
     /**
@@ -881,7 +901,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
 
 
-    final byte[] copyBuffer = new byte[16384];
+    final byte[] copyBuffer = new byte[32768];
 
     private void copyFromZipInputStream(InputStream src) throws IOException {
         if (entry == null) {
@@ -1123,27 +1143,31 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * Zip64Mode#Never}.
      */
     protected void writeCentralFileHeader(ZipArchiveEntry ze) throws IOException {
+        byte[] centralFileHeader = createCentralFileHeader(ze);
+        writeCounted(centralFileHeader);
+    }
+
+    private byte[] createCentralFileHeader(ZipArchiveEntry ze) throws IOException {
 
         final long lfhOffset = offsets.get(ze).longValue();
         final boolean needsZip64Extra = hasZip64Extra(ze)
-            || ze.getCompressedSize() >= ZIP64_MAGIC
-            || ze.getSize() >= ZIP64_MAGIC
-            || lfhOffset >= ZIP64_MAGIC;
+                || ze.getCompressedSize() >= ZIP64_MAGIC
+                || ze.getSize() >= ZIP64_MAGIC
+                || lfhOffset >= ZIP64_MAGIC;
 
         if (needsZip64Extra && zip64Mode == Zip64Mode.Never) {
             // must be the offset that is too big, otherwise an
             // exception would have been throw in putArchiveEntry or
             // closeArchiveEntry
             throw new Zip64RequiredException(Zip64RequiredException
-                                             .ARCHIVE_TOO_BIG_MESSAGE);
+                    .ARCHIVE_TOO_BIG_MESSAGE);
         }
 
 
         handleZip64Extra(ze, lfhOffset, needsZip64Extra);
 
-        byte[] centralFileHeader = createCentralFileHeader(ze, getName(ze), lfhOffset, needsZip64Extra);
-        writeCounted(centralFileHeader);
-    }
+       return createCentralFileHeader(ze, getName(ze), lfhOffset, needsZip64Extra);
+    };
 
     /**
      * Writes the central file header entry.
@@ -1208,7 +1232,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         putShort(commentLen, buf, CFH_COMMENT_LENGTH_OFFSET);
 
         // disk number start
-        System.arraycopy(ZERO,  0, buf, CFH_DISK_NUMBER_OFFSET, SHORT);
+        System.arraycopy(ZERO, 0, buf, CFH_DISK_NUMBER_OFFSET, SHORT);
 
         // internal file attributes
         putShort(ze.getInternalAttributes(), buf, CFH_INTERNAL_ATTRIBUTES_OFFSET);
