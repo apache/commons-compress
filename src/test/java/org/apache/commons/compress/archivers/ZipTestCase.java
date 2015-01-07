@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.archivers.zip.Zip64Mode;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntryPredicate;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream; 	
@@ -309,13 +310,17 @@ public final class ZipTestCase extends AbstractTestCase {
             throws IOException {
 
         File[] tmp = createTempDirAndFile();
-        File reference = createReferenceFile(tmp[0]);
+        File reference = createReferenceFile(tmp[0], Zip64Mode.Never, "expected.");
 
         File a1 = File.createTempFile("src1.", ".zip", tmp[0]);
-        createFirstEntry(new ZipArchiveOutputStream(a1)).close();
+        ZipArchiveOutputStream zos = new ZipArchiveOutputStream(a1);
+        zos.setUseZip64(Zip64Mode.Never);
+        createFirstEntry(zos).close();
 
         File a2 = File.createTempFile("src2.", ".zip", tmp[0]);
-        createSecondEntry(new ZipArchiveOutputStream(a2)).close();
+        ZipArchiveOutputStream zos1 = new ZipArchiveOutputStream(a2);
+        zos1.setUseZip64(Zip64Mode.Never);
+        createSecondEntry(zos1).close();
 
         ZipFile zf1 = new ZipFile(a1);
         ZipFile zf2 = new ZipFile(a2);
@@ -324,11 +329,38 @@ public final class ZipTestCase extends AbstractTestCase {
         zf1.copyRawEntries(zos2, allFilesPredicate);
         zf2.copyRawEntries(zos2, allFilesPredicate);
         zos2.close();
+        // copyRawEntries does not add superfluous zip64 header like regular zip output stream
+        // does when using Zip64Mode.AsNeeded so all the source material has to be Zip64Mode.Never,
+        // if exact binary equality is to be achieved
         assertSameFileContents(reference, fileResult);
         zf1.close();
         zf2.close();
     }
 
+    public void testCopyRawZip64EntryFromFile()
+            throws IOException {
+
+        File[] tmp = createTempDirAndFile();
+        File reference = File.createTempFile("z64reference.", ".zip", tmp[0]);
+        ZipArchiveOutputStream zos1 = new ZipArchiveOutputStream(reference);
+        zos1.setUseZip64(Zip64Mode.Always);
+        createFirstEntry(zos1);
+        zos1.close();
+
+        File a1 = File.createTempFile("zip64src.", ".zip", tmp[0]);
+        ZipArchiveOutputStream zos = new ZipArchiveOutputStream(a1);
+        zos.setUseZip64(Zip64Mode.Always);
+        createFirstEntry(zos).close();
+
+        ZipFile zf1 = new ZipFile(a1);
+        File fileResult = File.createTempFile("file-actual.", ".zip", tmp[0]);
+        ZipArchiveOutputStream zos2 = new ZipArchiveOutputStream(fileResult);
+        zos2.setUseZip64(Zip64Mode.Always);
+        zf1.copyRawEntries(zos2, allFilesPredicate);
+        zos2.close();
+        assertSameFileContents(reference, fileResult);
+        zf1.close();
+    }
     public void testUnixModeInAddRaw() throws IOException {
 
         File[] tmp = createTempDirAndFile();
@@ -348,9 +380,10 @@ public final class ZipTestCase extends AbstractTestCase {
         zf1.close();
     }
 
-    private File createReferenceFile(File directory) throws IOException {
-        File reference = File.createTempFile("expected.", ".zip", directory);
+    private File createReferenceFile(File directory, Zip64Mode zipMode, String prefix) throws IOException {
+        File reference = File.createTempFile(prefix, ".zip", directory);
         ZipArchiveOutputStream zos = new ZipArchiveOutputStream(reference);
+        zos.setUseZip64(zipMode);
         createFirstEntry(zos);
         createSecondEntry(zos);
         zos.close();
