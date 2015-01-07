@@ -279,7 +279,7 @@ public class ZipFile implements Closeable {
      * @since 1.1
      */
     public Enumeration<ZipArchiveEntry> getEntriesInPhysicalOrder() {
-        ZipArchiveEntry[] allEntries = entries.toArray(new ZipArchiveEntry[0]);
+        ZipArchiveEntry[] allEntries = entries.toArray(new ZipArchiveEntry[entries.size()]);
         Arrays.sort(allEntries, OFFSET_COMPARATOR);
         return Collections.enumeration(Arrays.asList(allEntries));
     }

@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -1036,7 +1037,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         // compression method
         putShort(zipMethod, buf, LFH_METHOD_OFFSET);
 
-        ZipUtil.toDosTime(ze.getTime(), buf, LFH_TIME_OFFSET);
+        ZipUtil.toDosTime(calendarInstance, ze.getTime(), buf, LFH_TIME_OFFSET);
 
         // CRC
         if (phased){
@@ -1169,6 +1170,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
        return createCentralFileHeader(ze, getName(ze), lfhOffset, needsZip64Extra);
     };
 
+    private final Calendar calendarInstance = Calendar.getInstance();
+
+    private final Calendar calendarInstance = Calendar.getInstance();
+
     /**
      * Writes the central file header entry.
      * @param ze the entry to write
@@ -1209,7 +1214,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
 
         // last mod. time and date
-        ZipUtil.toDosTime(ze.getTime(), buf, CFH_TIME_OFFSET);
+        ZipUtil.toDosTime(calendarInstance, ze.getTime(), buf, CFH_TIME_OFFSET);
 
         // CRC
         // compressed length

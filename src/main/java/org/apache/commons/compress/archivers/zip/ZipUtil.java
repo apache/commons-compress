@@ -67,7 +67,10 @@ public abstract class ZipUtil {
      *         must be non-negative and no larger than <tt>buf.length-4</tt>
      */
     public static void toDosTime(long t, byte[] buf, int offset) {
-        Calendar c = Calendar.getInstance();
+        toDosTime(Calendar.getInstance(), t, buf, offset);
+    }
+
+    static void toDosTime(Calendar c, long t, byte[] buf, int offset) {
         c.setTimeInMillis(t);
 
         int year = c.get(Calendar.YEAR);
@@ -84,6 +87,7 @@ public abstract class ZipUtil {
                 |         (c.get(Calendar.SECOND) >> 1);
         ZipLong.putLong(value, buf, offset);
     }
+
 
     /**
      * Assumes a negative integer really is a positive integer that
