@@ -345,7 +345,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         if (includeUnparseable && unparseableExtra != null) {
             result.add(unparseableExtra);
         }
-        return result.toArray(new ZipExtraField[0]);
+        return result.toArray(new ZipExtraField[result.size()]);
     }
 
     /**
