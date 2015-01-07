@@ -459,7 +459,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         long bytesWritten = streamCompressor.getTotalBytesWritten() - entry.dataStart;
         long realCrc = streamCompressor.getCrc32();
         entry.bytesRead = streamCompressor.getBytesRead();
-        doCloseEntry(realCrc, bytesWritten);
+        final Zip64Mode effectiveMode = getEffectiveZip64Mode(entry.entry);
+        final boolean actuallyNeedsZip64 = handleSizesAndCrc(bytesWritten, realCrc, effectiveMode);
+        closeEntry(actuallyNeedsZip64, false);
         streamCompressor.reset();
     }
 
@@ -470,28 +472,20 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @throws Zip64RequiredException if the entry's uncompressed or
      *                                compressed size exceeds 4 GByte and {@link #setUseZip64}
      *                                is {@link Zip64Mode#Never}.
+     * @param phased              This entry is second phase of a 2-phase zip creation, size, compressed size and crc
+     *                            are known in ZipArchiveEntry
      */
-    private void closeCopiedEntry() throws IOException {
+    private void closeCopiedEntry(boolean phased) throws IOException {
         preClose();
         entry.bytesRead = entry.entry.getSize();
-        doCloseCopiedEntry();
-    }
-
-    private void doCloseEntry(long realCrc, long bytesWritten) throws IOException {
-        final Zip64Mode effectiveMode = getEffectiveZip64Mode(entry.entry);
-        final boolean actuallyNeedsZip64 = handleSizesAndCrc(bytesWritten, realCrc, effectiveMode);
-
-        closeEntry(actuallyNeedsZip64);
-    }
-
-    private void doCloseCopiedEntry() throws IOException {
         Zip64Mode effectiveMode = getEffectiveZip64Mode(entry.entry);
         boolean actuallyNeedsZip64 = checkIfNeedsZip64(effectiveMode);
-        closeEntry(actuallyNeedsZip64);
+        closeEntry(actuallyNeedsZip64, phased);
     }
 
-    private void closeEntry(boolean actuallyNeedsZip64) throws IOException {
-        if (raf != null) {
+
+    private void closeEntry(boolean actuallyNeedsZip64, boolean phased) throws IOException {
+        if (!phased && raf != null) {
             rewriteSizesAndCrc(actuallyNeedsZip64);
         }
 
@@ -516,6 +510,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Adds an archive entry with a raw input stream.
      *
+     * If crc, size and compressed size are supplied on the entry, these values will be used as-is.
+     * Zip64 status is re-established based on the settings in this stream, and the supplied value
+     * is ignored.
+     *
      * The entry is put and closed immediately.
      *
      * @param entry The archive entry to add
@@ -525,9 +523,18 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     public void addRawArchiveEntry(ZipArchiveEntry entry, InputStream rawStream)
             throws IOException {
         ZipArchiveEntry ae = new ZipArchiveEntry(entry);
-        putArchiveEntry(ae);
+        if (hasZip64Extra(ae)) {
+            // Will be re-added as required. this may make the file generated with this method
+            // somewhat smaller than standard mode,
+            // since standard mode is unable to remove the zip 64 header.
+            ae.removeExtraField(Zip64ExtendedInformationExtraField.HEADER_ID);
+        }
+        boolean is2PhaseSource = ae.getCrc() != -1
+                && ae.getSize() != ArchiveEntry.SIZE_UNKNOWN
+                && ae.getCompressedSize() != -1;
+        putArchiveEntry(ae, is2PhaseSource);
         copyFromZipInputStream(rawStream);
-        closeCopiedEntry();
+        closeCopiedEntry(is2PhaseSource);
     }
 
     /**
@@ -590,13 +597,19 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     private boolean checkIfNeedsZip64(Zip64Mode effectiveMode)
             throws ZipException {
-        final boolean actuallyNeedsZip64 = effectiveMode == Zip64Mode.Always
-                || entry.entry.getSize() >= ZIP64_MAGIC
-                || entry.entry.getCompressedSize() >= ZIP64_MAGIC;
+        final boolean actuallyNeedsZip64 = isZip64Required(entry.entry, effectiveMode);
         if (actuallyNeedsZip64 && effectiveMode == Zip64Mode.Never) {
             throw new Zip64RequiredException(Zip64RequiredException.getEntryTooBigMessage(entry.entry));
         }
         return actuallyNeedsZip64;
+    }
+
+    private boolean isZip64Required(ZipArchiveEntry entry1, Zip64Mode requestedMode) {
+        return requestedMode == Zip64Mode.Always || isTooLageForZip32(entry1);
+    }
+
+    private boolean isTooLageForZip32(ZipArchiveEntry zipArchiveEntry){
+        return zipArchiveEntry.getSize() >= ZIP64_MAGIC || zipArchiveEntry.getCompressedSize() >= ZIP64_MAGIC;
     }
     /**
      * When using random access output, write the local file header
@@ -659,6 +672,22 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     @Override
     public void putArchiveEntry(ArchiveEntry archiveEntry) throws IOException {
+        putArchiveEntry(archiveEntry, false);
+    }
+
+    /**
+     * Writes the headers for an archive entry to the output stream.
+     * The caller must then write the content to the stream and call
+     * {@link #closeArchiveEntry()} to complete the process.
+
+     * @param archiveEntry The archiveEntry
+     * @param phased If true size, compressedSize and crc required to be known up-front in the archiveEntry
+     * @throws ClassCastException if entry is not an instance of ZipArchiveEntry
+     * @throws Zip64RequiredException if the entry's uncompressed or
+     * compressed size is known to exceed 4 GByte and {@link #setUseZip64}
+     * is {@link Zip64Mode#Never}.
+     */
+    private void putArchiveEntry(ArchiveEntry archiveEntry, boolean phased) throws IOException {
         if (finished) {
             throw new IOException("Stream has already been finished");
         }
@@ -682,13 +711,18 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             // just a placeholder, real data will be in data
             // descriptor or inserted later via RandomAccessFile
             ZipEightByteInteger size = ZipEightByteInteger.ZERO;
-            if (entry.entry.getMethod() == STORED
-                && entry.entry.getSize() != ArchiveEntry.SIZE_UNKNOWN) {
+            ZipEightByteInteger compressedSize = ZipEightByteInteger.ZERO;
+            if (phased){
+                size = new ZipEightByteInteger(entry.entry.getSize());
+                compressedSize = new ZipEightByteInteger(entry.entry.getCompressedSize());
+            } else if (entry.entry.getMethod() == STORED
+                    && entry.entry.getSize() != ArchiveEntry.SIZE_UNKNOWN) {
                 // actually, we already know the sizes
                 size = new ZipEightByteInteger(entry.entry.getSize());
+                compressedSize = size;
             }
             z64.setSize(size);
-            z64.setCompressedSize(size);
+            z64.setCompressedSize(compressedSize);
             entry.entry.setExtra();
         }
 
@@ -696,7 +730,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             def.setLevel(level);
             hasCompressionLevelChanged = false;
         }
-        writeLocalFileHeader((ZipArchiveEntry) archiveEntry);
+        writeLocalFileHeader((ZipArchiveEntry) archiveEntry, phased);
     }
 
     /**
@@ -935,6 +969,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @throws IOException on error
      */
     protected void writeLocalFileHeader(ZipArchiveEntry ze) throws IOException {
+        writeLocalFileHeader(ze, false);
+    }
+
+    private void writeLocalFileHeader(ZipArchiveEntry ze, boolean phased) throws IOException {
         boolean encodable = zipEncoding.canEncode(ze.getName());
         ByteBuffer name = getName(ze);
 
@@ -942,7 +980,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             addUnicodeExtraFields(ze, encodable, name);
         }
 
-        final byte[] localHeader = createLocalFileHeader(ze, name, encodable);
+        final byte[] localHeader = createLocalFileHeader(ze, name, encodable, phased);
         long localHeaderStart = streamCompressor.getTotalBytesWritten();
         offsets.put(ze, localHeaderStart);
         entry.localDataStart = localHeaderStart + LFH_CRC_OFFSET; // At crc offset
@@ -951,8 +989,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
 
-    private byte[] createLocalFileHeader(ZipArchiveEntry ze, ByteBuffer name, boolean encodable)  {
-
+    private byte[] createLocalFileHeader(ZipArchiveEntry ze, ByteBuffer name, boolean encodable,
+                                         boolean phased)  {
         byte[] extra = ze.getLocalFileDataExtra();
         final int nameLen = name.limit() - name.position();
         int len= LFH_FILENAME_OFFSET + nameLen + extra.length;
@@ -963,7 +1001,11 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         //store method in local variable to prevent multiple method calls
         final int zipMethod = ze.getMethod();
 
-        putShort(versionNeededToExtract(zipMethod, hasZip64Extra(ze)), buf, LFH_VERSION_NEEDED_OFFSET);
+        if (phased &&  !isZip64Required(entry.entry, zip64Mode)){
+            putShort(INITIAL_VERSION, buf, LFH_VERSION_NEEDED_OFFSET);
+        } else {
+            putShort(versionNeededToExtract(zipMethod, hasZip64Extra(ze)), buf, LFH_VERSION_NEEDED_OFFSET);
+        }
 
         GeneralPurposeBit generalPurposeBit = getGeneralPurposeBits(zipMethod,
                 !encodable
@@ -977,29 +1019,31 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         ZipUtil.toDosTime(ze.getTime(), buf, LFH_TIME_OFFSET);
 
         // CRC
-        // compressed length
-        // uncompressed length
-        if (zipMethod == DEFLATED || raf != null) {
+        if (phased){
+            putLong(ze.getCrc(), buf, LFH_CRC_OFFSET);
+        } else if (zipMethod == DEFLATED || raf != null) {
             System.arraycopy(LZERO, 0, buf, LFH_CRC_OFFSET, WORD);
-            if (hasZip64Extra(entry.entry)) {
-                // point to ZIP64 extended information extra field for
-                // sizes, may get rewritten once sizes are known if
-                // stream is seekable
-                ZipLong.ZIP64_MAGIC.putLong(buf, LFH_COMPRESSED_SIZE_OFFSET);
-                ZipLong.ZIP64_MAGIC.putLong(buf, LFH_ORIGINAL_SIZE_OFFSET);
-            } else {
-                System.arraycopy(LZERO, 0, buf, LFH_COMPRESSED_SIZE_OFFSET, WORD);
-                System.arraycopy(LZERO, 0, buf, LFH_ORIGINAL_SIZE_OFFSET, WORD);
-            }
         } else {
             putLong(ze.getCrc(), buf, LFH_CRC_OFFSET);
-            if (!hasZip64Extra(ze)) {
-                putLong(ze.getSize(), buf, LFH_COMPRESSED_SIZE_OFFSET);
-                putLong(ze.getSize(), buf, LFH_ORIGINAL_SIZE_OFFSET);
-            } else {
-                ZipLong.ZIP64_MAGIC.putLong(buf, LFH_COMPRESSED_SIZE_OFFSET);
-                ZipLong.ZIP64_MAGIC.putLong(buf, LFH_ORIGINAL_SIZE_OFFSET);
-            }
+        }
+
+        // compressed length
+        // uncompressed length
+        if (hasZip64Extra(entry.entry)){
+            // point to ZIP64 extended information extra field for
+            // sizes, may get rewritten once sizes are known if
+            // stream is seekable
+            ZipLong.ZIP64_MAGIC.putLong(buf, LFH_COMPRESSED_SIZE_OFFSET);
+            ZipLong.ZIP64_MAGIC.putLong(buf, LFH_ORIGINAL_SIZE_OFFSET);
+        } else if (phased) {
+            putLong(ze.getCompressedSize(), buf, LFH_COMPRESSED_SIZE_OFFSET);
+            putLong(ze.getSize(), buf, LFH_ORIGINAL_SIZE_OFFSET);
+        } else if (zipMethod == DEFLATED || raf != null) {
+            System.arraycopy(LZERO, 0, buf, LFH_COMPRESSED_SIZE_OFFSET, WORD);
+            System.arraycopy(LZERO, 0, buf, LFH_ORIGINAL_SIZE_OFFSET, WORD);
+        } else { // Stored
+            putLong(ze.getSize(), buf, LFH_COMPRESSED_SIZE_OFFSET);
+            putLong(ze.getSize(), buf, LFH_ORIGINAL_SIZE_OFFSET);
         }
         // file name length
         putShort(nameLen, buf, LFH_FILENAME_LENGTH_OFFSET);
