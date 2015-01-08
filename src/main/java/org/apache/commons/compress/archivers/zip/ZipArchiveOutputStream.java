@@ -1172,8 +1172,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
     private final Calendar calendarInstance = Calendar.getInstance();
 
-    private final Calendar calendarInstance = Calendar.getInstance();
-
     /**
      * Writes the central file header entry.
      * @param ze the entry to write
