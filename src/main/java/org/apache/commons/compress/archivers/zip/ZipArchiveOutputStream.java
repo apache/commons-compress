@@ -545,9 +545,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             // since standard mode is unable to remove the zip 64 header.
             ae.removeExtraField(Zip64ExtendedInformationExtraField.HEADER_ID);
         }
-        boolean is2PhaseSource = ae.getCrc() != -1
+        boolean is2PhaseSource = ae.getCrc() != ZipArchiveEntry.CRC_UNKNOWN
                 && ae.getSize() != ArchiveEntry.SIZE_UNKNOWN
-                && ae.getCompressedSize() != -1;
+                && ae.getCompressedSize() != ArchiveEntry.SIZE_UNKNOWN;
         putArchiveEntry(ae, is2PhaseSource);
         copyFromZipInputStream(rawStream);
         closeCopiedEntry(is2PhaseSource);
@@ -778,7 +778,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                                        + " STORED method when not writing to a"
                                        + " file");
             }
-            if (entry.entry.getCrc() == -1) {
+            if (entry.entry.getCrc() == ZipArchiveEntry.CRC_UNKNOWN) {
                 throw new ZipException("crc checksum is required for STORED"
                                        + " method when not writing to a file");
             }

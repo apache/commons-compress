@@ -164,7 +164,9 @@ public enum ZipMethod {
     /**
      * Unknown compression method.
      */
-    UNKNOWN(-1);
+    UNKNOWN();
+
+    static final int UNKNOWN_CODE = -1;
 
     private final int code;
 
@@ -176,6 +178,10 @@ public enum ZipMethod {
             cte.put(Integer.valueOf(method.getCode()), method);
         }
         codeToEnum = Collections.unmodifiableMap(cte);
+    }
+
+    private ZipMethod() {
+        this(UNKNOWN_CODE);
     }
 
     /**

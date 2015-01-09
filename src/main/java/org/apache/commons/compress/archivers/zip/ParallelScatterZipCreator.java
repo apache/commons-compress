@@ -116,7 +116,9 @@ public class ParallelScatterZipCreator {
 
     public void addArchiveEntry(final ZipArchiveEntry zipArchiveEntry, final InputStreamSupplier source) {
         final int method = zipArchiveEntry.getMethod();
-        if (method == -1) throw new IllegalArgumentException("Method must be set on the supplied zipArchiveEntry");
+        if (method == ZipMethod.UNKNOWN_CODE) {
+            throw new IllegalArgumentException("Method must be set on the supplied zipArchiveEntry");
+        }
         // Consider if we want to constrain the number of items that can enqueue here.
         es.submit(new Callable<ScatterZipOutputStream>() {
             public ScatterZipOutputStream call() throws Exception {

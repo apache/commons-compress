@@ -53,6 +53,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
 
     public static final int PLATFORM_UNIX = 3;
     public static final int PLATFORM_FAT  = 0;
+    public static final int CRC_UNKNOWN = -1;
     private static final int SHORT_MASK = 0xFFFF;
     private static final int SHORT_SHIFT = 16;
     private static final byte[] EMPTY = new byte[0];
@@ -67,7 +68,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-93"
      *        >COMPRESS-93</a>
      */
-    private int method = -1;
+    private int method = ZipMethod.UNKNOWN_CODE;
 
     /**
      * The {@link java.util.zip.ZipEntry#setSize} method in the base
