@@ -1023,10 +1023,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             putShort(versionNeededToExtract(zipMethod, hasZip64Extra(ze)), buf, LFH_VERSION_NEEDED_OFFSET);
         }
 
-        GeneralPurposeBit generalPurposeBit = getGeneralPurposeBits(zipMethod,
-                !encodable
-                        && fallbackToUTF8
-        );
+        GeneralPurposeBit generalPurposeBit = getGeneralPurposeBits(zipMethod, !encodable && fallbackToUTF8);
         generalPurposeBit.encode(buf, LFH_GPB_OFFSET);
 
         // compression method
