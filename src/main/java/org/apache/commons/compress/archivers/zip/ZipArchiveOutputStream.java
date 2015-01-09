@@ -27,7 +27,6 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -448,20 +447,16 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private void writeCentralDirectoryInChunks() throws IOException {
         int NUM_PER_WRITE = 1000;
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(70 * NUM_PER_WRITE);
-        Iterator<ZipArchiveEntry> iterator = entries.iterator();
-        ZipArchiveEntry ze;
         int count = 0;
-        while (iterator.hasNext()){
-            ze = iterator.next();
+        for (ZipArchiveEntry ze : entries) {
             byteArrayOutputStream.write(createCentralFileHeader(ze));
-            count++;
-            if (count > NUM_PER_WRITE){
-                writeCounted( byteArrayOutputStream.toByteArray());
+            if (++count > NUM_PER_WRITE){
+                writeCounted(byteArrayOutputStream.toByteArray());
                 byteArrayOutputStream.reset();
                 count = 0;
             }
         }
-        writeCounted( byteArrayOutputStream.toByteArray());
+        writeCounted(byteArrayOutputStream.toByteArray());
     }
 
     /**
