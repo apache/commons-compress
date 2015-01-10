@@ -40,7 +40,7 @@ import static java.util.Collections.synchronizedList;
  * #ZipArchiveOutputStream *before* calling #writeTo on this class.</p>
  */
 public class ParallelScatterZipCreator {
-    private List<ScatterZipOutputStream> streams = synchronizedList(new ArrayList<ScatterZipOutputStream>());
+    private final List<ScatterZipOutputStream> streams = synchronizedList(new ArrayList<ScatterZipOutputStream>());
     private final ExecutorService es;
     private final ScatterGatherBackingStoreSupplier supplier;
 
@@ -49,7 +49,7 @@ public class ParallelScatterZipCreator {
     private long scatterDoneAt;
 
     private static class DefaultSupplier implements ScatterGatherBackingStoreSupplier {
-        AtomicInteger storeNum = new AtomicInteger(0);
+        final AtomicInteger storeNum = new AtomicInteger(0);
 
         public ScatterGatherBackingStore get() throws IOException {
             File tempFile = File.createTempFile("parallelscatter", "n" + storeNum.incrementAndGet());
@@ -64,7 +64,7 @@ public class ParallelScatterZipCreator {
         return new ScatterZipOutputStream(bs, sc);
     }
 
-    private ThreadLocal<ScatterZipOutputStream> tlScatterStreams = new ThreadLocal<ScatterZipOutputStream>() {
+    private final ThreadLocal<ScatterZipOutputStream> tlScatterStreams = new ThreadLocal<ScatterZipOutputStream>() {
         @Override
         protected ScatterZipOutputStream initialValue() {
             try {

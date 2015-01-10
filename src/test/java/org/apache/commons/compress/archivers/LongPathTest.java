@@ -140,12 +140,11 @@ public class LongPathTest extends AbstractTestCase {
             assertTrue(ais instanceof ArArchiveInputStream);
             // CPIO does not store directories or directory names
             expected.clear();
-            for(int i=0; i < fileList.size(); i++){
-                String ent = fileList.get(i);
-                if (!ent.endsWith("/")){// not a directory
+            for (String ent : fileList) {
+                if (!ent.endsWith("/")) {// not a directory
                     final int lastSlash = ent.lastIndexOf('/');
                     if (lastSlash >= 0) { // extract path name
-                        expected.add(ent.substring(lastSlash+1, ent.length()));
+                        expected.add(ent.substring(lastSlash + 1, ent.length()));
                     } else {
                         expected.add(ent);
                     }

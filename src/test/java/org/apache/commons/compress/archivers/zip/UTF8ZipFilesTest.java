@@ -366,8 +366,8 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
     }
 
     public void testUtf8Interoperability() throws IOException {
-        File file1 = super.getFile("utf8-7zip-test.zip");
-        File file2 = super.getFile("utf8-winzip-test.zip");
+        File file1 = getFile("utf8-7zip-test.zip");
+        File file2 = getFile("utf8-winzip-test.zip");
 
         testFile(file1,CP437);
         testFile(file2,CP437);

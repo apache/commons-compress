@@ -163,7 +163,7 @@ public class SevenZFile implements Closeable {
         final byte archiveVersionMinor = file.readByte();
         if (archiveVersionMajor != 0) {
             throw new IOException(String.format("Unsupported 7z version (%d,%d)",
-                    Byte.valueOf(archiveVersionMajor), Byte.valueOf(archiveVersionMinor)));
+                    archiveVersionMajor, archiveVersionMinor));
         }
 
         final long startHeaderCrc = 0xffffFFFFL & Integer.reverseBytes(file.readInt());
