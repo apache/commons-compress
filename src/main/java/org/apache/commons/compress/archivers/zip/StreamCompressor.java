@@ -50,7 +50,7 @@ public abstract class StreamCompressor implements Closeable {
     private long sourcePayloadLength = 0;
     private long totalWrittenToOutputStream = 0;
 
-    private final int bufferSize = 4096;
+    private static final int bufferSize = 4096;
     private final byte[] outputBuffer = new byte[bufferSize];
     private final byte[] readerBuf = new byte[bufferSize];
 

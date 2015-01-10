@@ -157,4 +157,12 @@
     <Method name="equals" />
     <Bug pattern="EQ_DOESNT_OVERRIDE_EQUALS" />
   </Match>
+  
+  <!-- Reason: failure to delete a file that may not exist. And we really don't care that much either -->
+  <Match>
+    <Class name="org.apache.commons.compress.archivers.zip.FileBasedScatterGatherBackingStore" />
+    <Method name="close" />
+    <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE" />
+  </Match>
+
 </FindBugsFilter>
