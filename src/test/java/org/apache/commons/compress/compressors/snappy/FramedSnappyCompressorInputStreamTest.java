@@ -154,7 +154,7 @@ public final class FramedSnappyCompressorInputStreamTest
             fail("expected an exception");
             in.close();
         } catch (IOException ex) {
-            assertTrue(ex.getMessage().indexOf("unskippable chunk") > -1);
+            assertTrue(ex.getMessage().contains("unskippable chunk"));
         }
     }
 

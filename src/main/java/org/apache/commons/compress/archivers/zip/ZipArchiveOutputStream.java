@@ -1142,7 +1142,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
     private byte[] createCentralFileHeader(ZipArchiveEntry ze) throws IOException {
 
-        final long lfhOffset = offsets.get(ze).longValue();
+        final long lfhOffset = offsets.get(ze);
         final boolean needsZip64Extra = hasZip64Extra(ze)
                 || ze.getCompressedSize() >= ZIP64_MAGIC
                 || ze.getSize() >= ZIP64_MAGIC

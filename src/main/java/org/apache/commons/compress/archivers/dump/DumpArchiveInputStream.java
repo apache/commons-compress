@@ -127,7 +127,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
         // put in a dummy record for the root node.
         Dirent root = new Dirent(2, 2, 4, ".");
-        names.put(Integer.valueOf(2), root);
+        names.put(2, root);
 
         // use priority based on queue to ensure parent directories are
         // released first.
@@ -306,7 +306,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         }
 
         entry.setName(path);
-        entry.setSimpleName(names.get(Integer.valueOf(entry.getIno())).getName());
+        entry.setSimpleName(names.get(entry.getIno()).getName());
         entry.setOffset(filepos);
 
         return entry;
@@ -327,9 +327,9 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
                 raw.readRecord();
             }
 
-            if (!names.containsKey(Integer.valueOf(entry.getIno())) &&
+            if (!names.containsKey(entry.getIno()) &&
                     DumpArchiveConstants.SEGMENT_TYPE.INODE == entry.getHeaderType()) {
-                pending.put(Integer.valueOf(entry.getIno()), entry);
+                pending.put(entry.getIno(), entry);
             }
 
             int datalen = DumpArchiveConstants.TP_SIZE * entry.getHeaderCount();
@@ -367,7 +367,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
                 }
                 */
 
-                names.put(Integer.valueOf(ino), d);
+                names.put(ino, d);
 
                 // check whether this allows us to fill anything in the pending list.
                 for (Map.Entry<Integer, DumpArchiveEntry> e : pending.entrySet()) {
@@ -384,7 +384,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
                 // remove anything that we found. (We can't do it earlier
                 // because of concurrent modification exceptions.)
                 for (DumpArchiveEntry e : queue) {
-                    pending.remove(Integer.valueOf(e.getIno()));
+                    pending.remove(e.getIno());
                 }
             }
 
@@ -413,12 +413,12 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         Dirent dirent = null;
 
         for (int i = entry.getIno();; i = dirent.getParentIno()) {
-            if (!names.containsKey(Integer.valueOf(i))) {
+            if (!names.containsKey(i)) {
                 elements.clear();
                 break;
             }
 
-            dirent = names.get(Integer.valueOf(i));
+            dirent = names.get(i);
             elements.push(dirent.getName());
 
             if (dirent.getIno() == dirent.getParentIno()) {
@@ -428,7 +428,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
         // if an element is missing defer the work and read next entry.
         if (elements.isEmpty()) {
-            pending.put(Integer.valueOf(entry.getIno()), entry);
+            pending.put(entry.getIno(), entry);
 
             return null;
         }

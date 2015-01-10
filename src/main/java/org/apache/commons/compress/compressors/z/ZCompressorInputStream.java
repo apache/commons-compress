@@ -144,7 +144,7 @@ public class ZCompressorInputStream extends LZWInputStream {
                 addRepeatOfPreviousCode();
                 addedUnfinishedEntry = true;
             } else if (code > tableSize) {
-                throw new IOException(String.format("Invalid %d bit code 0x%x", Integer.valueOf(codeSize), Integer.valueOf(code)));
+                throw new IOException(String.format("Invalid %d bit code 0x%x", codeSize, code));
             }
             return expandCodeToOutputStack(code, addedUnfinishedEntry);
         }

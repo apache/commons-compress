@@ -490,9 +490,9 @@ public class SevenZOutputFile implements Closeable {
         boolean hasEmptyFiles = false;
         int emptyStreamCounter = 0;
         final BitSet emptyFiles = new BitSet(0);
-        for (int i = 0; i < files.size(); i++) {
-            if (!files.get(i).hasStream()) {
-                boolean isDir = files.get(i).isDirectory();
+        for (SevenZArchiveEntry file1 : files) {
+            if (!file1.hasStream()) {
+                boolean isDir = file1.isDirectory();
                 emptyFiles.set(emptyStreamCounter++, !isDir);
                 hasEmptyFiles |= !isDir;
             }
@@ -513,9 +513,9 @@ public class SevenZOutputFile implements Closeable {
         boolean hasAntiItems = false;
         final BitSet antiItems = new BitSet(0);
         int antiItemCounter = 0;
-        for (int i = 0; i < files.size(); i++) {
-            if (!files.get(i).hasStream()) {
-                boolean isAnti = files.get(i).isAntiItem();
+        for (SevenZArchiveEntry file1 : files) {
+            if (!file1.hasStream()) {
+                boolean isAnti = file1.isAntiItem();
                 antiItems.set(antiItemCounter++, isAnti);
                 hasAntiItems |= isAnti;
             }

@@ -121,8 +121,7 @@ public abstract class AbstractTestCase extends TestCase {
     }
 
     private static final boolean ON_WINDOWS =
-        System.getProperty("os.name").toLowerCase(Locale.ENGLISH)
-        .indexOf("windows") > -1;
+            System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("windows");
 
     /**
      * Accommodate Windows bug encountered in both Sun and IBM JDKs.

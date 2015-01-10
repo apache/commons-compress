@@ -62,7 +62,7 @@ class LZMA2Decoder extends CoderBase {
 
     @Override
     Object getOptionsFromCoder(Coder coder, InputStream in) {
-        return Integer.valueOf(getDictionarySize(coder));
+        return getDictionarySize(coder);
     }
 
     private int getDictSize(Object opts) {

@@ -62,8 +62,7 @@ public class TarUtils {
                 final int length = buffer.length;
                 StringBuilder result = new StringBuilder(length);
 
-                for (int i = 0; i < length; ++i) {
-                    byte b = buffer[i];
+                for (byte b : buffer) {
                     if (b == 0) { // Trailing null
                         break;
                     }

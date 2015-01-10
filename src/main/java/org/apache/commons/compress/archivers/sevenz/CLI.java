@@ -58,7 +58,7 @@ public class CLI {
                     first = false;
                     sb.append(m.getMethod());
                     if (m.getOptions() != null) {
-                        sb.append("(" + m.getOptions() + ")");
+                        sb.append("(").append(m.getOptions()).append(")");
                     }
                 }
                 return sb.toString();

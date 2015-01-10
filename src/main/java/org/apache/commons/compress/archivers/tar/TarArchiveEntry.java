@@ -378,7 +378,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @return This entry's name.
      */
     public String getName() {
-        return name.toString();
+        return name;
     }
 
     /**
@@ -405,7 +405,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @return This entry's link name.
      */
     public String getLinkName() {
-        return linkName.toString();
+        return linkName;
     }
 
     /**
@@ -461,7 +461,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @return This entry's user name.
      */
     public String getUserName() {
-        return userName.toString();
+        return userName;
     }
 
     /**
@@ -479,7 +479,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @return This entry's group name.
      */
     public String getGroupName() {
-        return groupName.toString();
+        return groupName;
     }
 
     /**
@@ -1035,7 +1035,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
                         fileName = fileName.substring(2);
                     }
                 }
-            } else if (osname.indexOf("netware") > -1) {
+            } else if (osname.contains("netware")) {
                 int colon = fileName.indexOf(':');
                 if (colon != -1) {
                     fileName = fileName.substring(colon + 1);
