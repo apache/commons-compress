@@ -23,8 +23,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.Deflater;
@@ -43,6 +45,7 @@ public class ParallelScatterZipCreator {
     private final List<ScatterZipOutputStream> streams = synchronizedList(new ArrayList<ScatterZipOutputStream>());
     private final ExecutorService es;
     private final ScatterGatherBackingStoreSupplier supplier;
+    private final List<Future> futures = new ArrayList<Future>();
 
     private final long startedAt = System.currentTimeMillis();
     private long compressionDoneAt = 0;
@@ -120,8 +123,8 @@ public class ParallelScatterZipCreator {
             throw new IllegalArgumentException("Method must be set on the supplied zipArchiveEntry");
         }
         // Consider if we want to constrain the number of items that can enqueue here.
-        es.submit(new Callable<ScatterZipOutputStream>() {
-            public ScatterZipOutputStream call() throws Exception {
+        Future<Object> future = es.submit(new Callable<Object>() {
+            public Void call() throws Exception {
                 ScatterZipOutputStream streamToUse = tlScatterStreams.get();
                 InputStream payload = source.get();
                 try {
@@ -129,10 +132,11 @@ public class ParallelScatterZipCreator {
                 } finally {
                     payload.close();
                 }
-                return streamToUse;
+                return null;
             }
 
         });
+        futures.add( future);
     }
 
 
@@ -146,8 +150,16 @@ public class ParallelScatterZipCreator {
      * @param targetStream The ZipArchiveOutputStream to receive the contents of the scatter streams
      * @throws IOException          If writing fails
      * @throws InterruptedException If we get interrupted
+     * @throws ExecutionException   If something happens in the parallel execution
      */
-    public void writeTo(ZipArchiveOutputStream targetStream) throws IOException, InterruptedException {
+    public void writeTo(ZipArchiveOutputStream targetStream)
+            throws IOException, InterruptedException, ExecutionException {
+
+        // Make sure we catch any exceptions from parallel phase
+        for (Future future : futures) {
+            future.get();
+        }
+
         es.shutdown();
         es.awaitTermination(1000 * 60, TimeUnit.SECONDS);
 
