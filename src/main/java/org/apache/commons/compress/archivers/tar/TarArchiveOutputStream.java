@@ -606,7 +606,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     private void failForBigNumbers(TarArchiveEntry entry) {
         failForBigNumber("entry size", entry.getSize(), TarConstants.MAXSIZE);
-        failForBigNumber("group id", entry.getGroupId(), TarConstants.MAXID);
+        failForBigNumberWithPosixMessage("group id", entry.getGroupId(), TarConstants.MAXID);
         failForBigNumber("last modification time",
                          entry.getModTime().getTime() / 1000,
                          TarConstants.MAXSIZE);
@@ -619,10 +619,18 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     private void failForBigNumber(String field, long value, long maxValue) {
+        failForBigNumber(field, value, maxValue, "");
+    }
+
+    private void failForBigNumberWithPosixMessage(String field, long value, long maxValue) {
+        failForBigNumber(field, value, maxValue, " Use STAR or POSIX extensions to overcome this limit");
+    }
+
+    private void failForBigNumber(String field, long value, long maxValue, String additionalMsg) {
         if (value < 0 || value > maxValue) {
             throw new RuntimeException(field + " '" + value
-                                       + "' is too big ( > "
-                                       + maxValue + " )");
+                    + "' is too big ( > "
+                    + maxValue + " )." + additionalMsg);
         }
     }
 
