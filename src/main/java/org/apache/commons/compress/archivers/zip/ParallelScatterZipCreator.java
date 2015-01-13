@@ -40,18 +40,22 @@ import static java.util.Collections.synchronizedList;
  * the output file. Things that need to come in a specific order (manifests, directories)
  * must be handled by the client of this class, usually by writing these things to the
  * #ZipArchiveOutputStream *before* calling #writeTo on this class.</p>
+ * <p>
+ * The client can supply an ExecutorService, but for reasons of memory model consistency,
+ * this will be shut down by this class prior to completion.
+ * </p>
  */
 public class ParallelScatterZipCreator {
     private final List<ScatterZipOutputStream> streams = synchronizedList(new ArrayList<ScatterZipOutputStream>());
     private final ExecutorService es;
-    private final ScatterGatherBackingStoreSupplier supplier;
+    private final ScatterGatherBackingStoreSupplier backingStoreSupplier;
     private final List<Future> futures = new ArrayList<Future>();
 
     private final long startedAt = System.currentTimeMillis();
     private long compressionDoneAt = 0;
     private long scatterDoneAt;
 
-    private static class DefaultSupplier implements ScatterGatherBackingStoreSupplier {
+    private static class DefaultBackingStoreSupplier implements ScatterGatherBackingStoreSupplier {
         final AtomicInteger storeNum = new AtomicInteger(0);
 
         public ScatterGatherBackingStore get() throws IOException {
@@ -71,7 +75,7 @@ public class ParallelScatterZipCreator {
         @Override
         protected ScatterZipOutputStream initialValue() {
             try {
-                ScatterZipOutputStream scatterStream = createDeferred(supplier);
+                ScatterZipOutputStream scatterStream = createDeferred(backingStoreSupplier);
                 streams.add(scatterStream);
                 return scatterStream;
             } catch (IOException e) {
@@ -84,27 +88,30 @@ public class ParallelScatterZipCreator {
      * Create a ParallelScatterZipCreator with default threads
      */
     public ParallelScatterZipCreator() {
-        this(Runtime.getRuntime().availableProcessors());
+        this(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
     }
 
     /**
      * Create a ParallelScatterZipCreator
      *
-     * @param nThreads the number of threads to use in parallel.
+     * @param executorService The executorService to use for parallel scheduling. For technical reasons,
+     *                        this will be shut down by this class.
      */
-    public ParallelScatterZipCreator(int nThreads) {
-        this( nThreads, new DefaultSupplier());
+    public ParallelScatterZipCreator(ExecutorService executorService) {
+        this(executorService, new DefaultBackingStoreSupplier());
     }
 
     /**
      * Create a ParallelScatterZipCreator
      *
-     * @param nThreads the number of threads to use in parallel.
+     * @param executorService The executorService to use. For technical reasons, this will be shut down
+     *                        by this class.
      * @param backingStoreSupplier The supplier of backing store which shall be used
      */
-    public ParallelScatterZipCreator(int nThreads, ScatterGatherBackingStoreSupplier backingStoreSupplier) {
-        supplier = backingStoreSupplier;
-        es = Executors.newFixedThreadPool(nThreads);
+    public ParallelScatterZipCreator(ExecutorService executorService,
+                                     ScatterGatherBackingStoreSupplier backingStoreSupplier) {
+        this.backingStoreSupplier = backingStoreSupplier;
+        es = executorService;
     }
 
     /**
@@ -113,19 +120,43 @@ public class ParallelScatterZipCreator {
      * This method is expected to be called from a single client thread
      * </p>
      *
-     * @param zipArchiveEntry The entry to add. Compression method
+     * @param zipArchiveEntry The entry to add.
      * @param source          The source input stream supplier
      */
 
     public void addArchiveEntry(final ZipArchiveEntry zipArchiveEntry, final InputStreamSupplier source) {
+        submit(createCallable(zipArchiveEntry, source));
+    }
+
+    /**
+     * Submit a callable for compression
+     * @param callable The callable to run
+     */
+    public void submit(Callable<Object> callable) {
+        futures.add(es.submit(callable));
+    }
+
+    /**
+     * Create a callable that will compress the given archive entry.
+     *
+     * <p>This method is expected to be called from a single client thread.</p>
+     * <p>
+     * This method is used by clients that want finer grained control over how the callable is
+     * created, possibly wanting to wrap this callable in a different callable</p>
+     *
+     * @param zipArchiveEntry The entry to add.
+     * @param source    The source input stream supplier
+     * @return   A callable that will be used to check for errors
+     */
+
+    public Callable<Object> createCallable(final ZipArchiveEntry zipArchiveEntry, final InputStreamSupplier source) {
         final int method = zipArchiveEntry.getMethod();
         if (method == ZipMethod.UNKNOWN_CODE) {
             throw new IllegalArgumentException("Method must be set on the supplied zipArchiveEntry");
         }
-        // Consider if we want to constrain the number of items that can enqueue here.
-        Future<Object> future = es.submit(new Callable<Object>() {
-            public Void call() throws Exception {
-                ScatterZipOutputStream streamToUse = tlScatterStreams.get();
+        return new Callable<Object>() {
+            public Object call() throws Exception {
+                final ScatterZipOutputStream streamToUse = tlScatterStreams.get();
                 InputStream payload = source.get();
                 try {
                     streamToUse.addArchiveEntry(zipArchiveEntry, payload, method);
@@ -134,9 +165,7 @@ public class ParallelScatterZipCreator {
                 }
                 return null;
             }
-
-        });
-        futures.add( future);
+        };
     }
 
 
@@ -161,7 +190,7 @@ public class ParallelScatterZipCreator {
         }
 
         es.shutdown();
-        es.awaitTermination(1000 * 60, TimeUnit.SECONDS);
+        es.awaitTermination(1000 * 60, TimeUnit.SECONDS);  // == Infinity. We really *must* wait for this to complete
 
         // It is important that all threads terminate before we go on, ensure happens-before relationship
         compressionDoneAt = System.currentTimeMillis();
