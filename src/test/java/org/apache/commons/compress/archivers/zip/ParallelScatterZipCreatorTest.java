@@ -27,11 +27,16 @@ import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.junit.Assert.*;
 
 @SuppressWarnings("OctalInteger")
 public class ParallelScatterZipCreatorTest {
+
+    private final int NUMITEMS = 5000;
 
     @Test
     public void concurrent()
@@ -44,10 +49,34 @@ public class ParallelScatterZipCreatorTest {
         Map<String, byte[]> entries = writeEntries(zipCreator);
         zipCreator.writeTo(zos);
         zos.close();
-
         removeEntriesFoundInZipFile(result, entries);
         assertTrue(entries.size() == 0);
         assertNotNull( zipCreator.getStatisticsMessage());
+    }
+
+    @Test
+    public void callableApi()
+            throws Exception {
+        File result = File.createTempFile("parallelScatterGather2", "");
+        ZipArchiveOutputStream zos = new ZipArchiveOutputStream(result);
+        zos.setEncoding("UTF-8");
+        ExecutorService es = Executors.newFixedThreadPool(1);
+
+        ScatterGatherBackingStoreSupplier supp = new ScatterGatherBackingStoreSupplier() {
+            public ScatterGatherBackingStore get() throws IOException {
+                return new FileBasedScatterGatherBackingStore(File.createTempFile("parallelscatter", "n1"));
+            }
+        };
+
+        ParallelScatterZipCreator zipCreator = new ParallelScatterZipCreator(es, supp);
+        Map<String, byte[]> entries = writeEntriesAsCallable(zipCreator);
+        zipCreator.writeTo(zos);
+        zos.close();
+
+
+        removeEntriesFoundInZipFile(result, entries);
+        assertTrue(entries.size() == 0);
+        assertNotNull(zipCreator.getStatisticsMessage());
     }
 
     private void removeEntriesFoundInZipFile(File result, Map<String, byte[]> entries) throws IOException {
@@ -58,21 +87,16 @@ public class ParallelScatterZipCreatorTest {
             InputStream inputStream = zf.getInputStream(zipArchiveEntry);
             byte[] actual = IOUtils.toByteArray(inputStream);
             byte[] expected = entries.remove(zipArchiveEntry.getName());
-            assertArrayEquals( expected, actual);
+            assertArrayEquals( "For " + zipArchiveEntry.getName(),  expected, actual);
         }
         zf.close();
     }
 
     private Map<String, byte[]> writeEntries(ParallelScatterZipCreator zipCreator) {
         Map<String, byte[]> entries = new HashMap<String, byte[]>();
-        for (int i = 0; i < 10000; i++){
-            ZipArchiveEntry za = new ZipArchiveEntry( "file" + i);
-            final String payload = "content" + i;
-            final byte[] payloadBytes = payload.getBytes();
-            entries.put( za.getName(), payloadBytes);
-            za.setMethod(ZipArchiveEntry.DEFLATED);
-            za.setSize(payload.length());
-            za.setUnixMode(UnixStat.FILE_FLAG | 0664);
+        for (int i = 0; i < NUMITEMS; i++){
+            final byte[] payloadBytes = ("content" + i).getBytes();
+            ZipArchiveEntry za = createZipArchiveEntry(entries, i, payloadBytes);
             zipCreator.addArchiveEntry(za, new InputStreamSupplier() {
                 public InputStream get() {
                     return new ByteArrayInputStream(payloadBytes);
@@ -80,5 +104,29 @@ public class ParallelScatterZipCreatorTest {
             });
         }
         return entries;
+    }
+
+    private Map<String, byte[]> writeEntriesAsCallable(ParallelScatterZipCreator zipCreator) {
+        Map<String, byte[]> entries = new HashMap<String, byte[]>();
+        for (int i = 0; i < NUMITEMS; i++){
+            final byte[] payloadBytes = ("content" + i).getBytes();
+            ZipArchiveEntry za = createZipArchiveEntry(entries, i, payloadBytes);
+            final Callable<Object> callable = zipCreator.createCallable(za, new InputStreamSupplier() {
+                public InputStream get() {
+                    return new ByteArrayInputStream(payloadBytes);
+                }
+            });
+            zipCreator.submit(callable);
+        }
+        return entries;
+    }
+
+    private ZipArchiveEntry createZipArchiveEntry(Map<String, byte[]> entries, int i, byte[] payloadBytes) {
+        ZipArchiveEntry za = new ZipArchiveEntry( "file" + i);
+        entries.put( za.getName(), payloadBytes);
+        za.setMethod(ZipArchiveEntry.DEFLATED);
+        za.setSize(payloadBytes.length);
+        za.setUnixMode(UnixStat.FILE_FLAG | 0664);
+        return za;
     }
 }
