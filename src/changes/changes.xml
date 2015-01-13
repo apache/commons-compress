@@ -75,6 +75,11 @@ The <action> type attribute can be add,update,fix,remove.
         has thrown an exception reading the file - for example if the
         file doesn't exist.
       </action>
+      <action type="fix" date="2015-01-13" issue="COMPRESS-290"
+              due-to="Kristian Rosenvold">
+        Improved error message when tar encounters a groupId that is
+        too big to write without using the STAR or POSIX format.
+      </action>
     </release>
 
     <release version="1.9" date="2014-10-09"
