@@ -32,6 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.Deflater;
 
 import static java.util.Collections.synchronizedList;
+import static org.apache.commons.compress.archivers.zip.ZipArchiveEntryRequest.createZipArchiveEntryRequest;
 
 /**
  * Creates a zip in parallel by using multiple threadlocal #ScatterZipOutputStream instances.
@@ -132,7 +133,7 @@ public class ParallelScatterZipCreator {
      * Submit a callable for compression
      * @param callable The callable to run
      */
-    public void submit(Callable<Object> callable) {
+    public final void submit(Callable<Object> callable) {
         futures.add(es.submit(callable));
     }
 
@@ -149,20 +150,15 @@ public class ParallelScatterZipCreator {
      * @return   A callable that will be used to check for errors
      */
 
-    public Callable<Object> createCallable(final ZipArchiveEntry zipArchiveEntry, final InputStreamSupplier source) {
+    public final Callable<Object> createCallable(ZipArchiveEntry zipArchiveEntry, InputStreamSupplier source) {
         final int method = zipArchiveEntry.getMethod();
         if (method == ZipMethod.UNKNOWN_CODE) {
             throw new IllegalArgumentException("Method must be set on the supplied zipArchiveEntry");
         }
+        final ZipArchiveEntryRequest zipArchiveEntryRequest = createZipArchiveEntryRequest(zipArchiveEntry, source);
         return new Callable<Object>() {
             public Object call() throws Exception {
-                final ScatterZipOutputStream streamToUse = tlScatterStreams.get();
-                InputStream payload = source.get();
-                try {
-                    streamToUse.addArchiveEntry(zipArchiveEntry, payload, method);
-                } finally {
-                    payload.close();
-                }
+                tlScatterStreams.get().addArchiveEntry(zipArchiveEntryRequest);
                 return null;
             }
         };
