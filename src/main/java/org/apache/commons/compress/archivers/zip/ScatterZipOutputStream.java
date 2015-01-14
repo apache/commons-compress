@@ -49,25 +49,30 @@ public class ScatterZipOutputStream implements Closeable {
     private final StreamCompressor streamCompressor;
 
     private static class CompressedEntry {
-        final ZipArchiveEntry entry;
+        final ZipArchiveEntryRequest zipArchiveEntryRequest;
         final long crc;
         final long compressedSize;
-        final int method;
         final long size;
 
-        public CompressedEntry(ZipArchiveEntry entry, long crc, long compressedSize, int method, long size) {
-            this.entry = entry;
+        public CompressedEntry(ZipArchiveEntryRequest zipArchiveEntryRequest, long crc, long compressedSize, long size) {
+            this.zipArchiveEntryRequest = zipArchiveEntryRequest;
             this.crc = crc;
             this.compressedSize = compressedSize;
-            this.method = method;
             this.size = size;
         }
 
+        /**
+         * Update the original ZipArchiveEntry witg sizes/crc
+         * Do not use this methods from threads that did not create the instance itself !
+         * @return the zipeArchiveEntry that is basis for this request
+         */
+
         public ZipArchiveEntry transferToArchiveEntry(){
+            ZipArchiveEntry entry = zipArchiveEntryRequest.getZipArchiveEntry();
             entry.setCompressedSize(compressedSize);
             entry.setSize(size);
             entry.setCrc(crc);
-            entry.setMethod(method);
+            entry.setMethod(zipArchiveEntryRequest.getMethod());
             return entry;
         }
     }
@@ -81,16 +86,18 @@ public class ScatterZipOutputStream implements Closeable {
     /**
      * Add an archive entry to this scatter stream.
      *
-     * @param zipArchiveEntry The entry to write
-     * @param payload         The content to write for the entry. The caller is responsible for closing this.
-     * @param method          The compression method
+     * @param zipArchiveEntryRequest The entry to write.
      * @throws IOException    If writing fails
      */
-    public void addArchiveEntry(ZipArchiveEntry zipArchiveEntry, InputStream payload, int method) throws IOException {
-        streamCompressor.deflate(payload, method);
-        items.add(new CompressedEntry(zipArchiveEntry, streamCompressor.getCrc32(),
-                                      streamCompressor.getBytesWrittenForLastEntry(), method,
-                                      streamCompressor.getBytesRead()));
+    public void addArchiveEntry(ZipArchiveEntryRequest zipArchiveEntryRequest) throws IOException {
+        final InputStream payloadStream = zipArchiveEntryRequest.getPayloadStream();
+        try {
+            streamCompressor.deflate(payloadStream, zipArchiveEntryRequest.getMethod());
+        } finally {
+            payloadStream.close();
+        }
+        items.add(new CompressedEntry(zipArchiveEntryRequest, streamCompressor.getCrc32(),
+                                      streamCompressor.getBytesWrittenForLastEntry(), streamCompressor.getBytesRead()));
     }
 
     /**
