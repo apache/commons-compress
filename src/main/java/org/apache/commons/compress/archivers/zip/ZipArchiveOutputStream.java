@@ -204,6 +204,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     private static final byte[] LZERO = {0, 0, 0, 0};
 
+    private static final byte[] ONE = ZipLong.getBytes(1L);
+
     /**
      * Holds the offsets of the LFH starts for each entry.
      */
@@ -265,6 +267,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private boolean hasUsedZip64 = false;
 
     private Zip64Mode zip64Mode = Zip64Mode.AsNeeded;
+
+    private final byte[] copyBuffer = new byte[32768];
+    private final Calendar calendarInstance = Calendar.getInstance();
 
     /**
      * Creates a new ZIP OutputStream filtering the underlying stream.
@@ -499,7 +504,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         closeEntry(actuallyNeedsZip64, phased);
     }
 
-
     private void closeEntry(boolean actuallyNeedsZip64, boolean phased) throws IOException {
         if (!phased && raf != null) {
             rewriteSizesAndCrc(actuallyNeedsZip64);
@@ -627,6 +631,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private boolean isTooLageForZip32(ZipArchiveEntry zipArchiveEntry){
         return zipArchiveEntry.getSize() >= ZIP64_MAGIC || zipArchiveEntry.getCompressedSize() >= ZIP64_MAGIC;
     }
+
     /**
      * When using random access output, write the local file header
      * and potentiall the ZIP64 extra containing the correct CRC and
@@ -895,10 +900,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         streamCompressor.writeCounted(data);
     }
 
-
-
-    final byte[] copyBuffer = new byte[32768];
-
     private void copyFromZipInputStream(InputStream src) throws IOException {
         if (entry == null) {
             throw new IllegalStateException("No current entry");
@@ -1159,10 +1160,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
         handleZip64Extra(ze, lfhOffset, needsZip64Extra);
 
-       return createCentralFileHeader(ze, getName(ze), lfhOffset, needsZip64Extra);
-    };
-
-    private final Calendar calendarInstance = Calendar.getInstance();
+        return createCentralFileHeader(ze, getName(ze), lfhOffset, needsZip64Extra);
+    }
 
     /**
      * Writes the central file header entry.
@@ -1316,8 +1315,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         writeCounted(ZipShort.getBytes(dataLen));
         streamCompressor.writeCounted(data.array(), data.arrayOffset(), dataLen);
     }
-
-    private static final byte[] ONE = ZipLong.getBytes(1L);
 
     /**
      * Writes the &quot;ZIP64 End of central dir record&quot; and
