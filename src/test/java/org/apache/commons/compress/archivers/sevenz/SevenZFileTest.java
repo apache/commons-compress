@@ -60,6 +60,15 @@ public class SevenZFileTest extends AbstractTestCase {
         }
     }
 
+    public void test7zDecryptUnarchiveWithoutPassword() throws Exception {
+        try {
+            test7zUnarchive(getFile("bla.encrypted.7z"), SevenZMethod.LZMA);
+            fail("Expected a PasswordRequiredException");
+        } catch (PasswordRequiredException ex) {
+            // expected
+        }
+    }
+
     private void test7zUnarchive(File f, SevenZMethod m) throws Exception {
         test7zUnarchive(f, m, null);
     }

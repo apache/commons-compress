@@ -54,7 +54,7 @@ class AES256SHA256Decoder extends CoderBase {
                 System.arraycopy(coder.properties, 2 + saltSize, iv, 0, ivSize);
 
                 if (passwordBytes == null) {
-                    throw new IOException("Cannot read encrypted files without a password");
+                    throw new PasswordRequiredException();
                 }
                 final byte[] aesKeyBytes;
                 if (numCyclesPower == 0x3f) {

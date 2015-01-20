@@ -80,6 +80,11 @@ The <action> type attribute can be add,update,fix,remove.
         Improved error message when tar encounters a groupId that is
         too big to write without using the STAR or POSIX format.
       </action>
+      <action type="fix" date="2015-01-20" issue="COMPRESS-298">
+        SevenZFile now throws the specific PasswordRequiredException
+        when it encounters an encrypted stream but no password has
+        been specified.
+      </action>
     </release>
 
     <release version="1.9" date="2014-10-09"
