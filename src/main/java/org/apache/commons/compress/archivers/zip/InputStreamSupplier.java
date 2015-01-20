@@ -25,7 +25,7 @@ public interface InputStreamSupplier {
 
     /**
      * Supply an input stream for a resource.
-     * @return the input stream, may be null if there is no content for the resource.
+     * @return the input stream. Should never null, but may be an empty stream.
      */
     InputStream get();
 }
