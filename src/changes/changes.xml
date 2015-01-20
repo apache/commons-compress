@@ -44,6 +44,19 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.10" date="not released, yet"
              description="Release 1.10">
+
+      <action type="add" date="2014-01-10" issue="COMPRESS-296"
+              due-to="Kristian Rosenvold">
+        Added support for parallel compression. This low-level API allows
+        a client to build a zip/jar file by using the class
+        org.apache.commons.compress.archivers.zip.ParallelScatterZipCreator.
+
+        Zip documentation updated with further notes about parallel features.
+
+        Please note that some aspects of jar creation need to be
+        handled by client code and is not part of commons-compress for this release.
+      </action>
+
       <action type="add" date="2014-12-24"
               due-to="Kristian Rosenvold">
         Cut overall object instantiation in half by changing file
