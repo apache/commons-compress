@@ -60,15 +60,6 @@ public class SevenZFileTest extends AbstractTestCase {
         }
     }
 
-    public void test7zDecryptUnarchiveWithoutPassword() throws Exception {
-        try {
-            test7zUnarchive(getFile("bla.encrypted.7z"), SevenZMethod.LZMA);
-            fail("Expected a PasswordRequiredException");
-        } catch (PasswordRequiredException ex) {
-            // expected
-        }
-    }
-
     private void test7zUnarchive(File f, SevenZMethod m) throws Exception {
         test7zUnarchive(f, m, null);
     }
@@ -77,9 +68,14 @@ public class SevenZFileTest extends AbstractTestCase {
         try {
             new SevenZFile(getFile("bla.encrypted.7z"));
             fail("shouldn't decrypt without a password");
-        } catch (IOException ex) {
-            assertEquals("Cannot read encrypted files without a password",
-                         ex.getMessage());
+        } catch (PasswordRequiredException ex) {
+            String msg = ex.getMessage();
+            assertTrue("Should start with whining about being unable to decrypt",
+                       msg.startsWith("Cannot read encrypted archive "));
+            assertTrue("Should finish the sentence properly",
+                       msg.endsWith(" without a password."));
+            assertTrue("Should contain archive's name",
+                       msg.contains("bla.encrypted.7z"));
         }
     }
 

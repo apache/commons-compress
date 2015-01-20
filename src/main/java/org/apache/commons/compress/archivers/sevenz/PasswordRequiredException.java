@@ -26,7 +26,7 @@ import java.io.IOException;
  */
 public class PasswordRequiredException extends IOException {
 
-    public PasswordRequiredException() {
-        super("Cannot read encrypted files without a password");
+    public PasswordRequiredException(String archiveName) {
+        super("Cannot read encrypted archive " + archiveName + " without a password.");
     }
 }

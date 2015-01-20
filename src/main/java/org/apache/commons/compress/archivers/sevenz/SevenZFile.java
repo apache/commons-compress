@@ -67,6 +67,7 @@ import org.apache.commons.compress.utils.IOUtils;
 public class SevenZFile implements Closeable {
     static final int SIGNATURE_HEADER_SIZE = 32;
 
+    private final String fileName;
     private RandomAccessFile file;
     private final Archive archive;
     private int currentEntryIndex = -1;
@@ -91,6 +92,7 @@ public class SevenZFile implements Closeable {
     public SevenZFile(final File filename, final byte[] password) throws IOException {
         boolean succeeded = false;
         this.file = new RandomAccessFile(filename, "r");
+        this.fileName = filename.getAbsolutePath();
         try {
             archive = readHeaders(password);
             if (password != null) {
@@ -276,8 +278,8 @@ public class SevenZFile implements Closeable {
             if (coder.numInStreams != 1 || coder.numOutStreams != 1) {
                 throw new IOException("Multi input/output stream coders are not yet supported");
             }
-            inputStreamStack = Coders.addDecoder(inputStreamStack, folder.getUnpackSizeForCoder(coder),
-                    coder, password);
+            inputStreamStack = Coders.addDecoder(fileName, inputStreamStack,
+                    folder.getUnpackSizeForCoder(coder), coder, password);
         }
         if (folder.hasCrc) {
             inputStreamStack = new CRC32VerifyingInputStream(inputStreamStack,
@@ -859,8 +861,8 @@ public class SevenZFile implements Closeable {
                 throw new IOException("Multi input/output stream coders are not yet supported");
             }
             SevenZMethod method = SevenZMethod.byId(coder.decompressionMethodId);
-            inputStreamStack = Coders.addDecoder(inputStreamStack, folder.getUnpackSizeForCoder(coder),
-                    coder, password);
+            inputStreamStack = Coders.addDecoder(fileName, inputStreamStack,
+                    folder.getUnpackSizeForCoder(coder), coder, password);
             methods.addFirst(new SevenZMethodConfiguration(method,
                      Coders.findByMethod(method).getOptionsFromCoder(coder, inputStreamStack)));
         }
