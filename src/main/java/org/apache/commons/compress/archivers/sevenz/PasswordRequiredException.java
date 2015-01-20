@@ -26,6 +26,11 @@ import java.io.IOException;
  */
 public class PasswordRequiredException extends IOException {
 
+    /**
+     * Create a new exception.
+     *
+     * @param archiveName name of the archive containing encrypted streams.
+     */
     public PasswordRequiredException(String archiveName) {
         super("Cannot read encrypted archive " + archiveName + " without a password.");
     }
