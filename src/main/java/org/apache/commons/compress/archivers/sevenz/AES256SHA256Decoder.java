@@ -30,7 +30,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 class AES256SHA256Decoder extends CoderBase {
     @Override
-    InputStream decode(final InputStream in, long uncompressedLength,
+    InputStream decode(final String archiveName, final InputStream in, long uncompressedLength,
             final Coder coder, final byte[] passwordBytes) throws IOException {
         return new InputStream() {
             private boolean isInitialized = false;
@@ -46,7 +46,7 @@ class AES256SHA256Decoder extends CoderBase {
                 final int ivSize = ((byte0 >> 6) & 1) + (byte1 & 0x0f);
                 final int saltSize = ((byte0 >> 7) & 1) + (byte1 >> 4);
                 if (2 + saltSize + ivSize > coder.properties.length) {
-                    throw new IOException("Salt size + IV size too long");
+                    throw new IOException("Salt size + IV size too long in " + archiveName);
                 }
                 final byte[] salt = new byte[saltSize];
                 System.arraycopy(coder.properties, 2, salt, 0, saltSize);
@@ -54,7 +54,7 @@ class AES256SHA256Decoder extends CoderBase {
                 System.arraycopy(coder.properties, 2 + saltSize, iv, 0, ivSize);
 
                 if (passwordBytes == null) {
-                    throw new PasswordRequiredException();
+                    throw new PasswordRequiredException(archiveName);
                 }
                 final byte[] aesKeyBytes;
                 if (numCyclesPower == 0x3f) {
