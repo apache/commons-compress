@@ -366,11 +366,17 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     }
 
     private ZipExtraField[] copyOf(ZipExtraField[] src){
-        return Arrays.copyOf(src, src.length);
+        return copyOf(src, src.length);
+    }
+
+    private ZipExtraField[] copyOf(ZipExtraField[] src, int length) {
+        ZipExtraField[] cpy = new ZipExtraField[length];
+        System.arraycopy(src, 0, cpy, 0, Math.min(src.length, length));
+        return cpy;
     }
 
     private ZipExtraField[] getMergedFields() {
-        final ZipExtraField[] zipExtraFields = Arrays.copyOf(extraFields, extraFields.length + 1);
+        final ZipExtraField[] zipExtraFields = copyOf(extraFields, extraFields.length + 1);
         zipExtraFields[zipExtraFields.length] = unparseableExtra;
         return zipExtraFields;
     }
@@ -401,7 +407,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
                 if (getExtraField(ze.getHeaderId())!= null){
                     removeExtraField(ze.getHeaderId());
                 }
-                final ZipExtraField[] zipExtraFields = Arrays.copyOf(extraFields, extraFields.length + 1);
+                final ZipExtraField[] zipExtraFields = copyOf(extraFields, extraFields.length + 1);
                 zipExtraFields[zipExtraFields.length -1] = ze;
                 extraFields = zipExtraFields;
             }
