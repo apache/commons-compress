@@ -18,22 +18,33 @@
 package org.apache.commons.compress.archivers.zip;
 
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.After;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 
+import static org.apache.commons.compress.AbstractTestCase.tryHardToDelete;
 import static org.apache.commons.compress.archivers.zip.ZipArchiveEntryRequest.createZipArchiveEntryRequest;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 public class ScatterZipOutputStreamTest {
 
+    private File scatterFile = null;
+    private File target = null;
+
+    @After
+    public void cleanup() {
+        tryHardToDelete(scatterFile);
+        tryHardToDelete(target);
+    }
+    
     @Test
     public void putArchiveEntry() throws Exception {
-        File scatteFile = File.createTempFile("scattertest", ".notzip");
-        ScatterZipOutputStream scatterZipOutputStream = ScatterZipOutputStream.fileBased(scatteFile);
+        scatterFile = File.createTempFile("scattertest", ".notzip");
+        ScatterZipOutputStream scatterZipOutputStream = ScatterZipOutputStream.fileBased(scatterFile);
         final byte[] B_PAYLOAD = "RBBBBBBS".getBytes();
         final byte[] A_PAYLOAD = "XAAY".getBytes();
 
@@ -47,7 +58,7 @@ public class ScatterZipOutputStreamTest {
         ByteArrayInputStream payload1 = new ByteArrayInputStream(A_PAYLOAD);
         scatterZipOutputStream.addArchiveEntry(createZipArchiveEntryRequest(zae, createPayloadSupplier(payload1)));
 
-        File target = File.createTempFile("scattertest", ".zip");
+        target = File.createTempFile("scattertest", ".zip");
         ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(target);
         scatterZipOutputStream.writeTo( outputStream);
         outputStream.close();
