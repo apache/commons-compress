@@ -18,6 +18,7 @@
 package org.apache.commons.compress.archivers.zip;
 
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.After;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -31,6 +32,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static org.apache.commons.compress.AbstractTestCase.tryHardToDelete;
 import static org.junit.Assert.*;
 
 @SuppressWarnings("OctalInteger")
@@ -38,10 +40,19 @@ public class ParallelScatterZipCreatorTest {
 
     private final int NUMITEMS = 5000;
 
+    private File result;
+    private File tmp;
+    
+    @After
+    public void cleanup() {
+        tryHardToDelete(result);
+        tryHardToDelete(tmp);
+    }
+
     @Test
     public void concurrent()
             throws Exception {
-        File result = File.createTempFile("parallelScatterGather1", "");
+        result = File.createTempFile("parallelScatterGather1", "");
         ZipArchiveOutputStream zos = new ZipArchiveOutputStream(result);
         zos.setEncoding("UTF-8");
         ParallelScatterZipCreator zipCreator = new ParallelScatterZipCreator();
@@ -57,14 +68,14 @@ public class ParallelScatterZipCreatorTest {
     @Test
     public void callableApi()
             throws Exception {
-        File result = File.createTempFile("parallelScatterGather2", "");
+        result = File.createTempFile("parallelScatterGather2", "");
         ZipArchiveOutputStream zos = new ZipArchiveOutputStream(result);
         zos.setEncoding("UTF-8");
         ExecutorService es = Executors.newFixedThreadPool(1);
 
         ScatterGatherBackingStoreSupplier supp = new ScatterGatherBackingStoreSupplier() {
             public ScatterGatherBackingStore get() throws IOException {
-                return new FileBasedScatterGatherBackingStore(File.createTempFile("parallelscatter", "n1"));
+                return new FileBasedScatterGatherBackingStore(tmp = File.createTempFile("parallelscatter", "n1"));
             }
         };
 
