@@ -513,6 +513,8 @@
 
           <p>There is no guarantee of order of the entries when writing a Zip
           file with <code>ParallelScatterZipCreator</code>.</p>
+
+          See the examples section for a code sample demonstrating how to make a zip file.
       </subsection>
 
     </section>
