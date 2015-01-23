@@ -289,6 +289,35 @@ try {
     content.close();
 }
 ]]></source>
+
+          <p>Creating a zip file with multiple threads:</p>
+
+          A simple implementation to create a zip file might be like this:
+
+<source>
+public class ScatterSample {
+
+  ParallelScatterZipCreator scatterZipCreator = new ParallelScatterZipCreator();
+  ScatterZipOutputStream dirs = ScatterZipOutputStream.fileBased(File.createTempFile("scatter-dirs", "tmp"));
+
+  public ScatterSample() throws IOException {
+  }
+
+  public void addEntry(ZipArchiveEntry zipArchiveEntry, InputStreamSupplier streamSupplier) throws IOException {
+     if (zipArchiveEntry.isDirectory() &amp;&amp; !zipArchiveEntry.isUnixSymlink())
+        dirs.addArchiveEntry(ZipArchiveEntryRequest.createZipArchiveEntryRequest(zipArchiveEntry, streamSupplier));
+     else
+        scatterZipCreator.addArchiveEntry( zipArchiveEntry, streamSupplier);
+  }
+
+  public void writeTo(ZipArchiveOutputStream zipArchiveOutputStream)
+  throws IOException, ExecutionException, InterruptedException {
+     dirs.writeTo(zipArchiveOutputStream);
+     dirs.close();
+     scatterZipCreator.writeTo(zipArchiveOutputStream);
+  }
+}
+</source>
       </subsection>
 
       <subsection name="jar">
