@@ -21,6 +21,13 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.io.InputStream;
 
+/**
+ * Supplies input streams.
+ *
+ * Implementations are required to be thread safe.
+ *
+ * @since 1.10
+ */
 public interface InputStreamSupplier {
 
     /**

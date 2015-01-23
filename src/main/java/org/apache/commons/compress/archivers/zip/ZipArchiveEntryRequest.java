@@ -21,6 +21,8 @@ import java.io.InputStream;
 
 /**
  * A Thread-safe representation of a ZipArchiveEntry that is used to add entries to parallel archives.
+ *
+ * @since 1.10
  */
 public class ZipArchiveEntryRequest {
     /*

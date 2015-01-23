@@ -21,6 +21,8 @@ package org.apache.commons.compress.archivers.zip;
 /**
  *  A predicate to test if a #ZipArchiveEntry matches a criteria.
  *  Some day this can extend java.util.function.Predicate
+ *
+ *  @since 1.10
  */
 public interface ZipArchiveEntryPredicate {
     /**
