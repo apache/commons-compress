@@ -44,6 +44,7 @@ import static org.apache.commons.compress.archivers.zip.ZipArchiveEntryRequest.c
  * The client can supply an ExecutorService, but for reasons of memory model consistency,
  * this will be shut down by this class prior to completion.
  * </p>
+ * @since 1.10
  */
 public class ParallelScatterZipCreator {
     private final List<ScatterZipOutputStream> streams = synchronizedList(new ArrayList<ScatterZipOutputStream>());
@@ -85,7 +86,8 @@ public class ParallelScatterZipCreator {
     };
 
     /**
-     * Create a ParallelScatterZipCreator with default threads
+     * Create a ParallelScatterZipCreator with default threads, which is set to the number of available
+     * processors, as defined by java.lang.Runtime#availableProcessors()
      */
     public ParallelScatterZipCreator() {
         this(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
@@ -129,8 +131,11 @@ public class ParallelScatterZipCreator {
     }
 
     /**
-     * Submit a callable for compression
-     * @param callable The callable to run
+     * Submit a callable for compression.
+     *
+     * @see #createCallable for details of if/when to use this.
+     *
+     * @param callable The callable to run, created by #createCallable, possibly wrapped by caller.
      */
     public final void submit(Callable<Object> callable) {
         futures.add(es.submit(callable));
@@ -141,18 +146,22 @@ public class ParallelScatterZipCreator {
      *
      * <p>This method is expected to be called from a single client thread.</p>
      * <p>
-     * This method is used by clients that want finer grained control over how the callable is
-     * created, possibly wanting to wrap this callable in a different callable</p>
+     * Consider using #addArchiveEntry, which wraps this method and #submit. The most common use case
+     * for using #createCallable and #submit from a client is if you want to wrap the callable in something
+     * that can be prioritized by the supplied #ExecutorService, for instance to process large or slow files first.
+     * Since the creation of the #ExecutorService is handled by the client, all of this is up to the client.
      *
      * @param zipArchiveEntry The entry to add.
      * @param source    The source input stream supplier
-     * @return   A callable that will be used to check for errors
+     * @return   A callable that should subsequently passed to #submit, possibly in a wrapped/adapted from. The
+     *          value of this callable is not used, but any exceptions happening inside the compression
+     *          will be propagated through the callable.
      */
 
     public final Callable<Object> createCallable(ZipArchiveEntry zipArchiveEntry, InputStreamSupplier source) {
         final int method = zipArchiveEntry.getMethod();
         if (method == ZipMethod.UNKNOWN_CODE) {
-            throw new IllegalArgumentException("Method must be set on the supplied zipArchiveEntry");
+            throw new IllegalArgumentException("Method must be set on zipArchiveEntry: " + zipArchiveEntry);
         }
         final ZipArchiveEntryRequest zipArchiveEntryRequest = createZipArchiveEntryRequest(zipArchiveEntry, source);
         return new Callable<Object>() {
@@ -203,9 +212,8 @@ public class ParallelScatterZipCreator {
      *
      * @return A string
      */
-    public String getStatisticsMessage() {
-        return "Compression: " + (compressionDoneAt - startedAt) + "ms," +
-                "Merging files: " + (scatterDoneAt - compressionDoneAt) + "ms";
+    public ScatterStatistics getStatisticsMessage() {
+        return new ScatterStatistics(compressionDoneAt - startedAt, scatterDoneAt - compressionDoneAt);
     }
 }
 

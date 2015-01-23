@@ -20,6 +20,11 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.io.IOException;
 
+/**
+ * Supplies ScatterGatherBackingStore instances.
+ *
+ * @since 1.10
+ */
 public interface ScatterGatherBackingStoreSupplier {
     /**
      * Get a ScatterGatherBackingStore.
