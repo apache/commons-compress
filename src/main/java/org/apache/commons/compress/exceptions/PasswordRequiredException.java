@@ -15,12 +15,12 @@
  *  limitations under the License.
  *
  */
-package org.apache.commons.compress.archivers.sevenz;
+package org.apache.commons.compress.exceptions;
 
 import java.io.IOException;
 
 /**
- * Exception thrown when trying to read an encrypted entry without
+ * Exception thrown when trying to read an encrypted entry or file without
  * configuring a password.
  * @since 1.10
  */
@@ -29,9 +29,10 @@ public class PasswordRequiredException extends IOException {
     /**
      * Create a new exception.
      *
-     * @param archiveName name of the archive containing encrypted streams.
+     * @param name name of the archive containing encrypted streams or
+     * the encrypted file.
      */
-    public PasswordRequiredException(String archiveName) {
-        super("Cannot read encrypted archive " + archiveName + " without a password.");
+    public PasswordRequiredException(String name) {
+        super("Cannot read encrypted content from " + name + " without a password.");
     }
 }
