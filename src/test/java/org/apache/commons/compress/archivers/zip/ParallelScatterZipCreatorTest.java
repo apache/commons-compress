@@ -17,6 +17,10 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import org.apache.commons.compress.parallel.FileBasedScatterGatherBackingStore;
+import org.apache.commons.compress.parallel.InputStreamSupplier;
+import org.apache.commons.compress.parallel.ScatterGatherBackingStore;
+import org.apache.commons.compress.parallel.ScatterGatherBackingStoreSupplier;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.After;
 import org.junit.Test;

@@ -18,6 +18,8 @@
 package org.apache.commons.compress.archivers.zip;
 
 
+import org.apache.commons.compress.parallel.FileBasedScatterGatherBackingStore;
+import org.apache.commons.compress.parallel.ScatterGatherBackingStore;
 import org.apache.commons.compress.utils.BoundedInputStream;
 
 import java.io.Closeable;

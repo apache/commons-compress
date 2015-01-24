@@ -17,6 +17,8 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import org.apache.commons.compress.parallel.InputStreamSupplier;
+
 import java.io.InputStream;
 
 /**

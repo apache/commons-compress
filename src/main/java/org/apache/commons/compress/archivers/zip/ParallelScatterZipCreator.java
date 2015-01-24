@@ -17,6 +17,11 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import org.apache.commons.compress.parallel.FileBasedScatterGatherBackingStore;
+import org.apache.commons.compress.parallel.InputStreamSupplier;
+import org.apache.commons.compress.parallel.ScatterGatherBackingStore;
+import org.apache.commons.compress.parallel.ScatterGatherBackingStoreSupplier;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;

@@ -17,6 +17,7 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import org.apache.commons.compress.parallel.InputStreamSupplier;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Test;
 
