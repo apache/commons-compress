@@ -27,6 +27,7 @@ import javax.crypto.CipherInputStream;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import org.apache.commons.compress.exceptions.PasswordRequiredException;
 
 class AES256SHA256Decoder extends CoderBase {
     @Override

@@ -23,6 +23,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import javax.crypto.Cipher;
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.exceptions.PasswordRequiredException;
 
 public class SevenZFileTest extends AbstractTestCase {
     private static final String TEST2_CONTENT = "<?xml version = '1.0'?>\r\n<!DOCTYPE"
@@ -71,7 +72,7 @@ public class SevenZFileTest extends AbstractTestCase {
         } catch (PasswordRequiredException ex) {
             String msg = ex.getMessage();
             assertTrue("Should start with whining about being unable to decrypt",
-                       msg.startsWith("Cannot read encrypted archive "));
+                       msg.startsWith("Cannot read encrypted content from "));
             assertTrue("Should finish the sentence properly",
                        msg.endsWith(" without a password."));
             assertTrue("Should contain archive's name",
