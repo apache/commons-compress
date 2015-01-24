@@ -17,6 +17,8 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import org.apache.commons.compress.parallel.ScatterGatherBackingStore;
+
 import java.io.Closeable;
 import java.io.DataOutput;
 import java.io.IOException;

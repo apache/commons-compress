@@ -16,23 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.commons.compress.parallel;
 
-package org.apache.commons.compress.archivers.zip;
-
-import java.io.InputStream;
+import java.io.IOException;
 
 /**
- * Supplies input streams.
- *
- * Implementations are required to be thread safe.
+ * Supplies ScatterGatherBackingStore instances.
  *
  * @since 1.10
  */
-public interface InputStreamSupplier {
-
+public interface ScatterGatherBackingStoreSupplier {
     /**
-     * Supply an input stream for a resource.
-     * @return the input stream. Should never null, but may be an empty stream.
+     * Create a ScatterGatherBackingStore.
+     *
+     * @return a ScatterGatherBackingStore, not null
      */
-    InputStream get();
+    ScatterGatherBackingStore get() throws IOException;
 }

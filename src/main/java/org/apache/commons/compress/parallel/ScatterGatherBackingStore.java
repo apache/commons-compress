@@ -15,15 +15,17 @@
  *  limitations under the License.
  *
  */
-package org.apache.commons.compress.archivers.zip;
+package org.apache.commons.compress.parallel;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * <p></p>Abstraction over a scatter-output zip archives can be written to
- * with a method to gather all content from an InputStream later on.</p>
+ * <p>Store intermediate payload in a scatter-gather scenario.
+ * Multiple threads write their payload to a backing store, which can
+ * subsequently be reversed to an #InputStream to be used as input in the
+ * gather phase.</p>
  *
  * <p>It is the responsibility of the allocator of an instance of this class
  * to close this. Closing it should clear off any allocated structures
