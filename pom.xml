@@ -200,6 +200,22 @@ Unix Compress, DEFLATE and ar, cpio, jar, tar, zip, dump, 7z, arj.
           </dependency>
         </dependencies>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.target}</target>
+          <encoding>${commons.encoding}</encoding>
+          <fork>${commons.compiler.fork}</fork>
+          <compilerVersion>${commons.compiler.compilerVersion}</compilerVersion>
+          <executable>${commons.compiler.javac}</executable>
+          <!-- Fix incremental compiler bug, see https://jira.codehaus.org/browse/MCOMPILER-205 -->
+ 	  <excludes>
+ 	    <exclude>**/package-info.java</exclude>
+ 	  </excludes>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
