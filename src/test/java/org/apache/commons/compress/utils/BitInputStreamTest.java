@@ -35,9 +35,9 @@ public class BitInputStreamTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldNotAllowReadingOfMoreThan31BitsAtATime() throws IOException {
+    public void shouldNotAllowReadingOfMoreThan63BitsAtATime() throws IOException {
         BitInputStream bis = new BitInputStream(getStream(), ByteOrder.LITTLE_ENDIAN);
-        bis.readBits(32);
+        bis.readBits(64);
     }
 
     @Test

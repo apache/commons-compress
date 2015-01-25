@@ -42,7 +42,7 @@ class BitStream extends BitInputStream {
      * @return The next bit (0 or 1) or -1 if the end of the stream has been reached
      */
     int nextBit() throws IOException {
-        return readBits(1);
+        return (int) readBits(1);
     }
 
     /**
@@ -51,11 +51,11 @@ class BitStream extends BitInputStream {
      * @param n the number of bits read (up to 8)
      * @return The value formed by the n bits, or -1 if the end of the stream has been reached
      */
-    int nextBits(final int n) throws IOException {
+    long nextBits(final int n) throws IOException {
         return readBits(n);
     }
 
     int nextByte() throws IOException {
-        return readBits(8);
+        return (int) readBits(8);
     }
 }

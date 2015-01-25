@@ -29,8 +29,8 @@ import java.nio.ByteOrder;
  * @NotThreadSafe
  */
 public class BitInputStream implements Closeable {
-    private static final int MAXIMUM_CACHE_SIZE = 31; // bits in int minus sign bit
-    private static final int[] MASKS = new int[MAXIMUM_CACHE_SIZE + 1];
+    private static final int MAXIMUM_CACHE_SIZE = 63; // bits in long minus sign bit
+    private static final long[] MASKS = new long[MAXIMUM_CACHE_SIZE + 1];
 
     static {
         for (int i = 1; i <= MAXIMUM_CACHE_SIZE; i++) {
@@ -40,7 +40,7 @@ public class BitInputStream implements Closeable {
 
     private final InputStream in;
     private final ByteOrder byteOrder;
-    private int bitsCached = 0;
+    private long bitsCached = 0;
     private int bitsCachedSize = 0;
 
     /**
@@ -68,20 +68,20 @@ public class BitInputStream implements Closeable {
     }
     
     /**
-     * Returns at most 31 bits read from the underlying stream.
+     * Returns at most 63 bits read from the underlying stream.
      *
      * @param count the number of bits to read, must be a positive
-     * number not bigger than 31.
-     * @return the bits concatenated as an integer using the stream's byte order.
+     * number not bigger than 63.
+     * @return the bits concatenated as a long using the stream's byte order.
      *         -1 if the end of the underlying stream has been reached before reading
      *         the requested number of bits
      */
-    public int readBits(final int count) throws IOException {
+    public long readBits(final int count) throws IOException {
         if (count < 0 || count > MAXIMUM_CACHE_SIZE) {
             throw new IllegalArgumentException("count must not be negative or greater than " + MAXIMUM_CACHE_SIZE);
         }
         while (bitsCachedSize < count) {
-            final int nextByte = in.read();
+            final long nextByte = in.read();
             if (nextByte < 0) {
                 return nextByte;
             }
@@ -94,7 +94,7 @@ public class BitInputStream implements Closeable {
             bitsCachedSize += 8;
         }
         
-        final int bitsOut;
+        final long bitsOut;
         if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
             bitsOut = (bitsCached & MASKS[count]);
             bitsCached >>>= count;
