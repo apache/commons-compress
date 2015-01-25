@@ -40,9 +40,9 @@ public class ZCompressorInputStream extends LZWInputStream {
     
     public ZCompressorInputStream(InputStream inputStream) throws IOException {
         super(inputStream, ByteOrder.LITTLE_ENDIAN);
-        int firstByte = in.readBits(8);
-        int secondByte = in.readBits(8);
-        int thirdByte = in.readBits(8);
+        int firstByte = (int) in.readBits(8);
+        int secondByte = (int) in.readBits(8);
+        int thirdByte = (int) in.readBits(8);
         if (firstByte != MAGIC_1 || secondByte != MAGIC_2 || thirdByte < 0) {
             throw new IOException("Input is not in .Z format");
         }

@@ -124,7 +124,7 @@ class ExplodingInputStream extends InputStream {
             if (literalTree != null) {
                 literal = literalTree.read(bits);
             } else {
-                literal = bits.nextBits(8);
+                literal = bits.nextByte();
             }
 
             if (literal == -1) {
@@ -137,7 +137,7 @@ class ExplodingInputStream extends InputStream {
         } else if (bit == 0) {
             // back reference
             int distanceLowSize = dictionarySize == 4096 ? 6 : 7;
-            int distanceLow = bits.nextBits(distanceLowSize);
+            int distanceLow = (int) bits.nextBits(distanceLowSize);
             int distanceHigh = distanceTree.read(bits);
             if (distanceHigh == -1 && distanceLow <= 0) {
                 // end of stream reached, nothing left to decode
