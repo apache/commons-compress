@@ -51,18 +51,13 @@
         </section>
 
         <section name="Status">
-          <p>The current release is 1.9 and requires Java 5.</p>
+          <p>The current release is 1.10 and requires Java 5.</p>
 
           <p>Below we highlight some new features, for a full list
           of changes see the <a href="changes-report.html">Changes
           Report</a>.</p>
 
-          <subsection name="What's new in 1.9?">
-            <ul>
-              <li>support for raw DEFLATE streams</li>
-            </ul>
-          </subsection>
-          <subsection name="What's coming in 1.10?">
+          <subsection name="What's new in 1.10?">
             <ul>
               <li>the old
               <code>org.apache.commons.compress.compressors.z._internal_</code>
@@ -70,8 +65,9 @@
               <code>org.apache.commons.compress.compressors.lzw</code>
               and the code is now an official part of Commons
               Compress' API.</li>
-              <li>A new class in the zip package can create archives
-              while compressing different entries in parallel.</li>
+              <li>Added support for parallel ZIP compression.</li>
+              <li>Added support for raw transfer of entries from one ZIP file to another without uncompress/compress.</li>
+              <li>Performance improvements for creating ZIP files with lots of small entries.</li>
             </ul>
           </subsection>
         </section>
