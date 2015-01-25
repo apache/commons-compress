@@ -28,8 +28,9 @@ import java.util.zip.CRC32;
 import java.util.zip.Deflater;
 
 /**
- * Encapsulates a Deflater and crc calculator, handling multiple types of output streams.
- * Currently #ZipEntry.DEFLATED and #ZipEntry.STORED are the only supported compression methods.
+ * Encapsulates a {@link Deflater} and crc calculator, handling multiple types of output streams.
+ * Currently {@link java.util.zip.ZipEntry#DEFLATED} and {@link java.util.zip.ZipEntry#STORED} are the only
+ * supported compression methods.
  *
  * @since 1.10
  */
@@ -63,7 +64,7 @@ public abstract class StreamCompressor implements Closeable {
     /**
      * Create a stream compressor with the given compression level.
      *
-     * @param os       The #OutputStream stream to receive output
+     * @param os       The stream to receive output
      * @param deflater The deflater to use
      * @return A stream compressor
      */
@@ -74,7 +75,7 @@ public abstract class StreamCompressor implements Closeable {
     /**
      * Create a stream compressor with the default compression level.
      *
-     * @param os The #OutputStream stream to receive output
+     * @param os The stream to receive output
      * @return A stream compressor
      */
     static StreamCompressor create(OutputStream os) {
@@ -84,7 +85,7 @@ public abstract class StreamCompressor implements Closeable {
     /**
      * Create a stream compressor with the given compression level.
      *
-     * @param os       The #DataOutput to receive output
+     * @param os       The DataOutput to receive output
      * @param deflater The deflater to use for the compressor
      * @return A stream compressor
      */
@@ -95,8 +96,8 @@ public abstract class StreamCompressor implements Closeable {
     /**
      * Create a stream compressor with the given compression level.
      *
-     * @param compressionLevel The #Deflater compression level
-     * @param bs               The #ScatterGatherBackingStore to receive output
+     * @param compressionLevel The {@link Deflater}  compression level
+     * @param bs               The ScatterGatherBackingStore to receive output
      * @return A stream compressor
      */
     public static StreamCompressor create(int compressionLevel, ScatterGatherBackingStore bs) {
@@ -107,7 +108,7 @@ public abstract class StreamCompressor implements Closeable {
     /**
      * Create a stream compressor with the default compression level.
      *
-     * @param bs The #ScatterGatherBackingStore to receive output
+     * @param bs The ScatterGatherBackingStore to receive output
      * @return A stream compressor
      */
     public static StreamCompressor create(ScatterGatherBackingStore bs) {

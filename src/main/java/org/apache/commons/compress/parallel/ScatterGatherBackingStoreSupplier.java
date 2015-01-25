@@ -21,7 +21,7 @@ package org.apache.commons.compress.parallel;
 import java.io.IOException;
 
 /**
- * Supplies ScatterGatherBackingStore instances.
+ * Supplies {@link ScatterGatherBackingStore} instances.
  *
  * @since 1.10
  */

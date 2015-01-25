@@ -39,15 +39,15 @@ import static java.util.Collections.synchronizedList;
 import static org.apache.commons.compress.archivers.zip.ZipArchiveEntryRequest.createZipArchiveEntryRequest;
 
 /**
- * Creates a zip in parallel by using multiple threadlocal #ScatterZipOutputStream instances.
+ * Creates a zip in parallel by using multiple threadlocal {@link ScatterZipOutputStream} instances.
  * <p>
  * Note that this class generally makes no guarantees about the order of things written to
  * the output file. Things that need to come in a specific order (manifests, directories)
  * must be handled by the client of this class, usually by writing these things to the
- * #ZipArchiveOutputStream *before* calling #writeTo on this class.</p>
+ * {@link ZipArchiveOutputStream} <em>before</em> calling {@link #writeTo writeTo} on this class.</p>
  * <p>
- * The client can supply an ExecutorService, but for reasons of memory model consistency,
- * this will be shut down by this class prior to completion.
+ * The client can supply an {@link java.util.concurrent.ExecutorService}, but for reasons of
+ * memory model consistency, this will be shut down by this class prior to completion.
  * </p>
  * @since 1.10
  */
@@ -92,7 +92,7 @@ public class ParallelScatterZipCreator {
 
     /**
      * Create a ParallelScatterZipCreator with default threads, which is set to the number of available
-     * processors, as defined by java.lang.Runtime#availableProcessors()
+     * processors, as defined by {@link java.lang.Runtime#availableProcessors}
      */
     public ParallelScatterZipCreator() {
         this(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
@@ -138,9 +138,9 @@ public class ParallelScatterZipCreator {
     /**
      * Submit a callable for compression.
      *
-     * @see #createCallable for details of if/when to use this.
+     * @see ParallelScatterZipCreator#createCallable for details of if/when to use this.
      *
-     * @param callable The callable to run, created by #createCallable, possibly wrapped by caller.
+     * @param callable The callable to run, created by {@link #createCallable createCallable}, possibly wrapped by caller.
      */
     public final void submit(Callable<Object> callable) {
         futures.add(es.submit(callable));
@@ -148,19 +148,20 @@ public class ParallelScatterZipCreator {
 
     /**
      * Create a callable that will compress the given archive entry.
-     *
+     * <p/>
      * <p>This method is expected to be called from a single client thread.</p>
-     * <p>
-     * Consider using #addArchiveEntry, which wraps this method and #submit. The most common use case
-     * for using #createCallable and #submit from a client is if you want to wrap the callable in something
-     * that can be prioritized by the supplied #ExecutorService, for instance to process large or slow files first.
-     * Since the creation of the #ExecutorService is handled by the client, all of this is up to the client.
+     * <p/>
+     * Consider using {@link #addArchiveEntry addArchiveEntry}, which wraps this method and {@link #submit submit}.
+     * The most common use case for using {@link #createCallable createCallable} and {@link #submit submit} from a
+     * client is if you want to wrap the callable in something that can be prioritized by the supplied
+     * {@link ExecutorService}, for instance to process large or slow files first.
+     * Since the creation of the {@link ExecutorService} is handled by the client, all of this is up to the client.
      *
      * @param zipArchiveEntry The entry to add.
-     * @param source    The source input stream supplier
-     * @return   A callable that should subsequently passed to #submit, possibly in a wrapped/adapted from. The
-     *          value of this callable is not used, but any exceptions happening inside the compression
-     *          will be propagated through the callable.
+     * @param source          The source input stream supplier
+     * @return A callable that should subsequently passed to #submit, possibly in a wrapped/adapted from. The
+     * value of this callable is not used, but any exceptions happening inside the compression
+     * will be propagated through the callable.
      */
 
     public final Callable<Object> createCallable(ZipArchiveEntry zipArchiveEntry, InputStreamSupplier source) {
@@ -179,13 +180,13 @@ public class ParallelScatterZipCreator {
 
 
     /**
-     * Write the contents this to the target #ZipArchiveOutputStream.
+     * Write the contents this to the target {@link ZipArchiveOutputStream}.
      * <p>
      * It may be beneficial to write things like directories and manifest files to the targetStream
      * before calling this method.
      * </p>
      *
-     * @param targetStream The ZipArchiveOutputStream to receive the contents of the scatter streams
+     * @param targetStream The {@link ZipArchiveOutputStream} to receive the contents of the scatter streams
      * @throws IOException          If writing fails
      * @throws InterruptedException If we get interrupted
      * @throws ExecutionException   If something happens in the parallel execution
