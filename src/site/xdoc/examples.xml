@@ -292,7 +292,7 @@ try {
 
           <p>Creating a zip file with multiple threads:</p>
 
-          A simple implementation to create a zip file might be like this:
+          A simple implementation to create a zip file might look like this:
 
 <source>
 public class ScatterSample {

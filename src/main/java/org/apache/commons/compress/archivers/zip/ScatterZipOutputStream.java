@@ -41,7 +41,7 @@ import java.util.zip.Deflater;
  * implementation only supports file-based backing.
  * </p>
  * Thread safety: This class supports multiple threads. But the "writeTo" method must be called
- * by the thread that originally created the ZipArchiveEntry.
+ * by the thread that originally created the {@link ZipArchiveEntry}.
  *
  * @since 1.10
  */
@@ -64,9 +64,9 @@ public class ScatterZipOutputStream implements Closeable {
         }
 
         /**
-         * Update the original ZipArchiveEntry witg sizes/crc
+         * Update the original {@link ZipArchiveEntry} with sizes/crc
          * Do not use this methods from threads that did not create the instance itself !
-         * @return the zipeArchiveEntry that is basis for this request
+         * @return the zipArchiveEntry that is basis for this request
          */
 
         public ZipArchiveEntry transferToArchiveEntry(){
@@ -105,7 +105,7 @@ public class ScatterZipOutputStream implements Closeable {
     /**
      * Write the contents of this scatter stream to a target archive.
      *
-     * @param target The archive to receive the contents of this #ScatterZipOutputStream
+     * @param target The archive to receive the contents of this {@link ScatterZipOutputStream}.
      * @throws IOException If writing fails
      */
     public void writeTo(ZipArchiveOutputStream target) throws IOException {
@@ -129,10 +129,10 @@ public class ScatterZipOutputStream implements Closeable {
     }
 
     /**
-     * Create a ScatterZipOutputStream with default compression level that is backed by a file
+     * Create a {@link ScatterZipOutputStream} with default compression level that is backed by a file
      *
      * @param file The file to offload compressed data into.
-     * @return A  ScatterZipOutputStream that is ready for use.
+     * @return A ScatterZipOutputStream that is ready for use.
      * @throws FileNotFoundException
      */
     public static ScatterZipOutputStream fileBased(File file) throws FileNotFoundException {
@@ -140,7 +140,7 @@ public class ScatterZipOutputStream implements Closeable {
     }
 
     /**
-     * Create a ScatterZipOutputStream that is backed by a file
+     * Create a {@link ScatterZipOutputStream} that is backed by a file
      *
      * @param file             The file to offload compressed data into.
      * @param compressionLevel The compression level to use, @see #Deflater

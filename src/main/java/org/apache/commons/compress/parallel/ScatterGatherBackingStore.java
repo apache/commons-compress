@@ -24,7 +24,7 @@ import java.io.InputStream;
 /**
  * <p>Store intermediate payload in a scatter-gather scenario.
  * Multiple threads write their payload to a backing store, which can
- * subsequently be reversed to an #InputStream to be used as input in the
+ * subsequently be reversed to an {@link InputStream} to be used as input in the
  * gather phase.</p>
  *
  * <p>It is the responsibility of the allocator of an instance of this class
