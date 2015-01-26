@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream; 	
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
 
@@ -403,15 +404,37 @@ public final class ZipTestCase extends AbstractTestCase {
 
     private void assertSameFileContents(File expectedFile, File actualFile) throws IOException {
         int size = (int) Math.max(expectedFile.length(), actualFile.length());
-        byte[] expected = new byte[size];
-        byte[] actual = new byte[size];
-        final FileInputStream expectedIs = new FileInputStream(expectedFile);
-        final FileInputStream actualIs = new FileInputStream(actualFile);
-        IOUtils.readFully(expectedIs, expected);
-        IOUtils.readFully(actualIs, actual);
-        expectedIs.close();
-        actualIs.close();
-        Assert.assertArrayEquals(expected, actual);
+        ZipFile expected = new ZipFile(expectedFile);
+        ZipFile actual = new ZipFile(actualFile);
+        byte[] expectedBuf = new byte[size];
+        byte[] actualBuf = new byte[size];
+
+        Enumeration<ZipArchiveEntry> actualInOrder = actual.getEntriesInPhysicalOrder();
+        Enumeration<ZipArchiveEntry> expectedInOrder = expected.getEntriesInPhysicalOrder();
+
+        while (actualInOrder.hasMoreElements()){
+            ZipArchiveEntry actualElement = actualInOrder.nextElement();
+            ZipArchiveEntry expectedElement = expectedInOrder.nextElement();
+            assertEquals( expectedElement.getName(), actualElement.getName());
+            assertEquals( expectedElement.getMethod(), actualElement.getMethod());
+            assertEquals( expectedElement.getGeneralPurposeBit(), actualElement.getGeneralPurposeBit());
+            assertEquals( expectedElement.getCrc(), actualElement.getCrc());
+            assertEquals( expectedElement.getCompressedSize(), actualElement.getCompressedSize());
+            assertEquals( expectedElement.getSize(), actualElement.getSize());
+            assertEquals( expectedElement.getExternalAttributes(), actualElement.getExternalAttributes());
+            assertEquals( expectedElement.getInternalAttributes(), actualElement.getInternalAttributes());
+
+            InputStream actualIs = actual.getInputStream(actualElement);
+            InputStream expectedIs = expected.getInputStream(expectedElement);
+            IOUtils.readFully(expectedIs, expectedBuf);
+            IOUtils.readFully(actualIs, actualBuf);
+            expectedIs.close();
+            actualIs.close();
+            Assert.assertArrayEquals(expectedBuf, actualBuf); // Buffers are larger than payload. dont care
+        }
+
+        expected.close();
+        actual.close();
     }
 
 
