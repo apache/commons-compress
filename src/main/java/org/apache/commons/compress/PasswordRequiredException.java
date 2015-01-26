@@ -15,7 +15,7 @@
  *  limitations under the License.
  *
  */
-package org.apache.commons.compress.exceptions;
+package org.apache.commons.compress;
 
 import java.io.IOException;
 
