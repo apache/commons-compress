@@ -23,7 +23,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import javax.crypto.Cipher;
 import org.apache.commons.compress.AbstractTestCase;
-import org.apache.commons.compress.exceptions.PasswordRequiredException;
+import org.apache.commons.compress.PasswordRequiredException;
 
 public class SevenZFileTest extends AbstractTestCase {
     private static final String TEST2_CONTENT = "<?xml version = '1.0'?>\r\n<!DOCTYPE"
