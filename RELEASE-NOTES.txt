@@ -5,6 +5,66 @@ compression and archive formats.  These include: bzip2, gzip, pack200,
 lzma, xz, Snappy, traditional Unix Compress, DEFLATE and ar, cpio,
 jar, tar, zip, dump, 7z, arj.
 
+Release 1.10
+------------
+
+Release 1.10 moves the former
+org.apache.commons.compress.compressors.z._internal_ package which
+breaks backwards compatibility for code which used the old package.
+
+New features:
+o Added support for parallel compression. This low-level API allows
+  a client to build a zip/jar file by using the class
+  org.apache.commons.compress.archivers.zip.ParallelScatterZipCreator.
+
+  Zip documentation updated with further notes about parallel features.
+
+  Please note that some aspects of jar creation need to be
+  handled by client code and is not part of commons-compress for this
+  release.
+  Issue: COMPRESS-296. Thanks to Kristian Rosenvold. 
+o Cut overall object instantiation in half by changing file
+  header generation algorithm, for a 10-15 percent performance
+  improvement.
+
+  Also extracted two private methods createLocalFileHeader
+  and createCentralFileHeader in ZipArchiveOutputStream.
+  These may have some interesting additional usages in the
+  near future. Thanks to Kristian Rosenvold. 
+o New methods in ZipArchiveOutputStream and ZipFile allows
+  entries to be copied from one archive to another without
+  having to re-compress them.
+  Issue: COMPRESS-295. Thanks to Kristian Rosenvold. 
+
+Fixed Bugs:
+o ZipFile logs a warning in its finalizer when its constructor
+  has thrown an exception reading the file - for example if the
+  file doesn't exist.
+  Issue: COMPRESS-297. 
+o Improved error message when tar encounters a groupId that is
+  too big to write without using the STAR or POSIX format.
+  Issue: COMPRESS-290. Thanks to Kristian Rosenvold. 
+o SevenZFile now throws the specific PasswordRequiredException
+  when it encounters an encrypted stream but no password has
+  been specified.
+  Issue: COMPRESS-298. 
+
+Changes:
+o Moved the package
+  org.apache.commons.compress.compressors.z._internal_ to
+  org.apache.commons.compress.compressors.lzw and made it part
+  of the API that is officially supported.  This will break
+  existing code that uses the old package. Thanks to Damjan Jovanovic. 
+
+For complete information on Apache Commons Compress, including instructions
+on how to submit bug reports, patches, or suggestions for improvement,
+see the Apache Commons Compress website:
+
+http://commons.apache.org/compress/
+
+Old Release Notes
+=================
+
 Release 1.9
 -----------
 
@@ -31,15 +91,6 @@ o Checking for XZ for Java may be expensive.  The result will now be
   cached outside of an OSGi environment.  You can use the new
   XZUtils#setCacheXZAvailability to overrride this default behavior.
   Issue: COMPRESS-285.
-
-For complete information on Apache Commons Compress, including instructions
-on how to submit bug reports, patches, or suggestions for improvement,
-see the Apache Commons Compress website:
-
-http://commons.apache.org/compress/
-
-Old Release Notes
-=================
 
 Release 1.8.1
 -------------
