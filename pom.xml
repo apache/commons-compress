@@ -25,7 +25,7 @@
 
   <groupId>org.apache.commons</groupId>
   <artifactId>commons-compress</artifactId>
-  <version>1.10-SNAPSHOT</version>
+  <version>1.10</version>
   <name>Apache Commons Compress</name>
   <url>http://commons.apache.org/proper/commons-compress/</url>
   <!-- The description is not indented to make it look better in the release notes -->
@@ -140,9 +140,9 @@ Unix Compress, DEFLATE and ar, cpio, jar, tar, zip, dump, 7z, arj.
   </contributors>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/compress/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/compress/trunk</developerConnection>
-    <url>http://svn.apache.org/repos/asf/commons/proper/compress/trunk</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/compress/tags/COMPRESS-1.10</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/compress/tags/COMPRESS-1.10</developerConnection>
+    <url>http://svn.apache.org/repos/asf/commons/proper/compress/tags/COMPRESS-1.10</url>
   </scm>
 
   <build>
