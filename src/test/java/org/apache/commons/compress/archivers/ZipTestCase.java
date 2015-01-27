@@ -416,6 +416,8 @@ public final class ZipTestCase extends AbstractTestCase {
             ZipArchiveEntry actualElement = actualInOrder.nextElement();
             ZipArchiveEntry expectedElement = expectedInOrder.nextElement();
             assertEquals( expectedElement.getName(), actualElement.getName());
+            // Don't compare timestamps since they may vary;
+            // there's no support for stubbed out clock (TimeSource) in ZipArchiveOutputStream
             assertEquals( expectedElement.getMethod(), actualElement.getMethod());
             assertEquals( expectedElement.getGeneralPurposeBit(), actualElement.getGeneralPurposeBit());
             assertEquals( expectedElement.getCrc(), actualElement.getCrc());
