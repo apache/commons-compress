@@ -148,9 +148,9 @@ public class ParallelScatterZipCreator {
 
     /**
      * Create a callable that will compress the given archive entry.
-     * <p/>
+     *
      * <p>This method is expected to be called from a single client thread.</p>
-     * <p/>
+     *
      * Consider using {@link #addArchiveEntry addArchiveEntry}, which wraps this method and {@link #submit submit}.
      * The most common use case for using {@link #createCallable createCallable} and {@link #submit submit} from a
      * client is if you want to wrap the callable in something that can be prioritized by the supplied
