@@ -12,6 +12,11 @@ Release 1.10 moves the former
 org.apache.commons.compress.compressors.z._internal_ package which
 breaks backwards compatibility for code which used the old package.
 
+This also changes the superclass of ZCompressorInputStream which makes
+this class binary incompatible with the one of Compress 1.9.  Code
+that extends ZCompressorInputStream will need to be recompiled in
+order to work with Compress 1.10.
+
 New features:
 o Added support for parallel compression. This low-level API allows
   a client to build a zip/jar file by using the class

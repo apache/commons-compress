@@ -64,7 +64,10 @@
               now is
               <code>org.apache.commons.compress.compressors.lzw</code>
               and the code is now an official part of Commons
-              Compress' API.</li>
+              Compress' API.  This change also causes
+              <code>ZCompressorInputStream</code> of 1.10 to be binary
+              incompatible with the one of 1.9 and code that extends
+              this class will need to be recompiled.</li>
               <li>Added support for parallel ZIP compression.</li>
               <li>Added support for raw transfer of entries from one ZIP file to another without uncompress/compress.</li>
               <li>Performance improvements for creating ZIP files with lots of small entries.</li>
