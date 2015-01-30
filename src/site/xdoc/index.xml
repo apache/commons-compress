@@ -59,7 +59,7 @@
 
           <subsection name="What's new in 1.10?">
             <ul>
-              <li>the old
+              <li>The old
               <code>org.apache.commons.compress.compressors.z._internal_</code>
               now is
               <code>org.apache.commons.compress.compressors.lzw</code>
