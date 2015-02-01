@@ -18,7 +18,6 @@
 package org.apache.commons.compress.archivers.sevenz;
 
 import java.io.File;
-import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import javax.crypto.Cipher;
