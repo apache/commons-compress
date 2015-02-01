@@ -30,6 +30,7 @@ public class BitStreamTest extends TestCase {
         assertEquals("next bit", -1, stream.nextBit());
         assertEquals("next bit", -1, stream.nextBit());
         assertEquals("next bit", -1, stream.nextBit());
+        stream.close();
     }
 
     public void testStream() throws Exception {
@@ -54,12 +55,14 @@ public class BitStreamTest extends TestCase {
         assertEquals("bit 15", 0, stream.nextBit());
         
         assertEquals("next bit", -1, stream.nextBit());
+        stream.close();
     }
 
     public void testNextByteFromEmptyStream() throws Exception {
         BitStream stream = new BitStream(new ByteArrayInputStream(new byte[0]));
         assertEquals("next byte", -1, stream.nextByte());
         assertEquals("next byte", -1, stream.nextByte());
+        stream.close();
     }
 
     public void testReadAlignedBytes() throws Exception {
@@ -67,6 +70,7 @@ public class BitStreamTest extends TestCase {
         assertEquals("next byte", 0xEA, stream.nextByte());
         assertEquals("next byte", 0x35, stream.nextByte());
         assertEquals("next byte", -1, stream.nextByte());
+        stream.close();
     }
 
     public void testNextByte() throws Exception {
@@ -78,5 +82,6 @@ public class BitStreamTest extends TestCase {
         
         assertEquals("next byte", 0x5E, stream.nextByte());
         assertEquals("next byte", -1, stream.nextByte()); // not enough bits left to read a byte
+        stream.close();
     }
 }
