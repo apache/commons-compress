@@ -55,7 +55,7 @@ public class ParallelScatterZipCreator {
     private final List<ScatterZipOutputStream> streams = synchronizedList(new ArrayList<ScatterZipOutputStream>());
     private final ExecutorService es;
     private final ScatterGatherBackingStoreSupplier backingStoreSupplier;
-    private final List<Future> futures = new ArrayList<Future>();
+    private final List<Future<Object>> futures = new ArrayList<Future<Object>>();
 
     private final long startedAt = System.currentTimeMillis();
     private long compressionDoneAt = 0;
@@ -195,7 +195,7 @@ public class ParallelScatterZipCreator {
             throws IOException, InterruptedException, ExecutionException {
 
         // Make sure we catch any exceptions from parallel phase
-        for (Future future : futures) {
+        for (Future<?> future : futures) {
             future.get();
         }
 
