@@ -73,6 +73,7 @@ public class ScatterZipOutputStreamTest {
         final ZipArchiveEntry a_entry = zf.getEntries("a.txt").iterator().next();
         assertEquals(4, a_entry.getSize());
         assertArrayEquals(A_PAYLOAD, IOUtils.toByteArray(zf.getInputStream(a_entry)));
+        zf.close();
     }
 
     private InputStreamSupplier createPayloadSupplier(final ByteArrayInputStream payload) {
