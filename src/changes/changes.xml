@@ -43,7 +43,16 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
     <release version="1.10" date="not released, yet"
-             description="Release 1.10">
+             description="Release 1.10 
+------------
+
+
+
+Release 1.10 moves the former 
+org.apache.commons.compress.compressors.z._internal_ package which 
+breaks backwards compatibility for code which used the old package. 
+This also changes the superclass of ZCompressorInputStream.    
+">
 
       <action type="add" date="2014-01-10" issue="COMPRESS-296"
               due-to="Kristian Rosenvold">
@@ -54,7 +63,8 @@ The <action> type attribute can be add,update,fix,remove.
         Zip documentation updated with further notes about parallel features.
 
         Please note that some aspects of jar creation need to be
-        handled by client code and is not part of commons-compress for this release.
+        handled by client code and is not part of commons-compress for this
+        release.
       </action>
 
       <action type="add" date="2014-12-24"
