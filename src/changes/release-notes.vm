@@ -27,13 +27,11 @@ $release.description.replaceAll("  ", "
 
 ## Fix up indentation for multi-line action descriptions
 #macro ( indent )
-#set($action=$action.replaceAll("(?m)^  +","                 "))
+#set($action=$action.replaceAll("(?m)^  +","  "))
 #end
 #if ($release.getActions().size() == 0)
 No changes defined in this version.
 #else
-Changes in this version include:
-
 #if ($release.getActions('add').size() !=0)
 New features:
 #foreach($actionItem in $release.getActions('add'))
@@ -51,7 +49,12 @@ New features:
 #else
 #set($dueto="")
 #end
-o#if($!issue != "") $issue: #end ${action} #if($!dueto != "")Thanks to $dueto. #end
+o ${action}##
+#if($!issue != "")
+
+  Issue: $issue. #if($!dueto != "")Thanks to $dueto. #end
+#else#if($!dueto != "") Thanks to $dueto. #end
+#end
 
 #set($issue="")
 #set($dueto="")
@@ -75,7 +78,12 @@ Fixed Bugs:
 #else
 #set($dueto="")
 #end
-o#if($!issue != "") $issue: #end ${action} #if($!dueto != "")Thanks to $dueto. #end
+o ${action}##
+#if($!issue != "")
+
+  Issue: $issue. #if($!dueto != "")Thanks to $dueto. #end
+#else#if($!dueto != "") Thanks to $dueto. #end
+#end
 
 #set($issue="")
 #set($dueto="")
@@ -99,7 +107,12 @@ Changes:
 #else
 #set($dueto="")
 #end
-o#if($!issue != "") $issue: #end ${action} #if($!dueto != "")Thanks to $dueto. #end
+o ${action}##
+#if($!issue != "")
+
+  Issue: $issue. #if($!dueto != "")Thanks to $dueto. #end
+#else#if($!dueto != "") Thanks to $dueto. #end
+#end
 
 #set($issue="")
 #set($dueto="")
@@ -123,7 +136,12 @@ Removed:
 #else
 #set($dueto="")
 #end
-o#if($!issue != "") $issue. #end ${action} #if($!dueto != "")Thanks to $dueto. #end
+o ${action}##
+#if($!issue != "")
+
+  Issue: $issue. #if($!dueto != "")Thanks to $dueto. #end
+#else#if($!dueto != "") Thanks to $dueto. #end
+#end
 
 #set($issue="")
 #set($dueto="")
@@ -131,11 +149,14 @@ o#if($!issue != "") $issue. #end ${action} #if($!dueto != "")Thanks to $dueto. #
 #end
 ## End of main loop
 #end
- 
-For complete information on ${project.name}, including instructions on how to submit bug reports,
-patches, or suggestions for improvement, see the ${project.name} website:
+#macro ( fixurl $url )
+$url.replaceAll("proper/commons-","")
+#end
+For complete information on ${project.name}, including instructions
+on how to submit bug reports, patches, or suggestions for improvement,
+see the ${project.name} website:
 
-${project.url}
+#fixurl ( ${project.url} )
 
 Old Release Notes
 =================
