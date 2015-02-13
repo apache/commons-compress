@@ -95,12 +95,6 @@ public class TarUtilsTest extends TestCase {
             fail("Expected IllegalArgumentException - embedded space");
         } catch (IllegalArgumentException expected) {
         }
-        buffer = " 0\00007 ".getBytes(CharsetNames.UTF_8); // Invalid - embedded NUL
-        try {
-            TarUtils.parseOctal(buffer,0, buffer.length);
-            fail("Expected IllegalArgumentException - embedded NUL");
-        } catch (IllegalArgumentException expected) {
-        }
     }
 
     private void checkRoundTripOctal(final long value, final int bufsize) {
