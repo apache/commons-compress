@@ -132,6 +132,11 @@ public class TarUtils {
 
         for ( ;start < end; start++) {
             final byte currentByte = buffer[start];
+            if (currentByte == 0) {
+                // some archivers don't pad the whole field but just insert a NUL
+                // COMPRESS-301
+                break;
+            }
             // CheckStyle:MagicNumber OFF
             if (currentByte < '0' || currentByte > '7'){
                 throw new IllegalArgumentException(
