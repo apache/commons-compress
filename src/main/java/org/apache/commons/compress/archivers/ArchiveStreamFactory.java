@@ -72,7 +72,6 @@ import org.apache.commons.compress.utils.IOUtils;
  * in.close();
  * </pre>
  * 
- * @Immutable
  */
 public class ArchiveStreamFactory {
 
