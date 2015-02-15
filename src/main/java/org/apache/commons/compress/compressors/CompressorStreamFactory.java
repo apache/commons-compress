@@ -154,7 +154,8 @@ public class CompressorStreamFactory {
      *                          if true, decompress until the end of the
      *                          input; if false, stop after the first
      *                          stream and leave the input position to point
-     *                          to the next byte after the stream
+     *                          to the next byte after the stream.
+     *           This setting applies to the gzip, bzip2 and xz formats only.
      * @since 1.10
      */
     public CompressorStreamFactory(boolean decompressUntilEOF) {
@@ -176,6 +177,8 @@ public class CompressorStreamFactory {
      *                          to the next byte after the stream
      * @since 1.5
      * @deprecated 1.10 use the {@link #CompressorStreamFactory(boolean)} constructor instead
+     * @throws IllegalStateException if the constructor {@link #CompressorStreamFactory(boolean)} 
+     * was used to create the factory
      */
     @Deprecated
     public void setDecompressConcatenated(boolean decompressConcatenated) {
