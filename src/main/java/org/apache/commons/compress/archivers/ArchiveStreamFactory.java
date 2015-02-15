@@ -71,7 +71,7 @@ import org.apache.commons.compress.utils.IOUtils;
  * out.close();
  * in.close();
  * </pre>
- * 
+ * @Immutable provided that the deprecated method setEntryEncoding is not used.
  */
 public class ArchiveStreamFactory {
 
@@ -119,9 +119,35 @@ public class ArchiveStreamFactory {
     public static final String SEVEN_Z = "7z";
 
     /**
+     * Entry encoding, null for the platform default.
+     */
+    private final String encoding;
+
+    /**
      * Entry encoding, null for the default.
      */
-    private String entryEncoding = null;
+    private volatile String entryEncoding = null;
+
+    /**
+     * Create an instance using the platform default encoding.
+     */
+    public ArchiveStreamFactory() {
+        this(null);
+    }
+
+    /**
+     * Create an instance using the specified encoding.
+     *
+     * @param encoding the encoding to be used.
+     *
+     * @since 1.10
+     */
+    public ArchiveStreamFactory(String encoding) {
+        super();
+        this.encoding = encoding;
+        // Also set the original field so can continue to use it.
+        this.entryEncoding = encoding;
+    }
 
     /**
      * Returns the encoding to use for arj, zip, dump, cpio and tar
@@ -139,8 +165,16 @@ public class ArchiveStreamFactory {
      * 
      * @param entryEncoding the entry encoding, null uses the default.
      * @since 1.5
+     * @deprecated 1.10 use {@link #ArchiveStreamFactory(String)} to specify the encoding
+     * @throws IllegalStateException if the constructor {@link #ArchiveStreamFactory(String)} 
+     * was used to specify the factory encoding.
      */
+    @Deprecated
     public void setEntryEncoding(String entryEncoding) {
+        // Note: this does not detect new ArchiveStreamFactory(null) but that does not set the encoding anyway
+        if (encoding != null) {
+            throw new IllegalStateException("Cannot overide encoding set by the constructor");
+        }
         this.entryEncoding = entryEncoding;
     }
 

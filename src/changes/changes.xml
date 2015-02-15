@@ -54,6 +54,11 @@ breaks backwards compatibility for code which used the old package.
 This also changes the superclass of ZCompressorInputStream.    
 ">
 
+      <action issue="COMPRESS-302" type="fix">
+        Restore immutability/thread-safety to ArchiveStreamFactory.
+        The class is now immutable provided that the method setEntryEncoding is not used.
+        The class is thread-safe.
+      </action>
       <action issue="COMPRESS-303" type="fix">
         Restore immutability/thread-safety to CompressorStreamFactory.
         The class is now immutable provided that the method setDecompressConcatenated is not used.
