@@ -54,7 +54,7 @@ breaks backwards compatibility for code which used the old package.
 This also changes the superclass of ZCompressorInputStream.    
 ">
 
-      <action type="add" date="2014-01-10" issue="COMPRESS-296"
+      <action issue="COMPRESS-296" type="add" date="2014-01-10"
               due-to="Kristian Rosenvold">
         Added support for parallel compression. This low-level API allows
         a client to build a zip/jar file by using the class
@@ -87,23 +87,23 @@ This also changes the superclass of ZCompressorInputStream.
         of the API that is officially supported.  This will break
         existing code that uses the old package.
       </action>
-      <action type="add" date="2014-12-18" issue="COMPRESS-295"
+      <action issue="COMPRESS-295" type="add" date="2014-12-18"
               due-to="Kristian Rosenvold">
         New methods in ZipArchiveOutputStream and ZipFile allows
         entries to be copied from one archive to another without
         having to re-compress them.
       </action>
-      <action type="fix" date="2014-12-22" issue="COMPRESS-297">
+      <action issue="COMPRESS-297" type="fix" date="2014-12-22">
         ZipFile logs a warning in its finalizer when its constructor
         has thrown an exception reading the file - for example if the
         file doesn't exist.
       </action>
-      <action type="fix" date="2015-01-13" issue="COMPRESS-290"
+      <action issue="COMPRESS-290" type="fix" date="2015-01-13"
               due-to="Kristian Rosenvold">
         Improved error message when tar encounters a groupId that is
         too big to write without using the STAR or POSIX format.
       </action>
-      <action type="fix" date="2015-01-20" issue="COMPRESS-298">
+      <action issue="COMPRESS-298" type="fix" date="2015-01-20">
         SevenZFile now throws the specific PasswordRequiredException
         when it encounters an encrypted stream but no password has
         been specified.
