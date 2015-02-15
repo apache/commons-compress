@@ -76,27 +76,29 @@ import org.apache.commons.compress.utils.IOUtils;
 public class ArchiveStreamFactory {
 
     /**
-     * Constant used to identify the AR archive format.
+     * Constant (value {@value}) used to identify the AR archive format.
      * @since 1.1
      */
     public static final String AR = "ar";
     /**
-     * Constant used to identify the ARJ archive format.
+     * Constant (value {@value}) used to identify the ARJ archive format.
+     * Not supported as an output stream type.
      * @since 1.6
      */
     public static final String ARJ = "arj";
     /**
-     * Constant used to identify the CPIO archive format.
+     * Constant (value {@value}) used to identify the CPIO archive format.
      * @since 1.1
      */
     public static final String CPIO = "cpio";
     /**
-     * Constant used to identify the Unix DUMP archive format.
+     * Constant (value {@value}) used to identify the Unix DUMP archive format.
+     * Not supported as an output stream type.
      * @since 1.3
      */
     public static final String DUMP = "dump";
     /**
-     * Constant used to identify the JAR archive format.
+     * Constant (value {@value}) used to identify the JAR archive format.
      * @since 1.1
      */
     public static final String JAR = "jar";
@@ -106,12 +108,12 @@ public class ArchiveStreamFactory {
      */
     public static final String TAR = "tar";
     /**
-     * Constant used to identify the ZIP archive format.
+     * Constant (value {@value}) used to identify the ZIP archive format.
      * @since 1.1
      */
     public static final String ZIP = "zip";
     /**
-     * Constant used to identify the 7z archive format.
+     * Constant (value {@value}) used to identify the 7z archive format.
      * @since 1.8
      */
     public static final String SEVEN_Z = "7z";
@@ -145,7 +147,8 @@ public class ArchiveStreamFactory {
     /**
      * Create an archive input stream from an archiver name and an input stream.
      * 
-     * @param archiverName the archive name, i.e. "ar", "arj", "zip", "tar", "jar", "dump" or "cpio"
+     * @param archiverName the archive name,
+     * i.e. {@value #AR}, {@value #ARJ}, {@value #ZIP}, {@value #TAR}, {@value #JAR}, {@value #CPIO}, {@value #DUMP} or {@value #SEVEN_Z}
      * @param in the input stream
      * @return the archive input stream
      * @throws ArchiveException if the archiver name is not known
@@ -214,9 +217,10 @@ public class ArchiveStreamFactory {
     }
 
     /**
-     * Create an archive output stream from an archiver name and an input stream.
+     * Create an archive output stream from an archiver name and an output stream.
      * 
-     * @param archiverName the archive name, i.e. "ar", "zip", "tar", "jar" or "cpio"
+     * @param archiverName the archive name,
+     * i.e. {@value #AR}, {@value #ZIP}, {@value #TAR}, {@value #JAR}, {@value #CPIO} or {@value #SEVEN_Z} 
      * @param out the output stream
      * @return the archive output stream
      * @throws ArchiveException if the archiver name is not known
