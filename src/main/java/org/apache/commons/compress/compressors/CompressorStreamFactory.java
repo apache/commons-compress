@@ -62,7 +62,7 @@ import org.apache.commons.compress.utils.IOUtils;
  * IOUtils.copy(in, new FileOutputStream(output));
  * in.close();
  * </pre>
- * 
+ * @Immutable provided that the deprecated method setDecompressConcatenated is not used.
  */
 public class CompressorStreamFactory {
 
@@ -124,7 +124,44 @@ public class CompressorStreamFactory {
      */
     public static final String DEFLATE = "deflate";
 
-    private boolean decompressConcatenated = false;
+    /**
+     * If true, decompress until the end of the input.
+     * If false, stop after the first stream and leave the 
+     * input position to point to the next byte after the stream
+     */
+    private final Boolean decompressUntilEOF;
+    // This is Boolean so setDecompressConcatenated can determine whether it has been set by the ctor
+    // once the setDecompressConcatenated method has been removed, it can revert to boolean
+
+    /**
+     * If true, decompress until the end of the input.
+     * If false, stop after the first stream and leave the 
+     * input position to point to the next byte after the stream
+     */
+
+    private volatile boolean decompressConcatenated = false;
+
+    /**
+     * Create an instance with the decompress Concatenated option set to false.
+     */
+    public CompressorStreamFactory() {
+        this.decompressUntilEOF = null;  
+    }
+
+    /**
+     * Create an instance with the provided decompress Concatenated option.
+     * @param       decompressUntilEOF
+     *                          if true, decompress until the end of the
+     *                          input; if false, stop after the first
+     *                          stream and leave the input position to point
+     *                          to the next byte after the stream
+     * @since 1.10
+     */
+    public CompressorStreamFactory(boolean decompressUntilEOF) {
+        this.decompressUntilEOF = Boolean.valueOf(decompressUntilEOF);
+        // Also copy to existing variable so can continue to use that as the current value
+        this.decompressConcatenated = decompressUntilEOF;
+    }
 
     /**
      * Whether to decompress the full input or only the first stream
@@ -138,8 +175,13 @@ public class CompressorStreamFactory {
      *                          stream and leave the input position to point
      *                          to the next byte after the stream
      * @since 1.5
+     * @deprecated 1.10 use the {@link #CompressorStreamFactory(boolean)} constructor instead
      */
+    @Deprecated
     public void setDecompressConcatenated(boolean decompressConcatenated) {
+        if (this.decompressUntilEOF != null) {
+            throw new IllegalStateException("Cannot override the setting defined by the constructor");
+        }
         this.decompressConcatenated = decompressConcatenated;
     }
 
