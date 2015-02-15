@@ -67,54 +67,59 @@ import org.apache.commons.compress.utils.IOUtils;
 public class CompressorStreamFactory {
 
     /**
-     * Constant used to identify the BZIP2 compression algorithm.
+     * Constant (value {@value}) used to identify the BZIP2 compression algorithm.
      * @since 1.1
      */
     public static final String BZIP2 = "bzip2";
 
     /**
-     * Constant used to identify the GZIP compression algorithm.
+     * Constant (value {@value}) used to identify the GZIP compression algorithm.
+     * Not supported as an output stream type.
      * @since 1.1
      */
     public static final String GZIP = "gz";
     /**
-     * Constant used to identify the PACK200 compression algorithm.
+     * Constant (value {@value}) used to identify the PACK200 compression algorithm.
      * @since 1.3
      */
     public static final String PACK200 = "pack200";
 
     /**
-     * Constant used to identify the XZ compression method.
+     * Constant (value {@value}) used to identify the XZ compression method.
      * @since 1.4
      */
     public static final String XZ = "xz";
 
     /**
-     * Constant used to identify the LZMA compression method.
+     * Constant (value {@value}) used to identify the LZMA compression method.
+     * Not supported as an output stream type.
      * @since 1.6
      */
     public static final String LZMA = "lzma";
 
     /**
-     * Constant used to identify the "framed" Snappy compression method.
+     * Constant (value {@value}) used to identify the "framed" Snappy compression method.
+     * Not supported as an output stream type.
      * @since 1.7
      */
     public static final String SNAPPY_FRAMED = "snappy-framed";
 
     /**
-     * Constant used to identify the "raw" Snappy compression method.
+     * Constant (value {@value}) used to identify the "raw" Snappy compression method.
+     * Not supported as an output stream type.
      * @since 1.7
      */
     public static final String SNAPPY_RAW = "snappy-raw";
 
     /**
-     * Constant used to identify the traditional Unix compress method.
+     * Constant (value {@value}) used to identify the traditional Unix compress method.
+     * Not supported as an output stream type.
      * @since 1.7
      */
     public static final String Z = "z";
 
     /**
-     * Constant used to identify the Deflate compress method.
+     * Constant (value {@value}) used to identify the Deflate compress method.
      * @since 1.9
      */
     public static final String DEFLATE = "deflate";
@@ -200,8 +205,10 @@ public class CompressorStreamFactory {
     /**
      * Create a compressor input stream from a compressor name and an input stream.
      * 
-     * @param name of the compressor, i.e. "gz", "bzip2", "xz",
-     *        "lzma", "snappy-raw", "snappy-framed", "pack200", "z"
+     * @param name of the compressor,
+     * i.e. {@value #GZIP}, {@value #BZIP2}, {@value #XZ}, {@value #LZMA},
+     * {@value #PACK200}, {@value #SNAPPY_RAW}, {@value #SNAPPY_FRAMED}, 
+     * {@value #Z} or {@value #DEFLATE} 
      * @param in the input stream
      * @return compressor input stream
      * @throws CompressorException if the compressor name is not known
@@ -260,9 +267,11 @@ public class CompressorStreamFactory {
     }
 
     /**
-     * Create an compressor output stream from an compressor name and an input stream.
+     * Create an compressor output stream from an compressor name and an output stream.
      * 
-     * @param name the compressor name, i.e. "gz", "bzip2", "xz", or "pack200"
+     * @param name the compressor name,
+     * i.e. {@value #GZIP}, {@value #BZIP2}, {@value #XZ},
+     * {@value #PACK200} or {@value #DEFLATE} 
      * @param out the output stream
      * @return the compressor output stream
      * @throws CompressorException if the archiver name is not known
