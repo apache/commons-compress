@@ -206,25 +206,6 @@ jar, tar, zip, dump, 7z, arj.
   <reporting>
     <plugins>
       <plugin>
-        <!-- generate the changes report from changes.xml and link to JIRA -->
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-changes-plugin</artifactId>
-        <version>${commons.changes.version}</version>
-        <configuration>
-           <issueLinkTemplatePerSystem>
-               <default>%URL%/%ISSUE%</default>
-           </issueLinkTemplatePerSystem>
-        </configuration>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>changes-report</report>
-              <report>jira-report</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>
-      <plugin>
         <!-- generate a code coverage report -->
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cobertura-maven-plugin</artifactId>
