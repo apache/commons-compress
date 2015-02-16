@@ -84,7 +84,10 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     private final OutputStream out;
 
-    private final ZipEncoding encoding;
+    private final ZipEncoding zipEncoding;
+
+    // the provided encoding (for unit tests)
+    final String encoding;
 
     private boolean addPaxHeadersForNonAsciiNames = false;
     private static final ZipEncoding ASCII =
@@ -150,7 +153,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     public TarArchiveOutputStream(OutputStream os, int blockSize,
                                   int recordSize, String encoding) {
         out = new CountingOutputStream(os);
-        this.encoding = ZipEncodingHelper.getZipEncoding(encoding);
+        this.encoding = encoding;
+        this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
 
         this.assemLen = 0;
         this.assemBuf = new byte[recordSize];
@@ -301,7 +305,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             writePaxHeaders(entry, entryName, paxHeaders);
         }
 
-        entry.writeEntryHeader(recordBuf, encoding,
+        entry.writeEntryHeader(recordBuf, zipEncoding,
                                bigNumberMode == BIGNUMBER_STAR);
         writeRecord(recordBuf);
 
@@ -660,7 +664,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                                    Map<String, String> paxHeaders,
                                    String paxHeaderName, byte linkType, String fieldName)
         throws IOException {
-        final ByteBuffer encodedName = encoding.encode(name);
+        final ByteBuffer encodedName = zipEncoding.encode(name);
         final int len = encodedName.limit() - encodedName.position();
         if (len >= TarConstants.NAMELEN) {
 

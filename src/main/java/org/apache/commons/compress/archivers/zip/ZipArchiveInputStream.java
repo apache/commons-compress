@@ -61,6 +61,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     /** The zip encoding to use for filenames and the file comment. */
     private final ZipEncoding zipEncoding;
 
+    // the provided encoding (for unit tests)
+    final String encoding;
+
     /** Whether to look for and use Unicode extra fields. */
     private final boolean useUnicodeExtraFields;
 
@@ -139,6 +142,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
 
     private int entriesRead = 0;
 
+    /**
+     * Create an instance using UTF-8 encoding
+     * @param inputStream the stream to wrap
+     */
     public ZipArchiveInputStream(InputStream inputStream) {
         this(inputStream, ZipEncodingHelper.UTF8);
     }
@@ -175,6 +182,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                                  String encoding,
                                  boolean useUnicodeExtraFields,
                                  boolean allowStoredEntriesWithDataDescriptor) {
+        this.encoding = encoding;
         zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
         this.useUnicodeExtraFields = useUnicodeExtraFields;
         in = new PushbackInputStream(inputStream, buf.capacity());

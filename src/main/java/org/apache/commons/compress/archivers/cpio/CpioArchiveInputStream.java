@@ -91,7 +91,10 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
     /**
      * The encoding to use for filenames and labels.
      */
-    private final ZipEncoding encoding;
+    private final ZipEncoding zipEncoding;
+
+    // the provided encoding (for unit tests)
+    final String encoding;
 
     /**
      * Construct the cpio input stream with a blocksize of {@link
@@ -150,7 +153,8 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
     public CpioArchiveInputStream(final InputStream in, int blockSize, String encoding) {
         this.in = in;
         this.blockSize = blockSize;
-        this.encoding = ZipEncodingHelper.getZipEncoding(encoding);
+        this.encoding = encoding;
+        this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
     }
 
     /**
@@ -444,7 +448,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         byte tmpBuffer[] = new byte[length - 1];
         readFully(tmpBuffer, 0, tmpBuffer.length);
         this.in.read();
-        return encoding.decode(tmpBuffer);
+        return zipEncoding.decode(tmpBuffer);
     }
 
     /**

@@ -73,7 +73,10 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     private TarArchiveEntry currEntry;
 
     /** The encoding of the file */
-    private final ZipEncoding encoding;
+    private final ZipEncoding zipEncoding;
+
+    // the provided encoding (for unit tests)
+    final String encoding;
 
     /**
      * Constructor for TarInputStream.
@@ -137,7 +140,8 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                                  String encoding) {
         this.is = is;
         this.hasHitEOF = false;
-        this.encoding = ZipEncodingHelper.getZipEncoding(encoding);
+        this.encoding = encoding;
+        this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
         this.recordSize = recordSize;
         this.blockSize = blockSize;
     }
@@ -271,7 +275,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         }
 
         try {
-            currEntry = new TarArchiveEntry(headerBuf, encoding);
+            currEntry = new TarArchiveEntry(headerBuf, zipEncoding);
         } catch (IllegalArgumentException e) {
             IOException ioe = new IOException("Error detected parsing the header");
             ioe.initCause(e);
@@ -289,7 +293,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                 // entry
                 return null;
             }
-            currEntry.setLinkName(encoding.decode(longLinkData));
+            currEntry.setLinkName(zipEncoding.decode(longLinkData));
         }
 
         if (currEntry.isGNULongNameEntry()) {
@@ -300,7 +304,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                 // entry
                 return null;
             }
-            currEntry.setName(encoding.decode(longNameData));
+            currEntry.setName(zipEncoding.decode(longNameData));
         }
 
         if (currEntry.isPaxHeader()){ // Process Pax headers

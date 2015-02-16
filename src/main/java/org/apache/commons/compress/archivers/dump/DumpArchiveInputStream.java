@@ -74,7 +74,10 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     /**
      * The encoding to use for filenames and labels.
      */
-    private final ZipEncoding encoding;
+    private final ZipEncoding zipEncoding;
+
+    // the provided encoding (for unit tests)
+    final String encoding;
 
     /**
      * Constructor using the platform's default encoding for file
@@ -99,7 +102,8 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         throws ArchiveException {
         this.raw = new TapeInputStream(is);
         this.hasHitEOF = false;
-        this.encoding = ZipEncodingHelper.getZipEncoding(encoding);
+        this.encoding = encoding;
+        this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
 
         try {
             // read header, verify it's a dump archive.
@@ -110,7 +114,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
             }
 
             // get summary information
-            summary = new DumpArchiveSummary(headerBytes, this.encoding);
+            summary = new DumpArchiveSummary(headerBytes, this.zipEncoding);
 
             // reset buffer with actual block size.
             raw.resetBlockSize(summary.getNTRec(), summary.isCompressed());
@@ -351,7 +355,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
                 byte type = blockBuffer[i + 6];
 
-                String name = DumpArchiveUtil.decode(encoding, blockBuffer, i + 8, blockBuffer[i + 7]);
+                String name = DumpArchiveUtil.decode(zipEncoding, blockBuffer, i + 8, blockBuffer[i + 7]);
 
                 if (".".equals(name) || "..".equals(name)) {
                     // do nothing...

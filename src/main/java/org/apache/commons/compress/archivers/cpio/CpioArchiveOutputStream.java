@@ -92,7 +92,10 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     /**
      * The encoding to use for filenames and labels.
      */
-    private final ZipEncoding encoding;
+    private final ZipEncoding zipEncoding;
+
+    // the provided encoding (for unit tests)
+    final String encoding;
 
     /**
      * Construct the cpio output stream with a specified format, a
@@ -157,7 +160,8 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         }
         this.entryFormat = format;
         this.blockSize = blockSize;
-        this.encoding = ZipEncodingHelper.getZipEncoding(encoding);
+        this.encoding = encoding;
+        this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
     }
 
     /**
@@ -534,7 +538,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      * @throws IOException if the string couldn't be written
      */
     private void writeCString(final String str) throws IOException {
-        ByteBuffer buf = encoding.encode(str);
+        ByteBuffer buf = zipEncoding.encode(str);
         final int len = buf.limit() - buf.position();
         out.write(buf.array(), buf.arrayOffset(), len);
         out.write('\0');
