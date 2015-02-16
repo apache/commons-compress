@@ -63,6 +63,7 @@ import org.apache.commons.compress.utils.IOUtils;
  * in.close();
  * </pre>
  * @Immutable provided that the deprecated method setDecompressConcatenated is not used.
+ * @ThreadSafe even if the deprecated method setDecompressConcatenated is used
  */
 public class CompressorStreamFactory {
 
