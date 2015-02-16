@@ -275,8 +275,6 @@ jar, tar, zip, dump, 7z, arj.
           <excludes>
             <!-- files used during tests -->
             <exclude>src/test/resources/**</exclude>
-            <!-- proposal text without license -->
-            <exclude>PROPOSAL.txt</exclude>
             <exclude>.pmd</exclude>
             <exclude>.gitignore</exclude>
             <exclude>.gitattributes</exclude>
