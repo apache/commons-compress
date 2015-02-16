@@ -24,13 +24,11 @@
     <fileSets>
         <fileSet>
             <includes>
-                <include>build.xml</include>
                 <include>LICENSE.txt</include>
                 <include>NOTICE.txt</include>
                 <include>README.txt</include>
                 <include>RELEASE-NOTES.txt</include>
                 <include>pom.xml</include>
-                <include>STATUS</include>
                 <include>findbugs-exclude-filter.xml</include>
                 <include>pmd-ruleset.xml</include>
             </includes>
