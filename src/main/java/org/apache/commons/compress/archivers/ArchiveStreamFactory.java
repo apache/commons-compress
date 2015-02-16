@@ -72,6 +72,7 @@ import org.apache.commons.compress.utils.IOUtils;
  * in.close();
  * </pre>
  * @Immutable provided that the deprecated method setEntryEncoding is not used.
+ * @ThreadSafe even if the deprecated method setEntryEncoding is used
  */
 public class ArchiveStreamFactory {
 
