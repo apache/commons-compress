@@ -358,4 +358,9 @@ public class CompressorStreamFactory {
         }
         throw new CompressorException("Compressor: " + name + " not found.");
     }
+
+    // For Unit tests
+    boolean getDecompressConcatenated() {
+        return decompressConcatenated;
+    }
 }
