@@ -115,6 +115,31 @@ public final class DetectCompressorTestCase extends TestCase {
         }
     }
 
+    public void testOverride() {
+        CompressorStreamFactory fac = new CompressorStreamFactory();
+        assertFalse(fac.getDecompressConcatenated());
+        fac.setDecompressConcatenated(true);
+        assertTrue(fac.getDecompressConcatenated());
+
+        fac = new CompressorStreamFactory(false);
+        assertFalse(fac.getDecompressConcatenated());
+        try {
+            fac.setDecompressConcatenated(true);
+            fail("Expected IllegalStateException");
+        } catch (IllegalStateException ise) {
+            // expected
+        }
+
+        fac = new CompressorStreamFactory(true);
+        assertTrue(fac.getDecompressConcatenated());
+        try {
+            fac.setDecompressConcatenated(true);
+            fail("Expected IllegalStateException");
+        } catch (IllegalStateException ise) {
+            // expected
+        }
+    }
+
     public void testMutiples() throws Exception {
         for(int i=0; i <tests.length; i++) {
             TestData test = tests[i];
