@@ -52,7 +52,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
      * Constructs the ArjInputStream, taking ownership of the inputStream that is passed in.
      * @param inputStream the underlying stream, whose ownership is taken
      * @param charsetName the charset used for file names and comments
-     *   in the archive
+     *   in the archive. May be {@code null} to use the platform default.
      * @throws ArchiveException
      */
     public ArjArchiveInputStream(final InputStream inputStream,
