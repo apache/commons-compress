@@ -18,23 +18,22 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import static org.junit.Assert.*;
+
 import java.math.BigInteger;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
- * JUnit 3 testcases for org.apache.commons.compress.archivers.zip.ZipEightByteInteger.
+ * JUnit testcases for org.apache.commons.compress.archivers.zip.ZipEightByteInteger.
  *
  */
-public class ZipEightByteIntegerTest extends TestCase {
-
-    public ZipEightByteIntegerTest(String name) {
-        super(name);
-    }
+public class ZipEightByteIntegerTest {
 
     /**
      * Test conversion to bytes.
      */
+    @Test
     public void testLongToBytes() {
         ZipEightByteInteger zl = new ZipEightByteInteger(0xAB12345678l);
         byte[] result = zl.getBytes();
@@ -52,6 +51,7 @@ public class ZipEightByteIntegerTest extends TestCase {
     /**
      * Test conversion from bytes.
      */
+    @Test
     public void testLongFromBytes() {
         byte[] val = new byte[] {0x78, 0x56, 0x34, 0x12, (byte) 0xAB, 0x00, 0x00, 0x00};
         ZipEightByteInteger zl = new ZipEightByteInteger(val);
@@ -61,6 +61,7 @@ public class ZipEightByteIntegerTest extends TestCase {
     /**
      * Test conversion to bytes.
      */
+    @Test
     public void testBIToBytes() {
         ZipEightByteInteger zl =
             new ZipEightByteInteger(BigInteger.valueOf(Long.MAX_VALUE)
@@ -80,6 +81,7 @@ public class ZipEightByteIntegerTest extends TestCase {
     /**
      * Test conversion from bytes.
      */
+    @Test
     public void testBIFromBytes() {
         byte[] val = new byte[] {(byte) 0xFE, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
         ZipEightByteInteger zl = new ZipEightByteInteger(val);
@@ -91,6 +93,7 @@ public class ZipEightByteIntegerTest extends TestCase {
     /**
      * Test the contract of the equals method.
      */
+    @Test
     public void testEquals() {
         ZipEightByteInteger zl = new ZipEightByteInteger(0x12345678);
         ZipEightByteInteger zl2 = new ZipEightByteInteger(0x12345678);
@@ -110,6 +113,7 @@ public class ZipEightByteIntegerTest extends TestCase {
     /**
      * Test sign handling.
      */
+    @Test
     public void testSign() {
         ZipEightByteInteger zl = new ZipEightByteInteger(new byte[] {(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF});
         assertEquals(BigInteger.valueOf(Long.MAX_VALUE).shiftLeft(1).setBit(0),

@@ -19,13 +19,12 @@
 package org.apache.commons.compress.compressors;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
+import static org.junit.Assert.*;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-
-import junit.framework.TestCase;
 
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
@@ -34,13 +33,10 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorInputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
+import org.junit.Test;
 
 @SuppressWarnings("deprecation") // deliberately tests setDecompressConcatenated
-public final class DetectCompressorTestCase extends TestCase {
-
-    public DetectCompressorTestCase(String name) {
-        super(name);
-    }
+public final class DetectCompressorTestCase {
 
     final CompressorStreamFactory factory = new CompressorStreamFactory();
     private static final CompressorStreamFactory factoryTrue = new CompressorStreamFactory(true);
@@ -90,6 +86,7 @@ public final class DetectCompressorTestCase extends TestCase {
         new TestData("multiple.xz", new char[]{'a'}, factory, false),
     };
     
+    @Test
     public void testDetection() throws Exception {
         CompressorInputStream bzip2 = getStreamFor("bla.txt.bz2"); 
         assertNotNull(bzip2);
@@ -115,6 +112,7 @@ public final class DetectCompressorTestCase extends TestCase {
         }
     }
 
+    @Test
     public void testOverride() {
         CompressorStreamFactory fac = new CompressorStreamFactory();
         assertFalse(fac.getDecompressConcatenated());
@@ -140,6 +138,7 @@ public final class DetectCompressorTestCase extends TestCase {
         }
     }
 
+    @Test
     public void testMutiples() throws Exception {
         for(int i=0; i <tests.length; i++) {
             TestData test = tests[i];

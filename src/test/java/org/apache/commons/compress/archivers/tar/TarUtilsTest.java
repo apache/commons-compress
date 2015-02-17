@@ -18,15 +18,20 @@
 
 package org.apache.commons.compress.archivers.tar;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.CharsetNames;
+import org.junit.Test;
 
-public class TarUtilsTest extends TestCase {
+public class TarUtilsTest {
 
 
+    @Test
     public void testName(){
         byte [] buff = new byte[20];
         String sb1 = "abcdefghijklmnopqrstuvwxyz";
@@ -43,6 +48,7 @@ public class TarUtilsTest extends TestCase {
         assertEquals(sb1, sb2);
     }
 
+    @Test
     public void testParseOctal() throws Exception{
         long value; 
         byte [] buffer;
@@ -69,6 +75,7 @@ public class TarUtilsTest extends TestCase {
         assertEquals(0, value);
     }
 
+    @Test
     public void testParseOctalInvalid() throws Exception{
         byte [] buffer;
         buffer=new byte[0]; // empty byte array
@@ -109,6 +116,7 @@ public class TarUtilsTest extends TestCase {
         checkRoundTripOctal(value, TarConstants.SIZELEN);
     }
 
+    @Test
     public void testRoundTripOctal() {
         checkRoundTripOctal(0);
         checkRoundTripOctal(1);
@@ -129,10 +137,12 @@ public class TarUtilsTest extends TestCase {
         assertEquals(value,parseValue);
     }
 
+    @Test
     public void testRoundTripOctalOrBinary8() {
         testRoundTripOctalOrBinary(8);
     }
 
+    @Test
     public void testRoundTripOctalOrBinary12() {
         testRoundTripOctalOrBinary(12);
         checkRoundTripOctalOrBinary(Long.MAX_VALUE, 12);
@@ -148,6 +158,7 @@ public class TarUtilsTest extends TestCase {
     }
 
     // Check correct trailing bytes are generated
+    @Test
     public void testTrailers() {
         byte [] buffer = new byte[12];
         TarUtils.formatLongOctalBytes(123, buffer, 0, buffer.length);
@@ -163,12 +174,14 @@ public class TarUtilsTest extends TestCase {
         assertEquals('3', buffer[buffer.length-3]); // end of number
     }
 
+    @Test
     public void testNegative() throws Exception {
         byte [] buffer = new byte[22];
         TarUtils.formatUnsignedOctalString(-1, buffer, 0, buffer.length);
         assertEquals("1777777777777777777777", new String(buffer, CharsetNames.UTF_8));
     }
 
+    @Test
     public void testOverflow() throws Exception {
         byte [] buffer = new byte[8-1]; // a lot of the numbers have 8-byte buffers (nul term)
         TarUtils.formatUnsignedOctalString(07777777L, buffer, 0, buffer.length);
@@ -180,6 +193,7 @@ public class TarUtilsTest extends TestCase {
         }
     }
 
+    @Test
     public void testRoundTripNames(){
         checkName("");
         checkName("The quick brown fox\n");
@@ -187,6 +201,7 @@ public class TarUtilsTest extends TestCase {
         // checkName("\0"); // does not work, because NUL is ignored
     }
 
+    @Test
     public void testRoundEncoding() throws Exception {
         // COMPRESS-114
         ZipEncoding enc = ZipEncodingHelper.getZipEncoding(CharsetNames.ISO_8859_1);
@@ -202,6 +217,7 @@ public class TarUtilsTest extends TestCase {
         assertEquals(string, TarUtils.parseName(buff, 0, len));
     }
 
+    @Test
     public void testReadNegativeBinary8Byte() {
         byte[] b = new byte[] {
             (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
@@ -210,6 +226,7 @@ public class TarUtilsTest extends TestCase {
         assertEquals(-3601l, TarUtils.parseOctalOrBinary(b, 0, 8));
     }
 
+    @Test
     public void testReadNegativeBinary12Byte() {
         byte[] b = new byte[] {
             (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
@@ -220,6 +237,7 @@ public class TarUtilsTest extends TestCase {
     }
 
 
+    @Test
     public void testWriteNegativeBinary8Byte() {
         byte[] b = new byte[] {
             (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
@@ -229,6 +247,7 @@ public class TarUtilsTest extends TestCase {
     }
 
     // https://issues.apache.org/jira/browse/COMPRESS-191
+    @Test
     public void testVerifyHeaderCheckSum() {
         byte[] valid = { // from bla.tar
                 116, 101, 115, 116, 49, 46, 120, 109, 108, 0, 0, 0, 0, 0, 0,

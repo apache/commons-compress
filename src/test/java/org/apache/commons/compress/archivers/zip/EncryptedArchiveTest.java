@@ -19,15 +19,17 @@
 package org.apache.commons.compress.archivers.zip;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class EncryptedArchiveTest extends TestCase {
+public class EncryptedArchiveTest {
 
+    @Test
     public void testReadPasswordEncryptedEntryViaZipFile()
         throws IOException {
         File file = getFile("password-encrypted.zip");
@@ -50,6 +52,7 @@ public class EncryptedArchiveTest extends TestCase {
         }
     }
 
+    @Test
     public void testReadPasswordEncryptedEntryViaStream()
         throws IOException {
         File file = getFile("password-encrypted.zip");
