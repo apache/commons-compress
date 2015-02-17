@@ -53,12 +53,12 @@ public class ExplodeSupportTest {
 
     @Test
     public void testArchiveWithImplodeCompression4K2Trees() throws IOException {
-        testArchiveWithImplodeCompression("target/test-classes/archives/imploding-4Kdict-2trees.zip", "HEADER.TXT");
+        testArchiveWithImplodeCompression("target/test-classes/imploding-4Kdict-2trees.zip", "HEADER.TXT");
     }
 
     @Test
     public void testArchiveWithImplodeCompression8K3Trees() throws IOException {
-        testArchiveWithImplodeCompression("target/test-classes/archives/imploding-8Kdict-3trees.zip", "LICENSE.TXT");
+        testArchiveWithImplodeCompression("target/test-classes/imploding-8Kdict-3trees.zip", "LICENSE.TXT");
     }
 
     @Test
@@ -86,12 +86,12 @@ public class ExplodeSupportTest {
 
     @Test
     public void testZipStreamWithImplodeCompression4K2Trees() throws IOException {
-        testZipStreamWithImplodeCompression("target/test-classes/archives/imploding-4Kdict-2trees.zip", "HEADER.TXT");
+        testZipStreamWithImplodeCompression("target/test-classes/imploding-4Kdict-2trees.zip", "HEADER.TXT");
     }
 
     @Test
     public void testZipStreamWithImplodeCompression8K3Trees() throws IOException {
-        testZipStreamWithImplodeCompression("target/test-classes/archives/imploding-8Kdict-3trees.zip", "LICENSE.TXT");
+        testZipStreamWithImplodeCompression("target/test-classes/imploding-8Kdict-3trees.zip", "LICENSE.TXT");
     }
 
     @Test
