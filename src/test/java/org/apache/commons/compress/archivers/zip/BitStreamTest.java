@@ -19,12 +19,15 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import static org.junit.Assert.*;
+
 import java.io.ByteArrayInputStream;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class BitStreamTest extends TestCase {
+public class BitStreamTest {
 
+    @Test
     public void testEmptyStream() throws Exception {
         BitStream stream = new BitStream(new ByteArrayInputStream(new byte[0]));
         assertEquals("next bit", -1, stream.nextBit());
@@ -33,6 +36,7 @@ public class BitStreamTest extends TestCase {
         stream.close();
     }
 
+    @Test
     public void testStream() throws Exception {
         BitStream stream = new BitStream(new ByteArrayInputStream(new byte[] { (byte) 0xEA, 0x03 }));
 
@@ -58,6 +62,7 @@ public class BitStreamTest extends TestCase {
         stream.close();
     }
 
+    @Test
     public void testNextByteFromEmptyStream() throws Exception {
         BitStream stream = new BitStream(new ByteArrayInputStream(new byte[0]));
         assertEquals("next byte", -1, stream.nextByte());
@@ -65,6 +70,7 @@ public class BitStreamTest extends TestCase {
         stream.close();
     }
 
+    @Test
     public void testReadAlignedBytes() throws Exception {
         BitStream stream = new BitStream(new ByteArrayInputStream(new byte[] { (byte) 0xEA, 0x35 }));
         assertEquals("next byte", 0xEA, stream.nextByte());
@@ -73,6 +79,7 @@ public class BitStreamTest extends TestCase {
         stream.close();
     }
 
+    @Test
     public void testNextByte() throws Exception {
         BitStream stream = new BitStream(new ByteArrayInputStream(new byte[] { (byte) 0xEA, 0x35 }));
         assertEquals("bit 0", 0, stream.nextBit());

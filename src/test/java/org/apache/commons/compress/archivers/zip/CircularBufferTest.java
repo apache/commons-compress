@@ -19,10 +19,13 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
-public class CircularBufferTest extends TestCase {
+import org.junit.Test;
 
+public class CircularBufferTest {
+
+    @Test
     public void testPutAndGet() throws Exception {
         int size = 16;
         CircularBuffer buffer = new CircularBuffer(size);
@@ -40,6 +43,7 @@ public class CircularBufferTest extends TestCase {
         assertFalse("available", buffer.available());
     }
 
+    @Test
     public void testCopy() throws Exception {
         CircularBuffer buffer = new CircularBuffer(16);
         

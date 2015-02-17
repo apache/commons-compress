@@ -18,12 +18,14 @@
  */
 package org.apache.commons.compress.compressors;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
 import org.apache.commons.compress.compressors.gzip.GzipUtils;
+import org.junit.Test;
 
-public class GzipUtilsTestCase extends TestCase {
+public class GzipUtilsTestCase {
 
+    @Test
     public void testIsCompressedFilename() {
         assertFalse(GzipUtils.isCompressedFilename(""));
         assertFalse(GzipUtils.isCompressedFilename(".gz"));
@@ -53,6 +55,7 @@ public class GzipUtilsTestCase extends TestCase {
         assertFalse(GzipUtils.isCompressedFilename("x.wmz.y"));
     }
 
+    @Test
     public void testGetUncompressedFilename() {
         assertEquals("", GzipUtils.getUncompressedFilename(""));
         assertEquals(".gz", GzipUtils.getUncompressedFilename(".gz"));
@@ -78,6 +81,7 @@ public class GzipUtilsTestCase extends TestCase {
         assertEquals("x.wmz.y", GzipUtils.getUncompressedFilename("x.wmz.y"));
     }
 
+    @Test
     public void testGetCompressedFilename() {
         assertEquals(".gz", GzipUtils.getCompressedFilename(""));
         assertEquals("x.gz", GzipUtils.getCompressedFilename("x"));
