@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.archivers;
 
+import static org.junit.Assert.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream; 	
@@ -40,6 +42,7 @@ import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.archivers.zip.ZipMethod;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
+import org.junit.Test;
 
 public final class ZipTestCase extends AbstractTestCase {
     /**
@@ -47,6 +50,7 @@ public final class ZipTestCase extends AbstractTestCase {
      * and source is the same, it looks like the operations have worked
      * @throws Exception
      */
+    @Test
     public void testZipArchiveCreation() throws Exception {
         // Archive
         final File output = new File(dir, "bla.zip");
@@ -111,6 +115,7 @@ public final class ZipTestCase extends AbstractTestCase {
      * Simple unarchive test. Asserts nothing.
      * @throws Exception
      */
+    @Test
     public void testZipUnarchive() throws Exception {
         final File input = getFile("bla.zip");
         final InputStream is = new FileInputStream(input);
@@ -127,6 +132,7 @@ public final class ZipTestCase extends AbstractTestCase {
      * <a href="https://issues.apache.org/jira/browse/COMPRESS-208"
      * >COMPRESS-208</a>.
      */
+    @Test
     public void testSkipsPK00Prefix() throws Exception {
         final File input = getFile("COMPRESS-208.zip");
         InputStream is = new FileInputStream(input);
@@ -145,6 +151,7 @@ public final class ZipTestCase extends AbstractTestCase {
      * <a href="https://issues.apache.org/jira/browse/COMPRESS-93"
      * >COMPRESS-93</a>.
      */
+    @Test
     public void testSupportedCompressionMethod() throws IOException {
         /*
         ZipFile bla = new ZipFile(getFile("bla.zip"));
@@ -167,6 +174,7 @@ public final class ZipTestCase extends AbstractTestCase {
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-93"
      *        >COMPRESS-93</a>
      */
+    @Test
     public void testSkipEntryWithUnsupportedCompressionMethod()
             throws IOException {
         ZipArchiveInputStream zip =
@@ -196,6 +204,7 @@ public final class ZipTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testListAllFilesWithNestedArchive() throws Exception {
         final File input = getFile("OSX_ArchiveWithNestedArchive.zip");
 
@@ -230,6 +239,7 @@ public final class ZipTestCase extends AbstractTestCase {
         results.contains("test3.xml");
     }
 
+    @Test
     public void testDirectoryEntryFromFile() throws Exception {
         File[] tmp = createTempDirAndFile();
         File archive = null;
@@ -265,6 +275,7 @@ public final class ZipTestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testExplicitDirectoryEntry() throws Exception {
         File[] tmp = createTempDirAndFile();
         File archive = null;
@@ -307,6 +318,7 @@ public final class ZipTestCase extends AbstractTestCase {
         }
     };
 
+    @Test
     public void testCopyRawEntriesFromFile()
             throws IOException {
 
@@ -338,6 +350,7 @@ public final class ZipTestCase extends AbstractTestCase {
         zf2.close();
     }
 
+    @Test
     public void testCopyRawZip64EntryFromFile()
             throws IOException {
 
@@ -362,6 +375,8 @@ public final class ZipTestCase extends AbstractTestCase {
         assertSameFileContents(reference, fileResult);
         zf1.close();
     }
+
+    @Test
     public void testUnixModeInAddRaw() throws IOException {
 
         File[] tmp = createTempDirAndFile();
@@ -449,6 +464,7 @@ public final class ZipTestCase extends AbstractTestCase {
         zos.closeArchiveEntry();
     }
 
+    @Test
     public void testFileEntryFromFile() throws Exception {
         File[] tmp = createTempDirAndFile();
         File archive = null;
@@ -493,6 +509,7 @@ public final class ZipTestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testExplicitFileEntry() throws Exception {
         File[] tmp = createTempDirAndFile();
         File archive = null;

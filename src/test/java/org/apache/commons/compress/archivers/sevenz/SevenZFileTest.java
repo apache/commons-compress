@@ -17,17 +17,21 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import javax.crypto.Cipher;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.PasswordRequiredException;
+import org.junit.Test;
 
 public class SevenZFileTest extends AbstractTestCase {
     private static final String TEST2_CONTENT = "<?xml version = '1.0'?>\r\n<!DOCTYPE"
         + " connections>\r\n<meinxml>\r\n\t<leer />\r\n</meinxml>\n";
 
+    @Test
     public void testAllEmptyFilesArchive() throws Exception {
         SevenZFile archive = new SevenZFile(getFile("7z-empty-mhc-off.7z"));
         try {
@@ -37,22 +41,27 @@ public class SevenZFileTest extends AbstractTestCase {
         }
     }
     
+    @Test
     public void testHelloWorldHeaderCompressionOffCopy() throws Exception {
         checkHelloWorld("7z-hello-mhc-off-copy.7z");
     }
 
+    @Test
     public void testHelloWorldHeaderCompressionOffLZMA2() throws Exception {
         checkHelloWorld("7z-hello-mhc-off-lzma2.7z");
     }
 
+    @Test
     public void test7zUnarchive() throws Exception {
         test7zUnarchive(getFile("bla.7z"), SevenZMethod.LZMA);
     }
 
+    @Test
     public void test7zDeflateUnarchive() throws Exception {
         test7zUnarchive(getFile("bla.deflate.7z"), SevenZMethod.DEFLATE);
     }
 
+    @Test
     public void test7zDecryptUnarchive() throws Exception {
         if (isStrongCryptoAvailable()) {
             test7zUnarchive(getFile("bla.encrypted.7z"), SevenZMethod.LZMA, // stack LZMA + AES
@@ -64,6 +73,7 @@ public class SevenZFileTest extends AbstractTestCase {
         test7zUnarchive(f, m, null);
     }
 
+    @Test
     public void testEncryptedArchiveRequiresPassword() throws Exception {
         try {
             new SevenZFile(getFile("bla.encrypted.7z"));
@@ -82,6 +92,7 @@ public class SevenZFileTest extends AbstractTestCase {
     /**
      * @see "https://issues.apache.org/jira/browse/COMPRESS-256"
      */
+    @Test
     public void testCompressedHeaderWithNonDefaultDictionarySize() throws Exception {
         SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-256.7z"));
         try {
@@ -95,6 +106,7 @@ public class SevenZFileTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testSignatureCheck() {
         assertTrue(SevenZFile.matches(SevenZFile.sevenZSignature,
                                       SevenZFile.sevenZSignature.length));
@@ -109,6 +121,7 @@ public class SevenZFileTest extends AbstractTestCase {
                                                     (byte) 0xAF, 0x27, 0x1D}, 6));
     }
 
+    @Test
     public void testReadingBackLZMA2DictSize() throws Exception {
         File output = new File(dir, "lzma2-dictsize.7z");
         SevenZOutputFile outArchive = new SevenZOutputFile(output);
@@ -134,6 +147,7 @@ public class SevenZFileTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testReadingBackDeltaDistance() throws Exception {
         File output = new File(dir, "delta-distance.7z");
         SevenZOutputFile outArchive = new SevenZOutputFile(output);

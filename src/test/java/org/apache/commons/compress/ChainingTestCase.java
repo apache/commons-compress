@@ -18,6 +18,8 @@
 
 package org.apache.commons.compress;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 
@@ -25,10 +27,12 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.junit.Test;
 
 
 public class ChainingTestCase extends AbstractTestCase {
 
+    @Test
     public void testTarGzip() throws Exception {
         File file = getFile("bla.tgz");
         final TarArchiveInputStream is = new TarArchiveInputStream(new GzipCompressorInputStream(new FileInputStream(file)));
@@ -38,6 +42,7 @@ public class ChainingTestCase extends AbstractTestCase {
         is.close();
     }
 
+    @Test
     public void testTarBzip2() throws Exception {
         File file = getFile("bla.tar.bz2");
         final TarArchiveInputStream is = new TarArchiveInputStream(new BZip2CompressorInputStream(new FileInputStream(file)));

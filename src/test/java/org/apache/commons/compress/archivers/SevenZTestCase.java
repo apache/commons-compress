@@ -17,6 +17,8 @@
  */
 package org.apache.commons.compress.archivers;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -26,21 +28,26 @@ import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.compress.archivers.sevenz.SevenZMethod;
 import org.apache.commons.compress.archivers.sevenz.SevenZOutputFile;
+import org.junit.Test;
 
 public class SevenZTestCase extends AbstractTestCase {
 
+    @Test
     public void testSevenZArchiveCreationUsingCopy() throws Exception {
         testSevenZArchiveCreation(SevenZMethod.COPY);
     }
     
+    @Test
     public void testSevenZArchiveCreationUsingLZMA2() throws Exception {
         testSevenZArchiveCreation(SevenZMethod.LZMA2);
     }
     
+    @Test
     public void testSevenZArchiveCreationUsingBZIP2() throws Exception {
         testSevenZArchiveCreation(SevenZMethod.BZIP2);
     }
     
+    @Test
     public void testSevenZArchiveCreationUsingDeflate() throws Exception {
         testSevenZArchiveCreation(SevenZMethod.DEFLATE);
     }

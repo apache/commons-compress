@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress;
 
+import static org.junit.Assert.*;
 import java.io.BufferedInputStream;
 import java.io.Closeable;
 import java.io.File;
@@ -34,15 +35,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.After;
+import org.junit.Before;
 
-public abstract class AbstractTestCase extends TestCase {
+public abstract class AbstractTestCase {
 
     protected File dir;
     protected File resultDir;
@@ -52,15 +53,8 @@ public abstract class AbstractTestCase extends TestCase {
 
     protected ArchiveStreamFactory factory = new ArchiveStreamFactory();
 
-    public AbstractTestCase() {
-    }
-
-    public AbstractTestCase(String name) {
-        super(name);
-    }
-
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         dir = mkdir("dir");
         resultDir = mkdir("dir-result");
         archive = null;
@@ -90,8 +84,8 @@ public abstract class AbstractTestCase extends TestCase {
         return new File(uri);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         rmdir(dir);
         rmdir(resultDir);
         dir = resultDir = null;

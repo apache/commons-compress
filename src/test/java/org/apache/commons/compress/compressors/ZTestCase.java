@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.compressors;
 
+import static org.junit.Assert.*;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,9 +30,11 @@ import java.io.InputStream;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.z.ZCompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.Test;
 
 public final class ZTestCase extends AbstractTestCase {
 
+    @Test
     public void testZUnarchive() throws Exception {
         testUnarchive(new StreamWrapper<CompressorInputStream>() {
             public CompressorInputStream wrap(InputStream is) throws IOException {
@@ -39,6 +43,7 @@ public final class ZTestCase extends AbstractTestCase {
         });
     }
 
+    @Test
     public void testZUnarchiveViaFactory() throws Exception {
         testUnarchive(new StreamWrapper<CompressorInputStream>() {
             public CompressorInputStream wrap(InputStream is) throws Exception {
@@ -48,6 +53,7 @@ public final class ZTestCase extends AbstractTestCase {
         });
     }
 
+    @Test
     public void testZUnarchiveViaAutoDetection() throws Exception {
         testUnarchive(new StreamWrapper<CompressorInputStream>() {
             public CompressorInputStream wrap(InputStream is) throws Exception {
@@ -57,6 +63,7 @@ public final class ZTestCase extends AbstractTestCase {
         });
     }
 
+    @Test
     public void testMatches() throws Exception {
         assertFalse(ZCompressorInputStream.matches(new byte[] { 1, 2, 3, 4 }, 4));
         assertFalse(ZCompressorInputStream.matches(new byte[] { 0x1f, 2, 3, 4 }, 4));

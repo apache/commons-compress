@@ -48,19 +48,19 @@ import org.junit.runners.Parameterized.Parameters;
 /**
  * Test that can read various tar file examples.
  * 
-  * Files must be in resources/longpath, and there must be a file.txt containing
+  * Files must be in resources/longsymlink, and there must be a file.txt containing
  * the list of files in the archives.
 */
 @RunWith(Parameterized.class)
-public class LongPathTest extends AbstractTestCase {
+public class LongSymLinkTest extends AbstractTestCase {
 
-    private static final ClassLoader CLASSLOADER = LongPathTest.class.getClassLoader();
-    private static final File ARCDIR = new File(CLASSLOADER.getResource("longpath").getFile());
+    private static final ClassLoader CLASSLOADER = LongSymLinkTest.class.getClassLoader();
+    private static final File ARCDIR = new File(CLASSLOADER.getResource("longsymlink").getFile());
     private static final ArrayList<String> FILELIST = new ArrayList<String>();
 
     private File file;
 
-    public LongPathTest(File file){
+    public LongSymLinkTest(File file){
         this.file = file;
     }
 
@@ -92,6 +92,7 @@ public class LongPathTest extends AbstractTestCase {
         }
       return params;
     }
+
 
     @Override
     protected String getExpectedString(ArchiveEntry entry) {

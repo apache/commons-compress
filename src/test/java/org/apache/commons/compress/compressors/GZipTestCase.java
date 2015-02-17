@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.compressors;
 
+import static org.junit.Assert.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -35,9 +37,11 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipParameters;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
+import org.junit.Test;
 
 public final class GZipTestCase extends AbstractTestCase {
 
+    @Test
     public void testGzipCreation()  throws Exception {
         final File input = getFile("test1.xml");
         final File output = new File(dir, "test1.xml.gz");
@@ -55,6 +59,7 @@ public final class GZipTestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testGzipUnarchive() throws Exception {
         final File input = getFile("bla.tgz");
         final File output = new File(dir, "bla.tar");
@@ -77,6 +82,7 @@ public final class GZipTestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testConcatenatedStreamsReadFirstOnly() throws Exception {
         final File input = getFile("multiple.gz");
         final InputStream is = new FileInputStream(input);
@@ -94,6 +100,7 @@ public final class GZipTestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testConcatenatedStreamsReadFully() throws Exception {
         final File input = getFile("multiple.gz");
         final InputStream is = new FileInputStream(input);
@@ -116,6 +123,7 @@ public final class GZipTestCase extends AbstractTestCase {
     /**
      * @see "https://issues.apache.org/jira/browse/COMPRESS-84"
      */
+    @Test
     public void testCorruptedInput() throws Exception {
         InputStream in = null;
         OutputStream out = null;
@@ -153,6 +161,7 @@ public final class GZipTestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testInteroperabilityWithGzipCompressorInputStream() throws Exception {
         FileInputStream fis = new FileInputStream(getFile("test3.xml"));
         byte[] content;
@@ -181,6 +190,7 @@ public final class GZipTestCase extends AbstractTestCase {
         Assert.assertArrayEquals("uncompressed content", content, content2);
     }
 
+    @Test
     public void testInteroperabilityWithGZIPInputStream() throws Exception {
         FileInputStream fis = new FileInputStream(getFile("test3.xml"));
         byte[] content;
@@ -209,6 +219,7 @@ public final class GZipTestCase extends AbstractTestCase {
         Assert.assertArrayEquals("uncompressed content", content, content2);
     }
 
+    @Test
     public void testInvalidCompressionLevel() {
         GzipParameters parameters = new GzipParameters();
         try {
@@ -247,18 +258,22 @@ public final class GZipTestCase extends AbstractTestCase {
         assertEquals("extra flags (XFL)", flag, bout.toByteArray()[8]);
     }
 
+    @Test
     public void testExtraFlagsFastestCompression() throws Exception {
         testExtraFlags(Deflater.BEST_SPEED, 4);
     }
 
+    @Test
     public void testExtraFlagsBestCompression() throws Exception {
         testExtraFlags(Deflater.BEST_COMPRESSION, 2);
     }
 
+    @Test
     public void testExtraFlagsDefaultCompression() throws Exception {
         testExtraFlags(Deflater.DEFAULT_COMPRESSION, 0);
     }
     
+    @Test
     public void testOverWrite() throws Exception {
         GzipCompressorOutputStream out = new GzipCompressorOutputStream(new ByteArrayOutputStream());
         out.close();
@@ -270,6 +285,7 @@ public final class GZipTestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testMetadataRoundTrip() throws Exception {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
                 
