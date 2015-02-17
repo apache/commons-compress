@@ -41,30 +41,32 @@ import org.apache.commons.compress.archivers.ArchiveException;
  * The class uses nested suites in order to be able to name the test after the file name,
  * as JUnit does not allow one to change the display name of a test.
  */
-public class ArchiveReadTests extends AbstractTestCase {
+public class ArchiveReadTest extends AbstractTestCase {
 
-    final static ClassLoader classLoader = ArchiveReadTests.class.getClassLoader();
+    final static ClassLoader classLoader = ArchiveReadTest.class.getClassLoader();
 
     private File file;
     private static final ArrayList<String> fileList = new ArrayList<String>();
 
-    public ArchiveReadTests(String name) {
+    public ArchiveReadTest(String name) {
         super(name);
     }
 
-    private ArchiveReadTests(String name, File file){
+    private ArchiveReadTest(String name, File file){
         super(name);
         this.file = file;
     }
 
     public static TestSuite suite() throws IOException{
         TestSuite suite = new TestSuite("ArchiveReadTests");
+        // TODO move fileList setup to static block
         File arcdir =new File(classLoader.getResource("archives").getFile());
         assertTrue(arcdir.exists());
         File listing= new File(arcdir,"files.txt");
         assertTrue("files.txt is readable",listing.canRead());
         BufferedReader br = new BufferedReader(new FileReader(listing));
         String line;
+        fileList.clear(); // Surefire calls the suite more than once
         while ((line=br.readLine())!=null){
             if (line.startsWith("#")){
                 continue;
@@ -79,7 +81,7 @@ public class ArchiveReadTests extends AbstractTestCase {
             }
             // Appears to be the only way to give the test a variable name
             TestSuite namedSuite = new TestSuite(file.getName());
-            Test test = new ArchiveReadTests("testArchive", file);
+            Test test = new ArchiveReadTest("testArchive", file);
             namedSuite.addTest(test);
             suite.addTest(namedSuite);
         }
@@ -99,6 +101,8 @@ public class ArchiveReadTests extends AbstractTestCase {
            checkArchiveContent(file, expected);
         } catch (ArchiveException e) {
             fail("Problem checking "+file);
+        } catch (junit.framework.AssertionFailedError e) { // show error in context
+            fail("Problem checking " + file + " " +e);
         }
     }
 }
