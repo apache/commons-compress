@@ -26,9 +26,11 @@ import java.io.InputStream;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.lzma.LZMACompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.Test;
 
 public final class LZMATestCase extends AbstractTestCase {
 
+    @Test
     public void testLZMAUnarchive() throws Exception {
         final File input = getFile("bla.tar.lzma");
         final File output = new File(dir, "bla.tar");

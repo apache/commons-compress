@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.archivers.cpio;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -25,9 +27,11 @@ import java.io.InputStream;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.Test;
 
 public class CpioArchiveOutputStreamTest extends AbstractTestCase {
 
+    @Test
     public void testWriteOldBinary() throws Exception {
         final File f = getFile("test1.xml");
         final File output = new File(dir, "test.cpio");

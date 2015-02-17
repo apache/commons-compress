@@ -18,19 +18,24 @@
 
 package org.apache.commons.compress.archivers.ar;
 
+import static org.junit.Assert.*;
+
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.utils.ArchiveUtils;
+import org.junit.Test;
 
 public class ArArchiveInputStreamTest extends AbstractTestCase {
 
+    @Test
     public void testReadLongNamesGNU() throws Exception {
         checkLongNameEntry("longfile_gnu.ar");
     }
 
+    @Test
     public void testReadLongNamesBSD() throws Exception {
         checkLongNameEntry("longfile_bsd.ar");
     }

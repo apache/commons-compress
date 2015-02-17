@@ -29,6 +29,7 @@ import org.apache.commons.compress.compressors.deflate.DeflateCompressorInputStr
 import org.apache.commons.compress.compressors.deflate.DeflateCompressorOutputStream;
 import org.apache.commons.compress.compressors.deflate.DeflateParameters;
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.Test;
 
 public final class DeflateTestCase extends AbstractTestCase {
 
@@ -37,6 +38,7 @@ public final class DeflateTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testDeflateCreation()  throws Exception {
         final File input = getFile("test1.xml");
         final File output = new File(dir, "test1.xml.deflatez");
@@ -59,6 +61,7 @@ public final class DeflateTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testRawDeflateCreation()  throws Exception {
         final File input = getFile("test1.xml");
         final File output = new File(dir, "test1.xml.deflate");
@@ -82,6 +85,7 @@ public final class DeflateTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testDeflateUnarchive() throws Exception {
         final File input = getFile("bla.tar.deflatez");
         final File output = new File(dir, "bla.tar");
@@ -109,6 +113,7 @@ public final class DeflateTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testRawDeflateUnarchive() throws Exception {
         final File input = getFile("bla.tar.deflate");
         final File output = new File(dir, "bla.tar");

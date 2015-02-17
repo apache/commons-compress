@@ -18,17 +18,23 @@
 
 package org.apache.commons.compress;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import java.util.Collection;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Test that can read various archive file examples.
@@ -37,55 +43,48 @@ import org.apache.commons.compress.archivers.ArchiveException;
  * 
  * Files must be in resources/archives, and there must be a file.txt containing
  * the list of files in the archives.
- * 
- * The class uses nested suites in order to be able to name the test after the file name,
- * as JUnit does not allow one to change the display name of a test.
  */
+@RunWith(Parameterized.class)
 public class ArchiveReadTest extends AbstractTestCase {
 
-    final static ClassLoader classLoader = ArchiveReadTest.class.getClassLoader();
+    private static final ClassLoader CLASSLOADER = ArchiveReadTest.class.getClassLoader();
+    private static final File ARCDIR = new File(CLASSLOADER.getResource("archives").getFile());
+    private static final ArrayList<String> FILELIST = new ArrayList<String>();
 
     private File file;
-    private static final ArrayList<String> fileList = new ArrayList<String>();
 
-    public ArchiveReadTest(String name) {
-        super(name);
-    }
-
-    private ArchiveReadTest(String name, File file){
-        super(name);
+    public ArchiveReadTest(File file){
         this.file = file;
     }
 
-    public static TestSuite suite() throws IOException{
-        TestSuite suite = new TestSuite("ArchiveReadTests");
-        // TODO move fileList setup to static block
-        File arcdir =new File(classLoader.getResource("archives").getFile());
-        assertTrue(arcdir.exists());
-        File listing= new File(arcdir,"files.txt");
+    @BeforeClass
+    public static void setUpFileList() throws Exception {
+        assertTrue(ARCDIR.exists());
+        File listing= new File(ARCDIR,"files.txt");
         assertTrue("files.txt is readable",listing.canRead());
         BufferedReader br = new BufferedReader(new FileReader(listing));
         String line;
-        fileList.clear(); // Surefire calls the suite more than once
         while ((line=br.readLine())!=null){
-            if (line.startsWith("#")){
-                continue;
+            if (!line.startsWith("#")){
+                FILELIST.add(line);
             }
-            fileList.add(line);
         }
         br.close();
-        File[]files=arcdir.listFiles();
-        for (final File file : files) {
-            if (file.getName().endsWith(".txt")){
-                continue;
+    }
+
+    @Parameters
+    public static Collection<Object[]> data() {
+        assertTrue(ARCDIR.exists());
+        Collection<Object[]> params = new ArrayList<Object[]>();
+        for (File f : ARCDIR.listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return !name.endsWith(".txt");
             }
-            // Appears to be the only way to give the test a variable name
-            TestSuite namedSuite = new TestSuite(file.getName());
-            Test test = new ArchiveReadTest("testArchive", file);
-            namedSuite.addTest(test);
-            suite.addTest(namedSuite);
+        })) 
+        {
+            params.add(new Object[] { f });
         }
-        return suite;
+      return params;
     }
 
     // files.txt contains size and filename
@@ -94,14 +93,15 @@ public class ArchiveReadTest extends AbstractTestCase {
         return entry.getSize() + " " + entry.getName();
     }
 
+    @Test
     public void testArchive() throws Exception{
         @SuppressWarnings("unchecked") // fileList is correct type already
-        ArrayList<String> expected= (ArrayList<String>) fileList.clone();
+        ArrayList<String> expected= (ArrayList<String>) FILELIST.clone();
         try {
            checkArchiveContent(file, expected);
         } catch (ArchiveException e) {
             fail("Problem checking "+file);
-        } catch (junit.framework.AssertionFailedError e) { // show error in context
+        } catch (AssertionError e) { // show error in context
             fail("Problem checking " + file + " " +e);
         }
     }

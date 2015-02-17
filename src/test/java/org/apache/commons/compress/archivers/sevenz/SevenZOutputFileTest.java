@@ -17,6 +17,9 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
+import static org.junit.Assert.*;
+import org.junit.Test;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -49,6 +52,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         super.tearDown();
     }
 
+    @Test
     public void testDirectoriesAndEmptyFiles() throws Exception {
         output = new File(dir, "empties.7z");
 
@@ -145,6 +149,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
 
     }
 
+    @Test
     public void testDirectoriesOnly() throws Exception {
         output = new File(dir, "dirs.7z");
         SevenZOutputFile outArchive = new SevenZOutputFile(output);
@@ -173,6 +178,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
 
     }
 
+    @Test
     public void testCantFinishTwice() throws Exception {
         output = new File(dir, "finish.7z");
         SevenZOutputFile outArchive = new SevenZOutputFile(output);
@@ -187,96 +193,118 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testSixEmptyFiles() throws Exception {
         testCompress252(6, 0);
     }
 
+    @Test
     public void testSixFilesSomeNotEmpty() throws Exception {
         testCompress252(6, 2);
     }
 
+    @Test
     public void testSevenEmptyFiles() throws Exception {
         testCompress252(7, 0);
     }
 
+    @Test
     public void testSevenFilesSomeNotEmpty() throws Exception {
         testCompress252(7, 2);
     }
 
+    @Test
     public void testEightEmptyFiles() throws Exception {
         testCompress252(8, 0);
     }
 
+    @Test
     public void testEightFilesSomeNotEmpty() throws Exception {
         testCompress252(8, 2);
     }
 
+    @Test
     public void testNineEmptyFiles() throws Exception {
         testCompress252(9, 0);
     }
 
+    @Test
     public void testNineFilesSomeNotEmpty() throws Exception {
         testCompress252(9, 2);
     }
 
+    @Test
     public void testTwentyNineEmptyFiles() throws Exception {
         testCompress252(29, 0);
     }
 
+    @Test
     public void testTwentyNineFilesSomeNotEmpty() throws Exception {
         testCompress252(29, 7);
     }
 
+    @Test
     public void testCopyRoundtrip() throws Exception {
         testRoundTrip(SevenZMethod.COPY);
     }
 
+    @Test
     public void testBzip2Roundtrip() throws Exception {
         testRoundTrip(SevenZMethod.BZIP2);
     }
 
+    @Test
     public void testLzma2Roundtrip() throws Exception {
         testRoundTrip(SevenZMethod.LZMA2);
     }
 
+    @Test
     public void testDeflateRoundtrip() throws Exception {
         testRoundTrip(SevenZMethod.DEFLATE);
     }
 
+    @Test
     public void testBCJX86Roundtrip() throws Exception {
         if (XZ_BCJ_IS_BUGGY) { return; }
         testFilterRoundTrip(new SevenZMethodConfiguration(SevenZMethod.BCJ_X86_FILTER));
     }
 
+    @Test
     public void testBCJARMRoundtrip() throws Exception {
         if (XZ_BCJ_IS_BUGGY) { return; }
         testFilterRoundTrip(new SevenZMethodConfiguration(SevenZMethod.BCJ_ARM_FILTER));
     }
 
+    @Test
     public void testBCJARMThumbRoundtrip() throws Exception {
         if (XZ_BCJ_IS_BUGGY) { return; }
         testFilterRoundTrip(new SevenZMethodConfiguration(SevenZMethod.BCJ_ARM_THUMB_FILTER));
     }
 
+    @Test
     public void testBCJIA64Roundtrip() throws Exception {
         if (XZ_BCJ_IS_BUGGY) { return; }
         testFilterRoundTrip(new SevenZMethodConfiguration(SevenZMethod.BCJ_IA64_FILTER));
     }
 
+    @Test
     public void testBCJPPCRoundtrip() throws Exception {
         if (XZ_BCJ_IS_BUGGY) { return; }
         testFilterRoundTrip(new SevenZMethodConfiguration(SevenZMethod.BCJ_PPC_FILTER));
     }
 
+    @Test
     public void testBCJSparcRoundtrip() throws Exception {
         if (XZ_BCJ_IS_BUGGY) { return; }
         testFilterRoundTrip(new SevenZMethodConfiguration(SevenZMethod.BCJ_SPARC_FILTER));
     }
 
+    @Test
     public void testDeltaRoundtrip() throws Exception {
         testFilterRoundTrip(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER));
     }
 
+    @Test
     public void testStackOfContentCompressions() throws Exception {
         output = new File(dir, "multiple-methods.7z");
         ArrayList<SevenZMethodConfiguration> methods = new ArrayList<SevenZMethodConfiguration>();
@@ -287,6 +315,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         createAndReadBack(output, methods);
     }
 
+    @Test
     public void testDeflateWithConfiguration() throws Exception {
         output = new File(dir, "deflate-options.7z");
         // Deflater.BEST_SPEED
@@ -294,6 +323,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
                           .singletonList(new SevenZMethodConfiguration(SevenZMethod.DEFLATE, 1)));
     }
 
+    @Test
     public void testBzip2WithConfiguration() throws Exception {
         output = new File(dir, "bzip2-options.7z");
         // 400k block size
@@ -301,6 +331,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
                           .singletonList(new SevenZMethodConfiguration(SevenZMethod.BZIP2, 4)));
     }
 
+    @Test
     public void testLzma2WithIntConfiguration() throws Exception {
         output = new File(dir, "lzma2-options.7z");
         // 1 MB dictionary
@@ -308,6 +339,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
                           .singletonList(new SevenZMethodConfiguration(SevenZMethod.LZMA2, 1 << 20)));
     }
 
+    @Test
     public void testLzma2WithOptionsConfiguration() throws Exception {
         output = new File(dir, "lzma2-options2.7z");
         LZMA2Options opts = new LZMA2Options(1);
@@ -315,6 +347,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
                           .singletonList(new SevenZMethodConfiguration(SevenZMethod.LZMA2, opts)));
     }
 
+    @Test
     public void testArchiveWithMixedMethods() throws Exception {
         output = new File(dir, "mixed-methods.7z");
         SevenZOutputFile outArchive = new SevenZOutputFile(output);

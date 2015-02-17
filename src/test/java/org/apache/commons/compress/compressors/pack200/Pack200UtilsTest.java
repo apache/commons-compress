@@ -29,9 +29,11 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.Test;
 
 public final class Pack200UtilsTest extends AbstractTestCase {
 
+    @Test
     public void testNormalize() throws Throwable {
         final File input = getFile("bla.jar");
         final File[] output = createTempDirAndFile();
@@ -68,6 +70,7 @@ public final class Pack200UtilsTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testNormalizeInPlace() throws Throwable {
         final File input = getFile("bla.jar");
         final File[] output = createTempDirAndFile();
