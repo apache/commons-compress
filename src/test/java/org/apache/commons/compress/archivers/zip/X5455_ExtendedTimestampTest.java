@@ -437,6 +437,7 @@ public class X5455_ExtendedTimestampTest {
         zf.close();
     }
 
+    @Test
     public void testBitsAreSetWithTime() {
         xf.setModifyJavaTime(new Date(1111));
         assertTrue(xf.isBit0_modifyTimePresent());
