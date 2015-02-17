@@ -30,6 +30,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -359,9 +360,7 @@ public abstract class AbstractTestCase extends TestCase {
             }
             in.close();
             if (expected != null && expected.size() > 0) {
-                for (String name : expected) {
-                    fail("Expected entry: " + name);
-                }
+                fail(expected.size() + " missing entries: " + Arrays.toString(expected.toArray()));
             }
             if (expected != null) {
                 assertEquals(0, expected.size());
