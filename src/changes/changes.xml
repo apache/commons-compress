@@ -54,6 +54,11 @@ breaks backwards compatibility for code which used the old package.
 This also changes the superclass of ZCompressorInputStream.    
 ">
 
+      <action issue="COMPRESS-309" type="fix"
+              date="2015-02-20">
+        BZip2CompressorInputStream#read would return -1 when asked to
+        read 0 bytes.
+      </action>
       <action issue="COMPRESS-306" type="fix">
         ArchiveStreamFactory fails to pass on the encoding when creating some streams.
         * ArjArchiveInputStream
