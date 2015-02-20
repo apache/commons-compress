@@ -165,6 +165,9 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         if (this.in == null) {
             throw new IOException("stream closed");
         }
+        if (len == 0) {
+            return 0;
+        }
 
         final int hi = offs + len;
         int destOffs = offs;
