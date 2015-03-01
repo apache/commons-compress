@@ -60,8 +60,8 @@ public class LongPathTest extends AbstractTestCase {
 
     private File file;
 
-    public LongPathTest(File file){
-        this.file = file;
+    public LongPathTest(String file){
+        this.file = new File(ARCDIR, file);
     }
 
     @BeforeClass
@@ -79,10 +79,10 @@ public class LongPathTest extends AbstractTestCase {
         br.close();
     }
 
-    @Parameters
+    @Parameters(name = "file={0}")
     public static Collection<Object[]> data() {
         Collection<Object[]> params = new ArrayList<Object[]>();
-        for (File f : ARCDIR.listFiles(new FilenameFilter() {
+        for (String f : ARCDIR.list(new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 return !name.endsWith(".txt");
             }
