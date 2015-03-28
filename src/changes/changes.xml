@@ -85,6 +85,16 @@ This also changes the superclass of ZCompressorInputStream.
         The class is now immutable provided that the method setDecompressConcatenated is not used.
         The class is thread-safe.
       </action>
+      <action issue="COMPRESS-298" type="fix" date="2015-01-20">
+        SevenZFile now throws the specific PasswordRequiredException
+        when it encounters an encrypted stream but no password has
+        been specified.
+      </action>
+      <action issue="COMPRESS-290" type="fix" date="2015-01-13"
+              due-to="Kristian Rosenvold">
+        Improved error message when tar encounters a groupId that is
+        too big to write without using the STAR or POSIX format.
+      </action>
       <action issue="COMPRESS-296" type="add" date="2015-01-10"
               due-to="Kristian Rosenvold">
         Added support for parallel compression. This low-level API allows
@@ -97,7 +107,6 @@ This also changes the superclass of ZCompressorInputStream.
         handled by client code and is not part of commons-compress for this
         release.
       </action>
-
       <action type="add" date="2014-12-24"
               due-to="Kristian Rosenvold">
         Cut overall object instantiation in half by changing file
@@ -109,14 +118,10 @@ This also changes the superclass of ZCompressorInputStream.
         These may have some interesting additional usages in the
         near future.
       </action>
-
-      <action type="update" date="2014-10-28"
-              due-to="Damjan Jovanovic">
-        Moved the package
-        org.apache.commons.compress.compressors.z._internal_ to
-        org.apache.commons.compress.compressors.lzw and made it part
-        of the API that is officially supported.  This will break
-        existing code that uses the old package.
+      <action issue="COMPRESS-297" type="fix" date="2014-12-22">
+        ZipFile logs a warning in its finalizer when its constructor
+        has thrown an exception reading the file - for example if the
+        file doesn't exist.
       </action>
       <action issue="COMPRESS-295" type="add" date="2014-12-18"
               due-to="Kristian Rosenvold">
@@ -124,20 +129,13 @@ This also changes the superclass of ZCompressorInputStream.
         entries to be copied from one archive to another without
         having to re-compress them.
       </action>
-      <action issue="COMPRESS-297" type="fix" date="2014-12-22">
-        ZipFile logs a warning in its finalizer when its constructor
-        has thrown an exception reading the file - for example if the
-        file doesn't exist.
-      </action>
-      <action issue="COMPRESS-290" type="fix" date="2015-01-13"
-              due-to="Kristian Rosenvold">
-        Improved error message when tar encounters a groupId that is
-        too big to write without using the STAR or POSIX format.
-      </action>
-      <action issue="COMPRESS-298" type="fix" date="2015-01-20">
-        SevenZFile now throws the specific PasswordRequiredException
-        when it encounters an encrypted stream but no password has
-        been specified.
+      <action type="update" date="2014-10-28"
+              due-to="Damjan Jovanovic">
+        Moved the package
+        org.apache.commons.compress.compressors.z._internal_ to
+        org.apache.commons.compress.compressors.lzw and made it part
+        of the API that is officially supported.  This will break
+        existing code that uses the old package.
       </action>
     </release>
 
