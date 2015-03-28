@@ -54,6 +54,10 @@ breaks backwards compatibility for code which used the old package.
 This also changes the superclass of ZCompressorInputStream.    
 ">
 
+      <action issue="COMPRESS-312" type="fix" date="2015-03-28">
+        TarArchiveEntry's constructor with a File and a String arg
+        didn't normalize the name.
+      </action>
       <action issue="COMPRESS-308" type="fix" date="2015-02-20">
         ZipEncodingHelper no longer reads system properties directly
         to determine the default charset.
