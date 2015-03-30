@@ -29,6 +29,7 @@ import org.apache.commons.compress.compressors.deflate.DeflateCompressorOutputSt
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.compressors.lzma.LZMACompressorInputStream;
+import org.apache.commons.compress.compressors.lzma.LZMAUtils;
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorOutputStream;
 import org.apache.commons.compress.compressors.xz.XZUtils;
@@ -239,6 +240,11 @@ public class CompressorStreamFactory {
             if (XZUtils.matches(signature, signatureLength) &&
                 XZUtils.isXZCompressionAvailable()) {
                 return new XZCompressorInputStream(in, decompressConcatenated);
+            }
+
+            if (LZMAUtils.matches(signature, signatureLength) &&
+                LZMAUtils.isLZMACompressionAvailable()) {
+                return new LZMACompressorInputStream(in);
             }
 
         } catch (IOException e) {

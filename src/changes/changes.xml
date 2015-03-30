@@ -54,6 +54,9 @@ breaks backwards compatibility for code which used the old package.
 This also changes the superclass of ZCompressorInputStream.    
 ">
 
+      <action issue="COMPRESS-313" type="add" date="2015-03-30">
+        CompressorStreamFactory can now auto-detect LZMA streams.
+      </action>
       <action issue="COMPRESS-312" type="fix" date="2015-03-28">
         TarArchiveEntry's constructor with a File and a String arg
         didn't normalize the name.
