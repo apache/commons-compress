@@ -29,11 +29,18 @@
     <menu name="Compress">
       <item name="Overview"    href="/index.html"/>
       <item name="Examples"    href="/examples.html"/>
+      <item name="Known Limitations" href="/limitations.html"/>
       <item name="Conventions"    href="/conventions.html"/>
       <item name="Issue Tracking" href="/issue-tracking.html"/>
       <item name="Download"    href="/download_compress.cgi"/>
       <item name="Security Reports"    href="/security.html"/>
       <item name="Wiki"        href="http://wiki.apache.org/commons/Compress"/>
+      <item name="Javadoc 1.9" href="javadocs/api-1.9/index.html"/>
+      <item name="Javadoc 1.8.1" href="javadocs/api-1.8.1/index.html"/>
+      <item name="Javadoc 1.8" href="javadocs/api-1.8/index.html"/>
+      <item name="Javadoc 1.7" href="javadocs/api-1.7/index.html"/>
+      <item name="Javadoc 1.6" href="javadocs/api-1.6/index.html"/>
+      <item name="Javadoc SVN latest" href="apidocs/index.html"/>
     </menu>
   </body>
   

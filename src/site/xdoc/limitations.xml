@@ -1,0 +1,171 @@
+<?xml version="1.0"?>
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<document>
+   <properties>
+      <title>Known Limitations and Problems</title>
+   </properties>
+
+   <body>
+     <p>This page lists the known limitations and problems of Apache
+     Commons Compress&#x2122; grouped by the archiving/compression
+     format they apply to.</p>
+
+     <section name="7Z">
+       <ul>
+         <li>the format requires the otherwise optional <a
+         href="http://tukaani.org/xz/java.html">XZ for Java</a>
+         library.</li>
+         <li>only <code>File</code>s are supported as input/output,
+         not streams.  In Compress 1.7
+         <code>ArchiveStreamFactory</code> will not auto-detect 7z
+         archives, starting with 1.8 it will throw a
+         <code>StreamingNotSupportedException</code> when reading from
+         a 7z archive.</li>
+         <li>Encryption, solid compression, header compression and
+         LZMA (not LZMA2) are only supported when reading
+         archives</li>
+         <li>Several of the "methods" supported by 7z are not
+         implemented in Compress.</li>
+         <li>No support for multi-volume archives</li>
+         <li>Support for some BCJ filters and the DELTA filter has
+         been added with Compress 1.8.  Because of a known bug in
+         version 1.4 of the <a
+         href="http://tukaani.org/xz/java.html">XZ for Java</a>
+         library, archives using BCJ filters will cause an
+         <code>AssertionError</code> when read.  If you need support
+         for BCJ filters you must use XZ for Java 1.5 or later.</li>
+       </ul>
+     </section>
+     <section name="AR">
+       <p>AR archives can not contain directories - this is a
+       limitation of the format rather than one of Compress'
+       implementation.</p>
+       <ul>
+         <li>file names longer than 16 characters are only fully
+         supported using the BSD dialect, the GNU/SRV4 dialect is only
+         supported when reading archives.</li>
+       </ul>
+     </section>
+     <section name="ARJ">
+       <ul>
+         <li>read-only support</li>
+         <li>no support for compression, encryption or multi-volume
+         archives</li>
+       </ul>
+     </section>
+     <section name="BZIP2">
+       <p>Versions of Compress prior to 1.4.1 are vulnerable to a
+       possible denial of service attack, see the <a
+       href="security.html">Security Reports</a> page for details.</p>
+     </section>
+     <section name="CPIO">
+       <p>We are not aware of any problems.</p>
+     </section>
+     <section name="DEFLATE">
+       <ul>
+         <li><code>CompressorStreamFactory</code> is not able to auto-detect
+         streams using DEFLATE compression.</li>
+       </ul>
+     </section>
+     <section name="DUMP">
+       <ul>
+         <li>read-only support</li>
+         <li>only the new-fs format is supported</li>
+         <li>the only compression algorithm supported is zlib</li>
+       </ul>
+     </section>
+     <section name="GZIP">
+       <p>We are not aware of any problems.</p>
+     </section>
+     <section name="JAR">
+       <p>JAR archives are special ZIP archives, all limitations of <a
+       href="#ZIP">ZIP</a> apply to JAR as well.</p>
+       <ul>
+         <li><code>ArchiveStreamFactory</code> cannot tell JAR
+         archives from ZIP archives and will not auto-detect
+         JARs.</li>
+         <li>Compress doesn't provide special access to the archive's
+         MANIFEST</li>
+       </ul>
+     </section>
+     <section name="LZMA">
+       <ul>
+         <li>the format requires the otherwise optional <a
+         href="http://tukaani.org/xz/java.html">XZ for Java</a>
+         library.</li>
+         <li>read-only support</li>
+       </ul>
+     </section>
+     <section name="PACK200">
+       <p>We are not aware of any problems.</p>
+     </section>
+     <section name="SNAPPY">
+       <ul>
+         <li>read-only support</li>
+       </ul>
+     </section>
+     <section name="TAR">
+       <ul>
+         <li>sparse files can neither be read nor written</li>
+         <li>only a subset of the GNU and POSIX extensions are
+         supported</li>
+         <li>In Compress 1.6 <code>TarArchiveInputStream</code> could
+         fail to read the full contents of an entry unless the stream
+         was wrapped in a bufferng stream.</li>
+       </ul>
+     </section>
+     <section name="XZ">
+       <ul>
+         <li>the format requires the otherwise optional <a
+         href="http://tukaani.org/xz/java.html">XZ for Java</a>
+         library.</li>
+       </ul>
+     </section>
+     <section name="Z">
+       <ul>
+         <li>In Compress 1.7 and 1.8
+         <code>CompressorStreamFactory</code> is not able to
+         auto-detect streams using .Z compression.</li>
+         <li>read-only support</li>
+       </ul>
+     </section>
+     <section name="ZIP">
+       <ul>
+         <li><code>ZipArchiveInputStream</code> is limited and may
+         even return false contents in some cases, use
+         <code>ZipFile</code> whenever possible.  See <a
+         href="zip.html#ZipArchiveInputStream_vs_ZipFile">the ZIP
+         documentation page</a> for details.  This limitation is a
+         result of streaming data vs using random access and not a
+         limitation of Compress' specific implementation.</li>
+         <li>only a subset of compression methods are supported,
+         including the most common STORED and DEFLATEd.  IMPLODE and
+         SHRINK support is read-only.</li>
+         <li>no support for encryption or multi-volume archives</li>
+         <li>In versions prior to Compress 1.6
+         <code>ZipArchiveEntries</code> read from an archive will
+         contain non-zero millisecond values when using Java8 rather
+         than the expected two-second granularity.</li>
+         <li>Compress 1.7 has a known bug where the very first entry
+         of an archive will not be read correctly by
+         <code>ZipArchiveInputStream</code> if it used the STORED
+         method.</li>
+       </ul>
+     </section>
+   </body>
+</document>

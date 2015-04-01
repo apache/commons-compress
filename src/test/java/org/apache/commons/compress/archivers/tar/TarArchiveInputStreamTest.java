@@ -19,6 +19,8 @@
 package org.apache.commons.compress.archivers.tar;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
+import static org.apache.commons.compress.AbstractTestCase.mkdir;
+import static org.apache.commons.compress.AbstractTestCase.rmdir;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -26,22 +28,27 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.compress.utils.CharsetNames;
+import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Test;
 
 public class TarArchiveInputStreamTest {
 
     @Test
     public void readSimplePaxHeader() throws Exception {
-        final TarArchiveInputStream tais = new TarArchiveInputStream(null);
+        final InputStream is = new ByteArrayInputStream(new byte[1]);
+        final TarArchiveInputStream tais = new TarArchiveInputStream(is);
         Map<String, String> headers = tais
             .parsePaxHeaders(new ByteArrayInputStream("30 atime=1321711775.972059463\n"
                                                       .getBytes(CharsetNames.UTF_8)));
@@ -52,7 +59,8 @@ public class TarArchiveInputStreamTest {
 
     @Test
     public void readPaxHeaderWithEmbeddedNewline() throws Exception {
-        final TarArchiveInputStream tais = new TarArchiveInputStream(null);
+        final InputStream is = new ByteArrayInputStream(new byte[1]);
+        final TarArchiveInputStream tais = new TarArchiveInputStream(is);
         Map<String, String> headers = tais
             .parsePaxHeaders(new ByteArrayInputStream("28 comment=line1\nline2\nand3\n"
                                                       .getBytes(CharsetNames.UTF_8)));
@@ -66,7 +74,8 @@ public class TarArchiveInputStreamTest {
         String ae = "\u00e4";
         String line = "11 path="+ ae + "\n";
         assertEquals(11, line.getBytes(CharsetNames.UTF_8).length);
-        final TarArchiveInputStream tais = new TarArchiveInputStream(null);
+        final InputStream is = new ByteArrayInputStream(new byte[1]);
+        final TarArchiveInputStream tais = new TarArchiveInputStream(is);
         Map<String, String> headers = tais
             .parsePaxHeaders(new ByteArrayInputStream(line.getBytes(CharsetNames.UTF_8)));
         assertEquals(1, headers.size());
@@ -177,6 +186,53 @@ public class TarArchiveInputStreamTest {
         is.read(actual);
         assertArrayEquals(expected, actual);
         tar.close();
+    }
+
+    @Test
+    public void readsArchiveCompletely_COMPRESS245() throws Exception {
+        InputStream is = TarArchiveInputStreamTest.class
+            .getResourceAsStream("/COMPRESS-245.tar.gz");
+        try {
+            InputStream gin = new GZIPInputStream(is);
+            TarArchiveInputStream tar = new TarArchiveInputStream(gin);
+            int count = 0;
+            TarArchiveEntry entry = tar.getNextTarEntry();
+            while (entry != null) {
+                count++;
+                entry = tar.getNextTarEntry();
+            }
+            assertEquals(31, count);
+            tar.close();
+        } catch (IOException e) {
+            fail("COMPRESS-245: " + e.getMessage());
+        } finally {
+            is.close();
+        }
+    }
+
+    @Test(expected = IOException.class)
+    public void shouldThrowAnExceptionOnTruncatedEntries() throws Exception {
+        File dir = mkdir("COMPRESS-279");
+        TarArchiveInputStream is = getTestStream("/COMPRESS-279.tar");
+        FileOutputStream out = null;
+        try {
+            TarArchiveEntry entry = is.getNextTarEntry();
+            int count = 0;
+            while (entry != null) {
+                out = new FileOutputStream(new File(dir, String.valueOf(count)));
+                IOUtils.copy(is, out);
+                out.close();
+                out = null;
+                count++;
+                entry = is.getNextTarEntry();
+            }
+        } finally {
+            is.close();
+            if (out != null) {
+                out.close();
+            }
+            rmdir(dir);
+        }
     }
 
     private TarArchiveInputStream getTestStream(String name) {

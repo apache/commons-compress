@@ -27,10 +27,10 @@ import static org.apache.commons.compress.archivers.zip.ZipUtil.signedByteToUnsi
 import static org.apache.commons.compress.archivers.zip.ZipUtil.unsignedIntToSignedByte;
 
 /**
- * An extra field that stores UNIX UID/GID data (owner & group ownership) for a given
+ * An extra field that stores UNIX UID/GID data (owner &amp; group ownership) for a given
  * zip entry.  We're using the field definition given in Info-Zip's source archive:
  * zip-3.0.tar.gz/proginfo/extrafld.txt
- * <p/>
+ *
  * <pre>
  * Value         Size        Description
  * -----         ----        -----------
@@ -259,7 +259,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
 
     @Override
     public int hashCode() {
-        int hc = (-1234567 * version);
+        int hc = -1234567 * version;
         // Since most UID's and GID's are below 65,536, this is (hopefully!)
         // a nice way to make sure typical UID and GID values impact the hash
         // as much as possible.

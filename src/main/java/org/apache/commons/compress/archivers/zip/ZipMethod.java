@@ -105,29 +105,29 @@ public enum ZipMethod {
     /**
      * Compression Method 9 for enhanced deflate.
      * 
-     * @see "http://www.winzip.com/wz54.htm"
+     * @see <a href="http://www.winzip.com/wz54.htm">http://www.winzip.com/wz54.htm</a>
      */
     ENHANCED_DEFLATED(9),
 
     /**
      * PKWARE Data Compression Library Imploding.
      * 
-     * @see "http://www.winzip.com/wz54.htm"
+     * @see <a href="http://www.winzip.com/wz54.htm">http://www.winzip.com/wz54.htm</a>
      */
     PKWARE_IMPLODING(10),
 
     /**
      * Compression Method 12 for bzip2.
      * 
-     * @see "http://www.winzip.com/wz54.htm"
+     * @see <a href="http://www.winzip.com/wz54.htm">http://www.winzip.com/wz54.htm</a>
      */
     BZIP2(12),
 
     /**
      * Compression Method 14 for LZMA.
      * 
-     * @see "http://www.7-zip.org/sdk.html"
-     * @see "http://www.winzip.com/wz54.htm"
+     * @see <a href="http://www.7-zip.org/sdk.html">http://www.7-zip.org/sdk.html</a>
+     * @see <a href="http://www.winzip.com/wz54.htm">http://www.winzip.com/wz54.htm</a>
      */
     LZMA(14),
 
@@ -135,21 +135,21 @@ public enum ZipMethod {
     /**
      * Compression Method 96 for Jpeg compression.
      * 
-     * @see "http://www.winzip.com/wz54.htm"
+     * @see <a href="http://www.winzip.com/wz54.htm">http://www.winzip.com/wz54.htm</a>
      */
     JPEG(96),
 
     /**
      * Compression Method 97 for WavPack.
      * 
-     * @see "http://www.winzip.com/wz54.htm"
+     * @see <a href="http://www.winzip.com/wz54.htm">http://www.winzip.com/wz54.htm</a>
      */
     WAVPACK(97),
 
     /**
      * Compression Method 98 for PPMd.
      * 
-     * @see "http://www.winzip.com/wz54.htm"
+     * @see <a href="http://www.winzip.com/wz54.htm">http://www.winzip.com/wz54.htm</a>
      */
     PPMD(98),
 
@@ -157,14 +157,16 @@ public enum ZipMethod {
     /**
      * Compression Method 99 for AES encryption.
      * 
-     * @see "http://www.winzip.com/wz54.htm"
+     * @see <a href="http://www.winzip.com/wz54.htm">http://www.winzip.com/wz54.htm</a>
      */
     AES_ENCRYPTED(99),
 
     /**
      * Unknown compression method.
      */
-    UNKNOWN(-1);
+    UNKNOWN();
+
+    static final int UNKNOWN_CODE = -1;
 
     private final int code;
 
@@ -173,9 +175,13 @@ public enum ZipMethod {
     static {
         Map<Integer, ZipMethod> cte = new HashMap<Integer, ZipMethod>();
         for (ZipMethod method : values()) {
-            cte.put(Integer.valueOf(method.getCode()), method);
+            cte.put(method.getCode(), method);
         }
         codeToEnum = Collections.unmodifiableMap(cte);
+    }
+
+    private ZipMethod() {
+        this(UNKNOWN_CODE);
     }
 
     /**
@@ -202,6 +208,6 @@ public enum ZipMethod {
      * method is not known.
      */
     public static ZipMethod getMethodByCode(int code) {
-        return codeToEnum.get(Integer.valueOf(code));
+        return codeToEnum.get(code);
     }
 }

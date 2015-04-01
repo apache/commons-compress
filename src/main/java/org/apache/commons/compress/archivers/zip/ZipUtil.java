@@ -51,22 +51,43 @@ public abstract class ZipUtil {
      * @return the date as a byte array
      */
     public static byte[] toDosTime(long t) {
-        Calendar c = Calendar.getInstance();
+        byte[] result = new byte[4];
+        toDosTime(t, result, 0);
+        return result;
+    }
+
+    /**
+     * Convert a Date object to a DOS date/time field.
+     *
+     * <p>Stolen from InfoZip's <code>fileio.c</code></p>
+     * @param t number of milliseconds since the epoch
+     * @param buf the output buffer
+     * @param offset
+     *         The offset within the output buffer of the first byte to be written.
+     *         must be non-negative and no larger than <tt>buf.length-4</tt>
+     */
+    public static void toDosTime(long t, byte[] buf, int offset) {
+        toDosTime(Calendar.getInstance(), t, buf, offset);
+    }
+
+    static void toDosTime(Calendar c, long t, byte[] buf, int offset) {
         c.setTimeInMillis(t);
 
         int year = c.get(Calendar.YEAR);
         if (year < 1980) {
-            return copy(DOS_TIME_MIN); // stop callers from changing the array
+            System.arraycopy(DOS_TIME_MIN, 0, buf, offset, DOS_TIME_MIN.length);// stop callers from changing the array
+            return;
         }
         int month = c.get(Calendar.MONTH) + 1;
         long value =  ((year - 1980) << 25)
-            |         (month << 21)
-            |         (c.get(Calendar.DAY_OF_MONTH) << 16)
-            |         (c.get(Calendar.HOUR_OF_DAY) << 11)
-            |         (c.get(Calendar.MINUTE) << 5)
-            |         (c.get(Calendar.SECOND) >> 1);
-        return ZipLong.getBytes(value);
+                |         (month << 21)
+                |         (c.get(Calendar.DAY_OF_MONTH) << 16)
+                |         (c.get(Calendar.HOUR_OF_DAY) << 11)
+                |         (c.get(Calendar.MINUTE) << 5)
+                |         (c.get(Calendar.SECOND) >> 1);
+        ZipLong.putLong(value, buf, offset);
     }
+
 
     /**
      * Assumes a negative integer really is a positive integer that
@@ -200,6 +221,7 @@ public abstract class ZipUtil {
         cal.set(Calendar.HOUR_OF_DAY, (int) (dosTime >> 11) & 0x1f);
         cal.set(Calendar.MINUTE, (int) (dosTime >> 5) & 0x3f);
         cal.set(Calendar.SECOND, (int) (dosTime << 1) & 0x3e);
+        cal.set(Calendar.MILLISECOND, 0);
         // CheckStyle:MagicNumberCheck ON
         return cal.getTime().getTime();
     }
@@ -275,6 +297,12 @@ public abstract class ZipUtil {
         }
         return null;
     }
+    static void copy(byte[] from, byte[] to, int offset) {
+        if (from != null) {
+            System.arraycopy(from, 0, to, offset, from.length);
+        }
+    }
+
 
     /**
      * Whether this library is able to read or write the given entry.
@@ -301,6 +329,8 @@ public abstract class ZipUtil {
      */
     private static boolean supportsMethodOf(ZipArchiveEntry entry) {
         return entry.getMethod() == ZipEntry.STORED
+            || entry.getMethod() == ZipMethod.UNSHRINKING.getCode()
+            || entry.getMethod() == ZipMethod.IMPLODING.getCode()
             || entry.getMethod() == ZipEntry.DEFLATED;
     }
 

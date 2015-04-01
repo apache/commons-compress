@@ -17,6 +17,8 @@
  */
 package org.apache.commons.compress.archivers;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -24,15 +26,39 @@ import java.io.IOException;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
+import org.apache.commons.compress.archivers.sevenz.SevenZMethod;
 import org.apache.commons.compress.archivers.sevenz.SevenZOutputFile;
+import org.junit.Test;
 
 public class SevenZTestCase extends AbstractTestCase {
-    public void testSevenZArchiveCreation() throws Exception {
+
+    @Test
+    public void testSevenZArchiveCreationUsingCopy() throws Exception {
+        testSevenZArchiveCreation(SevenZMethod.COPY);
+    }
+    
+    @Test
+    public void testSevenZArchiveCreationUsingLZMA2() throws Exception {
+        testSevenZArchiveCreation(SevenZMethod.LZMA2);
+    }
+    
+    @Test
+    public void testSevenZArchiveCreationUsingBZIP2() throws Exception {
+        testSevenZArchiveCreation(SevenZMethod.BZIP2);
+    }
+    
+    @Test
+    public void testSevenZArchiveCreationUsingDeflate() throws Exception {
+        testSevenZArchiveCreation(SevenZMethod.DEFLATE);
+    }
+    
+    private void testSevenZArchiveCreation(SevenZMethod method) throws Exception {
         final File output = new File(dir, "bla.7z");
         final File file1 = getFile("test1.xml");
         final File file2 = getFile("test2.xml");
 
         final SevenZOutputFile outArchive = new SevenZOutputFile(output);
+        outArchive.setContentCompression(method);
         try {
             SevenZArchiveEntry entry;
             
@@ -66,7 +92,7 @@ public class SevenZTestCase extends AbstractTestCase {
             archive.close();
         }
     }
-    
+
     private void copy(final File src, final SevenZOutputFile dst) throws IOException { 
         FileInputStream fis = null;
         try {

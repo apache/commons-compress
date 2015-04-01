@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress;
 
+import static org.junit.Assert.*;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,17 +28,17 @@ import java.io.IOException;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
+import org.apache.commons.compress.archivers.arj.ArjArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
+import org.junit.Test;
 
 public final class DetectArchiverTestCase extends AbstractTestCase {
-    public DetectArchiverTestCase(String name) {
-        super(name);
-    }
 
     final ClassLoader classLoader = getClass().getClassLoader();
 
+    @Test
     public void testDetectionNotArchive() throws IOException {
         try {
             getStreamFor("test.txt");
@@ -46,12 +48,14 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testCOMPRESS117() throws Exception {
         final ArchiveInputStream tar = getStreamFor("COMPRESS-117.tar");
         assertNotNull(tar);
         assertTrue(tar instanceof TarArchiveInputStream);
     }
 
+    @Test
     public void testDetection() throws Exception {
 
         final ArchiveInputStream ar = getStreamFor("bla.ar"); 
@@ -73,6 +77,10 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
         final ArchiveInputStream cpio = getStreamFor("bla.cpio");
         assertNotNull(cpio);
         assertTrue(cpio instanceof CpioArchiveInputStream);
+        
+        final ArchiveInputStream arj = getStreamFor("bla.arj");
+        assertNotNull(arj);
+        assertTrue(arj instanceof ArjArchiveInputStream);
 
 // Not yet implemented
 //        final ArchiveInputStream tgz = getStreamFor("bla.tgz");
@@ -95,10 +103,12 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
 //        emptyArchive("ar");
 //    }
 
+    @Test
     public void testEmptyCpioArchive() throws Exception {
         checkEmptyArchive("cpio");
     }
 
+    @Test
     public void testEmptyJarArchive() throws Exception {
         checkEmptyArchive("jar");
     }
@@ -107,6 +117,7 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
 //    public void testEmptyTarArchive() throws Exception {
 //        checkEmptyArchive("tar");
 //    }
+    @Test
     public void testEmptyZipArchive() throws Exception {
         checkEmptyArchive("zip");
     }

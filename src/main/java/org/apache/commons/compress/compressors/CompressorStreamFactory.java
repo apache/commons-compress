@@ -24,14 +24,21 @@ import java.io.OutputStream;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
+import org.apache.commons.compress.compressors.deflate.DeflateCompressorInputStream;
+import org.apache.commons.compress.compressors.deflate.DeflateCompressorOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.compressors.lzma.LZMACompressorInputStream;
+import org.apache.commons.compress.compressors.lzma.LZMAUtils;
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorOutputStream;
 import org.apache.commons.compress.compressors.xz.XZUtils;
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorInputStream;
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorOutputStream;
+import org.apache.commons.compress.compressors.snappy.FramedSnappyCompressorInputStream;
+import org.apache.commons.compress.compressors.snappy.SnappyCompressorInputStream;
+import org.apache.commons.compress.compressors.z.ZCompressorInputStream;
+import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * <p>Factory to create Compressor[In|Out]putStreams from names. To add other
@@ -56,41 +63,108 @@ import org.apache.commons.compress.compressors.pack200.Pack200CompressorOutputSt
  * IOUtils.copy(in, new FileOutputStream(output));
  * in.close();
  * </pre>
- * 
- * @Immutable
+ * @Immutable provided that the deprecated method setDecompressConcatenated is not used.
+ * @ThreadSafe even if the deprecated method setDecompressConcatenated is used
  */
 public class CompressorStreamFactory {
 
     /**
-     * Constant used to identify the BZIP2 compression algorithm.
+     * Constant (value {@value}) used to identify the BZIP2 compression algorithm.
      * @since 1.1
      */
     public static final String BZIP2 = "bzip2";
 
     /**
-     * Constant used to identify the GZIP compression algorithm.
+     * Constant (value {@value}) used to identify the GZIP compression algorithm.
+     * Not supported as an output stream type.
      * @since 1.1
      */
     public static final String GZIP = "gz";
     /**
-     * Constant used to identify the PACK200 compression algorithm.
+     * Constant (value {@value}) used to identify the PACK200 compression algorithm.
      * @since 1.3
      */
     public static final String PACK200 = "pack200";
 
     /**
-     * Constant used to identify the XZ compression method.
+     * Constant (value {@value}) used to identify the XZ compression method.
      * @since 1.4
      */
     public static final String XZ = "xz";
 
     /**
-     * Constant used to identify the LZMA compression method.
+     * Constant (value {@value}) used to identify the LZMA compression method.
+     * Not supported as an output stream type.
      * @since 1.6
      */
     public static final String LZMA = "lzma";
 
-    private boolean decompressConcatenated = false;
+    /**
+     * Constant (value {@value}) used to identify the "framed" Snappy compression method.
+     * Not supported as an output stream type.
+     * @since 1.7
+     */
+    public static final String SNAPPY_FRAMED = "snappy-framed";
+
+    /**
+     * Constant (value {@value}) used to identify the "raw" Snappy compression method.
+     * Not supported as an output stream type.
+     * @since 1.7
+     */
+    public static final String SNAPPY_RAW = "snappy-raw";
+
+    /**
+     * Constant (value {@value}) used to identify the traditional Unix compress method.
+     * Not supported as an output stream type.
+     * @since 1.7
+     */
+    public static final String Z = "z";
+
+    /**
+     * Constant (value {@value}) used to identify the Deflate compress method.
+     * @since 1.9
+     */
+    public static final String DEFLATE = "deflate";
+
+    /**
+     * If true, decompress until the end of the input.
+     * If false, stop after the first stream and leave the 
+     * input position to point to the next byte after the stream
+     */
+    private final Boolean decompressUntilEOF;
+    // This is Boolean so setDecompressConcatenated can determine whether it has been set by the ctor
+    // once the setDecompressConcatenated method has been removed, it can revert to boolean
+
+    /**
+     * If true, decompress until the end of the input.
+     * If false, stop after the first stream and leave the 
+     * input position to point to the next byte after the stream
+     */
+
+    private volatile boolean decompressConcatenated = false;
+
+    /**
+     * Create an instance with the decompress Concatenated option set to false.
+     */
+    public CompressorStreamFactory() {
+        this.decompressUntilEOF = null;  
+    }
+
+    /**
+     * Create an instance with the provided decompress Concatenated option.
+     * @param       decompressUntilEOF
+     *                          if true, decompress until the end of the
+     *                          input; if false, stop after the first
+     *                          stream and leave the input position to point
+     *                          to the next byte after the stream.
+     *           This setting applies to the gzip, bzip2 and xz formats only.
+     * @since 1.10
+     */
+    public CompressorStreamFactory(boolean decompressUntilEOF) {
+        this.decompressUntilEOF = Boolean.valueOf(decompressUntilEOF);
+        // Also copy to existing variable so can continue to use that as the current value
+        this.decompressConcatenated = decompressUntilEOF;
+    }
 
     /**
      * Whether to decompress the full input or only the first stream
@@ -104,8 +178,15 @@ public class CompressorStreamFactory {
      *                          stream and leave the input position to point
      *                          to the next byte after the stream
      * @since 1.5
+     * @deprecated 1.10 use the {@link #CompressorStreamFactory(boolean)} constructor instead
+     * @throws IllegalStateException if the constructor {@link #CompressorStreamFactory(boolean)} 
+     * was used to create the factory
      */
+    @Deprecated
     public void setDecompressConcatenated(boolean decompressConcatenated) {
+        if (this.decompressUntilEOF != null) {
+            throw new IllegalStateException("Cannot override the setting defined by the constructor");
+        }
         this.decompressConcatenated = decompressConcatenated;
     }
 
@@ -133,7 +214,7 @@ public class CompressorStreamFactory {
         final byte[] signature = new byte[12];
         in.mark(signature.length);
         try {
-            int signatureLength = in.read(signature);
+            int signatureLength = IOUtils.readFully(in, signature);
             in.reset();
 
             if (BZip2CompressorInputStream.matches(signature, signatureLength)) {
@@ -144,13 +225,26 @@ public class CompressorStreamFactory {
                 return new GzipCompressorInputStream(in, decompressConcatenated);
             }
 
-            if (XZUtils.isXZCompressionAvailable() &&
-                XZCompressorInputStream.matches(signature, signatureLength)) {
+            if (Pack200CompressorInputStream.matches(signature, signatureLength)) {
+                return new Pack200CompressorInputStream(in);
+            }
+
+            if (FramedSnappyCompressorInputStream.matches(signature, signatureLength)) {
+                return new FramedSnappyCompressorInputStream(in);
+            }
+
+            if (ZCompressorInputStream.matches(signature, signatureLength)) {
+                return new ZCompressorInputStream(in);
+            }
+
+            if (XZUtils.matches(signature, signatureLength) &&
+                XZUtils.isXZCompressionAvailable()) {
                 return new XZCompressorInputStream(in, decompressConcatenated);
             }
 
-            if (Pack200CompressorInputStream.matches(signature, signatureLength)) {
-                return new Pack200CompressorInputStream(in);
+            if (LZMAUtils.matches(signature, signatureLength) &&
+                LZMAUtils.isLZMACompressionAvailable()) {
+                return new LZMACompressorInputStream(in);
             }
 
         } catch (IOException e) {
@@ -163,7 +257,10 @@ public class CompressorStreamFactory {
     /**
      * Create a compressor input stream from a compressor name and an input stream.
      * 
-     * @param name of the compressor, i.e. "gz", "bzip2", "xz", "lzma", or "pack200"
+     * @param name of the compressor,
+     * i.e. {@value #GZIP}, {@value #BZIP2}, {@value #XZ}, {@value #LZMA},
+     * {@value #PACK200}, {@value #SNAPPY_RAW}, {@value #SNAPPY_FRAMED}, 
+     * {@value #Z} or {@value #DEFLATE} 
      * @param in the input stream
      * @return compressor input stream
      * @throws CompressorException if the compressor name is not known
@@ -179,15 +276,15 @@ public class CompressorStreamFactory {
         try {
 
             if (GZIP.equalsIgnoreCase(name)) {
-                return new GzipCompressorInputStream(in);
+                return new GzipCompressorInputStream(in, decompressConcatenated);
             }
 
             if (BZIP2.equalsIgnoreCase(name)) {
-                return new BZip2CompressorInputStream(in);
+                return new BZip2CompressorInputStream(in, decompressConcatenated);
             }
 
             if (XZ.equalsIgnoreCase(name)) {
-                return new XZCompressorInputStream(in);
+                return new XZCompressorInputStream(in, decompressConcatenated);
             }
 
             if (LZMA.equalsIgnoreCase(name)) {
@@ -198,6 +295,22 @@ public class CompressorStreamFactory {
                 return new Pack200CompressorInputStream(in);
             }
 
+            if (SNAPPY_RAW.equalsIgnoreCase(name)) {
+                return new SnappyCompressorInputStream(in);
+            }
+
+            if (SNAPPY_FRAMED.equalsIgnoreCase(name)) {
+                return new FramedSnappyCompressorInputStream(in);
+            }
+
+            if (Z.equalsIgnoreCase(name)) {
+                return new ZCompressorInputStream(in);
+            }
+
+            if (DEFLATE.equalsIgnoreCase(name)) {
+                return new DeflateCompressorInputStream(in);
+            }
+
         } catch (IOException e) {
             throw new CompressorException(
                     "Could not create CompressorInputStream.", e);
@@ -206,9 +319,11 @@ public class CompressorStreamFactory {
     }
 
     /**
-     * Create an compressor output stream from an compressor name and an input stream.
+     * Create an compressor output stream from an compressor name and an output stream.
      * 
-     * @param name the compressor name, i.e. "gz", "bzip2", "xz", or "pack200"
+     * @param name the compressor name,
+     * i.e. {@value #GZIP}, {@value #BZIP2}, {@value #XZ},
+     * {@value #PACK200} or {@value #DEFLATE} 
      * @param out the output stream
      * @return the compressor output stream
      * @throws CompressorException if the archiver name is not known
@@ -240,10 +355,19 @@ public class CompressorStreamFactory {
                 return new Pack200CompressorOutputStream(out);
             }
 
+            if (DEFLATE.equalsIgnoreCase(name)) {
+                return new DeflateCompressorOutputStream(out);
+            }
+
         } catch (IOException e) {
             throw new CompressorException(
                     "Could not create CompressorOutputStream", e);
         }
         throw new CompressorException("Compressor: " + name + " not found.");
+    }
+
+    // For Unit tests
+    boolean getDecompressConcatenated() {
+        return decompressConcatenated;
     }
 }

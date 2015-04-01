@@ -54,7 +54,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Set the long file mode.
      * This can be LONGFILE_ERROR(0) or LONGFILE_BSD(1).
-     * This specifies the treatment of long file names (names >= 16).
+     * This specifies the treatment of long file names (names &gt;= 16).
      * Default is LONGFILE_ERROR.
      * @param longFileMode the mode to use
      * @since 1.3
@@ -69,7 +69,6 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         return header.length;
     }
 
-    /** {@inheritDoc} */
     @Override
     public void closeArchiveEntry() throws IOException {
         if(finished) {
@@ -78,13 +77,12 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         if (prevEntry == null || !haveUnclosedEntry){
             throw new IOException("No current entry to close");
         }
-        if ((entryOffset % 2) != 0) {
+        if (entryOffset % 2 != 0) {
             out.write('\n'); // Pad byte
         }
         haveUnclosedEntry = false;
     }
 
-    /** {@inheritDoc} */
     @Override
     public void putArchiveEntry( final ArchiveEntry pEntry ) throws IOException {
         if(finished) {
@@ -140,7 +138,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
             throw new IOException("filename too long, > 16 chars: "+n);
         }
         if (LONGFILE_BSD == longFileMode && 
-            (n.length() > 16 || n.indexOf(" ") > -1)) {
+            (n.length() > 16 || n.contains(" "))) {
             mustAppendName = true;
             offset += write(ArArchiveInputStream.BSD_LONGNAME_PREFIX
                             + String.valueOf(n.length()));
@@ -149,7 +147,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         }
 
         offset = fill(offset, 16, ' ');
-        final String m = "" + (pEntry.getLastModified());
+        final String m = "" + pEntry.getLastModified();
         if (m.length() > 12) {
             throw new IOException("modified too long");
         }
@@ -215,7 +213,6 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         prevEntry = null;
     }
 
-    /** {@inheritDoc} */
     @Override
     public ArchiveEntry createArchiveEntry(File inputFile, String entryName)
             throws IOException {
@@ -225,7 +222,6 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         return new ArArchiveEntry(inputFile, entryName);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void finish() throws IOException {
         if(haveUnclosedEntry) {

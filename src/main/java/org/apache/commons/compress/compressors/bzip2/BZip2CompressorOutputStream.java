@@ -29,7 +29,7 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
  * <p>
  * The compression requires large amounts of memory. Thus you should call the
  * {@link #close() close()} method as soon as possible, to force
- * <tt>BZip2CompressorOutputStream</tt> to release the allocated memory.
+ * {@code BZip2CompressorOutputStream} to release the allocated memory.
  * </p>
  *
  * <p> You can shrink the amount of allocated memory and maybe raise
@@ -52,9 +52,7 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
  * &lt;code&gt;65k + (5 * blocksize)&lt;/code&gt;.
  * </pre>
  *
- * <table width="100%" border="1">
- * <colgroup> <col width="33%" /> <col width="33%" /> <col width="33%" />
- * </colgroup>
+ * <table width="100%" border="1" summary="Memory usage by blocksize">
  * <tr>
  * <th colspan="3">Memory usage by blocksize</th>
  * </tr>
@@ -111,7 +109,7 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
  * </table>
  *
  * <p>
- * For decompression <tt>BZip2CompressorInputStream</tt> allocates less memory if the
+ * For decompression {@code BZip2CompressorInputStream} allocates less memory if the
  * bzipped input is smaller than one block.
  * </p>
  *
@@ -128,12 +126,12 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     implements BZip2Constants {
 
     /**
-     * The minimum supported blocksize <tt> == 1</tt>.
+     * The minimum supported blocksize {@code  == 1}.
      */
     public static final int MIN_BLOCKSIZE = 1;
 
     /**
-     * The maximum supported blocksize <tt> == 9</tt>.
+     * The maximum supported blocksize {@code  == 9}.
      */
     public static final int MAX_BLOCKSIZE = 9;
 
@@ -330,12 +328,12 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
      *
      * @return The blocksize, between {@link #MIN_BLOCKSIZE} and
      *         {@link #MAX_BLOCKSIZE} both inclusive. For a negative
-     *         <tt>inputLength</tt> this method returns <tt>MAX_BLOCKSIZE</tt>
+     *         {@code inputLength} this method returns {@code MAX_BLOCKSIZE}
      *         always.
      *
      * @param inputLength
      *            The length of the data which will be compressed by
-     *            <tt>BZip2CompressorOutputStream</tt>.
+     *            {@code BZip2CompressorOutputStream}.
      */
     public static int chooseBlockSize(long inputLength) {
         return (inputLength > 0) ? (int) Math
@@ -343,7 +341,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     }
 
     /**
-     * Constructs a new <tt>BZip2CompressorOutputStream</tt> with a blocksize of 900k.
+     * Constructs a new {@code BZip2CompressorOutputStream} with a blocksize of 900k.
      *
      * @param out 
      *            the destination stream.
@@ -359,7 +357,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     }
 
     /**
-     * Constructs a new <tt>BZip2CompressorOutputStream</tt> with specified blocksize.
+     * Constructs a new {@code BZip2CompressorOutputStream} with specified blocksize.
      *
      * @param out
      *            the destination stream.
@@ -369,25 +367,19 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
      * @throws IOException
      *             if an I/O error occurs in the specified stream.
      * @throws IllegalArgumentException
-     *             if <code>(blockSize < 1) || (blockSize > 9)</code>.
+     *             if <code>(blockSize &lt; 1) || (blockSize &gt; 9)</code>.
      * @throws NullPointerException
      *             if <code>out == null</code>.
      *
      * @see #MIN_BLOCKSIZE
      * @see #MAX_BLOCKSIZE
      */
-    public BZip2CompressorOutputStream(final OutputStream out,
-                                       final int blockSize)
-        throws IOException {
-        super();
-
+    public BZip2CompressorOutputStream(final OutputStream out, final int blockSize) throws IOException {
         if (blockSize < 1) {
-            throw new IllegalArgumentException("blockSize(" + blockSize
-                                               + ") < 1");
+            throw new IllegalArgumentException("blockSize(" + blockSize + ") < 1");
         }
         if (blockSize > 9) {
-            throw new IllegalArgumentException("blockSize(" + blockSize
-                                               + ") > 9");
+            throw new IllegalArgumentException("blockSize(" + blockSize + ") > 9");
         }
 
         this.blockSize100k = blockSize;
@@ -398,7 +390,6 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         init();
     }
 
-    /** {@inheritDoc} */
     @Override
     public void write(final int b) throws IOException {
         if (this.out != null) {
@@ -1277,7 +1268,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         this.nMTF = wr + 1;
     }
 
-    static final class Data extends Object {
+    static final class Data {
 
         // with blockSize 900k
         /* maps unsigned byte => "does it occur in block" */
@@ -1327,8 +1318,6 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         int origPtr;
 
         Data(int blockSize100k) {
-            super();
-
             final int n = blockSize100k * BZip2Constants.BASEBLOCKSIZE;
             this.block = new byte[(n + 1 + NUM_OVERSHOOT_BYTES)];
             this.fmap = new int[n];

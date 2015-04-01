@@ -45,11 +45,11 @@ limitations under the License.
 -->
 <document>
   <properties>
-    <title>Download Commons Compress</title>
+    <title>Download Apache Commons Compress</title>
     <author email="dev@commons.apache.org">Commons Documentation Team</author>
   </properties>
   <body>
-    <section name="Download Commons Compress">
+    <section name="Download Apache Commons Compress">
     <subsection name="Using a Mirror">
       <p>
         We recommend you use a mirror to download our release
@@ -88,39 +88,39 @@ limitations under the License.
       </form>
 
       <p>
-        The <a href="http://www.apache.org/dist/commons/KEYS">KEYS</a>
+        The <a href="https://www.apache.org/dist/commons/KEYS">KEYS</a>
         link links to the code signing keys used to sign the product.
         The <code>PGP</code> link downloads the OpenPGP compatible signature from our main site.
         The <code>MD5</code> link downloads the checksum from the main site.
       </p>
     </subsection>
     </section>
-    <section name="Commons Compress 1.5 ">
+    <section name="Apache Commons Compress 1.9 ">
       <subsection name="Binaries">
         <table>
           <tr>
-              <td><a href="[preferred]/commons/compress/binaries/commons-compress-1.5-bin.tar.gz">commons-compress-1.5-bin.tar.gz</a></td>
-              <td><a href="http://www.apache.org/dist/commons/compress/binaries/commons-compress-1.5-bin.tar.gz.md5">md5</a></td>
-              <td><a href="http://www.apache.org/dist/commons/compress/binaries/commons-compress-1.5-bin.tar.gz.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/compress/binaries/commons-compress-1.9-bin.tar.gz">commons-compress-1.9-bin.tar.gz</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.9-bin.tar.gz.md5">md5</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.9-bin.tar.gz.asc">pgp</a></td>
           </tr>
           <tr>
-              <td><a href="[preferred]/commons/compress/binaries/commons-compress-1.5-bin.zip">commons-compress-1.5-bin.zip</a></td>
-              <td><a href="http://www.apache.org/dist/commons/compress/binaries/commons-compress-1.5-bin.zip.md5">md5</a></td>
-              <td><a href="http://www.apache.org/dist/commons/compress/binaries/commons-compress-1.5-bin.zip.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/compress/binaries/commons-compress-1.9-bin.zip">commons-compress-1.9-bin.zip</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.9-bin.zip.md5">md5</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.9-bin.zip.asc">pgp</a></td>
           </tr>
         </table>
       </subsection>
       <subsection name="Source">
         <table>
           <tr>
-              <td><a href="[preferred]/commons/compress/source/commons-compress-1.5-src.tar.gz">commons-compress-1.5-src.tar.gz</a></td>
-              <td><a href="http://www.apache.org/dist/commons/compress/source/commons-compress-1.5-src.tar.gz.md5">md5</a></td>
-              <td><a href="http://www.apache.org/dist/commons/compress/source/commons-compress-1.5-src.tar.gz.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/compress/source/commons-compress-1.9-src.tar.gz">commons-compress-1.9-src.tar.gz</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.9-src.tar.gz.md5">md5</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.9-src.tar.gz.asc">pgp</a></td>
           </tr>
           <tr>
-              <td><a href="[preferred]/commons/compress/source/commons-compress-1.5-src.zip">commons-compress-1.5-src.zip</a></td>
-              <td><a href="http://www.apache.org/dist/commons/compress/source/commons-compress-1.5-src.zip.md5">md5</a></td>
-              <td><a href="http://www.apache.org/dist/commons/compress/source/commons-compress-1.5-src.zip.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/compress/source/commons-compress-1.9-src.zip">commons-compress-1.9-src.zip</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.9-src.zip.md5">md5</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.9-src.zip.asc">pgp</a></td>
           </tr>
         </table>
       </subsection>

@@ -22,14 +22,17 @@ package org.apache.commons.compress.archivers.zip;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.compress.utils.CharsetNames;
+
+import static org.junit.Assert.*;
+
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * Test zip encodings.
  */
-public class TestZipEncodings extends TestCase {
+public class ZipEncodingTest {
     private static final String UNENC_STRING = "\u2016";
 
     // stress test for internal grow method.
@@ -39,16 +42,19 @@ public class TestZipEncodings extends TestCase {
     private static final String BAD_STRING_ENC =
         "%U2016%U2015%U2016%U2015%U2016%U2015%U2016%U2015%U2016%U2015%U2016";
 
+    @Test
     public void testSimpleCp437Encoding() throws IOException {
 
         doSimpleEncodingTest("Cp437", null);
     }
 
+    @Test
     public void testSimpleCp850Encoding() throws IOException {
 
         doSimpleEncodingTest("Cp850", null);
     }
 
+    @Test
     public void testNioCp1252Encoding() throws IOException {
         // CP1252 has some undefined code points, these are
         // the defined ones
@@ -106,14 +112,13 @@ public class TestZipEncodings extends TestCase {
         doSimpleEncodingTest("Cp1252",b);
     }
 
-    private static final void assertEquals(byte[] expected, ByteBuffer actual) {
+    private static void assertEquals(byte[] expected, ByteBuffer actual) {
 
-        assertEquals(expected.length, actual.limit());
+        Assert.assertEquals(expected.length, actual.limit());
 
-        for (int i = 0; i < expected.length; ++i) {
-
+        for (byte anExpected : expected) {
             byte a = actual.get();
-            assertEquals(expected[i], a);
+            Assert.assertEquals(anExpected, a);
         }
 
     }
@@ -133,15 +138,15 @@ public class TestZipEncodings extends TestCase {
 
         String decoded = enc.decode(testBytes);
 
-        assertEquals(true, enc.canEncode(decoded));
+        assertTrue(enc.canEncode(decoded));
 
         ByteBuffer encoded = enc.encode(decoded);
 
         assertEquals(testBytes, encoded);
 
-        assertEquals(false, enc.canEncode(UNENC_STRING));
+        assertFalse(enc.canEncode(UNENC_STRING));
         assertEquals("%U2016".getBytes(CharsetNames.US_ASCII), enc.encode(UNENC_STRING));
-        assertEquals(false, enc.canEncode(BAD_STRING));
+        assertFalse(enc.canEncode(BAD_STRING));
         assertEquals(BAD_STRING_ENC.getBytes(CharsetNames.US_ASCII),
                      enc.encode(BAD_STRING));
     }

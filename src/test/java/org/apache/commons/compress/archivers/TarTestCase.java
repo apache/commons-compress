@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.archivers;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -31,8 +33,11 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.Test;
 
 public final class TarTestCase extends AbstractTestCase {
+
+    @Test
     public void testTarArchiveCreation() throws Exception {
         final File output = new File(dir, "bla.tar");
         final File file1 = getFile("test1.xml");
@@ -52,6 +57,7 @@ public final class TarTestCase extends AbstractTestCase {
         os.close();
     }
 
+    @Test
     public void testTarArchiveLongNameCreation() throws Exception {
         String name = "testdata/12345678901234567890123456789012345678901234567890123456789012345678901234567890123456.xml";
         byte[] bytes = name.getBytes(CharsetNames.UTF_8);
@@ -104,6 +110,7 @@ public final class TarTestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testTarUnarchive() throws Exception {
         final File input = getFile("bla.tar");
         final InputStream is = new FileInputStream(input);
@@ -115,6 +122,7 @@ public final class TarTestCase extends AbstractTestCase {
         out.close();
     }
 
+    @Test
     public void testCOMPRESS114() throws Exception {
         final File input = getFile("COMPRESS-114.tar");
         final InputStream is = new FileInputStream(input);
@@ -127,6 +135,7 @@ public final class TarTestCase extends AbstractTestCase {
         in.close();
     }
 
+    @Test
     public void testDirectoryEntryFromFile() throws Exception {
         File[] tmp = createTempDirAndFile();
         File archive = null;
@@ -166,6 +175,7 @@ public final class TarTestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testExplicitDirectoryEntry() throws Exception {
         File[] tmp = createTempDirAndFile();
         File archive = null;
@@ -205,6 +215,7 @@ public final class TarTestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testFileEntryFromFile() throws Exception {
         File[] tmp = createTempDirAndFile();
         File archive = null;
@@ -253,6 +264,7 @@ public final class TarTestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testExplicitFileEntry() throws Exception {
         File[] tmp = createTempDirAndFile();
         File archive = null;
@@ -303,6 +315,7 @@ public final class TarTestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testCOMPRESS178() throws Exception {
         final File input = getFile("COMPRESS-178.tar");
         final InputStream is = new FileInputStream(input);

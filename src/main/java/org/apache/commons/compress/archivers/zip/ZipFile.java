@@ -17,6 +17,8 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import java.io.BufferedInputStream;
+import java.io.Closeable;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
@@ -27,13 +29,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
 import org.apache.commons.compress.utils.IOUtils;
@@ -75,7 +75,7 @@ import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC
  * </ul>
  *
  */
-public class ZipFile {
+public class ZipFile implements Closeable {
     private static final int HASH_SIZE = 509;
     static final int NIBLET_MASK = 0x0f;
     static final int BYTE_SHIFT = 8;
@@ -134,7 +134,7 @@ public class ZipFile {
     /**
      * Whether the file is closed.
      */
-    private boolean closed;
+    private volatile boolean closed = true;
 
     // cached buffers - must only be used locally in the class (COMPRESS-172 - reduce garbage collection)
     private final byte[] DWORD_BUF = new byte[DWORD];
@@ -218,13 +218,9 @@ public class ZipFile {
             resolveLocalFileHeaderData(entriesWithoutUTF8Flag);
             success = true;
         } finally {
+            closed = !success;
             if (!success) {
-                try {
-                    closed = true;
-                    archive.close();
-                } catch (IOException e2) { // NOPMD
-                    // swallow, throw the original exception instead
-                }
+                IOUtils.closeQuietly(archive);
             }
         }
     }
@@ -257,13 +253,7 @@ public class ZipFile {
      * @param zipfile file to close, can be null
      */
     public static void closeQuietly(ZipFile zipfile) {
-        if (zipfile != null) {
-            try {
-                zipfile.close();
-            } catch (IOException e) { // NOPMD
-                //ignore, that's why the method is called "quietly"
-            }
-        }
+        IOUtils.closeQuietly(zipfile);
     }
 
     /**
@@ -289,7 +279,7 @@ public class ZipFile {
      * @since 1.1
      */
     public Enumeration<ZipArchiveEntry> getEntriesInPhysicalOrder() {
-        ZipArchiveEntry[] allEntries = entries.toArray(new ZipArchiveEntry[0]);
+        ZipArchiveEntry[] allEntries = entries.toArray(new ZipArchiveEntry[entries.size()]);
         Arrays.sort(allEntries, OFFSET_COMPARATOR);
         return Collections.enumeration(Arrays.asList(allEntries));
     }
@@ -316,7 +306,7 @@ public class ZipFile {
      * the archive's central directory.
      *
      * @param name name of the entry.
-     * @return the Iterable<ZipArchiveEntry> corresponding to the
+     * @return the Iterable&lt;ZipArchiveEntry&gt; corresponding to the
      * given name
      * @since 1.6
      */
@@ -331,7 +321,7 @@ public class ZipFile {
      * appear within the archive.
      *
      * @param name name of the entry.
-     * @return the Iterable<ZipArchiveEntry> corresponding to the
+     * @return the Iterable&lt;ZipArchiveEntry&gt; corresponding to the
      * given name
      * @since 1.6
      */
@@ -356,6 +346,44 @@ public class ZipFile {
     }
 
     /**
+     * Expose the raw stream of the archive entry (compressed form)
+     * <p/>
+     * This method does not relate to how/if we understand the payload in the
+     * stream, since we really only intend to move it on to somewhere else.
+     *
+     * @param ze The entry to get the stream for
+     * @return The raw input stream containing (possibly) compressed data.
+     */
+    private InputStream getRawInputStream(ZipArchiveEntry ze) {
+        if (!(ze instanceof Entry)) {
+            return null;
+        }
+        OffsetEntry offsetEntry = ((Entry) ze).getOffsetEntry();
+        long start = offsetEntry.dataOffset;
+        return new BoundedInputStream(start, ze.getCompressedSize());
+    }
+
+
+    /**
+     * Transfer selected entries from this zipfile to a given #ZipArchiveOutputStream.
+     * Compression and all other attributes will be as in this file.
+     * This method transfers entries based on the central directory of the zip file.
+     *
+     * @param target The zipArchiveOutputStream to write the entries to
+     * @param predicate A predicate that selects which entries to write
+     */
+    public void copyRawEntries(ZipArchiveOutputStream target, ZipArchiveEntryPredicate predicate)
+            throws IOException {
+        Enumeration<ZipArchiveEntry> src = getEntriesInPhysicalOrder();
+        while (src.hasMoreElements()) {
+            ZipArchiveEntry entry = src.nextElement();
+            if (predicate.test( entry)) {
+                target.addRawArchiveEntry(entry, getRawInputStream(entry));
+            }
+        }
+    }
+
+    /**
      * Returns an InputStream for reading the contents of the given entry.
      *
      * @param ze the entry to get the stream for.
@@ -374,10 +402,15 @@ public class ZipFile {
         long start = offsetEntry.dataOffset;
         BoundedInputStream bis =
             new BoundedInputStream(start, ze.getCompressedSize());
-        switch (ze.getMethod()) {
-            case ZipEntry.STORED:
+        switch (ZipMethod.getMethodByCode(ze.getMethod())) {
+            case STORED:
                 return bis;
-            case ZipEntry.DEFLATED:
+            case UNSHRINKING:
+                return new UnshrinkingInputStream(bis);
+            case IMPLODING:
+                return new ExplodingInputStream(ze.getGeneralPurposeBit().getSlidingDictionarySize(),
+                        ze.getGeneralPurposeBit().getNumberOfShannonFanoTrees(), new BufferedInputStream(bis));
+            case DEFLATED:
                 bis.addDummy();
                 final Inflater inflater = new Inflater(true);
                 return new InflaterInputStream(bis, inflater) {
@@ -892,10 +925,10 @@ public class ZipFile {
     private void resolveLocalFileHeaderData(Map<ZipArchiveEntry, NameAndComment>
                                             entriesWithoutUTF8Flag)
         throws IOException {
-        for (Iterator<ZipArchiveEntry> it = entries.iterator(); it.hasNext(); ) {
+        for (ZipArchiveEntry zipArchiveEntry : entries) {
             // entries is filled in populateFromCentralDirectory and
             // never modified
-            Entry ze = (Entry) it.next();
+            Entry ze = (Entry) zipArchiveEntry;
             OffsetEntry offsetEntry = ze.getOffsetEntry();
             long offset = offsetEntry.headerOffset;
             archive.seek(offset + LFH_OFFSET_FOR_FILENAME_LENGTH);

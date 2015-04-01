@@ -42,7 +42,295 @@ The <action> type attribute can be add,update,fix,remove.
     <title>commons-compress</title>
   </properties>
   <body>
-    <release version="1.6" date="not released, yet"
+    <release version="1.10" date="not released, yet"
+             description="Release 1.10 
+------------
+
+
+
+Release 1.10 moves the former 
+org.apache.commons.compress.compressors.z._internal_ package which 
+breaks backwards compatibility for code which used the old package. 
+This also changes the superclass of ZCompressorInputStream.    
+">
+
+      <action issue="COMPRESS-313" type="add" date="2015-03-30">
+        CompressorStreamFactory can now auto-detect LZMA streams.
+      </action>
+      <action issue="COMPRESS-312" type="fix" date="2015-03-28">
+        TarArchiveEntry's constructor with a File and a String arg
+        didn't normalize the name.
+      </action>
+      <action issue="COMPRESS-308" type="fix" date="2015-02-20">
+        ZipEncodingHelper no longer reads system properties directly
+        to determine the default charset.
+      </action>
+      <action issue="COMPRESS-309" type="fix" date="2015-02-20">
+        BZip2CompressorInputStream#read would return -1 when asked to
+        read 0 bytes.
+      </action>
+      <action issue="COMPRESS-306" type="fix" date="2015-02-17">
+        ArchiveStreamFactory fails to pass on the encoding when creating some streams.
+        * ArjArchiveInputStream
+        * CpioArchiveInputStream
+        * DumpArchiveInputStream
+        * JarArchiveInputStream
+        * TarArchiveInputStream
+        * JarArchiveOutputStream
+      </action>
+      <action issue="COMPRESS-302" type="fix" date="2015-02-16">
+        Restore immutability/thread-safety to ArchiveStreamFactory.
+        The class is now immutable provided that the method setEntryEncoding is not used.
+        The class is thread-safe.
+      </action>
+      <action issue="COMPRESS-303" type="fix" date="2015-02-16">
+        Restore immutability/thread-safety to CompressorStreamFactory.
+        The class is now immutable provided that the method setDecompressConcatenated is not used.
+        The class is thread-safe.
+      </action>
+      <action issue="COMPRESS-298" type="fix" date="2015-01-20">
+        SevenZFile now throws the specific PasswordRequiredException
+        when it encounters an encrypted stream but no password has
+        been specified.
+      </action>
+      <action issue="COMPRESS-290" type="fix" date="2015-01-13"
+              due-to="Kristian Rosenvold">
+        Improved error message when tar encounters a groupId that is
+        too big to write without using the STAR or POSIX format.
+      </action>
+      <action issue="COMPRESS-296" type="add" date="2015-01-10"
+              due-to="Kristian Rosenvold">
+        Added support for parallel compression. This low-level API allows
+        a client to build a zip/jar file by using the class
+        org.apache.commons.compress.archivers.zip.ParallelScatterZipCreator.
+
+        Zip documentation updated with further notes about parallel features.
+
+        Please note that some aspects of jar creation need to be
+        handled by client code and is not part of commons-compress for this
+        release.
+      </action>
+      <action type="add" date="2014-12-24"
+              due-to="Kristian Rosenvold">
+        Cut overall object instantiation in half by changing file
+        header generation algorithm, for a 10-15 percent performance
+        improvement.
+
+        Also extracted two private methods createLocalFileHeader
+        and createCentralFileHeader in ZipArchiveOutputStream.
+        These may have some interesting additional usages in the
+        near future.
+      </action>
+      <action issue="COMPRESS-297" type="fix" date="2014-12-22">
+        ZipFile logs a warning in its finalizer when its constructor
+        has thrown an exception reading the file - for example if the
+        file doesn't exist.
+      </action>
+      <action issue="COMPRESS-295" type="add" date="2014-12-18"
+              due-to="Kristian Rosenvold">
+        New methods in ZipArchiveOutputStream and ZipFile allows
+        entries to be copied from one archive to another without
+        having to re-compress them.
+      </action>
+      <action type="update" date="2014-10-28"
+              due-to="Damjan Jovanovic">
+        Moved the package
+        org.apache.commons.compress.compressors.z._internal_ to
+        org.apache.commons.compress.compressors.lzw and made it part
+        of the API that is officially supported.  This will break
+        existing code that uses the old package.
+      </action>
+    </release>
+
+    <release version="1.9" date="2014-10-09"
+             description="Release 1.9">
+      <action type="add" date="2014-06-14" issue="COMPRESS-263"
+              due-to="Matthias Stevens">
+        Added support for DEFLATE streams without any gzip framing.
+      </action>
+      <action type="fix" date="2014-08-14" issue="COMPRESS-287">
+        When reading 7z files unknown file properties and properties
+        of type kDummy are now ignored.
+      </action>
+      <action type="fix" date="2014-08-21" issue="COMPRESS-286">
+        Expanding 7z archives using LZMA compression could cause an
+        EOFException.
+      </action>
+      <action type="update" date="2014-08-31" issue="COMPRESS-285">
+        Checking for XZ for Java may be expensive.  The result will
+        now be cached outside of an OSGi environment.  You can use the
+        new XZUtils#setCacheXZAvailability to overrride this default
+        behavior.
+      </action>
+      <action type="fix" date="2014-09-19" issue="COMPRESS-289"
+              due-to="Bob Robertson">
+        Long-Name and -link or PAX-header entries in TAR archives
+        always had the current time as last modfication time, creating
+        archives that are different at the byte level each time an
+        archive was built.
+      </action>
+    </release>
+
+    <release version="1.8.1" date="2014-05-14"
+             description="Release 1.8.1">
+      <action type="update" date="2014-03-19">
+        The dependency on org.tukaani:xz is now marked as optional.
+      </action>
+      <action type="fix" date="2014-03-28" issue="COMPRESS-270">
+        The snappy, ar and tar inputstreams might fail to read from a
+        non-buffered stream in certain cases.
+      </action>
+      <action type="add" date="2014-04-12" issue="COMPRESS-272">
+        CompressorStreamFactory can now auto-detect Unix compress
+        (".Z") streams.
+      </action>
+      <action type="fix" date="2014-04-12" issue="COMPRESS-277">
+        IOUtils#skip might skip fewer bytes than requested even though
+        more could be read from the stream.
+      </action>
+      <action type="fix" date="2014-04-13" issue="COMPRESS-276">
+        ArchiveStreams now validate there is a current entry before
+        reading or writing entry data.
+      </action>
+      <action type="fix" date="2014-04-13">
+        ArjArchiveInputStream#canReadEntryData tested the current
+        entry of the stream rather than its argument.
+      </action>
+      <action type="fix" date="2014-04-13" issue="COMPRESS-274">
+        ChangeSet#delete and deleteDir now properly deal with unnamed
+        entries.
+      </action>
+      <action type="fix" date="2014-04-18" issue="COMPRESS-273">
+        Added a few null checks to improve robustness.
+      </action>
+      <action type="fix" date="2014-04-19" issue="COMPRESS-278">
+        TarArchiveInputStream failed to read archives with empty
+        gid/uid fields.
+      </action>
+      <action type="fix" date="2014-04-27" issue="COMPRESS-279">
+        TarArchiveInputStream now again throws an exception when it
+        encounters a truncated archive while reading from the last
+        entry.
+      </action>
+      <action type="fix" date="2014-05-02" issue="COMPRESS-280"
+              due-to="BELUGA BEHR">
+        Adapted TarArchiveInputStream#skip to the modified
+        IOUtils#skip method.
+      </action>
+    </release>
+    <release version="1.8" date="2014-03-12"
+             description="Release 1.8">
+      <action issue="COMPRESS-253" type="fix" date="2014-01-20">
+        BZip2CompressorInputStream read fewer bytes than possible from
+        a truncated stream.
+      </action> 
+      <action issue="COMPRESS-253" type="fix" date="2014-01-22">
+        SevenZFile failed claiming the dictionary was too large when
+        archives used LZMA compression for headers and content and
+        certain non-default dictionary sizes.
+      </action>
+      <action issue="COMPRESS-259" type="fix" date="2014-01-24">
+        CompressorStreamFactory.createCompressorInputStream with
+        explicit compression did not honor decompressConcatenated
+      </action>
+      <action issue="COMPRESS-260" type="add" date="2014-02-20">
+        GzipCompressorInputStream now provides access to the same
+        metadata that can be provided via GzipParameters when writing
+        a gzip stream.
+      </action>
+      <action issue="COMPRESS-262" type="fix" date="2014-02-21">
+        TarArchiveInputStream will now read archives created by tar
+        implementations that encode big numbers by not adding a
+        trailing NUL.
+      </action>
+      <action issue="COMPRESS-264" type="fix" date="2014-02-21">
+        ZipArchiveInputStream would return NUL bytes for the first 512
+        bytes of a STORED entry if it was the very first entry of the
+        archive.
+      </action>
+      <action issue="COMPRESS-265" type="fix" date="2014-02-22">
+        When writing PAX/POSIX headers for TAR entries with
+        backslashes or certain non-ASCII characters in their name
+        TarArchiveOutputStream could fail.
+      </action>
+      <action issue="COMPRESS-267" type="fix" date="2014-02-22">
+        ArchiveStreamFactory now throws a StreamingNotSupported - a
+        new subclass of ArchiveException - if it is asked to read from
+        or write to a stream and Commons Compress doesn't support
+        streaming for the format.  This currently only applies to the
+        7z format.
+      </action>
+      <action issue="COMPRESS-266" type="add" date="2014-02-25">
+        SevenZOutputFile now supports chaining multiple
+        compression/encryption/filter methods and passing options to
+        the methods.
+      </action>
+      <action issue="COMPRESS-261" type="add" date="2014-02-26">
+        The (compression) method(s) can now be specified per entry in
+        SevenZOutputFile.
+      </action>
+      <action issue="COMPRESS-258" type="add" date="2014-02-26">
+        SevenZArchiveEntry "knows" which method(s) have been used to
+        write it to the archive.
+      </action>
+      <action type="add" date="2014-02-28">
+        The 7z package now supports the delta filter as method.
+      </action>
+      <action issue="COMPRESS-257" type="add" date="2014-03-03">
+        The 7z package now supports BCJ filters for several platforms.
+        You will need a version &gt;= 1.5 of XZ for Java to read archives
+        using BCJ, though.
+      </action>
+    </release>
+    <release version="1.7" date="2014-01-20"
+             description="Release 1.7">
+      <action issue="COMPRESS-241" type="fix" date="2013-10-27">
+        SevenZOutputFile#closeArchiveEntry throws an exception when
+        using LZMA2 compression on Java8.
+      </action> 
+      <action issue="COMPRESS-147" type="add" date="2013-11-07"
+              due-to="BELUGA BEHR">
+        Read-Only support for Snappy compression.
+      </action> 
+      <action issue="COMPRESS-244" type="fix" date="2013-11-27"
+              due-to="Nico Kruber">
+        7z reading of big 64bit values could be wrong.
+      </action> 
+      <action issue="COMPRESS-243" type="add" date="2013-11-30"
+              due-to="Damjan Jovanovic">
+        Read-Only support for .Z compressed files.
+      </action> 
+      <action type="add" date="2013-12-06" due-to="Damjan Jovanovic">
+        ZipFile and ZipArchiveInputStream now support reading entries compressed using the
+        SHRINKING method.
+      </action> 
+      <action issue="COMPRESS-245" type="fix" date="2013-12-06">
+        TarArchiveInputStream could fail to read an archive completely.
+      </action> 
+      <action issue="COMPRESS-242" type="fix" date="2013-12-08">
+        The time-setters in X5455_ExtendedTimestamp now set the
+        corresponding flags explicitly - i.e. they set the bit if the
+        valus is not-null and reset it otherwise.  This may cause
+        incompatibilities if you use setFlags to unset a bit and later
+        set the time to a non-null value - the flag will now be set.
+      </action> 
+      <action issue="COMPRESS-250" type="add" date="2013-12-16" due-to="Emmanuel Bourg">
+        GzipCompressorOutputStream now supports setting the compression level and the header metadata
+        (filename, comment, modification time, operating system and extra flags)
+      </action>
+      <action issue="COMPRESS-115" type="add" date="2013-12-19" due-to="Emmanuel Bourg">
+        ZipFile and ZipArchiveInputStream now support reading entries compressed using the IMPLODE method.
+      </action>
+      <action issue="COMPRESS-252" type="fix" date="2013-12-20">
+        SevenZOutputFile would create invalid archives if more than
+        six empty files or directories were included.
+      </action>
+      <action type="add" date="2013-12-20">
+        ZipFile and the 7z file classes now implement Closeable and
+        can be used in try-with-resources constructs.
+      </action> 
+    </release>
+    <release version="1.6" date="2013-10-26"
              description="Release 1.6">
       <action type="fix" date="2013-04-25" issue="COMPRESS-223"
               due-to="Jeremy Gustie">
@@ -51,8 +339,9 @@ The <action> type attribute can be add,update,fix,remove.
       </action>
       <action type="add" date="2013-05-07" issue="COMPRESS-54"
               due-to="Damjan Jovanovic">
-        Added read-only support for 7z archives that don't use
-        LZMA compression.
+        Added support for 7z archives.  Most compression algorithms
+        can be read and written, LZMA and encryption are only
+        supported when reading.
       </action>
       <action type="add" date="2013-05-19" issue="COMPRESS-226"
               due-to="Damjan Jovanovic">
@@ -71,7 +360,7 @@ The <action> type attribute can be add,update,fix,remove.
         name.
       </action>
       <action type="fix" date="2013-06-04" issue="COMPRESS-227">
-        ZipFile#getInoutStream could return null if the archive
+        ZipFile#getInputStream could return null if the archive
         contained duplicate entries.
         The class now also provides two new methods to obtain all
         entries of a given name rather than just the first one.
@@ -80,9 +369,40 @@ The <action> type attribute can be add,update,fix,remove.
               due-to="BELUGA BEHR">
         Readabilty patch to TarArchiveInputStream.
       </action>
-      <action type="update" date="2013-07-08" issue="COMPRESS-233"
+      <action type="update" date="2013-08-08" issue="COMPRESS-234"
               due-to="BELUGA BEHR">
-        Performance and readability patch to TarBuffer.
+        Performance improvements to TarArchiveInputStream, in
+        particular to the skip method.
+      </action>
+      <action type="fix" date="2013-08-08" issue="COMPRESS-236"
+              due-to="Andrew Duffy">
+        CpioArchiveInputStream failed to read archives created by
+        Redline RPM.
+      </action>
+      <action type="fix" date="2013-08-09" issue="COMPRESS-237"
+              due-to="Emmanuel Bourg">
+        TarArchiveOutputStream now properly handles link names that
+        are too long to fit into a traditional TAR header.
+      </action>
+      <action type="add" date="2013-08-10">
+        DumpArchiveInputStream now supports an encoding parameter that
+        can be used to specify the encoding of file names.
+      </action>
+      <action type="add" date="2013-08-10">
+        The CPIO streams now support an encoding parameter that can be
+        used to specify the encoding of file names.
+      </action>
+      <action type="add" date="2013-09-22" issue="COMPRESS-111">
+        Read-only support for LZMA standalone compression has been added.
+      </action>
+      <action type="fix" date="2013-10-04" issue="COMPRESS-239">
+        The auto-detecting create*InputStream methods of Archive and
+        CompressorStreamFactory could fail to detect the format of
+        blocking input streams.
+      </action>
+      <action type="fix" date="2013-10-21" issue="COMPRESS-240"
+              due-to="Gary Gregory">
+        ZipEncodingHelper.isUTF8(String) does not check all UTF-8 aliases.
       </action>
     </release>
     <release version="1.5" date="2013-03-14"

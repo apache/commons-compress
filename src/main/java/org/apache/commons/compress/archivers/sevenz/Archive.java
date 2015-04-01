@@ -27,7 +27,7 @@ class Archive {
     /// Whether each particular packed streams has a CRC.
     BitSet packCrcsDefined;
     /// CRCs for each packed stream, valid only if that packed stream has one.
-    int[] packCrcs;
+    long[] packCrcs;
     /// Properties of solid compression blocks.
     Folder[] folders;
     /// Temporary properties for non-empty files (subsumed into the files array later).
@@ -36,4 +36,20 @@ class Archive {
     SevenZArchiveEntry[] files;
     /// Mapping between folders, files and streams.
     StreamMap streamMap;
+
+    @Override
+    public String toString() {
+        return "Archive with packed streams starting at offset " + packPos
+            + ", " + lengthOf(packSizes) + " pack sizes, " + lengthOf(packCrcs)
+            + " CRCs, " + lengthOf(folders) + " folders, " + lengthOf(files)
+            + " files and " + streamMap;
+    }
+
+    private static String lengthOf(long[] a) {
+        return a == null ? "(null)" : String.valueOf(a.length); 
+    }
+
+    private static String lengthOf(Object[] a) {
+        return a == null ? "(null)" : String.valueOf(a.length); 
+    }
 }

@@ -170,7 +170,7 @@ public class FileNameUtil {
 
     /**
      * Maps the given filename to the name that the file should have after
-     * compressio. Common file types with custom suffixes for
+     * compression. Common file types with custom suffixes for
      * compressed versions are automatically detected and correctly mapped.
      * For example the name "package.tar" is mapped to "package.tgz". If no
      * custom mapping is applicable, then the default ".gz" suffix is appended

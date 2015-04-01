@@ -20,6 +20,8 @@ package org.apache.commons.compress.archivers.dump;
 
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.ZipEncoding;
+import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -38,6 +40,11 @@ import java.util.Stack;
  * Methods are provided to position at each successive entry in
  * the archive, and the read each entry as a normal input stream
  * using read().
+ *
+ * There doesn't seem to exist a hint on the encoding of string values
+ * in any piece documentation.  Given the main purpose of dump/restore
+ * is backing up a system it seems very likely the format uses the
+ * current default encoding of the system.
  *
  * @NotThreadSafe
  */
@@ -65,14 +72,38 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     private Queue<DumpArchiveEntry> queue;
 
     /**
-     * Constructor.
+     * The encoding to use for filenames and labels.
+     */
+    private final ZipEncoding zipEncoding;
+
+    // the provided encoding (for unit tests)
+    final String encoding;
+
+    /**
+     * Constructor using the platform's default encoding for file
+     * names.
      *
      * @param is
      * @throws ArchiveException
      */
     public DumpArchiveInputStream(InputStream is) throws ArchiveException {
+        this(is, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param is
+     * @param encoding the encoding to use for file names, use null
+     * for the platform's default encoding
+     * @since 1.6
+     */
+    public DumpArchiveInputStream(InputStream is, String encoding)
+        throws ArchiveException {
         this.raw = new TapeInputStream(is);
         this.hasHitEOF = false;
+        this.encoding = encoding;
+        this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
 
         try {
             // read header, verify it's a dump archive.
@@ -83,7 +114,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
             }
 
             // get summary information
-            summary = new DumpArchiveSummary(headerBytes);
+            summary = new DumpArchiveSummary(headerBytes, this.zipEncoding);
 
             // reset buffer with actual block size.
             raw.resetBlockSize(summary.getNTRec(), summary.isCompressed());
@@ -100,14 +131,14 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
         // put in a dummy record for the root node.
         Dirent root = new Dirent(2, 2, 4, ".");
-        names.put(Integer.valueOf(2), root);
+        names.put(2, root);
 
         // use priority based on queue to ensure parent directories are
         // released first.
         queue = new PriorityQueue<DumpArchiveEntry>(10,
                 new Comparator<DumpArchiveEntry>() {
                     public int compare(DumpArchiveEntry p, DumpArchiveEntry q) {
-                        if ((p.getOriginalName() == null) || (q.getOriginalName() == null)) {
+                        if (p.getOriginalName() == null || q.getOriginalName() == null) {
                             return Integer.MAX_VALUE;
                         }
 
@@ -138,13 +169,13 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      * Read CLRI (deleted inode) segment.
      */
     private void readCLRI() throws IOException {
-        byte[] readBuf = raw.readRecord();
+        byte[] buffer = raw.readRecord();
 
-        if (!DumpArchiveUtil.verify(readBuf)) {
+        if (!DumpArchiveUtil.verify(buffer)) {
             throw new InvalidFormatException();
         }
 
-        active = DumpArchiveEntry.parse(readBuf);
+        active = DumpArchiveEntry.parse(buffer);
 
         if (DumpArchiveConstants.SEGMENT_TYPE.CLRI != active.getHeaderType()) {
             throw new InvalidFormatException();
@@ -162,13 +193,13 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      * Read BITS segment.
      */
     private void readBITS() throws IOException {
-        byte[] readBuf = raw.readRecord();
+        byte[] buffer = raw.readRecord();
 
-        if (!DumpArchiveUtil.verify(readBuf)) {
+        if (!DumpArchiveUtil.verify(buffer)) {
             throw new InvalidFormatException();
         }
 
-        active = DumpArchiveEntry.parse(readBuf);
+        active = DumpArchiveEntry.parse(buffer);
 
         if (DumpArchiveConstants.SEGMENT_TYPE.BITS != active.getHeaderType()) {
             throw new InvalidFormatException();
@@ -279,7 +310,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         }
 
         entry.setName(path);
-        entry.setSimpleName(names.get(Integer.valueOf(entry.getIno())).getName());
+        entry.setSimpleName(names.get(entry.getIno()).getName());
         entry.setOffset(filepos);
 
         return entry;
@@ -294,15 +325,15 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         boolean first = true;
 
         while (first ||
-                (DumpArchiveConstants.SEGMENT_TYPE.ADDR == entry.getHeaderType())) {
+                DumpArchiveConstants.SEGMENT_TYPE.ADDR == entry.getHeaderType()) {
             // read the header that we just peeked at.
             if (!first) {
                 raw.readRecord();
             }
 
-            if (!names.containsKey(Integer.valueOf(entry.getIno())) &&
-                    (DumpArchiveConstants.SEGMENT_TYPE.INODE == entry.getHeaderType())) {
-                pending.put(Integer.valueOf(entry.getIno()), entry);
+            if (!names.containsKey(entry.getIno()) &&
+                    DumpArchiveConstants.SEGMENT_TYPE.INODE == entry.getHeaderType()) {
+                pending.put(entry.getIno(), entry);
             }
 
             int datalen = DumpArchiveConstants.TP_SIZE * entry.getHeaderCount();
@@ -317,14 +348,14 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
             int reclen = 0;
 
-            for (int i = 0; (i < (datalen - 8)) && (i < (size - 8));
+            for (int i = 0; i < datalen - 8 && i < size - 8;
                     i += reclen) {
                 int ino = DumpArchiveUtil.convert32(blockBuffer, i);
                 reclen = DumpArchiveUtil.convert16(blockBuffer, i + 4);
 
                 byte type = blockBuffer[i + 6];
 
-                String name = new String(blockBuffer, i + 8, blockBuffer[i + 7]); // TODO default charset?
+                String name = DumpArchiveUtil.decode(zipEncoding, blockBuffer, i + 8, blockBuffer[i + 7]);
 
                 if (".".equals(name) || "..".equals(name)) {
                     // do nothing...
@@ -340,7 +371,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
                 }
                 */
 
-                names.put(Integer.valueOf(ino), d);
+                names.put(ino, d);
 
                 // check whether this allows us to fill anything in the pending list.
                 for (Map.Entry<Integer, DumpArchiveEntry> e : pending.entrySet()) {
@@ -357,7 +388,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
                 // remove anything that we found. (We can't do it earlier
                 // because of concurrent modification exceptions.)
                 for (DumpArchiveEntry e : queue) {
-                    pending.remove(Integer.valueOf(e.getIno()));
+                    pending.remove(e.getIno());
                 }
             }
 
@@ -386,12 +417,12 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         Dirent dirent = null;
 
         for (int i = entry.getIno();; i = dirent.getParentIno()) {
-            if (!names.containsKey(Integer.valueOf(i))) {
+            if (!names.containsKey(i)) {
                 elements.clear();
                 break;
             }
 
-            dirent = names.get(Integer.valueOf(i));
+            dirent = names.get(i);
             elements.push(dirent.getName());
 
             if (dirent.getIno() == dirent.getParentIno()) {
@@ -401,7 +432,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
         // if an element is missing defer the work and read next entry.
         if (elements.isEmpty()) {
-            pending.put(Integer.valueOf(entry.getIno()), entry);
+            pending.put(entry.getIno(), entry);
 
             return null;
         }
@@ -434,20 +465,24 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     public int read(byte[] buf, int off, int len) throws IOException {
         int totalRead = 0;
 
-        if (hasHitEOF || isClosed || (entryOffset >= entrySize)) {
+        if (hasHitEOF || isClosed || entryOffset >= entrySize) {
             return -1;
         }
 
-        if ((len + entryOffset) > entrySize) {
+        if (active == null) {
+            throw new IllegalStateException("No current dump entry");
+        }
+
+        if (len + entryOffset > entrySize) {
             len = (int) (entrySize - entryOffset);
         }
 
         while (len > 0) {
-            int sz = (len > (readBuf.length - recordOffset))
-                ? (readBuf.length - recordOffset) : len;
+            int sz = len > readBuf.length - recordOffset
+                ? readBuf.length - recordOffset : len;
 
             // copy any data we have
-            if ((recordOffset + sz) <= readBuf.length) {
+            if (recordOffset + sz <= readBuf.length) {
                 System.arraycopy(readBuf, recordOffset, buf, off, sz);
                 totalRead += sz;
                 recordOffset += sz;

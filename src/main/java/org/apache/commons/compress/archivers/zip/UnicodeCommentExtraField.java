@@ -24,9 +24,8 @@ package org.apache.commons.compress.archivers.zip;
  * <p>Stores the UTF-8 version of the file comment as stored in the
  * central directory header.</p>
  *
- * <p>See {@link
- * "http://www.pkware.com/documents/casestudies/APPNOTE.TXT PKWARE's
- * APPNOTE.TXT, section 4.6.8"}.</p>
+ * @see <a href="http://www.pkware.com/documents/casestudies/APPNOTE.TXT">PKWARE
+ * APPNOTE.TXT, section 4.6.8</a>
  *
  * @NotThreadSafe super-class is not thread-safe
  */
@@ -63,7 +62,6 @@ public class UnicodeCommentExtraField extends AbstractUnicodeExtraField {
         super(comment, bytes);
     }
 
-    /** {@inheritDoc} */
     public ZipShort getHeaderId() {
         return UCOM_ID;
     }

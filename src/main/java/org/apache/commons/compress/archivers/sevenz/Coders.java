@@ -17,219 +17,204 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
+import java.io.FilterInputStream;
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.GeneralSecurityException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.io.OutputStream;
 import java.util.Arrays;
-
-import javax.crypto.Cipher;
-import javax.crypto.CipherInputStream;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.zip.Deflater;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.Inflater;
+import java.util.zip.InflaterInputStream;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
+import org.tukaani.xz.ARMOptions;
+import org.tukaani.xz.ARMThumbOptions;
+import org.tukaani.xz.FilterOptions;
+import org.tukaani.xz.FinishableOutputStream;
+import org.tukaani.xz.FinishableWrapperOutputStream;
+import org.tukaani.xz.IA64Options;
 import org.tukaani.xz.LZMAInputStream;
-import org.tukaani.xz.LZMA2InputStream;
+import org.tukaani.xz.PowerPCOptions;
+import org.tukaani.xz.SPARCOptions;
+import org.tukaani.xz.X86Options;
 
 class Coders {
-    static InputStream addDecoder(final InputStream is,
-            final Coder coder, final String password) throws IOException {
-        for (final CoderId coderId : coderTable) {
-            if (Arrays.equals(coderId.id, coder.decompressionMethodId)) {
-                return coderId.coder.decode(is, coder, password);
-            }
-        }
-        throw new IOException("Unsupported compression method " +
-                Arrays.toString(coder.decompressionMethodId));
-    }
-    
-    static CoderId[] coderTable = new CoderId[] {
-        new CoderId(new byte[] { (byte)0x00 }, new CopyDecoder()),
-        new CoderId(new byte[] { (byte)0x03, (byte)0x01, (byte)0x01 }, new LZMADecoder()),
-        new CoderId(new byte[] { (byte)0x21 }, new LZMA2Decoder()),
-        // FIXME: gives corrupt output
-        //new CoderId(new byte[] { (byte)0x04, (byte)0x01, (byte)0x08 }, new DeflateDecoder()),
-        new CoderId(new byte[] { (byte)0x04, (byte)0x02, (byte)0x02 }, new BZIP2Decoder()),
-        new CoderId(new byte[] { (byte)0x06, (byte)0xf1, (byte)0x07, (byte)0x01 }, new AES256SHA256Decoder())
-    };
-    
-    static class CoderId {
-        CoderId(final byte[] id, final CoderBase coder) {
-            this.id = id;
-            this.coder = coder;
-        }
+    private static final Map<SevenZMethod, CoderBase> CODER_MAP = new HashMap<SevenZMethod, CoderBase>() {
 
-        final byte[] id;
-        final CoderBase coder;
+        private static final long serialVersionUID = 1664829131806520867L;
+    {
+            put(SevenZMethod.COPY, new CopyDecoder());
+            put(SevenZMethod.LZMA, new LZMADecoder());
+            put(SevenZMethod.LZMA2, new LZMA2Decoder());
+            put(SevenZMethod.DEFLATE, new DeflateDecoder());
+            put(SevenZMethod.BZIP2, new BZIP2Decoder());
+            put(SevenZMethod.AES256SHA256, new AES256SHA256Decoder());
+            put(SevenZMethod.BCJ_X86_FILTER, new BCJDecoder(new X86Options()));
+            put(SevenZMethod.BCJ_PPC_FILTER, new BCJDecoder(new PowerPCOptions()));
+            put(SevenZMethod.BCJ_IA64_FILTER, new BCJDecoder(new IA64Options()));
+            put(SevenZMethod.BCJ_ARM_FILTER, new BCJDecoder(new ARMOptions()));
+            put(SevenZMethod.BCJ_ARM_THUMB_FILTER, new BCJDecoder(new ARMThumbOptions()));
+            put(SevenZMethod.BCJ_SPARC_FILTER, new BCJDecoder(new SPARCOptions()));
+            put(SevenZMethod.DELTA_FILTER, new DeltaDecoder());
+        }};
+
+    static CoderBase findByMethod(SevenZMethod method) {
+        return CODER_MAP.get(method);
+    }
+
+    static InputStream addDecoder(final String archiveName, final InputStream is, long uncompressedLength,
+            final Coder coder, final byte[] password) throws IOException {
+        CoderBase cb = findByMethod(SevenZMethod.byId(coder.decompressionMethodId));
+        if (cb == null) {
+            throw new IOException("Unsupported compression method " +
+                                  Arrays.toString(coder.decompressionMethodId)
+                                  + " used in " + archiveName);
+        }
+        return cb.decode(archiveName, is, uncompressedLength, coder, password);
     }
     
-    static abstract class CoderBase {
-        abstract InputStream decode(final InputStream in, final Coder coder,
-                String password) throws IOException;
+    static OutputStream addEncoder(final OutputStream out, final SevenZMethod method,
+                                   Object options) throws IOException {
+        CoderBase cb = findByMethod(method);
+        if (cb == null) {
+            throw new IOException("Unsupported compression method " + method);
+        }
+        return cb.encode(out, options);
     }
-    
+
     static class CopyDecoder extends CoderBase {
         @Override
-        InputStream decode(final InputStream in, final Coder coder,
-                String password) throws IOException {
+        InputStream decode(final String archiveName, final InputStream in, long uncompressedLength,
+                final Coder coder, byte[] password) throws IOException {
             return in; 
         }
-    }
-    
-    static class LZMA2Decoder extends CoderBase {
         @Override
-        InputStream decode(final InputStream in, final Coder coder,
-                String password) throws IOException {
-            final int dictionarySizeBits = 0xff & coder.properties[0];
-            if ((dictionarySizeBits & (~0x3f)) != 0) {
-                throw new IOException("Unsupported LZMA2 property bits");
-            }
-            if (dictionarySizeBits > 40) {
-                throw new IOException("Dictionary larger than 4GiB maximum size");
-            }
-            final int dictionarySize;
-            if (dictionarySizeBits == 40) {
-                dictionarySize = 0xFFFFffff;
-            } else {
-                dictionarySize = (2 | (dictionarySizeBits & 0x1)) << (dictionarySizeBits / 2 + 11);
-            }
-            return new LZMA2InputStream(in, dictionarySize);
+        OutputStream encode(final OutputStream out, final Object options) {
+            return out;
         }
     }
-    
+
     static class LZMADecoder extends CoderBase {
         @Override
-        InputStream decode(final InputStream in, final Coder coder,
-                String password) throws IOException {
+        InputStream decode(final String archiveName, final InputStream in, long uncompressedLength,
+                final Coder coder, byte[] password) throws IOException {
             byte propsByte = coder.properties[0];
             long dictSize = coder.properties[1];
             for (int i = 1; i < 4; i++) {
-                dictSize |= (coder.properties[i + 1] << (8 * i));
+                dictSize |= (coder.properties[i + 1] & 0xffl) << (8 * i);
             }
             if (dictSize > LZMAInputStream.DICT_SIZE_MAX) {
-                throw new IOException("Dictionary larger than 4GiB maximum size");
+                throw new IOException("Dictionary larger than 4GiB maximum size used in " + archiveName);
             }
-            return new LZMAInputStream(in, -1, propsByte, (int) dictSize);
+            return new LZMAInputStream(in, uncompressedLength, propsByte, (int) dictSize);
         }
     }
     
-//    static class DeflateDecoder extends CoderBase {
-//        @Override
-//        InputStream decode(final InputStream in, final Coder coder, final String password)
-//                throws IOException {
-//            System.out.println("deflate prop count = " + (coder.properties == null ? -1 : coder.properties.length));
-//            return new DeflaterInputStream(in, new Deflater(Deflater.DEFAULT_COMPRESSION, true));
-//            //return new GZIPInputStream(in);
-//        }
-//    }
+    static class BCJDecoder extends CoderBase {
+        private final FilterOptions opts;
+        BCJDecoder(FilterOptions opts) {
+            this.opts = opts;
+        }
 
-    static class BZIP2Decoder extends CoderBase {
         @Override
-        InputStream decode(final InputStream in, final Coder coder, final String password)
-                throws IOException {
-            return new BZip2CompressorInputStream(in);
+        InputStream decode(final String archiveName, final InputStream in, long uncompressedLength,
+                final Coder coder, byte[] password) throws IOException {
+            try {
+                return opts.getInputStream(in);
+            } catch (AssertionError e) {
+                IOException ex = new IOException("BCJ filter used in " + archiveName
+                                                 + " needs XZ for Java > 1.4 - see "
+                                                 + "http://commons.apache.org/proper/commons-compress/limitations.html#7Z");
+                ex.initCause(e);
+                throw ex;
+            }
+        }
+        @Override
+        OutputStream encode(final OutputStream out, final Object options) {
+            final FinishableOutputStream fo = opts.getOutputStream(new FinishableWrapperOutputStream(out));
+            return new FilterOutputStream(fo) {
+                @Override
+                public void flush() {
+                }
+            };
+        }
+    }
+    
+    static class DeflateDecoder extends CoderBase {
+        DeflateDecoder() {
+            super(Number.class);
+        }
+
+        @Override
+        InputStream decode(final String archiveName, final InputStream in, long uncompressedLength,
+                final Coder coder, final byte[] password)
+            throws IOException {
+            return new InflaterInputStream(new DummyByteAddingInputStream(in),
+                                           new Inflater(true));
+        }
+        @Override
+        OutputStream encode(final OutputStream out, final Object options) {
+            int level = numberOptionOrDefault(options, 9);
+            return new DeflaterOutputStream(out, new Deflater(level, true));
         }
     }
 
-    static class AES256SHA256Decoder extends CoderBase {
+    static class BZIP2Decoder extends CoderBase {
+        BZIP2Decoder() {
+            super(Number.class);
+        }
+
         @Override
-        InputStream decode(final InputStream in, final Coder coder,
-                final String password) throws IOException {
-            return new InputStream() {
-                private boolean isInitialized = false;
-                private CipherInputStream cipherInputStream = null;
-                
-                private CipherInputStream init() throws IOException {
-                    if (isInitialized) {
-                        return cipherInputStream;
-                    }
-                    final int byte0 = 0xff & coder.properties[0];
-                    final int numCyclesPower = byte0 & 0x3f;
-                    final int byte1 = 0xff & coder.properties[1];
-                    final int ivSize = ((byte0 >> 6) & 1) + (byte1 & 0x0f);
-                    final int saltSize = ((byte0 >> 7) & 1) + (byte1 >> 4);
-                    //debug("numCyclesPower=" + numCyclesPower + ", saltSize=" + saltSize + ", ivSize=" + ivSize);
-                    if (2 + saltSize + ivSize > coder.properties.length) {
-                        throw new IOException("Salt size + IV size too long");
-                    }
-                    final byte[] salt = new byte[saltSize];
-                    System.arraycopy(coder.properties, 2, salt, 0, saltSize);
-                    final byte[] iv = new byte[16];
-                    System.arraycopy(coder.properties, 2 + saltSize, iv, 0, ivSize);
-                    
-                    if (password == null) {
-                        throw new IOException("Cannot read encrypted files without a password");
-                    }
-                    final byte[] passwordBytes = password.getBytes("UTF-16LE");
-                    final byte[] aesKeyBytes;
-                    if (numCyclesPower == 0x3f) {
-                        aesKeyBytes = new byte[32];
-                        System.arraycopy(salt, 0, aesKeyBytes, 0, saltSize);
-                        System.arraycopy(passwordBytes, 0, aesKeyBytes, saltSize,
-                                Math.min(passwordBytes.length, aesKeyBytes.length - saltSize));
-                    } else {
-                        final MessageDigest digest;
-                        try {
-                            digest = MessageDigest.getInstance("SHA-256");
-                        } catch (NoSuchAlgorithmException noSuchAlgorithmException) {
-                            IOException ioe = new IOException("SHA-256 is unsupported by your Java implementation");
-                            ioe.initCause(noSuchAlgorithmException);
-                            throw ioe;
-        // TODO: simplify when Compress requires Java 1.6                
-//                            throw new IOException("SHA-256 is unsupported by your Java implementation",
-//                                    noSuchAlgorithmException);
-                        }
-                        final byte[] extra = new byte[8];
-                        for (long j = 0; j < (1L << numCyclesPower); j++) {
-                            digest.update(salt);
-                            digest.update(passwordBytes);
-                            digest.update(extra);
-                            for (int k = 0; k < extra.length; k++) {
-                                ++extra[k];
-                                if (extra[k] != 0) {
-                                    break;
-                                }
-                            }
-                        }
-                        aesKeyBytes = digest.digest();
-                    }
-                    
-                    final SecretKey aesKey = new SecretKeySpec(aesKeyBytes, "AES");
-                    try {
-                        final Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
-                        cipher.init(Cipher.DECRYPT_MODE, aesKey, new IvParameterSpec(iv));
-                        cipherInputStream = new CipherInputStream(in, cipher);
-                        isInitialized = true;
-                        return cipherInputStream;
-                    } catch (GeneralSecurityException generalSecurityException) {
-                        IOException ioe = new IOException("Decryption error " +
-                                "(do you have the JCE Unlimited Strength Jurisdiction Policy Files installed?)");
-                        ioe.initCause(generalSecurityException);
-                        throw ioe;
-        // TODO: simplify when Compress requires Java 1.6                
-//                        throw new IOException("Decryption error " +
-//                                "(do you have the JCE Unlimited Strength Jurisdiction Policy Files installed?)",
-//                                generalSecurityException);
-                    }
-                }
-                
-                @Override
-                public int read() throws IOException {
-                    return init().read();
-                }
-                
-                @Override
-                public int read(byte[] b, int off, int len) throws IOException {
-                    return init().read(b, off, len);
-                }
-                
-                @Override
-                public void close() {
-                }
-            };
+        InputStream decode(final String archiveName, final InputStream in, long uncompressedLength,
+                final Coder coder, final byte[] password)
+                throws IOException {
+            return new BZip2CompressorInputStream(in);
+        }
+        @Override
+        OutputStream encode(final OutputStream out, final Object options)
+                throws IOException {
+            int blockSize = numberOptionOrDefault(options, BZip2CompressorOutputStream.MAX_BLOCKSIZE);
+            return new BZip2CompressorOutputStream(out, blockSize);
+        }
+    }
+
+    /**
+     * ZLIB requires an extra dummy byte.
+     *
+     * @see java.util.zip.Inflater#Inflater(boolean)
+     * @see org.apache.commons.compress.archivers.zip.ZipFile.BoundedInputStream
+     */
+    private static class DummyByteAddingInputStream extends FilterInputStream {
+        private boolean addDummyByte = true;
+
+        private DummyByteAddingInputStream(InputStream in) {
+            super(in);
+        }
+
+        @Override
+        public int read() throws IOException {
+            int result = super.read();
+            if (result == -1 && addDummyByte) {
+                addDummyByte = false;
+                result = 0;
+            }
+            return result;
+        }
+
+        @Override
+        public int read(byte[] b, int off, int len) throws IOException {
+            int result = super.read(b, off, len);
+            if (result == -1 && addDummyByte) {
+                addDummyByte = false;
+                b[off] = 0;
+                return 1;
+            }
+            return result;
         }
     }
 }

@@ -137,15 +137,18 @@ public abstract class ArchiveInputStream extends InputStream {
 
     /**
      * Whether this stream is able to read the given entry.
-     *
-     * <p>Some archive formats support variants or details that are
-     * not supported (yet).</p>
-     *
-     * <p>This implementation always returns true.
-     *
+     * 
+     * <p>
+     * Some archive formats support variants or details that are not supported (yet).
+     * </p>
+     * 
+     * @param archiveEntry
+     *            the entry to test
+     * @return This implementation always returns true.
+     * 
      * @since 1.1
      */
-    public boolean canReadEntryData(ArchiveEntry ae) {
+    public boolean canReadEntryData(ArchiveEntry archiveEntry) {
         return true;
     }
 

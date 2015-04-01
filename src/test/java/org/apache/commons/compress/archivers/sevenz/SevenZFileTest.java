@@ -17,12 +17,21 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
+import static org.junit.Assert.*;
+
+import java.io.File;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import javax.crypto.Cipher;
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.PasswordRequiredException;
+import org.junit.Test;
 
 public class SevenZFileTest extends AbstractTestCase {
-    private static String TEST2_CONTENT = "<?xml version = '1.0'?>\r\n<!DOCTYPE"
+    private static final String TEST2_CONTENT = "<?xml version = '1.0'?>\r\n<!DOCTYPE"
         + " connections>\r\n<meinxml>\r\n\t<leer />\r\n</meinxml>\n";
 
+    @Test
     public void testAllEmptyFilesArchive() throws Exception {
         SevenZFile archive = new SevenZFile(getFile("7z-empty-mhc-off.7z"));
         try {
@@ -32,21 +41,148 @@ public class SevenZFileTest extends AbstractTestCase {
         }
     }
     
+    @Test
     public void testHelloWorldHeaderCompressionOffCopy() throws Exception {
         checkHelloWorld("7z-hello-mhc-off-copy.7z");
     }
 
+    @Test
     public void testHelloWorldHeaderCompressionOffLZMA2() throws Exception {
         checkHelloWorld("7z-hello-mhc-off-lzma2.7z");
     }
 
+    @Test
     public void test7zUnarchive() throws Exception {
-        SevenZFile sevenZFile = new SevenZFile(getFile("bla.7z"));
+        test7zUnarchive(getFile("bla.7z"), SevenZMethod.LZMA);
+    }
+
+    @Test
+    public void test7zDeflateUnarchive() throws Exception {
+        test7zUnarchive(getFile("bla.deflate.7z"), SevenZMethod.DEFLATE);
+    }
+
+    @Test
+    public void test7zDecryptUnarchive() throws Exception {
+        if (isStrongCryptoAvailable()) {
+            test7zUnarchive(getFile("bla.encrypted.7z"), SevenZMethod.LZMA, // stack LZMA + AES
+                            "foo".getBytes("UTF-16LE"));
+        }
+    }
+
+    private void test7zUnarchive(File f, SevenZMethod m) throws Exception {
+        test7zUnarchive(f, m, null);
+    }
+
+    @Test
+    public void testEncryptedArchiveRequiresPassword() throws Exception {
+        try {
+            new SevenZFile(getFile("bla.encrypted.7z"));
+            fail("shouldn't decrypt without a password");
+        } catch (PasswordRequiredException ex) {
+            String msg = ex.getMessage();
+            assertTrue("Should start with whining about being unable to decrypt",
+                       msg.startsWith("Cannot read encrypted content from "));
+            assertTrue("Should finish the sentence properly",
+                       msg.endsWith(" without a password."));
+            assertTrue("Should contain archive's name",
+                       msg.contains("bla.encrypted.7z"));
+        }
+    }
+
+    /**
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-256"
+     */
+    @Test
+    public void testCompressedHeaderWithNonDefaultDictionarySize() throws Exception {
+        SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-256.7z"));
+        try {
+            int count = 0;
+            while (sevenZFile.getNextEntry() != null) {
+                count++;
+            }
+            assertEquals(446, count);
+        } finally {
+            sevenZFile.close();
+        }
+    }
+
+    @Test
+    public void testSignatureCheck() {
+        assertTrue(SevenZFile.matches(SevenZFile.sevenZSignature,
+                                      SevenZFile.sevenZSignature.length));
+        assertTrue(SevenZFile.matches(SevenZFile.sevenZSignature,
+                                      SevenZFile.sevenZSignature.length + 1));
+        assertFalse(SevenZFile.matches(SevenZFile.sevenZSignature,
+                                      SevenZFile.sevenZSignature.length - 1));
+        assertFalse(SevenZFile.matches(new byte[] { 1, 2, 3, 4, 5, 6 }, 6));
+        assertTrue(SevenZFile.matches(new byte[] { '7', 'z', (byte) 0xBC,
+                                                   (byte) 0xAF, 0x27, 0x1C}, 6));
+        assertFalse(SevenZFile.matches(new byte[] { '7', 'z', (byte) 0xBC,
+                                                    (byte) 0xAF, 0x27, 0x1D}, 6));
+    }
+
+    @Test
+    public void testReadingBackLZMA2DictSize() throws Exception {
+        File output = new File(dir, "lzma2-dictsize.7z");
+        SevenZOutputFile outArchive = new SevenZOutputFile(output);
+        try {
+            outArchive.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.LZMA2, 1 << 20)));
+            SevenZArchiveEntry entry = new SevenZArchiveEntry();
+            entry.setName("foo.txt");
+            outArchive.putArchiveEntry(entry);
+            outArchive.write(new byte[] { 'A' });
+            outArchive.closeArchiveEntry();
+        } finally {
+            outArchive.close();
+        }
+
+        SevenZFile archive = new SevenZFile(output);
+        try {
+            SevenZArchiveEntry entry = archive.getNextEntry();
+            SevenZMethodConfiguration m = entry.getContentMethods().iterator().next();
+            assertEquals(SevenZMethod.LZMA2, m.getMethod());
+            assertEquals(1 << 20, m.getOptions());
+        } finally {
+            archive.close();
+        }
+    }
+
+    @Test
+    public void testReadingBackDeltaDistance() throws Exception {
+        File output = new File(dir, "delta-distance.7z");
+        SevenZOutputFile outArchive = new SevenZOutputFile(output);
+        try {
+            outArchive.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER, 32),
+                                                       new SevenZMethodConfiguration(SevenZMethod.LZMA2)));
+            SevenZArchiveEntry entry = new SevenZArchiveEntry();
+            entry.setName("foo.txt");
+            outArchive.putArchiveEntry(entry);
+            outArchive.write(new byte[] { 'A' });
+            outArchive.closeArchiveEntry();
+        } finally {
+            outArchive.close();
+        }
+
+        SevenZFile archive = new SevenZFile(output);
+        try {
+            SevenZArchiveEntry entry = archive.getNextEntry();
+            SevenZMethodConfiguration m = entry.getContentMethods().iterator().next();
+            assertEquals(SevenZMethod.DELTA_FILTER, m.getMethod());
+            assertEquals(32, m.getOptions());
+        } finally {
+            archive.close();
+        }
+    }
+
+    private void test7zUnarchive(File f, SevenZMethod m, byte[] password) throws Exception {
+        SevenZFile sevenZFile = new SevenZFile(f, password);
         try {
             SevenZArchiveEntry entry = sevenZFile.getNextEntry();
             assertEquals("test1.xml", entry.getName());
+            assertEquals(m, entry.getContentMethods().iterator().next().getMethod());
             entry = sevenZFile.getNextEntry();
             assertEquals("test2.xml", entry.getName());
+            assertEquals(m, entry.getContentMethods().iterator().next().getMethod());
             byte[] contents = new byte[(int)entry.getSize()];
             int off = 0;
             while ((off < contents.length)) {
@@ -78,5 +214,9 @@ public class SevenZFileTest extends AbstractTestCase {
         } finally {
             sevenZFile.close();
         }
+    }
+
+    private static boolean isStrongCryptoAvailable() throws NoSuchAlgorithmException {
+        return Cipher.getMaxAllowedKeyLength("AES/ECB/PKCS5Padding") >= 256;
     }
 }

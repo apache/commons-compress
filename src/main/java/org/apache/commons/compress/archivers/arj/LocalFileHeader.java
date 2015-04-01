@@ -30,7 +30,7 @@ class LocalFileHeader {
     int dateTimeModified;
     long compressedSize;
     long originalSize;
-    int originalCrc32;
+    long originalCrc32;
     int fileSpecPosition;
     int fileAccessMode;
     int firstChapter;

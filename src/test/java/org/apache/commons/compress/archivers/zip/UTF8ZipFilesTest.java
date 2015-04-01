@@ -18,6 +18,8 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -29,6 +31,7 @@ import java.util.zip.CRC32;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.utils.CharsetNames;
+import org.junit.Test;
 
 public class UTF8ZipFilesTest extends AbstractTestCase {
 
@@ -37,41 +40,49 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
     private static final String EURO_FOR_DOLLAR_TXT = "\u20AC_for_Dollar.txt";
     private static final String OIL_BARREL_TXT = "\u00D6lf\u00E4sser.txt";
 
+    @Test
     public void testUtf8FileRoundtripExplicitUnicodeExtra()
         throws IOException {
         testFileRoundtrip(CharsetNames.UTF_8, true, true);
     }
 
+    @Test
     public void testUtf8FileRoundtripNoEFSExplicitUnicodeExtra()
         throws IOException {
         testFileRoundtrip(CharsetNames.UTF_8, false, true);
     }
 
+    @Test
     public void testCP437FileRoundtripExplicitUnicodeExtra()
         throws IOException {
         testFileRoundtrip(CP437, false, true);
     }
 
+    @Test
     public void testASCIIFileRoundtripExplicitUnicodeExtra()
         throws IOException {
         testFileRoundtrip(CharsetNames.US_ASCII, false, true);
     }
 
+    @Test
     public void testUtf8FileRoundtripImplicitUnicodeExtra()
         throws IOException {
         testFileRoundtrip(CharsetNames.UTF_8, true, false);
     }
 
+    @Test
     public void testUtf8FileRoundtripNoEFSImplicitUnicodeExtra()
         throws IOException {
         testFileRoundtrip(CharsetNames.UTF_8, false, false);
     }
 
+    @Test
     public void testCP437FileRoundtripImplicitUnicodeExtra()
         throws IOException {
         testFileRoundtrip(CP437, false, false);
     }
 
+    @Test
     public void testASCIIFileRoundtripImplicitUnicodeExtra()
         throws IOException {
         testFileRoundtrip(CharsetNames.US_ASCII, false, false);
@@ -83,6 +94,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
      * 7-ZIP doesn't use EFS for strings that can be encoded in CP437
      * - which is true for OIL_BARREL_TXT.
      */
+    @Test
     public void testRead7ZipArchive() throws IOException {
         File archive = getFile("utf8-7zip-test.zip");
         ZipFile zf = null;
@@ -96,6 +108,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testRead7ZipArchiveForStream() throws IOException {
         FileInputStream archive =
             new FileInputStream(getFile("utf8-7zip-test.zip"));
@@ -116,6 +129,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
      * WinZIP created archive, uses Unicode Extra Fields but only in
      * the central directory.
      */
+    @Test
     public void testReadWinZipArchive() throws IOException {
         File archive = getFile("utf8-winzip-test.zip");
         ZipFile zf = null;
@@ -141,6 +155,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testReadWinZipArchiveForStream() throws IOException {
         FileInputStream archive =
             new FileInputStream(getFile("utf8-winzip-test.zip"));
@@ -157,6 +172,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testZipFileReadsUnicodeFields() throws IOException {
         File file = File.createTempFile("unicode-test", ".zip");
         file.deleteOnExit();
@@ -176,6 +192,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testZipArchiveInputStreamReadsUnicodeFields()
         throws IOException {
         File file = File.createTempFile("unicode-test", ".zip");
@@ -193,6 +210,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testRawNameReadFromZipFile()
         throws IOException {
         File archive = getFile("utf8-7zip-test.zip");
@@ -205,6 +223,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testRawNameReadFromStream()
         throws IOException {
         FileInputStream archive =
@@ -330,7 +349,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
                 } else if (ze.getName().endsWith("_for_Dollar.txt")) {
                     assertUnicodeName(ze, EURO_FOR_DOLLAR_TXT, encoding);
                 } else if (!ze.getName().equals(ASCII_TXT)) {
-                    throw new AssertionError("Urecognized ZIP entry with name ["
+                    throw new AssertionError("Unrecognized ZIP entry with name ["
                                              + ze.getName() + "] found.");
                 }
             }
@@ -365,9 +384,10 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testUtf8Interoperability() throws IOException {
-        File file1 = super.getFile("utf8-7zip-test.zip");
-        File file2 = super.getFile("utf8-winzip-test.zip");
+        File file1 = getFile("utf8-7zip-test.zip");
+        File file2 = getFile("utf8-winzip-test.zip");
 
         testFile(file1,CP437);
         testFile(file2,CP437);

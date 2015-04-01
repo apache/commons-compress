@@ -16,14 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.commons.compress.compressors;
+package org.apache.commons.compress.compressors.xz;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
-import org.apache.commons.compress.compressors.xz.XZUtils;
+import org.junit.Test;
 
-public class XZUtilsTestCase extends TestCase {
+public class XZUtilsTestCase {
 
+    @Test
     public void testIsCompressedFilename() {
         assertFalse(XZUtils.isCompressedFilename(""));
         assertFalse(XZUtils.isCompressedFilename(".xz"));
@@ -41,6 +42,7 @@ public class XZUtilsTestCase extends TestCase {
         assertFalse(XZUtils.isCompressedFilename("x.txz.y"));
     }
 
+    @Test
     public void testGetUncompressedFilename() {
         assertEquals("", XZUtils.getUncompressedFilename(""));
         assertEquals(".xz", XZUtils.getUncompressedFilename(".xz"));
@@ -54,6 +56,7 @@ public class XZUtilsTestCase extends TestCase {
         assertEquals("x.txz.y", XZUtils.getUncompressedFilename("x.txz.y"));
     }
 
+    @Test
     public void testGetCompressedFilename() {
         assertEquals(".xz", XZUtils.getCompressedFilename(""));
         assertEquals("x.xz", XZUtils.getCompressedFilename("x"));
@@ -63,6 +66,47 @@ public class XZUtilsTestCase extends TestCase {
         assertEquals("x.wmf .xz", XZUtils.getCompressedFilename("x.wmf "));
         assertEquals("x.wmf\n.xz", XZUtils.getCompressedFilename("x.wmf\n"));
         assertEquals("x.wmf.y.xz", XZUtils.getCompressedFilename("x.wmf.y"));
+    }
+
+    @Test
+    public void testMatches() {
+        byte[] data = {
+            (byte) 0xFD, '7', 'z', 'X', 'Z', '\0'
+        };
+        assertFalse(XZUtils.matches(data, 5));
+        assertTrue(XZUtils.matches(data, 6));
+        assertTrue(XZUtils.matches(data, 7));
+        data[5] = '0';
+        assertFalse(XZUtils.matches(data, 6));
+    }
+
+    @Test
+    public void testCachingIsEnabledByDefaultAndXZIsPresent() {
+        assertEquals(XZUtils.CachedAvailability.CACHED_AVAILABLE, XZUtils.getCachedXZAvailability());
+        assertTrue(XZUtils.isXZCompressionAvailable());
+    }
+
+    @Test
+    public void testCanTurnOffCaching() {
+        try {
+            XZUtils.setCacheXZAvailablity(false);
+            assertEquals(XZUtils.CachedAvailability.DONT_CACHE, XZUtils.getCachedXZAvailability());
+            assertTrue(XZUtils.isXZCompressionAvailable());
+        } finally {
+            XZUtils.setCacheXZAvailablity(true);
+        }
+    }
+
+    @Test
+    public void testTurningOnCachingReEvaluatesAvailability() {
+        try {
+            XZUtils.setCacheXZAvailablity(false);
+            assertEquals(XZUtils.CachedAvailability.DONT_CACHE, XZUtils.getCachedXZAvailability());
+            XZUtils.setCacheXZAvailablity(true);
+            assertEquals(XZUtils.CachedAvailability.CACHED_AVAILABLE, XZUtils.getCachedXZAvailability());
+        } finally {
+            XZUtils.setCacheXZAvailablity(true);
+        }
     }
 
 }

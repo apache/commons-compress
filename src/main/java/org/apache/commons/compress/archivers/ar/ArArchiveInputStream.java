@@ -25,6 +25,7 @@ import java.io.InputStream;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
+import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * Implements the "ar" archive format as an input stream.
@@ -81,21 +82,14 @@ public class ArArchiveInputStream extends ArchiveInputStream {
     public ArArchiveEntry getNextArEntry() throws IOException {
         if (currentEntry != null) {
             final long entryEnd = entryOffset + currentEntry.getLength();
-            while (offset < entryEnd) {
-                int x = read();
-                if (x == -1) {
-                    // hit EOF before previous entry was complete
-                    // TODO: throw an exception instead?
-                    return null;
-                }
-            }
+            IOUtils.skip(this, entryEnd - offset);
             currentEntry = null;
         }
 
         if (offset == 0) {
             final byte[] expected = ArchiveUtils.toAsciiBytes(ArArchiveEntry.HEADER);
             final byte[] realized = new byte[expected.length];
-            final int read = read(realized);
+            final int read = IOUtils.readFully(this, realized);
             if (read != expected.length) {
                 throw new IOException("failed to read header. Occured at byte: " + getBytesRead());
             }
@@ -115,18 +109,18 @@ public class ArArchiveInputStream extends ArchiveInputStream {
             return null;
         }
 
-        read(NAME_BUF);
-        read(LAST_MODIFIED_BUF);
-        read(ID_BUF);
+        IOUtils.readFully(this, NAME_BUF);
+        IOUtils.readFully(this, LAST_MODIFIED_BUF);
+        IOUtils.readFully(this, ID_BUF);
         int userId = asInt(ID_BUF, true);
-        read(ID_BUF);
-        read(FILE_MODE_BUF);
-        read(LENGTH_BUF);
+        IOUtils.readFully(this, ID_BUF);
+        IOUtils.readFully(this, FILE_MODE_BUF);
+        IOUtils.readFully(this, LENGTH_BUF);
 
         {
             final byte[] expected = ArchiveUtils.toAsciiBytes(ArArchiveEntry.TRAILER);
             final byte[] realized = new byte[expected.length];
-            final int read = read(realized);
+            final int read = IOUtils.readFully(this, realized);
             if (read != expected.length) {
                 throw new IOException("failed to read entry trailer. Occured at byte: " + getBytesRead());
             }
@@ -152,8 +146,8 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         if (temp.endsWith("/")) { // GNU terminator
             temp = temp.substring(0, temp.length() - 1);
         } else if (isGNULongName(temp)) {
-            int offset = Integer.parseInt(temp.substring(1));// get the offset
-            temp = getExtendedName(offset); // convert to the long name
+            int off = Integer.parseInt(temp.substring(1));// get the offset
+            temp = getExtendedName(off); // convert to the long name
         } else if (isBSDLongName(temp)) {
             temp = getBSDLongName(temp);
             // entry length contained the length of the file name in
@@ -259,12 +253,12 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         }
         final int ret = this.input.read(b, off, toRead);
         count(ret);
-        offset += (ret > 0 ? ret : 0);
+        offset += ret > 0 ? ret : 0;
         return ret;
     }
 
     /**
-     * Checks if the signature matches ASCII "!<arch>" followed by a single LF
+     * Checks if the signature matches ASCII "!&lt;arch&gt;" followed by a single LF
      * control character
      * 
      * @param signature
@@ -351,14 +345,8 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         int nameLen =
             Integer.parseInt(bsdLongName.substring(BSD_LONGNAME_PREFIX_LEN));
         byte[] name = new byte[nameLen];
-        int read = 0, readNow = 0;
-        while ((readNow = input.read(name, read, nameLen - read)) >= 0) {
-            read += readNow;
-            count(readNow);
-            if (read == nameLen) {
-                break;
-            }
-        }
+        int read = IOUtils.readFully(input, name);
+        count(read);
         if (read != nameLen) {
             throw new EOFException();
         }
@@ -396,7 +384,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
     private ArArchiveEntry readGNUStringTable(byte[] length) throws IOException {
         int bufflen = asInt(length); // Assume length will fit in an int
         namebuffer = new byte[bufflen];
-        int read = read(namebuffer, 0, bufflen);
+        int read = IOUtils.readFully(this, namebuffer, 0, bufflen);
         if (read != bufflen){
             throw new IOException("Failed to read complete // record: expected="
                                   + bufflen + " read=" + read);

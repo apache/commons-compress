@@ -26,5 +26,5 @@ class SubStreamsInfo {
     /// Whether CRC is present for each unpacked stream.
     BitSet hasCrc;
     /// CRCs of unpacked streams, if present.
-    int[] crcs;
+    long[] crcs;
 }

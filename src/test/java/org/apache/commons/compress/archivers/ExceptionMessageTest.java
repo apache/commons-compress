@@ -1,7 +1,7 @@
 package org.apache.commons.compress.archivers;
 
-import org.junit.Assert;
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -21,7 +21,7 @@ import junit.framework.TestCase;
  * specific language governing permissions and limitations
  * under the License.
  */
-public class ExceptionMessageTest extends TestCase {
+public class ExceptionMessageTest {
 
     private static final String ARCHIVER_NULL_MESSAGE = "Archivername must not be null.";
 
@@ -30,45 +30,49 @@ public class ExceptionMessageTest extends TestCase {
     private static final String OUTPUTSTREAM_NULL_MESSAGE = "OutputStream must not be null.";
 
 
+    @Test
     public void testMessageWhenArchiverNameIsNull_1(){
         try{
             new ArchiveStreamFactory().createArchiveInputStream(null, System.in);
             fail("Should raise an IllegalArgumentException.");
         }catch (IllegalArgumentException e) {
-            Assert.assertEquals(ARCHIVER_NULL_MESSAGE, e.getMessage());
+            assertEquals(ARCHIVER_NULL_MESSAGE, e.getMessage());
         } catch (ArchiveException e) {
             fail("ArchiveException not expected");
         }
     }
 
+    @Test
     public void testMessageWhenInputStreamIsNull(){
         try{
             new ArchiveStreamFactory().createArchiveInputStream("zip", null);
             fail("Should raise an IllegalArgumentException.");
         }catch (IllegalArgumentException e) {
-            Assert.assertEquals(INPUTSTREAM_NULL_MESSAGE, e.getMessage());
+            assertEquals(INPUTSTREAM_NULL_MESSAGE, e.getMessage());
         } catch (ArchiveException e) {
             fail("ArchiveException not expected");
         }
     }
 
+    @Test
     public void testMessageWhenArchiverNameIsNull_2(){
         try{
             new ArchiveStreamFactory().createArchiveOutputStream(null, System.out);
             fail("Should raise an IllegalArgumentException.");
         } catch (IllegalArgumentException e) {
-            Assert.assertEquals(ARCHIVER_NULL_MESSAGE, e.getMessage());
+            assertEquals(ARCHIVER_NULL_MESSAGE, e.getMessage());
         } catch (ArchiveException e){
             fail("ArchiveException not expected");
         }
     }
 
+    @Test
     public void testMessageWhenOutputStreamIsNull(){
         try{
             new ArchiveStreamFactory().createArchiveOutputStream("zip", null);
             fail("Should raise an IllegalArgumentException.");
         } catch (IllegalArgumentException e) {
-            Assert.assertEquals(OUTPUTSTREAM_NULL_MESSAGE, e.getMessage());
+            assertEquals(OUTPUTSTREAM_NULL_MESSAGE, e.getMessage());
         } catch (ArchiveException e) {
             fail("ArchiveException not expected");
         }

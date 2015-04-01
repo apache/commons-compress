@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress;
 
+import static org.junit.Assert.*;
 import java.io.BufferedInputStream;
 import java.io.Closeable;
 import java.io.File;
@@ -30,18 +31,19 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-
-import junit.framework.TestCase;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.After;
+import org.junit.Before;
 
-public abstract class AbstractTestCase extends TestCase {
+public abstract class AbstractTestCase {
 
     protected File dir;
     protected File resultDir;
@@ -51,16 +53,8 @@ public abstract class AbstractTestCase extends TestCase {
 
     protected ArchiveStreamFactory factory = new ArchiveStreamFactory();
 
-    public AbstractTestCase() {
-        super();
-    }
-
-    public AbstractTestCase(String name) {
-        super(name);
-    }
-
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         dir = mkdir("dir");
         resultDir = mkdir("dir-result");
         archive = null;
@@ -90,8 +84,8 @@ public abstract class AbstractTestCase extends TestCase {
         return new File(uri);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         rmdir(dir);
         rmdir(resultDir);
         dir = resultDir = null;
@@ -122,8 +116,7 @@ public abstract class AbstractTestCase extends TestCase {
     }
 
     private static final boolean ON_WINDOWS =
-        System.getProperty("os.name").toLowerCase(Locale.ENGLISH)
-        .indexOf("windows") > -1;
+            System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("windows");
 
     /**
      * Accommodate Windows bug encountered in both Sun and IBM JDKs.
@@ -361,9 +354,7 @@ public abstract class AbstractTestCase extends TestCase {
             }
             in.close();
             if (expected != null && expected.size() > 0) {
-                for (String name : expected) {
-                    fail("Expected entry: " + name);
-                }
+                fail(expected.size() + " missing entries: " + Arrays.toString(expected.toArray()));
             }
             if (expected != null) {
                 assertEquals(0, expected.size());
@@ -393,8 +384,7 @@ public abstract class AbstractTestCase extends TestCase {
      * element of the two element array).
      */
     protected File[] createTempDirAndFile() throws IOException {
-        File tmpDir = mkdir("testdir");
-        tmpDir.deleteOnExit();
+        File tmpDir = createTempDir();
         File tmpFile = File.createTempFile("testfile", "", tmpDir);
         tmpFile.deleteOnExit();
         FileOutputStream fos = new FileOutputStream(tmpFile);
@@ -406,6 +396,12 @@ public abstract class AbstractTestCase extends TestCase {
         }
     }
 
+    protected File createTempDir() throws IOException {
+        File tmpDir = mkdir("testdir");
+        tmpDir.deleteOnExit();
+        return tmpDir;
+    }
+
     protected void closeQuietly(Closeable closeable){
         if (closeable != null) {
             try {
@@ -414,5 +410,9 @@ public abstract class AbstractTestCase extends TestCase {
                 // ignored
             }
         }
+    }
+
+    protected static interface StreamWrapper<I extends InputStream> {
+        I wrap(InputStream in) throws Exception;
     }
 }

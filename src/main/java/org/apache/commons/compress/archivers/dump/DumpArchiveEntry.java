@@ -114,6 +114,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * #define EXT2_XATTR_MAGIC        0xEA020000  // block EA
  * #define EXT2_XATTR_MAGIC2       0xEA020001  // in inode EA
  * </pre>
+ * <p>
  * The fields in <b>bold</b> are the same for all blocks. (This permitted
  * multiple dumps to be written to a single tape.)
  * </p>
@@ -131,7 +132,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  *
  * //
  * // This is the new (4.4) BSD inode structure
- * // copied from the FreeBSD 2.0 <ufs/ufs/dinode.h> include file
+ * // copied from the FreeBSD 2.0 &lt;ufs/ufs/dinode.h&gt; include file
  * //
  * struct new_bsd_inode {
  *   __u16       di_mode;           // file type, standard Unix permissions
@@ -154,6 +155,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  *   __s32       di_spare[2];       // unused
  * };
  * </pre>
+ * <p>
  * It is important to note that the header DOES NOT have the name of the
  * file. It can't since hard links mean that you may have multiple filenames
  * for a single physical file. You must read the contents of the directory
@@ -163,16 +165,16 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * <p>
  * The C structure that indicates if a specific block is a real block
  * that contains data or is a sparse block that is not persisted to the
- * disk is:
+ * disk is:</p>
  * <pre>
  * #define TP_BSIZE    1024
  * #define TP_NINDIR   (TP_BSIZE/2)
  *
  * union u_data {
- *   char    s_addrs[TP_NINDIR]; // 1 => data; 0 => hole in inode
+ *   char    s_addrs[TP_NINDIR]; // 1 =&gt; data; 0 =&gt; hole in inode
  *   int32_t s_inos[TP_NINOS];   // table of first inode on each volume
  * } u_data;
- * </pre></p>
+ * </pre>
  *
  * @NotThreadSafe
  */
@@ -586,7 +588,6 @@ public class DumpArchiveEntry implements ArchiveEntry {
         this.name = name;
     }
 
-    /** {@inheritDoc} */
     public Date getLastModifiedDate() {
         return new Date(mtime);
     }

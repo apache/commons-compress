@@ -26,13 +26,48 @@
     <download-page rdf:resource="http://commons.apache.org/compress/download_compress.cgi"/>
     <asfext:pmc rdf:resource="http://commons.apache.org/"/>
     <shortdesc xml:lang="en">Commons Compress</shortdesc>
-    <description xml:lang="en">Commons Compress: working with zip, ar, jar, bz2, cpio, tar, gz, dump, pack200 and xz files.</description>
+    <description xml:lang="en">Commons Compress: working with zip, ar, jar, bz2, cpio, tar, gz, dump, pack200, lzma, 7z, arj and xz files.</description>
     <repository>
       <SVNRepository>
         <browse rdf:resource="http://svn.apache.org/repos/asf/commons/proper/compress/trunk"/>
         <location rdf:resource="http://svn.apache.org/repos/asf/commons/proper/compress"/>
       </SVNRepository>
     </repository>
+    <release>
+      <Version>
+        <name>commons-compress</name>
+        <created>2014-10-09</created>
+        <revision>1.9</revision>
+      </Version>
+    </release>
+    <release>
+      <Version>
+        <name>commons-compress</name>
+        <created>2014-05-14</created>
+        <revision>1.8.1</revision>
+      </Version>
+    </release>
+    <release>
+      <Version>
+        <name>commons-compress</name>
+        <created>2014-03-12</created>
+        <revision>1.8</revision>
+      </Version>
+    </release>
+    <release>
+      <Version>
+        <name>commons-compress</name>
+        <created>2014-01-20</created>
+        <revision>1.7</revision>
+      </Version>
+    </release>
+    <release>
+      <Version>
+        <name>commons-compress</name>
+        <created>2013-10-26</created>
+        <revision>1.6</revision>
+      </Version>
+    </release>
     <release>
       <Version>
         <name>commons-compress</name>

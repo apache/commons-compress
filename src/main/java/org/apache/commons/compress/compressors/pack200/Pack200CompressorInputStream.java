@@ -159,31 +159,26 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
         jarOut.close();
     }
 
-    /** {@inheritDoc} */
     @Override
     public int read() throws IOException {
         return streamBridge.getInput().read();
     }
 
-    /** {@inheritDoc} */
     @Override
     public int read(byte[] b) throws IOException {
         return streamBridge.getInput().read(b);
     }
 
-    /** {@inheritDoc} */
     @Override
     public int read(byte[] b, int off, int count) throws IOException {
         return streamBridge.getInput().read(b, off, count);
     }
 
-    /** {@inheritDoc} */
     @Override
     public int available() throws IOException {
         return streamBridge.getInput().available();
     }
 
-    /** {@inheritDoc} */
     @Override
     public boolean markSupported() {
         try {
@@ -193,7 +188,6 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
         }
     }
 
-    /** {@inheritDoc} */
     @Override
     public void mark(int limit) {
         try {
@@ -203,13 +197,11 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
         }
     }
 
-    /** {@inheritDoc} */
     @Override
     public void reset() throws IOException {
         streamBridge.getInput().reset();
     }
 
-    /** {@inheritDoc} */
     @Override
     public long skip(long count) throws IOException {
         return streamBridge.getInput().skip(count);

@@ -52,7 +52,7 @@ public class LZMACompressorInputStream extends CompressorInputStream {
     @Override
     public int read() throws IOException {
         int ret = in.read();
-        count(ret == -1 ? -1 : 1);
+        count(ret == -1 ? 0 : 1);
         return ret;
     }
 
@@ -80,5 +80,37 @@ public class LZMACompressorInputStream extends CompressorInputStream {
     @Override
     public void close() throws IOException {
         in.close();
+    }
+
+    /**
+     * Checks if the signature matches what is expected for an lzma file.
+     * 
+     * @param signature
+     *            the bytes to check
+     * @param length
+     *            the number of bytes to check
+     * @return true, if this stream is an lzma  compressed stream, false otherwise
+     * 
+     * @since 1.10
+     */
+    public static boolean matches(byte[] signature, int length) {
+
+        if (signature == null || length < 3) {
+            return false;
+        }
+
+        if (signature[0] != 0x5d) {
+            return false;
+        }
+
+        if (signature[1] != 0) {
+            return false;
+        }
+
+        if (signature[2] != 0) {
+            return false;
+        }
+
+        return true;
     }
 }

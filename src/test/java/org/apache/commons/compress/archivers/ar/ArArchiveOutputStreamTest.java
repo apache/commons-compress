@@ -18,6 +18,8 @@
 
 package org.apache.commons.compress.archivers.ar;
 
+import static org.junit.Assert.*;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,9 +28,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.compress.AbstractTestCase;
+import org.junit.Test;
 
 public class ArArchiveOutputStreamTest extends AbstractTestCase {
 
+    @Test
     public void testLongFileNamesCauseExceptionByDefault() {
         ArArchiveOutputStream os = null;
         try {
@@ -44,6 +48,7 @@ public class ArArchiveOutputStreamTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testLongFileNamesWorkUsingBSDDialect() throws Exception {
         FileOutputStream fos = null;
         ArArchiveOutputStream os = null;

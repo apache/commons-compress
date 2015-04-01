@@ -134,7 +134,7 @@ public class ExtraFieldUtils {
         LOOP:
         while (start <= data.length - WORD) {
             ZipShort headerId = new ZipShort(data, start);
-            int length = (new ZipShort(data, start + 2)).getValue();
+            int length = new ZipShort(data, start + 2).getValue();
             if (start + WORD + length > data.length) {
                 switch(onUnparseableData.getKey()) {
                 case UnparseableExtraField.THROW_KEY:
@@ -176,11 +176,11 @@ public class ExtraFieldUtils {
                 }
                 v.add(ze);
             } catch (InstantiationException ie) {
-                throw new ZipException(ie.getMessage());
+                throw (ZipException) new ZipException(ie.getMessage()).initCause(ie);
             } catch (IllegalAccessException iae) {
-                throw new ZipException(iae.getMessage());
+                throw (ZipException) new ZipException(iae.getMessage()).initCause(iae);
             }
-            start += (length + WORD);
+            start += length + WORD;
         }
 
         ZipExtraField[] result = new ZipExtraField[v.size()];
@@ -210,13 +210,18 @@ public class ExtraFieldUtils {
                              0, result, start, 2);
             System.arraycopy(data[i].getLocalFileDataLength().getBytes(),
                              0, result, start + 2, 2);
+            start += WORD;
             byte[] local = data[i].getLocalFileDataData();
-            System.arraycopy(local, 0, result, start + WORD, local.length);
-            start += (local.length + WORD);
+            if (local != null) {
+                System.arraycopy(local, 0, result, start, local.length);
+                start += local.length;
+            }
         }
         if (lastIsUnparseableHolder) {
             byte[] local = data[data.length - 1].getLocalFileDataData();
-            System.arraycopy(local, 0, result, start, local.length);
+            if (local != null) {
+                System.arraycopy(local, 0, result, start, local.length);
+            }
         }
         return result;
     }
@@ -243,13 +248,18 @@ public class ExtraFieldUtils {
                              0, result, start, 2);
             System.arraycopy(data[i].getCentralDirectoryLength().getBytes(),
                              0, result, start + 2, 2);
+            start += WORD;
             byte[] local = data[i].getCentralDirectoryData();
-            System.arraycopy(local, 0, result, start + WORD, local.length);
-            start += (local.length + WORD);
+            if (local != null) {
+                System.arraycopy(local, 0, result, start, local.length);
+                start += local.length;
+            }
         }
         if (lastIsUnparseableHolder) {
             byte[] local = data[data.length - 1].getCentralDirectoryData();
-            System.arraycopy(local, 0, result, start, local.length);
+            if (local != null) {
+                System.arraycopy(local, 0, result, start, local.length);
+            }
         }
         return result;
     }

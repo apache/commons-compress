@@ -27,15 +27,15 @@ import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
  * Holds size and other extended information for entries that use Zip64
  * features.
  *
- * <p>See {@link
- * "http://www.pkware.com/documents/casestudies/APPNOTE.TXT PKWARE's
- * APPNOTE.TXT, section 4.5.3"}.</p>
- *
  * <p>Currently Commons Compress doesn't support encrypting the
- * central directory so the note about masking doesn't apply.</p>
+ * central directory so the note in APPNOTE.TXT about masking doesn't
+ * apply.</p>
  *
  * <p>The implementation relies on data being read from the local file
  * header and assumes that both size values are always present.</p>
+ *
+ * @see <a href="http://www.pkware.com/documents/casestudies/APPNOTE.TXT">PKWARE
+ * APPNOTE.TXT, section 4.5.3</a>
  *
  * @since 1.2
  * @NotThreadSafe
@@ -101,17 +101,14 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
         this.diskStart = diskStart;
     }
 
-    /** {@inheritDoc} */
     public ZipShort getHeaderId() {
         return HEADER_ID;
     }
 
-    /** {@inheritDoc} */
     public ZipShort getLocalFileDataLength() {
         return new ZipShort(size != null ? 2 * DWORD : 0);
     }
 
-    /** {@inheritDoc} */
     public ZipShort getCentralDirectoryLength() {
         return new ZipShort((size != null ? DWORD : 0)
                             + (compressedSize != null ? DWORD : 0)
@@ -119,7 +116,6 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
                             + (diskStart != null ? WORD : 0));
     }
 
-    /** {@inheritDoc} */
     public byte[] getLocalFileDataData() {
         if (size != null || compressedSize != null) {
             if (size == null || compressedSize == null) {
@@ -132,7 +128,6 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
         return EMPTY;
     }
 
-    /** {@inheritDoc} */
     public byte[] getCentralDirectoryData() {
         byte[] data = new byte[getCentralDirectoryLength().getValue()];
         int off = addSizes(data);
@@ -147,7 +142,6 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
         return data;
     }
 
-    /** {@inheritDoc} */
     public void parseFromLocalFileData(byte[] buffer, int offset, int length)
         throws ZipException {
         if (length == 0) {
@@ -177,7 +171,6 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
         }
     }
 
-    /** {@inheritDoc} */
     public void parseFromCentralDirectoryData(byte[] buffer, int offset,
                                               int length)
         throws ZipException {

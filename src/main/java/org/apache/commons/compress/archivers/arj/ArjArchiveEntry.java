@@ -28,6 +28,7 @@ import org.apache.commons.compress.archivers.zip.ZipUtil;
  * An entry in an ARJ archive.
  * 
  * @NotThreadSafe
+ * @since 1.6
  */
 public class ArjArchiveEntry implements ArchiveEntry {
     private final LocalFileHeader localFileHeader;
@@ -40,6 +41,11 @@ public class ArjArchiveEntry implements ArchiveEntry {
         this.localFileHeader = localFileHeader;
     }
 
+    /**
+     * Get this entry's name.
+     *
+     * @return This entry's name.
+     */
     public String getName() {
         if ((localFileHeader.arjFlags & LocalFileHeader.Flags.PATHSYM) != 0) {
             return localFileHeader.name.replaceAll("/",
@@ -49,16 +55,93 @@ public class ArjArchiveEntry implements ArchiveEntry {
         }
     }
 
+    /**
+     * Get this entry's file size.
+     *
+     * @return This entry's file size.
+     */
     public long getSize() {
         return localFileHeader.originalSize;
     }
 
+    /** True if the entry refers to a directory */
     public boolean isDirectory() {
         return localFileHeader.fileType == LocalFileHeader.FileTypes.DIRECTORY;
     }
 
+    /**
+     * The last modified date of the entry.
+     *
+     * <p>Note the interpretation of time is different depending on
+     * the HostOS that has created the archive.  While an OS that is
+     * {@link #isHostOsUnix considered to be Unix} stores time in a
+     * timezone independent manner, other platforms only use the local
+     * time.  I.e. if an archive has been created at midnight UTC on a
+     * machine in timezone UTC this method will return midnight
+     * regardless of timezone if the archive has been created on a
+     * non-Unix system and a time taking the current timezone into
+     * account if the archive has beeen created on Unix.</p>
+     */
     public Date getLastModifiedDate() {
-        return new Date(ZipUtil.dosToJavaTime(
-                0xffffFFFFL & localFileHeader.dateTimeModified));
+        long ts = isHostOsUnix() ? localFileHeader.dateTimeModified * 1000l
+            : ZipUtil.dosToJavaTime(0xFFFFFFFFL & localFileHeader.dateTimeModified);
+        return new Date(ts);
     }
+
+    /**
+     * File mode of this entry.
+     *
+     * <p>The format depends on the host os that created the entry.</p>
+     */
+    public int getMode() {
+        return localFileHeader.fileAccessMode;
+    }
+
+    /**
+     * File mode of this entry as Unix stat value.
+     *
+     * <p>Will only be non-zero of the host os was UNIX.
+     */
+    public int getUnixMode() {
+        return isHostOsUnix() ? getMode() : 0;
+    }
+
+    /**
+     * The operating system the archive has been created on.
+     * @see HostOs
+     */
+    public int getHostOs() {
+        return localFileHeader.hostOS;
+    }
+
+    /**
+     * Is the operating system the archive has been created on one
+     * that is considered a UNIX OS by arj?
+     */
+    public boolean isHostOsUnix() {
+        return getHostOs() == HostOs.UNIX || getHostOs() == HostOs.NEXT;
+    }
+
+    int getMethod() {
+        return localFileHeader.method;
+    }
+
+    /**
+     * The known values for HostOs.
+     */
+    public static class HostOs {
+        public static final int DOS = 0;
+        public static final int PRIMOS = 1;
+        public static final int UNIX = 2;
+        public static final int AMIGA = 3;
+        public static final int MAC_OS = 4;
+        public static final int OS_2 = 5;
+        public static final int APPLE_GS = 6;
+        public static final int ATARI_ST = 7;
+        public static final int NEXT = 8;
+        public static final int VAX_VMS = 9;
+        public static final int WIN95 = 10;
+        public static final int WIN32 = 11;
+    }
+    
 }

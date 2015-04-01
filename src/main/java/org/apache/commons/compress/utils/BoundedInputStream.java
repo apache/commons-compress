@@ -20,10 +20,21 @@ package org.apache.commons.compress.utils;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * A stream that limits reading from a wrapped stream to a given number of bytes.
+ * @NotThreadSafe
+ * @since 1.6
+ */
 public class BoundedInputStream extends InputStream {
     private final InputStream in;
     private long bytesRemaining;
     
+    /**
+     * Creates the stream that will at most read the given amount of
+     * bytes from the given stream.
+     * @param in the stream to read from
+     * @param size the maximum amount of bytes to read
+     */
     public BoundedInputStream(final InputStream in, final long size) {
         this.in = in;
         bytesRemaining = size;
@@ -57,5 +68,7 @@ public class BoundedInputStream extends InputStream {
 
     @Override
     public void close() {
+        // there isn't anything to close in this stream and the nested
+        // stream is controlled externally
     }
 }

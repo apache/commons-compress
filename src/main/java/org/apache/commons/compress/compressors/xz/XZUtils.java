@@ -31,12 +31,34 @@ public class XZUtils {
 
     private static final FileNameUtil fileNameUtil;
 
+    /**
+     * XZ Header Magic Bytes begin a XZ file.
+     *
+     * <p>This is a copy of {@code org.tukaani.xz.XZ.HEADER_MAGIC} in
+     * XZ for Java version 1.5.</p>
+     */
+    private static final byte[] HEADER_MAGIC = {
+        (byte) 0xFD, '7', 'z', 'X', 'Z', '\0'
+    };
+
+    static enum CachedAvailability {
+        DONT_CACHE, CACHED_AVAILABLE, CACHED_UNAVAILABLE
+    }
+
+    private static volatile CachedAvailability cachedXZAvailability;
+
     static {
         Map<String, String> uncompressSuffix = new HashMap<String, String>();
         uncompressSuffix.put(".txz", ".tar");
         uncompressSuffix.put(".xz", "");
         uncompressSuffix.put("-xz", "");
         fileNameUtil = new FileNameUtil(uncompressSuffix, ".xz");
+        cachedXZAvailability = CachedAvailability.DONT_CACHE;
+        try {
+            Class.forName("org.osgi.framework.BundleEvent");
+        } catch (Exception ex) {
+            setCacheXZAvailablity(true);
+        }
     }
 
     /** Private constructor to prevent instantiation of this utility class. */
@@ -44,10 +66,44 @@ public class XZUtils {
     }
 
     /**
+     * Checks if the signature matches what is expected for a .xz file.
+     *
+     * <p>This is more or less a copy of the version found in {@link
+     * XZCompressorInputStream} but doesn't depend on the presence of
+     * XZ for Java.</p>
+     *
+     * @param   signature     the bytes to check
+     * @param   length        the number of bytes to check
+     * @return  true if signature matches the .xz magic bytes, false otherwise
+     * @since 1.9
+     */
+    public static boolean matches(byte[] signature, int length) {
+        if (length < HEADER_MAGIC.length) {
+            return false;
+        }
+
+        for (int i = 0; i < HEADER_MAGIC.length; ++i) {
+            if (signature[i] != HEADER_MAGIC[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Are the classes required to support XZ compression available?
      * @since 1.5
      */
     public static boolean isXZCompressionAvailable() {
+        final CachedAvailability cachedResult = cachedXZAvailability;
+        if (cachedResult != CachedAvailability.DONT_CACHE) {
+            return cachedResult == CachedAvailability.CACHED_AVAILABLE;
+        }
+        return internalIsXZCompressionAvailable();
+    }
+
+    private static boolean internalIsXZCompressionAvailable() {
         try {
             XZCompressorInputStream.matches(null, 0);
             return true;
@@ -99,4 +155,25 @@ public class XZUtils {
         return fileNameUtil.getCompressedFilename(filename);
     }
 
+    /**
+     * Whether to cache the result of the XZ for Java check.
+     *
+     * <p>This defaults to {@code false} in an OSGi environment and {@code true} otherwise.</p>
+     * @param doCache whether to cache the result
+     * @since 1.9
+     */
+    public static void setCacheXZAvailablity(boolean doCache) {
+        if (!doCache) {
+            cachedXZAvailability = CachedAvailability.DONT_CACHE;
+        } else if (cachedXZAvailability == CachedAvailability.DONT_CACHE) {
+            final boolean hasXz = internalIsXZCompressionAvailable();
+            cachedXZAvailability = hasXz ? CachedAvailability.CACHED_AVAILABLE
+                : CachedAvailability.CACHED_UNAVAILABLE;
+        }
+    }
+
+    // only exists to support unit tests
+    static CachedAvailability getCachedXZAvailability() {
+        return cachedXZAvailability;
+    }
 }

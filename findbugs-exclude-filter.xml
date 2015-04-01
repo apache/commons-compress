@@ -64,16 +64,18 @@
     <Field name="summary"/>
     <Bug pattern="UWF_NULL_FIELD" />
   </Match>
-
-  <!-- Reason: exception in close swallowed in order to re-throw original -->
   <Match>
-    <Class name="org.apache.commons.compress.archivers.zip.ZipFile" />
-    <Method name="&lt;init&gt;" />
-    <Bug pattern="DE_MIGHT_IGNORE" />
+    <Class name="org.apache.commons.compress.archivers.sevenz.Folder" />
+    <Or>
+      <Field name="totalInputStreams"/>
+    </Or>
+    <Bug pattern="URF_UNREAD_FIELD" />
   </Match>
+
+  <!-- Reason: exception in close swallowed in order to re-throw original in caller -->
   <Match>
-    <Class name="org.apache.commons.compress.compressors.pack200.Pack200CompressorOutputStream" />
-    <Method name="finish" />
+    <Class name="org.apache.commons.compress.utils.IOUtils" />
+    <Method name="closeQuietly" />
     <Bug pattern="DE_MIGHT_IGNORE" />
   </Match>
 
@@ -83,6 +85,11 @@
   <Match>
     <Class name="org.apache.commons.compress.archivers.zip.ZipArchiveInputStream" />
     <Method name="closeEntry" />
+    <Bug pattern="SR_NOT_CHECKED" />
+  </Match>
+  <Match>
+    <Class name="org.apache.commons.compress.archivers.tar.TarArchiveInputStream" />
+    <Method name="getNextTarEntry" />
     <Bug pattern="SR_NOT_CHECKED" />
   </Match>
 
@@ -104,6 +111,58 @@
     <Class name="org.apache.commons.compress.compressors.pack200.TempFileCachingStreamBridge$1" />
     <Method name="&lt;init&gt;" />
     <Bug pattern="OBL_UNSATISFIED_OBLIGATION" />
+  </Match>
+
+  <!-- Reason: the contract is to use default encoding (unless told otherwise) -->
+  <Match>
+    <Class name="org.apache.commons.compress.archivers.arj.ArjArchiveInputStream" />
+    <Method name="readString" />
+    <Bug pattern="DM_DEFAULT_ENCODING" />
+  </Match>
+  <Match>
+    <Class name="org.apache.commons.compress.archivers.zip.AsiExtraField" />
+    <Or>
+      <Method name="getLocalFileDataData" />
+      <Method name="getLocalFileDataLength" />
+      <Method name="parseFromLocalFileData" />
+    </Or>
+    <Bug pattern="DM_DEFAULT_ENCODING" />
+  </Match>
+  <Match>
+    <Class name="org.apache.commons.compress.archivers.zip.FallbackZipEncoding" />
+    <Or>
+      <Method name="decode" />
+      <Method name="encode" />
+    </Or>
+    <Bug pattern="DM_DEFAULT_ENCODING" />
+  </Match>
+
+  <!-- Reason: default encoding is good enough for exception message -->
+  <Match>
+    <Class name="org.apache.commons.compress.archivers.tar.TarUtils" />
+    <Method name="exceptionMessage" />
+    <Bug pattern="DM_DEFAULT_ENCODING" />
+  </Match>
+
+  <!-- Reason: unrolled loop, all possible cases are covered -->
+  <Match>
+    <Class name="org.apache.commons.compress.compressors.snappy.PureJavaCrc32C" />
+    <Method name="update" />
+    <Bug pattern="SF_SWITCH_NO_DEFAULT" />
+  </Match>
+
+  <!-- Reason: class only adds unused always-null fields and superclass' equals is sufficient -->
+  <Match>
+    <Class name="org.apache.commons.compress.archivers.jar.JarArchiveEntry" />
+    <Method name="equals" />
+    <Bug pattern="EQ_DOESNT_OVERRIDE_EQUALS" />
+  </Match>
+  
+  <!-- Reason: failure to delete a file that may not exist. And we really don't care that much either -->
+  <Match>
+    <Class name="org.apache.commons.compress.parallel.FileBasedScatterGatherBackingStore" />
+    <Method name="close" />
+    <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE" />
   </Match>
 
 </FindBugsFilter>

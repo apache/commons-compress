@@ -34,16 +34,18 @@ public class ArchiveUtils {
     /**
      * Generates a string containing the name, isDirectory setting and size of an entry.
      * <p>
-     * For example:<br/>
-     * <tt>-    2000 main.c</tt><br/>
-     * <tt>d     100 testfiles</tt><br/>
+     * For example:
+     * <pre>
+     * -    2000 main.c
+     * d     100 testfiles
+     * </pre>
      * 
      * @return the representation of the entry
      */
     public static String toString(ArchiveEntry entry){
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(entry.isDirectory()? 'd' : '-');// c.f. "ls -l" output
-        String size = Long.toString((entry.getSize()));
+        String size = Long.toString(entry.getSize());
         sb.append(' ');
         // Pad output to 7 places, leading spaces
         for(int i=7; i > size.length(); i--){
@@ -67,7 +69,7 @@ public class ArchiveUtils {
             String expected, byte[] buffer, int offset, int length){
         byte[] buffer1;
         try {
-            buffer1 = expected.getBytes("ASCII");
+            buffer1 = expected.getBytes(CharsetNames.US_ASCII);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e); // Should not happen
         }
@@ -94,7 +96,7 @@ public class ArchiveUtils {
      */
     public static byte[] toAsciiBytes(String inputString){
         try {
-            return inputString.getBytes("ASCII");
+            return inputString.getBytes(CharsetNames.US_ASCII);
         } catch (UnsupportedEncodingException e) {
            throw new RuntimeException(e); // Should never happen
         }
@@ -108,7 +110,7 @@ public class ArchiveUtils {
      */
     public static String toAsciiString(final byte[] inputBytes){
         try {
-            return new String(inputBytes, "ASCII");
+            return new String(inputBytes, CharsetNames.US_ASCII);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e); // Should never happen
         }
@@ -124,7 +126,7 @@ public class ArchiveUtils {
      */
     public static String toAsciiString(final byte[] inputBytes, int offset, int length){
         try {
-            return new String(inputBytes, offset, length, "ASCII");
+            return new String(inputBytes, offset, length, CharsetNames.US_ASCII);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e); // Should never happen
         }
@@ -230,5 +232,22 @@ public class ArchiveUtils {
             final byte[] buffer2, final int offset2, final int length2){
         return isEqual(buffer1, offset1, length1, buffer2, offset2, length2, true);
     }
-
+    
+    /**
+     * Returns true if the first N bytes of an array are all zero
+     * 
+     * @param a
+     *            The array to check
+     * @param size
+     *            The number of characters to check (not the size of the array)
+     * @return true if the first N bytes are zero
+     */
+    public static boolean isArrayZero(byte[] a, int size) {
+        for (int i = 0; i < size; i++) {
+            if (a[i] != 0) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

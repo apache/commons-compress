@@ -17,10 +17,14 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -30,11 +34,14 @@ import java.util.TimeZone;
 import java.util.zip.ZipException;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
+import static org.apache.commons.compress.AbstractTestCase.mkdir;
+import static org.apache.commons.compress.AbstractTestCase.rmdir;
 import static org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp.ACCESS_TIME_BIT;
 import static org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp.CREATE_TIME_BIT;
 import static org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp.MODIFY_TIME_BIT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -56,9 +63,18 @@ public class X5455_ExtendedTimestampTest {
      */
     private X5455_ExtendedTimestamp xf;
 
+    private File tmpDir;
+
     @Before
     public void before() {
         xf = new X5455_ExtendedTimestamp();
+    }
+
+    @After
+    public void removeTempFiles() {
+        if (tmpDir != null) {
+            rmdir(tmpDir);
+        }
     }
 
     @Test
@@ -389,6 +405,60 @@ public class X5455_ExtendedTimestampTest {
         parseReparse((byte) -1, MAX_TIME_SECONDS, (byte) 7, MOD_AC_CR_MAX, MOD_MAX);
     }
 
+    @Test
+    public void testWriteReadRoundtrip() throws IOException {
+        tmpDir = mkdir("X5455");
+        File output = new File(tmpDir, "write_rewrite.zip");
+        final OutputStream out = new FileOutputStream(output);
+        Date d = new Date(97, 8, 24, 15, 10, 2);
+        ZipArchiveOutputStream os = null;
+        try {
+            os = new ZipArchiveOutputStream(out);
+            ZipArchiveEntry ze = new ZipArchiveEntry("foo");
+            xf.setModifyJavaTime(d);
+            xf.setFlags((byte) 1);
+            ze.addExtraField(xf);
+            os.putArchiveEntry(ze);
+            os.closeArchiveEntry();
+        } finally {
+            if (os != null) {
+                os.close();
+            }
+        }
+        out.close();
+        
+        ZipFile zf = new ZipFile(output);
+        ZipArchiveEntry ze = zf.getEntry("foo");
+        X5455_ExtendedTimestamp ext =
+            (X5455_ExtendedTimestamp) ze.getExtraField(X5455);
+        assertNotNull(ext);
+        assertTrue(ext.isBit0_modifyTimePresent());
+        assertEquals(d, ext.getModifyJavaTime());
+        zf.close();
+    }
+
+    @Test
+    public void testBitsAreSetWithTime() {
+        xf.setModifyJavaTime(new Date(1111));
+        assertTrue(xf.isBit0_modifyTimePresent());
+        assertEquals(1, xf.getFlags());
+        xf.setAccessJavaTime(new Date(2222));
+        assertTrue(xf.isBit1_accessTimePresent());
+        assertEquals(3, xf.getFlags());
+        xf.setCreateJavaTime(new Date(3333));
+        assertTrue(xf.isBit2_createTimePresent());
+        assertEquals(7, xf.getFlags());
+        xf.setModifyJavaTime(null);
+        assertFalse(xf.isBit0_modifyTimePresent());
+        assertEquals(6, xf.getFlags());
+        xf.setAccessJavaTime(null);
+        assertFalse(xf.isBit1_accessTimePresent());
+        assertEquals(4, xf.getFlags());
+        xf.setCreateJavaTime(null);
+        assertFalse(xf.isBit2_createTimePresent());
+        assertEquals(0, xf.getFlags());
+    }
+
     private void parseReparse(
             final ZipLong time,
             final byte[] expectedLocal,
@@ -410,10 +480,10 @@ public class X5455_ExtendedTimestampTest {
         System.arraycopy(almostExpectedCentral, 0, expectedCentral, 0, almostExpectedCentral.length);
         expectedCentral[0] = expectedFlags;
 
-        xf.setFlags(providedFlags);
         xf.setModifyTime(time);
         xf.setAccessTime(time);
         xf.setCreateTime(time);
+        xf.setFlags(providedFlags);
         byte[] result = xf.getLocalFileDataData();
         assertTrue(Arrays.equals(expectedLocal, result));
 
@@ -434,10 +504,10 @@ public class X5455_ExtendedTimestampTest {
         }
 
         // Do the same as above, but with Central Directory data:
-        xf.setFlags(providedFlags);
         xf.setModifyTime(time);
         xf.setAccessTime(time);
         xf.setCreateTime(time);
+        xf.setFlags(providedFlags);
         result = xf.getCentralDirectoryData();
         assertTrue(Arrays.equals(expectedCentral, result));
 

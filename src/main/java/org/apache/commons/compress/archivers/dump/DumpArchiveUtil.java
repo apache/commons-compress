@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.archivers.dump;
 
+import java.io.IOException;
+import org.apache.commons.compress.archivers.zip.ZipEncoding;
 
 /**
  * Various utilities for dump archives.
@@ -129,5 +131,15 @@ class DumpArchiveUtil {
         i += buffer[offset] & 0x000000FF;
 
         return i;
+    }
+
+    /**
+     * Decodes a byte array to a string.
+     */
+    static String decode(ZipEncoding encoding, byte[] b, int offset, int len)
+        throws IOException {
+        byte[] copy = new byte[len];
+        System.arraycopy(b, offset, copy, 0, len);
+        return encoding.decode(copy);
     }
 }

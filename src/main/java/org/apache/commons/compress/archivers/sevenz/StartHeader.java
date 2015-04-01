@@ -20,5 +20,5 @@ package org.apache.commons.compress.archivers.sevenz;
 class StartHeader {
     long nextHeaderOffset;
     long nextHeaderSize;
-    int nextHeaderCrc;
+    long nextHeaderCrc;
 }

@@ -102,7 +102,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
     }
 
     /**
-     * @return The utf-8 encoded name.
+     * @return The UTF-8 encoded name.
      */
     public byte[] getUnicodeName() {
         byte[] b = null;
@@ -114,7 +114,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
     }
 
     /**
-     * @param unicodeName The utf-8 encoded name to set.
+     * @param unicodeName The UTF-8 encoded name to set.
      */
     public void setUnicodeName(byte[] unicodeName) {
         if (unicodeName != null) {
@@ -127,7 +127,6 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
         data = null;
     }
 
-    /** {@inheritDoc} */
     public byte[] getCentralDirectoryData() {
         if (data == null) {
             this.assembleData();
@@ -140,25 +139,21 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
         return b;
     }
 
-    /** {@inheritDoc} */
     public ZipShort getCentralDirectoryLength() {
         if (data == null) {
             assembleData();
         }
-        return new ZipShort(data.length);
+        return new ZipShort(data != null ? data.length : 0);
     }
 
-    /** {@inheritDoc} */
     public byte[] getLocalFileDataData() {
         return getCentralDirectoryData();
     }
 
-    /** {@inheritDoc} */
     public ZipShort getLocalFileDataLength() {
         return getCentralDirectoryLength();
     }
 
-    /** {@inheritDoc} */
     public void parseFromLocalFileData(byte[] buffer, int offset, int length)
         throws ZipException {
 

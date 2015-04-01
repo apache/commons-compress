@@ -20,14 +20,34 @@ package org.apache.commons.compress.archivers.zip;
 /**
  * Parser/encoder for the "general purpose bit" field in ZIP's local
  * file and central directory headers.
+ * 
  * @since 1.1
  * @NotThreadSafe
  */
-public final class GeneralPurposeBit {
+public final class GeneralPurposeBit implements Cloneable {
+
     /**
      * Indicates that the file is encrypted.
      */
     private static final int ENCRYPTION_FLAG = 1 << 0;
+
+    /**
+     * Indicates the size of the sliding dictionary used by the compression method 6 (imploding).
+     * <ul>
+     *   <li>0: 4096 bytes</li>
+     *   <li>1: 8192 bytes</li>
+     * </ul>
+     */
+    private static final int SLIDING_DICTIONARY_SIZE_FLAG = 1 << 1;
+
+    /**
+     * Indicates the number of Shannon-Fano trees used by the compression method 6 (imploding).
+     * <ul>
+     *   <li>0: 2 trees (lengths, distances)</li>
+     *   <li>1: 3 trees (literals, lengths, distances)</li>
+     * </ul>
+     */
+    private static final int NUMBER_OF_SHANNON_FANO_TREES_FLAG = 1 << 2;
 
     /**
      * Indicates that a data descriptor stored after the file contents
@@ -41,7 +61,7 @@ public final class GeneralPurposeBit {
     private static final int STRONG_ENCRYPTION_FLAG = 1 << 6;
 
     /**
-     * Indicates that filenames are written in utf-8.
+     * Indicates that filenames are written in UTF-8.
      *
      * <p>The only reason this is public is that {@link
      * ZipArchiveOutputStream#EFS_FLAG} was public in Apache Commons
@@ -53,6 +73,8 @@ public final class GeneralPurposeBit {
     private boolean dataDescriptorFlag = false;
     private boolean encryptionFlag = false;
     private boolean strongEncryptionFlag = false;
+    private int slidingDictionarySize;
+    private int numberOfShannonFanoTrees;
 
     public GeneralPurposeBit() {
     }
@@ -119,22 +141,51 @@ public final class GeneralPurposeBit {
     }
 
     /**
+     * Returns the sliding dictionary size used by the compression method 6 (imploding).
+     */
+    int getSlidingDictionarySize() {
+        return slidingDictionarySize;
+    }
+
+    /**
+     * Returns the number of trees used by the compression method 6 (imploding).
+     */
+    int getNumberOfShannonFanoTrees() {
+        return numberOfShannonFanoTrees;
+    }
+
+    /**
      * Encodes the set bits in a form suitable for ZIP archives.
      */
     public byte[] encode() {
-        return 
-            ZipShort.getBytes((dataDescriptorFlag ? DATA_DESCRIPTOR_FLAG : 0)
-                              |
-                              (languageEncodingFlag ? UFT8_NAMES_FLAG : 0)
-                              |
-                              (encryptionFlag ? ENCRYPTION_FLAG : 0)
-                              |
-                              (strongEncryptionFlag ? STRONG_ENCRYPTION_FLAG : 0)
-                              );
+        byte[] result = new byte[2];
+        encode(result, 0);
+        return result;
+    }
+
+
+    /**
+     * Encodes the set bits in a form suitable for ZIP archives.
+     *
+     * @param buf the output buffer
+     * @param  offset
+     *         The offset within the output buffer of the first byte to be written.
+     *         must be non-negative and no larger than <tt>buf.length-2</tt>
+     */
+    public void encode(byte[] buf, int offset) {
+                ZipShort.putShort((dataDescriptorFlag ? DATA_DESCRIPTOR_FLAG : 0)
+                        |
+                        (languageEncodingFlag ? UFT8_NAMES_FLAG : 0)
+                        |
+                        (encryptionFlag ? ENCRYPTION_FLAG : 0)
+                        |
+                        (strongEncryptionFlag ? STRONG_ENCRYPTION_FLAG : 0)
+                        , buf, offset);
     }
 
     /**
      * Parses the supported flags from the given archive data.
+     * 
      * @param data local file header or a central directory entry.
      * @param offset offset at which the general purpose bit starts
      */
@@ -143,9 +194,10 @@ public final class GeneralPurposeBit {
         GeneralPurposeBit b = new GeneralPurposeBit();
         b.useDataDescriptor((generalPurposeFlag & DATA_DESCRIPTOR_FLAG) != 0);
         b.useUTF8ForNames((generalPurposeFlag & UFT8_NAMES_FLAG) != 0);
-        b.useStrongEncryption((generalPurposeFlag & STRONG_ENCRYPTION_FLAG)
-                              != 0);
+        b.useStrongEncryption((generalPurposeFlag & STRONG_ENCRYPTION_FLAG) != 0);
         b.useEncryption((generalPurposeFlag & ENCRYPTION_FLAG) != 0);
+        b.slidingDictionarySize = (generalPurposeFlag & SLIDING_DICTIONARY_SIZE_FLAG) != 0 ? 8192 : 4096;
+        b.numberOfShannonFanoTrees = (generalPurposeFlag & NUMBER_OF_SHANNON_FANO_TREES_FLAG) != 0 ? 3 : 2;
         return b;
     }
 
@@ -167,5 +219,15 @@ public final class GeneralPurposeBit {
             && g.strongEncryptionFlag == strongEncryptionFlag
             && g.languageEncodingFlag == languageEncodingFlag
             && g.dataDescriptorFlag == dataDescriptorFlag;
+    }
+
+    @Override
+    public Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException ex) {
+            // impossible
+            throw new RuntimeException("GeneralPurposeBit is not Cloneable?", ex);
+        }
     }
 }

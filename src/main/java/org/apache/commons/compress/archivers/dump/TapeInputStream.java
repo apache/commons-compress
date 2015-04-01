@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
+import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * Filter stream that mimics a physical tape drive capable of compressing
@@ -237,6 +238,8 @@ class TapeInputStream extends FilterInputStream {
     public byte[] readRecord() throws IOException {
         byte[] result = new byte[recordSize];
 
+        // the read implementation will loop internally as long as
+        // input is available
         if (-1 == read(result, 0, result.length)) {
             throw new ShortFileException();
         }
@@ -333,16 +336,9 @@ class TapeInputStream extends FilterInputStream {
      */
     private boolean readFully(byte[] b, int off, int len)
         throws IOException {
-        int count = 0;
-
-        while (count < len) {
-            int n = in.read(b, off + count, len - count);
-
-            if (n == -1) {
-                throw new ShortFileException();
-            }
-
-            count += n;
+        int count = IOUtils.readFully(in, b, off, len);
+        if (count < len) {
+            throw new ShortFileException();
         }
 
         return true;

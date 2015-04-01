@@ -18,16 +18,18 @@
  */
 package org.apache.commons.compress.archivers.dump;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.*;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveException;
+import org.junit.Test;
 
 public class DumpArchiveInputStreamTest extends AbstractTestCase {
 
+    @Test
     public void testNotADumpArchive() throws Exception {
         FileInputStream is = new FileInputStream(getFile("bla.zip"));
         try {
@@ -41,6 +43,7 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testNotADumpArchiveButBigEnough() throws Exception {
         FileInputStream is = new FileInputStream(getFile("zip64support.tar.bz2"));
         try {
@@ -54,6 +57,7 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testConsumesArchiveCompletely() throws Exception {
         InputStream is = DumpArchiveInputStreamTest.class
             .getResourceAsStream("/archive_with_trailer.dump");

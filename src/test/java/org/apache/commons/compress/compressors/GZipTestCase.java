@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.compressors;
 
+import static org.junit.Assert.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -26,13 +28,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.zip.Deflater;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
+import org.apache.commons.compress.compressors.gzip.GzipParameters;
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.Assert;
+import org.junit.Test;
 
 public final class GZipTestCase extends AbstractTestCase {
 
+    @Test
     public void testGzipCreation()  throws Exception {
         final File input = getFile("test1.xml");
         final File output = new File(dir, "test1.xml.gz");
@@ -50,6 +59,7 @@ public final class GZipTestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testGzipUnarchive() throws Exception {
         final File input = getFile("bla.tgz");
         final File output = new File(dir, "bla.tar");
@@ -72,6 +82,7 @@ public final class GZipTestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testConcatenatedStreamsReadFirstOnly() throws Exception {
         final File input = getFile("multiple.gz");
         final InputStream is = new FileInputStream(input);
@@ -89,6 +100,7 @@ public final class GZipTestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testConcatenatedStreamsReadFully() throws Exception {
         final File input = getFile("multiple.gz");
         final InputStream is = new FileInputStream(input);
@@ -111,6 +123,7 @@ public final class GZipTestCase extends AbstractTestCase {
     /**
      * @see "https://issues.apache.org/jira/browse/COMPRESS-84"
      */
+    @Test
     public void testCorruptedInput() throws Exception {
         InputStream in = null;
         OutputStream out = null;
@@ -146,5 +159,159 @@ public final class GZipTestCase extends AbstractTestCase {
                 in.close();
             }
         }
+    }
+
+    @Test
+    public void testInteroperabilityWithGzipCompressorInputStream() throws Exception {
+        FileInputStream fis = new FileInputStream(getFile("test3.xml"));
+        byte[] content;
+        try {
+            content = IOUtils.toByteArray(fis);
+        } finally {
+            fis.close();
+        }
+        
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+
+        GzipParameters parameters = new GzipParameters();
+        parameters.setCompressionLevel(Deflater.BEST_COMPRESSION);
+        parameters.setOperatingSystem(3);
+        parameters.setFilename("test3.xml");
+        parameters.setComment("Test file");
+        parameters.setModificationTime(System.currentTimeMillis());
+        GzipCompressorOutputStream out = new GzipCompressorOutputStream(bout, parameters);
+        out.write(content);
+        out.flush();
+        out.close();
+
+        GzipCompressorInputStream in = new GzipCompressorInputStream(new ByteArrayInputStream(bout.toByteArray()));
+        byte[] content2 = IOUtils.toByteArray(in);
+
+        Assert.assertArrayEquals("uncompressed content", content, content2);
+    }
+
+    @Test
+    public void testInteroperabilityWithGZIPInputStream() throws Exception {
+        FileInputStream fis = new FileInputStream(getFile("test3.xml"));
+        byte[] content;
+        try {
+            content = IOUtils.toByteArray(fis);
+        } finally {
+            fis.close();
+        }
+        
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+
+        GzipParameters parameters = new GzipParameters();
+        parameters.setCompressionLevel(Deflater.BEST_COMPRESSION);
+        parameters.setOperatingSystem(3);
+        parameters.setFilename("test3.xml");
+        parameters.setComment("Test file");
+        parameters.setModificationTime(System.currentTimeMillis());
+        GzipCompressorOutputStream out = new GzipCompressorOutputStream(bout, parameters);
+        out.write(content);
+        out.flush();
+        out.close();
+
+        GZIPInputStream in = new GZIPInputStream(new ByteArrayInputStream(bout.toByteArray()));
+        byte[] content2 = IOUtils.toByteArray(in);
+
+        Assert.assertArrayEquals("uncompressed content", content, content2);
+    }
+
+    @Test
+    public void testInvalidCompressionLevel() {
+        GzipParameters parameters = new GzipParameters();
+        try {
+            parameters.setCompressionLevel(10);
+            fail("IllegalArgumentException not thrown");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+        
+        try {
+            parameters.setCompressionLevel(-5);
+            fail("IllegalArgumentException not thrown");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+    }
+
+    private void testExtraFlags(int compressionLevel, int flag) throws Exception {
+        FileInputStream fis = new FileInputStream(getFile("test3.xml"));
+        byte[] content;
+        try {
+            content = IOUtils.toByteArray(fis);
+        } finally {
+            fis.close();
+        }
+        
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        
+        GzipParameters parameters = new GzipParameters();
+        parameters.setCompressionLevel(compressionLevel);
+        GzipCompressorOutputStream out = new GzipCompressorOutputStream(bout, parameters);
+        IOUtils.copy(new ByteArrayInputStream(content), out);
+        out.flush();
+        out.close();
+        
+        assertEquals("extra flags (XFL)", flag, bout.toByteArray()[8]);
+    }
+
+    @Test
+    public void testExtraFlagsFastestCompression() throws Exception {
+        testExtraFlags(Deflater.BEST_SPEED, 4);
+    }
+
+    @Test
+    public void testExtraFlagsBestCompression() throws Exception {
+        testExtraFlags(Deflater.BEST_COMPRESSION, 2);
+    }
+
+    @Test
+    public void testExtraFlagsDefaultCompression() throws Exception {
+        testExtraFlags(Deflater.DEFAULT_COMPRESSION, 0);
+    }
+    
+    @Test
+    public void testOverWrite() throws Exception {
+        GzipCompressorOutputStream out = new GzipCompressorOutputStream(new ByteArrayOutputStream());
+        out.close();
+        try {
+            out.write(0);
+            fail("IOException expected");
+        } catch (IOException e) {
+            // expected
+        }
+    }
+
+    @Test
+    public void testMetadataRoundTrip() throws Exception {
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+                
+        GzipParameters parameters = new GzipParameters();
+        parameters.setCompressionLevel(Deflater.BEST_COMPRESSION);
+        parameters.setModificationTime(123456000);
+        parameters.setOperatingSystem(13);
+        parameters.setFilename("test3.xml");
+        parameters.setComment("Umlaute möglich?");
+        GzipCompressorOutputStream out = new GzipCompressorOutputStream(bout, parameters);
+        FileInputStream fis = new FileInputStream(getFile("test3.xml"));
+        try {
+            IOUtils.copy(fis, out);
+        } finally {
+            fis.close();
+            out.close();
+        }
+        
+        GzipCompressorInputStream input =
+            new GzipCompressorInputStream(new ByteArrayInputStream(bout.toByteArray()));
+        input.close();
+        GzipParameters readParams = input.getMetaData();
+        assertEquals(Deflater.BEST_COMPRESSION, readParams.getCompressionLevel());
+        assertEquals(123456000, readParams.getModificationTime());
+        assertEquals(13, readParams.getOperatingSystem());
+        assertEquals("test3.xml", readParams.getFilename());
+        assertEquals("Umlaute möglich?", readParams.getComment());
     }
 }

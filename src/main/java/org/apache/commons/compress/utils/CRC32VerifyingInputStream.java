@@ -17,68 +17,26 @@
  */
 package org.apache.commons.compress.utils;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.CRC32;
 
-public class CRC32VerifyingInputStream extends InputStream {
-    private final InputStream in;
-    private long bytesRemaining;
-    private final int expectedCrc32;
-    private final CRC32 crc32 = new CRC32();
+/**
+ * A stream that verifies the CRC of the data read once the stream is
+ * exhausted.
+ * @NotThreadSafe
+ * @since 1.6
+ */
+public class CRC32VerifyingInputStream extends ChecksumVerifyingInputStream {
     
     public CRC32VerifyingInputStream(final InputStream in, final long size, final int expectedCrc32) {
-        this.in = in;
-        this.expectedCrc32 = expectedCrc32;
-        this.bytesRemaining = size;
+        this(in, size, expectedCrc32 & 0xFFFFffffl);
     }
 
-    @Override
-    public int read() throws IOException {
-        if (bytesRemaining <= 0) {
-            return -1;
-        }
-        int ret = in.read();
-        if (ret >= 0) {
-            crc32.update(ret);
-            --bytesRemaining;
-        }
-        if (bytesRemaining == 0 && expectedCrc32 != (int)crc32.getValue()) {
-            throw new IOException("CRC32 verification failed");
-        }
-        return ret;
+    /**
+     * @since 1.7
+     */
+    public CRC32VerifyingInputStream(final InputStream in, final long size, final long expectedCrc32) {
+        super(new CRC32(), in, size, expectedCrc32);
     }
 
-    @Override
-    public int read(byte[] b) throws IOException {
-        return read(b, 0, b.length);
-    }
-
-    @Override
-    public int read(byte[] b, int off, int len) throws IOException {
-        int ret = in.read(b, off, len);
-        if (ret >= 0) {
-            crc32.update(b, off, ret);
-            bytesRemaining -= ret;
-        }
-        if (bytesRemaining <= 0 && expectedCrc32 != (int)crc32.getValue()) {
-            throw new IOException("CRC32 verification failed");
-        }
-        return ret;
-    }
-
-    @Override
-    public long skip(long n) throws IOException {
-        // Can't really skip, we have to hash everything to verify the checksum
-        if (read() >= 0) {
-            return 1;
-        } else {
-            return 0;
-        }
-    }
-
-    @Override
-    public void close() throws IOException {
-        in.close();
-    }
 }

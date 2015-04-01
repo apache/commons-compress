@@ -18,32 +18,51 @@
  */
 package org.apache.commons.compress.archivers.cpio;
 
+import static org.junit.Assert.*;
+
 import java.io.FileInputStream;
 
 import org.apache.commons.compress.AbstractTestCase;
+import org.junit.Test;
 
 public class CpioArchiveInputStreamTest extends AbstractTestCase {
 
+    @Test
     public void testCpioUnarchive() throws Exception {
-        StringBuffer expected = new StringBuffer();
+        StringBuilder expected = new StringBuilder();
         expected.append("./test1.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>./test2.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>\n");
 
 
-        CpioArchiveInputStream in = 
-                new CpioArchiveInputStream(new FileInputStream(getFile("bla.cpio")));
-        CpioArchiveEntry entry= null;
+        CpioArchiveInputStream in = new CpioArchiveInputStream(new FileInputStream(getFile("bla.cpio")));
+        CpioArchiveEntry entry;
 
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         while ((entry = (CpioArchiveEntry) in.getNextEntry()) != null) {
             result.append(entry.getName());
             int tmp;
             while ((tmp = in.read()) != -1) {
                 result.append((char) tmp);
-             }
-         }
-         in.close();
-         assertEquals(result.toString(), expected.toString());
+            }
+        }
+        in.close();
+        assertEquals(result.toString(), expected.toString());
+    }
+
+    @Test
+    public void testCpioUnarchiveCreatedByRedlineRpm() throws Exception {
+        CpioArchiveInputStream in =
+            new CpioArchiveInputStream(new FileInputStream(getFile("redline.cpio")));
+        CpioArchiveEntry entry= null;
+
+        int count = 0;
+        while ((entry = (CpioArchiveEntry) in.getNextEntry()) != null) {
+            count++;
+            assertNotNull(entry);
+        }
+        in.close();
+
+        assertEquals(count, 1);
     }
 }

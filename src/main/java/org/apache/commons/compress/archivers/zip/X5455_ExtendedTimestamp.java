@@ -31,7 +31,6 @@ import java.util.zip.ZipException;
  * allows one to store additional timestamps, and, in addition, the timestamps
  * are stored using per-second granularity (zip's default behaviour can only store
  * timestamps to the nearest <em>even</em> second).
- * <p/>
  * </p><p>
  * Unfortunately, 32 (unsigned) bits can only store dates up to the year 2106,
  * and so this extra field will eventually be obsolete.  Enjoy it while it lasts!
@@ -85,9 +84,21 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     private static final ZipShort HEADER_ID = new ZipShort(0x5455);
     private static final long serialVersionUID = 1L;
 
-    static final byte MODIFY_TIME_BIT = 1;
-    static final byte ACCESS_TIME_BIT = 2;
-    static final byte CREATE_TIME_BIT = 4;
+    /**
+     * The bit set inside the flags by when the last modification time
+     * is present in this extra field.
+     */
+    public static final byte MODIFY_TIME_BIT = 1;
+    /**
+     * The bit set inside the flags by when the lasr access time is
+     * present in this extra field.
+     */
+    public static final byte ACCESS_TIME_BIT = 2;
+    /**
+     * The bit set inside the flags by when the original creation time
+     * is present in this extra field.
+     */
+    public static final byte CREATE_TIME_BIT = 4;
 
     // The 3 boolean fields (below) come from this flags byte.  The remaining 5 bits
     // are ignored according to the current version of the spec (December 2012).
@@ -136,10 +147,10 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     /**
      * Length of the extra field in the local file data - without
      * Header-ID or length specifier.
-     * <p/>
-     * For X5455 the central length is often smaller than the
+     *
+     * <p>For X5455 the central length is often smaller than the
      * local length, because central cannot contain access or create
-     * timestamps.
+     * timestamps.</p>
      *
      * @return a <code>ZipShort</code> for the length of the data of this extra field
      */
@@ -397,7 +408,12 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      *
      * @param l ZipLong of the modify time (seconds per epoch)
      */
-    public void setModifyTime(ZipLong l) { this.modifyTime = l; }
+    public void setModifyTime(ZipLong l) {
+        bit0_modifyTimePresent = l != null;
+        flags = (byte) (l != null ? (flags | MODIFY_TIME_BIT)
+                        : (flags & ~MODIFY_TIME_BIT));
+        this.modifyTime = l;
+    }
 
     /**
      * <p>
@@ -411,7 +427,12 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      *
      * @param l ZipLong of the access time (seconds per epoch)
      */
-    public void setAccessTime(ZipLong l) { this.accessTime = l; }
+    public void setAccessTime(ZipLong l) {
+        bit1_accessTimePresent = l != null;
+        flags = (byte) (l != null ? (flags | ACCESS_TIME_BIT)
+                        : (flags & ~ACCESS_TIME_BIT));
+        this.accessTime = l;
+    }
 
     /**
      * <p>
@@ -425,7 +446,12 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      *
      * @param l ZipLong of the create time (seconds per epoch)
      */
-    public void setCreateTime(ZipLong l) { this.createTime = l; }
+    public void setCreateTime(ZipLong l) {
+        bit2_createTimePresent = l != null;
+        flags = (byte) (l != null ? (flags | CREATE_TIME_BIT)
+                        : (flags & ~CREATE_TIME_BIT));
+        this.createTime = l;
+    }
 
     /**
      * <p>

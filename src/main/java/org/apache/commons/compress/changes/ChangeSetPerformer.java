@@ -268,7 +268,7 @@ public class ChangeSetPerformer {
             return nestedEnum.hasMoreElements();
         }
         public ArchiveEntry next() {
-            return (current = nestedEnum.nextElement());
+            return current = nestedEnum.nextElement();
         }
         public InputStream getInputStream() throws IOException {
             return in.getInputStream(current);

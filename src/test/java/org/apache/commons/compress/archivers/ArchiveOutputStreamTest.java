@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.archivers;
 
+import static org.junit.Assert.*;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,19 +34,11 @@ import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.Test;
 
 public class ArchiveOutputStreamTest extends AbstractTestCase {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testFinish() throws Exception {
         OutputStream out1 = new ByteArrayOutputStream();
 
@@ -94,6 +88,7 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testOptionalFinish() throws Exception {
         OutputStream out1 = new ByteArrayOutputStream();
 
@@ -114,22 +109,27 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testCallSequenceAr() throws Exception{
         doCallSequence("Ar");
     }
 
+    @Test
     public void testCallSequenceCpio() throws Exception{
         doCallSequence("Cpio");
     }
 
+    @Test
     public void testCallSequenceJar() throws Exception{
         doCallSequence("Jar");
     }
 
+    @Test
     public void testCallSequenceTar() throws Exception{
         doCallSequence("Tar");
     }
 
+    @Test
     public void testCallSequenceZip() throws Exception{
         doCallSequence("Zip");
     }

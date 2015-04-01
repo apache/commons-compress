@@ -81,7 +81,7 @@ public final class ZipLong implements Cloneable, Serializable {
         new ZipLong(0X30304B50L);
 
     /**
-     * Archive extra data record signature.</p>
+     * Archive extra data record signature.
      * @since 1.5
      */
     public static final ZipLong AED_SIG = new ZipLong(0X08064B50L);
@@ -134,11 +134,28 @@ public final class ZipLong implements Cloneable, Serializable {
      */
     public static byte[] getBytes(long value) {
         byte[] result = new byte[WORD];
-        result[0] = (byte) ((value & BYTE_MASK));
-        result[BYTE_1] = (byte) ((value & BYTE_1_MASK) >> BYTE_1_SHIFT);
-        result[BYTE_2] = (byte) ((value & BYTE_2_MASK) >> BYTE_2_SHIFT);
-        result[BYTE_3] = (byte) ((value & BYTE_3_MASK) >> BYTE_3_SHIFT);
+        putLong(value, result, 0);
         return result;
+    }
+
+    /**
+     * put the value as four bytes in big endian byte order.
+     * @param value the Java long to convert to bytes
+     * @param buf the output buffer
+     * @param  offset
+     *         The offset within the output buffer of the first byte to be written.
+     *         must be non-negative and no larger than <tt>buf.length-4</tt>
+     */
+
+    public static void putLong(long value, byte[] buf, int offset) {
+        buf[offset++] = (byte) ((value & BYTE_MASK));
+        buf[offset++] = (byte) ((value & BYTE_1_MASK) >> BYTE_1_SHIFT);
+        buf[offset++] = (byte) ((value & BYTE_2_MASK) >> BYTE_2_SHIFT);
+        buf[offset] = (byte) ((value & BYTE_3_MASK) >> BYTE_3_SHIFT);
+    }
+
+    public void putLong(byte[] buf, int offset) {
+        putLong(value, buf, offset);
     }
 
     /**

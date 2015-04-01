@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.compressors;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -28,12 +30,14 @@ import java.lang.management.ManagementFactory;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.Test;
 
 public final class XZTestCase extends AbstractTestCase {
 
+    @Test
     public void testXZCreation()  throws Exception {
         long max = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax();
-        System.out.println("XZTestCase: HeapMax="+max+" bytes "+((double)max/(1024*1024))+" MB");
+        System.out.println("XZTestCase: HeapMax="+max+" bytes "+(double)max/(1024*1024)+" MB");
         final File input = getFile("test1.xml");
         final File output = new File(dir, "test1.xml.xz");
         final OutputStream out = new FileOutputStream(output);
@@ -50,6 +54,7 @@ public final class XZTestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testXZUnarchive() throws Exception {
         final File input = getFile("bla.tar.xz");
         final File output = new File(dir, "bla.tar");
@@ -72,6 +77,7 @@ public final class XZTestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testConcatenatedStreamsReadFirstOnly() throws Exception {
         final File input = getFile("multiple.xz");
         final InputStream is = new FileInputStream(input);
@@ -89,6 +95,7 @@ public final class XZTestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testConcatenatedStreamsReadFully() throws Exception {
         final File input = getFile("multiple.xz");
         final InputStream is = new FileInputStream(input);

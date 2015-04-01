@@ -17,6 +17,8 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
+import java.util.LinkedList;
+
 /**
  * The unit of solid compression.
  */
@@ -24,6 +26,7 @@ class Folder {
     /// List of coders used in this folder, eg. one for compression, one for encryption.
     Coder[] coders;
     /// Total number of input streams across all coders.
+    /// this field is currently unused but technically part of the 7z API
     long totalInputStreams;
     /// Total number of output streams across all coders.
     long totalOutputStreams;
@@ -36,9 +39,28 @@ class Folder {
     /// Whether the folder has a CRC.
     boolean hasCrc;
     /// The CRC, if present.
-    int crc;
-    /// The number of unpack substreams, one per non-empty file in this folder.
+    long crc;
+    /// The number of unpack substreams, product of the number of
+    /// output streams and the nuber of non-empty files in this
+    /// folder.
     int numUnpackSubStreams;
+
+    /**
+     * Sorts Coders using bind pairs.
+     * <p>The first coder reads from the packed stream (we currently
+     * only support single input stream decoders), the second reads
+     * from the output of the first and so on.</p>
+     */
+    Iterable<Coder> getOrderedCoders() {
+        LinkedList<Coder> l = new LinkedList<Coder>();
+        int current = (int) packedStreams[0]; // more that 2^31 coders?
+        while (current != -1) {
+            l.addLast(coders[current]);
+            int pair = findBindPairForOutStream(current);
+            current = pair != -1 ? (int) bindPairs[pair].inIndex : -1;
+        }
+        return l;
+    }
 
     int findBindPairForInStream(final int index) {
         for (int i = 0; i < bindPairs.length; i++) {
@@ -68,6 +90,27 @@ class Folder {
             }
         }
         return 0;
+    }
+
+    long getUnpackSizeForCoder(Coder coder) {
+        if (coders != null) {
+            for (int i = 0; i < coders.length; i++) {
+                if (coders[i] == coder) {
+                    return unpackSizes[i];
+                }
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    public String toString() {
+        return "Folder with " + coders.length + " coders, " + totalInputStreams
+            + " input streams, " + totalOutputStreams + " output streams, "
+            + bindPairs.length + " bind pairs, " + packedStreams.length
+            + " packed streams, " + unpackSizes.length + " unpack sizes, "
+            + (hasCrc ? "with CRC " + crc : "without CRC")
+            + " and " + numUnpackSubStreams + " unpack streams";
     }
 }
 

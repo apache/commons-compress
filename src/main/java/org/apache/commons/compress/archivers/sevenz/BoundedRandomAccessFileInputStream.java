@@ -59,5 +59,6 @@ class BoundedRandomAccessFileInputStream extends InputStream {
 
     @Override
     public void close() {
+        // the nested RandomAccessFile is controlled externally
     }
 }
