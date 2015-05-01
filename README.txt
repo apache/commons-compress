@@ -1,4 +1,5 @@
-# Apache Commons Compress
+Apache Commons Compress
+=======================
 
 Commons Compress is a Java library for working with various
 compression and archiving formats.
