@@ -584,12 +584,12 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                                             TarArchiveEntry entry) {
         addPaxHeaderForBigNumber(paxHeaders, "size", entry.getSize(),
                                  TarConstants.MAXSIZE);
-        addPaxHeaderForBigNumber(paxHeaders, "gid", entry.getGroupId(),
+        addPaxHeaderForBigNumber(paxHeaders, "gid", entry.getLongGroupId(),
                                  TarConstants.MAXID);
         addPaxHeaderForBigNumber(paxHeaders, "mtime",
                                  entry.getModTime().getTime() / 1000,
                                  TarConstants.MAXSIZE);
-        addPaxHeaderForBigNumber(paxHeaders, "uid", entry.getUserId(),
+        addPaxHeaderForBigNumber(paxHeaders, "uid", entry.getLongUserId(),
                                  TarConstants.MAXID);
         // star extensions by J\u00f6rg Schilling
         addPaxHeaderForBigNumber(paxHeaders, "SCHILY.devmajor",
@@ -610,11 +610,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     private void failForBigNumbers(TarArchiveEntry entry) {
         failForBigNumber("entry size", entry.getSize(), TarConstants.MAXSIZE);
-        failForBigNumberWithPosixMessage("group id", entry.getGroupId(), TarConstants.MAXID);
+        failForBigNumberWithPosixMessage("group id", entry.getLongGroupId(), TarConstants.MAXID);
         failForBigNumber("last modification time",
                          entry.getModTime().getTime() / 1000,
                          TarConstants.MAXSIZE);
-        failForBigNumber("user id", entry.getUserId(), TarConstants.MAXID);
+        failForBigNumber("user id", entry.getLongUserId(), TarConstants.MAXID);
         failForBigNumber("mode", entry.getMode(), TarConstants.MAXID);
         failForBigNumber("major device number", entry.getDevMajor(),
                          TarConstants.MAXID);

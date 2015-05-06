@@ -54,6 +54,10 @@ breaks backwards compatibility for code which used the old package.
 This also changes the superclass of ZCompressorInputStream.    
 ">
 
+      <action issue="COMPRESS-315" type="add" date="2015-05-06">
+        TarArchiveOutputStream can now write entries with group or
+        user ids &gt; 0x80000000.
+      </action>
       <action issue="COMPRESS-313" type="add" date="2015-03-30">
         CompressorStreamFactory can now auto-detect LZMA streams.
       </action>
