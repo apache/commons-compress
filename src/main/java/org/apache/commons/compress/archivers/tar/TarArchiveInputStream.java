@@ -498,11 +498,11 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             } else if ("linkpath".equals(key)){
                 currEntry.setLinkName(val);
             } else if ("gid".equals(key)){
-                currEntry.setGroupId(Integer.parseInt(val));
+                currEntry.setGroupId(Long.parseLong(val));
             } else if ("gname".equals(key)){
                 currEntry.setGroupName(val);
             } else if ("uid".equals(key)){
-                currEntry.setUserId(Integer.parseInt(val));
+                currEntry.setUserId(Long.parseLong(val));
             } else if ("uname".equals(key)){
                 currEntry.setUserName(val);
             } else if ("size".equals(key)){
