@@ -485,6 +485,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     /**
      * Get this entry's group id.
      *
+     * @since 1.10
      * @return This entry's group id.
      */
     public long getLongGroupId() {
@@ -494,6 +495,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     /**
      * Set this entry's group id.
      *
+     * @since 1.10
      * @param groupId This entry's new group id.
      */
     public void setGroupId(long groupId) {
