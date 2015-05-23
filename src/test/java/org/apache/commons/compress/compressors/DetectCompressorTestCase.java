@@ -30,6 +30,7 @@ import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.commons.compress.compressors.deflate.DeflateCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorInputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
@@ -103,6 +104,10 @@ public final class DetectCompressorTestCase {
         CompressorInputStream xz = getStreamFor("bla.tar.xz");
         assertNotNull(xz);
         assertTrue(xz instanceof XZCompressorInputStream);
+
+        CompressorInputStream zlib = getStreamFor("bla.tar.deflatez");
+        assertNotNull(zlib);
+        assertTrue(zlib instanceof DeflateCompressorInputStream);
 
         try {
             factory.createCompressorInputStream(new ByteArrayInputStream(new byte[0]));
