@@ -377,7 +377,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
 
     private ZipExtraField[] getMergedFields() {
         final ZipExtraField[] zipExtraFields = copyOf(extraFields, extraFields.length + 1);
-        zipExtraFields[zipExtraFields.length] = unparseableExtra;
+        zipExtraFields[extraFields.length] = unparseableExtra;
         return zipExtraFields;
     }
 

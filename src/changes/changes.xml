@@ -54,8 +54,13 @@ breaks backwards compatibility for code which used the old package.
 This also changes the superclass of ZCompressorInputStream.    
 ">
 
+      <action issue="COMPRESS-317" type="fix" date="2015-06-09"
+              due-to="Lucas Werkmeister">
+        ArrayIndexOutOfBoundsException when ZIP extra fields are read
+        and the entry contains an UnparseableExtraField.
+      </action>
       <action issue="COMPRESS-316" type="add" date="2015-05-23"
-              due-to=""Nick Burch">
+              due-to="Nick Burch">
         CompressorStreamFactory can now auto-detect DEFLATE streams
         with ZLIB header.
       </action>
