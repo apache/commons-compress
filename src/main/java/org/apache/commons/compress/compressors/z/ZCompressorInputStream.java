@@ -49,14 +49,17 @@ public class ZCompressorInputStream extends LZWInputStream {
         blockMode = (thirdByte & BLOCK_MODE_MASK) != 0;
         maxCodeSize = thirdByte & MAX_CODE_SIZE_MASK;
         if (blockMode) {
-            setClearCode(DEFAULT_CODE_SIZE);
+            setClearCode(codeSize);
         }
         initializeTables(maxCodeSize);
         clearEntries();
     }
     
     private void clearEntries() {
-        setTableSize((1 << 8) + (blockMode ? 1 : 0));
+        tableSize = 1 << 8;
+        if (blockMode) {
+            tableSize++;
+        }
     }
 
     /**
@@ -97,11 +100,11 @@ public class ZCompressorInputStream extends LZWInputStream {
      */
     @Override
     protected int addEntry(int previousCode, byte character) throws IOException {
-        final int maxTableSize = 1 << getCodeSize();
+        final int maxTableSize = 1 << codeSize;
         int r = addEntry(previousCode, character, maxTableSize);
-        if (getTableSize() == maxTableSize && getCodeSize() < maxCodeSize) {
+        if (tableSize == maxTableSize && codeSize < maxCodeSize) {
             reAlignReading();
-            incrementCodeSize();
+            codeSize++;
         }
         return r;
     }
@@ -129,19 +132,19 @@ public class ZCompressorInputStream extends LZWInputStream {
         final int code = readNextCode();
         if (code < 0) {
             return -1;
-        } else if (blockMode && code == getClearCode()) {
+        } else if (blockMode && code == clearCode) {
             clearEntries();
             reAlignReading();
-            resetCodeSize();
-            resetPreviousCode();
+            codeSize = 9;
+            previousCode = -1;
             return 0;
         } else {
             boolean addedUnfinishedEntry = false;
-            if (code == getTableSize()) {
+            if (code == tableSize) {
                 addRepeatOfPreviousCode();
                 addedUnfinishedEntry = true;
-            } else if (code > getTableSize()) {
-                throw new IOException(String.format("Invalid %d bit code 0x%x", getCodeSize(), code));
+            } else if (code > tableSize) {
+                throw new IOException(String.format("Invalid %d bit code 0x%x", codeSize, code));
             }
             return expandCodeToOutputStack(code, addedUnfinishedEntry);
         }

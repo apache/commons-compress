@@ -36,22 +36,20 @@ class UnshrinkingInputStream extends LZWInputStream {
     
     public UnshrinkingInputStream(InputStream inputStream) throws IOException {
         super(inputStream, ByteOrder.LITTLE_ENDIAN);
-        setClearCode(DEFAULT_CODE_SIZE);
+        setClearCode(codeSize);
         initializeTables(MAX_CODE_SIZE);
-        isUsed = new boolean[getPrefixesLength()];
+        isUsed = new boolean[prefixes.length];
         for (int i = 0; i < (1 << 8); i++) {
             isUsed[i] = true;
         }
-        setTableSize(getClearCode() + 1);
+        tableSize = clearCode + 1;
     }
 
     @Override
     protected int addEntry(int previousCode, byte character) throws IOException {
-        int tableSize = getTableSize();
         while ((tableSize < MAX_TABLE_SIZE) && isUsed[tableSize]) {
             tableSize++;
         }
-        setTableSize(tableSize);
         int idx = addEntry(previousCode, character, MAX_TABLE_SIZE);
         if (idx >= 0) {
             isUsed[idx] = true;
@@ -62,14 +60,14 @@ class UnshrinkingInputStream extends LZWInputStream {
     private void partialClear() {
         final boolean[] isParent = new boolean[MAX_TABLE_SIZE];
         for (int i = 0; i < isUsed.length; i++) {
-            if (isUsed[i] && getPrefix(i) != UNUSED_PREFIX) {
-                isParent[getPrefix(i)] = true;
+            if (isUsed[i] && prefixes[i] != -1) {
+                isParent[prefixes[i]] = true;
             }
         }
-        for (int i = getClearCode() + 1; i < isParent.length; i++) {
+        for (int i = clearCode + 1; i < isParent.length; i++) {
             if (!isParent[i]) {
                 isUsed[i] = false;
-                setPrefix(i, UNUSED_PREFIX);
+                prefixes[i] = -1;
             }
         }
     }
@@ -91,19 +89,19 @@ class UnshrinkingInputStream extends LZWInputStream {
         final int code = readNextCode();
         if (code < 0) {
             return -1;
-        } else if (code == getClearCode()) {
+        } else if (code == clearCode) {
             final int subCode = readNextCode();
             if (subCode < 0) {
                 throw new IOException("Unexpected EOF;");
             } else if (subCode == 1) {
-                if (getCodeSize() < MAX_CODE_SIZE) {
-                    incrementCodeSize();
+                if (codeSize < MAX_CODE_SIZE) {
+                    codeSize++;
                 } else {
                     throw new IOException("Attempt to increase code size beyond maximum");
                 }
             } else if (subCode == 2) {
                 partialClear();
-                setTableSize(getClearCode() + 1);
+                tableSize = clearCode + 1;
             } else {
                 throw new IOException("Invalid clear code subcode " + subCode);
             }
