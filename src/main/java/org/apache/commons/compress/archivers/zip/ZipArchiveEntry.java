@@ -216,6 +216,10 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     /**
      * Retrieves the internal file attributes.
      *
+     * <p><b>Note</b>: {@link ZipArchiveInputStream} is unable to fill
+     * this field, you must use {@link ZipFile} if you want to read
+     * entries using this attribute.</p>
+     *
      * @return the internal file attributes
      */
     public int getInternalAttributes() {
@@ -232,6 +236,11 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
 
     /**
      * Retrieves the external file attributes.
+     *
+     * <p><b>Note</b>: {@link ZipArchiveInputStream} is unable to fill
+     * this field, you must use {@link ZipFile} if you want to read
+     * entries using this attribute.</p>
+     *
      * @return the external file attributes
      */
     public long getExternalAttributes() {
@@ -321,6 +330,12 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
 
     /**
      * Retrieves all extra fields that have been parsed successfully.
+     *
+     * <p><b>Note</b>: The set of extra fields may be incomplete when
+     * {@link ZipArchiveInputStream} has been used as some extra
+     * fields use the central directory to store additional
+     * information.</p>
+     *
      * @return an array of the extra fields
      */
     public ZipExtraField[] getExtraFields() {
@@ -597,6 +612,11 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
 
     /**
      * Gets the uncompressed size of the entry data.
+     *
+     * <p><b>Note</b>: {@link ZipArchiveInputStream} may create
+     * entries that return {@link #SIZE_UNKNOWN SIZE_UNKNOWN} as long
+     * as the entry hasn't been read completely.</p>
+     *
      * @return the entry size
      */
     @Override

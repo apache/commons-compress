@@ -43,15 +43,31 @@ import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC
 /**
  * Implements an input stream that can read Zip archives.
  *
- * <p>Note that {@link ZipArchiveEntry#getSize()} may return -1 if the
- * DEFLATE algorithm is used, as the size information is not available
- * from the header.</p>
- *
- * <p>The {@link ZipFile} class is preferred when reading from files.</p>
- *
  * <p>As of Apache Commons Compress it transparently supports Zip64
  * extensions and thus individual entries and archives larger than 4
  * GB or with more than 65536 entries.</p>
+ *
+ * <p>The {@link ZipFile} class is preferred when reading from files
+ * as {@link ZipArchiveInputStream} is limited by not being able to
+ * read the central directory header before returning entries.  In
+ * particular {@link ZipArchiveInputStream}</p>
+ *
+ * <ul>
+ *
+ *  <li>may return entries that are not part of the central directory
+ *  at all and shouldn't be considered part of the archive.</li>
+ *
+ *  <li>may return several entries with the same name.</li>
+ *
+ *  <li>will not return internal or external attributes.</li>
+ *
+ *  <li>may return incomplete extra field data.</li>
+ *
+ *  <li>may return unknown sizes and CRC values for entries until the
+ *  next entry has been reached if the archive uses the data
+ *  descriptor feature.</li>
+ *
+ * </ul>
  *
  * @see ZipFile
  * @NotThreadSafe
