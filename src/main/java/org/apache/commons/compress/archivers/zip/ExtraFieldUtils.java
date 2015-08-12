@@ -312,6 +312,7 @@ public class ExtraFieldUtils {
 
         /**
          * Key of the action to take.
+         * @return the key
          */
         public int getKey() { return key; }
     }

@@ -64,6 +64,7 @@ public class SevenZMethodConfiguration {
 
     /**
      * The specified method.
+     * @return the method
      */
     public SevenZMethod getMethod() {
         return method;
@@ -71,6 +72,7 @@ public class SevenZMethodConfiguration {
 
     /**
      * The specified options.
+     * @return the options
      */
     public Object getOptions() {
         return options;

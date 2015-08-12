@@ -75,6 +75,7 @@ public class BitInputStream implements Closeable {
      * @return the bits concatenated as a long using the stream's byte order.
      *         -1 if the end of the underlying stream has been reached before reading
      *         the requested number of bits
+     * @throws IOException on error
      */
     public long readBits(final int count) throws IOException {
         if (count < 0 || count > MAXIMUM_CACHE_SIZE) {

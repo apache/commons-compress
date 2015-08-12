@@ -81,6 +81,7 @@ public final class GeneralPurposeBit implements Cloneable {
 
     /**
      * whether the current entry uses UTF8 for file name and comment.
+     * @return whether the current entry uses UTF8 for file name and comment.
      */
     public boolean usesUTF8ForNames() {
         return languageEncodingFlag;
@@ -88,6 +89,7 @@ public final class GeneralPurposeBit implements Cloneable {
 
     /**
      * whether the current entry will use UTF8 for file name and comment.
+     * @param b whether the current entry will use UTF8 for file name and comment.
      */
     public void useUTF8ForNames(boolean b) {
         languageEncodingFlag = b;
@@ -95,6 +97,8 @@ public final class GeneralPurposeBit implements Cloneable {
 
     /**
      * whether the current entry uses the data descriptor to store CRC
+     * and size information.
+     * @return whether the current entry uses the data descriptor to store CRC
      * and size information
      */
     public boolean usesDataDescriptor() {
@@ -103,6 +107,8 @@ public final class GeneralPurposeBit implements Cloneable {
 
     /**
      * whether the current entry will use the data descriptor to store
+     * CRC and size information.
+     * @param b whether the current entry will use the data descriptor to store
      * CRC and size information
      */
     public void useDataDescriptor(boolean b) {
@@ -110,28 +116,32 @@ public final class GeneralPurposeBit implements Cloneable {
     }
 
     /**
-     * whether the current entry is encrypted
+     * whether the current entry is encrypted.
+     * @return whether the current entry is encrypted
      */
     public boolean usesEncryption() {
         return encryptionFlag;
     }
 
     /**
-     * whether the current entry will be encrypted
+     * whether the current entry will be encrypted.
+     * @param b whether the current entry will be encrypted
      */
     public void useEncryption(boolean b) {
         encryptionFlag = b;
     }
 
     /**
-     * whether the current entry is encrypted using strong encryption
+     * whether the current entry is encrypted using strong encryption.
+     * @return whether the current entry is encrypted using strong encryption
      */
     public boolean usesStrongEncryption() {
         return encryptionFlag && strongEncryptionFlag;
     }
 
     /**
-     * whether the current entry will be encrypted  using strong encryption
+     * whether the current entry will be encrypted  using strong encryption.
+     * @param b whether the current entry will be encrypted  using strong encryption
      */
     public void useStrongEncryption(boolean b) {
         strongEncryptionFlag = b;
@@ -156,6 +166,7 @@ public final class GeneralPurposeBit implements Cloneable {
 
     /**
      * Encodes the set bits in a form suitable for ZIP archives.
+     * @return the encoded general purpose bits
      */
     public byte[] encode() {
         byte[] result = new byte[2];
@@ -188,6 +199,7 @@ public final class GeneralPurposeBit implements Cloneable {
      * 
      * @param data local file header or a central directory entry.
      * @param offset offset at which the general purpose bit starts
+     * @return parsed flags
      */
     public static GeneralPurposeBit parse(final byte[] data, final int offset) {
         final int generalPurposeFlag = ZipShort.getValue(data, offset);

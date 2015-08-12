@@ -340,6 +340,8 @@ public class ZipFile implements Closeable {
      * <p>May return false if it is set up to use encryption or a
      * compression method that hasn't been implemented yet.</p>
      * @since 1.1
+     * @param ze the entry
+     * @return whether this class is able to read the given entry.
      */
     public boolean canReadEntryData(ZipArchiveEntry ze) {
         return ZipUtil.canHandleEntryData(ze);
@@ -371,6 +373,7 @@ public class ZipFile implements Closeable {
      *
      * @param target The zipArchiveOutputStream to write the entries to
      * @param predicate A predicate that selects which entries to write
+     * @throws IOException on error
      */
     public void copyRawEntries(ZipArchiveOutputStream target, ZipArchiveEntryPredicate predicate)
             throws IOException {

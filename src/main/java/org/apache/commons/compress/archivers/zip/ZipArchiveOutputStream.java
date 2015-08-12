@@ -349,6 +349,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * encoding is UTF-8.
      *
      * <p>Defaults to true.</p>
+     *
+     * @param b whether to set the language encoding flag if the file
+     * name encoding is UTF-8
      */
     public void setUseLanguageEncodingFlag(boolean b) {
         useUTF8Flag = b && ZipEncodingHelper.isUTF8(encoding);
@@ -358,6 +361,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * Whether to create Unicode Extra Fields.
      *
      * <p>Defaults to NEVER.</p>
+     *
+     * @param b whether to create Unicode Extra Fields.
      */
     public void setCreateUnicodeExtraFields(UnicodeExtraFieldPolicy b) {
         createUnicodeExtraFields = b;
@@ -368,6 +373,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * the file name cannot be encoded using the specified encoding.
      *
      * <p>Defaults to false.</p>
+     *
+     * @param b whether to fall back to UTF and the language encoding
+     * flag if the file name cannot be encoded using the specified
+     * encoding.
      */
     public void setFallbackToUTF8(boolean b) {
         fallbackToUTF8 = b;
@@ -416,6 +425,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * case the default is {@link Zip64Mode#Never Never}.</p>
      *
      * @since 1.3
+     * @param mode Whether Zip64 extensions will be used.
      */
     public void setUseZip64(Zip64Mode mode) {
         zip64Mode = mode;

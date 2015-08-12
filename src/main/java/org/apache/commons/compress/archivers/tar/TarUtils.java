@@ -280,6 +280,7 @@ public class TarUtils {
      * @param encoding name of the encoding to use for file names
      * @since 1.4
      * @return The entry name.
+     * @throws IOException on error
      */
     public static String parseName(byte[] buffer, final int offset,
                                    final int length,
@@ -345,6 +346,7 @@ public class TarUtils {
      * @param encoding name of the encoding to use for file names
      * @since 1.4
      * @return The updated offset, i.e. offset + length
+     * @throws IOException on error
      */
     public static int formatNameBytes(String name, byte[] buf, final int offset,
                                       final int length,

@@ -167,6 +167,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     }
 
     /**
+     * Create an instance using the specified encoding
+     * @param inputStream the stream to wrap
      * @param encoding the encoding to use for file names, use null
      * for the platform's default encoding
      * @since 1.5
@@ -176,6 +178,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     }
 
     /**
+     * Create an instance using the specified encoding
+     * @param inputStream the stream to wrap
      * @param encoding the encoding to use for file names, use null
      * for the platform's default encoding
      * @param useUnicodeExtraFields whether to use InfoZIP Unicode
@@ -186,6 +190,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     }
 
     /**
+     * Create an instance using the specified encoding
+     * @param inputStream the stream to wrap
      * @param encoding the encoding to use for file names, use null
      * for the platform's default encoding
      * @param useUnicodeExtraFields whether to use InfoZIP Unicode

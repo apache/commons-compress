@@ -159,6 +159,8 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * the file is a directory.  If the file is not a directory a
      * potential trailing forward slash will be stripped from the
      * entry name.</p>
+     * @param inputFile file to create the entry from
+     * @param entryName name of the entry
      */
     public ZipArchiveEntry(File inputFile, String entryName) {
         this(inputFile.isDirectory() && !entryName.endsWith("/") ? 
@@ -493,6 +495,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     /**
      * Looks up an extra field by its header id.
      *
+     * @param type the header id
      * @return null if no such field exists.
      */
     public ZipExtraField getExtraField(ZipShort type) {
@@ -551,6 +554,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
 
     /**
      * Sets the central directory part of extra fields.
+     * @param b an array of bytes to be parsed into extra fields
      */
     public void setCentralDirectoryExtra(byte[] b) {
         try {
@@ -659,6 +663,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * <p>This method will return null if this instance has not been
      * read from an archive.</p>
      *
+     * @return the raw name bytes
      * @since 1.2
      */
     public byte[] getRawName() {
@@ -686,6 +691,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
 
     /**
      * The "general purpose bit" field.
+     * @return the general purpose bit
      * @since 1.1
      */
     public GeneralPurposeBit getGeneralPurposeBit() {
@@ -694,6 +700,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
 
     /**
      * The "general purpose bit" field.
+     * @param b the general purpose bit
      * @since 1.1
      */
     public void setGeneralPurposeBit(GeneralPurposeBit b) {

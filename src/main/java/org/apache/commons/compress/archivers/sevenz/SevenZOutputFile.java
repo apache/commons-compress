@@ -77,6 +77,7 @@ public class SevenZOutputFile implements Closeable {
      *
      * <p>This is a short form for passing a single-element iterable
      * to {@link #setContentMethods}.</p>
+     * @param method the default compression method
      */
     public void setContentCompression(SevenZMethod method) {
         setContentMethods(Collections.singletonList(new SevenZMethodConfiguration(method)));
@@ -94,6 +95,7 @@ public class SevenZOutputFile implements Closeable {
      * the final output.</p>
      *
      * @since 1.8
+     * @param methods the default (compression) methods
      */
     public void setContentMethods(Iterable<? extends SevenZMethodConfiguration> methods) {
         this.contentMethods = reverse(methods);
@@ -102,7 +104,7 @@ public class SevenZOutputFile implements Closeable {
     /**
      * Closes the archive, calling {@link #finish} if necessary.
      * 
-     * @throws IOException
+     * @throws IOException on error
      */
     public void close() throws IOException {
         if (!finished) {
@@ -114,11 +116,11 @@ public class SevenZOutputFile implements Closeable {
     /**
      * Create an archive entry using the inputFile and entryName provided.
      * 
-     * @param inputFile
-     * @param entryName 
+     * @param inputFile file to create an entry from
+     * @param entryName the name to use
      * @return the ArchiveEntry set up with details from the file
      * 
-     * @throws IOException
+     * @throws IOException on error
      */
     public SevenZArchiveEntry createArchiveEntry(final File inputFile,
             final String entryName) throws IOException {
@@ -136,7 +138,7 @@ public class SevenZOutputFile implements Closeable {
      * {@link #closeArchiveEntry()} to complete the process.
      * 
      * @param archiveEntry describes the entry
-     * @throws IOException
+     * @throws IOException on error
      */
     public void putArchiveEntry(final ArchiveEntry archiveEntry) throws IOException {
         final SevenZArchiveEntry entry = (SevenZArchiveEntry) archiveEntry;
@@ -145,7 +147,7 @@ public class SevenZOutputFile implements Closeable {
     
     /**
      * Closes the archive entry.
-     * @throws IOException
+     * @throws IOException on error
      */
     public void closeArchiveEntry() throws IOException {
         if (currentOutputStream != null) {

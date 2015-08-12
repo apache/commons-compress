@@ -211,6 +211,8 @@ public abstract class ZipUtil {
     /**
      * Converts DOS time to Java time (number of milliseconds since
      * epoch).
+     * @param dosTime time to convert
+     * @return converted time
      */
     public static long dosToJavaTime(long dosTime) {
         Calendar cal = Calendar.getInstance();

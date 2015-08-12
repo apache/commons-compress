@@ -318,6 +318,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @param encoding encoding to use for file names
      * @since 1.4
      * @throws IllegalArgumentException if any of the numeric fields have an invalid format
+     * @throws IOException on error
      */
     public TarArchiveEntry(byte[] headerBuf, ZipEncoding encoding)
         throws IOException {
@@ -425,7 +426,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      *
      * @return This entry's user id.
      * @deprecated use #getLongUserId instead as user ids can be
-     * bigger than {@link Integer.MAX_INT}
+     * bigger than {@link Integer#MAX_VALUE}
      */
     @Deprecated
     public int getUserId() {
@@ -466,7 +467,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      *
      * @return This entry's group id.
      * @deprecated use #getLongGroupId instead as group ids can be
-     * bigger than {@link Integer.MAX_INT}
+     * bigger than {@link Integer#MAX_VALUE}
      */
     @Deprecated
     public int getGroupId() {
@@ -790,6 +791,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * Check if this is a "normal file"
      *
      * @since 1.2
+     * @return whether this is a "normal file"
      */
     public boolean isFile() {
         if (file != null) {
@@ -805,6 +807,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * Check if this is a symbolic link entry.
      *
      * @since 1.2
+     * @return whether this is a symbolic link
      */
     public boolean isSymbolicLink() {
         return linkFlag == LF_SYMLINK;
@@ -814,6 +817,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * Check if this is a link entry.
      *
      * @since 1.2
+     * @return whether this is a link entry
      */
     public boolean isLink() {
         return linkFlag == LF_LINK;
@@ -823,6 +827,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * Check if this is a character device entry.
      *
      * @since 1.2
+     * @return whether this is a character device
      */
     public boolean isCharacterDevice() {
         return linkFlag == LF_CHR;
@@ -832,6 +837,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * Check if this is a block device entry.
      *
      * @since 1.2
+     * @return whether this is a block device
      */
     public boolean isBlockDevice() {
         return linkFlag == LF_BLK;
@@ -841,6 +847,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * Check if this is a FIFO (pipe) entry.
      *
      * @since 1.2
+     * @return whether this is a FIFO entry
      */
     public boolean isFIFO() {
         return linkFlag == LF_FIFO;
@@ -896,6 +903,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * extension for numeric fields if their value doesn't fit in the
      * maximum size of standard tar archives
      * @since 1.4
+     * @throws IOException on error
      */
     public void writeEntryHeader(byte[] outbuf, ZipEncoding encoding,
                                  boolean starMode) throws IOException {
@@ -981,6 +989,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @since 1.4
      * @throws IllegalArgumentException if any of the numeric fields
      * have an invalid format
+     * @throws IOException on error
      */
     public void parseTarHeader(byte[] header, ZipEncoding encoding)
         throws IOException {

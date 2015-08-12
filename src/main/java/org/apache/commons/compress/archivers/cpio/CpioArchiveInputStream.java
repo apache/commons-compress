@@ -519,6 +519,9 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
      * Octal Binary value:
      * 
      * 070707 - MAGIC_OLD_BINARY (held as a short) = 0x71C7 or 0xC771
+     * @param signature data to match
+     * @param length length of data
+     * @return whether the buffer seems to contain CPIO data
      */
     public static boolean matches(byte[] signature, int length) {
         if (length < 6) {

@@ -133,7 +133,7 @@ public class ScatterZipOutputStream implements Closeable {
      *
      * @param file The file to offload compressed data into.
      * @return A ScatterZipOutputStream that is ready for use.
-     * @throws FileNotFoundException
+     * @throws FileNotFoundException if the file cannot be found
      */
     public static ScatterZipOutputStream fileBased(File file) throws FileNotFoundException {
         return fileBased(file, Deflater.DEFAULT_COMPRESSION);
@@ -145,7 +145,7 @@ public class ScatterZipOutputStream implements Closeable {
      * @param file             The file to offload compressed data into.
      * @param compressionLevel The compression level to use, @see #Deflater
      * @return A  ScatterZipOutputStream that is ready for use.
-     * @throws FileNotFoundException
+     * @throws FileNotFoundException if the file cannot be found
      */
     public static ScatterZipOutputStream fileBased(File file, int compressionLevel) throws FileNotFoundException {
         ScatterGatherBackingStore bs = new FileBasedScatterGatherBackingStore(file);

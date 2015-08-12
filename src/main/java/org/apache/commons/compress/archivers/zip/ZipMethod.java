@@ -206,6 +206,9 @@ public enum ZipMethod {
     /**
      * returns the {@link ZipMethod} for the given code or null if the
      * method is not known.
+     * @param code the code
+     * @return the {@link ZipMethod} for the given code or null if the
+     * method is not known.
      */
     public static ZipMethod getMethodByCode(int code) {
         return codeToEnum.get(code);

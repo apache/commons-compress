@@ -189,6 +189,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Whether to add a PAX extension header for non-ASCII file names.
      * @since 1.4
+     * @param b whether to add a PAX extension header for non-ASCII file names.
      */
     public void setAddPaxHeadersForNonAsciiNames(boolean b) {
         addPaxHeadersForNonAsciiNames = b;

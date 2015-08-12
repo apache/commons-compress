@@ -83,8 +83,8 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      * Constructor using the platform's default encoding for file
      * names.
      *
-     * @param is
-     * @throws ArchiveException
+     * @param is stream to read from
+     * @throws ArchiveException on error
      */
     public DumpArchiveInputStream(InputStream is) throws ArchiveException {
         this(is, null);
@@ -93,10 +93,11 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     /**
      * Constructor.
      *
-     * @param is
+     * @param is stream to read from
      * @param encoding the encoding to use for file names, use null
      * for the platform's default encoding
      * @since 1.6
+     * @throws ArchiveException on error
      */
     public DumpArchiveInputStream(InputStream is, String encoding)
         throws ArchiveException {
@@ -160,6 +161,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
     /**
      * Return the archive summary information.
+     * @return the summary
      */
     public DumpArchiveSummary getSummary() {
         return summary;
@@ -215,14 +217,13 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
     /**
      * Read the next entry.
+     * @return the next entry
+     * @throws IOException on error
      */
     public DumpArchiveEntry getNextDumpEntry() throws IOException {
         return getNextEntry();
     }
 
-    /**
-     * Read the next entry.
-     */
     @Override
     public DumpArchiveEntry getNextEntry() throws IOException {
         DumpArchiveEntry entry = null;
@@ -536,6 +537,9 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      * Look at the first few bytes of the file to decide if it's a dump
      * archive. With 32 bytes we can look at the magic value, with a full
      * 1k we can verify the checksum.
+     * @param buffer data to match
+     * @param length length of data
+     * @return whether the buffer seems to contain dump data
      */
     public static boolean matches(byte[] buffer, int length) {
         // do we have enough of the header?
