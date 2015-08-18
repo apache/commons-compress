@@ -71,6 +71,9 @@
               <li>Added auto-detection for LZMA.</li>
             </ul>
           </subsection>
+
+          <!--subsection name="What's coming in 1.11?">
+          </subsection-->
         </section>
 
         <section name="Documentation">
@@ -88,14 +91,14 @@
             by the <code>java.util.jar</code> package of the Java
             class library.  XZ and lzma support is provided by the public
             domain <a href="http://tukaani.org/xz/java.html">XZ for
-            Java</a> library.  As of Commons Compress 1.9 support for
+            Java</a> library.  As of Commons Compress 1.10 support for
             the lzma, Z and Snappy formats is read-only.</p>
 
           <p>The ar, arj, cpio, dump, tar, 7z and zip formats are supported as
             archivers where the <a href="zip.html">zip</a>
             implementation provides capabilities that go beyond the
             features found in java.util.zip.  As of Commons Compress
-            1.9 support for the dump and arj formats is
+            1.10 support for the dump and arj formats is
             read-only - 7z can read most compressed and encrypted
             archives but only write unencrypted ones.  LZMA(2) support
             in 7z requires <a href="http://tukaani.org/xz/java.html">XZ for

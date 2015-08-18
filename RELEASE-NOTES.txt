@@ -11,9 +11,18 @@ Release 1.10
 Release 1.10 moves the former
 org.apache.commons.compress.compressors.z._internal_ package which
 breaks backwards compatibility for code which used the old package.
-This also changes the superclass of ZCompressorInputStream.
+
+This also changes the superclass of ZCompressorInputStream which makes
+this class binary incompatible with the one of Compress 1.9.  Code
+that extends ZCompressorInputStream will need to be recompiled in
+order to work with Compress 1.10.
 
 New features:
+o CompressorStreamFactory can now auto-detect DEFLATE streams
+  with ZLIB header.
+  Issue: COMPRESS-316. Thanks to Nick Burch. 
+o CompressorStreamFactory can now auto-detect LZMA streams.
+  Issue: COMPRESS-313. 
 o Added support for parallel compression. This low-level API allows
   a client to build a zip/jar file by using the class
   org.apache.commons.compress.archivers.zip.ParallelScatterZipCreator.
@@ -38,6 +47,38 @@ o New methods in ZipArchiveOutputStream and ZipFile allows
   Issue: COMPRESS-295. Thanks to Kristian Rosenvold. 
 
 Fixed Bugs:
+o TarArchiveInputStream can now read entries with group or
+  user ids > 0x80000000.
+  Issue: COMPRESS-314. 
+o TarArchiveOutputStream can now write entries with group or
+  user ids > 0x80000000.
+  Issue: COMPRESS-315. 
+o TarArchiveEntry's constructor with a File and a String arg
+  didn't normalize the name.
+  Issue: COMPRESS-312. 
+o ZipEncodingHelper no longer reads system properties directly
+  to determine the default charset.
+  Issue: COMPRESS-308. 
+o BZip2CompressorInputStream#read would return -1 when asked to
+  read 0 bytes.
+  Issue: COMPRESS-309. 
+o ArchiveStreamFactory fails to pass on the encoding when creating
+  some streams.
+    * ArjArchiveInputStream
+    * CpioArchiveInputStream
+    * DumpArchiveInputStream
+    * JarArchiveInputStream
+    * TarArchiveInputStream
+    * JarArchiveOutputStream
+  Issue: COMPRESS-306. 
+o Restore immutability/thread-safety to ArchiveStreamFactory.
+  The class is now immutable provided that the method setEntryEncoding
+  is not used. The class is thread-safe.
+  Issue: COMPRESS-302. 
+o Restore immutability/thread-safety to CompressorStreamFactory.
+  The class is now immutable provided that the method
+  setDecompressConcatenated is not used.  The class is thread-safe.
+  Issue: COMPRESS-303.
 o ZipFile logs a warning in its finalizer when its constructor
   has thrown an exception reading the file - for example if the
   file doesn't exist.

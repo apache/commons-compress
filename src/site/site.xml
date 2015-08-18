@@ -35,6 +35,7 @@
       <item name="Download"    href="/download_compress.cgi"/>
       <item name="Security Reports"    href="/security-reports.html"/>
       <item name="Wiki"        href="http://wiki.apache.org/commons/Compress"/>
+      <item name="Javadoc 1.10" href="javadocs/api-1.10/index.html"/>
       <item name="Javadoc 1.9" href="javadocs/api-1.9/index.html"/>
       <item name="Javadoc 1.8.1" href="javadocs/api-1.8.1/index.html"/>
       <item name="Javadoc 1.8" href="javadocs/api-1.8/index.html"/>
