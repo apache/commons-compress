@@ -27,6 +27,7 @@ import java.util.Enumeration;
 import java.util.zip.ZipException;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -207,13 +208,6 @@ public class X7875_NewUnixTest {
         assertEquals(expectedUID, xf.getUID());
         assertEquals(expectedGID, xf.getGID());
 
-        // Initial central parse (init with garbage to avoid defaults causing test to pass).
-        xf.setUID(54321);
-        xf.setGID(12345);
-        xf.parseFromCentralDirectoryData(expected, 0, expected.length);
-        assertEquals(expectedUID, xf.getUID());
-        assertEquals(expectedGID, xf.getGID());
-
         xf.setUID(uid);
         xf.setGID(gid);
         if (expected.length < 5) {
@@ -239,22 +233,9 @@ public class X7875_NewUnixTest {
         assertEquals(expectedUID, xf.getUID());
         assertEquals(expectedGID, xf.getGID());
 
-        // Do the same as above, but with Central Directory data:
-        xf.setUID(uid);
-        xf.setGID(gid);
-        if (expected.length < 5) {
-            // We never emit zero-length entries.
-            assertEquals(5, xf.getCentralDirectoryLength().getValue());
-        } else {
-            assertEquals(expected.length, xf.getCentralDirectoryLength().getValue());
-        }
+        assertEquals(0, xf.getCentralDirectoryLength().getValue());
         result = xf.getCentralDirectoryData();
-        if (expected.length < 5) {
-            // We never emit zero-length entries.
-            assertTrue(Arrays.equals(new byte[]{1,1,0,1,0}, result));
-        } else {
-            assertTrue(Arrays.equals(expected, result));
-        }
+        assertArrayEquals(new byte[0], result);
 
         // And now we re-parse:
         xf.parseFromCentralDirectoryData(result, 0, result.length);

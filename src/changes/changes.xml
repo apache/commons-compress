@@ -44,6 +44,10 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.11" date="not released, yet"
              description="Release 1.11">
+      <action issue="COMPRESS-321" type="fix" date="2015-08-22">
+        ArrayIndexOutOfBoundsException when InfoZIP type 7875 extra
+        fields are read from the central directory.
+      </action>
     </release>
 
     <release version="1.10" date="2015-08-18"
