@@ -178,6 +178,6 @@ public class X0014_X509Certificates extends PKWareExtraHeader implements ZipExtr
 
         this.rcount = ZipShort.getValue(data, offset);
 
-        System.out.printf("14: rcount: %d\n", rcount);
+        System.out.printf("X509Certificates: rcount?: %d\n", rcount);
     }
 }

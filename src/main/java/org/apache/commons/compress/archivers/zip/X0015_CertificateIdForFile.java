@@ -36,6 +36,8 @@ import java.io.IOException;
  *         -----     ----     -----------
  * (CID)   0x0015    2 bytes  Tag for this "extra" block type
  *         TSize     2 bytes  Size of data that follows
+ *         RCount    4 bytes  Number of recipients. (inferred)
+ *         HashAlg   2 bytes  Hash algorithm identifier. (inferred)
  *         TData     TSize    Signature Data
  * </pre>
  * 
@@ -187,9 +189,9 @@ public class X0015_CertificateIdForFile extends PKWareExtraHeader implements Zip
         this.rcount = ZipShort.getValue(data, offset);
         this.hashAlg = HashAlgorithm.getAlgorithmByCode(ZipShort.getValue(data, offset + 2));
 
-        System.out.printf("15: rcount: %d\n", rcount);
-        System.out.printf("15: hashAlg: %s\n", hashAlg);
+        System.out.printf("CertificateId For File (CD): rcount: %d, hashAlg: %s\n", rcount, hashAlg);
 
+        /*
         int size = ZipShort.getValue(data, offset + 4);
 
         //System.out.printf("16: [2] %d %x\n", ZipShort.getValue(data, offset + 4),
@@ -200,6 +202,6 @@ public class X0015_CertificateIdForFile extends PKWareExtraHeader implements Zip
         int size2 = ZipShort.getValue(data, offset + 6 + size);
         System.out.printf("15: size2: %d\n", size2);
         System.out.printf("15: len: %d, offset+size*: %d\n", length, size + 10 + size2);
+        */
     }
-
 }

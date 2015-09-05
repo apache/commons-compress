@@ -363,21 +363,19 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader implements Z
         this.algId = EncryptionAlgorithm.getAlgorithmByCode(ZipShort.getValue(data, offset + 2));
         this.bitlen = ZipShort.getValue(data, offset + 4);
         this.flags = ZipShort.getValue(data, offset + 6);
+        this.rcount = ZipLong.getValue(data, offset + 8);
 
-        if (length > offset + 8) {
-            this.rcount = ZipLong.getValue(data, offset + 8);
+        if (rcount > 0) {
             this.hashAlg = HashAlgorithm.getAlgorithmByCode(ZipShort.getValue(data, offset + 12));
             this.hashSize = ZipShort.getValue(data, offset + 14);
             // srlist... hashed public keys
         }
 
-        System.out.printf("17: format  : %d\n", this.format);
-        System.out.printf("17: algId   : %s\n", this.algId);
-        System.out.printf("17: bitlen  : %d\n", this.bitlen);
-        System.out.printf("17: flags   : %x\n", this.flags);
-        System.out.printf("17: rcount  : %d\n", this.rcount);
-        System.out.printf("17: hashAlg : %s\n", this.hashAlg);
-        System.out.printf("17: hashSize: %d\n", this.hashSize);
+        if (rcount > 0) {
+            System.out.printf("Strong Encryption Header (CD): alg: %s, flags: %x, rcount: %d, hash: %s\n", this.algId, this.flags, this.rcount, this.hashAlg);
+        } else {
+            System.out.printf("Strong Encryption Header (CD): alg: %s, flags: %x\n", this.algId, this.flags);
+        }
     }
 
     /**
@@ -406,10 +404,7 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader implements Z
         // vdata
         // vcrc32
 
-        System.out.printf("17: format  : %d\n", this.format);
-        System.out.printf("17: algId   : %s\n", this.algId);
-        System.out.printf("17: bitlen  : %d\n", this.bitlen);
-        System.out.printf("17: flags   : %x\n", this.flags);
+        System.out.printf("Strong Encryption Header (file): alg: %s, flags: %x\n", this.algId, this.flags);
     }
 
     /**

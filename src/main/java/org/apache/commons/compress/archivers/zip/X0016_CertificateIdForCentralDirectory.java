@@ -37,6 +37,8 @@ import java.io.IOException;
  *         -----     ----     -----------
  * (CDID)  0x0016    2 bytes  Tag for this "extra" block type
  *         TSize     2 bytes  Size of data that follows
+ *         RCount    4 bytes  Number of recipients. (inferred)
+ *         HashAlg   2 bytes  Hash algorithm identifier. (inferred)
  *         TData     TSize    Data
  * </pre>
  * 
@@ -176,8 +178,9 @@ public class X0016_CertificateIdForCentralDirectory extends PKWareExtraHeader im
         this.rcount = ZipShort.getValue(data, offset);
         this.hashAlg = HashAlgorithm.getAlgorithmByCode(ZipShort.getValue(data, offset + 2));
 
-        System.out.printf("16: rcount: %d\n", rcount);
-        System.out.printf("16: hashAlg: %s\n", hashAlg);
+        System.out.printf("CertificateId For CD (CD): rcount: %d, hashAlg: %s\n", rcount, hashAlg);
+
+        /*
         int size = ZipShort.getValue(data, offset + 4);
         int size2 = ZipShort.getValue(data, offset + 6);
         System.out.printf("16: diff: %d\n", size - size2);
@@ -187,5 +190,6 @@ public class X0016_CertificateIdForCentralDirectory extends PKWareExtraHeader im
         //System.out.printf("16: [3] %d %x\n", ZipShort.getValue(data, offset + 6),
         //        ZipShort.getValue(data, offset + 6));
         System.out.printf("16: len: %d, offset+size: %d\n", length, size + 8);
+        */
     }
 }
