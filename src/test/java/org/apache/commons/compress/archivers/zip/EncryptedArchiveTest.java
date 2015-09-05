@@ -175,4 +175,54 @@ public class EncryptedArchiveTest extends TestCase {
             }
         }
     }
+
+    public void testReadPkwarePasswordEncryptedEntryViaZipFile()
+        throws IOException {
+        System.out.println("E");
+        File file = getFile("pkware-password-encrypted.zip");
+        ZipFile zf = null;
+        try {
+            zf = new ZipFile(file);
+            ZipArchiveEntry zae = zf.getEntry("LICENSE.txt");
+            assertTrue(zae.getGeneralPurposeBit().usesEncryption());
+            assertTrue(zae.getGeneralPurposeBit().usesStrongEncryption());
+            assertFalse(zf.canReadEntryData(zae));
+            try {
+                zf.getInputStream(zae);
+                fail("expected an exception");
+            } catch (UnsupportedZipFeatureException ex) {
+                assertSame(UnsupportedZipFeatureException.Feature.ENCRYPTION,
+                           ex.getFeature());
+            }
+        } finally {
+            ZipFile.closeQuietly(zf);
+        }
+    }
+
+    public void testReadPkwarePasswordEncryptedEntryViaStream()
+        throws IOException {
+        System.out.println("F");
+        File file = getFile("pkware-password-encrypted.zip");
+        ZipArchiveInputStream zin = null;
+        try {
+            zin = new ZipArchiveInputStream(new FileInputStream(file));
+            ZipArchiveEntry zae = zin.getNextZipEntry();
+            assertEquals("LICENSE.txt", zae.getName());
+            assertTrue(zae.getGeneralPurposeBit().usesEncryption());
+            assertTrue(zae.getGeneralPurposeBit().usesStrongEncryption());
+            assertFalse(zin.canReadEntryData(zae));
+            try {
+                byte[] buf = new byte[1024];
+                zin.read(buf, 0, buf.length);
+                fail("expected an exception");
+            } catch (UnsupportedZipFeatureException ex) {
+                assertSame(UnsupportedZipFeatureException.Feature.ENCRYPTION,
+                           ex.getFeature());
+            }
+        } finally {
+            if (zin != null) {
+                zin.close();
+            }
+        }
+    }
 }

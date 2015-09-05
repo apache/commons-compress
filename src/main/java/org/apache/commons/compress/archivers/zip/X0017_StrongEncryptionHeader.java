@@ -366,7 +366,7 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader implements Z
         this.bitlen = bytesToUnsignedInt(data, offset + 4, 2);
         this.flags = bytesToUnsignedInt(data, offset + 6, 2);
 
-        if (length > 8) {
+        if (length > offset + 8) {
             this.rcount = bytesToUnsignedInt(data, offset + 8, 4);
             this.hashAlg = bytesToUnsignedInt(data, offset + 12, 2);
             this.hashSize = bytesToUnsignedInt(data, offset + 14, 2);
