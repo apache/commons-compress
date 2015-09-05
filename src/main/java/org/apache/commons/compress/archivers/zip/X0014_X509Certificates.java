@@ -176,7 +176,7 @@ public class X0014_X509Certificates extends PKWareExtraHeader implements ZipExtr
             setLocalFileDataData(tmp);
         }
 
-        this.rcount = bytesToUnsignedInt(data, offset, 2);
+        this.rcount = ZipShort.getValue(data, offset);
 
         System.out.printf("14: rcount: %d\n", rcount);
     }

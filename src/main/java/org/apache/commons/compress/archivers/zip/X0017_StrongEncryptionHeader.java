@@ -18,8 +18,6 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import static org.apache.commons.compress.archivers.zip.ZipUtil.signedByteToUnsignedInt;
-
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -267,7 +265,7 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader implements Z
     private int algId;
     private int bitlen;
     private int flags;
-    private int rcount;
+    private long rcount;
     private int hashAlg;
     private int hashSize;
 
@@ -361,15 +359,15 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader implements Z
      * @param length
      */
     public void parseCentralDirectoryFormat(byte[] data, int offset, int length) {
-        this.format = bytesToUnsignedInt(data, offset, 2);
-        this.algId = bytesToUnsignedInt(data, offset + 2, 2);
-        this.bitlen = bytesToUnsignedInt(data, offset + 4, 2);
-        this.flags = bytesToUnsignedInt(data, offset + 6, 2);
+        this.format = ZipShort.getValue(data, offset);
+        this.algId = ZipShort.getValue(data, offset + 2);
+        this.bitlen = ZipShort.getValue(data, offset + 4);
+        this.flags = ZipShort.getValue(data, offset + 6);
 
         if (length > offset + 8) {
-            this.rcount = bytesToUnsignedInt(data, offset + 8, 4);
-            this.hashAlg = bytesToUnsignedInt(data, offset + 12, 2);
-            this.hashSize = bytesToUnsignedInt(data, offset + 14, 2);
+            this.rcount = ZipLong.getValue(data, offset + 8);
+            this.hashAlg = ZipShort.getValue(data, offset + 12);
+            this.hashSize = ZipShort.getValue(data, offset + 14);
             // srlist... hashed public keys
         }
 
@@ -390,17 +388,17 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader implements Z
      * @param length
      */
     public void parseFileFormat(byte[] data, int offset, int length) {
-        int ivSize = bytesToUnsignedInt(data, offset, 2);
+        int ivSize = ZipShort.getValue(data, offset);
         this.ivData = new byte[ivSize];
         System.arraycopy(data, offset + 4, this.ivData, 0, ivSize);
 
-        int size = bytesToUnsignedInt(data, offset + ivSize + 2, 4);
-        this.format = bytesToUnsignedInt(data, offset + ivSize + 6, 2);
-        this.algId = bytesToUnsignedInt(data, offset + ivSize + 8, 2);
-        this.bitlen = bytesToUnsignedInt(data, offset + ivSize + 10, 2);
-        this.flags = bytesToUnsignedInt(data, offset + ivSize + 12, 2);
+        long size = ZipLong.getValue(data, offset + ivSize + 2);
+        this.format =ZipShort.getValue(data, offset + ivSize + 6);
+        this.algId = ZipShort.getValue(data, offset + ivSize + 8);
+        this.bitlen = ZipShort.getValue(data, offset + ivSize + 10);
+        this.flags = ZipShort.getValue(data, offset + ivSize + 12);
 
-        int erdSize = bytesToUnsignedInt(data, offset + ivSize + 14, 2);
+        int erdSize = ZipShort.getValue(data, offset + ivSize + 14);
         this.erdData = new byte[erdSize];
         System.arraycopy(data, offset + ivSize + 16, this.erdData, 0, erdSize);
         // reserved

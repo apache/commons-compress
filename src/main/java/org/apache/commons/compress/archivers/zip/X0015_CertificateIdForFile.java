@@ -18,8 +18,6 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import static org.apache.commons.compress.archivers.zip.ZipUtil.signedByteToUnsignedInt;
-
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -186,20 +184,20 @@ public class X0015_CertificateIdForFile extends PKWareExtraHeader implements Zip
             setLocalFileDataData(tmp);
         }
 
-        this.rcount = bytesToUnsignedInt(data, offset, 2);
-        this.hashAlg = bytesToUnsignedInt(data, offset + 2, 2);
+        this.rcount = ZipShort.getValue(data, offset);
+        this.hashAlg = ZipShort.getValue(data, offset + 2);
 
         System.out.printf("15: rcount: %d\n", rcount);
         System.out.printf("15: hashAlg: %x\n", hashAlg);
 
-        System.out.printf("15: [2] %d %x\n", bytesToUnsignedInt(data, offset + 4, 2),
-                bytesToUnsignedInt(data, offset + 4, 2));
-        System.out.printf("15: [3] %d %x\n", bytesToUnsignedInt(data, offset + 6, 4),
-                bytesToUnsignedInt(data, offset + 6, 4));
-        System.out.printf("15: [4] %d %x\n", bytesToUnsignedInt(data, offset + 10, 4),
-                bytesToUnsignedInt(data, offset + 10, 4));
-        System.out.printf("15: [5] %d %x\n", bytesToUnsignedInt(data, offset + 14, 2),
-                bytesToUnsignedInt(data, offset + 14, 2));
+        System.out.printf("15: [2] %d %x\n", ZipShort.getValue(data, offset + 4),
+                ZipShort.getValue(data, offset + 4));
+        System.out.printf("15: [3] %d %x\n", ZipLong.getValue(data, offset + 6),
+                ZipLong.getValue(data, offset + 6));
+        System.out.printf("15: [4] %d %x\n", ZipLong.getValue(data, offset + 10),
+                ZipLong.getValue(data, offset + 10));
+        System.out.printf("15: [5] %d %x\n", ZipShort.getValue(data, offset + 14),
+                ZipShort.getValue(data, offset + 14));
     }
 
 }
