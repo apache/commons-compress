@@ -221,6 +221,38 @@ import java.io.IOException;
  *           Microsoft.
  * </pre>
  * 
+ * <b>Algorithm IDs</b> - integer identifier of the encryption algorithm from
+ * the following range
+ * 
+ * <ul>
+ * <li>0x6601 - DES</li>
+ * <li>0x6602 - RC2 (version needed to extract < 5.2)</li>
+ * <li>0x6603 - 3DES 168</li>
+ * <li>0x6609 - 3DES 112</li>
+ * <li>0x660E - AES 128</li>
+ * <li>0x660F - AES 192</li>
+ * <li>0x6610 - AES 256</li>
+ * <li>0x6702 - RC2 (version needed to extract >= 5.2)</li>
+ * <li>0x6720 - Blowfish</li>
+ * <li>0x6721 - Twofish</li>
+ * <li>0x6801 - RC4</li>
+ * <li>0xFFFF - Unknown algorithm</li>
+ * </ul>
+ * 
+ * <b>Hash Algorithms</b> - integer identifier of the hash algorithm from the
+ * following range
+ * 
+ * <ul>
+ * <li>0x0000 - none</li>
+ * <li>0x0001 - CRC32</li>
+ * <li>0x8003 - MD5</li>
+ * <li>0x8004 - SHA1</li>
+ * <li>0x8007 - RIPEMD160</li>
+ * <li>0x800C - SHA256</li>
+ * <li>0x800D - SHA384</li>
+ * <li>0x800E - SHA512</li>
+ * </ul>
+ * 
  * <b>Flags</b> - Processing flags needed for decryption
  * 
  * <ul>
@@ -244,7 +276,7 @@ import java.io.IOException;
  *
  * @NotThreadSafe
  */
-public class X0017_StrongEncryptionHeader extends PKWareExtraHeader implements ZipExtraField {
+public class PKWareExtraHeader implements ZipExtraField {
     private static final ZipShort HEADER_ID = new ZipShort(0x0017);
     private static final long serialVersionUID = 1L;
 
@@ -274,6 +306,23 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader implements Z
     // encryption data
     private byte ivData[];
     private byte erdData[];
+
+    /**
+     * Convert bytes to unsigned int, LSB.
+     * 
+     * @param data
+     * @param off
+     * @param len
+     * @return
+     */
+    int bytesToUnsignedInt(byte[] data, int off, int len) {
+        int x = 0;
+        for (int i = 0; i < len; i++) {
+            x += signedByteToUnsignedInt(data[off + i]) << (8 * i);
+        }
+
+        return x;
+    }
 
     /**
      * Set the extra field data in the local file data - without Header-ID or

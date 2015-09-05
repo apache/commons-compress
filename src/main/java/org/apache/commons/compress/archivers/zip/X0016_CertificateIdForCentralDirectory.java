@@ -18,14 +18,19 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import static org.apache.commons.compress.archivers.zip.ZipUtil.signedByteToUnsignedInt;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 /**
  * X.509 Certificate ID and Signature for central directory (0x0016):
  *
- * This field contains the information about which certificate in 
- * the PKCS#7 store was used to sign the central directory structure.
- * When the Central Directory Encryption feature is enabled for a 
- * ZIP file, this record will appear in the Archive Extra Data Record, 
- * otherwise it will appear in the first central directory record.
+ * This field contains the information about which certificate in the PKCS#7
+ * store was used to sign the central directory structure. When the Central
+ * Directory Encryption feature is enabled for a ZIP file, this record will
+ * appear in the Archive Extra Data Record, otherwise it will appear in the
+ * first central directory record.
  *
  * Note: all fields stored in Intel low-byte/high-byte order.
  *
@@ -39,12 +44,13 @@ package org.apache.commons.compress.archivers.zip;
  * 
  * @NotThreadSafe
  */
-public class X0016_CertificateIdForCentralDirectory implements ZipExtraField {
+public class X0016_CertificateIdForCentralDirectory extends PKWareExtraHeader implements ZipExtraField {
     private static final ZipShort HEADER_ID = new ZipShort(0x0016);
     private static final long serialVersionUID = 1L;
 
     /**
      * Get the header id.
+     * 
      * @return the header id
      */
     public ZipShort getHeaderId() {
@@ -52,15 +58,20 @@ public class X0016_CertificateIdForCentralDirectory implements ZipExtraField {
     }
 
     /**
-     * Extra field data in local file data - without
-     * Header-ID or length specifier.
+     * Extra field data in local file data - without Header-ID or length
+     * specifier.
      */
     private byte[] localData;
 
+    private int rcount;
+    private int hashAlg;
+
     /**
-     * Set the extra field data in the local file data -
-     * without Header-ID or length specifier.
-     * @param data the field data to use
+     * Set the extra field data in the local file data - without Header-ID or
+     * length specifier.
+     * 
+     * @param data
+     *            the field data to use
      */
     public void setLocalFileDataData(byte[] data) {
         localData = ZipUtil.copy(data);
@@ -68,6 +79,7 @@ public class X0016_CertificateIdForCentralDirectory implements ZipExtraField {
 
     /**
      * Get the length of the local data.
+     * 
      * @return the length of the local data
      */
     public ZipShort getLocalFileDataLength() {
@@ -76,6 +88,7 @@ public class X0016_CertificateIdForCentralDirectory implements ZipExtraField {
 
     /**
      * Get the local data.
+     * 
      * @return the local data
      */
     public byte[] getLocalFileDataData() {
@@ -83,22 +96,33 @@ public class X0016_CertificateIdForCentralDirectory implements ZipExtraField {
     }
 
     /**
-     * Extra field data in central directory - without
-     * Header-ID or length specifier.
+     * Extra field data in central directory - without Header-ID or length
+     * specifier.
      */
     private byte[] centralData;
 
     /**
      * Set the extra field data in central directory.
-     * @param data the data to use
+     * 
+     * @param data
+     *            the data to use
      */
     public void setCentralDirectoryData(byte[] data) {
+        try {
+            FileOutputStream os = new FileOutputStream("/tmp/16.dat");
+            os.write(data);
+            os.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+
         centralData = ZipUtil.copy(data);
     }
 
     /**
-     * Get the central data length.
-     * If there is no central data, get the local file data length.
+     * Get the central data length. If there is no central data, get the local
+     * file data length.
+     * 
      * @return the central data length
      */
     public ZipShort getCentralDirectoryLength() {
@@ -110,6 +134,7 @@ public class X0016_CertificateIdForCentralDirectory implements ZipExtraField {
 
     /**
      * Get the central data.
+     * 
      * @return the central data if present, else return the local file data
      */
     public byte[] getCentralDirectoryData() {
@@ -120,33 +145,49 @@ public class X0016_CertificateIdForCentralDirectory implements ZipExtraField {
     }
 
     /**
-     * @param data the array of bytes.
-     * @param offset the source location in the data array.
-     * @param length the number of bytes to use in the data array.
+     * This should never be called for this header type.
+     * 
+     * @param data
+     *            the array of bytes.
+     * @param offset
+     *            the source location in the data array.
+     * @param length
+     *            the number of bytes to use in the data array.
      * @see ZipExtraField#parseFromLocalFileData(byte[], int, int)
      */
     public void parseFromLocalFileData(byte[] data, int offset, int length) {
-        System.out.println("Field: 0x0016");
         byte[] tmp = new byte[length];
         System.arraycopy(data, offset, tmp, 0, length);
         setLocalFileDataData(tmp);
     }
 
     /**
-     * @param data the array of bytes.
-     * @param offset the source location in the data array.
-     * @param length the number of bytes to use in the data array.
+     * @param data
+     *            the array of bytes.
+     * @param offset
+     *            the source location in the data array.
+     * @param length
+     *            the number of bytes to use in the data array.
      * @see ZipExtraField#parseFromCentralDirectoryData(byte[], int, int)
      */
-    public void parseFromCentralDirectoryData(byte[] data, int offset,
-                                              int length) {
-        System.out.println("Field: 0x0016");
+    public void parseFromCentralDirectoryData(byte[] data, int offset, int length) {
         byte[] tmp = new byte[length];
         System.arraycopy(data, offset, tmp, 0, length);
         setCentralDirectoryData(tmp);
-        if (localData == null) {
-            setLocalFileDataData(tmp);
-        }
-    }
 
+        this.rcount = bytesToUnsignedInt(data, offset, 2);
+        this.hashAlg = bytesToUnsignedInt(data, offset + 2, 2);
+
+        System.out.printf("16: rcount: %d\n", rcount);
+        System.out.printf("16: hashAlg: %x\n", hashAlg);
+
+        System.out.printf("16: [2] %d %x\n", bytesToUnsignedInt(data, offset + 4, 2),
+                bytesToUnsignedInt(data, offset + 4, 2));
+        System.out.printf("16: [3] %d %x\n", bytesToUnsignedInt(data, offset + 6, 4),
+                bytesToUnsignedInt(data, offset + 6, 4));
+        System.out.printf("16: [4] %d %x\n", bytesToUnsignedInt(data, offset + 10, 4),
+                bytesToUnsignedInt(data, offset + 10, 4));
+        System.out.printf("16: [5] %d %x\n", bytesToUnsignedInt(data, offset + 14, 2),
+                bytesToUnsignedInt(data, offset + 14, 2));
+    }
 }

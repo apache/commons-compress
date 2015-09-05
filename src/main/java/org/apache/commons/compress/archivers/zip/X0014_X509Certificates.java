@@ -18,15 +18,17 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 /**
  * PKCS#7 Store for X.509 Certificates (0x0014):
  *
- * This field MUST contain information about each of the certificates 
- * files may be signed with. When the Central Directory Encryption 
- * feature is enabled for a ZIP file, this record will appear in 
- * the Archive Extra Data Record, otherwise it will appear in the 
- * first central directory record and will be ignored in any 
- * other record.  
+ * This field MUST contain information about each of the certificates files may
+ * be signed with. When the Central Directory Encryption feature is enabled for
+ * a ZIP file, this record will appear in the Archive Extra Data Record,
+ * otherwise it will appear in the first central directory record and will be
+ * ignored in any other record.
  *
  * Note: all fields stored in Intel low-byte/high-byte order.
  * 
@@ -40,12 +42,13 @@ package org.apache.commons.compress.archivers.zip;
  * 
  * @NotThreadSafe
  */
-public class X0014_X509Certificates implements ZipExtraField {
+public class X0014_X509Certificates extends PKWareExtraHeader implements ZipExtraField {
     private static final ZipShort HEADER_ID = new ZipShort(0x0014);
     private static final long serialVersionUID = 1L;
-    
+
     /**
      * Get the header id.
+     * 
      * @return the header id
      */
     public ZipShort getHeaderId() {
@@ -53,22 +56,38 @@ public class X0014_X509Certificates implements ZipExtraField {
     }
 
     /**
-     * Extra field data in local file data - without
-     * Header-ID or length specifier.
+     * Extra field data in local file data - without Header-ID or length
+     * specifier.
      */
     private byte[] localData;
 
+    private int rcount;
+
     /**
-     * Set the extra field data in the local file data -
-     * without Header-ID or length specifier.
-     * @param data the field data to use
+     * Set the extra field data in the local file data - without Header-ID or
+     * length specifier.
+     * 
+     * @param data
+     *            the field data to use
      */
     public void setLocalFileDataData(byte[] data) {
+        byte[] data1 = new byte[data.length - 2];
+        System.arraycopy(data1, 0, data, 2, data.length - 2);
+
+        try {
+            FileOutputStream os = new FileOutputStream("/tmp/14.dat");
+            os.write(data);
+            os.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+
         localData = ZipUtil.copy(data);
     }
 
     /**
      * Get the length of the local data.
+     * 
      * @return the length of the local data
      */
     public ZipShort getLocalFileDataLength() {
@@ -77,6 +96,7 @@ public class X0014_X509Certificates implements ZipExtraField {
 
     /**
      * Get the local data.
+     * 
      * @return the local data
      */
     public byte[] getLocalFileDataData() {
@@ -84,22 +104,25 @@ public class X0014_X509Certificates implements ZipExtraField {
     }
 
     /**
-     * Extra field data in central directory - without
-     * Header-ID or length specifier.
+     * Extra field data in central directory - without Header-ID or length
+     * specifier.
      */
     private byte[] centralData;
 
     /**
      * Set the extra field data in central directory.
-     * @param data the data to use
+     * 
+     * @param data
+     *            the data to use
      */
     public void setCentralDirectoryData(byte[] data) {
         centralData = ZipUtil.copy(data);
     }
 
     /**
-     * Get the central data length.
-     * If there is no central data, get the local file data length.
+     * Get the central data length. If there is no central data, get the local
+     * file data length.
+     * 
      * @return the central data length
      */
     public ZipShort getCentralDirectoryLength() {
@@ -111,6 +134,7 @@ public class X0014_X509Certificates implements ZipExtraField {
 
     /**
      * Get the central data.
+     * 
      * @return the central data if present, else return the local file data
      */
     public byte[] getCentralDirectoryData() {
@@ -121,34 +145,39 @@ public class X0014_X509Certificates implements ZipExtraField {
     }
 
     /**
-     * @param data the array of bytes.
-     * @param offset the source location in the data array.
-     * @param length the number of bytes to use in the data array.
+     * @param data
+     *            the array of bytes.
+     * @param offset
+     *            the source location in the data array.
+     * @param length
+     *            the number of bytes to use in the data array.
      * @see ZipExtraField#parseFromLocalFileData(byte[], int, int)
      */
     public void parseFromLocalFileData(byte[] data, int offset, int length) {
         byte[] tmp = new byte[length];
-        
-        System.out.println("Field: 0x0014");
         System.arraycopy(data, offset, tmp, 0, length);
         setLocalFileDataData(tmp);
     }
 
     /**
-     * @param data the array of bytes.
-     * @param offset the source location in the data array.
-     * @param length the number of bytes to use in the data array.
+     * @param data
+     *            the array of bytes.
+     * @param offset
+     *            the source location in the data array.
+     * @param length
+     *            the number of bytes to use in the data array.
      * @see ZipExtraField#parseFromCentralDirectoryData(byte[], int, int)
      */
-    public void parseFromCentralDirectoryData(byte[] data, int offset,
-                                              int length) {
-        System.out.println("Field: 0x0014");
+    public void parseFromCentralDirectoryData(byte[] data, int offset, int length) {
         byte[] tmp = new byte[length];
         System.arraycopy(data, offset, tmp, 0, length);
         setCentralDirectoryData(tmp);
         if (localData == null) {
             setLocalFileDataData(tmp);
         }
-    }
 
+        this.rcount = bytesToUnsignedInt(data, offset, 2);
+
+        System.out.printf("14: rcount: %d\n", rcount);
+    }
 }
