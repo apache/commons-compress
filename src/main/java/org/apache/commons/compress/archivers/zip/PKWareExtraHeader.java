@@ -18,6 +18,11 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+
 /**
  * Base class for all PKWare strong crypto extra headers.
  * 
@@ -57,4 +62,105 @@ package org.apache.commons.compress.archivers.zip;
  */
 public abstract class PKWareExtraHeader implements ZipExtraField {
 
+    /**
+     * Encryption algorithm.
+     */
+    public enum EncryptionAlgorithm {
+        DES(0x6601),
+        RC2pre52(0x6602),
+        TripleDES168(0x6603),
+        TripleDES192(0x6609),
+        AES128(0x660E),
+        AES192(0x660F),
+        AES256(0x6610),
+        RC2(0x6702),
+        RC4(0x6801),
+        UNKNOWN(0xFFFF);
+
+        private final int code;
+
+        private static final Map<Integer, EncryptionAlgorithm> codeToEnum;
+
+        static {
+            Map<Integer, EncryptionAlgorithm> cte = new HashMap<Integer, EncryptionAlgorithm>();
+            for (EncryptionAlgorithm method : values()) {
+                cte.put(Integer.valueOf(method.getCode()), method);
+            }
+            codeToEnum = Collections.unmodifiableMap(cte);
+        }
+
+        /**
+         * private constructor for enum style class.
+         */
+        EncryptionAlgorithm(int code) {
+            this.code = code;
+        }
+
+        /**
+         * the algorithm id.
+         * 
+         * @return the PKWare AlgorithmId
+         */
+        public int getCode() {
+            return code;
+        }
+
+        /**
+         * returns the EncryptionAlgorithm for the given code or null if the
+         * method is not known.
+         */
+        public static EncryptionAlgorithm getAlgorithmByCode(int code) {
+            return codeToEnum.get(Integer.valueOf(code));
+        }
+    }
+
+    /**
+     * Hash Algorithm
+     */
+    public enum HashAlgorithm {
+        NONE(0),
+        CRC32(1),
+        MD5(0x8003),
+        SHA1(0x8004),
+        RIPEND160(0x8007),
+        SHA256(0x800C),
+        SHA384(0x800D),
+        SHA512(0x800E);
+
+        private final int code;
+
+        private static final Map<Integer, HashAlgorithm> codeToEnum;
+
+        static {
+            Map<Integer, HashAlgorithm> cte = new HashMap<Integer, HashAlgorithm>();
+            for (HashAlgorithm method : values()) {
+                cte.put(Integer.valueOf(method.getCode()), method);
+            }
+            codeToEnum = Collections.unmodifiableMap(cte);
+        }
+
+        /**
+         * private constructor for enum style class.
+         */
+        HashAlgorithm(int code) {
+            this.code = code;
+        }
+
+        /**
+         * the hash algorithm ID.
+         * 
+         * @return the PKWare hashAlg
+         */
+        public int getCode() {
+            return code;
+        }
+
+        /**
+         * returns the HashAlgorithm for the given code or null if the method is
+         * not known.
+         */
+        public static HashAlgorithm getAlgorithmByCode(int code) {
+            return codeToEnum.get(Integer.valueOf(code));
+        }
+    }
 }
