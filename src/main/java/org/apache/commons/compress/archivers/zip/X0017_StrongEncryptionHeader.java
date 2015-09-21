@@ -18,9 +18,6 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 /**
  * Strong Encryption Header (0x0017)
  *
@@ -272,7 +269,39 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader implements Z
     // encryption data
     private byte ivData[];
     private byte erdData[];
+    
+    // encryption key
+    private byte recipientKeyHash[];
+    private byte keyBlob[];
+    
+    // password verification data
+    private byte vData[];
+    private byte vCRC32[];
 
+    /**
+     * Get record count.
+     * @return
+     */
+    public long getRecordCount() {
+        return rcount;
+    }
+    
+    /**
+     * Get hash algorithm.
+     * @return
+     */
+    public HashAlgorithm getHashAlgorithm() {
+        return hashAlg;
+    }
+    
+    /**
+     * Get encryption algorithm.
+     * @return
+     */
+    public EncryptionAlgorithm getEncryptionAlgorithm() {
+        return algId;
+    }
+    
     /**
      * Set the extra field data in the local file data - without Header-ID or
      * length specifier.
@@ -281,14 +310,6 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader implements Z
      *            the field data to use
      */
     public void setLocalFileDataData(byte[] data) {
-        try {
-            FileOutputStream os = new FileOutputStream("/tmp/17.dat");
-            os.write(data);
-            os.close();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-
         localData = ZipUtil.copy(data);
     }
 
@@ -369,12 +390,11 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader implements Z
             this.hashAlg = HashAlgorithm.getAlgorithmByCode(ZipShort.getValue(data, offset + 12));
             this.hashSize = ZipShort.getValue(data, offset + 14);
             // srlist... hashed public keys
-        }
-
-        if (rcount > 0) {
-            System.out.printf("Strong Encryption Header (CD): alg: %s, flags: %x, rcount: %d, hash: %s\n", this.algId, this.flags, this.rcount, this.hashAlg);
-        } else {
-            System.out.printf("Strong Encryption Header (CD): alg: %s, flags: %x\n", this.algId, this.flags);
+            for (int i = 0; i < this.rcount; i++) {
+                for (int j = 0; j < this.hashSize; j++) {
+                    //  ZipUtil.signedByteToUnsignedInt(data[offset + 16 + (i * this.hashSize) + j]));
+                }
+            }
         }
     }
 
@@ -399,12 +419,32 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader implements Z
         int erdSize = ZipShort.getValue(data, offset + ivSize + 14);
         this.erdData = new byte[erdSize];
         System.arraycopy(data, offset + ivSize + 16, this.erdData, 0, erdSize);
-        // reserved
-        // vsize
-        // vdata
-        // vcrc32
+        
+        this.rcount = ZipLong.getValue(data, offset + ivSize + 16 + erdSize);
+        System.out.println("rcount: " + rcount);
+        if (rcount == 0) {
+            int vSize = ZipShort.getValue(data, offset + ivSize + 20 + erdSize);
+            this.vData = new byte[vSize - 4];
+            this.vCRC32 = new byte[4];
+            System.arraycopy(data, offset + ivSize + 22 + erdSize , this.vData, 0, vSize - 4);
+            System.arraycopy(data, offset + ivSize + 22 + erdSize + vSize - 4, vCRC32, 0, 4);
+        } else {
+            this.hashAlg = HashAlgorithm.getAlgorithmByCode(ZipShort.getValue(data, offset + ivSize + 20 + erdSize));
+            this.hashSize = ZipShort.getValue(data, offset + ivSize + 22 + erdSize);
+            int resize = ZipShort.getValue(data, offset + ivSize + 24 + erdSize);
+            this.recipientKeyHash = new byte[this.hashSize];
+            this.keyBlob = new byte[resize - this.hashSize];
+            System.arraycopy(data, offset + ivSize + 24 + erdSize, this.recipientKeyHash, 0, this.hashSize);
+            System.arraycopy(data, offset + ivSize + 24 + erdSize + this.hashSize, this.keyBlob, 0, resize - this.hashSize);
 
-        System.out.printf("Strong Encryption Header (file): alg: %s, flags: %x\n", this.algId, this.flags);
+            int vSize = ZipShort.getValue(data, offset + ivSize + 26 + erdSize + resize);
+            this.vData = new byte[vSize - 4];
+            this.vCRC32 = new byte[4];
+            System.arraycopy(data, offset + ivSize + 22 + erdSize + resize, this.vData, 0, vSize - 4);
+            System.arraycopy(data, offset + ivSize + 22 + erdSize + resize + vSize - 4, vCRC32, 0, 4);
+        }
+        
+        // validate values?
     }
 
     /**

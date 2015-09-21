@@ -18,9 +18,6 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 /**
  * X.509 Certificate ID and Signature for individual file (0x0015):
  *
@@ -64,6 +61,22 @@ public class X0015_CertificateIdForFile extends PKWareExtraHeader implements Zip
 
     private int rcount;
     private HashAlgorithm hashAlg;
+    
+    /**
+     * Get record count.
+     * @return
+     */
+    public int getRecordCount() {
+        return rcount;
+    }
+
+    /**
+     * Get hash algorithm.
+     * @return
+     */
+    public HashAlgorithm getHashAlgorithm() {
+        return hashAlg;
+    }
 
     /**
      * Set the extra field data in the local file data - without Header-ID or
@@ -73,14 +86,6 @@ public class X0015_CertificateIdForFile extends PKWareExtraHeader implements Zip
      *            the field data to use
      */
     public void setLocalFileDataData(byte[] data) {
-        try {
-            FileOutputStream os = new FileOutputStream("/tmp/15.dat");
-            os.write(data);
-            os.close();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-
         localData = ZipUtil.copy(data);
     }
 
@@ -115,17 +120,6 @@ public class X0015_CertificateIdForFile extends PKWareExtraHeader implements Zip
      *            the data to use
      */
     public void setCentralDirectoryData(byte[] data) {
-        try {
-            FileOutputStream os = new FileOutputStream("/tmp/15.dat");
-            os.write(data);
-            os.close();
-
-            os = new FileOutputStream("/tmp/15.2.dat");
-            os.write(data, 2, data.length - 2);
-            os.close();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
         centralData = ZipUtil.copy(data);
     }
 
@@ -188,20 +182,5 @@ public class X0015_CertificateIdForFile extends PKWareExtraHeader implements Zip
 
         this.rcount = ZipShort.getValue(data, offset);
         this.hashAlg = HashAlgorithm.getAlgorithmByCode(ZipShort.getValue(data, offset + 2));
-
-        System.out.printf("CertificateId For File (CD): rcount: %d, hashAlg: %s\n", rcount, hashAlg);
-
-        /*
-        int size = ZipShort.getValue(data, offset + 4);
-
-        //System.out.printf("16: [2] %d %x\n", ZipShort.getValue(data, offset + 4),
-        //        ZipShort.getValue(data, offset + 4));
-        //System.out.printf("16: [3] %d %x\n", ZipShort.getValue(data, offset + 6),
-        //        ZipShort.getValue(data, offset + 6));
-        System.out.printf("15: len: %d, offset+size: %d\n", length, size + 8);
-        int size2 = ZipShort.getValue(data, offset + 6 + size);
-        System.out.printf("15: size2: %d\n", size2);
-        System.out.printf("15: len: %d, offset+size*: %d\n", length, size + 10 + size2);
-        */
     }
 }

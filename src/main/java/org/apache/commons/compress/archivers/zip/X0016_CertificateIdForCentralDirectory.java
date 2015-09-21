@@ -18,9 +18,6 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 /**
  * X.509 Certificate ID and Signature for central directory (0x0016):
  *
@@ -67,6 +64,22 @@ public class X0016_CertificateIdForCentralDirectory extends PKWareExtraHeader im
     private HashAlgorithm hashAlg;
 
     /**
+     * Get record count.
+     * @return
+     */
+    public int getRecordCount() {
+        return rcount;
+    }
+    
+    /**
+     * Get hash algorithm.
+     * @return
+     */
+    public HashAlgorithm getHashAlgorithm() {
+        return hashAlg;
+    }
+    
+    /**
      * Set the extra field data in the local file data - without Header-ID or
      * length specifier.
      * 
@@ -108,14 +121,6 @@ public class X0016_CertificateIdForCentralDirectory extends PKWareExtraHeader im
      *            the data to use
      */
     public void setCentralDirectoryData(byte[] data) {
-        try {
-            FileOutputStream os = new FileOutputStream("/tmp/16.dat");
-            os.write(data);
-            os.close();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-
         centralData = ZipUtil.copy(data);
     }
 
@@ -177,19 +182,5 @@ public class X0016_CertificateIdForCentralDirectory extends PKWareExtraHeader im
 
         this.rcount = ZipShort.getValue(data, offset);
         this.hashAlg = HashAlgorithm.getAlgorithmByCode(ZipShort.getValue(data, offset + 2));
-
-        System.out.printf("CertificateId For CD (CD): rcount: %d, hashAlg: %s\n", rcount, hashAlg);
-
-        /*
-        int size = ZipShort.getValue(data, offset + 4);
-        int size2 = ZipShort.getValue(data, offset + 6);
-        System.out.printf("16: diff: %d\n", size - size2);
-
-        //System.out.printf("16: [2] %d %x\n", ZipShort.getValue(data, offset + 4),
-        //        ZipShort.getValue(data, offset + 4));
-        //System.out.printf("16: [3] %d %x\n", ZipShort.getValue(data, offset + 6),
-        //        ZipShort.getValue(data, offset + 6));
-        System.out.printf("16: len: %d, offset+size: %d\n", length, size + 8);
-        */
     }
 }

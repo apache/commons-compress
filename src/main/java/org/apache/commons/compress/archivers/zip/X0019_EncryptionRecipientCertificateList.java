@@ -168,5 +168,4 @@ public class X0019_EncryptionRecipientCertificateList extends PKWareExtraHeader 
             setLocalFileDataData(tmp);
         }
     }
-
 }

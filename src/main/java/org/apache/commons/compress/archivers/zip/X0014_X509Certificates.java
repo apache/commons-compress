@@ -61,8 +61,6 @@ public class X0014_X509Certificates extends PKWareExtraHeader implements ZipExtr
      */
     private byte[] localData;
 
-    private int rcount;
-
     /**
      * Set the extra field data in the local file data - without Header-ID or
      * length specifier.
@@ -71,17 +69,6 @@ public class X0014_X509Certificates extends PKWareExtraHeader implements ZipExtr
      *            the field data to use
      */
     public void setLocalFileDataData(byte[] data) {
-        byte[] data1 = new byte[data.length - 2];
-        System.arraycopy(data1, 0, data, 2, data.length - 2);
-
-        try {
-            FileOutputStream os = new FileOutputStream("/tmp/14.dat");
-            os.write(data);
-            os.close();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-
         localData = ZipUtil.copy(data);
     }
 
@@ -175,9 +162,5 @@ public class X0014_X509Certificates extends PKWareExtraHeader implements ZipExtr
         if (localData == null) {
             setLocalFileDataData(tmp);
         }
-
-        this.rcount = ZipShort.getValue(data, offset);
-
-        System.out.printf("X509Certificates: rcount?: %d\n", rcount);
     }
 }
