@@ -728,8 +728,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @return true if this is a long name extension provided by GNU tar
      */
     public boolean isGNULongLinkEntry() {
-        return linkFlag == LF_GNUTYPE_LONGLINK
-            && name.equals(GNU_LONGLINK);
+        return linkFlag == LF_GNUTYPE_LONGLINK;
     }
 
     /**
@@ -738,8 +737,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @return true if this is a long name extension provided by GNU tar
      */
     public boolean isGNULongNameEntry() {
-        return linkFlag == LF_GNUTYPE_LONGNAME
-            && name.equals(GNU_LONGLINK);
+        return linkFlag == LF_GNUTYPE_LONGNAME;
     }
 
     /**
