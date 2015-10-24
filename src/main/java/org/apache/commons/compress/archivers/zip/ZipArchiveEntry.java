@@ -743,6 +743,14 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         }
     }
 
+    /**
+     * Wraps {@link ZipEntry#getTime} with a {@link Date} as the
+     * entry's last modified date.
+     *
+     * <p>Changes to the implementation of {@link ZipEntry#getTime}
+     * leak through and the returned value may depend on your local
+     * time zone as well as your version of Java.</p>
+     */
     public Date getLastModifiedDate() {
         return new Date(getTime());
     }

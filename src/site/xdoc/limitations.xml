@@ -165,6 +165,10 @@
          of an archive will not be read correctly by
          <code>ZipArchiveInputStream</code> if it used the STORED
          method.</li>
+         <li><code>ZipArchiveEntry#getLastModifiedDate</code> uses
+         <code>ZipEntry#getTime</code> under the covers which may
+         return different times for the same archive when using
+         different versions onf Java.</li>
        </ul>
      </section>
    </body>

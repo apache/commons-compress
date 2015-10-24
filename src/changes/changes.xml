@@ -44,6 +44,10 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.11" date="not released, yet"
              description="Release 1.11">
+      <action issue="COMPRESS-326" type="fix" date="2015-10-24">
+        Adjusted unit test to updates in Java8 and later that change
+        the logic of ZipEntry#getTime.
+      </action>
       <action issue="COMPRESS-324" type="fix" date="2015-10-06">
         TarArchiveOutputStream will now recognize GNU long name and
         link entries even if the special entry has a different name
