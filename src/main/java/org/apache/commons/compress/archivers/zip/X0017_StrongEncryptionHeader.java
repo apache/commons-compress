@@ -214,6 +214,8 @@ package org.apache.commons.compress.archivers.zip;
  *           function.  The version of the Simple Key Blob
  *           supported at this time is 0x02 as defined by
  *           Microsoft.
+ *           
+ *           For more details see https://msdn.microsoft.com/en-us/library/aa920051.aspx
  * </pre>
  * 
  * <b>Flags</b> - Processing flags needed for decryption
