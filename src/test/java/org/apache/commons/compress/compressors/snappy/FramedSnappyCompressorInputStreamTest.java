@@ -18,7 +18,7 @@
  */
 package org.apache.commons.compress.compressors.snappy;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -30,10 +30,12 @@ import java.io.InputStream;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.Test;
 
 public final class FramedSnappyCompressorInputStreamTest
     extends AbstractTestCase {
 
+    @Test
     public void testMatches() throws IOException {
         assertFalse(FramedSnappyCompressorInputStream.matches(new byte[10], 10));
         byte[] b = new byte[12];
@@ -52,6 +54,7 @@ public final class FramedSnappyCompressorInputStreamTest
     /**
      * Something big enough to make buffers slide.
      */
+    @Test
     public void testLoremIpsum() throws Exception {
         final FileInputStream isSz = new FileInputStream(getFile("lorem-ipsum.txt.sz"));
         final File outputSz = new File(dir, "lorem-ipsum.1");
@@ -101,6 +104,7 @@ public final class FramedSnappyCompressorInputStreamTest
         }
     }
 
+    @Test
     public void testRemainingChunkTypes() throws Exception {
         final FileInputStream isSz = new FileInputStream(getFile("mixed.txt.sz"));
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -123,6 +127,7 @@ public final class FramedSnappyCompressorInputStreamTest
             }, out.toByteArray());
     }
 
+    @Test
     public void testAvailable() throws Exception {
         final FileInputStream isSz = new FileInputStream(getFile("mixed.txt.sz"));
         try {
@@ -142,6 +147,7 @@ public final class FramedSnappyCompressorInputStreamTest
         }
     }
 
+    @Test
     public void testUnskippableChunk() {
         byte[] input = new byte[] {
             (byte) 0xff, 6, 0, 0, 's', 'N', 'a', 'P', 'p', 'Y',
@@ -154,16 +160,17 @@ public final class FramedSnappyCompressorInputStreamTest
             fail("expected an exception");
             in.close();
         } catch (IOException ex) {
-            assertTrue(ex.getMessage().indexOf("unskippable chunk") > -1);
+            assertTrue(ex.getMessage().contains("unskippable chunk"));
         }
     }
 
+    @Test
     public void testChecksumUnmasking() {
         testChecksumUnmasking(0xc757l);
         testChecksumUnmasking(0xffffc757l);
     }
 
-    public void testChecksumUnmasking(long x) {
+    private void testChecksumUnmasking(long x) {
         assertEquals(Long.toHexString(x),
                      Long.toHexString(FramedSnappyCompressorInputStream
                                       .unmask(mask(x))));

@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.changes;
 
+import static org.junit.Assert.*;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -39,6 +41,7 @@ import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.junit.Test;
 
 /**
  * Checks several ChangeSet business logics.
@@ -74,6 +77,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testAddChangeTwice() throws Exception {
         InputStream in = null;
         InputStream in2 = null;
@@ -108,6 +112,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testAddChangeTwiceWithoutReplace() throws Exception {
         InputStream in = null;
         InputStream in2 = null;
@@ -143,6 +148,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testDeleteDir() throws Exception {
         final String archivename = "cpio";
         File input = this.createArchive(archivename);
@@ -184,6 +190,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testDeleteDir2() throws Exception {
         final String archivename = "cpio";
         File input = this.createArchive(archivename);
@@ -225,6 +232,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testDeleteDir3() throws Exception {
         final String archivename = "cpio";
         File input = this.createArchive(archivename);
@@ -266,6 +274,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testDeleteFile() throws Exception {
         final String archivename = "cpio";
         File input = this.createArchive(archivename);
@@ -308,6 +317,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testDeleteFile2() throws Exception {
         final String archivename = "cpio";
         File input = this.createArchive(archivename);
@@ -351,6 +361,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testDeletePlusAddSame() throws Exception {
         final String archivename = "zip";
         File input = this.createArchive(archivename);
@@ -422,6 +433,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testChangeSetResults() throws Exception {
         final String archivename = "cpio";
         File input = this.createArchive(archivename);
@@ -485,6 +497,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testDeletePlusAdd() throws Exception {
         final String archivename = "cpio";
         File input = this.createArchive(archivename);
@@ -531,6 +544,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testDeleteFromAndAddToZip() throws Exception {
         final String archivename = "zip";
         File input = this.createArchive(archivename);
@@ -577,6 +591,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testDeleteFromAndAddToZipUsingZipFilePerform() throws Exception {
         final String archivename = "zip";
         File input = this.createArchive(archivename);
@@ -622,6 +637,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testAddDeleteAdd() throws Exception {
         final String archivename = "cpio";
         File input = this.createArchive(archivename);
@@ -670,6 +686,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testDeleteAddDelete() throws Exception {
         final String archivename = "cpio";
         File input = this.createArchive(archivename);
@@ -719,6 +736,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testDeleteFromZip() throws Exception {
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
@@ -759,6 +777,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testDeleteFromTar() throws Exception {
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
@@ -796,6 +815,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testDeleteFromJar() throws Exception {
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
@@ -831,6 +851,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         this.checkArchiveContent(temp, expected);
     }
 
+    @Test
     public void testDeleteFromAndAddToTar() throws Exception {
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
@@ -884,6 +905,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testDeleteFromAndAddToJar() throws Exception {
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
@@ -929,6 +951,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testDeleteFromAr() throws Exception {
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
@@ -967,6 +990,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testDeleteFromAndAddToAr() throws Exception {
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
@@ -1015,6 +1039,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testRenameAndDelete() throws Exception {
     }
 
@@ -1028,6 +1053,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testAddMoveDelete() throws Exception {
     }
 
@@ -1036,6 +1062,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testAddToEmptyArchive() throws Exception {
         final String archivename = "zip";
         File input = this.createEmptyArchive(archivename);
@@ -1081,6 +1108,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testDeleteAddToOneFileArchive() throws Exception {
         final String archivename = "zip";
         File input = this.createSingleEntryArchive(archivename);
@@ -1129,6 +1157,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testAddDeleteToOneFileArchive() throws Exception {
         final String archivename = "cpio";
         File input = this.createSingleEntryArchive(archivename);
@@ -1178,6 +1207,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testAddAllreadyExistingWithReplaceTrue() throws Exception {
         final String archivename = "zip";
         File input = this.createArchive(archivename);
@@ -1222,6 +1252,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testAddAllreadyExistingWithReplaceFalse() throws Exception {
         final String archivename = "zip";
         File input = this.createArchive(archivename);

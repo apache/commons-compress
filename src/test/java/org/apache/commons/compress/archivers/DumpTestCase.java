@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.archivers;
 
+import static org.junit.Assert.*;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,13 +31,16 @@ import java.util.ArrayList;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.dump.DumpArchiveInputStream;
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.Test;
 
 public final class DumpTestCase extends AbstractTestCase {
 
+    @Test
     public void testDumpUnarchiveAll() throws Exception {
         unarchiveAll(getFile("bla.dump"));
     }
 
+    @Test
     public void testCompressedDumpUnarchiveAll() throws Exception {
         unarchiveAll(getFile("bla.z.dump"));
     }
@@ -74,10 +79,12 @@ public final class DumpTestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testArchiveDetection() throws Exception {
         archiveDetection(getFile("bla.dump"));
     }
 
+    @Test
     public void testCompressedArchiveDetection() throws Exception {
         archiveDetection(getFile("bla.z.dump"));
     }
@@ -94,10 +101,12 @@ public final class DumpTestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testCheckArchive() throws Exception {
         checkDumpArchive(getFile("bla.dump"));
     }
 
+    @Test
     public void testCheckCompressedArchive() throws Exception {
         checkDumpArchive(getFile("bla.z.dump"));
     }

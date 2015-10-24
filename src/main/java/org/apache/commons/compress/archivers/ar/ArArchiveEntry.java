@@ -108,6 +108,8 @@ public class ArArchiveEntry implements ArchiveEntry {
 
     /**
      * Create a new instance using the attributes of the given file
+     * @param inputFile the file to create an entry from
+     * @param entryName the name of the entry
      */
     public ArArchiveEntry(File inputFile, String entryName) {
         // TODO sort out mode
@@ -137,6 +139,7 @@ public class ArArchiveEntry implements ArchiveEntry {
 
     /**
      * Last modified time in seconds since the epoch.
+     * @return the last modified date
      */
     public long getLastModified() {
         return lastModified;

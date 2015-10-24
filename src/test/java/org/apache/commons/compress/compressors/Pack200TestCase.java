@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.compressors;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -38,21 +40,26 @@ import org.apache.commons.compress.compressors.pack200.Pack200CompressorInputStr
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorOutputStream;
 import org.apache.commons.compress.compressors.pack200.Pack200Strategy;
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.Test;
 
 public final class Pack200TestCase extends AbstractTestCase {
 
+    @Test
     public void testJarUnarchiveAllInMemory() throws Exception {
         jarUnarchiveAll(false, Pack200Strategy.IN_MEMORY);
     }
 
+    @Test
     public void testJarUnarchiveAllFileArgInMemory() throws Exception {
         jarUnarchiveAll(true, Pack200Strategy.IN_MEMORY);
     }
 
+    @Test
     public void testJarUnarchiveAllTempFile() throws Exception {
         jarUnarchiveAll(false, Pack200Strategy.TEMP_FILE);
     }
 
+    @Test
     public void testJarUnarchiveAllFileTempFile() throws Exception {
         jarUnarchiveAll(true, Pack200Strategy.TEMP_FILE);
     }
@@ -89,10 +96,12 @@ public final class Pack200TestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testJarArchiveCreationInMemory() throws Exception {
         jarArchiveCreation(Pack200Strategy.IN_MEMORY);
     }
 
+    @Test
     public void testJarArchiveCreationTempFile() throws Exception {
         jarArchiveCreation(Pack200Strategy.TEMP_FILE);
     }
@@ -137,6 +146,7 @@ public final class Pack200TestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testGoodSignature() throws Exception {
         final InputStream is = new FileInputStream(getFile("bla.pack"));
         try {
@@ -148,6 +158,7 @@ public final class Pack200TestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testBadSignature() throws Exception {
         final InputStream is = new FileInputStream(getFile("bla.jar"));
         try {
@@ -159,6 +170,7 @@ public final class Pack200TestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testShortSignature() throws Exception {
         final InputStream is = new FileInputStream(getFile("bla.pack"));
         try {
@@ -170,6 +182,7 @@ public final class Pack200TestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testInputStreamMethods() throws Exception {
         Map<String, String> m = new HashMap<String, String>();
         m.put("foo", "bar");
@@ -196,6 +209,7 @@ public final class Pack200TestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testOutputStreamMethods() throws Exception {
         final File output = new File(dir, "bla.pack");
         Map<String, String> m = new HashMap<String, String>();

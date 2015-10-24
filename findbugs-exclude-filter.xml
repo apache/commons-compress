@@ -23,6 +23,7 @@
 -->
 <FindBugsFilter>
 
+<<<<<<< HEAD
   <!-- Reason: References to System.out/err == -->
   <Match>
     <Class name="org.apache.commons.compress.archivers.Lister" />
@@ -157,4 +158,18 @@
     <Method name="equals" />
     <Bug pattern="EQ_DOESNT_OVERRIDE_EQUALS" />
   </Match>
+<<<<<<< HEAD
+=======
+
+>>>>>>> refs/remotes/origin/compress-2.0
+=======
+  
+  <!-- Reason: failure to delete a file that may not exist. And we really don't care that much either -->
+  <Match>
+    <Class name="org.apache.commons.compress.parallel.FileBasedScatterGatherBackingStore" />
+    <Method name="close" />
+    <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE" />
+  </Match>
+
+>>>>>>> origin/master
 </FindBugsFilter>

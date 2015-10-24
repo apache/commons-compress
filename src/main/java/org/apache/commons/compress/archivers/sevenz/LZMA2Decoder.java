@@ -32,7 +32,7 @@ class LZMA2Decoder extends CoderBase {
     }
 
     @Override
-    InputStream decode(final InputStream in, long uncompressedLength,
+    InputStream decode(final String archiveName, final InputStream in, long uncompressedLength,
             final Coder coder, byte[] password) throws IOException {
         try {
             int dictionarySize = getDictionarySize(coder);
@@ -62,7 +62,7 @@ class LZMA2Decoder extends CoderBase {
 
     @Override
     Object getOptionsFromCoder(Coder coder, InputStream in) {
-        return Integer.valueOf(getDictionarySize(coder));
+        return getDictionarySize(coder);
     }
 
     private int getDictSize(Object opts) {

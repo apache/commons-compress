@@ -19,14 +19,17 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import static org.junit.Assert.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class BinaryTreeTest extends TestCase {
+public class BinaryTreeTest {
 
+    @Test
     public void testDecode() throws IOException {
         InputStream in = new ByteArrayInputStream(new byte[] { 0x02, 0x42, 0x01, 0x13 });
         

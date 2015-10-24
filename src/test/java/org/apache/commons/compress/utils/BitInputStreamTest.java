@@ -32,30 +32,35 @@ public class BitInputStreamTest {
     public void shouldNotAllowReadingOfANegativeAmountOfBits() throws IOException {
         BitInputStream bis = new BitInputStream(getStream(), ByteOrder.LITTLE_ENDIAN);
         bis.readBits(-1);
+        bis.close();
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldNotAllowReadingOfMoreThan31BitsAtATime() throws IOException {
+    public void shouldNotAllowReadingOfMoreThan63BitsAtATime() throws IOException {
         BitInputStream bis = new BitInputStream(getStream(), ByteOrder.LITTLE_ENDIAN);
-        bis.readBits(32);
+        bis.readBits(64);
+        bis.close();
     }
 
     @Test
     public void testReading24BitsInLittleEndian() throws IOException {
         BitInputStream bis = new BitInputStream(getStream(), ByteOrder.LITTLE_ENDIAN);
         assertEquals(0x000140f8, bis.readBits(24));
+        bis.close();
     }
 
     @Test
     public void testReading24BitsInBigEndian() throws IOException {
         BitInputStream bis = new BitInputStream(getStream(), ByteOrder.BIG_ENDIAN);
         assertEquals(0x00f84001, bis.readBits(24));
+        bis.close();
     }
 
     @Test
     public void testReading17BitsInLittleEndian() throws IOException {
         BitInputStream bis = new BitInputStream(getStream(), ByteOrder.LITTLE_ENDIAN);
         assertEquals(0x000140f8, bis.readBits(17));
+        bis.close();
     }
 
     @Test
@@ -63,12 +68,14 @@ public class BitInputStreamTest {
         BitInputStream bis = new BitInputStream(getStream(), ByteOrder.BIG_ENDIAN);
         // 1-11110000-10000000
         assertEquals(0x0001f080, bis.readBits(17));
+        bis.close();
     }
 
     @Test
     public void testReading30BitsInLittleEndian() throws IOException {
         BitInputStream bis = new BitInputStream(getStream(), ByteOrder.LITTLE_ENDIAN);
         assertEquals(0x2f0140f8, bis.readBits(30));
+        bis.close();
     }
 
     @Test
@@ -76,12 +83,14 @@ public class BitInputStreamTest {
         BitInputStream bis = new BitInputStream(getStream(), ByteOrder.BIG_ENDIAN);
         // 111110-00010000-00000000-01001011
         assertEquals(0x3e10004b, bis.readBits(30));
+        bis.close();
     }
 
     @Test
     public void testReading31BitsInLittleEndian() throws IOException {
         BitInputStream bis = new BitInputStream(getStream(), ByteOrder.LITTLE_ENDIAN);
         assertEquals(0x2f0140f8, bis.readBits(31));
+        bis.close();
     }
 
     @Test
@@ -89,6 +98,7 @@ public class BitInputStreamTest {
         BitInputStream bis = new BitInputStream(getStream(), ByteOrder.BIG_ENDIAN);
         // 1111100-00100000-00000000-10010111
         assertEquals(0x7c200097, bis.readBits(31));
+        bis.close();
     }
 
     @Test
@@ -97,6 +107,7 @@ public class BitInputStreamTest {
         assertEquals(0x08, bis.readBits(4));
         bis.clearBitCache();
         assertEquals(0, bis.readBits(1));
+        bis.close();
     }
 
     @Test
@@ -104,6 +115,7 @@ public class BitInputStreamTest {
         BitInputStream bis = new BitInputStream(getStream(), ByteOrder.LITTLE_ENDIAN);
         assertEquals(0x2f0140f8, bis.readBits(30));
         assertEquals(-1, bis.readBits(3));
+        bis.close();
     }
 
     private ByteArrayInputStream getStream() {

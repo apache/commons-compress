@@ -18,15 +18,14 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import static org.junit.Assert.*;
+
 import java.math.BigInteger;
 import java.util.zip.ZipException;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class Zip64ExtendedInformationExtraFieldTest extends TestCase {
-    public Zip64ExtendedInformationExtraFieldTest(String name) {
-        super(name);
-    }
+public class Zip64ExtendedInformationExtraFieldTest {
 
     private static final ZipEightByteInteger SIZE =
         new ZipEightByteInteger(0x12345678);
@@ -38,6 +37,7 @@ public class Zip64ExtendedInformationExtraFieldTest extends TestCase {
                                 .setBit(3));
     private static final ZipLong DISK = new ZipLong(0x12);
 
+    @Test
     public void testWriteCDOnlySizes() {
         Zip64ExtendedInformationExtraField f =
             new Zip64ExtendedInformationExtraField(SIZE, CSIZE);
@@ -47,6 +47,7 @@ public class Zip64ExtendedInformationExtraFieldTest extends TestCase {
         checkSizes(b);
     }
 
+    @Test
     public void testWriteCDSizeAndOffset() {
         Zip64ExtendedInformationExtraField f =
             new Zip64ExtendedInformationExtraField(SIZE, CSIZE, OFF, null);
@@ -57,6 +58,7 @@ public class Zip64ExtendedInformationExtraFieldTest extends TestCase {
         checkOffset(b, 16);
     }
 
+    @Test
     public void testWriteCDSizeOffsetAndDisk() {
         Zip64ExtendedInformationExtraField f =
             new Zip64ExtendedInformationExtraField(SIZE, CSIZE, OFF, DISK);
@@ -68,6 +70,7 @@ public class Zip64ExtendedInformationExtraFieldTest extends TestCase {
         checkDisk(b, 24);
     }
 
+    @Test
     public void testWriteCDSizeAndDisk() {
         Zip64ExtendedInformationExtraField f =
             new Zip64ExtendedInformationExtraField(SIZE, CSIZE, null, DISK);
@@ -78,6 +81,7 @@ public class Zip64ExtendedInformationExtraFieldTest extends TestCase {
         checkDisk(b, 16);
     }
 
+    @Test
     public void testReadLFHSizesOnly() throws ZipException {
         Zip64ExtendedInformationExtraField f =
             new Zip64ExtendedInformationExtraField();
@@ -91,6 +95,7 @@ public class Zip64ExtendedInformationExtraFieldTest extends TestCase {
         assertNull(f.getDiskStartNumber());
     }
 
+    @Test
     public void testReadLFHSizesAndOffset() throws ZipException {
         Zip64ExtendedInformationExtraField f =
             new Zip64ExtendedInformationExtraField();
@@ -105,6 +110,7 @@ public class Zip64ExtendedInformationExtraFieldTest extends TestCase {
         assertNull(f.getDiskStartNumber());
     }
 
+    @Test
     public void testReadLFHSizesOffsetAndDisk() throws ZipException {
         Zip64ExtendedInformationExtraField f =
             new Zip64ExtendedInformationExtraField();
@@ -120,6 +126,7 @@ public class Zip64ExtendedInformationExtraFieldTest extends TestCase {
         assertEquals(DISK, f.getDiskStartNumber());
     }
 
+    @Test
     public void testReadLFHSizesAndDisk() throws ZipException {
         Zip64ExtendedInformationExtraField f =
             new Zip64ExtendedInformationExtraField();
@@ -134,6 +141,7 @@ public class Zip64ExtendedInformationExtraFieldTest extends TestCase {
         assertEquals(DISK, f.getDiskStartNumber());
     }
 
+    @Test
     public void testReadCDSizesOffsetAndDisk() throws ZipException {
         Zip64ExtendedInformationExtraField f =
             new Zip64ExtendedInformationExtraField();
@@ -149,6 +157,7 @@ public class Zip64ExtendedInformationExtraFieldTest extends TestCase {
         assertEquals(DISK, f.getDiskStartNumber());
     }
 
+    @Test
     public void testReadCDSizesAndOffset() throws ZipException {
         Zip64ExtendedInformationExtraField f =
             new Zip64ExtendedInformationExtraField();
@@ -163,6 +172,7 @@ public class Zip64ExtendedInformationExtraFieldTest extends TestCase {
         assertNull(f.getDiskStartNumber());
     }
 
+    @Test
     public void testReadCDSomethingAndDisk() throws ZipException {
         Zip64ExtendedInformationExtraField f =
             new Zip64ExtendedInformationExtraField();
@@ -176,6 +186,7 @@ public class Zip64ExtendedInformationExtraFieldTest extends TestCase {
         assertEquals(DISK, f.getDiskStartNumber());
     }
 
+    @Test
     public void testReparseCDSingleEightByteData() throws ZipException {
         Zip64ExtendedInformationExtraField f =
             new Zip64ExtendedInformationExtraField();

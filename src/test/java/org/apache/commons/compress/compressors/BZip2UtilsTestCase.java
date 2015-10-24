@@ -18,12 +18,14 @@
  */
 package org.apache.commons.compress.compressors;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2Utils;
+import org.junit.Test;
 
-public class BZip2UtilsTestCase extends TestCase {
+public class BZip2UtilsTestCase {
 
+    @Test
     public void testIsCompressedFilename() {
         assertFalse(BZip2Utils.isCompressedFilename(""));
         assertFalse(BZip2Utils.isCompressedFilename(".gz"));
@@ -45,6 +47,7 @@ public class BZip2UtilsTestCase extends TestCase {
         assertFalse(BZip2Utils.isCompressedFilename("x.tbz2.y"));
     }
 
+    @Test
     public void testGetUncompressedFilename() {
         assertEquals("", BZip2Utils.getUncompressedFilename(""));
         assertEquals(".bz2", BZip2Utils.getUncompressedFilename(".bz2"));
@@ -63,6 +66,7 @@ public class BZip2UtilsTestCase extends TestCase {
         assertEquals("x.tbz2.y", BZip2Utils.getUncompressedFilename("x.tbz2.y"));
     }
 
+    @Test
     public void testGetCompressedFilename() {
         assertEquals(".bz2", BZip2Utils.getCompressedFilename(""));
         assertEquals(" .bz2", BZip2Utils.getCompressedFilename(" "));

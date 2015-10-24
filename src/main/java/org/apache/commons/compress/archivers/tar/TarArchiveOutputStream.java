@@ -84,7 +84,10 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     private final OutputStream out;
 
-    private final ZipEncoding encoding;
+    private final ZipEncoding zipEncoding;
+
+    // the provided encoding (for unit tests)
+    final String encoding;
 
     private boolean addPaxHeadersForNonAsciiNames = false;
     private static final ZipEncoding ASCII =
@@ -150,7 +153,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     public TarArchiveOutputStream(OutputStream os, int blockSize,
                                   int recordSize, String encoding) {
         out = new CountingOutputStream(os);
-        this.encoding = ZipEncodingHelper.getZipEncoding(encoding);
+        this.encoding = encoding;
+        this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
 
         this.assemLen = 0;
         this.assemBuf = new byte[recordSize];
@@ -185,6 +189,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Whether to add a PAX extension header for non-ASCII file names.
      * @since 1.4
+     * @param b whether to add a PAX extension header for non-ASCII file names.
      */
     public void setAddPaxHeadersForNonAsciiNames(boolean b) {
         addPaxHeadersForNonAsciiNames = b;
@@ -301,7 +306,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             writePaxHeaders(entry, entryName, paxHeaders);
         }
 
-        entry.writeEntryHeader(recordBuf, encoding,
+        entry.writeEntryHeader(recordBuf, zipEncoding,
                                bigNumberMode == BIGNUMBER_STAR);
         writeRecord(recordBuf);
 
@@ -580,12 +585,12 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                                             TarArchiveEntry entry) {
         addPaxHeaderForBigNumber(paxHeaders, "size", entry.getSize(),
                                  TarConstants.MAXSIZE);
-        addPaxHeaderForBigNumber(paxHeaders, "gid", entry.getGroupId(),
+        addPaxHeaderForBigNumber(paxHeaders, "gid", entry.getLongGroupId(),
                                  TarConstants.MAXID);
         addPaxHeaderForBigNumber(paxHeaders, "mtime",
                                  entry.getModTime().getTime() / 1000,
                                  TarConstants.MAXSIZE);
-        addPaxHeaderForBigNumber(paxHeaders, "uid", entry.getUserId(),
+        addPaxHeaderForBigNumber(paxHeaders, "uid", entry.getLongUserId(),
                                  TarConstants.MAXID);
         // star extensions by J\u00f6rg Schilling
         addPaxHeaderForBigNumber(paxHeaders, "SCHILY.devmajor",
@@ -606,11 +611,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     private void failForBigNumbers(TarArchiveEntry entry) {
         failForBigNumber("entry size", entry.getSize(), TarConstants.MAXSIZE);
-        failForBigNumber("group id", entry.getGroupId(), TarConstants.MAXID);
+        failForBigNumberWithPosixMessage("group id", entry.getLongGroupId(), TarConstants.MAXID);
         failForBigNumber("last modification time",
                          entry.getModTime().getTime() / 1000,
                          TarConstants.MAXSIZE);
-        failForBigNumber("user id", entry.getUserId(), TarConstants.MAXID);
+        failForBigNumber("user id", entry.getLongUserId(), TarConstants.MAXID);
         failForBigNumber("mode", entry.getMode(), TarConstants.MAXID);
         failForBigNumber("major device number", entry.getDevMajor(),
                          TarConstants.MAXID);
@@ -619,10 +624,18 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     private void failForBigNumber(String field, long value, long maxValue) {
+        failForBigNumber(field, value, maxValue, "");
+    }
+
+    private void failForBigNumberWithPosixMessage(String field, long value, long maxValue) {
+        failForBigNumber(field, value, maxValue, " Use STAR or POSIX extensions to overcome this limit");
+    }
+
+    private void failForBigNumber(String field, long value, long maxValue, String additionalMsg) {
         if (value < 0 || value > maxValue) {
             throw new RuntimeException(field + " '" + value
-                                       + "' is too big ( > "
-                                       + maxValue + " )");
+                    + "' is too big ( > "
+                    + maxValue + " )." + additionalMsg);
         }
     }
 
@@ -652,7 +665,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                                    Map<String, String> paxHeaders,
                                    String paxHeaderName, byte linkType, String fieldName)
         throws IOException {
-        final ByteBuffer encodedName = encoding.encode(name);
+        final ByteBuffer encodedName = zipEncoding.encode(name);
         final int len = encodedName.limit() - encodedName.position();
         if (len >= TarConstants.NAMELEN) {
 

@@ -40,9 +40,9 @@ public class ZCompressorInputStream extends LZWInputStream {
     
     public ZCompressorInputStream(InputStream inputStream) throws IOException {
         super(inputStream, ByteOrder.LITTLE_ENDIAN);
-        int firstByte = in.readBits(8);
-        int secondByte = in.readBits(8);
-        int thirdByte = in.readBits(8);
+        int firstByte = (int) in.readBits(8);
+        int secondByte = (int) in.readBits(8);
+        int thirdByte = (int) in.readBits(8);
         if (firstByte != MAGIC_1 || secondByte != MAGIC_2 || thirdByte < 0) {
             throw new IOException("Input is not in .Z format");
         }
@@ -50,17 +50,14 @@ public class ZCompressorInputStream extends LZWInputStream {
         maxCodeSize = thirdByte & MAX_CODE_SIZE_MASK;
         System.err.println("starting with maxCodeSize " + maxCodeSize + ", in block mode? " + blockMode); 
         if (blockMode) {
-            setClearCode(codeSize);
+            setClearCode(DEFAULT_CODE_SIZE);
         }
         initializeTables(maxCodeSize);
         clearEntries();
     }
     
     private void clearEntries() {
-        tableSize = 1 << 8;
-        if (blockMode) {
-            tableSize++;
-        }
+        setTableSize((1 << 8) + (blockMode ? 1 : 0));
     }
 
     /**
@@ -101,9 +98,9 @@ public class ZCompressorInputStream extends LZWInputStream {
      */
     @Override
     protected int addEntry(int previousCode, byte character) throws IOException {
-        final int maxTableSize = 1 << codeSize;
+        final int maxTableSize = 1 << getCodeSize();
         int r = addEntry(previousCode, character, maxTableSize);
-        if (tableSize == maxTableSize && codeSize < maxCodeSize) {
+        if (getTableSize() == maxTableSize && getCodeSize() < maxCodeSize) {
             reAlignReading();
             codeSize++;
             System.err.println("codeSize grew to " + codeSize);
@@ -134,7 +131,7 @@ public class ZCompressorInputStream extends LZWInputStream {
         final int code = readNextCode();
         if (code < 0) {
             return -1;
-        } else if (blockMode && code == clearCode) {
+        } else if (blockMode && code == getClearCode()) {
             clearEntries();
             reAlignReading();
             codeSize = 9;
@@ -143,11 +140,11 @@ public class ZCompressorInputStream extends LZWInputStream {
             return 0;
         } else {
             boolean addedUnfinishedEntry = false;
-            if (code == tableSize) {
+            if (code == getTableSize()) {
                 addRepeatOfPreviousCode();
                 addedUnfinishedEntry = true;
-            } else if (code > tableSize) {
-                throw new IOException(String.format("Invalid %d bit code 0x%x", Integer.valueOf(codeSize), Integer.valueOf(code)));
+            } else if (code > getTableSize()) {
+                throw new IOException(String.format("Invalid %d bit code 0x%x", getCodeSize(), code));
             }
             return expandCodeToOutputStack(code, addedUnfinishedEntry);
         }

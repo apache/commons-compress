@@ -18,14 +18,17 @@
  */
 package org.apache.commons.compress.archivers.memory;
 
+import static org.junit.Assert.*;
+
 import java.io.IOException;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 
-public final class MemoryArchiveTestCase extends TestCase {
+public final class MemoryArchiveTestCase {
 
+    @Test
     public void testReading() throws IOException {
 
         final MemoryArchiveInputStream is = new MemoryArchiveInputStream(new String[][] {

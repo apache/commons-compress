@@ -74,14 +74,17 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     /**
      * The encoding to use for filenames and labels.
      */
-    private final ZipEncoding encoding;
+    private final ZipEncoding zipEncoding;
+
+    // the provided encoding (for unit tests)
+    final String encoding;
 
     /**
      * Constructor using the platform's default encoding for file
      * names.
      *
-     * @param is
-     * @throws ArchiveException
+     * @param is stream to read from
+     * @throws ArchiveException on error
      */
     public DumpArchiveInputStream(InputStream is) throws ArchiveException {
         this(is, null);
@@ -90,16 +93,18 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     /**
      * Constructor.
      *
-     * @param is
+     * @param is stream to read from
      * @param encoding the encoding to use for file names, use null
      * for the platform's default encoding
      * @since 1.6
+     * @throws ArchiveException on error
      */
     public DumpArchiveInputStream(InputStream is, String encoding)
         throws ArchiveException {
         this.raw = new TapeInputStream(is);
         this.hasHitEOF = false;
-        this.encoding = ZipEncodingHelper.getZipEncoding(encoding);
+        this.encoding = encoding;
+        this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
 
         try {
             // read header, verify it's a dump archive.
@@ -110,7 +115,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
             }
 
             // get summary information
-            summary = new DumpArchiveSummary(headerBytes, this.encoding);
+            summary = new DumpArchiveSummary(headerBytes, this.zipEncoding);
 
             // reset buffer with actual block size.
             raw.resetBlockSize(summary.getNTRec(), summary.isCompressed());
@@ -127,7 +132,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
         // put in a dummy record for the root node.
         Dirent root = new Dirent(2, 2, 4, ".");
-        names.put(Integer.valueOf(2), root);
+        names.put(2, root);
 
         // use priority based on queue to ensure parent directories are
         // released first.
@@ -156,6 +161,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
     /**
      * Return the archive summary information.
+     * @return the summary
      */
     public DumpArchiveSummary getSummary() {
         return summary;
@@ -211,14 +217,13 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
     /**
      * Read the next entry.
+     * @return the next entry
+     * @throws IOException on error
      */
     public DumpArchiveEntry getNextDumpEntry() throws IOException {
         return getNextEntry();
     }
 
-    /**
-     * Read the next entry.
-     */
     @Override
     public DumpArchiveEntry getNextEntry() throws IOException {
         DumpArchiveEntry entry = null;
@@ -306,7 +311,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         }
 
         entry.setName(path);
-        entry.setSimpleName(names.get(Integer.valueOf(entry.getIno())).getName());
+        entry.setSimpleName(names.get(entry.getIno()).getName());
         entry.setOffset(filepos);
 
         return entry;
@@ -327,9 +332,9 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
                 raw.readRecord();
             }
 
-            if (!names.containsKey(Integer.valueOf(entry.getIno())) &&
+            if (!names.containsKey(entry.getIno()) &&
                     DumpArchiveConstants.SEGMENT_TYPE.INODE == entry.getHeaderType()) {
-                pending.put(Integer.valueOf(entry.getIno()), entry);
+                pending.put(entry.getIno(), entry);
             }
 
             int datalen = DumpArchiveConstants.TP_SIZE * entry.getHeaderCount();
@@ -351,7 +356,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
                 byte type = blockBuffer[i + 6];
 
-                String name = DumpArchiveUtil.decode(encoding, blockBuffer, i + 8, blockBuffer[i + 7]);
+                String name = DumpArchiveUtil.decode(zipEncoding, blockBuffer, i + 8, blockBuffer[i + 7]);
 
                 if (".".equals(name) || "..".equals(name)) {
                     // do nothing...
@@ -367,7 +372,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
                 }
                 */
 
-                names.put(Integer.valueOf(ino), d);
+                names.put(ino, d);
 
                 // check whether this allows us to fill anything in the pending list.
                 for (Map.Entry<Integer, DumpArchiveEntry> e : pending.entrySet()) {
@@ -384,7 +389,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
                 // remove anything that we found. (We can't do it earlier
                 // because of concurrent modification exceptions.)
                 for (DumpArchiveEntry e : queue) {
-                    pending.remove(Integer.valueOf(e.getIno()));
+                    pending.remove(e.getIno());
                 }
             }
 
@@ -413,12 +418,12 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         Dirent dirent = null;
 
         for (int i = entry.getIno();; i = dirent.getParentIno()) {
-            if (!names.containsKey(Integer.valueOf(i))) {
+            if (!names.containsKey(i)) {
                 elements.clear();
                 break;
             }
 
-            dirent = names.get(Integer.valueOf(i));
+            dirent = names.get(i);
             elements.push(dirent.getName());
 
             if (dirent.getIno() == dirent.getParentIno()) {
@@ -428,7 +433,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
         // if an element is missing defer the work and read next entry.
         if (elements.isEmpty()) {
-            pending.put(Integer.valueOf(entry.getIno()), entry);
+            pending.put(entry.getIno(), entry);
 
             return null;
         }
@@ -532,6 +537,9 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      * Look at the first few bytes of the file to decide if it's a dump
      * archive. With 32 bytes we can look at the magic value, with a full
      * 1k we can verify the checksum.
+     * @param buffer data to match
+     * @param length length of data
+     * @return whether the buffer seems to contain dump data
      */
     public static boolean matches(byte[] buffer, int length) {
         // do we have enough of the header?

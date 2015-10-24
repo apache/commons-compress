@@ -30,7 +30,7 @@ class DeltaDecoder extends CoderBase {
     }
 
     @Override
-    InputStream decode(final InputStream in, long uncompressedLength,
+    InputStream decode(final String archiveName, final InputStream in, long uncompressedLength,
             final Coder coder, byte[] password) throws IOException {
         return new DeltaOptions(getOptionsFromCoder(coder)).getInputStream(in);
     }
@@ -54,7 +54,7 @@ class DeltaDecoder extends CoderBase {
 
     @Override
     Object getOptionsFromCoder(Coder coder, InputStream in) {
-        return Integer.valueOf(getOptionsFromCoder(coder));
+        return getOptionsFromCoder(coder);
     }
 
     private int getOptionsFromCoder(Coder coder) {

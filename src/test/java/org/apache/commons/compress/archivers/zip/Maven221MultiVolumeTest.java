@@ -19,17 +19,17 @@
 package org.apache.commons.compress.archivers.zip;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.junit.Test;
 
 /**
- * JUnit 3 testcase for a multi-volume zip file.
+ * JUnit testcase for a multi-volume zip file.
  *
  * Some tools (like 7-zip) allow users to split a large archives into 'volumes'
  * with a given size to fit them into multiple cds, usb drives, or emails with
@@ -42,7 +42,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * yields an exception.
  *
  */
-public class Maven221MultiVolumeTest extends TestCase {
+public class Maven221MultiVolumeTest {
 
     private static final String [] ENTRIES = new String [] {
         "apache-maven-2.2.1/",
@@ -65,6 +65,7 @@ public class Maven221MultiVolumeTest extends TestCase {
     private static final String LAST_ENTRY_NAME =
         "apache-maven-2.2.1/lib/maven-2.2.1-uber.jar";
 
+    @Test
     public void testRead7ZipMultiVolumeArchiveForStream() throws IOException {
 
         FileInputStream archive =
@@ -111,6 +112,7 @@ public class Maven221MultiVolumeTest extends TestCase {
         }
     }
 
+    @Test
     public void testRead7ZipMultiVolumeArchiveForFile() throws IOException {
         File file = getFile("apache-maven-2.2.1.zip.001");
         try {

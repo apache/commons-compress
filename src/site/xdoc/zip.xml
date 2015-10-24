@@ -486,6 +486,37 @@
         archive.</p>
 
       </subsection>
+
+      <subsection name="Parallel zip creation" id="parallel">
+
+        <p>Starting with Compress 1.10 there is now built-in support for
+          parallel creation of zip archives</p>
+
+          <p>Multiple threads can write
+          to their own <code>ScatterZipOutputStream</code>
+          instance that is backed to file or to some user-implemented form of
+          storage (implementing <code>ScatterGatherBackingStore</code>).</p>
+
+          <p>When the threads finish, they can join these streams together
+          to a complete zip file using the <code>writeTo</code> method
+          that will write a single <code>ScatterOutputStream</code> to a target
+          <code>ZipArchiveOutputStream</code>.</p>
+
+          <p>To assist this process, clients can use
+          <code>ParallelScatterZipCreator</code> that will handle threads
+          pools and correct memory model consistency so the client
+          can avoid these issues. Please note that when writing well-formed
+          Zip files this way, it is usually necessary to keep a
+          separate <code>ScatterZipOutputStream</code> that receives all directories
+          and writes this to the target <code>ZipArchiveOutputStream</code> before
+          the ones created through <code>ParallelScatterZipCreator</code>. This is the responsibility of the client.</p>
+
+          <p>There is no guarantee of order of the entries when writing a Zip
+          file with <code>ParallelScatterZipCreator</code>.</p>
+
+          See the examples section for a code sample demonstrating how to make a zip file.
+      </subsection>
+
     </section>
   </body>
 </document>

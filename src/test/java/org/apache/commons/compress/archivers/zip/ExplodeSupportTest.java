@@ -19,6 +19,7 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import static org.junit.Assert.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,11 +28,11 @@ import java.io.InputStream;
 import java.util.zip.CRC32;
 import java.util.zip.CheckedOutputStream;
 
-import junit.framework.TestCase;
 import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.Test;
 
-public class ExplodeSupportTest extends TestCase {
+public class ExplodeSupportTest {
 
     private void testArchiveWithImplodeCompression(String filename, String entryName) throws IOException {
         ZipFile zip = new ZipFile(new File(filename));
@@ -50,14 +51,17 @@ public class ExplodeSupportTest extends TestCase {
         zip.close();
     }
 
+    @Test
     public void testArchiveWithImplodeCompression4K2Trees() throws IOException {
-        testArchiveWithImplodeCompression("target/test-classes/archives/imploding-4Kdict-2trees.zip", "HEADER.TXT");
+        testArchiveWithImplodeCompression("target/test-classes/imploding-4Kdict-2trees.zip", "HEADER.TXT");
     }
 
+    @Test
     public void testArchiveWithImplodeCompression8K3Trees() throws IOException {
-        testArchiveWithImplodeCompression("target/test-classes/archives/imploding-8Kdict-3trees.zip", "LICENSE.TXT");
+        testArchiveWithImplodeCompression("target/test-classes/imploding-8Kdict-3trees.zip", "LICENSE.TXT");
     }
 
+    @Test
     public void testTikaTestArchive() throws IOException {
         testArchiveWithImplodeCompression("target/test-classes/moby-imploded.zip", "README");
     }
@@ -80,14 +84,17 @@ public class ExplodeSupportTest extends TestCase {
         assertEquals("CRC32", entry.getCrc(), out.getChecksum().getValue());
     }
 
+    @Test
     public void testZipStreamWithImplodeCompression4K2Trees() throws IOException {
-        testZipStreamWithImplodeCompression("target/test-classes/archives/imploding-4Kdict-2trees.zip", "HEADER.TXT");
+        testZipStreamWithImplodeCompression("target/test-classes/imploding-4Kdict-2trees.zip", "HEADER.TXT");
     }
 
+    @Test
     public void testZipStreamWithImplodeCompression8K3Trees() throws IOException {
-        testZipStreamWithImplodeCompression("target/test-classes/archives/imploding-8Kdict-3trees.zip", "LICENSE.TXT");
+        testZipStreamWithImplodeCompression("target/test-classes/imploding-8Kdict-3trees.zip", "LICENSE.TXT");
     }
 
+    @Test
     public void testTikaTestStream() throws IOException {
         testZipStreamWithImplodeCompression("target/test-classes/moby-imploded.zip", "README");
     }

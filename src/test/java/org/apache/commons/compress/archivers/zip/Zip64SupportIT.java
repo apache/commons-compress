@@ -130,6 +130,45 @@ public class Zip64SupportIT {
                                        "zip6/5GB_of_Zeros");
     }
 
+    @Test public void writeAndRead5GBOfZerosUsingZipFile() throws Throwable {
+        File f = null;
+        try {
+            f = write5GBZerosFile("writeAndRead5GBOfZerosUsingZipFile");
+            read5GBOfZerosUsingZipFileImpl(f, "5GB_of_Zeros");
+        } finally {
+            if (f != null) {
+                AbstractTestCase.tryHardToDelete(f);
+            }
+        }
+    }
+
+    private static File write5GBZerosFile(String testName) throws Throwable {
+        File f = getTempFile(testName);
+        ZipArchiveOutputStream zos = new ZipArchiveOutputStream(f);
+        try {
+            zos.setUseZip64(Zip64Mode.Always);
+            byte[] buf = new byte[ONE_MILLION];
+            ZipArchiveEntry zae = new ZipArchiveEntry("5GB_of_Zeros");
+            zae.setSize(FIVE_BILLION);
+            zae.setMethod(ZipEntry.DEFLATED);
+            zae.setCrc(0x8a408f16L);
+            zos.putArchiveEntry(zae);
+            for (int j = 0; j < FIVE_BILLION / 1000 / 1000; j++) {
+                zos.write(buf);
+            }
+            zos.closeArchiveEntry();
+            zos.close();
+        } catch (IOException ex) {
+            System.err.println("Failed to write archive because of: "
+                               + ex.getMessage()
+                               + " - likely not enough disk space.");
+            assumeTrue(false);
+        } finally {
+            zos.destroy();
+        }
+        return f;
+    }
+
     @Test public void read100KFilesUsingZipFile() throws Throwable {
         read100KFilesUsingZipFileImpl(get100KFileFile());
     }

@@ -19,12 +19,15 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import static org.junit.Assert.*;
+
 import java.util.Arrays;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class GeneralPurposeBitTest extends TestCase {
+public class GeneralPurposeBitTest {
 
+    @Test
     public void testDefaults() {
         assertFalse(new GeneralPurposeBit().usesDataDescriptor());
         assertFalse(new GeneralPurposeBit().usesUTF8ForNames());
@@ -34,6 +37,7 @@ public class GeneralPurposeBitTest extends TestCase {
         assertTrue(Arrays.equals(b, new GeneralPurposeBit().encode()));
     }
 
+    @Test
     public void testParseEdgeCases() {
         assertFalse(GeneralPurposeBit.parse(new byte[2], 0)
                     .usesDataDescriptor());
@@ -57,6 +61,7 @@ public class GeneralPurposeBitTest extends TestCase {
                    .usesStrongEncryption());
     }
 
+    @Test
     public void testDataDescriptor() {
         byte[] flags = new byte[] {(byte) 8, (byte) 0};
         assertTrue(GeneralPurposeBit.parse(flags, 0).usesDataDescriptor());
@@ -65,6 +70,7 @@ public class GeneralPurposeBitTest extends TestCase {
         assertTrue(Arrays.equals(flags, b.encode()));
     }
 
+    @Test
     public void testLanguageEncodingFlag() {
         byte[] flags = new byte[] {(byte) 0, (byte) 8};
         assertTrue(GeneralPurposeBit.parse(flags, 0).usesUTF8ForNames());
@@ -73,6 +79,7 @@ public class GeneralPurposeBitTest extends TestCase {
         assertTrue(Arrays.equals(flags, b.encode()));
     }
 
+    @Test
     public void testEncryption() {
         byte[] flags = new byte[] {(byte) 1, (byte) 0};
         assertTrue(GeneralPurposeBit.parse(flags, 0).usesEncryption());
@@ -81,7 +88,8 @@ public class GeneralPurposeBitTest extends TestCase {
         assertTrue(Arrays.equals(flags, b.encode()));
     }
 
-    public void testStringEncryption() {
+    @Test
+    public void testStrongEncryption() {
         byte[] flags = new byte[] {(byte) 65, (byte) 0};
         assertTrue(GeneralPurposeBit.parse(flags, 0).usesStrongEncryption());
         GeneralPurposeBit b = new GeneralPurposeBit();
@@ -93,4 +101,12 @@ public class GeneralPurposeBitTest extends TestCase {
         assertFalse(GeneralPurposeBit.parse(flags, 0).usesStrongEncryption());
     }
 
+    @Test
+    public void testClone() {
+        GeneralPurposeBit b = new GeneralPurposeBit();
+        b.useStrongEncryption(true);
+        b.useUTF8ForNames(true);
+        assertEquals(b, b.clone());
+        assertNotSame(b, b.clone());
+    }
 }
