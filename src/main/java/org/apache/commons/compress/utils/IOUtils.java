@@ -49,6 +49,7 @@ public final class IOUtils {
      *            the InputStream to copy
      * @param output
      *            the target Stream
+     * @return the number of bytes copied
      * @throws IOException
      *             if an error occurs
      */
@@ -65,6 +66,7 @@ public final class IOUtils {
      *            the target Stream
      * @param buffersize
      *            the buffer size to use
+     * @return the number of bytes copied
      * @throws IOException
      *             if an error occurs
      */
@@ -93,7 +95,7 @@ public final class IOUtils {
      * @param input stream to skip bytes in
      * @param numToSkip the number of bytes to skip
      * @return the number of bytes actually skipped
-     * @throws IOException
+     * @throws IOException on error
      */
     public static long skip(InputStream input, long numToSkip) throws IOException {
         long available = numToSkip;
@@ -126,7 +128,7 @@ public final class IOUtils {
      * @param input stream to read from
      * @param b buffer to fill
      * @return the number of bytes actually read
-     * @throws IOException
+     * @throws IOException on error
      */
     public static int readFully(InputStream input, byte[] b) throws IOException {
         return readFully(input, b, 0, b.length);

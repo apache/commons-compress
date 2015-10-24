@@ -24,7 +24,7 @@ package org.apache.commons.compress.archivers.zip;
  * @since 1.1
  * @NotThreadSafe
  */
-public final class GeneralPurposeBit {
+public final class GeneralPurposeBit implements Cloneable {
 
     /**
      * Indicates that the file is encrypted.
@@ -81,6 +81,7 @@ public final class GeneralPurposeBit {
 
     /**
      * whether the current entry uses UTF8 for file name and comment.
+     * @return whether the current entry uses UTF8 for file name and comment.
      */
     public boolean usesUTF8ForNames() {
         return languageEncodingFlag;
@@ -88,6 +89,7 @@ public final class GeneralPurposeBit {
 
     /**
      * whether the current entry will use UTF8 for file name and comment.
+     * @param b whether the current entry will use UTF8 for file name and comment.
      */
     public void useUTF8ForNames(boolean b) {
         languageEncodingFlag = b;
@@ -95,6 +97,8 @@ public final class GeneralPurposeBit {
 
     /**
      * whether the current entry uses the data descriptor to store CRC
+     * and size information.
+     * @return whether the current entry uses the data descriptor to store CRC
      * and size information
      */
     public boolean usesDataDescriptor() {
@@ -103,6 +107,8 @@ public final class GeneralPurposeBit {
 
     /**
      * whether the current entry will use the data descriptor to store
+     * CRC and size information.
+     * @param b whether the current entry will use the data descriptor to store
      * CRC and size information
      */
     public void useDataDescriptor(boolean b) {
@@ -110,28 +116,32 @@ public final class GeneralPurposeBit {
     }
 
     /**
-     * whether the current entry is encrypted
+     * whether the current entry is encrypted.
+     * @return whether the current entry is encrypted
      */
     public boolean usesEncryption() {
         return encryptionFlag;
     }
 
     /**
-     * whether the current entry will be encrypted
+     * whether the current entry will be encrypted.
+     * @param b whether the current entry will be encrypted
      */
     public void useEncryption(boolean b) {
         encryptionFlag = b;
     }
 
     /**
-     * whether the current entry is encrypted using strong encryption
+     * whether the current entry is encrypted using strong encryption.
+     * @return whether the current entry is encrypted using strong encryption
      */
     public boolean usesStrongEncryption() {
         return encryptionFlag && strongEncryptionFlag;
     }
 
     /**
-     * whether the current entry will be encrypted  using strong encryption
+     * whether the current entry will be encrypted  using strong encryption.
+     * @param b whether the current entry will be encrypted  using strong encryption
      */
     public void useStrongEncryption(boolean b) {
         strongEncryptionFlag = b;
@@ -156,17 +166,32 @@ public final class GeneralPurposeBit {
 
     /**
      * Encodes the set bits in a form suitable for ZIP archives.
+     * @return the encoded general purpose bits
      */
     public byte[] encode() {
-        return 
-            ZipShort.getBytes((dataDescriptorFlag ? DATA_DESCRIPTOR_FLAG : 0)
-                              |
-                              (languageEncodingFlag ? UFT8_NAMES_FLAG : 0)
-                              |
-                              (encryptionFlag ? ENCRYPTION_FLAG : 0)
-                              |
-                              (strongEncryptionFlag ? STRONG_ENCRYPTION_FLAG : 0)
-                              );
+        byte[] result = new byte[2];
+        encode(result, 0);
+        return result;
+    }
+
+
+    /**
+     * Encodes the set bits in a form suitable for ZIP archives.
+     *
+     * @param buf the output buffer
+     * @param  offset
+     *         The offset within the output buffer of the first byte to be written.
+     *         must be non-negative and no larger than <tt>buf.length-2</tt>
+     */
+    public void encode(byte[] buf, int offset) {
+                ZipShort.putShort((dataDescriptorFlag ? DATA_DESCRIPTOR_FLAG : 0)
+                        |
+                        (languageEncodingFlag ? UFT8_NAMES_FLAG : 0)
+                        |
+                        (encryptionFlag ? ENCRYPTION_FLAG : 0)
+                        |
+                        (strongEncryptionFlag ? STRONG_ENCRYPTION_FLAG : 0)
+                        , buf, offset);
     }
 
     /**
@@ -174,6 +199,7 @@ public final class GeneralPurposeBit {
      * 
      * @param data local file header or a central directory entry.
      * @param offset offset at which the general purpose bit starts
+     * @return parsed flags
      */
     public static GeneralPurposeBit parse(final byte[] data, final int offset) {
         final int generalPurposeFlag = ZipShort.getValue(data, offset);
@@ -205,5 +231,15 @@ public final class GeneralPurposeBit {
             && g.strongEncryptionFlag == strongEncryptionFlag
             && g.languageEncodingFlag == languageEncodingFlag
             && g.dataDescriptorFlag == dataDescriptorFlag;
+    }
+
+    @Override
+    public Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException ex) {
+            // impossible
+            throw new RuntimeException("GeneralPurposeBit is not Cloneable?", ex);
+        }
     }
 }

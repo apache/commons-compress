@@ -18,7 +18,7 @@
  */
 package org.apache.commons.compress.compressors;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.*;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -30,10 +30,12 @@ import java.io.InputStream;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.snappy.FramedSnappyCompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.Test;
 
 public final class FramedSnappyTestCase
     extends AbstractTestCase {
 
+    @Test
     public void testDefaultExtraction() throws Exception {
         testUnarchive(new StreamWrapper<CompressorInputStream>() {
             public CompressorInputStream wrap(InputStream is) throws IOException {
@@ -42,6 +44,7 @@ public final class FramedSnappyTestCase
         });
     }
 
+    @Test
     public void testDefaultExtractionViaFactory() throws Exception {
         testUnarchive(new StreamWrapper<CompressorInputStream>() {
             public CompressorInputStream wrap(InputStream is) throws Exception {
@@ -52,6 +55,7 @@ public final class FramedSnappyTestCase
         });
     }
 
+    @Test
     public void testDefaultExtractionViaFactoryAutodetection() throws Exception {
         testUnarchive(new StreamWrapper<CompressorInputStream>() {
             public CompressorInputStream wrap(InputStream is) throws Exception {

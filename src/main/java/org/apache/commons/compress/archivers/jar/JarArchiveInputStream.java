@@ -32,8 +32,24 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
  */
 public class JarArchiveInputStream extends ZipArchiveInputStream {
 
+    /**
+     * Creates an instance from the input stream using the default encoding.
+     * 
+     * @param inputStream the input stream to wrap
+     */
     public JarArchiveInputStream( final InputStream inputStream ) {
         super(inputStream);
+    }
+
+    /**
+     * Creates an instance from the input stream using the specified encoding.
+     * 
+     * @param inputStream the input stream to wrap
+     * @param encoding the encoding to use
+     * @since 1.10
+     */
+    public JarArchiveInputStream( final InputStream inputStream, final String encoding ) {
+        super(inputStream, encoding);
     }
 
     public JarArchiveEntry getNextJarEntry() throws IOException {

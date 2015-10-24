@@ -41,6 +41,18 @@ public class JarArchiveOutputStream extends ZipArchiveOutputStream {
         super(out);
     }
 
+    /**
+     * Create and instance that wraps the output stream using the provided encoding.
+     * 
+     * @param out the output stream to wrap
+     * @param encoding the encoding to use. Use null for the platform default.
+     * @since 1.10
+     */
+    public JarArchiveOutputStream(final OutputStream out, final String encoding) {
+        super(out);
+        setEncoding(encoding);
+    }
+
     // @throws ClassCastException if entry is not an instance of ZipArchiveEntry
     @Override
     public void putArchiveEntry(ArchiveEntry ze) throws IOException {

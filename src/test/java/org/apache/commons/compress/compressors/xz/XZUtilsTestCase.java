@@ -18,10 +18,13 @@
  */
 package org.apache.commons.compress.compressors.xz;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
-public class XZUtilsTestCase extends TestCase {
+import org.junit.Test;
 
+public class XZUtilsTestCase {
+
+    @Test
     public void testIsCompressedFilename() {
         assertFalse(XZUtils.isCompressedFilename(""));
         assertFalse(XZUtils.isCompressedFilename(".xz"));
@@ -39,6 +42,7 @@ public class XZUtilsTestCase extends TestCase {
         assertFalse(XZUtils.isCompressedFilename("x.txz.y"));
     }
 
+    @Test
     public void testGetUncompressedFilename() {
         assertEquals("", XZUtils.getUncompressedFilename(""));
         assertEquals(".xz", XZUtils.getUncompressedFilename(".xz"));
@@ -52,6 +56,7 @@ public class XZUtilsTestCase extends TestCase {
         assertEquals("x.txz.y", XZUtils.getUncompressedFilename("x.txz.y"));
     }
 
+    @Test
     public void testGetCompressedFilename() {
         assertEquals(".xz", XZUtils.getCompressedFilename(""));
         assertEquals("x.xz", XZUtils.getCompressedFilename("x"));
@@ -63,6 +68,7 @@ public class XZUtilsTestCase extends TestCase {
         assertEquals("x.wmf.y.xz", XZUtils.getCompressedFilename("x.wmf.y"));
     }
 
+    @Test
     public void testMatches() {
         byte[] data = {
             (byte) 0xFD, '7', 'z', 'X', 'Z', '\0'
@@ -74,11 +80,13 @@ public class XZUtilsTestCase extends TestCase {
         assertFalse(XZUtils.matches(data, 6));
     }
 
+    @Test
     public void testCachingIsEnabledByDefaultAndXZIsPresent() {
         assertEquals(XZUtils.CachedAvailability.CACHED_AVAILABLE, XZUtils.getCachedXZAvailability());
         assertTrue(XZUtils.isXZCompressionAvailable());
     }
 
+    @Test
     public void testCanTurnOffCaching() {
         try {
             XZUtils.setCacheXZAvailablity(false);
@@ -89,6 +97,7 @@ public class XZUtilsTestCase extends TestCase {
         }
     }
 
+    @Test
     public void testTurningOnCachingReEvaluatesAvailability() {
         try {
             XZUtils.setCacheXZAvailablity(false);

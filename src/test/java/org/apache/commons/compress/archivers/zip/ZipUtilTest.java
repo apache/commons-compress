@@ -18,27 +18,24 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
-public class ZipUtilTest extends TestCase {
+import org.junit.Before;
+import org.junit.Test;
+
+public class ZipUtilTest {
 
     private Date time;
     private ZipLong zl;
 
-    /**
-     * Constructor
-     */
-    public ZipUtilTest(String name) {
-        super(name);
-    }
-
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         time = new Date();
         Calendar cal = Calendar.getInstance();
         cal.setTime(time);
@@ -59,16 +56,13 @@ public class ZipUtilTest extends TestCase {
         zl = new ZipLong(result);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testZipLong() throws Exception {
         ZipLong test = ZipUtil.toDosTime(time);
         assertEquals(test.getValue(), zl.getValue());
     }
 
+    @Test
     public void testAdjustToLong() {
         assertEquals(Integer.MAX_VALUE,
                      ZipUtil.adjustToLong(Integer.MAX_VALUE));
@@ -78,6 +72,7 @@ public class ZipUtilTest extends TestCase {
                      ZipUtil.adjustToLong(2 * Integer.MAX_VALUE));
     }
 
+    @Test
     public void testMinTime(){
         byte[] b1 = ZipUtil.toDosTime(0);
         byte b10 = b1[0]; // Save the first byte
@@ -86,6 +81,27 @@ public class ZipUtilTest extends TestCase {
         assertEquals(b10,b2[0]); // first byte should still be the same
     }
 
+    @Test
+    public void testOutsideCalendar(){
+        byte[] b1 = ZipUtil.toDosTime(160441200000L); // 1.1..1975
+        assertEquals(0, b1[0]);
+        assertEquals(33, b1[1]);
+        assertEquals(0, b1[2]);
+        assertEquals(0, b1[3]);
+    }
+
+    @Test
+    public void testInsideCalendar(){
+        TimeZone tz = TimeZone.getDefault();
+        long date = 476096400000L; // 1.1.1985, 10:00 am GMT
+        byte[] b1 = ZipUtil.toDosTime(date - tz.getOffset(date));
+        assertEquals(0, b1[0]);
+        assertEquals(72, b1[1]);
+        assertEquals(65, b1[2]);
+        assertEquals(10, b1[3]);
+    }
+
+    @Test
     public void testReverse() {
         byte[][] bTest = new byte[6][];
         bTest[0] = new byte[]{};
@@ -112,6 +128,7 @@ public class ZipUtilTest extends TestCase {
         }
     }
 
+    @Test
     public void testBigToLong() {
         BigInteger big1 = BigInteger.valueOf(1);
         BigInteger big2 = BigInteger.valueOf(Long.MAX_VALUE);
@@ -138,6 +155,7 @@ public class ZipUtilTest extends TestCase {
         }
     }
 
+    @Test
     public void testLongToBig() {
         long l0 = 0;
         long l1 = 1;
@@ -166,6 +184,7 @@ public class ZipUtilTest extends TestCase {
         }
     }
 
+    @Test
     public void testSignedByteToUnsignedInt() {
         // Yay, we can completely test all possible input values in this case!
         int expectedVal = 128;
@@ -179,6 +198,7 @@ public class ZipUtilTest extends TestCase {
         }
     }
 
+    @Test
     public void testUnsignedIntToSignedByte() {
         int unsignedVal = 128;
         for (int i = Byte.MIN_VALUE; i <= Byte.MAX_VALUE; i++) {

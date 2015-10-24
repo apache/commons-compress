@@ -1,4 +1,12 @@
-Apache Commons Compress was derived from various sources, including:
+Apache Commons Compress
+=======================
+
+Commons Compress is a Java library for working with various
+compression and archiving formats.
+
+For full documentation see http://commons.apache.org/proper/commons-compress/
+
+## Apache Commons Compress was derived from various sources, including:
 
 Original BZip2 classes contributed by Keiron Liddle
 <keiron@aftexsw.com>, Aftex Software to the Apache Ant project.

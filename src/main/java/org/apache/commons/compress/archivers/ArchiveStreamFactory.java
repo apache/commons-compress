@@ -71,33 +71,35 @@ import org.apache.commons.compress.utils.IOUtils;
  * out.close();
  * in.close();
  * </pre>
- * 
- * @Immutable
+ * @Immutable provided that the deprecated method setEntryEncoding is not used.
+ * @ThreadSafe even if the deprecated method setEntryEncoding is used
  */
 public class ArchiveStreamFactory {
 
     /**
-     * Constant used to identify the AR archive format.
+     * Constant (value {@value}) used to identify the AR archive format.
      * @since 1.1
      */
     public static final String AR = "ar";
     /**
-     * Constant used to identify the ARJ archive format.
+     * Constant (value {@value}) used to identify the ARJ archive format.
+     * Not supported as an output stream type.
      * @since 1.6
      */
     public static final String ARJ = "arj";
     /**
-     * Constant used to identify the CPIO archive format.
+     * Constant (value {@value}) used to identify the CPIO archive format.
      * @since 1.1
      */
     public static final String CPIO = "cpio";
     /**
-     * Constant used to identify the Unix DUMP archive format.
+     * Constant (value {@value}) used to identify the Unix DUMP archive format.
+     * Not supported as an output stream type.
      * @since 1.3
      */
     public static final String DUMP = "dump";
     /**
-     * Constant used to identify the JAR archive format.
+     * Constant (value {@value}) used to identify the JAR archive format.
      * @since 1.1
      */
     public static final String JAR = "jar";
@@ -107,26 +109,52 @@ public class ArchiveStreamFactory {
      */
     public static final String TAR = "tar";
     /**
-     * Constant used to identify the ZIP archive format.
+     * Constant (value {@value}) used to identify the ZIP archive format.
      * @since 1.1
      */
     public static final String ZIP = "zip";
     /**
-     * Constant used to identify the 7z archive format.
+     * Constant (value {@value}) used to identify the 7z archive format.
      * @since 1.8
      */
     public static final String SEVEN_Z = "7z";
 
     /**
-     * Entry encoding, null for the default.
+     * Entry encoding, null for the platform default.
      */
-    private String entryEncoding = null;
+    private final String encoding;
 
     /**
-     * Returns the encoding to use for arj, zip, dump, cpio and tar
-     * files, or null for the default.
+     * Entry encoding, null for the default.
+     */
+    private volatile String entryEncoding = null;
+
+    /**
+     * Create an instance using the platform default encoding.
+     */
+    public ArchiveStreamFactory() {
+        this(null);
+    }
+
+    /**
+     * Create an instance using the specified encoding.
      *
-     * @return entry encoding, or null
+     * @param encoding the encoding to be used.
+     *
+     * @since 1.10
+     */
+    public ArchiveStreamFactory(String encoding) {
+        super();
+        this.encoding = encoding;
+        // Also set the original field so can continue to use it.
+        this.entryEncoding = encoding;
+    }
+
+    /**
+     * Returns the encoding to use for arj, jar, zip, dump, cpio and tar
+     * files, or null for the archiver default.
+     *
+     * @return entry encoding, or null for the archiver default
      * @since 1.5
      */
     public String getEntryEncoding() {
@@ -134,19 +162,28 @@ public class ArchiveStreamFactory {
     }
 
     /**
-     * Sets the encoding to use for arj, zip, dump, cpio and tar files. Use null for the default.
+     * Sets the encoding to use for arj, jar, zip, dump, cpio and tar files. Use null for the archiver default.
      * 
-     * @param entryEncoding the entry encoding, null uses the default.
+     * @param entryEncoding the entry encoding, null uses the archiver default.
      * @since 1.5
+     * @deprecated 1.10 use {@link #ArchiveStreamFactory(String)} to specify the encoding
+     * @throws IllegalStateException if the constructor {@link #ArchiveStreamFactory(String)} 
+     * was used to specify the factory encoding.
      */
+    @Deprecated
     public void setEntryEncoding(String entryEncoding) {
+        // Note: this does not detect new ArchiveStreamFactory(null) but that does not set the encoding anyway
+        if (encoding != null) {
+            throw new IllegalStateException("Cannot overide encoding set by the constructor");
+        }
         this.entryEncoding = entryEncoding;
     }
 
     /**
      * Create an archive input stream from an archiver name and an input stream.
      * 
-     * @param archiverName the archive name, i.e. "ar", "arj", "zip", "tar", "jar", "dump" or "cpio"
+     * @param archiverName the archive name,
+     * i.e. {@value #AR}, {@value #ARJ}, {@value #ZIP}, {@value #TAR}, {@value #JAR}, {@value #CPIO}, {@value #DUMP} or {@value #SEVEN_Z}
      * @param in the input stream
      * @return the archive input stream
      * @throws ArchiveException if the archiver name is not known
@@ -191,7 +228,11 @@ public class ArchiveStreamFactory {
             }
         }
         if (JAR.equalsIgnoreCase(archiverName)) {
-            return new JarArchiveInputStream(in);
+            if (entryEncoding != null) {
+                return new JarArchiveInputStream(in, entryEncoding);
+            } else {
+                return new JarArchiveInputStream(in);
+            }
         }
         if (CPIO.equalsIgnoreCase(archiverName)) {
             if (entryEncoding != null) {
@@ -215,9 +256,10 @@ public class ArchiveStreamFactory {
     }
 
     /**
-     * Create an archive output stream from an archiver name and an input stream.
+     * Create an archive output stream from an archiver name and an output stream.
      * 
-     * @param archiverName the archive name, i.e. "ar", "zip", "tar", "jar" or "cpio"
+     * @param archiverName the archive name,
+     * i.e. {@value #AR}, {@value #ZIP}, {@value #TAR}, {@value #JAR} or {@value #CPIO} 
      * @param out the output stream
      * @return the archive output stream
      * @throws ArchiveException if the archiver name is not known
@@ -253,7 +295,11 @@ public class ArchiveStreamFactory {
             }
         }
         if (JAR.equalsIgnoreCase(archiverName)) {
-            return new JarArchiveOutputStream(out);
+            if (entryEncoding != null) {
+                return new JarArchiveOutputStream(out, entryEncoding);
+            } else {
+                return new JarArchiveOutputStream(out);
+            }
         }
         if (CPIO.equalsIgnoreCase(archiverName)) {
             if (entryEncoding != null) {
@@ -302,13 +348,25 @@ public class ArchiveStreamFactory {
                     return new ZipArchiveInputStream(in);
                 }
             } else if (JarArchiveInputStream.matches(signature, signatureLength)) {
-                return new JarArchiveInputStream(in);
+                if (entryEncoding != null) {
+                    return new JarArchiveInputStream(in, entryEncoding);
+                } else {
+                    return new JarArchiveInputStream(in);
+                }
             } else if (ArArchiveInputStream.matches(signature, signatureLength)) {
                 return new ArArchiveInputStream(in);
             } else if (CpioArchiveInputStream.matches(signature, signatureLength)) {
-                return new CpioArchiveInputStream(in);
+                if (entryEncoding != null) {
+                    return new CpioArchiveInputStream(in, entryEncoding);
+                } else {
+                    return new CpioArchiveInputStream(in);
+                }
             } else if (ArjArchiveInputStream.matches(signature, signatureLength)) {
-                return new ArjArchiveInputStream(in);
+                if (entryEncoding != null) {
+                    return new ArjArchiveInputStream(in, entryEncoding);
+                } else {
+                    return new ArjArchiveInputStream(in);
+                }
             } else if (SevenZFile.matches(signature, signatureLength)) {
                 throw new StreamingNotSupportedException(SEVEN_Z);
             }
@@ -319,7 +377,7 @@ public class ArchiveStreamFactory {
             signatureLength = IOUtils.readFully(in, dumpsig);
             in.reset();
             if (DumpArchiveInputStream.matches(dumpsig, signatureLength)) {
-                return new DumpArchiveInputStream(in);
+                return new DumpArchiveInputStream(in, entryEncoding);
             }
 
             // Tar needs an even bigger buffer to check the signature; read the first block
@@ -328,11 +386,7 @@ public class ArchiveStreamFactory {
             signatureLength = IOUtils.readFully(in, tarheader);
             in.reset();
             if (TarArchiveInputStream.matches(tarheader, signatureLength)) {
-                if (entryEncoding != null) {
-                    return new TarArchiveInputStream(in, entryEncoding);
-                } else {
-                    return new TarArchiveInputStream(in);
-                }
+                return new TarArchiveInputStream(in, entryEncoding);
             }
             // COMPRESS-117 - improve auto-recognition
             if (signatureLength >= 512) {
@@ -341,7 +395,7 @@ public class ArchiveStreamFactory {
                     tais = new TarArchiveInputStream(new ByteArrayInputStream(tarheader));
                     // COMPRESS-191 - verify the header checksum
                     if (tais.getNextTarEntry().isCheckSumOK()) {
-                        return new TarArchiveInputStream(in);
+                        return new TarArchiveInputStream(in, encoding);
                     }
                 } catch (Exception e) { // NOPMD
                     // can generate IllegalArgumentException as well

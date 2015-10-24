@@ -227,10 +227,10 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Constructor taking name, inode and type.
      *
-     * @param name
-     * @param simpleName
-     * @param ino
-     * @param type
+     * @param name the name
+     * @param simpleName the simple name
+     * @param ino the ino
+     * @param type the type
      */
     protected DumpArchiveEntry(String name, String simpleName, int ino,
                                TYPE type) {
@@ -242,12 +242,6 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Constructor taking tape buffer.
-     * @param buffer
-     * @param offset
-     */
-
-    /**
      * Returns the path of the entry.
      * @return the path of the entry.
      */
@@ -257,6 +251,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Sets the path of the entry.
+     * @param simpleName the simple name
      */
     protected void setSimpleName(String simpleName) {
         this.simpleName = simpleName;
@@ -264,6 +259,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Returns the ino of the entry.
+     * @return the ino
      */
     public int getIno() {
         return header.getIno();
@@ -271,6 +267,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Return the number of hard links to the entry.
+     * @return the number of hard links
      */
     public int getNlink() {
         return nlink;
@@ -278,6 +275,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Set the number of hard links.
+     * @param nlink the number of hard links
      */
     public void setNlink(int nlink) {
         this.nlink = nlink;
@@ -285,6 +283,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Get file creation time.
+     * @return the creation time
      */
     public Date getCreationTime() {
         return new Date(ctime);
@@ -292,6 +291,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Set the file creation time.
+     * @param ctime the creation time
      */
     public void setCreationTime(Date ctime) {
         this.ctime = ctime.getTime();
@@ -299,6 +299,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Return the generation of the file.
+     * @return the generation
      */
     public int getGeneration() {
         return generation;
@@ -306,6 +307,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Set the generation of the file.
+     * @param generation the generation
      */
     public void setGeneration(int generation) {
         this.generation = generation;
@@ -313,6 +315,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Has this file been deleted? (On valid on incremental dumps.)
+     * @return whether the file has been deleted
      */
     public boolean isDeleted() {
         return isDeleted;
@@ -320,6 +323,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Set whether this file has been deleted.
+     * @param isDeleted whether the file has been deleted
      */
     public void setDeleted(boolean isDeleted) {
         this.isDeleted = isDeleted;
@@ -327,6 +331,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Return the offset within the archive
+     * @return the offset
      */
     public long getOffset() {
         return offset;
@@ -334,6 +339,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Set the offset within the archive.
+     * @param offset the offset
      */
     public void setOffset(long offset) {
         this.offset = offset;
@@ -341,6 +347,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Return the tape volume where this file is located.
+     * @return the volume
      */
     public int getVolume() {
         return volume;
@@ -348,6 +355,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Set the tape volume.
+     * @param volume the volume
      */
     public void setVolume(int volume) {
         this.volume = volume;
@@ -355,6 +363,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Return the type of the tape segment header.
+     * @return the segment header
      */
     public DumpArchiveConstants.SEGMENT_TYPE getHeaderType() {
         return header.getType();
@@ -362,6 +371,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Return the number of records in this segment.
+     * @return the number of records
      */
     public int getHeaderCount() {
         return header.getCount();
@@ -369,6 +379,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Return the number of sparse records in this segment.
+     * @return the number of sparse records
      */
     public int getHeaderHoles() {
         return header.getHoles();
@@ -376,22 +387,18 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Is this a sparse record?
+     * @param idx index of the record to check
+     * @return whether this is a sparse record
      */
     public boolean isSparseRecord(int idx) {
         return (header.getCdata(idx) & 0x01) == 0;
     }
 
-    /**
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         return ino;
     }
 
-    /**
-     * @see java.lang.Object#equals(Object o)
-     */
     @Override
     public boolean equals(Object o) {
         if (o == this) {
@@ -418,9 +425,6 @@ public class DumpArchiveEntry implements ArchiveEntry {
         return true;
     }
 
-    /**
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return getName();
@@ -430,8 +434,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
      * Populate the dump archive entry and tape segment header with
      * the contents of the buffer.
      *
-     * @param buffer
-     * @throws Exception
+     * @param buffer buffer to read content from
      */
     static DumpArchiveEntry parse(byte[] buffer) {
         DumpArchiveEntry entry = new DumpArchiveEntry();
@@ -574,6 +577,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Sets the name of the entry.
+     * @param name the name
      */
     public final void setName(String name) {
         this.originalName = name;
@@ -588,12 +592,17 @@ public class DumpArchiveEntry implements ArchiveEntry {
         this.name = name;
     }
 
+    /**
+     * The last modified date.
+     * @return the last modified date
+     */
     public Date getLastModifiedDate() {
         return new Date(mtime);
     }
 
     /**
      * Is this a directory?
+     * @return whether this is a directory
      */
     public boolean isDirectory() {
         return type == TYPE.DIRECTORY;
@@ -601,6 +610,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Is this a regular file?
+     * @return whether this is a regular file
      */
     public boolean isFile() {
         return type == TYPE.FILE;
@@ -608,6 +618,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Is this a network device?
+     * @return whether this is a socket
      */
     public boolean isSocket() {
         return type == TYPE.SOCKET;
@@ -615,6 +626,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Is this a character device?
+     * @return whether this is a character device
      */
     public boolean isChrDev() {
         return type == TYPE.CHRDEV;
@@ -622,6 +634,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Is this a block device?
+     * @return whether this is a block device
      */
     public boolean isBlkDev() {
         return type == TYPE.BLKDEV;
@@ -629,6 +642,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Is this a fifo/pipe?
+     * @return whether this is a fifo
      */
     public boolean isFifo() {
         return type == TYPE.FIFO;
@@ -636,6 +650,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Get the type of the entry.
+     * @return the type
      */
     public TYPE getType() {
         return type;
@@ -643,6 +658,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Set the type of the entry.
+     * @param type the type
      */
     public void setType(TYPE type) {
         this.type = type;
@@ -650,6 +666,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Return the access permissions on the entry.
+     * @return the access permissions
      */
     public int getMode() {
         return mode;
@@ -657,6 +674,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Set the access permissions on the entry.
+     * @param mode the access permissions
      */
     public void setMode(int mode) {
         this.mode = mode & 07777;
@@ -665,6 +683,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Returns the permissions on the entry.
+     * @return the permissions
      */
     public Set<PERMISSION> getPermissions() {
         return permissions;
@@ -672,6 +691,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Returns the size of the entry.
+     * @return the size
      */
     public long getSize() {
         return isDirectory() ? SIZE_UNKNOWN : size;
@@ -686,6 +706,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Set the size of the entry.
+     * @param size the size
      */
     public void setSize(long size) {
         this.size = size;
@@ -693,6 +714,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Set the time the file was last modified.
+     * @param mtime the last modified time
      */
     public void setLastModifiedDate(Date mtime) {
         this.mtime = mtime.getTime();
@@ -700,6 +722,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Returns the time the file was last accessed.
+     * @return the access time
      */
     public Date getAccessTime() {
         return new Date(atime);
@@ -707,6 +730,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Set the time the file was last accessed.
+     * @param atime the access time
      */
     public void setAccessTime(Date atime) {
         this.atime = atime.getTime();
@@ -714,6 +738,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Return the user id.
+     * @return the user id
      */
     public int getUserId() {
         return uid;
@@ -721,6 +746,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Set the user id.
+     * @param uid the user id
      */
     public void setUserId(int uid) {
         this.uid = uid;
@@ -728,6 +754,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Return the group id
+     * @return the group id
      */
     public int getGroupId() {
         return gid;
@@ -735,6 +762,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Set the group id.
+     * @param gid the group id
      */
     public void setGroupId(int gid) {
         this.gid = gid;

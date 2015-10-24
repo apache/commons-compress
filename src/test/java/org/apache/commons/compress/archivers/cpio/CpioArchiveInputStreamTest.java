@@ -18,12 +18,16 @@
  */
 package org.apache.commons.compress.archivers.cpio;
 
+import static org.junit.Assert.*;
+
 import java.io.FileInputStream;
 
 import org.apache.commons.compress.AbstractTestCase;
+import org.junit.Test;
 
 public class CpioArchiveInputStreamTest extends AbstractTestCase {
 
+    @Test
     public void testCpioUnarchive() throws Exception {
         StringBuilder expected = new StringBuilder();
         expected.append("./test1.xml<?xml version=\"1.0\"?>\n");
@@ -46,6 +50,7 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
         assertEquals(result.toString(), expected.toString());
     }
 
+    @Test
     public void testCpioUnarchiveCreatedByRedlineRpm() throws Exception {
         CpioArchiveInputStream in =
             new CpioArchiveInputStream(new FileInputStream(getFile("redline.cpio")));

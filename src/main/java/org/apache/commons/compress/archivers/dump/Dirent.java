@@ -79,6 +79,6 @@ class Dirent {
      */
     @Override
     public String toString() {
-        return String.format("[%d]: %s", Integer.valueOf(ino), name);
+        return String.format("[%d]: %s", ino, name);
     }
 }

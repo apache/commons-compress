@@ -18,35 +18,57 @@
  */
 package org.apache.commons.compress.compressors;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.lzma.LZMACompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.Test;
 
 public final class LZMATestCase extends AbstractTestCase {
 
+    @Test
     public void testLZMAUnarchive() throws Exception {
         final File input = getFile("bla.tar.lzma");
         final File output = new File(dir, "bla.tar");
         final InputStream is = new FileInputStream(input);
         try {
             final CompressorInputStream in = new LZMACompressorInputStream(is);
-            FileOutputStream out = null;
-            try {
-                out = new FileOutputStream(output);
-                IOUtils.copy(in, out);
-            } finally {
-                if (out != null) {
-                    out.close();
-                }
-                in.close();
-            }
+            copy(in, output);
         } finally {
             is.close();
+        }
+    }
+
+    @Test
+    public void testLZMAUnarchiveWithAutodetection() throws Exception {
+        final File input = getFile("bla.tar.lzma");
+        final File output = new File(dir, "bla.tar");
+        final InputStream is = new BufferedInputStream(new FileInputStream(input));
+        try {
+            final CompressorInputStream in = new CompressorStreamFactory()
+                .createCompressorInputStream(is);
+            copy(in, output);
+        } finally {
+            is.close();
+        }
+    }
+
+    private void copy(InputStream in, File output) throws IOException {
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream(output);
+            IOUtils.copy(in, out);
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+            in.close();
         }
     }
 }

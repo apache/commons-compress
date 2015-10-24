@@ -43,15 +43,31 @@ import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC
 /**
  * Implements an input stream that can read Zip archives.
  *
- * <p>Note that {@link ZipArchiveEntry#getSize()} may return -1 if the
- * DEFLATE algorithm is used, as the size information is not available
- * from the header.</p>
- *
- * <p>The {@link ZipFile} class is preferred when reading from files.</p>
- *
  * <p>As of Apache Commons Compress it transparently supports Zip64
  * extensions and thus individual entries and archives larger than 4
  * GB or with more than 65536 entries.</p>
+ *
+ * <p>The {@link ZipFile} class is preferred when reading from files
+ * as {@link ZipArchiveInputStream} is limited by not being able to
+ * read the central directory header before returning entries.  In
+ * particular {@link ZipArchiveInputStream}</p>
+ *
+ * <ul>
+ *
+ *  <li>may return entries that are not part of the central directory
+ *  at all and shouldn't be considered part of the archive.</li>
+ *
+ *  <li>may return several entries with the same name.</li>
+ *
+ *  <li>will not return internal or external attributes.</li>
+ *
+ *  <li>may return incomplete extra field data.</li>
+ *
+ *  <li>may return unknown sizes and CRC values for entries until the
+ *  next entry has been reached if the archive uses the data
+ *  descriptor feature.</li>
+ *
+ * </ul>
  *
  * @see ZipFile
  * @NotThreadSafe
@@ -60,6 +76,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
 
     /** The zip encoding to use for filenames and the file comment. */
     private final ZipEncoding zipEncoding;
+
+    // the provided encoding (for unit tests)
+    final String encoding;
 
     /** Whether to look for and use Unicode extra fields. */
     private final boolean useUnicodeExtraFields;
@@ -139,11 +158,17 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
 
     private int entriesRead = 0;
 
+    /**
+     * Create an instance using UTF-8 encoding
+     * @param inputStream the stream to wrap
+     */
     public ZipArchiveInputStream(InputStream inputStream) {
         this(inputStream, ZipEncodingHelper.UTF8);
     }
 
     /**
+     * Create an instance using the specified encoding
+     * @param inputStream the stream to wrap
      * @param encoding the encoding to use for file names, use null
      * for the platform's default encoding
      * @since 1.5
@@ -153,6 +178,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     }
 
     /**
+     * Create an instance using the specified encoding
+     * @param inputStream the stream to wrap
      * @param encoding the encoding to use for file names, use null
      * for the platform's default encoding
      * @param useUnicodeExtraFields whether to use InfoZIP Unicode
@@ -163,6 +190,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     }
 
     /**
+     * Create an instance using the specified encoding
+     * @param inputStream the stream to wrap
      * @param encoding the encoding to use for file names, use null
      * for the platform's default encoding
      * @param useUnicodeExtraFields whether to use InfoZIP Unicode
@@ -175,6 +204,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                                  String encoding,
                                  boolean useUnicodeExtraFields,
                                  boolean allowStoredEntriesWithDataDescriptor) {
+        this.encoding = encoding;
         zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
         this.useUnicodeExtraFields = useUnicodeExtraFields;
         in = new PushbackInputStream(inputStream, buf.capacity());
@@ -274,7 +304,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
 
         processZip64Extra(size, cSize);
 
-        if (current.entry.getCompressedSize() != -1) {
+        if (current.entry.getCompressedSize() != ZipArchiveEntry.SIZE_UNKNOWN) {
             if (current.entry.getMethod() == ZipMethod.UNSHRINKING.getCode()) {
                 current.in = new UnshrinkingInputStream(new BoundedInputStream(in, current.entry.getCompressedSize()));
             } else if (current.entry.getMethod() == ZipMethod.IMPLODING.getCode()) {

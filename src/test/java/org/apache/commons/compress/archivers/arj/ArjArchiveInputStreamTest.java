@@ -19,14 +19,18 @@
 
 package org.apache.commons.compress.archivers.arj;
 
+import static org.junit.Assert.*;
+
 import java.io.FileInputStream;
 import java.util.Calendar;
 import java.util.TimeZone;
 
 import org.apache.commons.compress.AbstractTestCase;
+import org.junit.Test;
 
 public class ArjArchiveInputStreamTest extends AbstractTestCase {
 
+    @Test
     public void testArjUnarchive() throws Exception {
         StringBuilder expected = new StringBuilder();
         expected.append("test1.xml<?xml version=\"1.0\"?>\n");
@@ -50,6 +54,7 @@ public class ArjArchiveInputStreamTest extends AbstractTestCase {
         assertEquals(result.toString(), expected.toString());
     }
 
+    @Test
     public void testReadingOfAttributesDosVersion() throws Exception {
         ArjArchiveInputStream in = new ArjArchiveInputStream(new FileInputStream(getFile("bla.arj")));
         ArjArchiveEntry entry = in.getNextEntry();
@@ -63,6 +68,7 @@ public class ArjArchiveInputStreamTest extends AbstractTestCase {
         in.close();
     }
 
+    @Test
     public void testReadingOfAttributesUnixVersion() throws Exception {
         ArjArchiveInputStream in = new ArjArchiveInputStream(new FileInputStream(getFile("bla.unix.arj")));
         ArjArchiveEntry entry = in.getNextEntry();

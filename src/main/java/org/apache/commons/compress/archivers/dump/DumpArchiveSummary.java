@@ -69,6 +69,7 @@ public class DumpArchiveSummary {
 
     /**
      * Set dump date.
+     * @param dumpDate the dump date
      */
     public void setDumpDate(Date dumpDate) {
         this.dumpDate = dumpDate.getTime();
@@ -84,6 +85,7 @@ public class DumpArchiveSummary {
 
     /**
      * Set previous dump date.
+     * @param previousDumpDate the previous dump dat
      */
     public void setPreviousDumpDate(Date previousDumpDate) {
         this.previousDumpDate = previousDumpDate.getTime();
@@ -99,6 +101,7 @@ public class DumpArchiveSummary {
 
     /**
      * Set volume (tape) number.
+     * @param volume the volume number
      */
     public void setVolume(int volume) {
         this.volume = volume;
@@ -118,6 +121,7 @@ public class DumpArchiveSummary {
 
     /**
      * Set level.
+     * @param level the level
      */
     public void setLevel(int level) {
         this.level = level;
@@ -134,7 +138,7 @@ public class DumpArchiveSummary {
 
     /**
      * Set dump label.
-     * @param label
+     * @param label the label
      */
     public void setLabel(String label) {
         this.label = label;
@@ -150,6 +154,7 @@ public class DumpArchiveSummary {
 
     /**
      * Set the last mountpoint.
+     * @param filesystem the last mountpoint
      */
     public void setFilesystem(String filesystem) {
         this.filesys = filesystem;
@@ -165,7 +170,7 @@ public class DumpArchiveSummary {
 
     /**
      * Set the device name.
-     * @param devname
+     * @param devname the device name
      */
     public void setDevname(String devname) {
         this.devname = devname;
@@ -173,7 +178,7 @@ public class DumpArchiveSummary {
 
     /**
      * Get the hostname of the system where the dump was performed.
-     * @return hostname
+     * @return hostname the host name
      */
     public String getHostname() {
         return hostname;
@@ -181,6 +186,7 @@ public class DumpArchiveSummary {
 
     /**
      * Set the hostname.
+     * @param hostname the host name
      */
     public void setHostname(String hostname) {
         this.hostname = hostname;
@@ -196,7 +202,7 @@ public class DumpArchiveSummary {
 
     /**
      * Set the miscellaneous flags.
-     * @param flags
+     * @param flags flags
      */
     public void setFlags(int flags) {
         this.flags = flags;
@@ -212,7 +218,7 @@ public class DumpArchiveSummary {
 
     /**
      * Set the inode of the first record.
-     * @param firstrec
+     * @param firstrec the first record
      */
     public void setFirstRecord(int firstrec) {
         this.firstrec = firstrec;
@@ -229,6 +235,7 @@ public class DumpArchiveSummary {
 
     /**
      * Set the number of records per tape block.
+     * @param ntrec the number of records per tape block
      */
     public void setNTRec(int ntrec) {
         this.ntrec = ntrec;
@@ -278,9 +285,6 @@ public class DumpArchiveSummary {
         return (flags & 0x8000) == 0x8000;
     }
 
-    /**
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         int hash = 17;
@@ -302,9 +306,6 @@ public class DumpArchiveSummary {
         return hash;
     }
 
-    /**
-     * @see java.lang.Object#equals(Object)
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {

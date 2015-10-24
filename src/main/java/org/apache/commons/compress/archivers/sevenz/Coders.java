@@ -67,14 +67,15 @@ class Coders {
         return CODER_MAP.get(method);
     }
 
-    static InputStream addDecoder(final InputStream is, long uncompressedLength,
+    static InputStream addDecoder(final String archiveName, final InputStream is, long uncompressedLength,
             final Coder coder, final byte[] password) throws IOException {
         CoderBase cb = findByMethod(SevenZMethod.byId(coder.decompressionMethodId));
         if (cb == null) {
             throw new IOException("Unsupported compression method " +
-                                  Arrays.toString(coder.decompressionMethodId));
+                                  Arrays.toString(coder.decompressionMethodId)
+                                  + " used in " + archiveName);
         }
-        return cb.decode(is, uncompressedLength, coder, password);
+        return cb.decode(archiveName, is, uncompressedLength, coder, password);
     }
     
     static OutputStream addEncoder(final OutputStream out, final SevenZMethod method,
@@ -88,7 +89,7 @@ class Coders {
 
     static class CopyDecoder extends CoderBase {
         @Override
-        InputStream decode(final InputStream in, long uncompressedLength,
+        InputStream decode(final String archiveName, final InputStream in, long uncompressedLength,
                 final Coder coder, byte[] password) throws IOException {
             return in; 
         }
@@ -100,7 +101,7 @@ class Coders {
 
     static class LZMADecoder extends CoderBase {
         @Override
-        InputStream decode(final InputStream in, long uncompressedLength,
+        InputStream decode(final String archiveName, final InputStream in, long uncompressedLength,
                 final Coder coder, byte[] password) throws IOException {
             byte propsByte = coder.properties[0];
             long dictSize = coder.properties[1];
@@ -108,7 +109,7 @@ class Coders {
                 dictSize |= (coder.properties[i + 1] & 0xffl) << (8 * i);
             }
             if (dictSize > LZMAInputStream.DICT_SIZE_MAX) {
-                throw new IOException("Dictionary larger than 4GiB maximum size");
+                throw new IOException("Dictionary larger than 4GiB maximum size used in " + archiveName);
             }
             return new LZMAInputStream(in, uncompressedLength, propsByte, (int) dictSize);
         }
@@ -121,12 +122,13 @@ class Coders {
         }
 
         @Override
-        InputStream decode(final InputStream in, long uncompressedLength,
+        InputStream decode(final String archiveName, final InputStream in, long uncompressedLength,
                 final Coder coder, byte[] password) throws IOException {
             try {
                 return opts.getInputStream(in);
             } catch (AssertionError e) {
-                IOException ex = new IOException("BCJ filter needs XZ for Java > 1.4 - see "
+                IOException ex = new IOException("BCJ filter used in " + archiveName
+                                                 + " needs XZ for Java > 1.4 - see "
                                                  + "http://commons.apache.org/proper/commons-compress/limitations.html#7Z");
                 ex.initCause(e);
                 throw ex;
@@ -149,7 +151,7 @@ class Coders {
         }
 
         @Override
-        InputStream decode(final InputStream in, long uncompressedLength,
+        InputStream decode(final String archiveName, final InputStream in, long uncompressedLength,
                 final Coder coder, final byte[] password)
             throws IOException {
             return new InflaterInputStream(new DummyByteAddingInputStream(in),
@@ -168,7 +170,7 @@ class Coders {
         }
 
         @Override
-        InputStream decode(final InputStream in, long uncompressedLength,
+        InputStream decode(final String archiveName, final InputStream in, long uncompressedLength,
                 final Coder coder, final byte[] password)
                 throws IOException {
             return new BZip2CompressorInputStream(in);

@@ -18,6 +18,8 @@
 
 package org.apache.commons.compress;
 
+import static org.junit.Assert.*;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,6 +34,7 @@ import org.apache.commons.compress.archivers.cpio.CpioArchiveEntry;
 import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.junit.Test;
 
 /**
  * Check that the different write methods create the same output.
@@ -49,44 +52,58 @@ public class IOMethodsTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testWriteAr() throws Exception {
         ArchiveEntry entry = new ArArchiveEntry("dummy", bytesToTest);
         compareWrites("ar", entry);
     }
+
+    @Test
     public void testWriteCpio() throws Exception {
         ArchiveEntry entry = new CpioArchiveEntry("dummy", bytesToTest);
         compareWrites("cpio", entry);
     }
+
+    @Test
     public void testWriteJar() throws Exception {
         ArchiveEntry entry = new JarArchiveEntry("dummy");
         compareWrites("jar", entry);
     }
+
+    @Test
     public void testWriteTar() throws Exception {
         TarArchiveEntry entry = new TarArchiveEntry("dummy");
         entry.setSize(bytesToTest);
         compareWrites("tar", entry);
     }
+
+    @Test
     public void testWriteZip() throws Exception {
         ArchiveEntry entry = new ZipArchiveEntry("dummy");
         compareWrites("zip", entry);
     }
 
+    @Test
     public void testReadAr() throws Exception {
         compareReads("ar");
     }
 
+    @Test
     public void testReadCpio() throws Exception {
         compareReads("cpio");
     }
 
+    @Test
     public void testReadJar() throws Exception {
         compareReads("jar");
     }
 
+    @Test
     public void testReadTar() throws Exception {
         compareReads("tar");
     }
 
+    @Test
     public void testReadZip() throws Exception {
         compareReads("zip");
     }

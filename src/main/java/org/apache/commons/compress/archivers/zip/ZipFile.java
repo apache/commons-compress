@@ -134,7 +134,7 @@ public class ZipFile implements Closeable {
     /**
      * Whether the file is closed.
      */
-    private boolean closed;
+    private volatile boolean closed = true;
 
     // cached buffers - must only be used locally in the class (COMPRESS-172 - reduce garbage collection)
     private final byte[] DWORD_BUF = new byte[DWORD];
@@ -218,8 +218,8 @@ public class ZipFile implements Closeable {
             resolveLocalFileHeaderData(entriesWithoutUTF8Flag);
             success = true;
         } finally {
+            closed = !success;
             if (!success) {
-                closed = true;
                 IOUtils.closeQuietly(archive);
             }
         }
@@ -279,7 +279,7 @@ public class ZipFile implements Closeable {
      * @since 1.1
      */
     public Enumeration<ZipArchiveEntry> getEntriesInPhysicalOrder() {
-        ZipArchiveEntry[] allEntries = entries.toArray(new ZipArchiveEntry[0]);
+        ZipArchiveEntry[] allEntries = entries.toArray(new ZipArchiveEntry[entries.size()]);
         Arrays.sort(allEntries, OFFSET_COMPARATOR);
         return Collections.enumeration(Arrays.asList(allEntries));
     }
@@ -340,9 +340,50 @@ public class ZipFile implements Closeable {
      * <p>May return false if it is set up to use encryption or a
      * compression method that hasn't been implemented yet.</p>
      * @since 1.1
+     * @param ze the entry
+     * @return whether this class is able to read the given entry.
      */
     public boolean canReadEntryData(ZipArchiveEntry ze) {
         return ZipUtil.canHandleEntryData(ze);
+    }
+
+    /**
+     * Expose the raw stream of the archive entry (compressed form)
+     * <p/>
+     * This method does not relate to how/if we understand the payload in the
+     * stream, since we really only intend to move it on to somewhere else.
+     *
+     * @param ze The entry to get the stream for
+     * @return The raw input stream containing (possibly) compressed data.
+     */
+    private InputStream getRawInputStream(ZipArchiveEntry ze) {
+        if (!(ze instanceof Entry)) {
+            return null;
+        }
+        OffsetEntry offsetEntry = ((Entry) ze).getOffsetEntry();
+        long start = offsetEntry.dataOffset;
+        return new BoundedInputStream(start, ze.getCompressedSize());
+    }
+
+
+    /**
+     * Transfer selected entries from this zipfile to a given #ZipArchiveOutputStream.
+     * Compression and all other attributes will be as in this file.
+     * This method transfers entries based on the central directory of the zip file.
+     *
+     * @param target The zipArchiveOutputStream to write the entries to
+     * @param predicate A predicate that selects which entries to write
+     * @throws IOException on error
+     */
+    public void copyRawEntries(ZipArchiveOutputStream target, ZipArchiveEntryPredicate predicate)
+            throws IOException {
+        Enumeration<ZipArchiveEntry> src = getEntriesInPhysicalOrder();
+        while (src.hasMoreElements()) {
+            ZipArchiveEntry entry = src.nextElement();
+            if (predicate.test( entry)) {
+                target.addRawArchiveEntry(entry, getRawInputStream(entry));
+            }
+        }
     }
 
     /**

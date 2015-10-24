@@ -243,7 +243,7 @@ public abstract class ZipEncodingHelper {
     static boolean isUTF8(String charsetName) {
         if (charsetName == null) {
             // check platform's default encoding
-            charsetName = System.getProperty("file.encoding");
+            charsetName = Charset.defaultCharset().name();
         }
         if (Charsets.UTF_8.name().equalsIgnoreCase(charsetName)) {
             return true;

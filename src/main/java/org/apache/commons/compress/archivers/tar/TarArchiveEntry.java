@@ -121,10 +121,10 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     private int mode;
 
     /** The entry's user id. */
-    private int userId = 0;
+    private long userId = 0;
 
     /** The entry's group id. */
-    private int groupId = 0;
+    private long groupId = 0;
 
     /** The entry's size. */
     private long size = 0;
@@ -263,7 +263,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @param file The file that the entry represents.
      */
     public TarArchiveEntry(File file) {
-        this(file, normalizeFileName(file.getPath(), false));
+        this(file, file.getPath());
     }
 
     /**
@@ -274,23 +274,24 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @param fileName the name to be used for the entry.
      */
     public TarArchiveEntry(File file, String fileName) {
+        String normalizedName = normalizeFileName(fileName, false);
         this.file = file;
 
         if (file.isDirectory()) {
             this.mode = DEFAULT_DIR_MODE;
             this.linkFlag = LF_DIR;
 
-            int nameLength = fileName.length();
-            if (nameLength == 0 || fileName.charAt(nameLength - 1) != '/') {
-                this.name = fileName + "/";
+            int nameLength = normalizedName.length();
+            if (nameLength == 0 || normalizedName.charAt(nameLength - 1) != '/') {
+                this.name = normalizedName + "/";
             } else {
-                this.name = fileName;
+                this.name = normalizedName;
             }
         } else {
             this.mode = DEFAULT_FILE_MODE;
             this.linkFlag = LF_NORMAL;
             this.size = file.length();
-            this.name = fileName;
+            this.name = normalizedName;
         }
 
         this.modTime = file.lastModified() / MILLIS_PER_SECOND;
@@ -317,6 +318,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @param encoding encoding to use for file names
      * @since 1.4
      * @throws IllegalArgumentException if any of the numeric fields have an invalid format
+     * @throws IOException on error
      */
     public TarArchiveEntry(byte[] headerBuf, ZipEncoding encoding)
         throws IOException {
@@ -378,7 +380,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @return This entry's name.
      */
     public String getName() {
-        return name.toString();
+        return name;
     }
 
     /**
@@ -405,7 +407,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @return This entry's link name.
      */
     public String getLinkName() {
-        return linkName.toString();
+        return linkName;
     }
 
     /**
@@ -423,9 +425,12 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * Get this entry's user id.
      *
      * @return This entry's user id.
+     * @deprecated use #getLongUserId instead as user ids can be
+     * bigger than {@link Integer#MAX_VALUE}
      */
+    @Deprecated
     public int getUserId() {
-        return userId;
+        return (int) (userId & 0xffffffff);
     }
 
     /**
@@ -434,6 +439,26 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @param userId This entry's new user id.
      */
     public void setUserId(int userId) {
+        setUserId((long) userId);
+    }
+
+    /**
+     * Get this entry's user id.
+     *
+     * @return This entry's user id.
+     * @since 1.10
+     */
+    public long getLongUserId() {
+        return userId;
+    }
+
+    /**
+     * Set this entry's user id.
+     *
+     * @param userId This entry's new user id.
+     * @since 1.10
+     */
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 
@@ -441,9 +466,12 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * Get this entry's group id.
      *
      * @return This entry's group id.
+     * @deprecated use #getLongGroupId instead as group ids can be
+     * bigger than {@link Integer#MAX_VALUE}
      */
+    @Deprecated
     public int getGroupId() {
-        return groupId;
+        return (int) (groupId & 0xffffffff);
     }
 
     /**
@@ -452,6 +480,26 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @param groupId This entry's new group id.
      */
     public void setGroupId(int groupId) {
+        setGroupId((long) groupId);
+    }
+
+    /**
+     * Get this entry's group id.
+     *
+     * @since 1.10
+     * @return This entry's group id.
+     */
+    public long getLongGroupId() {
+        return groupId;
+    }
+
+    /**
+     * Set this entry's group id.
+     *
+     * @since 1.10
+     * @param groupId This entry's new group id.
+     */
+    public void setGroupId(long groupId) {
         this.groupId = groupId;
     }
 
@@ -461,7 +509,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @return This entry's user name.
      */
     public String getUserName() {
-        return userName.toString();
+        return userName;
     }
 
     /**
@@ -479,7 +527,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @return This entry's group name.
      */
     public String getGroupName() {
-        return groupName.toString();
+        return groupName;
     }
 
     /**
@@ -743,6 +791,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * Check if this is a "normal file"
      *
      * @since 1.2
+     * @return whether this is a "normal file"
      */
     public boolean isFile() {
         if (file != null) {
@@ -758,6 +807,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * Check if this is a symbolic link entry.
      *
      * @since 1.2
+     * @return whether this is a symbolic link
      */
     public boolean isSymbolicLink() {
         return linkFlag == LF_SYMLINK;
@@ -767,6 +817,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * Check if this is a link entry.
      *
      * @since 1.2
+     * @return whether this is a link entry
      */
     public boolean isLink() {
         return linkFlag == LF_LINK;
@@ -776,6 +827,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * Check if this is a character device entry.
      *
      * @since 1.2
+     * @return whether this is a character device
      */
     public boolean isCharacterDevice() {
         return linkFlag == LF_CHR;
@@ -785,6 +837,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * Check if this is a block device entry.
      *
      * @since 1.2
+     * @return whether this is a block device
      */
     public boolean isBlockDevice() {
         return linkFlag == LF_BLK;
@@ -794,6 +847,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * Check if this is a FIFO (pipe) entry.
      *
      * @since 1.2
+     * @return whether this is a FIFO entry
      */
     public boolean isFIFO() {
         return linkFlag == LF_FIFO;
@@ -811,9 +865,9 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         }
 
         String[]   list = file.list();
-        TarArchiveEntry[] result = new TarArchiveEntry[list.length];
+        TarArchiveEntry[] result = new TarArchiveEntry[list == null ? 0 : list.length];
 
-        for (int i = 0; i < list.length; ++i) {
+        for (int i = 0; i < result.length; ++i) {
             result[i] = new TarArchiveEntry(new File(file, list[i]));
         }
 
@@ -849,6 +903,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * extension for numeric fields if their value doesn't fit in the
      * maximum size of standard tar archives
      * @since 1.4
+     * @throws IOException on error
      */
     public void writeEntryHeader(byte[] outbuf, ZipEncoding encoding,
                                  boolean starMode) throws IOException {
@@ -934,6 +989,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @since 1.4
      * @throws IllegalArgumentException if any of the numeric fields
      * have an invalid format
+     * @throws IOException on error
      */
     public void parseTarHeader(byte[] header, ZipEncoding encoding)
         throws IOException {
@@ -1035,7 +1091,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
                         fileName = fileName.substring(2);
                     }
                 }
-            } else if (osname.indexOf("netware") > -1) {
+            } else if (osname.contains("netware")) {
                 int colon = fileName.indexOf(':');
                 if (colon != -1) {
                     fileName = fileName.substring(colon + 1);

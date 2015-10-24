@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.archivers;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -32,9 +34,11 @@ import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveOutputStream;
 import org.apache.commons.compress.archivers.cpio.CpioConstants;
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.Test;
 
 public final class CpioTestCase extends AbstractTestCase {
 
+    @Test
     public void testCpioArchiveCreation() throws Exception {
         final File output = new File(dir, "bla.cpio");
 
@@ -55,6 +59,7 @@ public final class CpioTestCase extends AbstractTestCase {
         out.close();
     }
 
+    @Test
     public void testCpioUnarchive() throws Exception {
         final File output = new File(dir, "bla.cpio");
         final File file1 = getFile("test1.xml");
@@ -108,6 +113,7 @@ public final class CpioTestCase extends AbstractTestCase {
         assertEquals("length of " + t.getAbsolutePath(), file2Length, t.length());
     }
 
+    @Test
     public void testDirectoryEntryFromFile() throws Exception {
         File[] tmp = createTempDirAndFile();
         File archive = null;
@@ -147,6 +153,7 @@ public final class CpioTestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testExplicitDirectoryEntry() throws Exception {
         File[] tmp = createTempDirAndFile();
         File archive = null;
@@ -187,6 +194,7 @@ public final class CpioTestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testFileEntryFromFile() throws Exception {
         File[] tmp = createTempDirAndFile();
         File archive = null;
@@ -235,6 +243,7 @@ public final class CpioTestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testExplicitFileEntry() throws Exception {
         File[] tmp = createTempDirAndFile();
         File archive = null;

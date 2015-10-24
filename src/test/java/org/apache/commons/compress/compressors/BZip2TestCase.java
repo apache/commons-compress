@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.compressors;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -27,9 +29,11 @@ import java.io.OutputStream;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.Test;
 
 public final class BZip2TestCase extends AbstractTestCase {
 
+    @Test
     public void testBzipCreation()  throws Exception {
         File output = null;
         final File input = getFile("test.txt");
@@ -58,6 +62,7 @@ public final class BZip2TestCase extends AbstractTestCase {
         assertEquals(input.length(),decompressed.length());
     }
 
+    @Test
     public void testBzip2Unarchive() throws Exception {
         final File input = getFile("bla.txt.bz2");
         final File output = new File(dir, "bla.txt");
@@ -69,6 +74,7 @@ public final class BZip2TestCase extends AbstractTestCase {
         os.close();
     }
 
+    @Test
     public void testConcatenatedStreamsReadFirstOnly() throws Exception {
         final File input = getFile("multiple.bz2");
         final InputStream is = new FileInputStream(input);
@@ -86,6 +92,7 @@ public final class BZip2TestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testConcatenatedStreamsReadFully() throws Exception {
         final File input = getFile("multiple.bz2");
         final InputStream is = new FileInputStream(input);
@@ -105,6 +112,7 @@ public final class BZip2TestCase extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testCOMPRESS131() throws Exception {
         final File input = getFile("COMPRESS-131.bz2");
         final InputStream is = new FileInputStream(input);

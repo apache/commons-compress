@@ -100,6 +100,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      * read from the specified stream. This doesn't suppprt decompressing
      * concatenated .bz2 files.
      * 
+     * @param in the InputStream from which this object should be created
      * @throws IOException
      *             if the stream content is malformed or an I/O error occurs.
      * @throws NullPointerException
@@ -164,6 +165,9 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         }
         if (this.in == null) {
             throw new IOException("stream closed");
+        }
+        if (len == 0) {
+            return 0;
         }
 
         final int hi = offs + len;

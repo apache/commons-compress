@@ -32,6 +32,8 @@ import static org.apache.commons.compress.archivers.zip.ZipUtil.unsignedIntToSig
  * zip-3.0.tar.gz/proginfo/extrafld.txt
  *
  * <pre>
+ * Local-header version:
+ *
  * Value         Size        Description
  * -----         ----        -----------
  * 0x7875        Short       tag for this extra block type ("ux")
@@ -41,11 +43,19 @@ import static org.apache.commons.compress.archivers.zip.ZipUtil.unsignedIntToSig
  * UID           Variable    UID for this entry (little endian)
  * GIDSize       1 byte      Size of GID field
  * GID           Variable    GID for this entry (little endian)
+ *
+ * Central-header version:
+ *
+ * Value         Size        Description
+ * -----         ----        -----------
+ * 0x7855        Short       tag for this extra block type ("Ux")
+ * TSize         Short       total data size for this block (0)
  * </pre>
  * @since 1.5
  */
 public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     private static final ZipShort HEADER_ID = new ZipShort(0x7875);
+    private static final ZipShort ZERO = new ZipShort(0);
     private static final BigInteger ONE_THOUSAND = BigInteger.valueOf(1000);
     private static final long serialVersionUID = 1L;
 
@@ -134,7 +144,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      * @return a <code>ZipShort</code> for the length of the data of this extra field
      */
     public ZipShort getCentralDirectoryLength() {
-        return getLocalFileDataLength();  // No different than local version.
+        return ZERO;
     }
 
     /**
@@ -181,7 +191,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      * @return get the data
      */
     public byte[] getCentralDirectoryData() {
-        return getLocalFileDataData();
+        return new byte[0];
     }
 
     /**
@@ -210,14 +220,12 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     }
 
     /**
-     * Doesn't do anything special since this class always uses the
-     * same data in central directory and local file data.
+     * Doesn't do anything since this class doesn't store anything
+     * inside the central directory.
      */
     public void parseFromCentralDirectoryData(
             byte[] buffer, int offset, int length
     ) throws ZipException {
-        reset();
-        parseFromLocalFileData(buffer, offset, length);
     }
 
     /**

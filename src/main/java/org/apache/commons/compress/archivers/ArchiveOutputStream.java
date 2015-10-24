@@ -60,14 +60,14 @@ public abstract class ArchiveOutputStream extends OutputStream {
      * {@link #closeArchiveEntry()} to complete the process.
      * 
      * @param entry describes the entry
-     * @throws IOException
+     * @throws IOException if an I/O error occurs
      */
     public abstract void putArchiveEntry(ArchiveEntry entry) throws IOException;
 
     /**
      * Closes the archive entry, writing any trailer information that may
      * be required.
-     * @throws IOException
+     * @throws IOException if an I/O error occurs
      */
     public abstract void closeArchiveEntry() throws IOException;
 
@@ -82,11 +82,11 @@ public abstract class ArchiveOutputStream extends OutputStream {
     /**
      * Create an archive entry using the inputFile and entryName provided.
      * 
-     * @param inputFile
-     * @param entryName 
+     * @param inputFile the file to create the entry from
+     * @param entryName name to use for the entry
      * @return the ArchiveEntry set up with details from the file
      * 
-     * @throws IOException
+     * @throws IOException if an I/O error occurs
      */
     public abstract ArchiveEntry createArchiveEntry(File inputFile, String entryName) throws IOException;
 

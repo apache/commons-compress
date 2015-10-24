@@ -42,8 +42,122 @@ The <action> type attribute can be add,update,fix,remove.
     <title>commons-compress</title>
   </properties>
   <body>
-    <release version="1.10" date="not released, yet"
-             description="Release 1.10">
+    <release version="1.11" date="not released, yet"
+             description="Release 1.11">
+      <action issue="COMPRESS-321" type="fix" date="2015-08-22">
+        ArrayIndexOutOfBoundsException when InfoZIP type 7875 extra
+        fields are read from the central directory.
+      </action>
+    </release>
+
+    <release version="1.10" date="2015-08-18"
+             description="Release 1.10 
+------------
+
+
+
+Release 1.10 moves the former 
+org.apache.commons.compress.compressors.z._internal_ package which 
+breaks backwards compatibility for code which used the old package. 
+This also changes the superclass of ZCompressorInputStream.    
+">
+
+      <action issue="COMPRESS-317" type="fix" date="2015-06-09"
+              due-to="Lucas Werkmeister">
+        ArrayIndexOutOfBoundsException when ZIP extra fields are read
+        and the entry contains an UnparseableExtraField.
+      </action>
+      <action issue="COMPRESS-316" type="add" date="2015-05-23"
+              due-to="Nick Burch">
+        CompressorStreamFactory can now auto-detect DEFLATE streams
+        with ZLIB header.
+      </action>
+      <action issue="COMPRESS-314" type="fix" date="2015-05-08">
+        TarArchiveInputStream can now read entries with group or
+        user ids &gt; 0x80000000.
+      </action>
+      <action issue="COMPRESS-315" type="fix" date="2015-05-06">
+        TarArchiveOutputStream can now write entries with group or
+        user ids &gt; 0x80000000.
+      </action>
+      <action issue="COMPRESS-313" type="add" date="2015-03-30">
+        CompressorStreamFactory can now auto-detect LZMA streams.
+      </action>
+      <action issue="COMPRESS-312" type="fix" date="2015-03-28">
+        TarArchiveEntry's constructor with a File and a String arg
+        didn't normalize the name.
+      </action>
+      <action issue="COMPRESS-308" type="fix" date="2015-02-20">
+        ZipEncodingHelper no longer reads system properties directly
+        to determine the default charset.
+      </action>
+      <action issue="COMPRESS-309" type="fix" date="2015-02-20">
+        BZip2CompressorInputStream#read would return -1 when asked to
+        read 0 bytes.
+      </action>
+      <action issue="COMPRESS-306" type="fix" date="2015-02-17">
+        ArchiveStreamFactory fails to pass on the encoding when creating some streams.
+        * ArjArchiveInputStream
+        * CpioArchiveInputStream
+        * DumpArchiveInputStream
+        * JarArchiveInputStream
+        * TarArchiveInputStream
+        * JarArchiveOutputStream
+      </action>
+      <action issue="COMPRESS-302" type="fix" date="2015-02-16">
+        Restore immutability/thread-safety to ArchiveStreamFactory.
+        The class is now immutable provided that the method setEntryEncoding is not used.
+        The class is thread-safe.
+      </action>
+      <action issue="COMPRESS-303" type="fix" date="2015-02-16">
+        Restore immutability/thread-safety to CompressorStreamFactory.
+        The class is now immutable provided that the method setDecompressConcatenated is not used.
+        The class is thread-safe.
+      </action>
+      <action issue="COMPRESS-298" type="fix" date="2015-01-20">
+        SevenZFile now throws the specific PasswordRequiredException
+        when it encounters an encrypted stream but no password has
+        been specified.
+      </action>
+      <action issue="COMPRESS-290" type="fix" date="2015-01-13"
+              due-to="Kristian Rosenvold">
+        Improved error message when tar encounters a groupId that is
+        too big to write without using the STAR or POSIX format.
+      </action>
+      <action issue="COMPRESS-296" type="add" date="2015-01-10"
+              due-to="Kristian Rosenvold">
+        Added support for parallel compression. This low-level API allows
+        a client to build a zip/jar file by using the class
+        org.apache.commons.compress.archivers.zip.ParallelScatterZipCreator.
+
+        Zip documentation updated with further notes about parallel features.
+
+        Please note that some aspects of jar creation need to be
+        handled by client code and is not part of commons-compress for this
+        release.
+      </action>
+      <action type="add" date="2014-12-24"
+              due-to="Kristian Rosenvold">
+        Cut overall object instantiation in half by changing file
+        header generation algorithm, for a 10-15 percent performance
+        improvement.
+
+        Also extracted two private methods createLocalFileHeader
+        and createCentralFileHeader in ZipArchiveOutputStream.
+        These may have some interesting additional usages in the
+        near future.
+      </action>
+      <action issue="COMPRESS-297" type="fix" date="2014-12-22">
+        ZipFile logs a warning in its finalizer when its constructor
+        has thrown an exception reading the file - for example if the
+        file doesn't exist.
+      </action>
+      <action issue="COMPRESS-295" type="add" date="2014-12-18"
+              due-to="Kristian Rosenvold">
+        New methods in ZipArchiveOutputStream and ZipFile allows
+        entries to be copied from one archive to another without
+        having to re-compress them.
+      </action>
       <action type="update" date="2014-10-28"
               due-to="Damjan Jovanovic">
         Moved the package

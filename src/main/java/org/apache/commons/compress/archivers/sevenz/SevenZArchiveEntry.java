@@ -124,6 +124,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Returns whether this entry has got a creation date at all.
+     * @return whether the entry has got a creation date
      */
     public boolean getHasCreationDate() {
         return hasCreationDate;
@@ -131,6 +132,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     
     /**
      * Sets whether this entry has got a creation date at all.
+     * @param hasCreationDate whether the entry has got a creation date
      */
     public void setHasCreationDate(boolean hasCreationDate) {
         this.hasCreationDate = hasCreationDate;
@@ -140,6 +142,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * Gets the creation date.
      * @throws UnsupportedOperationException if the entry hasn't got a
      * creation date.
+     * @return the creation date
      */
     public Date getCreationDate() {
         if (hasCreationDate) {
@@ -153,6 +156,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Sets the creation date using NTFS time (100 nanosecond units
      * since 1 January 1601)
+     * @param ntfsCreationDate the creation date
      */
     public void setCreationDate(long ntfsCreationDate) {
         this.creationDate = ntfsCreationDate;
@@ -160,6 +164,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     
     /**
      * Sets the creation date,
+     * @param creationDate the creation date
      */
     public void setCreationDate(Date creationDate) {
         hasCreationDate = creationDate != null;
@@ -170,6 +175,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Returns whether this entry has got a last modified date at all.
+     * @return whether this entry has got a last modified date at all
      */
     public boolean getHasLastModifiedDate() {
         return hasLastModifiedDate;
@@ -177,6 +183,8 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Sets whether this entry has got a last modified date at all.
+     * @param hasLastModifiedDate whether this entry has got a last
+     * modified date at all
      */
     public void setHasLastModifiedDate(boolean hasLastModifiedDate) {
         this.hasLastModifiedDate = hasLastModifiedDate;
@@ -186,6 +194,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * Gets the last modified date.
      * @throws UnsupportedOperationException if the entry hasn't got a
      * last modified date.
+     * @return the last modified date
      */
     public Date getLastModifiedDate() {
         if (hasLastModifiedDate) {
@@ -199,6 +208,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Sets the last modified date using NTFS time (100 nanosecond
      * units since 1 January 1601)
+     * @param ntfsLastModifiedDate the last modified date
      */
     public void setLastModifiedDate(long ntfsLastModifiedDate) {
         this.lastModifiedDate = ntfsLastModifiedDate;
@@ -206,6 +216,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     
     /**
      * Sets the last modified date,
+     * @param lastModifiedDate the last modified date
      */
     public void setLastModifiedDate(Date lastModifiedDate) {
         hasLastModifiedDate = lastModifiedDate != null;
@@ -216,6 +227,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     
     /**
      * Returns whether this entry has got an access date at all.
+     * @return whether this entry has got an access date at all.
      */
     public boolean getHasAccessDate() {
         return hasAccessDate;
@@ -223,6 +235,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Sets whether this entry has got an access date at all.
+     * @param hasAcessDate whether this entry has got an access date at all.
      */
     public void setHasAccessDate(boolean hasAcessDate) {
         this.hasAccessDate = hasAcessDate;
@@ -232,6 +245,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * Gets the access date.
      * @throws UnsupportedOperationException if the entry hasn't got a
      * access date.
+     * @return the access date
      */
     public Date getAccessDate() {
         if (hasAccessDate) {
@@ -245,6 +259,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Sets the access date using NTFS time (100 nanosecond units
      * since 1 January 1601)
+     * @param ntfsAccessDate the access date
      */
     public void setAccessDate(long ntfsAccessDate) {
         this.accessDate = ntfsAccessDate;
@@ -252,6 +267,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     
     /**
      * Sets the access date,
+     * @param accessDate the access date
      */
     public void setAccessDate(Date accessDate) {
         hasAccessDate = accessDate != null;
@@ -262,6 +278,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Returns whether this entry has windows attributes.
+     * @return whether this entry has windows attributes.
      */
     public boolean getHasWindowsAttributes() {
         return hasWindowsAttributes;
@@ -269,6 +286,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Sets whether this entry has windows attributes.
+     * @param hasWindowsAttributes whether this entry has windows attributes.
      */
     public void setHasWindowsAttributes(boolean hasWindowsAttributes) {
         this.hasWindowsAttributes = hasWindowsAttributes;
@@ -276,6 +294,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Gets the windows attributes.
+     * @return the windows attributes
      */
     public int getWindowsAttributes() {
         return windowsAttributes;
@@ -283,6 +302,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Sets the windows attributes.
+     * @param windowsAttributes the windows attributes
      */
     public void setWindowsAttributes(int windowsAttributes) {
         this.windowsAttributes = windowsAttributes;
@@ -291,7 +311,8 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Returns whether this entry has got a crc.
      *
-     * In general entries without streams don't have a CRC either.
+     * <p>In general entries without streams don't have a CRC either.</p>
+     * @return whether this entry has got a crc.
      */
     public boolean getHasCrc() {
         return hasCrc;
@@ -299,6 +320,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Sets whether this entry has got a crc.
+     * @param hasCrc whether this entry has got a crc.
      */
     public void setHasCrc(boolean hasCrc) {
         this.hasCrc = hasCrc;
@@ -307,6 +329,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Gets the CRC.
      * @deprecated use getCrcValue instead.
+     * @return the CRC
      */
     @Deprecated
     public int getCrc() {
@@ -316,6 +339,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Sets the CRC.
      * @deprecated use setCrcValue instead.
+     * @param crc the CRC
      */
     @Deprecated
     public void setCrc(int crc) {
@@ -325,6 +349,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Gets the CRC.
      * @since Compress 1.7
+     * @return the CRC
      */
     public long getCrcValue() {
         return crc;
@@ -333,6 +358,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Sets the CRC.
      * @since Compress 1.7
+     * @param crc the CRC
      */
     public void setCrcValue(long crc) {
         this.crc = crc;
@@ -341,6 +367,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Gets the compressed CRC.
      * @deprecated use getCompressedCrcValue instead.
+     * @return the compressed CRC
      */
     @Deprecated
     int getCompressedCrc() {
@@ -350,6 +377,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Sets the compressed CRC.
      * @deprecated use setCompressedCrcValue instead.
+     * @param crc the CRC
      */
     @Deprecated
     void setCompressedCrc(int crc) {
@@ -359,6 +387,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Gets the compressed CRC.
      * @since Compress 1.7
+     * @return the CRC
      */
     long getCompressedCrcValue() {
         return compressedCrc;
@@ -367,6 +396,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Sets the compressed CRC.
      * @since Compress 1.7
+     * @param crc the CRC
      */
     void setCompressedCrcValue(long crc) {
         this.compressedCrc = crc;
@@ -419,6 +449,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * <p>The methods will be consulted in iteration order to create
      * the final output.</p>
      *
+     * @param methods the methods to use for the content
      * @since 1.8
      */
     public void setContentMethods(Iterable<? extends SevenZMethodConfiguration> methods) {
@@ -445,6 +476,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * the final output.</p>
      *
      * @since 1.8
+     * @return the methods to use for the content
      */
     public Iterable<? extends SevenZMethodConfiguration> getContentMethods() {
         return contentMethods;
