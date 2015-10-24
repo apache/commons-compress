@@ -40,13 +40,13 @@ public abstract class LZWInputStream extends CompressorInputStream {
     private final byte[] oneByte = new byte[1];
 
     protected final BitInputStream in;
-    private int clearCode = -1;
-    private int codeSize = DEFAULT_CODE_SIZE;
-    private byte previousCodeFirstChar;
-    private int previousCode = UNUSED_PREFIX;
-    private int tableSize;
-    private int[] prefixes;
-    private byte[] characters;
+    protected int clearCode = -1;
+    protected int codeSize = DEFAULT_CODE_SIZE;
+    protected byte previousCodeFirstChar;
+    protected int previousCode = UNUSED_PREFIX;
+    protected int tableSize;
+    protected int[] prefixes;
+    protected byte[] characters;
     private byte[] outputStack;
     private int outputStackLocation;
 

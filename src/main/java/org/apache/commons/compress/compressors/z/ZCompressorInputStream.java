@@ -102,12 +102,8 @@ public class ZCompressorInputStream extends LZWInputStream {
         int r = addEntry(previousCode, character, maxTableSize);
         if (getTableSize() == maxTableSize && getCodeSize() < maxCodeSize) {
             reAlignReading();
-<<<<<<< HEAD
             codeSize++;
             System.err.println("codeSize grew to " + codeSize);
-=======
-            incrementCodeSize();
->>>>>>> origin/master
         }
         return r;
     }
@@ -138,14 +134,9 @@ public class ZCompressorInputStream extends LZWInputStream {
         } else if (blockMode && code == getClearCode()) {
             clearEntries();
             reAlignReading();
-<<<<<<< HEAD
             codeSize = 9;
             System.err.println("codeSize reset to 9 after reading clearCode");
             previousCode = -1;
-=======
-            resetCodeSize();
-            resetPreviousCode();
->>>>>>> origin/master
             return 0;
         } else {
             boolean addedUnfinishedEntry = false;
