@@ -27,6 +27,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.TreeMap;
@@ -282,6 +283,17 @@ public class ZipFileTest {
         assertEquals(5, ze.getSize());
         assertArrayEquals(new byte[] {'d', 'a', 't', 'a', '\n'},
                           IOUtils.toByteArray(zf.getInputStream(ze)));
+    }
+
+    @Test
+    public void testUnzipBZip2CompressedEntry() throws Exception {
+        File archive = getFile("bzip2-zip.zip");
+        zf = new ZipFile(archive);
+        ZipArchiveEntry ze = zf.getEntry("lots-of-as");
+        assertEquals(42, ze.getSize());
+        byte[] expected = new byte[42];
+        Arrays.fill(expected , (byte)'a');
+        assertArrayEquals(expected, IOUtils.toByteArray(zf.getInputStream(ze)));
     }
 
     /*

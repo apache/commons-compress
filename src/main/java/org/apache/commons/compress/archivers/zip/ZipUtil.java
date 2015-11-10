@@ -333,7 +333,8 @@ public abstract class ZipUtil {
         return entry.getMethod() == ZipEntry.STORED
             || entry.getMethod() == ZipMethod.UNSHRINKING.getCode()
             || entry.getMethod() == ZipMethod.IMPLODING.getCode()
-            || entry.getMethod() == ZipEntry.DEFLATED;
+            || entry.getMethod() == ZipEntry.DEFLATED
+            || entry.getMethod() == ZipMethod.BZIP2.getCode();
     }
 
     /**
