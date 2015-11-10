@@ -26,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.io.IOException;
 
 import org.apache.commons.compress.utils.IOUtils;
@@ -165,6 +166,21 @@ public class ZipArchiveInputStreamTest {
             assertEquals(5, ze.getSize());
             assertArrayEquals(new byte[] {'d', 'a', 't', 'a', '\n'},
                               IOUtils.toByteArray(in));
+        } finally {
+            in.close();
+        }
+    }
+
+    @Test
+    public void testUnzipBZip2CompressedEntry() throws Exception {
+        ZipArchiveInputStream in = new ZipArchiveInputStream(new FileInputStream(getFile("bzip2-zip.zip")));
+        
+        try {
+            ZipArchiveEntry ze = in.getNextZipEntry();
+            assertEquals(42, ze.getSize());
+            byte[] expected = new byte[42];
+            Arrays.fill(expected , (byte)'a');
+            assertArrayEquals(expected, IOUtils.toByteArray(in));
         } finally {
             in.close();
         }
