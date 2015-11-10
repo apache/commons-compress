@@ -33,6 +33,7 @@ import java.util.zip.ZipException;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 
 import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
@@ -312,6 +313,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                         current.entry.getGeneralPurposeBit().getSlidingDictionarySize(),
                         current.entry.getGeneralPurposeBit().getNumberOfShannonFanoTrees(),
                         new BoundedInputStream(in, current.entry.getCompressedSize()));
+            } else if (current.entry.getMethod() == ZipMethod.BZIP2.getCode()) {
+                current.in = new BZip2CompressorInputStream(new BoundedInputStream(in, current.entry.getCompressedSize()));
             }
         }
         
@@ -413,7 +416,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         } else if (current.entry.getMethod() == ZipArchiveOutputStream.DEFLATED) {
             read = readDeflated(buffer, offset, length);
         } else if (current.entry.getMethod() == ZipMethod.UNSHRINKING.getCode()
-                || current.entry.getMethod() == ZipMethod.IMPLODING.getCode()) {
+                || current.entry.getMethod() == ZipMethod.IMPLODING.getCode()
+                || current.entry.getMethod() == ZipMethod.BZIP2.getCode()) {
             read = current.in.read(buffer, offset, length);
         } else {
             throw new UnsupportedZipFeatureException(ZipMethod.getMethodByCode(current.entry.getMethod()),
