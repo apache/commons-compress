@@ -58,6 +58,11 @@ The <action> type attribute can be add,update,fix,remove.
         ArrayIndexOutOfBoundsException when InfoZIP type 7875 extra
         fields are read from the central directory.
       </action>
+      <action type="add" date="2015-11-11" due-to="Sören Glimm">
+        Added read-only support for bzip2 compression used inside of
+        ZIP archives.
+        GitHub Pull Request #4.
+      </action>
     </release>
 
     <release version="1.10" date="2015-08-18"

@@ -72,8 +72,12 @@
             </ul>
           </subsection>
 
-          <!--subsection name="What's coming in 1.11?">
-          </subsection-->
+          <subsection name="What's coming in 1.11?">
+            <ul>
+              <li>Added read-only support for BZIP2 compression used
+              inside of ZIP archives.</li>
+            </ul>
+          </subsection>
         </section>
 
         <section name="Documentation">
