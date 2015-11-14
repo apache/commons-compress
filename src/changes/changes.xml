@@ -51,7 +51,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action issue="COMPRESS-324" type="fix" date="2015-10-06">
         TarArchiveOutputStream will now recognize GNU long name and
         link entries even if the special entry has a different name
-        than GNU tar uses itself.  This seems to be the case fpr
+        than GNU tar uses itself.  This seems to be the case for
         archives created by star.
       </action>
       <action issue="COMPRESS-321" type="fix" date="2015-08-22">
