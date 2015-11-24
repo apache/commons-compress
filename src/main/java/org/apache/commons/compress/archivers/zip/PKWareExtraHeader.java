@@ -21,7 +21,6 @@ package org.apache.commons.compress.archivers.zip;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.zip.ZipEntry;
 
 /**
  * Base class for all PKWare strong crypto extra headers.
