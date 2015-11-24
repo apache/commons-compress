@@ -18,9 +18,6 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 /**
  * PKCS#7 Store for X.509 Certificates (0x0014):
  *
