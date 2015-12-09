@@ -862,7 +862,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
             return new TarArchiveEntry[0];
         }
 
-        String[]   list = file.list();
+        String[] list = file.list();
         TarArchiveEntry[] result = new TarArchiveEntry[list == null ? 0 : list.length];
 
         for (int i = 0; i < result.length; ++i) {
