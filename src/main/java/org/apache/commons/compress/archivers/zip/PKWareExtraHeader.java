@@ -25,6 +25,10 @@ import java.util.Map;
 /**
  * Base class for all PKWare strong crypto extra headers.
  * 
+ * <p>This base class acts as a marker so you know you can ignore all
+ * extra fields that extend this class if you are not interested in
+ * the meta data of PKWare strong encryption.</p>
+ *
  * <b>Algorithm IDs</b> - integer identifier of the encryption algorithm from
  * the following range
  * 
