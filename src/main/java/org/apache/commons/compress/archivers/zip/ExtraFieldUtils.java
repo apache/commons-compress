@@ -46,6 +46,7 @@ public class ExtraFieldUtils {
         register(UnicodePathExtraField.class);
         register(UnicodeCommentExtraField.class);
         register(Zip64ExtendedInformationExtraField.class);
+        register(X000A_NTFS.class);
     }
 
     /**
