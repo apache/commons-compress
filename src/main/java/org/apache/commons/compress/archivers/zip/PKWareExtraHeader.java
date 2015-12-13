@@ -56,8 +56,6 @@ import java.util.Map;
  * <li>0x800D - SHA384</li>
  * <li>0x800E - SHA512</li>
  * </ul>
- *
- * TODO: define enums for crypto and hash algorithms.
  */
 public abstract class PKWareExtraHeader implements ZipExtraField {
 
