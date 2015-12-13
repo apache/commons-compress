@@ -24,14 +24,14 @@ import java.util.Map;
 
 /**
  * Base class for all PKWare strong crypto extra headers.
- * 
+ *
  * <p>This base class acts as a marker so you know you can ignore all
  * extra fields that extend this class if you are not interested in
  * the meta data of PKWare strong encryption.</p>
  *
  * <b>Algorithm IDs</b> - integer identifier of the encryption algorithm from
  * the following range
- * 
+ *
  * <ul>
  * <li>0x6601 - DES</li>
  * <li>0x6602 - RC2 (version needed to extract < 5.2)</li>
@@ -46,10 +46,10 @@ import java.util.Map;
  * <li>0x6801 - RC4</li>
  * <li>0xFFFF - Unknown algorithm</li>
  * </ul>
- * 
+ *
  * <b>Hash Algorithms</b> - integer identifier of the hash algorithm from the
  * following range
- * 
+ *
  * <ul>
  * <li>0x0000 - none</li>
  * <li>0x0001 - CRC32</li>
@@ -99,7 +99,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
 
         /**
          * the algorithm id.
-         * 
+         *
          * @return the PKWare AlgorithmId
          */
         public int getCode() {
@@ -149,7 +149,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
 
         /**
          * the hash algorithm ID.
-         * 
+         *
          * @return the PKWare hashAlg
          */
         public int getCode() {

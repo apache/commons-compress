@@ -28,7 +28,7 @@ package org.apache.commons.compress.archivers.zip;
  * ignored in any other record.
  *
  * Note: all fields stored in Intel low-byte/high-byte order.
- * 
+ *
  * <pre>
  *         Value     Size     Description
  *         -----     ----     -----------
@@ -36,7 +36,7 @@ package org.apache.commons.compress.archivers.zip;
  *         TSize     2 bytes  Size of the store data
  *         TData     TSize    Data about the store
  * </pre>
- * 
+ *
  * @NotThreadSafe
  */
 public class X0014_X509Certificates extends PKWareExtraHeader implements ZipExtraField {
@@ -45,7 +45,7 @@ public class X0014_X509Certificates extends PKWareExtraHeader implements ZipExtr
 
     /**
      * Get the header id.
-     * 
+     *
      * @return the header id
      */
     public ZipShort getHeaderId() {
@@ -61,7 +61,7 @@ public class X0014_X509Certificates extends PKWareExtraHeader implements ZipExtr
     /**
      * Set the extra field data in the local file data - without Header-ID or
      * length specifier.
-     * 
+     *
      * @param data
      *            the field data to use
      */
@@ -71,7 +71,7 @@ public class X0014_X509Certificates extends PKWareExtraHeader implements ZipExtr
 
     /**
      * Get the length of the local data.
-     * 
+     *
      * @return the length of the local data
      */
     public ZipShort getLocalFileDataLength() {
@@ -80,7 +80,7 @@ public class X0014_X509Certificates extends PKWareExtraHeader implements ZipExtr
 
     /**
      * Get the local data.
-     * 
+     *
      * @return the local data
      */
     public byte[] getLocalFileDataData() {
@@ -95,7 +95,7 @@ public class X0014_X509Certificates extends PKWareExtraHeader implements ZipExtr
 
     /**
      * Set the extra field data in central directory.
-     * 
+     *
      * @param data
      *            the data to use
      */
@@ -106,7 +106,7 @@ public class X0014_X509Certificates extends PKWareExtraHeader implements ZipExtr
     /**
      * Get the central data length. If there is no central data, get the local
      * file data length.
-     * 
+     *
      * @return the central data length
      */
     public ZipShort getCentralDirectoryLength() {
@@ -118,7 +118,7 @@ public class X0014_X509Certificates extends PKWareExtraHeader implements ZipExtr
 
     /**
      * Get the central data.
-     * 
+     *
      * @return the central data if present, else return the local file data
      */
     public byte[] getCentralDirectoryData() {

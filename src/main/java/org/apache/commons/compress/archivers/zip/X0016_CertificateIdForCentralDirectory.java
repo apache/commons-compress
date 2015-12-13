@@ -38,7 +38,7 @@ package org.apache.commons.compress.archivers.zip;
  *         HashAlg   2 bytes  Hash algorithm identifier. (inferred)
  *         TData     TSize    Data
  * </pre>
- * 
+ *
  * @NotThreadSafe
  */
 public class X0016_CertificateIdForCentralDirectory extends PKWareExtraHeader implements ZipExtraField {
@@ -47,7 +47,7 @@ public class X0016_CertificateIdForCentralDirectory extends PKWareExtraHeader im
 
     /**
      * Get the header id.
-     * 
+     *
      * @return the header id
      */
     public ZipShort getHeaderId() {
@@ -70,7 +70,7 @@ public class X0016_CertificateIdForCentralDirectory extends PKWareExtraHeader im
     public int getRecordCount() {
         return rcount;
     }
-    
+
     /**
      * Get hash algorithm.
      * @return
@@ -78,11 +78,11 @@ public class X0016_CertificateIdForCentralDirectory extends PKWareExtraHeader im
     public HashAlgorithm getHashAlgorithm() {
         return hashAlg;
     }
-    
+
     /**
      * Set the extra field data in the local file data - without Header-ID or
      * length specifier.
-     * 
+     *
      * @param data
      *            the field data to use
      */
@@ -92,7 +92,7 @@ public class X0016_CertificateIdForCentralDirectory extends PKWareExtraHeader im
 
     /**
      * Get the length of the local data.
-     * 
+     *
      * @return the length of the local data
      */
     public ZipShort getLocalFileDataLength() {
@@ -101,7 +101,7 @@ public class X0016_CertificateIdForCentralDirectory extends PKWareExtraHeader im
 
     /**
      * Get the local data.
-     * 
+     *
      * @return the local data
      */
     public byte[] getLocalFileDataData() {
@@ -116,7 +116,7 @@ public class X0016_CertificateIdForCentralDirectory extends PKWareExtraHeader im
 
     /**
      * Set the extra field data in central directory.
-     * 
+     *
      * @param data
      *            the data to use
      */
@@ -127,7 +127,7 @@ public class X0016_CertificateIdForCentralDirectory extends PKWareExtraHeader im
     /**
      * Get the central data length. If there is no central data, get the local
      * file data length.
-     * 
+     *
      * @return the central data length
      */
     public ZipShort getCentralDirectoryLength() {
@@ -139,7 +139,7 @@ public class X0016_CertificateIdForCentralDirectory extends PKWareExtraHeader im
 
     /**
      * Get the central data.
-     * 
+     *
      * @return the central data if present, else return the local file data
      */
     public byte[] getCentralDirectoryData() {
@@ -151,7 +151,7 @@ public class X0016_CertificateIdForCentralDirectory extends PKWareExtraHeader im
 
     /**
      * This should never be called for this header type.
-     * 
+     *
      * @param data
      *            the array of bytes.
      * @param offset
