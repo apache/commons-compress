@@ -47,6 +47,11 @@ public class ExtraFieldUtils {
         register(UnicodeCommentExtraField.class);
         register(Zip64ExtendedInformationExtraField.class);
         register(X000A_NTFS.class);
+        register(X0014_X509Certificates.class);
+        register(X0015_CertificateIdForFile.class);
+        register(X0016_CertificateIdForCentralDirectory.class);
+        register(X0017_StrongEncryptionHeader.class);
+        register(X0019_EncryptionRecipientCertificateList.class);
     }
 
     /**
