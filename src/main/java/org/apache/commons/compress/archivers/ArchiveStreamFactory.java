@@ -342,31 +342,15 @@ public class ArchiveStreamFactory {
             int signatureLength = IOUtils.readFully(in, signature);
             in.reset();
             if (ZipArchiveInputStream.matches(signature, signatureLength)) {
-                if (entryEncoding != null) {
-                    return new ZipArchiveInputStream(in, entryEncoding);
-                } else {
-                    return new ZipArchiveInputStream(in);
-                }
+                return createArchiveInputStream(ZIP, in);
             } else if (JarArchiveInputStream.matches(signature, signatureLength)) {
-                if (entryEncoding != null) {
-                    return new JarArchiveInputStream(in, entryEncoding);
-                } else {
-                    return new JarArchiveInputStream(in);
-                }
+                return createArchiveInputStream(JAR, in);
             } else if (ArArchiveInputStream.matches(signature, signatureLength)) {
-                return new ArArchiveInputStream(in);
+                return createArchiveInputStream(AR, in);
             } else if (CpioArchiveInputStream.matches(signature, signatureLength)) {
-                if (entryEncoding != null) {
-                    return new CpioArchiveInputStream(in, entryEncoding);
-                } else {
-                    return new CpioArchiveInputStream(in);
-                }
+                return createArchiveInputStream(CPIO, in);
             } else if (ArjArchiveInputStream.matches(signature, signatureLength)) {
-                if (entryEncoding != null) {
-                    return new ArjArchiveInputStream(in, entryEncoding);
-                } else {
-                    return new ArjArchiveInputStream(in);
-                }
+                return createArchiveInputStream(ARJ, in);
             } else if (SevenZFile.matches(signature, signatureLength)) {
                 throw new StreamingNotSupportedException(SEVEN_Z);
             }
@@ -377,7 +361,7 @@ public class ArchiveStreamFactory {
             signatureLength = IOUtils.readFully(in, dumpsig);
             in.reset();
             if (DumpArchiveInputStream.matches(dumpsig, signatureLength)) {
-                return new DumpArchiveInputStream(in, entryEncoding);
+                return createArchiveInputStream(DUMP, in);
             }
 
             // Tar needs an even bigger buffer to check the signature; read the first block
@@ -386,7 +370,7 @@ public class ArchiveStreamFactory {
             signatureLength = IOUtils.readFully(in, tarheader);
             in.reset();
             if (TarArchiveInputStream.matches(tarheader, signatureLength)) {
-                return new TarArchiveInputStream(in, entryEncoding);
+                return createArchiveInputStream(TAR, in);
             }
             // COMPRESS-117 - improve auto-recognition
             if (signatureLength >= 512) {
@@ -395,7 +379,7 @@ public class ArchiveStreamFactory {
                     tais = new TarArchiveInputStream(new ByteArrayInputStream(tarheader));
                     // COMPRESS-191 - verify the header checksum
                     if (tais.getNextTarEntry().isCheckSumOK()) {
-                        return new TarArchiveInputStream(in, encoding);
+                        return createArchiveInputStream(TAR, in);
                     }
                 } catch (Exception e) { // NOPMD
                     // can generate IllegalArgumentException as well
