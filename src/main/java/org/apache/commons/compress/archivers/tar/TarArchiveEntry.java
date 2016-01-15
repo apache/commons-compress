@@ -85,7 +85,7 @@ import org.apache.commons.compress.utils.ArchiveUtils;
  * field is the binary representation of the number.
  * See TarUtils.parseOctalOrBinary.
  * </pre>
- * 
+ *
  * <p>
  * The C structure for a old GNU Tar Entry's header is:
  * <pre>
@@ -210,7 +210,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @param name the entry name
      * @param preserveLeadingSlashes whether to allow leading slashes
      * in the name.
-     * 
+     *
      * @since 1.1
      */
     public TarArchiveEntry(String name, boolean preserveLeadingSlashes) {
@@ -243,7 +243,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @param linkFlag the entry link flag.
      * @param preserveLeadingSlashes whether to allow leading slashes
      * in the name.
-     * 
+     *
      * @since 1.5
      */
     public TarArchiveEntry(String name, byte linkFlag, boolean preserveLeadingSlashes) {
@@ -412,9 +412,9 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
 
     /**
      * Set this entry's link name.
-     * 
+     *
      * @param link the link name to use.
-     * 
+     *
      * @since 1.1
      */
     public void setLinkName(String link) {
@@ -714,7 +714,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     }
 
     /**
-     * Indicate if this entry is a GNU sparse block 
+     * Indicate if this entry is a GNU sparse block
      *
      * @return true if this is a sparse extension provided by GNU tar
      */
@@ -742,11 +742,11 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
 
     /**
      * Check if this is a Pax header.
-     * 
+     *
      * @return {@code true} if this is a Pax header.
-     * 
+     *
      * @since 1.1
-     * 
+     *
      */
     public boolean isPaxHeader(){
         return linkFlag == LF_PAX_EXTENDED_HEADER_LC
@@ -755,9 +755,9 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
 
     /**
      * Check if this is a Pax header.
-     * 
+     *
      * @return {@code true} if this is a Pax header.
-     * 
+     *
      * @since 1.1
      */
     public boolean isGlobalPaxHeader(){
