@@ -117,6 +117,9 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     /** The entry's name. */
     private String name = "";
 
+    /** Whether to enforce leading slashes on the name */
+    private boolean preserveLeadingSlashes;
+
     /** The entry's permission mode. */
     private int mode;
 
@@ -215,6 +218,8 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      */
     public TarArchiveEntry(String name, boolean preserveLeadingSlashes) {
         this();
+
+        this.preserveLeadingSlashes = preserveLeadingSlashes;
 
         name = normalizeFileName(name, preserveLeadingSlashes);
         boolean isDir = name.endsWith("/");
@@ -389,7 +394,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @param name This entry's new name.
      */
     public void setName(String name) {
-        this.name = normalizeFileName(name, false);
+        this.name = normalizeFileName(name, this.preserveLeadingSlashes);
     }
 
     /**

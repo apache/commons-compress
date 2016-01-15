@@ -5,6 +5,15 @@ compression and archive formats.  These include: bzip2, gzip, pack200,
 lzma, xz, Snappy, traditional Unix Compress, DEFLATE and ar, cpio,
 jar, tar, zip, dump, 7z, arj.
 
+Release 1.11 (not yet released)
+------------
+
+Changes
+o TarArchiveEntry's preserveLeadingSlashes is now a property and used
+  on later calls to setName, too.
+  This behavior is a breaking change.
+  Issue: COMPRESS-328
+
 Release 1.10
 ------------
 
