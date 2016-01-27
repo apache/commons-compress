@@ -559,18 +559,22 @@ public class ZipFile implements Closeable {
 
         int versionMadeBy = ZipShort.getValue(CFH_BUF, off);
         off += SHORT;
+        ze.setVersionMadeBy(versionMadeBy);
         ze.setPlatform((versionMadeBy >> BYTE_SHIFT) & NIBLET_MASK);
 
-        off += SHORT; // skip version info
+        ze.setVersionRequired(ZipShort.getValue(CFH_BUF, off));
+        off += SHORT; // version required
 
         final GeneralPurposeBit gpFlag = GeneralPurposeBit.parse(CFH_BUF, off);
         final boolean hasUTF8Flag = gpFlag.usesUTF8ForNames();
         final ZipEncoding entryEncoding =
             hasUTF8Flag ? ZipEncodingHelper.UTF8_ZIP_ENCODING : zipEncoding;
         ze.setGeneralPurposeBit(gpFlag);
+        ze.setRawFlag(ZipShort.getValue(CFH_BUF, off));
 
         off += SHORT;
 
+        //noinspection MagicConstant
         ze.setMethod(ZipShort.getValue(CFH_BUF, off));
         off += SHORT;
 

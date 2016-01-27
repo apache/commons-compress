@@ -78,7 +78,10 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     private long size = SIZE_UNKNOWN;
 
     private int internalAttributes = 0;
+    private int versionRequired;
+    private int versionMadeBy;
     private int platform = PLATFORM_FAT;
+    private int rawFlag;
     private long externalAttributes = 0;
     private ZipExtraField[] extraFields;
     private UnparseableExtraFieldData unparseableExtra = null;
@@ -798,5 +801,29 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
             && Arrays.equals(getLocalFileDataExtra(),
                              other.getLocalFileDataExtra())
             && gpb.equals(other.gpb);
+    }
+
+    public void setVersionMadeBy(int versionMadeBy) {
+        this.versionMadeBy = versionMadeBy;
+    }
+
+    public void setVersionRequired(int versionRequired) {
+        this.versionRequired = versionRequired;
+    }
+
+    public int getVersionRequired() {
+        return versionRequired;
+    }
+
+    public int getVersionMadeBy() {
+        return versionMadeBy;
+    }
+
+    public int getRawFlag() {
+        return rawFlag;
+    }
+
+    public void setRawFlag(int rawFlag) {
+        this.rawFlag = rawFlag;
     }
 }
