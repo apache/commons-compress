@@ -9,6 +9,7 @@ Release 1.11 (not yet released)
 ------------
 
 Changes
+o Allow byte-for-byte replication of Zip entries
 o TarArchiveEntry's preserveLeadingSlashes is now a property and used
   on later calls to setName, too.
   This behavior is a breaking change.
