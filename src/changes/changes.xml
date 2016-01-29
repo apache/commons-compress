@@ -49,6 +49,15 @@ The <action> type attribute can be add,update,fix,remove.
         FramedSnappyCompressorInputStream returned 0 at the end of the
         stream under certain circumstances.
       </action>
+      <action type="add" date="2016-01-27" due-to="Jason van Zyl">
+        Allow byte-for-byte replication of Zip entries.
+        GitHub Pull Request #6.
+      </action>
+      <action issue="COMPRESS-328" type="add" date="2016-01-15">
+        TarArchiveEntry's preserveLeadingSlashes is now a property and used
+        on later calls to setName, too.
+        This behavior is a breaking change.
+      </action>
       <action issue="COMPRESS-326" type="fix" date="2015-10-24">
         Adjusted unit test to updates in Java8 and later that change
         the logic of ZipEntry#getTime.
