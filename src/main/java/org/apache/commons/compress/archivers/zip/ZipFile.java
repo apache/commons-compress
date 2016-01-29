@@ -357,7 +357,7 @@ public class ZipFile implements Closeable {
      * @param ze The entry to get the stream for
      * @return The raw input stream containing (possibly) compressed data.
      */
-    private InputStream getRawInputStream(ZipArchiveEntry ze) {
+    public InputStream getRawInputStream(ZipArchiveEntry ze) {
         if (!(ze instanceof Entry)) {
             return null;
         }

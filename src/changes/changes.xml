@@ -44,6 +44,9 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.11" date="not released, yet"
              description="Release 1.11">
+      <action issue="COMPRESS-323" type="add" date="2016-01-29">
+        ZipFile.getRawInputStream() is now part of the public API
+      </action>
       <action issue="COMPRESS-332" type="fix" date="2016-01-29">
         SnappyCompressorInputStream and
         FramedSnappyCompressorInputStream returned 0 at the end of the
