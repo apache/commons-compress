@@ -44,6 +44,15 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.11" date="not released, yet"
              description="Release 1.11">
+      <action issue="COMPRESS-331" type="fix" date="2016-01-31">
+        The checksum validation of TararchiveEntry is now as strict as
+        the validation of GNU tar, which eliminates a few cases of
+        false positives of ArchiveStreamFactory.
+        This behavior is a breaking change since the check has become
+        more strict but any archive that fails the checksum test now
+        would also fail it when extracted with other tools and must be
+        considered an invalid archive.
+      </action>
       <action issue="COMPRESS-323" type="add" date="2016-01-29">
         ZipFile.getRawInputStream() is now part of the public API
       </action>

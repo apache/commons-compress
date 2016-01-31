@@ -580,16 +580,6 @@ public class TarUtils {
      * checksum.
      * </blockquote>
      * <p>
-     * In addition there are
-     * <a href="https://issues.apache.org/jira/browse/COMPRESS-117">some tar files</a>
-     * that seem to have parts of their header cleared to zero (no detectable
-     * magic bytes, etc.) but still have a reasonable-looking checksum field
-     * present. It looks like we can detect such cases reasonably well by
-     * checking whether the stored checksum is <em>greater than</em> the
-     * computed unsigned checksum. That check is unlikely to pass on some
-     * random file header, as it would need to have a valid sequence of
-     * octal digits in just the right place.
-     * <p>
      * The return value of this method should be treated as a best-effort
      * heuristic rather than an absolute and final truth. The checksum
      * verification logic may well evolve over time as more special cases
@@ -619,9 +609,7 @@ public class TarUtils {
             unsignedSum += 0xff & b;
             signedSum += b;
         }
-
-        return storedSum == unsignedSum || storedSum == signedSum
-                || storedSum > unsignedSum; // COMPRESS-177
+        return storedSum == unsignedSum || storedSum == signedSum;
     }
 
 }
