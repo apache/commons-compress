@@ -17,6 +17,7 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.Closeable;
 import java.io.DataInput;
@@ -853,8 +854,10 @@ public class SevenZFile implements Closeable {
     private InputStream buildDecoderStack(final Folder folder, final long folderOffset,
                 final int firstPackStreamIndex, SevenZArchiveEntry entry) throws IOException {
         file.seek(folderOffset);
-        InputStream inputStreamStack = new BoundedRandomAccessFileInputStream(file,
-                archive.packSizes[firstPackStreamIndex]);
+        InputStream inputStreamStack =
+            new BufferedInputStream(
+              new BoundedRandomAccessFileInputStream(file,
+                  archive.packSizes[firstPackStreamIndex]));
         LinkedList<SevenZMethodConfiguration> methods = new LinkedList<SevenZMethodConfiguration>();
         for (final Coder coder : folder.getOrderedCoders()) {
             if (coder.numInStreams != 1 || coder.numOutStreams != 1) {

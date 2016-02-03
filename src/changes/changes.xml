@@ -44,6 +44,9 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.11" date="not released, yet"
              description="Release 1.11">
+      <action issue="COMPRESS-333" type="fix" date="2016-02-03" due-to="Dawid Weiss">
+        Added buffering for random access which speeds up 7Z support.
+      </action>
       <action issue="COMPRESS-331" type="fix" date="2016-01-31">
         The checksum validation of TararchiveEntry is now as strict as
         the validation of GNU tar, which eliminates a few cases of
@@ -92,15 +95,15 @@ The <action> type attribute can be add,update,fix,remove.
     </release>
 
     <release version="1.10" date="2015-08-18"
-             description="Release 1.10 
+             description="Release 1.10
 ------------
 
 
 
-Release 1.10 moves the former 
-org.apache.commons.compress.compressors.z._internal_ package which 
-breaks backwards compatibility for code which used the old package. 
-This also changes the superclass of ZCompressorInputStream.    
+Release 1.10 moves the former
+org.apache.commons.compress.compressors.z._internal_ package which
+breaks backwards compatibility for code which used the old package.
+This also changes the superclass of ZCompressorInputStream.
 ">
 
       <action issue="COMPRESS-317" type="fix" date="2015-06-09"
@@ -290,7 +293,7 @@ This also changes the superclass of ZCompressorInputStream.
       <action issue="COMPRESS-253" type="fix" date="2014-01-20">
         BZip2CompressorInputStream read fewer bytes than possible from
         a truncated stream.
-      </action> 
+      </action>
       <action issue="COMPRESS-253" type="fix" date="2014-01-22">
         SevenZFile failed claiming the dictionary was too large when
         archives used LZMA compression for headers and content and
@@ -354,33 +357,33 @@ This also changes the superclass of ZCompressorInputStream.
       <action issue="COMPRESS-241" type="fix" date="2013-10-27">
         SevenZOutputFile#closeArchiveEntry throws an exception when
         using LZMA2 compression on Java8.
-      </action> 
+      </action>
       <action issue="COMPRESS-147" type="add" date="2013-11-07"
               due-to="BELUGA BEHR">
         Read-Only support for Snappy compression.
-      </action> 
+      </action>
       <action issue="COMPRESS-244" type="fix" date="2013-11-27"
               due-to="Nico Kruber">
         7z reading of big 64bit values could be wrong.
-      </action> 
+      </action>
       <action issue="COMPRESS-243" type="add" date="2013-11-30"
               due-to="Damjan Jovanovic">
         Read-Only support for .Z compressed files.
-      </action> 
+      </action>
       <action type="add" date="2013-12-06" due-to="Damjan Jovanovic">
         ZipFile and ZipArchiveInputStream now support reading entries compressed using the
         SHRINKING method.
-      </action> 
+      </action>
       <action issue="COMPRESS-245" type="fix" date="2013-12-06">
         TarArchiveInputStream could fail to read an archive completely.
-      </action> 
+      </action>
       <action issue="COMPRESS-242" type="fix" date="2013-12-08">
         The time-setters in X5455_ExtendedTimestamp now set the
         corresponding flags explicitly - i.e. they set the bit if the
         valus is not-null and reset it otherwise.  This may cause
         incompatibilities if you use setFlags to unset a bit and later
         set the time to a non-null value - the flag will now be set.
-      </action> 
+      </action>
       <action issue="COMPRESS-250" type="add" date="2013-12-16" due-to="Emmanuel Bourg">
         GzipCompressorOutputStream now supports setting the compression level and the header metadata
         (filename, comment, modification time, operating system and extra flags)
@@ -395,7 +398,7 @@ This also changes the superclass of ZCompressorInputStream.
       <action type="add" date="2013-12-20">
         ZipFile and the 7z file classes now implement Closeable and
         can be used in try-with-resources constructs.
-      </action> 
+      </action>
     </release>
     <release version="1.6" date="2013-10-26"
              description="Release 1.6">
@@ -527,7 +530,7 @@ This also changes the superclass of ZCompressorInputStream.
         ZipArchiveInputStream now reads archives that start with a
         "PK00" signature.  Archives with this signatures are created
         when the archiver was willing to split the archive but in the
-        end only needed a single segment - so didn't split anything. 
+        end only needed a single segment - so didn't split anything.
       </action>
       <action type="update" date="2013-01-01" issue="COMPRESS-201">
         TarArchiveEntry has a new constructor that allows setting
@@ -626,43 +629,43 @@ This also changes the superclass of ZCompressorInputStream.
         eight bits of each character which effectively only worked for
         ASCII and ISO-8859-1 file names.
         This new default behavior is a breaking change.
-      </action> 
+      </action>
       <action issue="COMPRESS-184" type="fix" date="2012-03-23">
         TarArchiveInputStream failed to parse PAX headers that
         contained non-ASCII characters.
-      </action> 
+      </action>
       <action issue="COMPRESS-182" type="update" date="2012-03-02">
         The tar package can now write archives that use star/GNU/BSD
         extensions or use the POSIX/PAX variant to store numeric
         values that don't fit into the traditional header fields.
-      </action> 
+      </action>
       <action issue="COMPRESS-181" type="update" date="2012-03-02">
         Added a workaround for a Bug some tar implementations that add
         a NUL byte as first byte in numeric header fields.
-      </action> 
+      </action>
       <action issue="COMPRESS-176" type="update" date="2012-02-28">
         Added a workaround for a Bug in WinZIP which uses backslashes
         as path separators in Unicode Extra Fields.
-      </action> 
+      </action>
       <action issue="COMPRESS-131" type="update" date="2012-02-23">
         ArrayOutOfBounds while decompressing bz2. Added test case - code already seems to have been fixed.
-      </action> 
+      </action>
       <action issue="COMPRESS-178" type="fix" date="2012-02-23">
         TarArchiveInputStream throws IllegalArgumentException instead of IOException
-      </action> 
+      </action>
       <action issue="COMPRESS-179" type="fix" date="2012-02-23">
         TarUtils.formatLongOctalOrBinaryBytes() assumes the field will be 12 bytes long
-      </action> 
+      </action>
       <action issue="COMPRESS-175" type="fix" date="2012-02-22">
         GNU Tar sometimes uses binary encoding for UID and GID
-      </action> 
+      </action>
       <action issue="COMPRESS-171" type="fix" date="2012-01-29">
         ArchiveStreamFactory.createArchiveInputStream would claim
         short text files were TAR archives.
-      </action> 
+      </action>
       <action issue="COMPRESS-156" type="add" date="2011-11-02">
         Support for the XZ format has been added.
-      </action> 
+      </action>
       <action issue="COMPRESS-146" type="update" date="2011-11-07">
         BZip2CompressorInputStream now optionally supports reading of
         concatenated .bz2 files.
@@ -699,30 +702,30 @@ This also changes the superclass of ZCompressorInputStream.
              description="Release 1.3 - API compatible to 1.2 but requires Java5 at runtime">
       <action issue="COMPRESS-142" type="add" date="2011-09-14">
         Support for the Pack200 format has been added.
-      </action> 
+      </action>
       <action issue="COMPRESS-132" type="add" date="2011-08-17">
         Read-only support for the format used by the Unix dump(8) tool
         has been added.
-      </action> 
+      </action>
       <action issue="COMPRESS-36" type="update" date="2011-08-15">
         The ZIP package now supports Zip64 extensions.
-      </action> 
+      </action>
       <action issue="COMPRESS-144" type="update" date="2011-08-08">
         The AR package now supports the BSD dialect of storing file
         names longer than 16 chars (both reading and writing).
-      </action> 
+      </action>
       <action type="fix" date="2011-08-08">
         BZip2CompressorInputStream's getBytesRead method always
         returned 0.
-      </action> 
+      </action>
       <action issue="COMPRESS-152" type="fix" date="2011-08-03">
         ZipArchiveInputStream and ZipArchiveOutputStream could leak
         resources on some JDKs.
-      </action> 
+      </action>
       <action issue="COMPRESS-160" type="fix" date="2011-10-23">
         TarArchiveOutputStream's getBytesWritten method didn't count
         correctly.
-      </action> 
+      </action>
     </release>
     <release version="1.2" date="2011-07-31"
              description="Release 1.2 - a bugfix release, the last release expected to be compatible with Java 1.4">
@@ -749,41 +752,41 @@ This also changes the superclass of ZCompressorInputStream.
               due-to="Trejkaz">
         ArArchiveInputStream fails if entries contain only blanks for
         userId or groupId.
-      </action> 
+      </action>
       <action issue="COMPRESS-139" type="fix" date="2011-07-13">
         ZipFile may leak resources on some JDKs.
-      </action> 
+      </action>
       <action type="update" date="2011-04-18">
         ZipFile now implements finalize which closes the underlying
         file.
       </action>
       <action issue="COMPRESS-117" type="update" date="2011-03-23">
         Certain tar files not recognised by ArchiveStreamFactory.
-      </action> 
+      </action>
       <action issue="COMPRESS-125" type="fix" date="2011-03-23">
         BZip2CompressorInputStream throws IOException if underlying stream returns available() == 0.
         Removed the check.
-      </action> 
+      </action>
       <action issue="COMPRESS-127" type="fix" date="2011-03-23">
         Calling close() on inputStream returned by CompressorStreamFactory.createCompressorInputStream()
         does not close the underlying input stream.
-      </action> 
+      </action>
       <action issue="COMPRESS-122" type="add" date="2010-10-29">
         TarArchiveEntry provides access to the flags that determine
         whether it is an archived symbolic link, pipe or other
         "uncommon" file system object.
-      </action> 
+      </action>
       <action issue="COMPRESS-119" type="fix" date="2010-10-26">
         TarArchiveOutputStream#finish now writes all buffered data to the stream
-      </action> 
+      </action>
     </release>
     <release version="1.1" date="2010-08-13" description="Release 1.1">
       <action issue="COMPRESS-72" type="fix" date="2010-06-02">
        Move acknowledgements from NOTICE to README
-      </action> 
+      </action>
       <action issue="COMPRESS-113" type="fix" date="2010-06-02">
        TarArchiveEntry.parseTarHeader() includes the trailing space/NUL when parsing the octal size
-      </action> 
+      </action>
       <action issue="COMPRESS-108" type="add" date="2010-05-23">
        Command-line interface to list archive contents.
        Usage: java -jar commons-compress-n.m.jar archive-name [zip|tar|etc]
