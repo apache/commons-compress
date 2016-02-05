@@ -345,9 +345,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         int nameLen =
             Integer.parseInt(bsdLongName.substring(BSD_LONGNAME_PREFIX_LEN));
         byte[] name = new byte[nameLen];
-        int read = IOUtils.readFully(input, name);
-        count(read);
-        offset += read > 0 ? read : 0;
+        int read = IOUtils.readFully(this, name);
         if (read != nameLen) {
             throw new EOFException();
         }
