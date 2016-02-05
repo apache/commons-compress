@@ -178,6 +178,9 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      */
     @Override
     public int available() throws IOException {
+        if (isDirectory()) {
+            return 0;
+        }
         if (entrySize - entryOffset > Integer.MAX_VALUE) {
             return Integer.MAX_VALUE;
         }
@@ -203,7 +206,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      */
     @Override
     public long skip(final long n) throws IOException {
-        if (n <= 0) {
+        if (n <= 0 || isDirectory()) {
             return 0;
         }
 
@@ -329,7 +332,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * additional space used to fill a record after an entry
      */
     private void skipRecordPadding() throws IOException {
-        if (this.entrySize > 0 && this.entrySize % this.recordSize != 0) {
+        if (!isDirectory() && this.entrySize > 0 && this.entrySize % this.recordSize != 0) {
             long numRecords = (this.entrySize / this.recordSize) + 1;
             long padding = (numRecords * this.recordSize) - this.entrySize;
             long skipped = IOUtils.skip(is, padding);
@@ -546,6 +549,10 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         }
     }
 
+    private boolean isDirectory() {
+        return currEntry != null && currEntry.isDirectory();
+    }
+
     /**
      * Returns the next Archive Entry in this Stream.
      *
@@ -601,7 +608,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     public int read(byte[] buf, int offset, int numToRead) throws IOException {
     	int totalRead = 0;
 
-        if (hasHitEOF || entryOffset >= entrySize) {
+        if (hasHitEOF || isDirectory() || entryOffset >= entrySize) {
             return -1;
         }
 
