@@ -358,4 +358,13 @@ public class TarUtilsTest {
         assertFalse(TarUtils.verifyCheckSum(invalid));
     }
 
+    @Test
+    public void testParseOctalCompress330() throws Exception{
+        long expected = 0100000;
+        byte [] buffer = new byte[] {
+            32, 32, 32, 32, 32, 49, 48, 48, 48, 48, 48, 32
+        };
+        assertEquals(expected, TarUtils.parseOctalOrBinary(buffer, 0, buffer.length));
+    }
+
 }
