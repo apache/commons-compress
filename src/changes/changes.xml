@@ -44,6 +44,11 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.11" date="not released, yet"
              description="Release 1.11">
+      <action issue="COMPRESS-334" type="fix" date="2016-02-05"
+              due-to="Jeremy Gustie">
+        ArArchiveInputStream failed to read past the first entry when
+        BSD long names have been used.
+      </action>
       <action issue="COMPRESS-333" type="fix" date="2016-02-03" due-to="Dawid Weiss">
         Added buffering for random access which speeds up 7Z support.
       </action>

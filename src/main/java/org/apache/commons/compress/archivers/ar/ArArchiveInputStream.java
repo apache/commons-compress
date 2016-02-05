@@ -347,6 +347,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         byte[] name = new byte[nameLen];
         int read = IOUtils.readFully(input, name);
         count(read);
+        offset += read > 0 ? read : 0;
         if (read != nameLen) {
             throw new EOFException();
         }
