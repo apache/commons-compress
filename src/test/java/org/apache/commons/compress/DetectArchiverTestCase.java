@@ -56,6 +56,13 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
     }
 
     @Test
+    public void testCOMPRESS335() throws Exception {
+        final ArchiveInputStream tar = getStreamFor("COMPRESS-335.tar");
+        assertNotNull(tar);
+        assertTrue(tar instanceof TarArchiveInputStream);
+    }
+
+    @Test
     public void testDetection() throws Exception {
 
         final ArchiveInputStream ar = getStreamFor("bla.ar"); 

@@ -591,7 +591,7 @@ public class TarUtils {
      * @since 1.5
      */
     public static boolean verifyCheckSum(byte[] header) {
-        long storedSum = 0;
+        long storedSum = parseOctal(header, CHKSUM_OFFSET, CHKSUMLEN);
         long unsignedSum = 0;
         long signedSum = 0;
 
@@ -599,11 +599,6 @@ public class TarUtils {
         for (int i = 0; i < header.length; i++) {
             byte b = header[i];
             if (CHKSUM_OFFSET  <= i && i < CHKSUM_OFFSET + CHKSUMLEN) {
-                if ('0' <= b && b <= '7' && digits++ < 6) {
-                    storedSum = storedSum * 8 + b - '0';
-                } else if (digits > 0) {
-                    digits = 6; // only look at the first octal digit sequence
-                }
                 b = ' ';
             }
             unsignedSum += 0xff & b;
