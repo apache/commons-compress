@@ -44,6 +44,11 @@ public interface TarConstants {
     int    FORMAT_POSIX = 3;
 
     /**
+     * xstar format used by Jörg Schilling's star.
+     */
+    int    FORMAT_XSTAR = 4;
+
+    /**
      * The length of the name field in a header buffer.
      */
     int    NAMELEN = 100;
@@ -311,4 +316,37 @@ public interface TarConstants {
      */
     String GNU_LONGLINK = "././@LongLink"; // TODO rename as LONGLINK_GNU ?
 
+    /**
+     * The magix string used in the last four bytes of the header to
+     * identify the xstar format.
+     */
+    String MAGIC_XSTAR = "tar\0";
+
+    /**
+     * Offset inside the header for the xstar magic bytes.
+     */
+    int XSTAR_MAGIC_OFFSET = 508;
+
+    /**
+     * Length of the XSTAR magic.
+     */
+    int XSTAR_MAGIC_LEN = 4;
+
+    /**
+     * Length of the prefix field in xstar archives.
+     * 
+     */
+    int PREFIXLEN_XSTAR = 131;
+
+    /**
+     * The length of the access time field in a xstar header buffer.
+     * 
+     */
+    int ATIMELEN_XSTAR = 12;
+
+    /**
+     * The length of the created time field in a xstar header buffer.
+     * 
+     */
+    int CTIMELEN_XSTAR = 12;
 }

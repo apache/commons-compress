@@ -44,6 +44,10 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.11" date="not released, yet"
              description="Release 1.11">
+      <action issue="COMPRESS-336" type="fix" date="2016-02-14">
+        file names of tar archives using the xstar format are now
+        parsed properly.
+      </action>
       <action issue="COMPRESS-335" type="fix" date="2016-02-05">
         checksums of tars that pad the checksum field to the left are
         now calculated properly.
