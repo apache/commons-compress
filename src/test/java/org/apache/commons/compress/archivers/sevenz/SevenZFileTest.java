@@ -26,6 +26,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import javax.crypto.Cipher;
 
@@ -67,11 +68,16 @@ public class SevenZFileTest extends AbstractTestCase {
 			// "PPMd.7z", 
 		};
 
+		// TODO: use randomizedtesting for predictable, but different, randomness.
+		Random rnd = new Random(0xdeadbeef);
 		for (String fileName : variants) {
 		    archive = new SevenZFile(getFile("COMPRESS-320/" + fileName));
 
 		    while ((entry = archive.getNextEntry()) != null) {
-				// TODO: randomly skip reading entries.
+				// Sometimes skip reading entries.
+		    	if (rnd.nextBoolean()) {
+		    		continue;
+		    	}
 
 				if (entry.hasStream()) {
 				    assertTrue(entriesByName.containsKey(entry.getName()));
