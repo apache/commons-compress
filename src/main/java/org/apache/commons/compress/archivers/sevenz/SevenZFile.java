@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.LinkedList;
@@ -74,9 +75,10 @@ public class SevenZFile implements Closeable {
     private int currentEntryIndex = -1;
     private int currentFolderIndex = -1;
     private InputStream currentFolderInputStream = null;
-    private InputStream currentEntryInputStream = null;
     private byte[] password;
-        
+
+    private ArrayList<InputStream> deferredBlockStreams = new ArrayList<InputStream>();
+
     static final byte[] sevenZSignature = {
         (byte)'7', (byte)'z', (byte)0xBC, (byte)0xAF, (byte)0x27, (byte)0x1C
     };
@@ -809,17 +811,25 @@ public class SevenZFile implements Closeable {
     private void buildDecodingStream() throws IOException {
         final int folderIndex = archive.streamMap.fileFolderIndex[currentEntryIndex];
         if (folderIndex < 0) {
-            currentEntryInputStream = new BoundedInputStream(
-                    new ByteArrayInputStream(new byte[0]), 0);
+        	deferredBlockStreams.clear();
+            // TODO: previously it'd return an empty stream?
+        	// new BoundedInputStream(new ByteArrayInputStream(new byte[0]), 0);
             return;
         }
         final SevenZArchiveEntry file = archive.files[currentEntryIndex];
         if (currentFolderIndex == folderIndex) {
+        	// (COMPRESS-320).
+        	// The current entry is within the same (potentially opened) folder. The
+        	// previous stream has to be fully decoded before we can start reading
+        	// but don't do it eagerly -- if the user skips over the entire folder nothing
+        	// is effectively decompressed.
+
             // need to advance the folder input stream past the current file
-            drainPreviousEntry();
             file.setContentMethods(archive.files[currentEntryIndex - 1].getContentMethods());
         } else {
+        	// We're opening a new folder. Discard any queued streams/ folder stream.
             currentFolderIndex = folderIndex;
+        	deferredBlockStreams.clear();
             if (currentFolderInputStream != null) {
                 currentFolderInputStream.close();
                 currentFolderInputStream = null;
@@ -831,26 +841,15 @@ public class SevenZFile implements Closeable {
                     archive.streamMap.packStreamOffsets[firstPackStreamIndex];
             currentFolderInputStream = buildDecoderStack(folder, folderOffset, firstPackStreamIndex, file);
         }
-        final InputStream fileStream = new BoundedInputStream(
-                currentFolderInputStream, file.getSize());
+
+        InputStream fileStream = new BoundedInputStream(currentFolderInputStream, file.getSize());
         if (file.getHasCrc()) {
-            currentEntryInputStream = new CRC32VerifyingInputStream(
-                    fileStream, file.getSize(), file.getCrcValue());
-        } else {
-            currentEntryInputStream = fileStream;
+            fileStream = new CRC32VerifyingInputStream(fileStream, file.getSize(), file.getCrcValue());
         }
         
+        deferredBlockStreams.add(fileStream);
     }
-    
-    private void drainPreviousEntry() throws IOException {
-        if (currentEntryInputStream != null) {
-            // return value ignored as IOUtils.skip ensures the stream is drained completely
-            IOUtils.skip(currentEntryInputStream, Long.MAX_VALUE);
-            currentEntryInputStream.close();
-            currentEntryInputStream = null;
-        }
-    }
-    
+
     private InputStream buildDecoderStack(final Folder folder, final long folderOffset,
                 final int firstPackStreamIndex, SevenZArchiveEntry entry) throws IOException {
         file.seek(folderOffset);
@@ -886,13 +885,27 @@ public class SevenZFile implements Closeable {
      *             if an I/O error has occurred
      */
     public int read() throws IOException {
-        if (currentEntryInputStream == null) {
-            throw new IllegalStateException("No current 7z entry");
-        }
-        return currentEntryInputStream.read();
+    	return getCurrentStream().read();
     }
     
-    /**
+    private InputStream getCurrentStream() throws IOException {
+        if (deferredBlockStreams.isEmpty()) {
+            throw new IllegalStateException("No current 7z entry (call getNextEntry() first).");
+        }
+        
+        while (deferredBlockStreams.size() > 1) {
+        	// In solid compression mode we need to decompress all leading folder' 
+        	// streams to get access to an entry. We defer this until really needed
+        	// so that entire blocks can be skipped without wasting time for decompression.
+        	InputStream stream = deferredBlockStreams.remove(0);
+        	IOUtils.skip(stream, Long.MAX_VALUE);
+        	stream.close();
+        }
+
+		return deferredBlockStreams.get(0);
+	}
+
+	/**
      * Reads data into an array of bytes.
      * 
      * @param b the array to write data to
@@ -901,7 +914,7 @@ public class SevenZFile implements Closeable {
      *             if an I/O error has occurred
      */
     public int read(byte[] b) throws IOException {
-        return read(b, 0, b.length);
+    	return read(b, 0, b.length);
     }
     
     /**
@@ -915,10 +928,7 @@ public class SevenZFile implements Closeable {
      *             if an I/O error has occurred
      */
     public int read(byte[] b, int off, int len) throws IOException {
-        if (currentEntryInputStream == null) {
-            throw new IllegalStateException("No current 7z entry");
-        }
-        return currentEntryInputStream.read(b, off, len);
+        return getCurrentStream().read(b, off, len);
     }
     
     private static long readUint64(final DataInput in) throws IOException {
@@ -982,5 +992,10 @@ public class SevenZFile implements Closeable {
             bytesToSkip -= skippedNow;
         }
         return skipped;
+    }
+    
+    @Override
+    public String toString() {
+      return archive.toString();
     }
 }
