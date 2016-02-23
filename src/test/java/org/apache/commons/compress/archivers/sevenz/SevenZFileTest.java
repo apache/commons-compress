@@ -19,10 +19,16 @@ package org.apache.commons.compress.archivers.sevenz;
 
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.crypto.Cipher;
+
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.PasswordRequiredException;
 import org.junit.Test;
@@ -30,6 +36,63 @@ import org.junit.Test;
 public class SevenZFileTest extends AbstractTestCase {
     private static final String TEST2_CONTENT = "<?xml version = '1.0'?>\r\n<!DOCTYPE"
         + " connections>\r\n<meinxml>\r\n\t<leer />\r\n</meinxml>\n";
+
+    // https://issues.apache.org/jira/browse/COMPRESS-320
+    @Test
+    public void testRandomlySkippingEntries() throws Exception {
+    	// Read sequential reference.
+    	Map<String, byte[]> entriesByName = new HashMap<String, byte[]>();
+	    SevenZFile archive = new SevenZFile(getFile("COMPRESS-320/Copy.7z"));
+	    SevenZArchiveEntry entry;
+	    while ((entry = archive.getNextEntry()) != null) {
+	    	if (entry.hasStream()) {
+	    		entriesByName.put(entry.getName(), readFully(archive));
+	    	}
+	    }
+	    archive.close();
+
+		String[] variants = {
+			"BZip2-solid.7z", 
+			"BZip2.7z", 
+			"Copy-solid.7z", 
+			"Copy.7z", 
+			"Deflate-solid.7z", 
+			"Deflate.7z",
+			"LZMA-solid.7z", 
+			"LZMA.7z", 
+			"LZMA2-solid.7z", 
+			"LZMA2.7z", 
+			// TODO: unsupported compression method.
+			// "PPMd-solid.7z", 
+			// "PPMd.7z", 
+		};
+
+		for (String fileName : variants) {
+		    archive = new SevenZFile(getFile("COMPRESS-320/" + fileName));
+
+		    while ((entry = archive.getNextEntry()) != null) {
+				// TODO: randomly skip reading entries.
+
+				if (entry.hasStream()) {
+				    assertTrue(entriesByName.containsKey(entry.getName()));
+				    byte [] content = readFully(archive);
+				    assertTrue("Content mismatch on: " + fileName + "!" + entry.getName(), 
+				    		Arrays.equals(content, entriesByName.get(entry.getName())));
+				}
+		    }
+	
+		    archive.close();
+		}
+    }
+
+	private byte [] readFully(SevenZFile archive) throws IOException {
+	    byte [] buf = new byte [1024];
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		for (int len = 0; (len = archive.read(buf)) > 0;) {
+		    baos.write(buf, 0, len);
+		}
+		return baos.toByteArray();
+	}
 
     @Test
     public void testAllEmptyFilesArchive() throws Exception {
