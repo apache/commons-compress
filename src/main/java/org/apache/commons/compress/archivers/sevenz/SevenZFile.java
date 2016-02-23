@@ -983,4 +983,9 @@ public class SevenZFile implements Closeable {
         }
         return skipped;
     }
+    
+    @Override
+    public String toString() {
+      return archive.toString();
+    }
 }
