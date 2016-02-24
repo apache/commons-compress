@@ -41,64 +41,64 @@ public class SevenZFileTest extends AbstractTestCase {
     // https://issues.apache.org/jira/browse/COMPRESS-320
     @Test
     public void testRandomlySkippingEntries() throws Exception {
-    	// Read sequential reference.
-    	Map<String, byte[]> entriesByName = new HashMap<String, byte[]>();
-	    SevenZFile archive = new SevenZFile(getFile("COMPRESS-320/Copy.7z"));
-	    SevenZArchiveEntry entry;
-	    while ((entry = archive.getNextEntry()) != null) {
-	    	if (entry.hasStream()) {
-	    		entriesByName.put(entry.getName(), readFully(archive));
-	    	}
-	    }
-	    archive.close();
+        // Read sequential reference.
+        Map<String, byte[]> entriesByName = new HashMap<String, byte[]>();
+        SevenZFile archive = new SevenZFile(getFile("COMPRESS-320/Copy.7z"));
+        SevenZArchiveEntry entry;
+        while ((entry = archive.getNextEntry()) != null) {
+            if (entry.hasStream()) {
+                entriesByName.put(entry.getName(), readFully(archive));
+            }
+        }
+        archive.close();
 
-		String[] variants = {
-			"BZip2-solid.7z", 
-			"BZip2.7z", 
-			"Copy-solid.7z", 
-			"Copy.7z", 
-			"Deflate-solid.7z", 
-			"Deflate.7z",
-			"LZMA-solid.7z", 
-			"LZMA.7z", 
-			"LZMA2-solid.7z", 
-			"LZMA2.7z", 
-			// TODO: unsupported compression method.
-			// "PPMd-solid.7z", 
-			// "PPMd.7z", 
-		};
+        String[] variants = {
+            "BZip2-solid.7z",
+            "BZip2.7z",
+            "Copy-solid.7z",
+            "Copy.7z",
+            "Deflate-solid.7z",
+            "Deflate.7z",
+            "LZMA-solid.7z",
+            "LZMA.7z",
+            "LZMA2-solid.7z",
+            "LZMA2.7z",
+            // TODO: unsupported compression method.
+            // "PPMd-solid.7z",
+            // "PPMd.7z",
+        };
 
-		// TODO: use randomizedtesting for predictable, but different, randomness.
-		Random rnd = new Random(0xdeadbeef);
-		for (String fileName : variants) {
-		    archive = new SevenZFile(getFile("COMPRESS-320/" + fileName));
+        // TODO: use randomizedtesting for predictable, but different, randomness.
+        Random rnd = new Random(0xdeadbeef);
+        for (String fileName : variants) {
+            archive = new SevenZFile(getFile("COMPRESS-320/" + fileName));
 
-		    while ((entry = archive.getNextEntry()) != null) {
-				// Sometimes skip reading entries.
-		    	if (rnd.nextBoolean()) {
-		    		continue;
-		    	}
+            while ((entry = archive.getNextEntry()) != null) {
+                // Sometimes skip reading entries.
+                if (rnd.nextBoolean()) {
+                    continue;
+                }
 
-				if (entry.hasStream()) {
-				    assertTrue(entriesByName.containsKey(entry.getName()));
-				    byte [] content = readFully(archive);
-				    assertTrue("Content mismatch on: " + fileName + "!" + entry.getName(), 
-				    		Arrays.equals(content, entriesByName.get(entry.getName())));
-				}
-		    }
-	
-		    archive.close();
-		}
+                if (entry.hasStream()) {
+                    assertTrue(entriesByName.containsKey(entry.getName()));
+                    byte [] content = readFully(archive);
+                    assertTrue("Content mismatch on: " + fileName + "!" + entry.getName(),
+                               Arrays.equals(content, entriesByName.get(entry.getName())));
+                }
+            }
+
+            archive.close();
+        }
     }
 
-	private byte [] readFully(SevenZFile archive) throws IOException {
-	    byte [] buf = new byte [1024];
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		for (int len = 0; (len = archive.read(buf)) > 0;) {
-		    baos.write(buf, 0, len);
-		}
-		return baos.toByteArray();
-	}
+    private byte[] readFully(SevenZFile archive) throws IOException {
+        byte [] buf = new byte [1024];
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        for (int len = 0; (len = archive.read(buf)) > 0;) {
+            baos.write(buf, 0, len);
+        }
+        return baos.toByteArray();
+    }
 
     @Test
     public void testAllEmptyFilesArchive() throws Exception {
@@ -109,7 +109,7 @@ public class SevenZFileTest extends AbstractTestCase {
             archive.close();
         }
     }
-    
+
     @Test
     public void testHelloWorldHeaderCompressionOffCopy() throws Exception {
         checkHelloWorld("7z-hello-mhc-off-copy.7z");

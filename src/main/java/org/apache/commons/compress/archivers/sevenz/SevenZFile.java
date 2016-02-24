@@ -811,25 +811,24 @@ public class SevenZFile implements Closeable {
     private void buildDecodingStream() throws IOException {
         final int folderIndex = archive.streamMap.fileFolderIndex[currentEntryIndex];
         if (folderIndex < 0) {
-        	deferredBlockStreams.clear();
+            deferredBlockStreams.clear();
             // TODO: previously it'd return an empty stream?
-        	// new BoundedInputStream(new ByteArrayInputStream(new byte[0]), 0);
+            // new BoundedInputStream(new ByteArrayInputStream(new byte[0]), 0);
             return;
         }
         final SevenZArchiveEntry file = archive.files[currentEntryIndex];
         if (currentFolderIndex == folderIndex) {
-        	// (COMPRESS-320).
-        	// The current entry is within the same (potentially opened) folder. The
-        	// previous stream has to be fully decoded before we can start reading
-        	// but don't do it eagerly -- if the user skips over the entire folder nothing
-        	// is effectively decompressed.
+            // (COMPRESS-320).
+            // The current entry is within the same (potentially opened) folder. The
+            // previous stream has to be fully decoded before we can start reading
+            // but don't do it eagerly -- if the user skips over the entire folder nothing
+            // is effectively decompressed.
 
-            // need to advance the folder input stream past the current file
             file.setContentMethods(archive.files[currentEntryIndex - 1].getContentMethods());
         } else {
-        	// We're opening a new folder. Discard any queued streams/ folder stream.
+            // We're opening a new folder. Discard any queued streams/ folder stream.
             currentFolderIndex = folderIndex;
-        	deferredBlockStreams.clear();
+            deferredBlockStreams.clear();
             if (currentFolderInputStream != null) {
                 currentFolderInputStream.close();
                 currentFolderInputStream = null;
@@ -885,7 +884,7 @@ public class SevenZFile implements Closeable {
      *             if an I/O error has occurred
      */
     public int read() throws IOException {
-    	return getCurrentStream().read();
+        return getCurrentStream().read();
     }
     
     private InputStream getCurrentStream() throws IOException {
@@ -894,18 +893,18 @@ public class SevenZFile implements Closeable {
         }
         
         while (deferredBlockStreams.size() > 1) {
-        	// In solid compression mode we need to decompress all leading folder' 
-        	// streams to get access to an entry. We defer this until really needed
-        	// so that entire blocks can be skipped without wasting time for decompression.
-        	InputStream stream = deferredBlockStreams.remove(0);
-        	IOUtils.skip(stream, Long.MAX_VALUE);
-        	stream.close();
+            // In solid compression mode we need to decompress all leading folder'
+            // streams to get access to an entry. We defer this until really needed
+            // so that entire blocks can be skipped without wasting time for decompression.
+            InputStream stream = deferredBlockStreams.remove(0);
+            IOUtils.skip(stream, Long.MAX_VALUE);
+            stream.close();
         }
 
-		return deferredBlockStreams.get(0);
-	}
+        return deferredBlockStreams.get(0);
+    }
 
-	/**
+    /**
      * Reads data into an array of bytes.
      * 
      * @param b the array to write data to
@@ -914,7 +913,7 @@ public class SevenZFile implements Closeable {
      *             if an I/O error has occurred
      */
     public int read(byte[] b) throws IOException {
-    	return read(b, 0, b.length);
+        return read(b, 0, b.length);
     }
     
     /**
