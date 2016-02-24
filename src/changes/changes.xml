@@ -44,6 +44,13 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.11" date="not released, yet"
              description="Release 1.11">
+      <action issue="COMPRESS-320" type="fix" date="2016-02-24"
+              due-to="Dawid Weiss">
+        SevenZFile will now only try to drain an entry's content when
+        moving on to the next entry if data is read from the next
+        entry. This should improve performance for applications that
+        try to skip over entries.
+      </action>
       <action issue="COMPRESS-336" type="fix" date="2016-02-14">
         file names of tar archives using the xstar format are now
         parsed properly.
