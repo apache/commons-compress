@@ -1247,13 +1247,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         putLong(ze.getExternalAttributes(), buf, CFH_EXTERNAL_ATTRIBUTES_OFFSET);
 
         // relative offset of LFH
-        if(lfhOffset >= ZIP64_MAGIC || zip64Mode == Zip64Mode.Always){
-        	putLong(ZIP64_MAGIC, buf, CFH_LFH_OFFSET);
+        if (lfhOffset >= ZIP64_MAGIC || zip64Mode == Zip64Mode.Always) {
+            putLong(ZIP64_MAGIC, buf, CFH_LFH_OFFSET);
+        } else {
+            putLong(Math.min(lfhOffset, ZIP64_MAGIC), buf, CFH_LFH_OFFSET);
         }
-        else{
-        	putLong(Math.min(lfhOffset, ZIP64_MAGIC), buf, CFH_LFH_OFFSET);
-        }
-        
+
         // file name
         System.arraycopy(name.array(), name.arrayOffset(), buf, CFH_FILENAME_OFFSET, nameLen);
 
