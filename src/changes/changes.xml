@@ -44,6 +44,12 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.11" date="not released, yet"
              description="Release 1.11">
+      <action type="add" date="2016-03-05"
+              due-to="Matt Hovey">
+        When using Zip64Mode.Always also use ZIP64 extensions inside
+        the central directory.
+        GitHub Pull Request #10
+      </action>
       <action issue="COMPRESS-320" type="fix" date="2016-02-24"
               due-to="Dawid Weiss">
         SevenZFile will now only try to drain an entry's content when
