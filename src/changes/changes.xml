@@ -50,7 +50,7 @@ The <action> type attribute can be add,update,fix,remove.
         the central directory.
         GitHub Pull Request #10
       </action>
-      <action issue="COMPRESS-320" type="fix" date="2016-02-24"
+      <action issue="COMPRESS-340" type="fix" date="2016-02-24"
               due-to="Dawid Weiss">
         SevenZFile will now only try to drain an entry's content when
         moving on to the next entry if data is read from the next
