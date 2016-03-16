@@ -154,13 +154,59 @@ class Coders {
         InputStream decode(final String archiveName, final InputStream in, long uncompressedLength,
                 final Coder coder, final byte[] password)
             throws IOException {
-            return new InflaterInputStream(new DummyByteAddingInputStream(in),
-                                           new Inflater(true));
+            final Inflater inflater = new Inflater(true);
+            final InflaterInputStream inflaterInputStream = new InflaterInputStream(new DummyByteAddingInputStream(in),
+                    inflater);
+            return new InputStream() {
+                @Override
+                public int read() throws IOException {
+                    return inflaterInputStream.read();
+                }
+
+                @Override
+                public int read(byte[] b, int off, int len) throws IOException {
+                    return inflaterInputStream.read(b, off, len);
+                }
+
+                @Override
+                public int read(byte[] b) throws IOException {
+                    return inflaterInputStream.read(b);
+                }
+
+                @Override
+                public void close() throws IOException {
+                    inflaterInputStream.close();
+                    inflater.end();
+                }
+            };
         }
         @Override
         OutputStream encode(final OutputStream out, final Object options) {
             int level = numberOptionOrDefault(options, 9);
-            return new DeflaterOutputStream(out, new Deflater(level, true));
+            final Deflater deflater = new Deflater(level, true);
+            final DeflaterOutputStream deflaterOutputStream = new DeflaterOutputStream(out, deflater);
+            return new OutputStream() {
+                @Override
+                public void write(int b) throws IOException {
+                    deflaterOutputStream.write(b);
+                }
+
+                @Override
+                public void write(byte[] b) throws IOException {
+                    deflaterOutputStream.write(b);
+                }
+
+                @Override
+                public void write(byte[] b, int off, int len) throws IOException {
+                    deflaterOutputStream.write(b, off, len);
+                }
+
+                @Override
+                public void close() throws IOException {
+                    deflaterOutputStream.close();
+                    deflater.end();
+                }
+            };
         }
     }
 
