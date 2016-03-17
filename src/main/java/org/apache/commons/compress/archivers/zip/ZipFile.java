@@ -420,8 +420,11 @@ public class ZipFile implements Closeable {
                 return new InflaterInputStream(bis, inflater) {
                     @Override
                     public void close() throws IOException {
-                        super.close();
-                        inflater.end();
+                        try {
+                            super.close();
+                        } finally {
+                            inflater.end();
+                        }
                     }
                 };
             case BZIP2:

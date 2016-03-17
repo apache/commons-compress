@@ -519,8 +519,11 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     public void close() throws IOException {
         if (!closed) {
             closed = true;
-            in.close();
-            inf.end();
+            try {
+                in.close();
+            } finally {
+                inf.end();
+            }
         }
     }
 

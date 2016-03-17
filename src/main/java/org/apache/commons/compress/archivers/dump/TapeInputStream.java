@@ -294,18 +294,18 @@ class TapeInputStream extends FilterInputStream {
                         0x03)) {
                     case ZLIB:
 
+                        Inflater inflator = new Inflater();
                         try {
-                            Inflater inflator = new Inflater();
                             inflator.setInput(compBuffer, 0, compBuffer.length);
                             length = inflator.inflate(blockBuffer);
 
                             if (length != blockSize) {
                                 throw new ShortFileException();
                             }
-
-                            inflator.end();
                         } catch (DataFormatException e) {
                             throw new DumpArchiveException("bad data", e);
+                        } finally {
+                            inflator.end();
                         }
 
                         break;
