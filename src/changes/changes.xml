@@ -44,6 +44,10 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.11" date="not released, yet"
              description="Release 1.11">
+      <action issue="COMPRESS-343" type="fix" date="2016-03-17"
+              due-to="Rene Preissel">
+        Native Memory Leak in Sevenz-DeflateDecoder.
+      </action>
       <action type="add" date="2016-03-05"
               due-to="Matt Hovey">
         When using Zip64Mode.Always also use ZIP64 extensions inside
