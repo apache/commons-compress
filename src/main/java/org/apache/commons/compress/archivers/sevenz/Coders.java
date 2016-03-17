@@ -175,8 +175,11 @@ class Coders {
 
                 @Override
                 public void close() throws IOException {
-                    inflaterInputStream.close();
-                    inflater.end();
+                    try {
+                        inflaterInputStream.close();
+                    } finally {
+                        inflater.end();
+                    }
                 }
             };
         }
@@ -203,8 +206,11 @@ class Coders {
 
                 @Override
                 public void close() throws IOException {
-                    deflaterOutputStream.close();
-                    deflater.end();
+                    try {
+                        deflaterOutputStream.close();
+                    } finally {
+                        deflater.end();
+                    }
                 }
             };
         }
