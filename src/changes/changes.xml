@@ -44,6 +44,10 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.11" date="not released, yet"
              description="Release 1.11">
+      <action issue="COMPRESS-341" type="add" date="2016-03-20">
+        New method SevenZFile.getEntries can be used to list the
+        contents of a 7z archive.
+      </action>
       <action issue="COMPRESS-343" type="fix" date="2016-03-17"
               due-to="Rene Preissel">
         Native Memory Leak in Sevenz-DeflateDecoder.

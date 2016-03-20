@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 
@@ -243,6 +244,22 @@ public class SevenZFileTest extends AbstractTestCase {
         }
     }
 
+    @Test
+    public void getEntriesOfUnarchiveTest() throws IOException {
+        SevenZFile sevenZFile = new SevenZFile(getFile("bla.7z"));
+        try {
+            Iterable<SevenZArchiveEntry> entries = sevenZFile.getEntries();
+            Iterator<SevenZArchiveEntry> iter = entries.iterator();
+            SevenZArchiveEntry entry = iter.next();
+            assertEquals("test1.xml", entry.getName());
+            entry = iter.next();
+            assertEquals("test2.xml", entry.getName());
+            assertFalse(iter.hasNext());
+        } finally {
+            sevenZFile.close();
+        }
+    }
+    
     private void test7zUnarchive(File f, SevenZMethod m, byte[] password) throws Exception {
         SevenZFile sevenZFile = new SevenZFile(f, password);
         try {
