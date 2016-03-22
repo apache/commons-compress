@@ -177,7 +177,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
             throw new IOException("Cannot process GNU long filename as no // record was found");
         }
         for(int i=offset; i < namebuffer.length; i++){
-            if (namebuffer[i]=='\012'){
+            if (namebuffer[i] == '\012' || namebuffer[i] == 0){
                 if (namebuffer[i-1]=='/') {
                     i--; // drop trailing /
                 }
