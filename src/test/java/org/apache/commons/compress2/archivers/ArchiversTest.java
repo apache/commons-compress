@@ -46,12 +46,12 @@ public class ArchiversTest {
 
     @Test
     public void shouldFindArArchiveFormatAsChannelWritableFormat() {
-        shouldFind(ArArchiveFormat.class, new Archivers().getFormatsWithWriteSupportForChannels());
+        shouldFind(ArArchiveFormat.class, new Archivers().getFormatsWithWriteSupportForNonSeekableChannels());
     }
 
     @Test
     public void shouldFindArArchiveFormatAsChannelReadableFormat() {
-        shouldFind(ArArchiveFormat.class, new Archivers().getFormatsWithReadSupportForChannels());
+        shouldFind(ArArchiveFormat.class, new Archivers().getFormatsWithReadSupportForNonSeekableChannels());
     }
 
     @Test

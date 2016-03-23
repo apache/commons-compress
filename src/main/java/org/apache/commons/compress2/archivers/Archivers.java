@@ -20,16 +20,19 @@ package org.apache.commons.compress2.archivers;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Loads ArchiveFormats defined as "services" from {@code
@@ -84,28 +87,28 @@ public class Archivers implements Iterable<ArchiveFormat<? extends ArchiveEntry>
      * Iterates over all known formats that can write archives.
      */
     public Iterable<ArchiveFormat<? extends ArchiveEntry>> getFormatsWithWriteSupport() {
-        return filter(WRITE_PREDICATE);
+        return filter(ArchiveFormat::supportsWriting);
     }
 
     /**
      * Iterates over all known formats that can write archives to channels.
      */
-    public Iterable<ArchiveFormat<? extends ArchiveEntry>> getFormatsWithWriteSupportForChannels() {
-        return filter(WRITE_TO_CHANNEL_PREDICATE);
+    public Iterable<ArchiveFormat<? extends ArchiveEntry>> getFormatsWithWriteSupportForNonSeekableChannels() {
+        return filter(ArchiveFormat::supportsWritingToNonSeekableChannels);
     }
 
     /**
      * Iterates over all known formats that can read archives from channels.
      */
-    public Iterable<ArchiveFormat<? extends ArchiveEntry>> getFormatsWithReadSupportForChannels() {
-        return filter(READ_FROM_CHANNEL_PREDICATE);
+    public Iterable<ArchiveFormat<? extends ArchiveEntry>> getFormatsWithReadSupportForNonSeekableChannels() {
+        return filter(ArchiveFormat::supportsReadingFromNonSeekableChannels);
     }
 
     /**
      * Iterates over all known formats that provide random access input.
      */
     public Iterable<ArchiveFormat<? extends ArchiveEntry>> getFormatsWithRandomAccessInput() {
-        return filter(RANDOM_ACCESS_PREDICATE);
+        return filter(ArchiveFormat::supportsRandomAccessInput);
     }
 
     /**
@@ -118,60 +121,20 @@ public class Archivers implements Iterable<ArchiveFormat<? extends ArchiveEntry>
     }
 
     private void fillMap() throws ServiceConfigurationError {
-        Set<ArchiveFormat> ts = new TreeSet<ArchiveFormat>(SORT_FOR_AUTO_DETECTION);
+        Set<ArchiveFormat<? extends ArchiveEntry>> ts =
+            new TreeSet<ArchiveFormat<? extends ArchiveEntry>>(Archivers::sortForAutoDetection);
         ts.addAll(asList(formatLoader));
-        Map<String, ArchiveFormat<? extends ArchiveEntry>> a =
-            new LinkedHashMap<String, ArchiveFormat<? extends ArchiveEntry>>();
-        for (ArchiveFormat<? extends ArchiveEntry> f : ts) {
-            a.put(f.getName(), f);
-        }
-        archivers = Collections.unmodifiableMap(a);
+        archivers = Collections.unmodifiableMap(ts.stream()
+            .collect(Collectors.toMap(ArchiveFormat::getName, Function.identity())));
     }
-
-    private interface Predicate<T> { boolean matches(T t); }
-
-    private static final Predicate<ArchiveFormat<? extends ArchiveEntry>> WRITE_PREDICATE =
-        new Predicate<ArchiveFormat<? extends ArchiveEntry>>() {
-            public boolean matches(ArchiveFormat<? extends ArchiveEntry> a) {
-                return a.supportsWriting();
-            }
-        };
-
-    private static final Predicate<ArchiveFormat<? extends ArchiveEntry>> WRITE_TO_CHANNEL_PREDICATE =
-        new Predicate<ArchiveFormat<? extends ArchiveEntry>>() {
-            public boolean matches(ArchiveFormat<? extends ArchiveEntry> a) {
-                return a.supportsWritingToNonSeekableChannels();
-            }
-        };
-
-    private static final Predicate<ArchiveFormat<? extends ArchiveEntry>> READ_FROM_CHANNEL_PREDICATE =
-        new Predicate<ArchiveFormat<? extends ArchiveEntry>>() {
-            public boolean matches(ArchiveFormat<? extends ArchiveEntry> a) {
-                return a.supportsReadingFromNonSeekableChannels();
-            }
-        };
-
-    private static final Predicate<ArchiveFormat<? extends ArchiveEntry>> RANDOM_ACCESS_PREDICATE =
-        new Predicate<ArchiveFormat<? extends ArchiveEntry>>() {
-            public boolean matches(ArchiveFormat<? extends ArchiveEntry> a) {
-                return a.supportsRandomAccessInput();
-            }
-        };
-
-    private static final Predicate<ArchiveFormat<? extends ArchiveEntry>> AUTO_DETECTION_PREDICATE =
-        new Predicate<ArchiveFormat<? extends ArchiveEntry>>() {
-            public boolean matches(ArchiveFormat<? extends ArchiveEntry> a) {
-                return a.supportsAutoDetection();
-            }
-        };
 
     private Iterable<ArchiveFormat<? extends ArchiveEntry>>
         filter(final Predicate<ArchiveFormat<? extends ArchiveEntry>> p) {
-        return new Iterable<ArchiveFormat<? extends ArchiveEntry>>() {
-            public Iterator<ArchiveFormat<? extends ArchiveEntry>> iterator() {
-                return new FilteringIterator(Archivers.this.iterator(), p);
-            }
-        };
+        return () -> StreamSupport.stream(Spliterators.spliterator(archivers.values(),
+                                                                   Spliterator.NONNULL),
+                                          false)
+            .filter(p)
+            .iterator();
     }
 
     private static <T> List<T> asList(Iterable<T> i) {
@@ -182,48 +145,16 @@ public class Archivers implements Iterable<ArchiveFormat<? extends ArchiveEntry>
         return l;
     }
 
-    private Comparator<ArchiveFormat> SORT_FOR_AUTO_DETECTION = new Comparator<ArchiveFormat>() {
-        public int compare(ArchiveFormat a1, ArchiveFormat a2) {
-            if (a1.supportsAutoDetection() && a2.supportsAutoDetection()) {
-                return a1.getNumberOfBytesRequiredForAutodetection() - a2.getNumberOfBytesRequiredForAutodetection();
-            }
-            if (!a1.supportsAutoDetection() && !a2.supportsAutoDetection()) {
-                return 0;
-            }
-            if (a1.supportsAutoDetection()) {
-                return -1;
-            }
-            return 1;
+    private static int sortForAutoDetection(ArchiveFormat a1, ArchiveFormat a2) {
+        if (a1.supportsAutoDetection() && a2.supportsAutoDetection()) {
+            return a1.getNumberOfBytesRequiredForAutodetection() - a2.getNumberOfBytesRequiredForAutodetection();
         }
-    };
-
-    private static class FilteringIterator<T> implements Iterator<T> {
-        private final Iterator<T> i;
-        private final Predicate<? super T> filter;
-        private T lookAhead = null;
-        private FilteringIterator(Iterator<T> i, Predicate<? super T> filter) {
-            this.i = i;
-            this.filter = filter;
+        if (!a1.supportsAutoDetection() && !a2.supportsAutoDetection()) {
+            return 0;
         }
-        public void remove() {
-            i.remove();
+        if (a1.supportsAutoDetection()) {
+            return -1;
         }
-        public T next() {
-            if (lookAhead == null) {
-                throw new NoSuchElementException();
-            }
-            T next = lookAhead;
-            lookAhead = null;
-            return next;
-        }
-        public boolean hasNext() {
-            while (lookAhead == null && i.hasNext()) {
-                T next = i.next();
-                if (filter.matches(next)) {
-                    lookAhead = next;
-                }
-            }
-            return lookAhead != null;
-        }
+        return 1;
     }
 }
