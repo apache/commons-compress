@@ -314,8 +314,8 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             paxHeaders();
         }
 
-        if (currEntry.isGNUSparse()){ // Process sparse files
-            readGNUSparse();
+        if (currEntry.isOldGNUSparse()){ // Process sparse files
+            readOldGNUSparse();
         }
 
         // If the size of the next element in the archive has changed
@@ -434,6 +434,9 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         applyPaxHeadersToCurrentEntry(headers);
     }
 
+    // NOTE, using a Map here makes it impossible to ever support GNU
+    // sparse files using the PAX Format 0.0, see
+    // https://www.gnu.org/software/tar/manual/html_section/tar_92.html#SEC188
     Map<String, String> parsePaxHeaders(InputStream i) throws IOException {
         Map<String, String> headers = new HashMap<String, String>();
         // Format is "length keyword=value\n";
@@ -492,6 +495,10 @@ public class TarArchiveInputStream extends ArchiveInputStream {
          * size
          * uid,uname
          * SCHILY.devminor, SCHILY.devmajor: don't have setters/getters for those
+         *
+         * GNU sparse files use additional members, we use
+         * GNU.sparse.size to detect the 0.0 and 0.1 versions and
+         * GNU.sparse.realsize for 1.0.
          */
         for (Entry<String, String> ent : headers.entrySet()){
             String key = ent.getKey();
@@ -516,6 +523,10 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                 currEntry.setDevMinor(Integer.parseInt(val));
             } else if ("SCHILY.devmajor".equals(key)){
                 currEntry.setDevMajor(Integer.parseInt(val));
+            } else if ("GNU.sparse.size".equals(key)) {
+                currEntry.fillGNUSparse0xData(headers);
+            } else if ("GNU.sparse.realsize".equals(key)) {
+                currEntry.fillGNUSparse1xData(headers);
             }
         }
     }
@@ -528,7 +539,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      *
      * @todo Sparse files get not yet really processed.
      */
-    private void readGNUSparse() throws IOException {
+    private void readOldGNUSparse() throws IOException {
         /* we do not really process sparse files yet
         sparses = new ArrayList();
         sparses.addAll(currEntry.getSparses());
@@ -642,7 +653,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     public boolean canReadEntryData(ArchiveEntry ae) {
         if (ae instanceof TarArchiveEntry) {
             TarArchiveEntry te = (TarArchiveEntry) ae;
-            return !te.isGNUSparse();
+            return !te.isSparse();
         }
         return false;
     }

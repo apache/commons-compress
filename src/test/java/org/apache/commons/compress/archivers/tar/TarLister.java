@@ -73,6 +73,9 @@ public final class TarLister {
             }
             System.out.print(ae.getLinkName());
         }
+        if (ae.isSparse()) {
+            System.out.print(" (sparse)");
+        }
         System.out.println();
     }
             

@@ -44,6 +44,10 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.11" date="not released, yet"
              description="Release 1.11">
+      <action issue="COMPRESS-345" type="add" date="2016-03-23">
+        GNU sparse files using one of the PAX formats are now
+        detected, but cannot be extracted.
+      </action>
       <action issue="COMPRESS-344" type="fix" date="2016-03-22">
         ArArchiveInputStream can now read GNU extended names that are
         terminated with a NUL byte rather than a linefeed.

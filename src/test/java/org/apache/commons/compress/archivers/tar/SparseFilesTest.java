@@ -36,13 +36,40 @@ public class SparseFilesTest {
             tin = new TarArchiveInputStream(new FileInputStream(file));
             TarArchiveEntry ae = tin.getNextTarEntry();
             assertEquals("sparsefile", ae.getName());
+            assertTrue(ae.isOldGNUSparse());
             assertTrue(ae.isGNUSparse());
+            assertFalse(ae.isPaxGNUSparse());
             assertFalse(tin.canReadEntryData(ae));
         } finally {
             if (tin != null) {
                 tin.close();
             }
         }
+    }
+
+    @Test
+    public void testPaxGNU() throws Throwable {
+        File file = getFile("pax_gnu_sparse.tar");
+        TarArchiveInputStream tin = null;
+        try {
+            tin = new TarArchiveInputStream(new FileInputStream(file));
+            assertPaxGNUEntry(tin, "0.0");
+            assertPaxGNUEntry(tin, "0.1");
+            assertPaxGNUEntry(tin, "1.0");
+        } finally {
+            if (tin != null) {
+                tin.close();
+            }
+        }
+    }
+
+    private void assertPaxGNUEntry(TarArchiveInputStream tin, String suffix) throws Throwable {
+        TarArchiveEntry ae = tin.getNextTarEntry();
+        assertEquals("sparsefile-" + suffix, ae.getName());
+        assertTrue(ae.isGNUSparse());
+        assertTrue(ae.isPaxGNUSparse());
+        assertFalse(ae.isOldGNUSparse());
+        assertFalse(tin.canReadEntryData(ae));
     }
 }
 

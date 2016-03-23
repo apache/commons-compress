@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
@@ -194,6 +195,9 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
 
     /** The entry's real size in case of a sparse file. */
     private long realSize;
+
+    /** is this entry a GNU sparse entry using one of the PAX formats? */
+    private boolean paxGNUSparse;
 
     /** The entry's file reference */
     private final File file;
@@ -728,10 +732,10 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     }
 
     /**
-     * Indicates in case of a sparse file if an extension sparse header
-     * follows.
+     * Indicates in case of an oldgnu sparse file if an extension
+     * sparse header follows.
      *
-     * @return true if an extension sparse header follows.
+     * @return true if an extension oldgnu sparse header follows.
      */
     public boolean isExtended() {
         return isExtended;
@@ -747,12 +751,33 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     }
 
     /**
-     * Indicate if this entry is a GNU sparse block
+     * Indicate if this entry is a GNU sparse block.
      *
      * @return true if this is a sparse extension provided by GNU tar
      */
     public boolean isGNUSparse() {
+        return isOldGNUSparse() || isPaxGNUSparse();
+    }
+
+    /**
+     * Indicate if this entry is a GNU sparse block using the oldgnu format.
+     *
+     * @return true if this is a sparse extension provided by GNU tar
+     * @since 1.11
+     */
+    public boolean isOldGNUSparse() {
         return linkFlag == LF_GNUTYPE_SPARSE;
+    }
+
+    /**
+     * Indicate if this entry is a GNU sparse block using one of the
+     * PAX formats.
+     *
+     * @return true if this is a sparse extension provided by GNU tar
+     * @since 1.11
+     */
+    public boolean isPaxGNUSparse() {
+        return paxGNUSparse;
     }
 
     /**
@@ -882,6 +907,15 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      */
     public boolean isFIFO() {
         return linkFlag == LF_FIFO;
+    }
+
+    /**
+     * Check whether this is a sparse entry.
+     *
+     * @since 1.11
+     */
+    public boolean isSparse() {
+        return isGNUSparse();
     }
 
     /**
@@ -1168,6 +1202,21 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
             return FORMAT_POSIX;
         }
         return 0;
+    }
+
+    void fillGNUSparse0xData(Map<String, String> headers) {
+        paxGNUSparse = true;
+        realSize = Integer.parseInt(headers.get("GNU.sparse.size"));
+        if (headers.containsKey("GNU.sparse.name")) {
+            // version 0.1
+            name = headers.get("GNU.sparse.name");
+        }
+    }
+
+    void fillGNUSparse1xData(Map<String, String> headers) {
+        paxGNUSparse = true;
+        realSize = Integer.parseInt(headers.get("GNU.sparse.realsize"));
+        name = headers.get("GNU.sparse.name");
     }
 }
 
