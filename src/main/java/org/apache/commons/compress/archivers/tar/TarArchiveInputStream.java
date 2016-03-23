@@ -78,6 +78,9 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     // the provided encoding (for unit tests)
     final String encoding;
 
+    // the global PAX header
+    private Map<String, String> globalPaxHeaders = new HashMap<String, String>();
+
     /**
      * Constructor for TarInputStream.
      * @param is the input stream to use
@@ -310,8 +313,14 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             currEntry.setName(zipEncoding.decode(longNameData));
         }
 
+        if (currEntry.isGlobalPaxHeader()){ // Process Global Pax headers
+            readGlobalPaxHeaders();
+        }
+
         if (currEntry.isPaxHeader()){ // Process Pax headers
             paxHeaders();
+        } else if (!globalPaxHeaders.isEmpty()) {
+            applyPaxHeadersToCurrentEntry(globalPaxHeaders);
         }
 
         if (currEntry.isOldGNUSparse()){ // Process sparse files
@@ -428,6 +437,11 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         return record;
     }
 
+    private void readGlobalPaxHeaders() throws IOException {
+        globalPaxHeaders = parsePaxHeaders(this);
+        getNextEntry(); // Get the actual file entry
+    }
+
     private void paxHeaders() throws IOException{
         Map<String, String> headers = parsePaxHeaders(this);
         getNextEntry(); // Get the actual file entry
@@ -437,8 +451,9 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     // NOTE, using a Map here makes it impossible to ever support GNU
     // sparse files using the PAX Format 0.0, see
     // https://www.gnu.org/software/tar/manual/html_section/tar_92.html#SEC188
-    Map<String, String> parsePaxHeaders(InputStream i) throws IOException {
-        Map<String, String> headers = new HashMap<String, String>();
+    Map<String, String> parsePaxHeaders(InputStream i)
+        throws IOException {
+        Map<String, String> headers = new HashMap<String, String>(globalPaxHeaders);
         // Format is "length keyword=value\n";
         while(true){ // get length
             int ch;
