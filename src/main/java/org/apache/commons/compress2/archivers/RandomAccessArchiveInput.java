@@ -38,6 +38,5 @@ public interface RandomAccessArchiveInput<A extends ArchiveEntry> extends Archiv
      * @param entry the entry to read the contents of
      * @return a channel to read the entry's contents from or null if the entry is not part of this archive.
      */
-    // TODO SeekableByteChannel if using Java 7?
     ReadableByteChannel getChannel(A entry);
 }

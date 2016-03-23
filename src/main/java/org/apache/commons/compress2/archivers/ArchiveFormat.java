@@ -20,6 +20,7 @@ package org.apache.commons.compress2.archivers;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
 import java.io.File;
@@ -50,12 +51,12 @@ public interface ArchiveFormat<A extends ArchiveEntry> {
      * Does the format support writing to arbitrary non-seekable channels?
      * @return whether writing to arbitrary non-seekable channels is supported
      */
-    boolean supportsWritingToChannels();
+    boolean supportsWritingToNonSeekableChannels();
     /**
      * Does the format support reading from arbitrary non-seekable channels?
      * @return whether writing to arbitrary non-seekable channels is supported
      */
-    boolean supportsReadingFromChannels();
+    boolean supportsReadingFromNonSeekableChannels();
 
     /**
      * Does the format support content-based detection?
@@ -92,19 +93,16 @@ public interface ArchiveFormat<A extends ArchiveEntry> {
      * @param charset the charset used for encoding the entry names.
      * @throws IOException
      */
-    // TODO go for SeekableByteChannel rather than File when embracing Java7?
     // TODO use Path rather than File?
     ArchiveInput<A> readFrom(File file, Charset charset) throws IOException;
     /**
      * Provides random access to an archive assuming the given charset for entry names.
-     * @param file the file to read from
+     * @param channel the seekable channel to read from
      * @param charset the charset used for encoding the entry names.
      * @throws IOException
      * @throws UnsupportedOperationException if this format doesn't support random access
      */
-    // TODO go for SeekableByteChannel rather than File when embracing Java7?
-    // TODO use Path rather than File?
-    RandomAccessArchiveInput<A> readWithRandomAccessFrom(File file, Charset charset)
+    RandomAccessArchiveInput<A> readWithRandomAccessFrom(SeekableByteChannel channel, Charset charset)
         throws IOException, UnsupportedOperationException;
 
     /**
@@ -124,7 +122,6 @@ public interface ArchiveFormat<A extends ArchiveEntry> {
      * @throws IOException
      * @throws UnsupportedOperationException if this format doesn't support writing
      */
-    // TODO go for SeekableByteChannel rather than File when embracing Java7?
     // TODO use Path rather than File?
     ArchiveOutput<A> writeTo(File file, Charset charset) throws IOException, UnsupportedOperationException;
 }

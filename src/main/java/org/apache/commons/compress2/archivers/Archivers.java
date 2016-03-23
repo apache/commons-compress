@@ -140,14 +140,14 @@ public class Archivers implements Iterable<ArchiveFormat<? extends ArchiveEntry>
     private static final Predicate<ArchiveFormat<? extends ArchiveEntry>> WRITE_TO_CHANNEL_PREDICATE =
         new Predicate<ArchiveFormat<? extends ArchiveEntry>>() {
             public boolean matches(ArchiveFormat<? extends ArchiveEntry> a) {
-                return a.supportsWritingToChannels();
+                return a.supportsWritingToNonSeekableChannels();
             }
         };
 
     private static final Predicate<ArchiveFormat<? extends ArchiveEntry>> READ_FROM_CHANNEL_PREDICATE =
         new Predicate<ArchiveFormat<? extends ArchiveEntry>>() {
             public boolean matches(ArchiveFormat<? extends ArchiveEntry> a) {
-                return a.supportsReadingFromChannels();
+                return a.supportsReadingFromNonSeekableChannels();
             }
         };
 

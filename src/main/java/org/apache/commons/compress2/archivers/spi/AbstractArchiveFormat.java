@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
@@ -55,13 +56,13 @@ public abstract class AbstractArchiveFormat<A extends ArchiveEntry> implements A
      * <p>This implementation always returns false.</p>
      */
     @Override
-    public boolean supportsWritingToChannels() { return false; }
+    public boolean supportsWritingToNonSeekableChannels() { return false; }
     /**
      * {@inheritDoc}
      * <p>This implementation always returns false.</p>
      */
     @Override
-    public boolean supportsReadingFromChannels() { return false; }
+    public boolean supportsReadingFromNonSeekableChannels() { return false; }
 
     /**
      * {@inheritDoc}
@@ -102,18 +103,19 @@ public abstract class AbstractArchiveFormat<A extends ArchiveEntry> implements A
      */
     @Override
     public ArchiveInput<A> readFrom(File file, Charset charset) throws IOException {
+        SeekableByteChannel channel = FileChannel.open(file.toPath(), StandardOpenOption.READ);
         if (supportsRandomAccessInput()) {
-            return readWithRandomAccessFrom(file, charset);
+            return readWithRandomAccessFrom(channel, charset);
         }
 
-        return readFrom(FileChannel.open(file.toPath(), StandardOpenOption.READ), charset);
+        return readFrom(channel, charset);
     }
     /**
      * {@inheritDoc}
      * <p>This implementation always throws an UnsupportedOperationException.</p>
      */
     @Override
-    public RandomAccessArchiveInput<A> readWithRandomAccessFrom(File file, Charset charset)
+    public RandomAccessArchiveInput<A> readWithRandomAccessFrom(SeekableByteChannel channel, Charset charset)
         throws IOException, UnsupportedOperationException {
         throw new UnsupportedOperationException("this format cannot doesn't support random access");
     }

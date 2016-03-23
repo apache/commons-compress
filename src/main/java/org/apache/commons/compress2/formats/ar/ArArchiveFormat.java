@@ -55,12 +55,12 @@ public class ArArchiveFormat extends AbstractArchiveFormat<ArArchiveEntry> {
      * Yes.
      */
     @Override
-    public boolean supportsWritingToChannels() { return true; }
+    public boolean supportsWritingToNonSeekableChannels() { return true; }
     /**
      * Yes.
      */
     @Override
-    public boolean supportsReadingFromChannels() { return true; }
+    public boolean supportsReadingFromNonSeekableChannels() { return true; }
 
     /**
      * Yes.
