@@ -64,19 +64,43 @@ public final class TarLister {
     }
 
     private static void log(TarArchiveEntry ae) {
-        System.out.print(ae.getName());
+        StringBuilder sb = new StringBuilder(Integer.toOctalString(ae.getMode()))
+            .append(" ");
+        String name = ae.getUserName();
+        if (name != null && name.length() > 0) {
+            sb.append(name);
+        } else {
+            sb.append(ae.getLongUserId());
+        }
+        sb.append("/");
+        name = ae.getGroupName();
+        if (name != null && name.length() > 0) {
+            sb.append(name);
+        } else {
+            sb.append(ae.getLongGroupId());
+        }
+        sb.append(" ");
+        if (ae.isSparse()) {
+            sb.append(ae.getRealSize());
+        } else if (ae.isCharacterDevice() || ae.isBlockDevice()) {
+            sb.append(ae.getDevMajor()).append(",").append(ae.getDevMinor());
+        } else {
+            sb.append(ae.getSize());
+        }
+        sb.append(" ").append(ae.getLastModifiedDate()).append(" ");
+        sb.append(ae.getName());
         if (ae.isSymbolicLink() || ae.isLink()) {
             if (ae.isSymbolicLink()) {
-                System.out.print(" -> ");
+                sb.append(" -> ");
             } else {
-                System.out.print(" link to ");
+                sb.append(" link to ");
             }
-            System.out.print(ae.getLinkName());
+            sb.append(ae.getLinkName());
         }
         if (ae.isSparse()) {
-            System.out.print(" (sparse)");
+            sb.append(" (sparse)");
         }
-        System.out.println();
+        System.out.println(sb);
     }
             
 }
