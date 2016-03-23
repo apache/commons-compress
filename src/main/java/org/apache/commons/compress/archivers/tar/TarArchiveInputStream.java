@@ -518,6 +518,9 @@ public class TarArchiveInputStream extends ArchiveInputStream {
          * GNU sparse files use additional members, we use
          * GNU.sparse.size to detect the 0.0 and 0.1 versions and
          * GNU.sparse.realsize for 1.0.
+         *
+         * star files use additional members of which we use
+         * SCHILY.filetype in order to detect star sparse files.
          */
         for (Entry<String, String> ent : headers.entrySet()){
             String key = ent.getKey();
@@ -546,6 +549,8 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                 currEntry.fillGNUSparse0xData(headers);
             } else if ("GNU.sparse.realsize".equals(key)) {
                 currEntry.fillGNUSparse1xData(headers);
+            } else if ("SCHILY.filetype".equals(key) && "sparse".equals(val)) {
+                currEntry.fillStarSparseData(headers);
             }
         }
     }

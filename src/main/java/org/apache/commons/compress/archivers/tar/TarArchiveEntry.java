@@ -199,6 +199,9 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     /** is this entry a GNU sparse entry using one of the PAX formats? */
     private boolean paxGNUSparse;
 
+    /** is this entry a star sparse entry using the PAX header? */
+    private boolean starSparse;
+
     /** The entry's file reference */
     private final File file;
 
@@ -760,9 +763,10 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     }
 
     /**
-     * Indicate if this entry is a GNU sparse block using the oldgnu format.
+     * Indicate if this entry is a GNU or star sparse block using the
+     * oldgnu format.
      *
-     * @return true if this is a sparse extension provided by GNU tar
+     * @return true if this is a sparse extension provided by GNU tar or star
      * @since 1.11
      */
     public boolean isOldGNUSparse() {
@@ -778,6 +782,16 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      */
     public boolean isPaxGNUSparse() {
         return paxGNUSparse;
+    }
+
+    /**
+     * Indicate if this entry is a star sparse block using PAX headers.
+     *
+     * @return true if this is a sparse extension provided by star
+     * @since 1.11
+     */
+    public boolean isStarSparse() {
+        return starSparse;
     }
 
     /**
@@ -915,7 +929,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @since 1.11
      */
     public boolean isSparse() {
-        return isGNUSparse();
+        return isGNUSparse() || isStarSparse();
     }
 
     /**
@@ -1217,6 +1231,13 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         paxGNUSparse = true;
         realSize = Integer.parseInt(headers.get("GNU.sparse.realsize"));
         name = headers.get("GNU.sparse.name");
+    }
+
+    void fillStarSparseData(Map<String, String> headers) {
+        starSparse = true;
+        if (headers.containsKey("SCHILY.realsize")) {
+            realSize = Long.parseLong(headers.get("SCHILY.realsize"));
+        }
     }
 }
 

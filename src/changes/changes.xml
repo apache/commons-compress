@@ -47,6 +47,10 @@ The <action> type attribute can be add,update,fix,remove.
       <action issue="COMPRESS-347" type="add" date="2016-03-23">
         TarArchiveInputStream now supports reading global PAX headers.
       </action>
+      <action issue="COMPRESS-346" type="add" date="2016-03-23">
+        The PAX headers for sparse entries written by star are now
+        applied.
+      </action>
       <action issue="COMPRESS-345" type="add" date="2016-03-23">
         GNU sparse files using one of the PAX formats are now
         detected, but cannot be extracted.
