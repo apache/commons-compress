@@ -455,19 +455,23 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                             String keyword = coll.toString(CharsetNames.UTF_8);
                             // Get rest of entry
                             final int restLen = len - read;
-                            byte[] rest = new byte[restLen];
-                            int got = IOUtils.readFully(i, rest);
-                            if (got != restLen) {
-                                throw new IOException("Failed to read "
-                                                      + "Paxheader. Expected "
-                                                      + restLen
-                                                      + " bytes, read "
-                                                      + got);
+                            if (restLen == 1) { // only NL
+                                headers.remove(keyword);
+                            } else {
+                                byte[] rest = new byte[restLen];
+                                int got = IOUtils.readFully(i, rest);
+                                if (got != restLen) {
+                                    throw new IOException("Failed to read "
+                                                          + "Paxheader. Expected "
+                                                          + restLen
+                                                          + " bytes, read "
+                                                          + got);
+                                }
+                                // Drop trailing NL
+                                String value = new String(rest, 0,
+                                                          restLen - 1, CharsetNames.UTF_8);
+                                headers.put(keyword, value);
                             }
-                            // Drop trailing NL
-                            String value = new String(rest, 0,
-                                                      restLen - 1, CharsetNames.UTF_8);
-                            headers.put(keyword, value);
                             break;
                         }
                         coll.write((byte) ch);

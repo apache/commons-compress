@@ -58,6 +58,28 @@ public class TarArchiveInputStreamTest {
     }
 
     @Test
+    public void secondEntryWinsWhenPaxHeaderContainsDuplicateKey() throws Exception {
+        final InputStream is = new ByteArrayInputStream(new byte[1]);
+        final TarArchiveInputStream tais = new TarArchiveInputStream(is);
+        Map<String, String> headers = tais
+            .parsePaxHeaders(new ByteArrayInputStream("11 foo=bar\n11 foo=baz\n"
+                                                      .getBytes(CharsetNames.UTF_8)));
+        assertEquals(1, headers.size());
+        assertEquals("baz", headers.get("foo"));
+        tais.close();
+    }
+
+    @Test
+    public void paxHeaderEntryWithEmptyValueRemovesKey() throws Exception {
+        final InputStream is = new ByteArrayInputStream(new byte[1]);
+        final TarArchiveInputStream tais = new TarArchiveInputStream(is);
+        Map<String, String> headers = tais
+            .parsePaxHeaders(new ByteArrayInputStream("11 foo=bar\n7 foo=\n"
+                                                      .getBytes(CharsetNames.UTF_8)));
+        assertEquals(0, headers.size());
+    }
+
+    @Test
     public void readPaxHeaderWithEmbeddedNewline() throws Exception {
         final InputStream is = new ByteArrayInputStream(new byte[1]);
         final TarArchiveInputStream tais = new TarArchiveInputStream(is);
