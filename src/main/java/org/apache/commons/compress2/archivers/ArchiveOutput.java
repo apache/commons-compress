@@ -18,7 +18,6 @@
  */
 package org.apache.commons.compress2.archivers;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
 
@@ -26,7 +25,7 @@ import java.nio.channels.WritableByteChannel;
  * Writes {@link ArchiveEntry}s.
  * @NotThreadSafe
  */
-public interface ArchiveOutput<A extends ArchiveEntry> extends Closeable {
+public interface ArchiveOutput<A extends ArchiveEntry> extends AutoCloseable {
 
     /**
      * Creates an ArchiveEntry for the given parameters.

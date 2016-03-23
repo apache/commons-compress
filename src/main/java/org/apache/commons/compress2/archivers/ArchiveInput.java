@@ -18,7 +18,6 @@
  */
 package org.apache.commons.compress2.archivers;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.nio.channels.ReadableByteChannel;
 
@@ -26,7 +25,7 @@ import java.nio.channels.ReadableByteChannel;
  * Reads {@link ArchiveEntry}s.
  * @NotThreadSafe
  */
-public interface ArchiveInput<A extends ArchiveEntry> extends Closeable {
+public interface ArchiveInput<A extends ArchiveEntry> extends AutoCloseable {
 
     /**
      * Obtains the next entry.
