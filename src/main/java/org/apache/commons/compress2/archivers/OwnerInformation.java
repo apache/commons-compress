@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress2.archivers;
 
+import java.util.Objects;
+
 /**
  * Encapsulates owner information of an archive entry.
  *
@@ -100,11 +102,8 @@ public class OwnerInformation {
         OwnerInformation other = (OwnerInformation) obj;
         return userId == other.userId
             && groupId == other.groupId
-            && equals(userName, other.userName)
-            && equals(groupName, other.groupName);
+            && Objects.equals(userName, other.userName)
+            && Objects.equals(groupName, other.groupName);
     }
 
-    private static boolean equals(Object o1, Object o2) {
-        return o1 == null ? o2 == null : o1.equals(o2);
-    }
 }
