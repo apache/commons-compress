@@ -26,7 +26,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
+import java.time.Instant;
 
 import org.apache.commons.compress2.archivers.ArchiveEntryParameters;
 import org.apache.commons.compress2.archivers.OwnerInformation;
@@ -166,7 +166,7 @@ public class ArArchiveInput extends AbstractArchiveInput<ArArchiveEntry> {
 
         currentEntry = new ArArchiveEntry(new ArchiveEntryParameters().withName(temp).withSize(len)
                                           .withOwnerInformation(new OwnerInformation(userId, asInt(ID_BUF, true)))
-                                          .withLastModifiedDate(new Date(asLong(LAST_MODIFIED_BUF) * 1000)),
+                                          .withLastModified(Instant.ofEpochSecond(asLong(LAST_MODIFIED_BUF))),
                                           asInt(FILE_MODE_BUF, 8));
         return currentEntry;
     }

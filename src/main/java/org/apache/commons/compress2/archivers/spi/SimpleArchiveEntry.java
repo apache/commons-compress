@@ -18,7 +18,8 @@
  */
 package org.apache.commons.compress2.archivers.spi;
 
-import java.util.Date;
+import java.time.Instant;
+import java.util.Objects;
 
 import org.apache.commons.compress2.archivers.ArchiveEntry;
 import org.apache.commons.compress2.archivers.ArchiveEntryParameters;
@@ -32,7 +33,7 @@ public class SimpleArchiveEntry implements ArchiveEntry {
     private final String name;
     private final long size;
     private final boolean dirFlag;
-    private final Date lastModified;
+    private final Instant lastModified;
     private final OwnerInformation owner;
 
     /**
@@ -43,7 +44,7 @@ public class SimpleArchiveEntry implements ArchiveEntry {
         this.name = params.getName();
         this.size = params.getSize();
         this.dirFlag = params.isDirectory();
-        this.lastModified = params.getLastModifiedDate();
+        this.lastModified = params.getLastModified();
         this.owner = params.getOwnerInformation();
     }
 
@@ -63,8 +64,8 @@ public class SimpleArchiveEntry implements ArchiveEntry {
     }
 
     @Override
-    public Date getLastModifiedDate() {
-        return clone(lastModified);
+    public Instant getLastModified() {
+        return lastModified;
     }
 
     @Override
@@ -89,20 +90,10 @@ public class SimpleArchiveEntry implements ArchiveEntry {
             return false;
         }
         SimpleArchiveEntry other = (SimpleArchiveEntry) obj;
-        return equals(name, other.name)
+        return Objects.equals(name, other.name)
             && size == other.size
             && dirFlag == other.dirFlag
-            && equals(lastModified, other.lastModified)
-            && equals(owner, other.owner);
-    }
-
-    // TODO second instance (after ArchiveEntryParameters)
-    private static Date clone(Date d) {
-        return d == null ? null : (Date) d.clone();
-    }
-
-    // TODO second instance (after OwnerInformation)
-    private static boolean equals(Object o1, Object o2) {
-        return o1 == null ? o2 == null : o1.equals(o2);
+            && Objects.equals(lastModified, other.lastModified)
+            && Objects.equals(owner, other.owner);
     }
 }

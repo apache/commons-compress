@@ -22,7 +22,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
+import java.time.Duration;
+import java.time.Instant;
 import org.junit.Test;
 
 public class ArchiveEntryParametersTest {
@@ -33,7 +34,7 @@ public class ArchiveEntryParametersTest {
         assertEquals(null, p.getName());
         assertEquals(-1, p.getSize());
         assertEquals(false, p.isDirectory());
-        assertEquals(null, p.getLastModifiedDate());
+        assertEquals(null, p.getLastModified());
         assertEquals(null, p.getOwnerInformation());
     }
 
@@ -70,51 +71,51 @@ public class ArchiveEntryParametersTest {
 
     @Test
     public void copyActuallyCopies() {
-        final Date d = new Date();
+        final Instant d = Instant.now();
         final OwnerInformation o = new OwnerInformation(17, 4);
         ArchiveEntryParameters p = ArchiveEntryParameters.copyOf(new ArchiveEntry() {
                 public String getName() {return "baz";}
                 public long getSize() {return 42;}
                 public boolean isDirectory() {return false;}
-                public Date getLastModifiedDate() {return d;}
+                public Instant getLastModified() {return d;}
                 public OwnerInformation getOwnerInformation() {return o;}
             });
         assertEquals("baz", p.getName());
         assertEquals(42, p.getSize());
         assertEquals(false, p.isDirectory());
-        assertEquals(d, p.getLastModifiedDate());
+        assertEquals(d, p.getLastModified());
         assertEquals(o, p.getOwnerInformation());
     }
 
     @Test
     public void fromExistingFileHasExpectedValues() throws IOException {
-        final Date d = new Date();
+        final Instant d = Instant.now();
         File f = File.createTempFile("pre", "suf");
         f.deleteOnExit();
-        f.setLastModified(d.getTime());
+        f.setLastModified(d.toEpochMilli());
         ArchiveEntryParameters p = ArchiveEntryParameters.fromFile(f);
         assert p.getName().endsWith("suf");
         assert p.getName().startsWith("pre");
         assertEquals(0, p.getSize());
         assertEquals(false, p.isDirectory());
-        assertWithinTwoSecondsOf(d, p.getLastModifiedDate());
+        assertWithinTwoSecondsOf(d, p.getLastModified());
         assertEquals(null, p.getOwnerInformation());
     }
 
     @Test
     public void fromExistingDirectoryHasExpectedValues() throws IOException {
-        final Date d = new Date();
+        final Instant d = Instant.now();
         File f = File.createTempFile("pre", "suf");
         assert f.delete();
         f.mkdirs();
         f.deleteOnExit();
-        f.setLastModified(d.getTime());
+        f.setLastModified(d.toEpochMilli());
         ArchiveEntryParameters p = ArchiveEntryParameters.fromFile(f);
         assert p.getName().endsWith("suf/");
         assert p.getName().startsWith("pre");
         assertEquals(0, p.getSize());
         assertEquals(true, p.isDirectory());
-        assertWithinTwoSecondsOf(d, p.getLastModifiedDate());
+        assertWithinTwoSecondsOf(d, p.getLastModified());
         assertEquals(null, p.getOwnerInformation());
     }
 
@@ -126,7 +127,7 @@ public class ArchiveEntryParametersTest {
         assertEquals(-1, p.getSize());
     }
 
-    private static void assertWithinTwoSecondsOf(Date expected, Date actual) {
-        assert Math.abs(expected.getTime() - actual.getTime()) < 2000;
+    private static void assertWithinTwoSecondsOf(Instant expected, Instant actual) {
+        assert Math.abs(Duration.between(expected, actual).getSeconds()) < 2;
     }
 }

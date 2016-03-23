@@ -18,7 +18,7 @@
  */
 package org.apache.commons.compress2.archivers;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
 
@@ -56,11 +56,11 @@ public interface ArchiveEntry {
     boolean isDirectory();
 
     /**
-     * Gets the last modified date of this entry.
+     * Gets the last modified date/time of this entry.
      * 
-     * @return the last modified date of this entry.
+     * @return the last modified date/time of this entry.
      */
-    Date getLastModifiedDate();
+    Instant getLastModified();
 
     /**
      * Provides information about the owner.

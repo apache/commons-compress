@@ -19,7 +19,7 @@
 package org.apache.commons.compress2.archivers;
 
 import java.io.File;
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * A parameter object useful for creating new ArchiveEntries.
@@ -32,7 +32,7 @@ public class ArchiveEntryParameters {
     private String name;
     private long size = ArchiveEntry.SIZE_UNKNOWN;
     private boolean dirFlag = false;
-    private Date lastModified;
+    private Instant lastModified;
     private OwnerInformation owner;
 
     /**
@@ -45,7 +45,7 @@ public class ArchiveEntryParameters {
             .withName(otherEntry.getName())
             .asDirectory(otherEntry.isDirectory())
             .withSize(otherEntry.getSize())
-            .withLastModifiedDate(otherEntry.getLastModifiedDate())
+            .withLastModified(otherEntry.getLastModified())
             .withOwnerInformation(otherEntry.getOwnerInformation());
     }
 
@@ -59,7 +59,7 @@ public class ArchiveEntryParameters {
             .withName(file.getName())
             .asDirectory(file.isDirectory())
             .withSize(file.exists() ? file.length() : ArchiveEntry.SIZE_UNKNOWN)
-            .withLastModifiedDate(new Date(file.lastModified()));
+            .withLastModified(Instant.ofEpochMilli(file.lastModified()));
     }
 
     /**
@@ -97,12 +97,12 @@ public class ArchiveEntryParameters {
     }
 
     /**
-     * Sets the last modified date of the entry.
-     * @param lastModified the last modified date of the entry to build
+     * Sets the last modified date/time of the entry.
+     * @param lastModified the last modified date/time of the entry to build
      * @return the parameters object
      */
-    public ArchiveEntryParameters withLastModifiedDate(Date lastModified) {
-        this.lastModified = clone(lastModified);
+    public ArchiveEntryParameters withLastModified(Instant lastModified) {
+        this.lastModified = lastModified;
         return this;
     }
 
@@ -147,12 +147,12 @@ public class ArchiveEntryParameters {
     }
 
     /**
-     * Gets the configured last modified date.
+     * Gets the configured last modified date/time.
      * 
-     * @return the configured last modified date or null if no date was configured.
+     * @return the configured last modified date/time or null if no date was configured.
      */
-    public Date getLastModifiedDate() {
-        return clone(lastModified);
+    public Instant getLastModified() {
+        return lastModified;
     }
 
     /**
@@ -178,9 +178,5 @@ public class ArchiveEntryParameters {
             }
         }
         return name;
-    }
-
-    private static Date clone(Date d) {
-        return d == null ? null : (Date) d.clone();
     }
 }

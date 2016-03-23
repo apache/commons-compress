@@ -154,7 +154,7 @@ public class ArArchiveOutput extends AbstractArchiveOutput<ArArchiveEntry> {
         }
 
         offset = fill(offset, 16, (byte) ' ');
-        final String m = "" + (pEntry.getLastModifiedDate().getTime() / 1000);
+        final String m = "" + (pEntry.getLastModified().getEpochSecond());
         if (m.length() > 12) {
             throw new IOException("modified too long");
         }
