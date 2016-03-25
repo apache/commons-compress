@@ -19,14 +19,14 @@
 package org.apache.commons.compress.archivers.zip;
 
 /**
- * X.509 Certificate ID and Signature for individual file (0x0015):
+ * X.509 Certificate ID and Signature for individual file (0x0015).
  *
- * This field contains the information about which certificate in the PKCS#7
+ * <p>This field contains the information about which certificate in the PKCS#7
  * store was used to sign a particular file. It also contains the signature
  * data. This field can appear multiple times, but can only appear once per
- * certificate.
+ * certificate.</p>
  *
- * Note: all fields stored in Intel low-byte/high-byte order.
+ * <p>Note: all fields stored in Intel low-byte/high-byte order.</p>
  *
  * <pre>
  *         Value     Size     Description
@@ -39,6 +39,7 @@ package org.apache.commons.compress.archivers.zip;
  * </pre>
  *
  * @NotThreadSafe
+ * @since 1.11
  */
 public class X0015_CertificateIdForFile extends PKWareExtraHeader implements ZipExtraField {
     private static final ZipShort HEADER_ID = new ZipShort(0x0015);
@@ -64,7 +65,7 @@ public class X0015_CertificateIdForFile extends PKWareExtraHeader implements Zip
 
     /**
      * Get record count.
-     * @return
+     * @return the record count
      */
     public int getRecordCount() {
         return rcount;
@@ -72,7 +73,7 @@ public class X0015_CertificateIdForFile extends PKWareExtraHeader implements Zip
 
     /**
      * Get hash algorithm.
-     * @return
+     * @return the hash algorithm
      */
     public HashAlgorithm getHashAlgorithm() {
         return hashAlg;

@@ -34,13 +34,13 @@ import java.util.Map;
  *
  * <ul>
  * <li>0x6601 - DES</li>
- * <li>0x6602 - RC2 (version needed to extract < 5.2)</li>
+ * <li>0x6602 - RC2 (version needed to extract &lt; 5.2)</li>
  * <li>0x6603 - 3DES 168</li>
  * <li>0x6609 - 3DES 112</li>
  * <li>0x660E - AES 128</li>
  * <li>0x660F - AES 192</li>
  * <li>0x6610 - AES 256</li>
- * <li>0x6702 - RC2 (version needed to extract >= 5.2)</li>
+ * <li>0x6702 - RC2 (version needed to extract &gt;= 5.2)</li>
  * <li>0x6720 - Blowfish</li>
  * <li>0x6721 - Twofish</li>
  * <li>0x6801 - RC4</li>
@@ -60,11 +60,15 @@ import java.util.Map;
  * <li>0x800D - SHA384</li>
  * <li>0x800E - SHA512</li>
  * </ul>
+ *
+ * @since 1.11
  */
 public abstract class PKWareExtraHeader implements ZipExtraField {
 
     /**
      * Encryption algorithm.
+     *
+     * @since 1.11
      */
     public enum EncryptionAlgorithm {
         DES(0x6601),
@@ -107,8 +111,11 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
         }
 
         /**
-         * returns the EncryptionAlgorithm for the given code or null if the
+         * Returns the EncryptionAlgorithm for the given code or null if the
          * method is not known.
+         * @param code the code of the algorithm
+         * @return the EncryptionAlgorithm for the given code or null
+         * if the method is not known
          */
         public static EncryptionAlgorithm getAlgorithmByCode(int code) {
             return codeToEnum.get(Integer.valueOf(code));
@@ -117,6 +124,8 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
 
     /**
      * Hash Algorithm
+     *
+     * @since 1.11
      */
     public enum HashAlgorithm {
         NONE(0),
@@ -157,8 +166,11 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
         }
 
         /**
-         * returns the HashAlgorithm for the given code or null if the method is
+         * Returns the HashAlgorithm for the given code or null if the method is
          * not known.
+         * @param code the code of the algorithm
+         * @return the HashAlgorithm for the given code or null
+         * if the method is not known
          */
         public static HashAlgorithm getAlgorithmByCode(int code) {
             return codeToEnum.get(Integer.valueOf(code));

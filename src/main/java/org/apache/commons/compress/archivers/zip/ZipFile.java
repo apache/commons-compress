@@ -349,13 +349,14 @@ public class ZipFile implements Closeable {
     }
 
     /**
-     * Expose the raw stream of the archive entry (compressed form)
-     * <p/>
-     * This method does not relate to how/if we understand the payload in the
-     * stream, since we really only intend to move it on to somewhere else.
+     * Expose the raw stream of the archive entry (compressed form).
+     *
+     * <p>This method does not relate to how/if we understand the payload in the
+     * stream, since we really only intend to move it on to somewhere else.</p>
      *
      * @param ze The entry to get the stream for
      * @return The raw input stream containing (possibly) compressed data.
+     * @since 1.11
      */
     public InputStream getRawInputStream(ZipArchiveEntry ze) {
         if (!(ze instanceof Entry)) {
@@ -370,7 +371,7 @@ public class ZipFile implements Closeable {
     /**
      * Transfer selected entries from this zipfile to a given #ZipArchiveOutputStream.
      * Compression and all other attributes will be as in this file.
-     * This method transfers entries based on the central directory of the zip file.
+     * <p>This method transfers entries based on the central directory of the zip file.</p>
      *
      * @param target The zipArchiveOutputStream to write the entries to
      * @param predicate A predicate that selects which entries to write

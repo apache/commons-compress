@@ -59,6 +59,9 @@ import java.util.zip.ZipException;
  *          Atime      8 bytes    File last access time
  *          Ctime      8 bytes    File creation time
  * </pre>
+ *
+ * @since 1.11
+ * @NotThreadSafe
  */
 public class X000A_NTFS implements ZipExtraField {
     private static final ZipShort HEADER_ID = new ZipShort(0x000a);

@@ -19,9 +19,9 @@
 package org.apache.commons.compress.archivers.zip;
 
 /**
- * Strong Encryption Header (0x0017)
+ * Strong Encryption Header (0x0017).
  *
- * Certificate-based encryption:
+ * <p>Certificate-based encryption:</p>
  *
  * <pre>
  * Value     Size     Description
@@ -38,6 +38,7 @@ package org.apache.commons.compress.archivers.zip;
  * SRList    (var)    Simple list of recipients hashed public keys
  *
  * Flags -   This defines the processing flags.
+ * </pre>
  *
  *           <ul>
  *           <li>0x0007 - reserved for future use
@@ -52,6 +53,7 @@ package org.apache.commons.compress.archivers.zip;
  *           <li>0x8000 - reserved for future use
  *           </ul>
  *
+ * <pre>
  * RCount - This defines the number intended recipients whose
  *          public keys were used for encryption.  This identifies
  *          the number of elements in the SRList.
@@ -73,7 +75,7 @@ package org.apache.commons.compress.archivers.zip;
  *           SRList is determined using RCount * HSize.
  * </pre>
  *
- * Password-based Extra Field 0x0017 in central header only.
+ * <p>Password-based Extra Field 0x0017 in central header only.</p>
  *
  * <pre>
  * Value     Size     Description
@@ -87,10 +89,10 @@ package org.apache.commons.compress.archivers.zip;
  * (more?)
  * </pre>
  *
- * <b>Format</b> - the data format identifier for this record. The only value
- * allowed at this time is the integer value 2.
+ * <p><b>Format</b> - the data format identifier for this record. The only value
+ * allowed at this time is the integer value 2.</p>
  *
- * Password-based Extra Field 0x0017 preceding compressed file data.
+ * <p>Password-based Extra Field 0x0017 preceding compressed file data.</p>
  *
  * <pre>
  * Value     Size     Description
@@ -152,8 +154,7 @@ package org.apache.commons.compress.archivers.zip;
  *         stream of encrypted data for a file.
  * </pre>
  *
- *
- * Reserved1 - Certificate Decryption Header Reserved1 Data:
+ * <p>Reserved1 - Certificate Decryption Header Reserved1 Data:</p>
  *
  * <pre>
  * Value     Size     Description
@@ -161,12 +162,11 @@ package org.apache.commons.compress.archivers.zip;
  * RCount    4 bytes  Number of recipients.
  * </pre>
  *
- * RCount - This defines the number intended recipients whose public keys were
+ * <p>RCount - This defines the number intended recipients whose public keys were
  * used for encryption. This defines the number of elements in the REList field
- * defined below.
+ * defined below.</p>
  *
- *
- * Reserved2 - Certificate Decryption Header Reserved2 Data Structures:
+ * <p>Reserved2 - Certificate Decryption Header Reserved2 Data Structures:</p>
  *
  * <pre>
  * Value     Size     Description
@@ -190,7 +190,7 @@ package org.apache.commons.compress.archivers.zip;
  *           Element data structure as follows:
  * </pre>
  *
- * Recipient Element (REList) Data Structure:
+ * <p>Recipient Element (REList) Data Structure:</p>
  *
  * <pre>
  * Value     Size     Description
@@ -218,7 +218,7 @@ package org.apache.commons.compress.archivers.zip;
  *           For more details see https://msdn.microsoft.com/en-us/library/aa920051.aspx
  * </pre>
  *
- * <b>Flags</b> - Processing flags needed for decryption
+ * <p><b>Flags</b> - Processing flags needed for decryption</p>
  *
  * <ul>
  * <li>0x0001 - Password is required to decrypt</li>
@@ -234,12 +234,13 @@ package org.apache.commons.compress.archivers.zip;
  * <li>0x8000 - reserved for future use.
  * </ul>
  *
- * <b>See the section describing the Strong Encryption Specification for
+ * <p><b>See the section describing the Strong Encryption Specification for
  * details. Refer to the section in this document entitled
  * "Incorporating PKWARE Proprietary Technology into Your Product" for more
- * information.</b>
+ * information.</b></p>
  *
  * @NotThreadSafe
+ * @since 1.11
  */
 public class X0017_StrongEncryptionHeader extends PKWareExtraHeader implements ZipExtraField {
     private static final ZipShort HEADER_ID = new ZipShort(0x0017);
@@ -282,7 +283,7 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader implements Z
 
     /**
      * Get record count.
-     * @return
+     * @return the record count
      */
     public long getRecordCount() {
         return rcount;
@@ -290,7 +291,7 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader implements Z
 
     /**
      * Get hash algorithm.
-     * @return
+     * @return the hash algorithm
      */
     public HashAlgorithm getHashAlgorithm() {
         return hashAlg;
@@ -298,7 +299,7 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader implements Z
 
     /**
      * Get encryption algorithm.
-     * @return
+     * @return the encryption algorithm
      */
     public EncryptionAlgorithm getEncryptionAlgorithm() {
         return algId;
@@ -377,9 +378,9 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader implements Z
     /**
      * Parse central directory format.
      *
-     * @param data
-     * @param offset
-     * @param length
+     * @param data the buffer to read data from
+     * @param offset offset into buffer to read data
+     * @param length the length of data
      */
     public void parseCentralDirectoryFormat(byte[] data, int offset, int length) {
         this.format = ZipShort.getValue(data, offset);
@@ -401,11 +402,13 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader implements Z
     }
 
     /**
-     * Parse file header format. (Password only?)
+     * Parse file header format.
      *
-     * @param data
-     * @param offset
-     * @param length
+     * <p>(Password only?)</p>
+     *
+     * @param data the buffer to read data from
+     * @param offset offset into buffer to read data
+     * @param length the length of data
      */
     public void parseFileFormat(byte[] data, int offset, int length) {
         int ivSize = ZipShort.getValue(data, offset);

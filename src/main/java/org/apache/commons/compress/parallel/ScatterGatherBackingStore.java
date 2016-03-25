@@ -55,6 +55,7 @@ public interface ScatterGatherBackingStore extends Closeable {
 
     /**
      * Closes this backing store for further writing.
+     * @throws IOException when something fails
      */
     void closeForWriting() throws IOException;
 }

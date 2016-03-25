@@ -19,15 +19,15 @@
 package org.apache.commons.compress.archivers.zip;
 
 /**
- * PKCS#7 Store for X.509 Certificates (0x0014):
+ * PKCS#7 Store for X.509 Certificates (0x0014).
  *
- * This field MUST contain information about each of the certificates files may
+ * <p>This field MUST contain information about each of the certificates files may
  * be signed with. When the Central Directory Encryption feature is enabled for
  * a ZIP file, this record will appear in the Archive Extra Data Record,
  * otherwise it will appear in the first central directory record and will be
- * ignored in any other record.
+ * ignored in any other record.</p>
  *
- * Note: all fields stored in Intel low-byte/high-byte order.
+ * <p>Note: all fields stored in Intel low-byte/high-byte order.</p>
  *
  * <pre>
  *         Value     Size     Description
@@ -38,6 +38,7 @@ package org.apache.commons.compress.archivers.zip;
  * </pre>
  *
  * @NotThreadSafe
+ * @since 1.11
  */
 public class X0014_X509Certificates extends PKWareExtraHeader implements ZipExtraField {
     private static final ZipShort HEADER_ID = new ZipShort(0x0014);
