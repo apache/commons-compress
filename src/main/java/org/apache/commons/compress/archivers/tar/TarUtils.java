@@ -595,7 +595,6 @@ public class TarUtils {
         long unsignedSum = 0;
         long signedSum = 0;
 
-        int digits = 0;
         for (int i = 0; i < header.length; i++) {
             byte b = header[i];
             if (CHKSUM_OFFSET  <= i && i < CHKSUM_OFFSET + CHKSUMLEN) {

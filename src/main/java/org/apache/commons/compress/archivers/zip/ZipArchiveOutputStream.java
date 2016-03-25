@@ -111,15 +111,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /** indicates if this archive is finished. protected for use in Jar implementation */
     protected boolean finished = false;
 
-    /* 
-     * Apparently Deflater.setInput gets slowed down a lot on Sun JVMs
-     * when it gets handed a really big buffer.  See
-     * https://issues.apache.org/bugzilla/show_bug.cgi?id=45396
-     *
-     * Using a buffer size of 8 kB proved to be a good compromise
-     */
-    private static final int DEFLATER_BLOCK_SIZE = 8192;
-
     /**
      * Compression method for deflated entries.
      */

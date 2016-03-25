@@ -415,7 +415,6 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader implements Z
         this.ivData = new byte[ivSize];
         System.arraycopy(data, offset + 4, this.ivData, 0, ivSize);
 
-        long size = ZipLong.getValue(data, offset + ivSize + 2);
         this.format = ZipShort.getValue(data, offset + ivSize + 6);
         this.algId = EncryptionAlgorithm.getAlgorithmByCode(ZipShort.getValue(data, offset + ivSize + 8));
         this.bitlen = ZipShort.getValue(data, offset + ivSize + 10);
