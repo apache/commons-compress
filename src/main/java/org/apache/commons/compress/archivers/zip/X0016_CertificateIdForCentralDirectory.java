@@ -43,23 +43,11 @@ package org.apache.commons.compress.archivers.zip;
  * @since 1.11
  */
 public class X0016_CertificateIdForCentralDirectory extends PKWareExtraHeader implements ZipExtraField {
-    private static final ZipShort HEADER_ID = new ZipShort(0x0016);
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Get the header id.
-     *
-     * @return the header id
-     */
-    public ZipShort getHeaderId() {
-        return HEADER_ID;
+    public X0016_CertificateIdForCentralDirectory() {
+        super(new ZipShort(0x0016));
     }
-
-    /**
-     * Extra field data in local file data - without Header-ID or length
-     * specifier.
-     */
-    private byte[] localData;
 
     private int rcount;
     private HashAlgorithm hashAlg;
@@ -80,107 +68,8 @@ public class X0016_CertificateIdForCentralDirectory extends PKWareExtraHeader im
         return hashAlg;
     }
 
-    /**
-     * Set the extra field data in the local file data - without Header-ID or
-     * length specifier.
-     *
-     * @param data
-     *            the field data to use
-     */
-    public void setLocalFileDataData(byte[] data) {
-        localData = ZipUtil.copy(data);
-    }
-
-    /**
-     * Get the length of the local data.
-     *
-     * @return the length of the local data
-     */
-    public ZipShort getLocalFileDataLength() {
-        return new ZipShort(localData != null ? localData.length : 0);
-    }
-
-    /**
-     * Get the local data.
-     *
-     * @return the local data
-     */
-    public byte[] getLocalFileDataData() {
-        return ZipUtil.copy(localData);
-    }
-
-    /**
-     * Extra field data in central directory - without Header-ID or length
-     * specifier.
-     */
-    private byte[] centralData;
-
-    /**
-     * Set the extra field data in central directory.
-     *
-     * @param data
-     *            the data to use
-     */
-    public void setCentralDirectoryData(byte[] data) {
-        centralData = ZipUtil.copy(data);
-    }
-
-    /**
-     * Get the central data length. If there is no central data, get the local
-     * file data length.
-     *
-     * @return the central data length
-     */
-    public ZipShort getCentralDirectoryLength() {
-        if (centralData != null) {
-            return new ZipShort(centralData.length);
-        }
-        return getLocalFileDataLength();
-    }
-
-    /**
-     * Get the central data.
-     *
-     * @return the central data if present, else return the local file data
-     */
-    public byte[] getCentralDirectoryData() {
-        if (centralData != null) {
-            return ZipUtil.copy(centralData);
-        }
-        return getLocalFileDataData();
-    }
-
-    /**
-     * This should never be called for this header type.
-     *
-     * @param data
-     *            the array of bytes.
-     * @param offset
-     *            the source location in the data array.
-     * @param length
-     *            the number of bytes to use in the data array.
-     * @see ZipExtraField#parseFromLocalFileData(byte[], int, int)
-     */
-    public void parseFromLocalFileData(byte[] data, int offset, int length) {
-        byte[] tmp = new byte[length];
-        System.arraycopy(data, offset, tmp, 0, length);
-        setLocalFileDataData(tmp);
-    }
-
-    /**
-     * @param data
-     *            the array of bytes.
-     * @param offset
-     *            the source location in the data array.
-     * @param length
-     *            the number of bytes to use in the data array.
-     * @see ZipExtraField#parseFromCentralDirectoryData(byte[], int, int)
-     */
+    @Override
     public void parseFromCentralDirectoryData(byte[] data, int offset, int length) {
-        byte[] tmp = new byte[length];
-        System.arraycopy(data, offset, tmp, 0, length);
-        setCentralDirectoryData(tmp);
-
         this.rcount = ZipShort.getValue(data, offset);
         this.hashAlg = HashAlgorithm.getAlgorithmByCode(ZipShort.getValue(data, offset + 2));
     }
