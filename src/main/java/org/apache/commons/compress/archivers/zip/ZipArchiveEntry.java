@@ -803,26 +803,56 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
             && gpb.equals(other.gpb);
     }
 
+    /**
+     * Sets the "version made by" field.
+     * @param versionMadeBy "version made by" field
+     * @since 1.11
+     */
     public void setVersionMadeBy(int versionMadeBy) {
         this.versionMadeBy = versionMadeBy;
     }
 
+    /**
+     * Sets the "version required to expand" field.
+     * @param versionRequired "version required to expand" field
+     * @since 1.11
+     */
     public void setVersionRequired(int versionRequired) {
         this.versionRequired = versionRequired;
     }
 
+    /**
+     * The "version required to expand" field.
+     * @return "version required to expand" field
+     * @since 1.11
+     */
     public int getVersionRequired() {
         return versionRequired;
     }
 
+    /**
+     * The "version made by" field.
+     * @return "version made by" field
+     * @since 1.11
+     */
     public int getVersionMadeBy() {
         return versionMadeBy;
     }
 
+    /**
+     * The content of the flags field.
+     * @return content of the flags field
+     * @since 1.11
+     */
     public int getRawFlag() {
         return rawFlag;
     }
 
+    /**
+     * Sets the content of the flags field.
+     * @param rawFlag content of the flags field
+     * @since 1.11
+     */
     public void setRawFlag(int rawFlag) {
         this.rawFlag = rawFlag;
     }

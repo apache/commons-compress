@@ -319,34 +319,40 @@ public interface TarConstants {
     /**
      * The magix string used in the last four bytes of the header to
      * identify the xstar format.
+     * @since 1.11
      */
     String MAGIC_XSTAR = "tar\0";
 
     /**
      * Offset inside the header for the xstar magic bytes.
+     * @since 1.11
      */
     int XSTAR_MAGIC_OFFSET = 508;
 
     /**
      * Length of the XSTAR magic.
+     * @since 1.11
      */
     int XSTAR_MAGIC_LEN = 4;
 
     /**
      * Length of the prefix field in xstar archives.
      * 
+     * @since 1.11
      */
     int PREFIXLEN_XSTAR = 131;
 
     /**
      * The length of the access time field in a xstar header buffer.
      * 
+     * @since 1.11
      */
     int ATIMELEN_XSTAR = 12;
 
     /**
      * The length of the created time field in a xstar header buffer.
      * 
+     * @since 1.11
      */
     int CTIMELEN_XSTAR = 12;
 }
