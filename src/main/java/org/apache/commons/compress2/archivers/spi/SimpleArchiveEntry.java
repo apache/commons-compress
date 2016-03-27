@@ -51,9 +51,10 @@ public class SimpleArchiveEntry implements ArchiveEntry {
         this.size = params.size();
         this.type = params.getType();
         this.fileKey = params.fileKey();
-        this.lastModified = params.lastModifiedTime();
-        this.lastAccess = params.lastAccessTime();
-        this.created = params.creationTime();
+        this.lastModified = params.lastModifiedTime() != null ? params.lastModifiedTime()
+            : FileTime.fromMillis(0l);;
+        this.lastAccess = params.lastAccessTime() != null ? params.lastAccessTime() : this.lastModified;
+        this.created = params.creationTime() != null ? params.creationTime() : this.lastModified;
         this.owner = params.getOwnerInformation();
         this.permissions = params.getPermissions().map(Collections::unmodifiableSet);
         this.mode = params.getMode();
@@ -89,16 +90,25 @@ public class SimpleArchiveEntry implements ArchiveEntry {
         return type == FileType.OTHER;
     }
 
+    /**
+     * @return a {@link FileTime} representing the epoch (1970-01-01T00:00:00Z) if the modified time is unknown.
+     */
     @Override
     public FileTime lastModifiedTime() {
         return lastModified;
     }
 
+    /**
+     * @return {@link #lastModifiedTime} if the access time is unknown.
+     */
     @Override
     public FileTime lastAccessTime() {
         return lastAccess;
     }
 
+    /**
+     * @return {@link #lastModifiedTime} if the creation time is unknown.
+     */
     @Override
     public FileTime creationTime() {
         return created;
@@ -145,9 +155,9 @@ public class SimpleArchiveEntry implements ArchiveEntry {
             && size == other.size
             && type == other.type
             && Objects.equals(fileKey, other.fileKey)
-            && Objects.equals(lastModified, other.lastModified)
-            && Objects.equals(lastAccess, other.lastAccess)
-            && Objects.equals(created, other.created)
+            && lastModified.equals(other.lastModified)
+            && lastAccess.equals(other.lastAccess)
+            && created.equals(other.created)
             && Objects.equals(mode, other.mode)
             && Objects.equals(permissions, other.permissions)
             && Objects.equals(owner, other.owner);
