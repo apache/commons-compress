@@ -90,6 +90,8 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     private int su_tPos;
     private char su_z;
 
+    private int currentBlock, currentStream;
+
     /**
      * All memory intensive stuff. This field is initialized by initBlock().
      */
@@ -175,10 +177,10 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         int b;
         while (destOffs < hi && ((b = read0()) >= 0)) {
             dest[destOffs++] = (byte) b;
-            count(1);
         }
 
         int c = (destOffs == offs) ? -1 : (destOffs - offs);
+        count(c);
         return c;
     }
 
@@ -311,7 +313,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                 this.data = new Data(this.blockSize100k);
             }
 
-            // currBlockNo++;
+            fireProgress(currentBlock++, currentStream);
             getAndMoveToFrontDecode();
 
             this.crc.initialiseCRC();
@@ -346,6 +348,9 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         if (this.storedCombinedCRC != this.computedCombinedCRC) {
             throw new IOException("BZip2 CRC error");
         }
+
+        currentStream++;
+        currentBlock = 0;
 
         // Look for the next .bz2 stream if decompressing
         // concatenated files.

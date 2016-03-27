@@ -25,6 +25,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
@@ -131,6 +133,41 @@ public final class BZip2TestCase extends AbstractTestCase {
         } finally {
             is.close();
         }
+    }
+
+    @Test
+    public void testCOMPRESS207Listeners() throws Exception {
+        File inputFile = getFile("COMPRESS-207.bz2");
+        FileInputStream fInputStream = new FileInputStream(inputFile);
+        final List<Integer> blockNumbers = new ArrayList<Integer>();
+        final List<Long> readPositions = new ArrayList<Long>();
+        final BZip2CompressorInputStream in = new BZip2CompressorInputStream(fInputStream);
+
+        CompressionProgressListener blockListener = new CompressionProgressListener() {
+
+            public void notify(CompressionProgressEvent e) {
+                assertSame(in, e.getSource());
+                blockNumbers.add(e.getBlockNumber());
+                readPositions.add(e.getBytesProcessed());
+            }
+        };
+        in.addCompressionProgressListener(blockListener);
+
+        while(in.read() >= 0);
+        in.close();
+
+        // we miss the initial block event which is triggered by the constructor
+        assertEquals(4, blockNumbers.size());
+        System.err.println(blockNumbers);
+        for (int i = 0; i < 4; i++) {
+            assertEquals(i + 1, blockNumbers.get(i).intValue());
+        }
+
+        assertEquals(4, readPositions.size());
+        assertEquals(Long.valueOf(899907), readPositions.get(0));
+        assertEquals(Long.valueOf(1799817), readPositions.get(1));
+        assertEquals(Long.valueOf(2699710), readPositions.get(2));
+        assertEquals(Long.valueOf(3599604), readPositions.get(3));
     }
 
 }
