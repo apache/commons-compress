@@ -20,6 +20,7 @@ package org.apache.commons.compress2.archivers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -196,6 +197,20 @@ public class ArchiveEntryParametersTest {
                                 PosixFilePermission.GROUP_EXECUTE, PosixFilePermission.OTHERS_WRITE,
                                 PosixFilePermission.OTHERS_EXECUTE),
                      s);
+    }
+
+    @Test
+    public void withOptionalsAreNullSafe() {
+        ArchiveEntryParameters p = new ArchiveEntryParameters()
+            .withOwnerInformation((Optional) null)
+            .withMode((Optional) null)
+            .withPermissions((Optional) null);
+        assertNotNull(p.getOwnerInformation());
+        assertFalse(p.getOwnerInformation().isPresent());
+        assertNotNull(p.getMode());
+        assertFalse(p.getMode().isPresent());
+        assertNotNull(p.getPermissions());
+        assertFalse(p.getPermissions().isPresent());
     }
 
     private static void assertWithinTwoSecondsOf(Instant expected, FileTime actual) {

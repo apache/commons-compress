@@ -164,7 +164,7 @@ public class ArchiveEntryParameters implements ArchiveEntry {
      * @return the parameters object
      */
     public ArchiveEntryParameters withOwnerInformation(Optional<OwnerInformation> owner) {
-        this.owner = owner;
+        this.owner = owner != null ? owner : Optional.empty();
         return this;
     }
 
@@ -183,7 +183,7 @@ public class ArchiveEntryParameters implements ArchiveEntry {
      * @return the parameters object
      */
     public ArchiveEntryParameters withMode(Optional<Long> mode) {
-        this.mode = mode;
+        this.mode = mode != null ? mode : Optional.empty();
         return this;
     }
 
@@ -202,7 +202,7 @@ public class ArchiveEntryParameters implements ArchiveEntry {
      * @return the parameters object
      */
     public ArchiveEntryParameters withPermissions(Optional<Set<PosixFilePermission>> permissions) {
-        this.permissions = permissions;
+        this.permissions = permissions != null ? permissions : Optional.empty();
         return this;
     }
 
