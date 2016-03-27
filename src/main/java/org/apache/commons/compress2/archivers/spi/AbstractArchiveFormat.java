@@ -18,7 +18,6 @@
  */
 package org.apache.commons.compress2.archivers.spi;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
@@ -26,6 +25,7 @@ import java.nio.channels.SeekableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import org.apache.commons.compress2.archivers.ArchiveEntry;
 import org.apache.commons.compress2.archivers.ArchiveFormat;
@@ -99,11 +99,11 @@ public abstract class AbstractArchiveFormat<A extends ArchiveEntry> implements A
     /**
      * {@inheritDoc}
      * <p>This implementation delegates to {@link #readWithRandomAccessFrom} if random access is supported or {@link
-     * #readFrom(File, Charset)} otherwise.</p>
+     * #readFrom(ReadableByteChannel, Charset)} otherwise.</p>
      */
     @Override
-    public ArchiveInput<A> readFrom(File file, Charset charset) throws IOException {
-        SeekableByteChannel channel = FileChannel.open(file.toPath(), StandardOpenOption.READ);
+    public ArchiveInput<A> readFrom(Path path, Charset charset) throws IOException {
+        SeekableByteChannel channel = FileChannel.open(path, StandardOpenOption.READ);
         if (supportsRandomAccessInput()) {
             return readWithRandomAccessFrom(channel, charset);
         }
@@ -134,8 +134,8 @@ public abstract class AbstractArchiveFormat<A extends ArchiveEntry> implements A
      * <p>This implementation always delegates to {@link #writeTo(Channel, Charset)}.</p>
      */
     @Override
-    public ArchiveOutput<A> writeTo(File file, Charset charset) throws IOException, UnsupportedOperationException {
-        return writeTo(FileChannel.open(file.toPath(), StandardOpenOption.WRITE, StandardOpenOption.CREATE,
+    public ArchiveOutput<A> writeTo(Path path, Charset charset) throws IOException, UnsupportedOperationException {
+        return writeTo(FileChannel.open(path, StandardOpenOption.WRITE, StandardOpenOption.CREATE,
                                         StandardOpenOption.TRUNCATE_EXISTING),
                        charset);
     }

@@ -23,7 +23,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
-import java.io.File;
+import java.nio.file.Path;
 import java.io.IOException;
 
 /**
@@ -93,8 +93,7 @@ public interface ArchiveFormat<A extends ArchiveEntry> {
      * @param charset the charset used for encoding the entry names.
      * @throws IOException
      */
-    // TODO use Path rather than File?
-    ArchiveInput<A> readFrom(File file, Charset charset) throws IOException;
+    ArchiveInput<A> readFrom(Path path, Charset charset) throws IOException;
     /**
      * Provides random access to an archive assuming the given charset for entry names.
      * @param channel the seekable channel to read from
@@ -122,6 +121,5 @@ public interface ArchiveFormat<A extends ArchiveEntry> {
      * @throws IOException
      * @throws UnsupportedOperationException if this format doesn't support writing
      */
-    // TODO use Path rather than File?
-    ArchiveOutput<A> writeTo(File file, Charset charset) throws IOException, UnsupportedOperationException;
+    ArchiveOutput<A> writeTo(Path path, Charset charset) throws IOException, UnsupportedOperationException;
 }

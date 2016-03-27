@@ -145,7 +145,7 @@ public class ArchiveEntryParametersTest {
         File f = File.createTempFile("pre", "suf");
         f.deleteOnExit();
         f.setLastModified(d.toEpochMilli());
-        ArchiveEntryParameters p = ArchiveEntryParameters.fromFile(f);
+        ArchiveEntryParameters p = ArchiveEntryParameters.fromPath(f.toPath());
         assert p.getName().endsWith("suf");
         assert p.getName().startsWith("pre");
         assertEquals(0, p.size());
@@ -162,7 +162,7 @@ public class ArchiveEntryParametersTest {
         f.mkdirs();
         f.deleteOnExit();
         f.setLastModified(d.toEpochMilli());
-        ArchiveEntryParameters p = ArchiveEntryParameters.fromFile(f);
+        ArchiveEntryParameters p = ArchiveEntryParameters.fromPath(f.toPath());
         assert p.getName().endsWith("suf/");
         assert p.getName().startsWith("pre");
         assertEquals(0, p.size());
@@ -175,7 +175,7 @@ public class ArchiveEntryParametersTest {
     public void fromNonExistingFileHasNoSize() throws IOException {
         File f = File.createTempFile("pre", "suf");
         assert f.delete();
-        ArchiveEntryParameters p = ArchiveEntryParameters.fromFile(f);
+        ArchiveEntryParameters p = ArchiveEntryParameters.fromPath(f.toPath());
         assertEquals(-1, p.size());
     }
 

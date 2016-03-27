@@ -18,9 +18,9 @@
  */
 package org.apache.commons.compress2.archivers;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
@@ -63,19 +63,19 @@ public class ArchiveEntryParameters implements ArchiveEntry {
     }
 
     /**
-     * Populates parameters from a File instance.
-     * @param file the File to read information from
+     * Populates parameters from a Path instance.
+     * @param path the Path to read information from
+     * @param options options indicating how symbolic links are handled
      * @return parameters populated from the file instance
      */
-    public static ArchiveEntryParameters fromFile(File file) throws IOException {
-        Path path = file.toPath();
+    public static ArchiveEntryParameters fromPath(Path path, LinkOption... options) throws IOException {
         ArchiveEntryParameters params = new ArchiveEntryParameters()
-            .withName(file.getName());
-        if (file.exists()) {
+            .withName(path.getFileName().toString());
+        if (Files.exists(path, options)) {
             params = params
-                .withAttributes(Files.readAttributes(path, BasicFileAttributes.class));
+                .withAttributes(Files.readAttributes(path, BasicFileAttributes.class, options));
             try {
-                params = params.withPermissions(Files.readAttributes(path, PosixFileAttributes.class)
+                params = params.withPermissions(Files.readAttributes(path, PosixFileAttributes.class, options)
                                                 .permissions());
             } catch (UnsupportedOperationException ex) {
                 // file system without support for POSIX attributes

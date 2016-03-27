@@ -62,11 +62,11 @@ public class RoundTripTest {
             final WritableByteChannel out = new FileOutputStream(output).getChannel();
             final ArArchiveOutput os = new ArArchiveOutput(out);
             IOUtils.copy(new FileInputStream(file1).getChannel(),
-                         os.putEntry(os.createEntry(ArchiveEntryParameters.fromFile(file1))));
+                         os.putEntry(os.createEntry(ArchiveEntryParameters.fromPath(file1.toPath()))));
             os.closeEntry();
 
             IOUtils.copy(new FileInputStream(file2).getChannel(),
-                         os.putEntry(os.createEntry(ArchiveEntryParameters.fromFile(file2))));
+                         os.putEntry(os.createEntry(ArchiveEntryParameters.fromPath(file2.toPath()))));
             os.closeEntry();
             os.close();
             out.close();
@@ -103,11 +103,11 @@ public class RoundTripTest {
             final WritableByteChannel out = new FileOutputStream(output).getChannel();
             final ArchiveOutput<ArArchiveEntry> os = format.writeTo(out, null);
             IOUtils.copy(new FileInputStream(file1).getChannel(),
-                         os.putEntry(os.createEntry(ArchiveEntryParameters.fromFile(file1))));
+                         os.putEntry(os.createEntry(ArchiveEntryParameters.fromPath(file1.toPath()))));
             os.closeEntry();
 
             IOUtils.copy(new FileInputStream(file2).getChannel(),
-                         os.putEntry(os.createEntry(ArchiveEntryParameters.fromFile(file2))));
+                         os.putEntry(os.createEntry(ArchiveEntryParameters.fromPath(file2.toPath()))));
             os.closeEntry();
             os.close();
             out.close();
@@ -134,27 +134,27 @@ public class RoundTripTest {
     }
 
     @Test
-    public void testRoundtripUsingFormatInstanceAndFiles() throws Exception {
+    public void testRoundtripUsingFormatInstanceAndPaths() throws Exception {
         ArArchiveFormat format = new ArArchiveFormat();
         final File output = new File(dir, "format-files.ar");
         {
             final File file1 = getFile("test1.xml");
             final File file2 = getFile("test2.xml");
 
-            final ArchiveOutput<ArArchiveEntry> os = format.writeTo(output, null);
+            final ArchiveOutput<ArArchiveEntry> os = format.writeTo(output.toPath(), null);
             IOUtils.copy(new FileInputStream(file1).getChannel(),
-                         os.putEntry(os.createEntry(ArchiveEntryParameters.fromFile(file1))));
+                         os.putEntry(os.createEntry(ArchiveEntryParameters.fromPath(file1.toPath()))));
             os.closeEntry();
 
             IOUtils.copy(new FileInputStream(file2).getChannel(),
-                         os.putEntry(os.createEntry(ArchiveEntryParameters.fromFile(file2))));
+                         os.putEntry(os.createEntry(ArchiveEntryParameters.fromPath(file2.toPath()))));
             os.closeEntry();
             os.close();
         }
 
         // UnArArchive Operation
         final File input = output;
-        final ArchiveInput<ArArchiveEntry> in = format.readFrom(input, null);
+        final ArchiveInput<ArArchiveEntry> in = format.readFrom(input.toPath(), null);
         ArArchiveEntry entry = in.next();
         Assert.assertEquals("test1.xml", entry.getName());
 
