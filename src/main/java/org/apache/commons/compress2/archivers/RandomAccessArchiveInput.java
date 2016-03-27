@@ -39,4 +39,15 @@ public interface RandomAccessArchiveInput<A extends ArchiveEntry> extends Archiv
      * @return a channel to read the entry's contents from or null if the entry is not part of this archive.
      */
     ReadableByteChannel getChannel(A entry);
+
+    /**
+     * Whether this channel is able to read the contents of the given entry.
+     *
+     * <p>Some archive formats support variants or details that are not supported (yet).</p>
+     *
+     * @param entry
+     *            the entry to test
+     * @return whether the entry's content can be read
+     */
+    boolean canReadEntryData(A entry);
 }

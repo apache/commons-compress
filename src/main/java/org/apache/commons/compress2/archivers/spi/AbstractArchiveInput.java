@@ -40,7 +40,7 @@ public abstract class AbstractArchiveInput<A extends ArchiveEntry> implements Ar
      * <p>This implementation always returns true.</p>
      */
     @Override
-    public boolean canReadEntryData(A archiveEntry) {
+    public boolean canReadEntryData() {
         return true;
     }
 

@@ -37,23 +37,21 @@ public interface ArchiveInput<A extends ArchiveEntry> extends AutoCloseable {
      * Obtains a channel the contents of the current entry can be read from.
      * @return a channel to read the entry's contents from
      */
-    // TODO use some sort of Tuple or Map.Entry<A, ReadableByteChannel> and combine with next() ?
     ReadableByteChannel getChannel();
 
     /**
-     * Whether this channel is able to read the contents of the given entry.
+     * Whether this channel is able to read the contents of the current entry.
      * 
      * <p>Some archive formats support variants or details that are not supported (yet).</p>
      * 
-     * @param entry
-     *            the entry to test
-     * @return whether the entry's content can be read
+     * @return whether the current entry's content can be read
      */
-    boolean canReadEntryData(A entry);
+    boolean canReadEntryData();
 
     /**
      * Returns the current number of bytes read from this channel.
      * @return the number of read bytes
      */
     long getBytesRead();
+
 }
