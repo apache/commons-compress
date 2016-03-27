@@ -18,9 +18,12 @@
  */
 package org.apache.commons.compress2.archivers.spi;
 
-import java.time.Instant;
+import java.nio.file.attribute.FileTime;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.Collections;
 import java.util.Objects;
-
+import java.util.Optional;
+import java.util.Set;
 import org.apache.commons.compress2.archivers.ArchiveEntry;
 import org.apache.commons.compress2.archivers.ArchiveEntryParameters;
 import org.apache.commons.compress2.archivers.OwnerInformation;
@@ -32,9 +35,12 @@ import org.apache.commons.compress2.archivers.OwnerInformation;
 public class SimpleArchiveEntry implements ArchiveEntry {
     private final String name;
     private final long size;
-    private final boolean dirFlag;
-    private final Instant lastModified;
-    private final OwnerInformation owner;
+    private final ArchiveEntry.FileType type;
+    private final Object fileKey;
+    private final FileTime lastModified, lastAccess, created;
+    private final Optional<OwnerInformation> owner;
+    private final Optional<Set<PosixFilePermission>> permissions;
+    private final Optional<Long> mode;
 
     /**
      * Creates a SimpleArchiveEntry from a parameter object.
@@ -42,10 +48,15 @@ public class SimpleArchiveEntry implements ArchiveEntry {
      */
     public SimpleArchiveEntry(ArchiveEntryParameters params) {
         this.name = params.getName();
-        this.size = params.getSize();
-        this.dirFlag = params.isDirectory();
-        this.lastModified = params.getLastModified();
+        this.size = params.size();
+        this.type = params.getType();
+        this.fileKey = params.fileKey();
+        this.lastModified = params.lastModifiedTime();
+        this.lastAccess = params.lastAccessTime();
+        this.created = params.creationTime();
         this.owner = params.getOwnerInformation();
+        this.permissions = params.getPermissions().map(Collections::unmodifiableSet);
+        this.mode = params.getMode();
     }
 
     @Override
@@ -54,23 +65,63 @@ public class SimpleArchiveEntry implements ArchiveEntry {
     }
 
     @Override
-    public long getSize() {
+    public long size() {
         return size;
     }
 
     @Override
     public boolean isDirectory() {
-        return dirFlag;
+        return type == FileType.DIR;
     }
 
     @Override
-    public Instant getLastModified() {
+    public boolean isRegularFile() {
+        return type == FileType.REGULAR_FILE;
+    }
+
+    @Override
+    public boolean isSymbolicLink() {
+        return type == FileType.SYMLINK;
+    }
+
+    @Override
+    public boolean isOther() {
+        return type == FileType.OTHER;
+    }
+
+    @Override
+    public FileTime lastModifiedTime() {
         return lastModified;
     }
 
     @Override
-    public OwnerInformation getOwnerInformation() {
+    public FileTime lastAccessTime() {
+        return lastAccess;
+    }
+
+    @Override
+    public FileTime creationTime() {
+        return created;
+    }
+
+    @Override
+    public Object fileKey() {
+        return fileKey;
+    }
+
+    @Override
+    public Optional<OwnerInformation> getOwnerInformation() {
         return owner;
+    }
+
+    @Override
+    public Optional<Long> getMode() {
+        return mode;
+    }
+
+    @Override
+    public Optional<Set<PosixFilePermission>> getPermissions() {
+        return permissions;
     }
 
     @Override
@@ -92,8 +143,13 @@ public class SimpleArchiveEntry implements ArchiveEntry {
         SimpleArchiveEntry other = (SimpleArchiveEntry) obj;
         return Objects.equals(name, other.name)
             && size == other.size
-            && dirFlag == other.dirFlag
+            && type == other.type
+            && Objects.equals(fileKey, other.fileKey)
             && Objects.equals(lastModified, other.lastModified)
+            && Objects.equals(lastAccess, other.lastAccess)
+            && Objects.equals(created, other.created)
+            && Objects.equals(mode, other.mode)
+            && Objects.equals(permissions, other.permissions)
             && Objects.equals(owner, other.owner);
     }
 }

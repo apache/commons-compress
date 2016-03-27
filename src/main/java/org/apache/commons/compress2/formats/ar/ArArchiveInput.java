@@ -26,7 +26,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
+import java.nio.file.attribute.FileTime;
 
 import org.apache.commons.compress2.archivers.ArchiveEntryParameters;
 import org.apache.commons.compress2.archivers.OwnerInformation;
@@ -87,7 +87,7 @@ public class ArArchiveInput extends AbstractArchiveInput<ArArchiveEntry> {
     @Override
     public ArArchiveEntry next() throws IOException {
         if (currentEntry != null) {
-            final long entryEnd = entryOffset + currentEntry.getSize();
+            final long entryEnd = entryOffset + currentEntry.size();
             IOUtils.skip(wrappedStream, entryEnd - offset);
             currentEntry = null;
         }
@@ -166,8 +166,8 @@ public class ArArchiveInput extends AbstractArchiveInput<ArArchiveEntry> {
 
         currentEntry = new ArArchiveEntry(new ArchiveEntryParameters().withName(temp).withSize(len)
                                           .withOwnerInformation(new OwnerInformation(userId, asInt(ID_BUF, true)))
-                                          .withLastModified(Instant.ofEpochSecond(asLong(LAST_MODIFIED_BUF))),
-                                          asInt(FILE_MODE_BUF, 8));
+                                          .withLastModifiedTime(FileTime.fromMillis(asLong(LAST_MODIFIED_BUF) * 1000))
+                                          .withMode(asInt(FILE_MODE_BUF, 8)));
         return currentEntry;
     }
 
@@ -248,7 +248,7 @@ public class ArArchiveInput extends AbstractArchiveInput<ArArchiveEntry> {
     public int read(byte[] b, final int off, final int len) throws IOException {
         int toRead = len;
         if (currentEntry != null) {
-            final long entryEnd = entryOffset + currentEntry.getSize();
+            final long entryEnd = entryOffset + currentEntry.size();
             if (len > 0 && entryEnd > offset) {
                 toRead = (int) Math.min(len, entryEnd - offset);
             } else {

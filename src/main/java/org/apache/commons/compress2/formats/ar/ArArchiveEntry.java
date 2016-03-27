@@ -57,37 +57,17 @@ public class ArArchiveEntry extends SimpleArchiveEntry {
     /** The trailer for each entry */
     public static final String TRAILER = "`\012";
 
-    // TODO revisit once the permissions stuff is sorted out
-    private final int mode;
-    private static final int DEFAULT_MODE = 33188; // = (octal) 0100644 
+    /**
+     * The default mode (a world readable, owner writable regular file).
+     */
+    public static final long DEFAULT_MODE = 0100644l;
 
     /**
      * Creates an ArArchiveEntry from a parameter object.
      * @param params the parameters describing the archive entry.
      */
     public ArArchiveEntry(ArchiveEntryParameters params) {
-        this(params, DEFAULT_MODE);
-    }
-
-    /**
-     * Creates an ArArchiveEntry from a parameter object and an octal mode.
-     * @param params the parameters describing the archive entry.
-     * @param mode the file/dir mode of the entry
-     */
-    public ArArchiveEntry(ArchiveEntryParameters params, int mode) {
         super(params);
-        this.mode = mode;
-    }
-
-    // TODO revisit once the permissions stuff is sorted out
-    public int getMode() {
-        return mode;
-    }
-
-    // TODO revisit once the permissions stuff is sorted out
-    @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj) && mode == ((ArArchiveEntry) obj).mode;
     }
 
 }

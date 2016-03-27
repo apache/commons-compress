@@ -19,21 +19,33 @@
 package org.apache.commons.compress2.archivers;
 
 import java.io.File;
-import java.time.Instant;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
+import java.nio.file.attribute.PosixFileAttributes;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.EnumSet;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * A parameter object useful for creating new ArchiveEntries.
  * @NotThreadSafe
  */
-public class ArchiveEntryParameters {
+public class ArchiveEntryParameters implements ArchiveEntry {
 
     private static final char SLASH = '/';
 
     private String name;
     private long size = ArchiveEntry.SIZE_UNKNOWN;
-    private boolean dirFlag = false;
-    private Instant lastModified;
-    private OwnerInformation owner;
+    private Object fileKey;
+    private FileType type = FileType.REGULAR_FILE;
+    private FileTime lastModified, created, lastAccess;
+    private Optional<OwnerInformation> owner = Optional.empty();
+    private Optional<Long> mode = Optional.empty();
+    private Optional<Set<PosixFilePermission>> permissions = Optional.empty();
 
     /**
      * Creates parameters as a copy of an existing entry.
@@ -43,10 +55,11 @@ public class ArchiveEntryParameters {
     public static ArchiveEntryParameters copyOf(ArchiveEntry otherEntry) {
         return new ArchiveEntryParameters()
             .withName(otherEntry.getName())
-            .asDirectory(otherEntry.isDirectory())
-            .withSize(otherEntry.getSize())
-            .withLastModified(otherEntry.getLastModified())
-            .withOwnerInformation(otherEntry.getOwnerInformation());
+            .withAttributes(otherEntry)
+            .withType(otherEntry.getType())
+            .withOwnerInformation(otherEntry.getOwnerInformation())
+            .withMode(otherEntry.getMode())
+            .withPermissions(otherEntry.getPermissions());
     }
 
     /**
@@ -54,12 +67,21 @@ public class ArchiveEntryParameters {
      * @param file the File to read information from
      * @return parameters populated from the file instance
      */
-    public static ArchiveEntryParameters fromFile(File file) {
-        return new ArchiveEntryParameters()
-            .withName(file.getName())
-            .asDirectory(file.isDirectory())
-            .withSize(file.exists() ? file.length() : ArchiveEntry.SIZE_UNKNOWN)
-            .withLastModified(Instant.ofEpochMilli(file.lastModified()));
+    public static ArchiveEntryParameters fromFile(File file) throws IOException {
+        Path path = file.toPath();
+        ArchiveEntryParameters params = new ArchiveEntryParameters()
+            .withName(file.getName());
+        if (file.exists()) {
+            params = params
+                .withAttributes(Files.readAttributes(path, BasicFileAttributes.class));
+            try {
+                params = params.withPermissions(Files.readAttributes(path, PosixFileAttributes.class)
+                                                .permissions());
+            } catch (UnsupportedOperationException ex) {
+                // file system without support for POSIX attributes
+            }
+        }
+        return params;
     }
 
     /**
@@ -77,8 +99,48 @@ public class ArchiveEntryParameters {
     }
 
     /**
+     * Sets the creation time of the entry.
+     * @param creationTime the creation time for the entry to build
+     * @return the parameters object
+     */
+    public ArchiveEntryParameters withCreationTime(FileTime creationTime) {
+        this.created = creationTime;
+        return this;
+    }
+
+    /**
+     * Sets the last access time of the entry.
+     * @param lastAccessTime the last access time for the entry to build
+     * @return the parameters object
+     */
+    public ArchiveEntryParameters withLastAccessTime(FileTime lastAccessTime) {
+        this.lastAccess = lastAccessTime;
+        return this;
+    }
+
+    /**
+     * Sets the last modified time of the entry.
+     * @param lastModifiedTime the last modified time for the entry to build
+     * @return the parameters object
+     */
+    public ArchiveEntryParameters withLastModifiedTime(FileTime lastModifiedTime) {
+        this.lastModified = lastModifiedTime;
+        return this;
+    }
+
+    /**
+     * Sets the file key of the entry.
+     * @param key the file key for the entry to build
+     * @return the parameters object
+     */
+    public ArchiveEntryParameters withFileKey(Object key) {
+        this.fileKey = key;
+        return this;
+    }
+
+    /**
      * Sets the size of the entry.
-     * @param size the size of the entry to build
+     * @param size the size for the entry to build
      * @return the parameters object
      */
     public ArchiveEntryParameters withSize(long size) {
@@ -87,22 +149,22 @@ public class ArchiveEntryParameters {
     }
 
     /**
-     * Marks the entry to build as a directory.
-     * @param b whether the entry is supposed to represent a directory
+     * Sets the type of the entry.
+     * @param type the type for the entry to build
      * @return the parameters object
      */
-    public ArchiveEntryParameters asDirectory(boolean b) {
-        this.dirFlag = b;
+    public ArchiveEntryParameters withType(FileType type) {
+        this.type = type;
         return this;
     }
 
     /**
-     * Sets the last modified date/time of the entry.
-     * @param lastModified the last modified date/time of the entry to build
+     * Sets the owner information of the entry.
+     * @param owner the owner information for the entry to build
      * @return the parameters object
      */
-    public ArchiveEntryParameters withLastModified(Instant lastModified) {
-        this.lastModified = lastModified;
+    public ArchiveEntryParameters withOwnerInformation(Optional<OwnerInformation> owner) {
+        this.owner = owner;
         return this;
     }
 
@@ -112,56 +174,182 @@ public class ArchiveEntryParameters {
      * @return the parameters object
      */
     public ArchiveEntryParameters withOwnerInformation(OwnerInformation owner) {
-        this.owner = owner;
+        return withOwnerInformation(Optional.ofNullable(owner));
+    }
+
+    /**
+     * Sets the "mode" of the entry.
+     * @param mode the mode for the entry to build
+     * @return the parameters object
+     */
+    public ArchiveEntryParameters withMode(Optional<Long> mode) {
+        this.mode = mode;
         return this;
     }
 
     /**
-     * Gets the configured name.
-     *
-     * <p>The name will use '/' as directory separator and end with a '/' if and only if the entry represents a
-     * directory.</p>
-     *
-     * @return the normalized name
+     * Sets the "mode" of the entry.
+     * @param mode the mode for the entry to build
+     * @return the parameters object
      */
+    public ArchiveEntryParameters withMode(long mode) {
+        return withMode(Optional.of(mode));
+    }
+
+    /**
+     * Sets the permissions of the entry.
+     * @param permissions the permissions for the entry to build
+     * @return the parameters object
+     */
+    public ArchiveEntryParameters withPermissions(Optional<Set<PosixFilePermission>> permissions) {
+        this.permissions = permissions;
+        return this;
+    }
+
+    /**
+     * Sets the permissions of the entry.
+     * @param permissions the permissions for the entry to build
+     * @return the parameters object
+     */
+    public ArchiveEntryParameters withPermissions(Set<PosixFilePermission> permissions) {
+        return withPermissions(Optional.ofNullable(permissions));
+    }
+
+    /**
+     * Sets the basic attributes.
+     * @param attributes the attributes of the entry to build
+     * @return the parameters object
+     */
+    public ArchiveEntryParameters withAttributes(BasicFileAttributes attributes) {
+        if (attributes.isRegularFile()) {
+            type = FileType.REGULAR_FILE;
+        } else if (attributes.isDirectory()) {
+            type = FileType.DIR;
+        } else if (attributes.isSymbolicLink()) {
+            type = FileType.SYMLINK;
+        } else {
+            type = FileType.OTHER;
+        }
+        return withCreationTime(attributes.creationTime())
+            .withFileKey(attributes.fileKey())
+            .withLastAccessTime(attributes.lastAccessTime())
+            .withLastModifiedTime(attributes.lastModifiedTime())
+            .withSize(attributes.size());
+    }
+
+    @Override
     public String getName() {
-        return normalize(name, dirFlag);
+        return normalize(name, isDirectory());
     }
 
-    /**
-     * Gets the configured size or {@link #SIZE_UNKNOWN}) if the size is not configured.
-     * 
-     * @return the configured size
-     */
-    public long getSize() {
-        return dirFlag ? 0 : size;
+    @Override
+    public FileTime creationTime() {
+        return created;
     }
 
-    /**
-     * Returns true if parameters are configured to represent a directory.
-     * 
-     * @return true if this parameters refer to a directory.
-     */
+    @Override
+    public Object fileKey() {
+        return fileKey;
+    }
+
+    @Override
     public boolean isDirectory() {
-        return dirFlag;
+        return type == FileType.DIR;
     }
 
-    /**
-     * Gets the configured last modified date/time.
-     * 
-     * @return the configured last modified date/time or null if no date was configured.
-     */
-    public Instant getLastModified() {
+    @Override
+    public boolean isOther() {
+        return type == FileType.OTHER;
+    }
+
+    @Override
+    public boolean isRegularFile() {
+        return type == FileType.REGULAR_FILE;
+    }
+
+    @Override
+    public boolean isSymbolicLink() {
+        return type == FileType.SYMLINK;
+    }
+
+    @Override
+    public FileTime lastAccessTime() {
+        return lastAccess;
+    }
+
+    @Override
+    public FileTime lastModifiedTime() {
         return lastModified;
     }
 
-    /**
-     * Gets the configured information about the owner.
-     *
-     * @return information about the entry's owner or null if no information was configured
-     */
-    public OwnerInformation getOwnerInformation() {
+    @Override
+    public long size() {
+        return type == FileType.DIR ? 0 : size;
+    }
+
+    @Override
+    public Optional<OwnerInformation> getOwnerInformation() {
         return owner;
+    }
+
+    @Override
+    public Optional<Long> getMode() {
+        return mode.isPresent() ? mode : permissions.map(p -> modeFromPermissions(p, type));
+    }
+
+    @Override
+    public Optional<Set<PosixFilePermission>> getPermissions() {
+        return permissions.isPresent() ? permissions
+            : mode.map(ArchiveEntryParameters::permissionsFromMode);
+    }
+
+    @Override
+    public FileType getType() {
+        return type;
+    }
+
+    /**
+     * Translates a set of permissons into a Unix stat(2) {@code st_mode} result
+     * @param permissions the permissions
+     * @param type the file type
+     * @return the "mode"
+     */
+    public static long modeFromPermissions(Set<PosixFilePermission> permissions, FileType type) {
+        long mode;
+        switch (type) {
+        case SYMLINK:
+            mode = 012;
+            break;
+        case REGULAR_FILE:
+            mode = 010;
+            break;
+        case DIR:
+            mode = 004;
+            break;
+        default:
+            // OTHER could be a character or block device, a socket or a FIFO - so don't set anything
+            mode = 0;
+            break;
+        }
+        mode <<= 3;
+        mode <<= 3; // we don't support sticky, setuid, setgid
+        mode |= modeFromPermissions(permissions, "OWNER");
+        mode <<= 3;
+        mode |= modeFromPermissions(permissions, "GROUP");
+        mode <<= 3;
+        mode |= modeFromPermissions(permissions, "OTHERS");
+        return mode;
+    }
+
+    /**
+     * Translates a Unix stat(2) {@code st_mode} compatible value into a set of permissions.
+     */
+    public static Set<PosixFilePermission> permissionsFromMode(long mode) {
+        Set<PosixFilePermission> permissions = EnumSet.noneOf(PosixFilePermission.class);
+        addPermissions(permissions, "OTHERS", mode);
+        addPermissions(permissions, "GROUP", mode >> 3);
+        addPermissions(permissions, "OWNER", mode >> 6);
+        return permissions;
     }
 
     private static String normalize(String name, boolean dirFlag) {
@@ -178,5 +366,31 @@ public class ArchiveEntryParameters {
             }
         }
         return name;
+    }
+
+    private static long modeFromPermissions(Set<PosixFilePermission> permissions, String prefix) {
+        long mode = 0;
+        if (permissions.contains(PosixFilePermission.valueOf(prefix + "_READ"))) {
+            mode |= 4;
+        }
+        if (permissions.contains(PosixFilePermission.valueOf(prefix + "_WRITE"))) {
+            mode |= 2;
+        }
+        if (permissions.contains(PosixFilePermission.valueOf(prefix + "_EXECUTE"))) {
+            mode |= 1;
+        }
+        return mode;
+    }
+
+    private static void addPermissions(Set<PosixFilePermission> permissions, String prefix, long mode) {
+        if ((mode & 1) == 1) {
+            permissions.add(PosixFilePermission.valueOf(prefix + "_EXECUTE"));
+        }
+        if ((mode & 2) == 2) {
+            permissions.add(PosixFilePermission.valueOf(prefix + "_WRITE"));
+        }
+        if ((mode & 4) == 4) {
+            permissions.add(PosixFilePermission.valueOf(prefix + "_READ"));
+        }
     }
 }

@@ -19,11 +19,20 @@
 package org.apache.commons.compress2.archivers;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.attribute.FileTime;
+import java.nio.file.attribute.PosixFilePermission;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.EnumSet;
+import java.util.Optional;
+import java.util.Set;
+
 import org.junit.Test;
 
 public class ArchiveEntryParametersTest {
@@ -31,17 +40,25 @@ public class ArchiveEntryParametersTest {
     @Test
     public void defaultValues() {
         ArchiveEntryParameters p = new ArchiveEntryParameters();
-        assertEquals(null, p.getName());
-        assertEquals(-1, p.getSize());
-        assertEquals(false, p.isDirectory());
-        assertEquals(null, p.getLastModified());
-        assertEquals(null, p.getOwnerInformation());
+        assertNull(p.getName());
+        assertEquals(-1, p.size());
+        assertFalse(p.isDirectory());
+        assertFalse(p.isSymbolicLink());
+        assertFalse(p.isOther());
+        assertTrue(p.isRegularFile());
+        assertNull(p.lastModifiedTime());
+        assertNull(p.lastAccessTime());
+        assertNull(p.creationTime());
+        assertNull(p.fileKey());
+        assertFalse(p.getOwnerInformation().isPresent());
+        assertFalse(p.getPermissions().isPresent());
+        assertEquals(ArchiveEntry.FileType.REGULAR_FILE, p.getType());
     }
 
     @Test
     public void shouldAddTrailingSlashForDirectories() {
         ArchiveEntryParameters p = new ArchiveEntryParameters()
-            .withName("foo").asDirectory(true);
+            .withName("foo").withType(ArchiveEntry.FileType.DIR);
         assertEquals("foo/", p.getName());
         p.withName("foo/");
         assertEquals("foo/", p.getName());
@@ -52,7 +69,7 @@ public class ArchiveEntryParametersTest {
     @Test
     public void shouldStripTrailingSlashForNonDirectories() {
         ArchiveEntryParameters p = new ArchiveEntryParameters()
-            .withName("foo").asDirectory(false);
+            .withName("foo").withType(ArchiveEntry.FileType.REGULAR_FILE);
         assertEquals("foo", p.getName());
         p.withName("foo/");
         assertEquals("foo", p.getName());
@@ -63,28 +80,63 @@ public class ArchiveEntryParametersTest {
     @Test
     public void sizeShouldBe0ForDirectories() {
         ArchiveEntryParameters p = new ArchiveEntryParameters()
-            .asDirectory(true);
-        assertEquals(0, p.getSize());
+            .withType(ArchiveEntry.FileType.DIR);
+        assertEquals(0, p.size());
         p.withSize(42);
-        assertEquals(0, p.getSize());
+        assertEquals(0, p.size());
     }
 
     @Test
     public void copyActuallyCopies() {
-        final Instant d = Instant.now();
+        final FileTime d1 = FileTime.from(Instant.now());
+        final FileTime d2 = FileTime.from(Instant.now());
         final OwnerInformation o = new OwnerInformation(17, 4);
         ArchiveEntryParameters p = ArchiveEntryParameters.copyOf(new ArchiveEntry() {
+                @Override
                 public String getName() {return "baz";}
-                public long getSize() {return 42;}
+                @Override
+                public long size() {return 42;}
+                @Override
                 public boolean isDirectory() {return false;}
-                public Instant getLastModified() {return d;}
-                public OwnerInformation getOwnerInformation() {return o;}
+                @Override
+                public boolean isSymbolicLink() {return false;}
+                @Override
+                public boolean isOther() {return false;}
+                @Override
+                public boolean isRegularFile() {return true;}
+                @Override
+                public FileTime lastModifiedTime() {return d1;}
+                @Override
+                public FileTime lastAccessTime() {return null;}
+                @Override
+                public FileTime creationTime() {return d2;}
+                @Override
+                public Optional<OwnerInformation> getOwnerInformation() {return Optional.of(o);}
+                @Override
+                public Optional<Long> getMode() { return Optional.of(4711l); }
+                @Override
+                public Optional<Set<PosixFilePermission>> getPermissions() {
+                    return Optional.of(EnumSet.of(PosixFilePermission.OWNER_READ));
+                }
+                @Override
+                public Object fileKey() {
+                    return "foo";
+                }
             });
         assertEquals("baz", p.getName());
-        assertEquals(42, p.getSize());
-        assertEquals(false, p.isDirectory());
-        assertEquals(d, p.getLastModified());
-        assertEquals(o, p.getOwnerInformation());
+        assertEquals(42, p.size());
+        assertFalse(p.isDirectory());
+        assertFalse(p.isSymbolicLink());
+        assertFalse(p.isOther());
+        assertTrue(p.isRegularFile());
+        assertEquals(d1, p.lastModifiedTime());
+        assertEquals(d2, p.creationTime());
+        assertNull(p.lastAccessTime());
+        assertEquals("foo", p.fileKey());
+        assertEquals(ArchiveEntry.FileType.REGULAR_FILE, p.getType());
+        assertEquals(o, p.getOwnerInformation().get());
+        assertEquals(4711l, p.getMode().get().longValue());
+        assertTrue(p.getPermissions().get().contains(PosixFilePermission.OWNER_READ));
     }
 
     @Test
@@ -96,10 +148,10 @@ public class ArchiveEntryParametersTest {
         ArchiveEntryParameters p = ArchiveEntryParameters.fromFile(f);
         assert p.getName().endsWith("suf");
         assert p.getName().startsWith("pre");
-        assertEquals(0, p.getSize());
-        assertEquals(false, p.isDirectory());
-        assertWithinTwoSecondsOf(d, p.getLastModified());
-        assertEquals(null, p.getOwnerInformation());
+        assertEquals(0, p.size());
+        assertEquals(ArchiveEntry.FileType.REGULAR_FILE, p.getType());
+        assertWithinTwoSecondsOf(d, p.lastModifiedTime());
+        assertFalse(p.getOwnerInformation().isPresent());
     }
 
     @Test
@@ -113,10 +165,10 @@ public class ArchiveEntryParametersTest {
         ArchiveEntryParameters p = ArchiveEntryParameters.fromFile(f);
         assert p.getName().endsWith("suf/");
         assert p.getName().startsWith("pre");
-        assertEquals(0, p.getSize());
-        assertEquals(true, p.isDirectory());
-        assertWithinTwoSecondsOf(d, p.getLastModified());
-        assertEquals(null, p.getOwnerInformation());
+        assertEquals(0, p.size());
+        assertEquals(ArchiveEntry.FileType.DIR, p.getType());
+        assertWithinTwoSecondsOf(d, p.lastModifiedTime());
+        assertFalse(p.getOwnerInformation().isPresent());
     }
 
     @Test
@@ -124,10 +176,29 @@ public class ArchiveEntryParametersTest {
         File f = File.createTempFile("pre", "suf");
         assert f.delete();
         ArchiveEntryParameters p = ArchiveEntryParameters.fromFile(f);
-        assertEquals(-1, p.getSize());
+        assertEquals(-1, p.size());
     }
 
-    private static void assertWithinTwoSecondsOf(Instant expected, Instant actual) {
-        assert Math.abs(Duration.between(expected, actual).getSeconds()) < 2;
+    @Test
+    public void getModeConstructsModeFromPermissions() {
+        ArchiveEntryParameters p = new ArchiveEntryParameters()
+            .withPermissions(EnumSet.of(PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE, PosixFilePermission.OWNER_EXECUTE));
+        assertEquals("100700", Long.toString(p.getMode().get(), 8));
+    }
+
+    @Test
+    public void getPermissionsConstructsPermissionsFromMode() {
+        ArchiveEntryParameters p = new ArchiveEntryParameters()
+            .withMode(0100753l);
+        Set<PosixFilePermission> s = p.getPermissions().get();
+        assertEquals(EnumSet.of(PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE,
+                                PosixFilePermission.OWNER_EXECUTE, PosixFilePermission.GROUP_READ,
+                                PosixFilePermission.GROUP_EXECUTE, PosixFilePermission.OTHERS_WRITE,
+                                PosixFilePermission.OTHERS_EXECUTE),
+                     s);
+    }
+
+    private static void assertWithinTwoSecondsOf(Instant expected, FileTime actual) {
+        assert Math.abs(Duration.between(expected, actual.toInstant()).getSeconds()) < 2;
     }
 }

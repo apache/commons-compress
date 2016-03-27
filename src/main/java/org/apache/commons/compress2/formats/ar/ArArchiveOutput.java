@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 import org.apache.commons.compress2.archivers.ArchiveEntryParameters;
 import org.apache.commons.compress2.archivers.OwnerInformation;
@@ -95,8 +96,8 @@ public class ArArchiveOutput extends AbstractArchiveOutput<ArArchiveEntry> {
         if (prevEntry == null) {
             writeArchiveHeader();
         } else {
-            if (prevEntry.getSize() != entryOffset) {
-                throw new IOException("length does not match entry (" + prevEntry.getSize() + " != " + entryOffset);
+            if (prevEntry.size() != entryOffset) {
+                throw new IOException("length does not match entry (" + prevEntry.size() + " != " + entryOffset);
             }
 
             if (haveUnclosedEntry) {
@@ -154,7 +155,7 @@ public class ArArchiveOutput extends AbstractArchiveOutput<ArArchiveEntry> {
         }
 
         offset = fill(offset, 16, (byte) ' ');
-        final String m = "" + (pEntry.getLastModified().getEpochSecond());
+        final String m = "" + (pEntry.lastModifiedTime().toMillis() / 1000);
         if (m.length() > 12) {
             throw new IOException("modified too long");
         }
@@ -175,7 +176,7 @@ public class ArArchiveOutput extends AbstractArchiveOutput<ArArchiveEntry> {
         offset += write(g);
 
         offset = fill(offset, 40, (byte) ' ');
-        final String fm = "" + Integer.toString(pEntry.getMode(), 8);
+        final String fm = "" + Integer.toString(pEntry.getMode().orElse(0l).intValue(), 8);
         if (fm.length() > 8) {
             throw new IOException("filemode too long");
         }
@@ -183,7 +184,7 @@ public class ArArchiveOutput extends AbstractArchiveOutput<ArArchiveEntry> {
 
         offset = fill(offset, 48, (byte) ' ');
         final String s =
-            String.valueOf(pEntry.getSize()
+            String.valueOf(pEntry.size()
                            + (mustAppendName ? n.length() : 0));
         if (s.length() > 10) {
             throw new IOException("size too long");
@@ -215,6 +216,9 @@ public class ArArchiveOutput extends AbstractArchiveOutput<ArArchiveEntry> {
 
     @Override
     public ArArchiveEntry createEntry(ArchiveEntryParameters params) {
+        if (!params.getMode().isPresent()) {
+            params = params.withMode(ArArchiveEntry.DEFAULT_MODE);
+        }
         return new ArArchiveEntry(params);
     }
 
@@ -228,12 +232,12 @@ public class ArArchiveOutput extends AbstractArchiveOutput<ArArchiveEntry> {
         finished = true;
     }
 
-    private int getUserId(OwnerInformation info) {
-        return info == null ? 0 : info.getUserId();
+    private int getUserId(Optional<OwnerInformation> info) {
+        return info.map(OwnerInformation::getUserId).orElse(0);
     }
 
-    private int getGroupId(OwnerInformation info) {
-        return info == null ? 0 : info.getGroupId();
+    private int getGroupId(Optional<OwnerInformation> info) {
+        return info.map(OwnerInformation::getGroupId).orElse(0);
     }
 
     private class CurrentChannel implements WritableByteChannel {
