@@ -21,8 +21,10 @@ package org.apache.commons.compress2.archivers.spi;
 import static org.junit.Assert.assertEquals;
 
 import java.nio.file.attribute.FileTime;
+import java.nio.file.attribute.PosixFilePermission;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.EnumSet;
 
 import org.apache.commons.compress2.archivers.ArchiveEntryParameters;
 import org.junit.Test;
@@ -77,6 +79,13 @@ public class SimpleArchiveEntryTest {
                                                       .withLastModifiedTime(d1)
                                                       .withCreationTime(d2));
         assertEquals(d2, e.creationTime());
+    }
+
+    @Test(expected=UnsupportedOperationException.class)
+    public void permissionSetIsImmutable() {
+        SimpleArchiveEntry e = new SimpleArchiveEntry(new ArchiveEntryParameters()
+                                                      .withPermissions(EnumSet.of(PosixFilePermission.OWNER_READ)));
+        e.getPermissions().get().clear();
     }
 
 }
