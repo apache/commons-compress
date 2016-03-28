@@ -91,6 +91,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     private char su_z;
 
     private int currentBlock, currentStream;
+    private long compressedBytesRead;
 
     /**
      * All memory intensive stuff. This field is initialized by initBlock().
@@ -230,17 +231,25 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         }
     }
 
+    private int read(InputStream in) throws IOException {
+        int r = in.read();
+        if (r != -1) {
+            compressedBytesRead++;
+        }
+        return r;
+    }
+
     private boolean init(boolean isFirstStream) throws IOException {
         if (null == in) {
             throw new IOException("No InputStream");
         }
 
-        int magic0 = this.in.read();
+        int magic0 = read(this.in);
         if (magic0 == -1 && !isFirstStream) {
             return false;
         }
-        int magic1 = this.in.read();
-        int magic2 = this.in.read();
+        int magic1 = read(this.in);
+        int magic2 = read(this.in);
 
         if (magic0 != 'B' || magic1 != 'Z' || magic2 != 'h') {
             throw new IOException(isFirstStream
@@ -248,7 +257,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                     : "Garbage after a valid BZip2 stream");
         }
 
-        int blockSize = this.in.read();
+        int blockSize = read(this.in);
         if ((blockSize < '1') || (blockSize > '9')) {
             throw new IOException("BZip2 block size is invalid");
         }
@@ -302,6 +311,8 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             this.currentState = EOF;
             throw new IOException("bad block header");
         } else {
+             // subtract block start magic bytes from compressedBytesRead
+            fireProgress(currentBlock++, currentStream, compressedBytesRead - 6);
             this.storedBlockCRC = bsGetInt();
             this.blockRandomised = bsR(1) == 1;
 
@@ -313,7 +324,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                 this.data = new Data(this.blockSize100k);
             }
 
-            fireProgress(currentBlock++, currentStream);
             getAndMoveToFrontDecode();
 
             this.crc.initialiseCRC();
@@ -379,7 +389,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         if (bsLiveShadow < n) {
             final InputStream inShadow = this.in;
             do {
-                int thech = inShadow.read();
+                int thech = read(inShadow);
 
                 if (thech < 0) {
                     throw new IOException("unexpected end of stream");
@@ -401,7 +411,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         int bsBuffShadow = this.bsBuff;
 
         if (bsLiveShadow < 1) {
-            int thech = this.in.read();
+            int thech = read(this.in);
 
             if (thech < 0) {
                 throw new IOException("unexpected end of stream");
@@ -646,7 +656,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                     // Inlined:
                     // int zvec = bsR(zn);
                     while (bsLiveShadow < zn) {
-                        final int thech = inShadow.read();
+                        final int thech = read(inShadow);
                         if (thech >= 0) {
                             bsBuffShadow = (bsBuffShadow << 8) | thech;
                             bsLiveShadow += 8;
@@ -662,7 +672,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                     while (zvec > limit_zt[zn]) {
                         zn++;
                         while (bsLiveShadow < 1) {
-                            final int thech = inShadow.read();
+                            final int thech = read(inShadow);
                             if (thech >= 0) {
                                 bsBuffShadow = (bsBuffShadow << 8) | thech;
                                 bsLiveShadow += 8;
@@ -729,7 +739,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                 // Inlined:
                 // int zvec = bsR(zn);
                 while (bsLiveShadow < zn) {
-                    final int thech = inShadow.read();
+                    final int thech = read(inShadow);
                     if (thech >= 0) {
                         bsBuffShadow = (bsBuffShadow << 8) | thech;
                         bsLiveShadow += 8;
@@ -745,7 +755,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                 while (zvec > limit_zt[zn]) {
                     zn++;
                     while (bsLiveShadow < 1) {
-                        final int thech = inShadow.read();
+                        final int thech = read(inShadow);
                         if (thech >= 0) {
                             bsBuffShadow = (bsBuffShadow << 8) | thech;
                             bsLiveShadow += 8;
@@ -779,7 +789,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         while (zvec > limit_zt[zn]) {
             zn++;
             while (bsLiveShadow < 1) {
-                final int thech = inShadow.read();
+                final int thech = read(inShadow);
 
                 if (thech >= 0) {
                     bsBuffShadow = (bsBuffShadow << 8) | thech;

@@ -108,9 +108,11 @@ public abstract class CompressorInputStream extends InputStream {
      * @param blockNumber number of the block that is getting processed now
      * @param streamNumer number of the stream that is getting
      *        processed now
+     * @param compressedBytesRead number of compressed bytes read
      */
-    protected void fireProgress(int blockNumber, int streamNumber) {
-        CompressionProgressEvent e = new CompressionProgressEvent(this, blockNumber, streamNumber, getBytesRead());
+    protected void fireProgress(int blockNumber, int streamNumber, long compressedBytesRead) {
+        CompressionProgressEvent e = new CompressionProgressEvent(this, blockNumber, streamNumber,
+            compressedBytesRead, getBytesRead());
         for (CompressionProgressListener l : listeners) {
             l.notify(e);
         }

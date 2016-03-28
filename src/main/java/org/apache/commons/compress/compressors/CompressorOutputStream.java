@@ -54,9 +54,11 @@ public abstract class CompressorOutputStream extends OutputStream {
      * @param blockNumber number of the block that is getting processed now
      * @param streamNumer number of the stream that is getting
      *        processed now
+     * @param compressedBytesWritten number of compressed bytes written
      */
-    protected void fireProgress(int blockNumber, int streamNumber) {
-        CompressionProgressEvent e = new CompressionProgressEvent(this, blockNumber, streamNumber, getBytesWritten());
+    protected void fireProgress(int blockNumber, int streamNumber, long compressedBytesWritten) {
+        CompressionProgressEvent e = new CompressionProgressEvent(this, blockNumber, streamNumber,
+            compressedBytesWritten, getBytesWritten());
         for (CompressionProgressListener l : listeners) {
             l.notify(e);
         }

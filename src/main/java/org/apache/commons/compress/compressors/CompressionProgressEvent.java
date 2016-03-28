@@ -27,7 +27,7 @@ import java.util.EventObject;
 public class CompressionProgressEvent extends EventObject {
 
     private final int blockNumber, streamNumber;
-    private final long bytesProcessed;
+    private final long compressedBytesProcessed, uncompressedBytesProcessed;
     
     /**
      * Creates a new event.
@@ -36,14 +36,19 @@ public class CompressionProgressEvent extends EventObject {
      * @param blockNumber number of the block that is getting processed now
      * @param streamNumer number of the stream that is getting
      *        processed now
-     * @param bytesProcessed number of bytes read or written when the event is triggered
+     * @param compressedBytesProcessed number of compressed bytes read
+     *        or written when the event is triggered
+     * @param uncompressedBytesProcessed number of uncompressed bytes read
+     *        or written when the event is triggered
      */
     public CompressionProgressEvent(Object source, int blockNumber, int streamNumber,
-                                    long bytesProcessed) {
+                                    long compressedBytesProcessed,
+                                    long uncompressedBytesProcessed) {
         super(source);
         this.blockNumber = blockNumber;
         this.streamNumber = streamNumber;
-        this.bytesProcessed = bytesProcessed;
+        this.compressedBytesProcessed = compressedBytesProcessed;
+        this.uncompressedBytesProcessed = uncompressedBytesProcessed;
     }
 
     /**
@@ -69,10 +74,20 @@ public class CompressionProgressEvent extends EventObject {
     }
 
     /**
-     * The number of bytes processed so far.
-     * @return number of bytes read or written when the event is triggered
+     * The number of compressed bytes processed so far.
+     * @return number of compressed bytes read or written when the
+     *         event is triggered
      */
-    public long getBytesProcessed() {
-        return bytesProcessed;
+    public long getCompressedBytesProcessed() {
+        return compressedBytesProcessed;
+    }
+
+    /**
+     * The number of uncompressed bytes processed so far.
+     * @return number of uncompressed bytes read or written when the
+     *         event is triggered
+     */
+    public long getUncompressedBytesProcessed() {
+        return uncompressedBytesProcessed;
     }
 }
