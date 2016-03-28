@@ -134,7 +134,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         this.decompressConcatenated = decompressConcatenated;
 
         init(true);
-        initBlock();
     }
 
     @Override
@@ -206,6 +205,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             return -1;
 
         case START_BLOCK_STATE:
+            initBlock();
             return setupBlock();
 
         case RAND_PART_A_STATE:

@@ -158,23 +158,25 @@ public final class BZip2TestCase extends AbstractTestCase {
         while(in.read() >= 0);
         in.close();
 
-        // we miss the initial block event which is triggered by the constructor
-        assertEquals(4, blockNumbers.size());
-        for (int i = 0; i < 4; i++) {
-            assertEquals(i + 1, blockNumbers.get(i).intValue());
+        assertEquals(5, blockNumbers.size());
+        for (int i = 0; i < 5; i++) {
+            assertEquals(i, blockNumbers.get(i).intValue());
         }
 
-        assertEquals(4, uncompressedBytes.size());
-        assertEquals(Long.valueOf(899907), uncompressedBytes.get(0));
-        assertEquals(Long.valueOf(1799817), uncompressedBytes.get(1));
-        assertEquals(Long.valueOf(2699710), uncompressedBytes.get(2));
-        assertEquals(Long.valueOf(3599604), uncompressedBytes.get(3));
+        assertEquals(5, uncompressedBytes.size());
+        assertEquals(Long.valueOf(0), uncompressedBytes.get(0));
+        assertEquals(Long.valueOf(899907), uncompressedBytes.get(1));
+        assertEquals(Long.valueOf(1799817), uncompressedBytes.get(2));
+        assertEquals(Long.valueOf(2699710), uncompressedBytes.get(3));
+        assertEquals(Long.valueOf(3599604), uncompressedBytes.get(4));
 
-        assertEquals(4, compressedBytes.size());
-        assertEquals(Long.valueOf(457766), compressedBytes.get(0));
-        assertEquals(Long.valueOf(915639), compressedBytes.get(1));
-        assertEquals(Long.valueOf(1373360), compressedBytes.get(2));
-        assertEquals(Long.valueOf(1831305), compressedBytes.get(3));
+        assertEquals(5, compressedBytes.size());
+        // 4 == number of magic bytes + blocksize
+        assertEquals(Long.valueOf(4), compressedBytes.get(0));
+        assertEquals(Long.valueOf(457766), compressedBytes.get(1));
+        assertEquals(Long.valueOf(915639), compressedBytes.get(2));
+        assertEquals(Long.valueOf(1373360), compressedBytes.get(3));
+        assertEquals(Long.valueOf(1831305), compressedBytes.get(4));
     }
 
 }
