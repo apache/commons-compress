@@ -114,7 +114,11 @@ public abstract class CompressorInputStream extends InputStream {
         CompressionProgressEvent e = new CompressionProgressEvent(this, blockNumber, streamNumber,
             compressedBytesRead, getBytesRead());
         for (CompressionProgressListener l : listeners) {
-            l.notify(e);
+            try {
+                l.notify(e);
+            } catch (Exception ex) {
+                // TODO what to do with it?
+            }
         }
     }
 }

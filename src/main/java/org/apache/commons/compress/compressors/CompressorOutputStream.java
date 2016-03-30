@@ -60,7 +60,11 @@ public abstract class CompressorOutputStream extends OutputStream {
         CompressionProgressEvent e = new CompressionProgressEvent(this, blockNumber, streamNumber,
             compressedBytesWritten, getBytesWritten());
         for (CompressionProgressListener l : listeners) {
-            l.notify(e);
+            try {
+                l.notify(e);
+            } catch (Exception ex) {
+                // TODO what to do with it?
+            }
         }
     }
 
