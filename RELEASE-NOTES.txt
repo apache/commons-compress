@@ -5,15 +5,81 @@ compression and archive formats.  These include: bzip2, gzip, pack200,
 lzma, xz, Snappy, traditional Unix Compress, DEFLATE and ar, cpio,
 jar, tar, zip, dump, 7z, arj.
 
-Release 1.11 (not yet released)
+Release 1.11
 ------------
 
-Changes
-o Allow byte-for-byte replication of Zip entries
+New features:
+o TarArchiveInputStream now supports reading global PAX headers.
+  Issue: COMPRESS-347.
+o The PAX headers for sparse entries written by star are now
+  applied.
+  Issue: COMPRESS-346.
+o GNU sparse files using one of the PAX formats are now
+  detected, but cannot be extracted.
+  Issue: COMPRESS-345.
+o New method SevenZFile.getEntries can be used to list the
+  contents of a 7z archive.
+  Issue: COMPRESS-341.
+o When using Zip64Mode.Always also use ZIP64 extensions inside
+  the central directory.
+  GitHub Pull Request #10 Thanks to Matt Hovey.
+o ZipFile.getRawInputStream() is now part of the public API
+  Issue: COMPRESS-323.
+o Allow byte-for-byte replication of Zip entries.
+  GitHub Pull Request #6. Thanks to Jason van Zyl.
 o TarArchiveEntry's preserveLeadingSlashes is now a property and used
   on later calls to setName, too.
   This behavior is a breaking change.
-  Issue: COMPRESS-328
+  Issue: COMPRESS-328.
+o Added read-only support for bzip2 compression used inside of
+  ZIP archives.
+  GitHub Pull Request #4. Thanks to Sören Glimm.
+
+Fixed Bugs:
+o ArArchiveInputStream can now read GNU extended names that are
+  terminated with a NUL byte rather than a linefeed.
+  Issue: COMPRESS-344.
+o Native Memory Leak in Sevenz-DeflateDecoder.
+  Issue: COMPRESS-343. Thanks to Rene Preissel.
+o SevenZFile will now only try to drain an entry's content when
+  moving on to the next entry if data is read from the next
+  entry. This should improve performance for applications that
+  try to skip over entries.
+  Issue: COMPRESS-340. Thanks to Dawid Weiss.
+o file names of tar archives using the xstar format are now
+  parsed properly.
+  Issue: COMPRESS-336.
+o checksums of tars that pad the checksum field to the left are
+  now calculated properly.
+  Issue: COMPRESS-335.
+o ArArchiveInputStream failed to read past the first entry when
+  BSD long names have been used.
+  Issue: COMPRESS-334. Thanks to Jeremy Gustie.
+o Added buffering for random access which speeds up 7Z support.
+  Issue: COMPRESS-333. Thanks to Dawid Weiss.
+o The checksum validation of TararchiveEntry is now as strict as
+  the validation of GNU tar, which eliminates a few cases of
+  false positives of ArchiveStreamFactory.
+  This behavior is a breaking change since the check has become
+  more strict but any archive that fails the checksum test now
+  would also fail it when extracted with other tools and must be
+  considered an invalid archive.
+  Issue: COMPRESS-331.
+o SnappyCompressorInputStream and
+  FramedSnappyCompressorInputStream returned 0 at the end of the
+  stream under certain circumstances.
+  Issue: COMPRESS-332.
+o Adjusted unit test to updates in Java8 and later that change
+  the logic of ZipEntry#getTime.
+  Issue: COMPRESS-326.
+o TarArchiveOutputStream will now recognize GNU long name and
+  link entries even if the special entry has a different name
+  than GNU tar uses itself.  This seems to be the case for
+  archives created by star.
+  Issue: COMPRESS-324.
+o ArrayIndexOutOfBoundsException when InfoZIP type 7875 extra
+  fields are read from the central directory.
+  Issue: COMPRESS-321.
 
 Release 1.10
 ------------
