@@ -42,7 +42,10 @@ The <action> type attribute can be add,update,fix,remove.
     <title>commons-compress</title>
   </properties>
   <body>
-    <release version="1.11" date="not released, yet"
+    <release version="1.12" date="not released, yet"
+             description="Release 1.12">
+    </release>
+    <release version="1.11" date="2016-04-06"
              description="Release 1.11">
       <action issue="COMPRESS-347" type="add" date="2016-03-23">
         TarArchiveInputStream now supports reading global PAX headers.
