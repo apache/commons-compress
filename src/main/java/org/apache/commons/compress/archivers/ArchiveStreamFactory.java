@@ -209,44 +209,38 @@ public class ArchiveStreamFactory {
         if (ARJ.equalsIgnoreCase(archiverName)) {
             if (entryEncoding != null) {
                 return new ArjArchiveInputStream(in, entryEncoding);
-            } else {
-                return new ArjArchiveInputStream(in);
             }
+            return new ArjArchiveInputStream(in);
         }
         if (ZIP.equalsIgnoreCase(archiverName)) {
             if (entryEncoding != null) {
                 return new ZipArchiveInputStream(in, entryEncoding);
-            } else {
-                return new ZipArchiveInputStream(in);
             }
+            return new ZipArchiveInputStream(in);
         }
         if (TAR.equalsIgnoreCase(archiverName)) {
             if (entryEncoding != null) {
                 return new TarArchiveInputStream(in, entryEncoding);
-            } else {
-                return new TarArchiveInputStream(in);
             }
+            return new TarArchiveInputStream(in);
         }
         if (JAR.equalsIgnoreCase(archiverName)) {
             if (entryEncoding != null) {
                 return new JarArchiveInputStream(in, entryEncoding);
-            } else {
-                return new JarArchiveInputStream(in);
             }
+            return new JarArchiveInputStream(in);
         }
         if (CPIO.equalsIgnoreCase(archiverName)) {
             if (entryEncoding != null) {
                 return new CpioArchiveInputStream(in, entryEncoding);
-            } else {
-                return new CpioArchiveInputStream(in);
             }
+            return new CpioArchiveInputStream(in);
         }
         if (DUMP.equalsIgnoreCase(archiverName)) {
             if (entryEncoding != null) {
                 return new DumpArchiveInputStream(in, entryEncoding);
-            } else {
-                return new DumpArchiveInputStream(in);
             }
+            return new DumpArchiveInputStream(in);
         }
         if (SEVEN_Z.equalsIgnoreCase(archiverName)) {
             throw new StreamingNotSupportedException(SEVEN_Z);
@@ -290,23 +284,20 @@ public class ArchiveStreamFactory {
         if (TAR.equalsIgnoreCase(archiverName)) {
             if (entryEncoding != null) {
                 return new TarArchiveOutputStream(out, entryEncoding);
-            } else {
-                return new TarArchiveOutputStream(out);
             }
+            return new TarArchiveOutputStream(out);
         }
         if (JAR.equalsIgnoreCase(archiverName)) {
             if (entryEncoding != null) {
                 return new JarArchiveOutputStream(out, entryEncoding);
-            } else {
-                return new JarArchiveOutputStream(out);
             }
+            return new JarArchiveOutputStream(out);
         }
         if (CPIO.equalsIgnoreCase(archiverName)) {
             if (entryEncoding != null) {
                 return new CpioArchiveOutputStream(out, entryEncoding);
-            } else {
-                return new CpioArchiveOutputStream(out);
             }
+            return new CpioArchiveOutputStream(out);
         }
         if (SEVEN_Z.equalsIgnoreCase(archiverName)) {
             throw new StreamingNotSupportedException(SEVEN_Z);
