@@ -42,7 +42,7 @@ package org.apache.commons.compress.archivers.zip;
  * @NotThreadSafe
  * @since 1.11
  */
-public class X0016_CertificateIdForCentralDirectory extends PKWareExtraHeader implements ZipExtraField {
+public class X0016_CertificateIdForCentralDirectory extends PKWareExtraHeader {
     private static final long serialVersionUID = 1L;
 
     public X0016_CertificateIdForCentralDirectory() {
