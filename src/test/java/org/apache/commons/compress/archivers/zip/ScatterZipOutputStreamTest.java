@@ -25,6 +25,7 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.util.zip.ZipEntry;
 
 import static org.apache.commons.compress.AbstractTestCase.tryHardToDelete;
 import static org.apache.commons.compress.archivers.zip.ZipArchiveEntryRequest.createZipArchiveEntryRequest;
@@ -50,12 +51,12 @@ public class ScatterZipOutputStreamTest {
         final byte[] A_PAYLOAD = "XAAY".getBytes();
 
         ZipArchiveEntry zab = new ZipArchiveEntry("b.txt");
-        zab.setMethod(ZipArchiveEntry.DEFLATED);
+        zab.setMethod(ZipEntry.DEFLATED);
         final ByteArrayInputStream payload = new ByteArrayInputStream(B_PAYLOAD);
         scatterZipOutputStream.addArchiveEntry(createZipArchiveEntryRequest(zab, createPayloadSupplier(payload)));
 
         ZipArchiveEntry zae = new ZipArchiveEntry("a.txt");
-        zae.setMethod(ZipArchiveEntry.DEFLATED);
+        zae.setMethod(ZipEntry.DEFLATED);
         ByteArrayInputStream payload1 = new ByteArrayInputStream(A_PAYLOAD);
         scatterZipOutputStream.addArchiveEntry(createZipArchiveEntryRequest(zae, createPayloadSupplier(payload1)));
 

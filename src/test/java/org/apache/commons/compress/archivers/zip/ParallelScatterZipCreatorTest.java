@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.zip.ZipEntry;
 
 import static org.apache.commons.compress.AbstractTestCase.tryHardToDelete;
 import static org.junit.Assert.*;
@@ -139,7 +140,7 @@ public class ParallelScatterZipCreatorTest {
     private ZipArchiveEntry createZipArchiveEntry(Map<String, byte[]> entries, int i, byte[] payloadBytes) {
         ZipArchiveEntry za = new ZipArchiveEntry( "file" + i);
         entries.put( za.getName(), payloadBytes);
-        za.setMethod(ZipArchiveEntry.DEFLATED);
+        za.setMethod(ZipEntry.DEFLATED);
         za.setSize(payloadBytes.length);
         za.setUnixMode(UnixStat.FILE_FLAG | 0664);
         return za;
