@@ -77,6 +77,7 @@ public class TarArchiveInputStreamTest {
             .parsePaxHeaders(new ByteArrayInputStream("11 foo=bar\n7 foo=\n"
                                                       .getBytes(CharsetNames.UTF_8)));
         assertEquals(0, headers.size());
+        tais.close();
     }
 
     @Test
