@@ -368,10 +368,9 @@ public class ArchiveStreamFactoryTest {
             final Object object = fld.get(instance);
             if (object instanceof String || object == null) {
                 return (String) object;
-            } else {
-                System.out.println("Wrong type: " + object.getClass().getCanonicalName() + " for " + name + " in class " + instance.getClass().getSimpleName());
-                return "??";                
             }
+            System.out.println("Wrong type: " + object.getClass().getCanonicalName() + " for " + name + " in class " + instance.getClass().getSimpleName());
+            return "??";
         } catch (Exception e) {
             e.printStackTrace();
             return "??";
