@@ -86,10 +86,10 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
     }
 
     private void writeHeader(final GzipParameters parameters) throws IOException {
-        String filename = parameters.getFilename();
-        String comment = parameters.getComment();
+        final String filename = parameters.getFilename();
+        final String comment = parameters.getComment();
         
-        ByteBuffer buffer = ByteBuffer.allocate(10);
+        final ByteBuffer buffer = ByteBuffer.allocate(10);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.putShort((short) GZIPInputStream.GZIP_MAGIC);
         buffer.put((byte) Deflater.DEFLATED); // compression method (8: deflate)
@@ -97,7 +97,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
         buffer.putInt((int) (parameters.getModificationTime() / 1000));
         
         // extra flags
-        int compressionLevel = parameters.getCompressionLevel();
+        final int compressionLevel = parameters.getCompressionLevel();
         if (compressionLevel == Deflater.BEST_COMPRESSION) {
             buffer.put((byte) 2);
         } else if (compressionLevel == Deflater.BEST_SPEED) {
@@ -122,7 +122,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
     }
 
     private void writeTrailer() throws IOException {
-        ByteBuffer buffer = ByteBuffer.allocate(8);
+        final ByteBuffer buffer = ByteBuffer.allocate(8);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.putInt((int) crc.getValue());
         buffer.putInt(deflater.getTotalIn());
@@ -167,7 +167,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
     }
 
     private void deflate() throws IOException {
-        int length = deflater.deflate(deflateBuffer, 0, deflateBuffer.length);
+        final int length = deflater.deflate(deflateBuffer, 0, deflateBuffer.length);
         if (length > 0) {
             out.write(deflateBuffer, 0, length);
         }

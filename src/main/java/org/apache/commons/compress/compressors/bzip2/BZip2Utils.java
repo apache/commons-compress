@@ -32,7 +32,7 @@ public abstract class BZip2Utils {
     private static final FileNameUtil fileNameUtil;
 
     static {
-        Map<String, String> uncompressSuffix =
+        final Map<String, String> uncompressSuffix =
             new LinkedHashMap<String, String>();
         // backwards compatibilty: BZip2Utils never created the short
         // tbz form, so .tar.bz2 has to be added explicitly

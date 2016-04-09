@@ -51,7 +51,7 @@ public class LZMACompressorInputStream extends CompressorInputStream {
     /** {@inheritDoc} */
     @Override
     public int read() throws IOException {
-        int ret = in.read();
+        final int ret = in.read();
         count(ret == -1 ? 0 : 1);
         return ret;
     }
@@ -59,7 +59,7 @@ public class LZMACompressorInputStream extends CompressorInputStream {
     /** {@inheritDoc} */
     @Override
     public int read(final byte[] buf, final int off, final int len) throws IOException {
-        int ret = in.read(buf, off, len);
+        final int ret = in.read(buf, off, len);
         count(ret);
         return ret;
     }

@@ -316,7 +316,7 @@ public class DumpArchiveSummary {
             return false;
         }
 
-        DumpArchiveSummary rhs = (DumpArchiveSummary) o;
+        final DumpArchiveSummary rhs = (DumpArchiveSummary) o;
 
         if (dumpDate != rhs.dumpDate) {
             return false;

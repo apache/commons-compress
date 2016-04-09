@@ -259,7 +259,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         this.preserveLeadingSlashes = preserveLeadingSlashes;
 
         name = normalizeFileName(name, preserveLeadingSlashes);
-        boolean isDir = name.endsWith("/");
+        final boolean isDir = name.endsWith("/");
 
         this.name = name;
         this.mode = isDir ? DEFAULT_DIR_MODE : DEFAULT_FILE_MODE;
@@ -316,14 +316,14 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @param fileName the name to be used for the entry.
      */
     public TarArchiveEntry(final File file, final String fileName) {
-        String normalizedName = normalizeFileName(fileName, false);
+        final String normalizedName = normalizeFileName(fileName, false);
         this.file = file;
 
         if (file.isDirectory()) {
             this.mode = DEFAULT_DIR_MODE;
             this.linkFlag = LF_DIR;
 
-            int nameLength = normalizedName.length();
+            final int nameLength = normalizedName.length();
             if (nameLength == 0 || normalizedName.charAt(nameLength - 1) != '/') {
                 this.name = normalizedName + "/";
             } else {
@@ -950,11 +950,11 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
             return EMPTY_TAR_ARCHIVE_ENTRIES;
         }
 
-        String[] list = file.list();
+        final String[] list = file.list();
         if (list == null) {
             return EMPTY_TAR_ARCHIVE_ENTRIES;
         }
-        TarArchiveEntry[] result = new TarArchiveEntry[list.length];
+        final TarArchiveEntry[] result = new TarArchiveEntry[list.length];
 
         for (int i = 0; i < result.length; ++i) {
             result[i] = new TarArchiveEntry(new File(file, list[i]));
@@ -973,10 +973,10 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     public void writeEntryHeader(final byte[] outbuf) {
         try {
             writeEntryHeader(outbuf, TarUtils.DEFAULT_ENCODING, false);
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             try {
                 writeEntryHeader(outbuf, TarUtils.FALLBACK_ENCODING, false);
-            } catch (IOException ex2) {
+            } catch (final IOException ex2) {
                 // impossible
                 throw new RuntimeException(ex2);
             }
@@ -1009,7 +1009,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         offset = writeEntryHeaderField(modTime, outbuf, offset, MODTIMELEN,
                                        starMode);
 
-        int csOffset = offset;
+        final int csOffset = offset;
 
         for (int c = 0; c < CHKSUMLEN; ++c) {
             outbuf[offset++] = (byte) ' ';
@@ -1033,7 +1033,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
             outbuf[offset++] = 0;
         }
 
-        long chk = TarUtils.computeCheckSum(outbuf);
+        final long chk = TarUtils.computeCheckSum(outbuf);
 
         TarUtils.formatCheckSumOctalBytes(chk, outbuf, csOffset, CHKSUMLEN);
     }
@@ -1060,10 +1060,10 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     public void parseTarHeader(final byte[] header) {
         try {
             parseTarHeader(header, TarUtils.DEFAULT_ENCODING);
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             try {
                 parseTarHeader(header, TarUtils.DEFAULT_ENCODING, true);
-            } catch (IOException ex2) {
+            } catch (final IOException ex2) {
                 // not really possible
                 throw new RuntimeException(ex2);
             }
@@ -1124,7 +1124,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         devMinor = (int) TarUtils.parseOctalOrBinary(header, offset, DEVLEN);
         offset += DEVLEN;
 
-        int type = evaluateType(header);
+        final int type = evaluateType(header);
         switch (type) {
         case FORMAT_OLDGNU: {
             offset += ATIMELEN_GNU;
@@ -1140,7 +1140,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
             break;
         }
         case FORMAT_XSTAR: {
-            String xstarPrefix = oldStyle
+            final String xstarPrefix = oldStyle
                 ? TarUtils.parseName(header, offset, PREFIXLEN_XSTAR)
                 : TarUtils.parseName(header, offset, PREFIXLEN_XSTAR, encoding);
             if (xstarPrefix.length() > 0) {
@@ -1150,7 +1150,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         }
         case FORMAT_POSIX:
         default: {
-            String prefix = oldStyle
+            final String prefix = oldStyle
                 ? TarUtils.parseName(header, offset, PREFIXLEN)
                 : TarUtils.parseName(header, offset, PREFIXLEN, encoding);
             // SunOS tar -E does not add / to directory names, so fix
@@ -1171,7 +1171,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      */
     private static String normalizeFileName(String fileName,
                                             final boolean preserveLeadingSlashes) {
-        String osname = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
+        final String osname = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
 
         if (osname != null) {
 
@@ -1180,8 +1180,8 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
 
             if (osname.startsWith("windows")) {
                 if (fileName.length() > 2) {
-                    char ch1 = fileName.charAt(0);
-                    char ch2 = fileName.charAt(1);
+                    final char ch1 = fileName.charAt(0);
+                    final char ch2 = fileName.charAt(1);
 
                     if (ch2 == ':'
                         && (ch1 >= 'a' && ch1 <= 'z'
@@ -1190,7 +1190,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
                     }
                 }
             } else if (osname.contains("netware")) {
-                int colon = fileName.indexOf(':');
+                final int colon = fileName.indexOf(':');
                 if (colon != -1) {
                     fileName = fileName.substring(colon + 1);
                 }

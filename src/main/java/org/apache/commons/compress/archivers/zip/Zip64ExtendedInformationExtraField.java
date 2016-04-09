@@ -127,7 +127,7 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
             if (size == null || compressedSize == null) {
                 throw new IllegalArgumentException(LFH_MUST_HAVE_BOTH_SIZES_MSG);
             }
-            byte[] data = new byte[2 * DWORD];
+            final byte[] data = new byte[2 * DWORD];
             addSizes(data);
             return data;
         }
@@ -136,7 +136,7 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
 
     @Override
     public byte[] getCentralDirectoryData() {
-        byte[] data = new byte[getCentralDirectoryLength().getValue()];
+        final byte[] data = new byte[getCentralDirectoryLength().getValue()];
         int off = addSizes(data);
         if (relativeHeaderOffset != null) {
             System.arraycopy(relativeHeaderOffset.getBytes(), 0, data, off, DWORD);
@@ -227,7 +227,7 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
                                             final boolean hasDiskStart)
         throws ZipException {
         if (rawCentralDirectoryData != null) {
-            int expectedLength = (hasUncompressedSize ? DWORD : 0)
+            final int expectedLength = (hasUncompressedSize ? DWORD : 0)
                 + (hasCompressedSize ? DWORD : 0)
                 + (hasRelativeHeaderOffset ? DWORD : 0)
                 + (hasDiskStart ? WORD : 0);

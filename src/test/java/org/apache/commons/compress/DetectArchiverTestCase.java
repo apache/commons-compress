@@ -43,7 +43,7 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
         try {
             getStreamFor("test.txt");
             fail("Expected ArchiveException");
-        } catch (ArchiveException e) {
+        } catch (final ArchiveException e) {
             // expected
         }
     }
@@ -130,14 +130,14 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
     }
 
     private void checkEmptyArchive(final String type) throws Exception{
-        File ar = createEmptyArchive(type); // will be deleted by tearDown()
+        final File ar = createEmptyArchive(type); // will be deleted by tearDown()
         ar.deleteOnExit(); // Just in case file cannot be deleted
         ArchiveInputStream ais = null;
         BufferedInputStream in = null;
         try {
             in = new BufferedInputStream(new FileInputStream(ar));
             ais = factory.createArchiveInputStream(in);
-        } catch (ArchiveException ae) {
+        } catch (final ArchiveException ae) {
             fail("Should have recognised empty archive for "+type);
         } finally {
             if (ais != null) {

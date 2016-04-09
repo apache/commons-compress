@@ -177,7 +177,7 @@ public class ArArchiveEntry implements ArchiveEntry {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        ArArchiveEntry other = (ArArchiveEntry) obj;
+        final ArArchiveEntry other = (ArArchiveEntry) obj;
         if (name == null) {
             if (other.name != null) {
                 return false;

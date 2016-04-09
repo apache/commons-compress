@@ -133,7 +133,7 @@ public final class ZipLong implements Cloneable, Serializable {
      * @return value as four bytes in big endian byte order
      */
     public static byte[] getBytes(final long value) {
-        byte[] result = new byte[WORD];
+        final byte[] result = new byte[WORD];
         putLong(value, result, 0);
         return result;
     }
@@ -207,7 +207,7 @@ public final class ZipLong implements Cloneable, Serializable {
     public Object clone() {
         try {
             return super.clone();
-        } catch (CloneNotSupportedException cnfe) {
+        } catch (final CloneNotSupportedException cnfe) {
             // impossible
             throw new RuntimeException(cnfe);
         }

@@ -61,7 +61,7 @@ public abstract class LZWInputStream extends CompressorInputStream {
     
     @Override
     public int read() throws IOException {
-        int ret = read(oneByte);
+        final int ret = read(oneByte);
         if (ret < 0) {
             return ret;
         }
@@ -72,7 +72,7 @@ public abstract class LZWInputStream extends CompressorInputStream {
     public int read(final byte[] b, final int off, final int len) throws IOException {
         int bytesRead = readFromStack(b, off, len);
         while (len - bytesRead > 0) {
-            int result = decompressNextSymbol();
+            final int result = decompressNextSymbol();
             if (result < 0) {
                 if (bytesRead > 0) {
                     count(bytesRead);
@@ -192,9 +192,9 @@ public abstract class LZWInputStream extends CompressorInputStream {
     }
 
     private int readFromStack(final byte[] b, final int off, final int len) {
-        int remainingInStack = outputStack.length - outputStackLocation;
+        final int remainingInStack = outputStack.length - outputStackLocation;
         if (remainingInStack > 0) {
-            int maxLength = Math.min(remainingInStack, len);
+            final int maxLength = Math.min(remainingInStack, len);
             System.arraycopy(outputStack, outputStackLocation, b, off, maxLength);
             outputStackLocation += maxLength;
             return maxLength;

@@ -67,7 +67,7 @@ class AES256SHA256Decoder extends CoderBase {
                     final MessageDigest digest;
                     try {
                         digest = MessageDigest.getInstance("SHA-256");
-                    } catch (NoSuchAlgorithmException noSuchAlgorithmException) {
+                    } catch (final NoSuchAlgorithmException noSuchAlgorithmException) {
                         throw new IOException("SHA-256 is unsupported by your Java implementation",
                             noSuchAlgorithmException);
                     }
@@ -93,7 +93,7 @@ class AES256SHA256Decoder extends CoderBase {
                     cipherInputStream = new CipherInputStream(in, cipher);
                     isInitialized = true;
                     return cipherInputStream;
-                } catch (GeneralSecurityException generalSecurityException) {
+                } catch (final GeneralSecurityException generalSecurityException) {
                     throw new IOException("Decryption error " +
                         "(do you have the JCE Unlimited Strength Jurisdiction Policy Files installed?)",
                         generalSecurityException);

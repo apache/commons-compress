@@ -407,7 +407,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
             return false;
         }
 
-        DumpArchiveEntry rhs = (DumpArchiveEntry) o;
+        final DumpArchiveEntry rhs = (DumpArchiveEntry) o;
 
         if ((header == null) || (rhs.header == null)) {
             return false;
@@ -437,8 +437,8 @@ public class DumpArchiveEntry implements ArchiveEntry {
      * @param buffer buffer to read content from
      */
     static DumpArchiveEntry parse(final byte[] buffer) {
-        DumpArchiveEntry entry = new DumpArchiveEntry();
-        TapeSegmentHeader header = entry.header;
+        final DumpArchiveEntry entry = new DumpArchiveEntry();
+        final TapeSegmentHeader header = entry.header;
 
         header.type = DumpArchiveConstants.SEGMENT_TYPE.find(DumpArchiveUtil.convert32(
                     buffer, 0));
@@ -452,7 +452,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
         //header.magic = DumpArchiveUtil.convert32(buffer, 24);
         //header.checksum = DumpArchiveUtil.convert32(buffer, 28);
-        int m = DumpArchiveUtil.convert16(buffer, 32);
+        final int m = DumpArchiveUtil.convert16(buffer, 32);
 
         // determine the type of the file.
         entry.setType(TYPE.find((m >> 12) & 0x0F));
@@ -792,7 +792,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
         public static TYPE find(final int code) {
             TYPE type = UNKNOWN;
 
-            for (TYPE t : TYPE.values()) {
+            for (final TYPE t : TYPE.values()) {
                 if (code == t.code) {
                     type = t;
                 }
@@ -823,9 +823,9 @@ public class DumpArchiveEntry implements ArchiveEntry {
         }
 
         public static Set<PERMISSION> find(final int code) {
-            Set<PERMISSION> set = new HashSet<PERMISSION>();
+            final Set<PERMISSION> set = new HashSet<PERMISSION>();
 
-            for (PERMISSION p : PERMISSION.values()) {
+            for (final PERMISSION p : PERMISSION.values()) {
                 if ((code & p.code) == p.code) {
                     set.add(p);
                 }

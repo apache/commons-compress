@@ -51,7 +51,7 @@ public class TarUtils {
             @Override
             public ByteBuffer encode(final String name) {
                 final int length = name.length();
-                byte[] buf = new byte[length];
+                final byte[] buf = new byte[length];
 
                 // copy until end of input or output is reached.
                 for (int i = 0; i < length; ++i) {
@@ -63,9 +63,9 @@ public class TarUtils {
             @Override
             public String decode(final byte[] buffer) {
                 final int length = buffer.length;
-                StringBuilder result = new StringBuilder(length);
+                final StringBuilder result = new StringBuilder(length);
 
-                for (byte b : buffer) {
+                for (final byte b : buffer) {
                     if (b == 0) { // Trailing null
                         break;
                     }
@@ -202,7 +202,7 @@ public class TarUtils {
                                               final int offset,
                                               final int length,
                                               final boolean negative) {
-        byte[] remainder = new byte[length - 1];
+        final byte[] remainder = new byte[length - 1];
         System.arraycopy(buffer, offset + 1, remainder, 0, length - 1);
         BigInteger val = new BigInteger(remainder);
         if (negative) {
@@ -262,10 +262,10 @@ public class TarUtils {
     public static String parseName(final byte[] buffer, final int offset, final int length) {
         try {
             return parseName(buffer, offset, length, DEFAULT_ENCODING);
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             try {
                 return parseName(buffer, offset, length, FALLBACK_ENCODING);
-            } catch (IOException ex2) {
+            } catch (final IOException ex2) {
                 // impossible
                 throw new RuntimeException(ex2);
             }
@@ -297,7 +297,7 @@ public class TarUtils {
             }
         }
         if (len > 0) {
-            byte[] b = new byte[len];
+            final byte[] b = new byte[len];
             System.arraycopy(buffer, offset, b, 0, len);
             return encoding.decode(b);
         }
@@ -322,11 +322,11 @@ public class TarUtils {
     public static int formatNameBytes(final String name, final byte[] buf, final int offset, final int length) {
         try {
             return formatNameBytes(name, buf, offset, length, DEFAULT_ENCODING);
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             try {
                 return formatNameBytes(name, buf, offset, length,
                                        FALLBACK_ENCODING);
-            } catch (IOException ex2) {
+            } catch (final IOException ex2) {
                 // impossible
                 throw new RuntimeException(ex2);
             }
@@ -446,7 +446,7 @@ public class TarUtils {
      */
     public static int formatLongOctalBytes(final long value, final byte[] buf, final int offset, final int length) {
 
-        int idx=length-1; // For space
+        final int idx=length-1; // For space
 
         formatUnsignedOctalString(value, buf, offset, idx);
         buf[offset + idx] = (byte) ' '; // Trailing space
@@ -516,7 +516,7 @@ public class TarUtils {
                                                final int offset,
                                                final int length,
                                                final boolean negative) {
-        BigInteger val = BigInteger.valueOf(value);
+        final BigInteger val = BigInteger.valueOf(value);
         final byte[] b = val.toByteArray();
         final int len = b.length;
         final int off = offset + length - len;
@@ -561,7 +561,7 @@ public class TarUtils {
     public static long computeCheckSum(final byte[] buf) {
         long sum = 0;
 
-        for (byte element : buf) {
+        for (final byte element : buf) {
             sum += BYTE_MASK & element;
         }
 
@@ -594,7 +594,7 @@ public class TarUtils {
      * @since 1.5
      */
     public static boolean verifyCheckSum(final byte[] header) {
-        long storedSum = parseOctal(header, CHKSUM_OFFSET, CHKSUMLEN);
+        final long storedSum = parseOctal(header, CHKSUM_OFFSET, CHKSUMLEN);
         long unsignedSum = 0;
         long signedSum = 0;
 

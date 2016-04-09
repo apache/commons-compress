@@ -132,7 +132,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
     private int readOnce(final byte[] b, final int off, final int len) throws IOException {
         int read = -1;
         if (inUncompressedChunk) {
-            int amount = Math.min(uncompressedBytesRemaining, len);
+            final int amount = Math.min(uncompressedBytesRemaining, len);
             if (amount == 0) {
                 return -1;
             }
@@ -142,7 +142,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
                 count(read);
             }
         } else if (currentCompressedChunk != null) {
-            long before = currentCompressedChunk.getBytesRead();
+            final long before = currentCompressedChunk.getBytesRead();
             read = currentCompressedChunk.read(b, off, len);
             if (read == -1) {
                 currentCompressedChunk.close();
@@ -160,7 +160,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
     private void readNextBlock() throws IOException {
         verifyLastChecksumAndReset();
         inUncompressedChunk = false;
-        int type = readOneByte();
+        final int type = readOneByte();
         if (type == -1) {
             endReached = true;
         } else if (type == STREAM_IDENTIFIER_TYPE) {
@@ -181,7 +181,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
             uncompressedBytesRemaining = readSize() - 4 /* CRC */;
             expectedChecksum = unmask(readCrc());
         } else if (type == COMPRESSED_CHUNK_TYPE) {
-            long size = readSize() - 4 /* CRC */;
+            final long size = readSize() - 4 /* CRC */;
             expectedChecksum = unmask(readCrc());
             currentCompressedChunk =
                 new SnappyCompressorInputStream(new BoundedInputStream(in, size));
@@ -195,8 +195,8 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
     }
 
     private long readCrc() throws IOException {
-        byte[] b = new byte[4];
-        int read = IOUtils.readFully(in, b);
+        final byte[] b = new byte[4];
+        final int read = IOUtils.readFully(in, b);
         count(read);
         if (read != 4) {
             throw new IOException("premature end of stream");
@@ -230,8 +230,8 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
     }
 
     private void skipBlock() throws IOException {
-        int size = readSize();
-        long read = IOUtils.skip(in, size);
+        final int size = readSize();
+        final long read = IOUtils.skip(in, size);
         count(read);
         if (read != size) {
             throw new IOException("premature end of stream");
@@ -239,8 +239,8 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
     }
 
     private void readStreamIdentifier() throws IOException {
-        byte[] b = new byte[10];
-        int read = IOUtils.readFully(in, b);
+        final byte[] b = new byte[10];
+        final int read = IOUtils.readFully(in, b);
         count(read);
         if (10 != read || !matches(b, 10)) {
             throw new IOException("Not a framed Snappy stream");
@@ -248,7 +248,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
     }
 
     private int readOneByte() throws IOException {
-        int b = in.read();
+        final int b = in.read();
         if (b != -1) {
             count(1);
             return b & 0xFF;

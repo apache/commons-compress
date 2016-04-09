@@ -97,11 +97,11 @@ public final class ChangeSet {
         }
 
         if (!changes.isEmpty()) {
-            for (Iterator<Change> it = changes.iterator(); it.hasNext();) {
-                Change change = it.next();
+            for (final Iterator<Change> it = changes.iterator(); it.hasNext();) {
+                final Change change = it.next();
                 if (change.type() == Change.TYPE_ADD
                         && change.getEntry() != null) {
-                    ArchiveEntry entry = change.getEntry();
+                    final ArchiveEntry entry = change.getEntry();
 
                     if(entry.equals(pChange.getEntry())) {
                         if(pChange.isReplaceMode()) {
@@ -130,14 +130,14 @@ public final class ChangeSet {
             pChange.targetFile() == null) {
             return;
         }
-        String source = pChange.targetFile();
+        final String source = pChange.targetFile();
 
         if (source != null && !changes.isEmpty()) {
-            for (Iterator<Change> it = changes.iterator(); it.hasNext();) {
-                Change change = it.next();
+            for (final Iterator<Change> it = changes.iterator(); it.hasNext();) {
+                final Change change = it.next();
                 if (change.type() == Change.TYPE_ADD
                         && change.getEntry() != null) {
-                    String target = change.getEntry().getName();
+                    final String target = change.getEntry().getName();
 
                     if (target == null) {
                         continue;

@@ -510,7 +510,7 @@ public class SevenZFile implements Closeable {
         long totalOutStreams = 0;
         for (int i = 0; i < coders.length; i++) {
             coders[i] = new Coder();
-            int bits = header.readUnsignedByte();
+            final int bits = header.readUnsignedByte();
             final int idSize = bits & 0xf;
             final boolean isSimple = (bits & 0x10) == 0;
             final boolean hasAttributes = (bits & 0x20) != 0;
@@ -623,7 +623,7 @@ public class SevenZFile implements Closeable {
             if (propertyType == 0) {
                 break;
             }
-            long size = readUint64(header);
+            final long size = readUint64(header);
             switch (propertyType) {
                 case NID.kEmptyStream: {
                     isEmptyStream = readBits(header, files.length);
@@ -868,12 +868,12 @@ public class SevenZFile implements Closeable {
             new BufferedInputStream(
               new BoundedRandomAccessFileInputStream(file,
                   archive.packSizes[firstPackStreamIndex]));
-        LinkedList<SevenZMethodConfiguration> methods = new LinkedList<SevenZMethodConfiguration>();
+        final LinkedList<SevenZMethodConfiguration> methods = new LinkedList<SevenZMethodConfiguration>();
         for (final Coder coder : folder.getOrderedCoders()) {
             if (coder.numInStreams != 1 || coder.numOutStreams != 1) {
                 throw new IOException("Multi input/output stream coders are not yet supported");
             }
-            SevenZMethod method = SevenZMethod.byId(coder.decompressionMethodId);
+            final SevenZMethod method = SevenZMethod.byId(coder.decompressionMethodId);
             inputStreamStack = Coders.addDecoder(fileName, inputStreamStack,
                     folder.getUnpackSizeForCoder(coder), coder, password);
             methods.addFirst(new SevenZMethodConfiguration(method,
@@ -907,7 +907,7 @@ public class SevenZFile implements Closeable {
             // In solid compression mode we need to decompress all leading folder'
             // streams to get access to an entry. We defer this until really needed
             // so that entire blocks can be skipped without wasting time for decompression.
-            InputStream stream = deferredBlockStreams.remove(0);
+            final InputStream stream = deferredBlockStreams.remove(0);
             IOUtils.skip(stream, Long.MAX_VALUE);
             stream.close();
         }
@@ -943,14 +943,14 @@ public class SevenZFile implements Closeable {
     
     private static long readUint64(final DataInput in) throws IOException {
         // long rather than int as it might get shifted beyond the range of an int
-        long firstByte = in.readUnsignedByte();
+        final long firstByte = in.readUnsignedByte();
         int mask = 0x80;
         long value = 0;
         for (int i = 0; i < 8; i++) {
             if ((firstByte & mask) == 0) {
                 return value | ((firstByte & (mask - 1)) << (8 * i));
             }
-            long nextByte = in.readUnsignedByte();
+            final long nextByte = in.readUnsignedByte();
             value |= nextByte << (8 * i);
             mask >>>= 1;
         }
@@ -986,7 +986,7 @@ public class SevenZFile implements Closeable {
         }
         long skipped = 0;
         while (bytesToSkip > Integer.MAX_VALUE) {
-            long skippedNow = skipBytesFully(input, Integer.MAX_VALUE);
+            final long skippedNow = skipBytesFully(input, Integer.MAX_VALUE);
             if (skippedNow == 0) {
                 return skipped;
             }
@@ -994,7 +994,7 @@ public class SevenZFile implements Closeable {
             bytesToSkip -= skippedNow;
         }
         while (bytesToSkip > 0) {
-            int skippedNow = input.skipBytes((int) bytesToSkip);
+            final int skippedNow = input.skipBytes((int) bytesToSkip);
             if (skippedNow == 0) {
                 return skipped;
             }

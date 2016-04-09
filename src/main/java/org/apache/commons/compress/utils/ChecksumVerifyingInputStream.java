@@ -52,7 +52,7 @@ public class ChecksumVerifyingInputStream extends InputStream {
         if (bytesRemaining <= 0) {
             return -1;
         }
-        int ret = in.read();
+        final int ret = in.read();
         if (ret >= 0) {
             checksum.update(ret);
             --bytesRemaining;
@@ -82,7 +82,7 @@ public class ChecksumVerifyingInputStream extends InputStream {
      */
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
-        int ret = in.read(b, off, len);
+        final int ret = in.read(b, off, len);
         if (ret >= 0) {
             checksum.update(b, off, ret);
             bytesRemaining -= ret;

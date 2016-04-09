@@ -92,13 +92,13 @@ public enum SevenZMethod {
     }
 
     byte[] getId() {
-        byte[] copy = new byte[id.length];
+        final byte[] copy = new byte[id.length];
         System.arraycopy(id, 0, copy, 0, id.length);
         return copy;
     }
 
     static SevenZMethod byId(final byte[] id) {
-        for (SevenZMethod m : SevenZMethod.class.getEnumConstants()) {
+        for (final SevenZMethod m : SevenZMethod.class.getEnumConstants()) {
             if (Arrays.equals(m.id, id)) {
                 return m;
             }

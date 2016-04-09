@@ -67,7 +67,7 @@ public final class DeflateTestCase extends AbstractTestCase {
         final File output = new File(dir, "test1.xml.deflate");
         final OutputStream out = new FileOutputStream(output);
         try {
-            DeflateParameters params = new DeflateParameters();
+            final DeflateParameters params = new DeflateParameters();
             params.setWithZlibHeader(false);
             final CompressorOutputStream cos = new DeflateCompressorOutputStream(out, params);
             try {
@@ -119,7 +119,7 @@ public final class DeflateTestCase extends AbstractTestCase {
         final File output = new File(dir, "bla.tar");
         final InputStream is = new FileInputStream(input);
         try {
-            DeflateParameters params = new DeflateParameters();
+            final DeflateParameters params = new DeflateParameters();
             params.setWithZlibHeader(false);
             final CompressorInputStream in = new DeflateCompressorInputStream(is, params);
             FileOutputStream out = null;

@@ -39,7 +39,7 @@ abstract class CoderBase {
      * @return whether this method can extract options from the given object.
      */
     boolean canAcceptOptions(final Object opts) {
-        for (Class<?> c : acceptableOptions) {
+        for (final Class<?> c : acceptableOptions) {
             if (c.isInstance(opts)) {
                 return true;
             }

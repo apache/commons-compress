@@ -169,7 +169,7 @@ public final class GeneralPurposeBit implements Cloneable {
      * @return the encoded general purpose bits
      */
     public byte[] encode() {
-        byte[] result = new byte[2];
+        final byte[] result = new byte[2];
         encode(result, 0);
         return result;
     }
@@ -203,7 +203,7 @@ public final class GeneralPurposeBit implements Cloneable {
      */
     public static GeneralPurposeBit parse(final byte[] data, final int offset) {
         final int generalPurposeFlag = ZipShort.getValue(data, offset);
-        GeneralPurposeBit b = new GeneralPurposeBit();
+        final GeneralPurposeBit b = new GeneralPurposeBit();
         b.useDataDescriptor((generalPurposeFlag & DATA_DESCRIPTOR_FLAG) != 0);
         b.useUTF8ForNames((generalPurposeFlag & UFT8_NAMES_FLAG) != 0);
         b.useStrongEncryption((generalPurposeFlag & STRONG_ENCRYPTION_FLAG) != 0);
@@ -226,7 +226,7 @@ public final class GeneralPurposeBit implements Cloneable {
         if (!(o instanceof GeneralPurposeBit)) {
             return false;
         }
-        GeneralPurposeBit g = (GeneralPurposeBit) o;
+        final GeneralPurposeBit g = (GeneralPurposeBit) o;
         return g.encryptionFlag == encryptionFlag
             && g.strongEncryptionFlag == strongEncryptionFlag
             && g.languageEncodingFlag == languageEncodingFlag
@@ -237,7 +237,7 @@ public final class GeneralPurposeBit implements Cloneable {
     public Object clone() {
         try {
             return super.clone();
-        } catch (CloneNotSupportedException ex) {
+        } catch (final CloneNotSupportedException ex) {
             // impossible
             throw new RuntimeException("GeneralPurposeBit is not Cloneable?", ex);
         }

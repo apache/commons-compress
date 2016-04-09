@@ -34,7 +34,7 @@ public class TarUtilsTest {
     @Test
     public void testName(){
         byte [] buff = new byte[20];
-        String sb1 = "abcdefghijklmnopqrstuvwxyz";
+        final String sb1 = "abcdefghijklmnopqrstuvwxyz";
         int off = TarUtils.formatNameBytes(sb1, buff, 1, buff.length-1);
         assertEquals(off, 20);
         String sb2 = TarUtils.parseName(buff, 1, 10);
@@ -82,36 +82,36 @@ public class TarUtilsTest {
         try {
             TarUtils.parseOctal(buffer,0, buffer.length);
             fail("Expected IllegalArgumentException - should be at least 2 bytes long");
-        } catch (IllegalArgumentException expected) {
+        } catch (final IllegalArgumentException expected) {
         }
         buffer=new byte[]{0}; // 1-byte array
         try {
             TarUtils.parseOctal(buffer,0, buffer.length);
             fail("Expected IllegalArgumentException - should be at least 2 bytes long");
-        } catch (IllegalArgumentException expected) {
+        } catch (final IllegalArgumentException expected) {
         }
         buffer = "abcdef ".getBytes(CharsetNames.UTF_8); // Invalid input
         try {
             TarUtils.parseOctal(buffer,0, buffer.length);
             fail("Expected IllegalArgumentException");
-        } catch (IllegalArgumentException expected) {
+        } catch (final IllegalArgumentException expected) {
         }
         buffer = " 0 07 ".getBytes(CharsetNames.UTF_8); // Invalid - embedded space
         try {
             TarUtils.parseOctal(buffer,0, buffer.length);
             fail("Expected IllegalArgumentException - embedded space");
-        } catch (IllegalArgumentException expected) {
+        } catch (final IllegalArgumentException expected) {
         }
         buffer = " 0\00007 ".getBytes(CharsetNames.UTF_8); // Invalid - embedded NUL
         try {
             TarUtils.parseOctal(buffer,0, buffer.length);
             fail("Expected IllegalArgumentException - embedded NUL");
-        } catch (IllegalArgumentException expected) {
+        } catch (final IllegalArgumentException expected) {
         }
     }
 
     private void checkRoundTripOctal(final long value, final int bufsize) {
-        byte [] buffer = new byte[bufsize];
+        final byte [] buffer = new byte[bufsize];
         long parseValue;
         TarUtils.formatLongOctalBytes(value, buffer, 0, buffer.length);
         parseValue = TarUtils.parseOctal(buffer,0, buffer.length);
@@ -136,7 +136,7 @@ public class TarUtilsTest {
     }
 
     private void checkRoundTripOctalOrBinary(final long value, final int bufsize) {
-        byte [] buffer = new byte[bufsize];
+        final byte [] buffer = new byte[bufsize];
         long parseValue;
         TarUtils.formatLongOctalOrBinaryBytes(value, buffer, 0, buffer.length);
         parseValue = TarUtils.parseOctalOrBinary(buffer,0, buffer.length);
@@ -166,7 +166,7 @@ public class TarUtilsTest {
     // Check correct trailing bytes are generated
     @Test
     public void testTrailers() {
-        byte [] buffer = new byte[12];
+        final byte [] buffer = new byte[12];
         TarUtils.formatLongOctalBytes(123, buffer, 0, buffer.length);
         assertEquals(' ', buffer[buffer.length-1]);
         assertEquals('3', buffer[buffer.length-2]); // end of number
@@ -182,20 +182,20 @@ public class TarUtilsTest {
 
     @Test
     public void testNegative() throws Exception {
-        byte [] buffer = new byte[22];
+        final byte [] buffer = new byte[22];
         TarUtils.formatUnsignedOctalString(-1, buffer, 0, buffer.length);
         assertEquals("1777777777777777777777", new String(buffer, CharsetNames.UTF_8));
     }
 
     @Test
     public void testOverflow() throws Exception {
-        byte [] buffer = new byte[8-1]; // a lot of the numbers have 8-byte buffers (nul term)
+        final byte [] buffer = new byte[8-1]; // a lot of the numbers have 8-byte buffers (nul term)
         TarUtils.formatUnsignedOctalString(07777777L, buffer, 0, buffer.length);
         assertEquals("7777777", new String(buffer, CharsetNames.UTF_8));
         try {
             TarUtils.formatUnsignedOctalString(017777777L, buffer, 0, buffer.length);
             fail("Should have cause IllegalArgumentException");
-        } catch (IllegalArgumentException expected) {
+        } catch (final IllegalArgumentException expected) {
         }
     }
 
@@ -210,22 +210,22 @@ public class TarUtilsTest {
     @Test
     public void testRoundEncoding() throws Exception {
         // COMPRESS-114
-        ZipEncoding enc = ZipEncodingHelper.getZipEncoding(CharsetNames.ISO_8859_1);
-        String s = "0302-0601-3\u00b1\u00b1\u00b1F06\u00b1W220\u00b1ZB\u00b1LALALA\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1CAN\u00b1\u00b1DC\u00b1\u00b1\u00b104\u00b1060302\u00b1MOE.model";
-        byte buff[] = new byte[100];
-        int len = TarUtils.formatNameBytes(s, buff, 0, buff.length, enc);
+        final ZipEncoding enc = ZipEncodingHelper.getZipEncoding(CharsetNames.ISO_8859_1);
+        final String s = "0302-0601-3\u00b1\u00b1\u00b1F06\u00b1W220\u00b1ZB\u00b1LALALA\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1CAN\u00b1\u00b1DC\u00b1\u00b1\u00b104\u00b1060302\u00b1MOE.model";
+        final byte buff[] = new byte[100];
+        final int len = TarUtils.formatNameBytes(s, buff, 0, buff.length, enc);
         assertEquals(s, TarUtils.parseName(buff, 0, len, enc));
     }
 
     private void checkName(final String string) {
-        byte buff[] = new byte[100];
-        int len = TarUtils.formatNameBytes(string, buff, 0, buff.length);
+        final byte buff[] = new byte[100];
+        final int len = TarUtils.formatNameBytes(string, buff, 0, buff.length);
         assertEquals(string, TarUtils.parseName(buff, 0, len));
     }
 
     @Test
     public void testReadNegativeBinary8Byte() {
-        byte[] b = new byte[] {
+        final byte[] b = new byte[] {
             (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
             (byte) 0xff, (byte) 0xff, (byte) 0xf1, (byte) 0xef,
         };
@@ -234,7 +234,7 @@ public class TarUtilsTest {
 
     @Test
     public void testReadNegativeBinary12Byte() {
-        byte[] b = new byte[] {
+        final byte[] b = new byte[] {
             (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
             (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
             (byte) 0xff, (byte) 0xff, (byte) 0xf1, (byte) 0xef,
@@ -245,7 +245,7 @@ public class TarUtilsTest {
 
     @Test
     public void testWriteNegativeBinary8Byte() {
-        byte[] b = new byte[] {
+        final byte[] b = new byte[] {
             (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
             (byte) 0xff, (byte) 0xff, (byte) 0xf1, (byte) 0xef,
         };
@@ -255,7 +255,7 @@ public class TarUtilsTest {
     // https://issues.apache.org/jira/browse/COMPRESS-191
     @Test
     public void testVerifyHeaderCheckSum() {
-        byte[] valid = { // from bla.tar
+        final byte[] valid = { // from bla.tar
                 116, 101, 115, 116, 49, 46, 120, 109, 108, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -285,7 +285,7 @@ public class TarUtilsTest {
                 0, 0, 0, 0 };
         assertTrue(TarUtils.verifyCheckSum(valid));
 
-        byte[] compress117 = { // from COMPRESS-117
+        final byte[] compress117 = { // from COMPRESS-117
             (byte) 0x37, (byte) 0x7a, (byte) 0x43, (byte) 0x2e, (byte) 0x74, (byte) 0x78, (byte) 0x74, (byte) 0x00,
             0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -326,7 +326,7 @@ public class TarUtilsTest {
         };
         assertTrue(TarUtils.verifyCheckSum(compress117));
 
-        byte[] invalid = { // from the testAIFF.aif file in Tika
+        final byte[] invalid = { // from the testAIFF.aif file in Tika
                 70, 79, 82, 77, 0, 0, 15, 46, 65, 73, 70, 70, 67, 79, 77, 77,
                 0, 0, 0, 18, 0, 2, 0, 0, 3, -64, 0, 16, 64, 14, -84, 68, 0, 0,
                 0, 0, 0, 0, 83, 83, 78, 68, 0, 0, 15, 8, 0, 0, 0, 0, 0, 0, 0,
@@ -360,8 +360,8 @@ public class TarUtilsTest {
 
     @Test
     public void testParseOctalCompress330() throws Exception{
-        long expected = 0100000;
-        byte [] buffer = new byte[] {
+        final long expected = 0100000;
+        final byte [] buffer = new byte[] {
             32, 32, 32, 32, 32, 49, 48, 48, 48, 48, 48, 32
         };
         assertEquals(expected, TarUtils.parseOctalOrBinary(buffer, 0, buffer.length));

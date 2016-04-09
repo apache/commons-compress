@@ -32,16 +32,16 @@ public class ArjArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void testArjUnarchive() throws Exception {
-        StringBuilder expected = new StringBuilder();
+        final StringBuilder expected = new StringBuilder();
         expected.append("test1.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>test2.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>\n");
 
 
-        ArjArchiveInputStream in = new ArjArchiveInputStream(new FileInputStream(getFile("bla.arj")));
+        final ArjArchiveInputStream in = new ArjArchiveInputStream(new FileInputStream(getFile("bla.arj")));
         ArjArchiveEntry entry;
 
-        StringBuilder result = new StringBuilder();
+        final StringBuilder result = new StringBuilder();
         while ((entry = in.getNextEntry()) != null) {
             result.append(entry.getName());
             int tmp;
@@ -56,12 +56,12 @@ public class ArjArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void testReadingOfAttributesDosVersion() throws Exception {
-        ArjArchiveInputStream in = new ArjArchiveInputStream(new FileInputStream(getFile("bla.arj")));
-        ArjArchiveEntry entry = in.getNextEntry();
+        final ArjArchiveInputStream in = new ArjArchiveInputStream(new FileInputStream(getFile("bla.arj")));
+        final ArjArchiveEntry entry = in.getNextEntry();
         assertEquals("test1.xml", entry.getName());
         assertEquals(30, entry.getSize());
         assertEquals(0, entry.getUnixMode());
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         cal.set(2008, 9, 6, 23, 50, 52);
         cal.set(Calendar.MILLISECOND, 0);
         assertEquals(cal.getTime(), entry.getLastModifiedDate());
@@ -70,12 +70,12 @@ public class ArjArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void testReadingOfAttributesUnixVersion() throws Exception {
-        ArjArchiveInputStream in = new ArjArchiveInputStream(new FileInputStream(getFile("bla.unix.arj")));
-        ArjArchiveEntry entry = in.getNextEntry();
+        final ArjArchiveInputStream in = new ArjArchiveInputStream(new FileInputStream(getFile("bla.unix.arj")));
+        final ArjArchiveEntry entry = in.getNextEntry();
         assertEquals("test1.xml", entry.getName());
         assertEquals(30, entry.getSize());
         assertEquals(0664, entry.getUnixMode() & 07777 /* UnixStat.PERM_MASK */);
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT+0000"));
+        final Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT+0000"));
         cal.set(2008, 9, 6, 21, 50, 52);
         cal.set(Calendar.MILLISECOND, 0);
         assertEquals(cal.getTime(), entry.getLastModifiedDate());

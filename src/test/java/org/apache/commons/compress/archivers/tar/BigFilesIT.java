@@ -52,7 +52,7 @@ public class BigFilesIT {
                                          );
             gzin = new GzipCompressorInputStream(in);
             tin = new TarArchiveInputStream(gzin);
-            TarArchiveEntry e = tin.getNextTarEntry();
+            final TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertNull(tin.getNextTarEntry());
         } finally {
@@ -77,19 +77,19 @@ public class BigFilesIT {
                                          .getResourceAsStream(name));
             gzin = new GzipCompressorInputStream(in);
             tin = new TarArchiveInputStream(gzin);
-            TarArchiveEntry e = tin.getNextTarEntry();
+            final TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertEquals(8200l * 1024 * 1024, e.getSize());
 
             long read = 0;
-            Random r = new Random(System.currentTimeMillis());
+            final Random r = new Random(System.currentTimeMillis());
             int readNow;
-            byte[] buf = new byte[1024 * 1024];
+            final byte[] buf = new byte[1024 * 1024];
             while ((readNow = tin.read(buf, 0, buf.length)) > 0) {
                 // testing all bytes for a value of 0 is going to take
                 // too long, just pick a few ones randomly
                 for (int i = 0; i < 100; i++) {
-                    int idx = r.nextInt(readNow);
+                    final int idx = r.nextInt(readNow);
                     assertEquals("testing byte " + (read + idx), 0, buf[idx]);
                 }
                 read += readNow;

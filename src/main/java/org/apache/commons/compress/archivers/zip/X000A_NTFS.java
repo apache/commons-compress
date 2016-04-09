@@ -119,7 +119,7 @@ public class X000A_NTFS implements ZipExtraField {
      */
     @Override
     public byte[] getLocalFileDataData() {
-        byte[] data = new byte[getLocalFileDataLength().getValue()];
+        final byte[] data = new byte[getLocalFileDataLength().getValue()];
         int pos = 4;
         System.arraycopy(TIME_ATTR_TAG.getBytes(), 0, data, pos, 2);
         pos += 2;
@@ -162,13 +162,13 @@ public class X000A_NTFS implements ZipExtraField {
         offset += 4;
 
         while (offset + 4 <= len) {
-            ZipShort tag = new ZipShort(data, offset);
+            final ZipShort tag = new ZipShort(data, offset);
             offset += 2;
             if (tag.equals(TIME_ATTR_TAG)) {
                 readTimeAttr(data, offset, len - offset);
                 break;
             }
-            ZipShort size = new ZipShort(data, offset);
+            final ZipShort size = new ZipShort(data, offset);
             offset += 2 + size.getValue();
         }
     }
@@ -312,7 +312,7 @@ public class X000A_NTFS implements ZipExtraField {
      */
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder();
+        final StringBuilder buf = new StringBuilder();
         buf.append("0x000A Zip Extra Field:")
             .append(" Modify:[").append(getModifyJavaTime()).append("] ")
             .append(" Access:[").append(getAccessJavaTime()).append("] ")
@@ -323,7 +323,7 @@ public class X000A_NTFS implements ZipExtraField {
     @Override
     public boolean equals(final Object o) {
         if (o instanceof X000A_NTFS) {
-            X000A_NTFS xf = (X000A_NTFS) o;
+            final X000A_NTFS xf = (X000A_NTFS) o;
 
             return (modifyTime == xf.modifyTime || (modifyTime != null && modifyTime.equals(xf.modifyTime))) &&
                     (accessTime == xf.accessTime || (accessTime != null && accessTime.equals(xf.accessTime))) &&
@@ -361,7 +361,7 @@ public class X000A_NTFS implements ZipExtraField {
 
     private void readTimeAttr(final byte[] data, int offset, final int length) {
         if (length >= 2 + 3 * 8) {
-            ZipShort tagValueLength = new ZipShort(data, offset);
+            final ZipShort tagValueLength = new ZipShort(data, offset);
             if (TIME_ATTR_SIZE.equals(tagValueLength)) {
                 offset += 2;
                 modifyTime = new ZipEightByteInteger(data, offset);
@@ -387,7 +387,7 @@ public class X000A_NTFS implements ZipExtraField {
 
     private static Date zipToDate(final ZipEightByteInteger z) {
         if (z == null || ZipEightByteInteger.ZERO.equals(z)) { return null; }
-        long l = (z.getLongValue() + EPOCH_OFFSET) / 10000l;
+        final long l = (z.getLongValue() + EPOCH_OFFSET) / 10000l;
         return new Date(l);
     }
 

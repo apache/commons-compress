@@ -57,11 +57,11 @@ public class ParallelScatterZipCreatorTest {
     public void concurrent()
             throws Exception {
         result = File.createTempFile("parallelScatterGather1", "");
-        ZipArchiveOutputStream zos = new ZipArchiveOutputStream(result);
+        final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(result);
         zos.setEncoding("UTF-8");
-        ParallelScatterZipCreator zipCreator = new ParallelScatterZipCreator();
+        final ParallelScatterZipCreator zipCreator = new ParallelScatterZipCreator();
 
-        Map<String, byte[]> entries = writeEntries(zipCreator);
+        final Map<String, byte[]> entries = writeEntries(zipCreator);
         zipCreator.writeTo(zos);
         zos.close();
         removeEntriesFoundInZipFile(result, entries);
@@ -73,19 +73,19 @@ public class ParallelScatterZipCreatorTest {
     public void callableApi()
             throws Exception {
         result = File.createTempFile("parallelScatterGather2", "");
-        ZipArchiveOutputStream zos = new ZipArchiveOutputStream(result);
+        final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(result);
         zos.setEncoding("UTF-8");
-        ExecutorService es = Executors.newFixedThreadPool(1);
+        final ExecutorService es = Executors.newFixedThreadPool(1);
 
-        ScatterGatherBackingStoreSupplier supp = new ScatterGatherBackingStoreSupplier() {
+        final ScatterGatherBackingStoreSupplier supp = new ScatterGatherBackingStoreSupplier() {
             @Override
             public ScatterGatherBackingStore get() throws IOException {
                 return new FileBasedScatterGatherBackingStore(tmp = File.createTempFile("parallelscatter", "n1"));
             }
         };
 
-        ParallelScatterZipCreator zipCreator = new ParallelScatterZipCreator(es, supp);
-        Map<String, byte[]> entries = writeEntriesAsCallable(zipCreator);
+        final ParallelScatterZipCreator zipCreator = new ParallelScatterZipCreator(es, supp);
+        final Map<String, byte[]> entries = writeEntriesAsCallable(zipCreator);
         zipCreator.writeTo(zos);
         zos.close();
 
@@ -96,23 +96,23 @@ public class ParallelScatterZipCreatorTest {
     }
 
     private void removeEntriesFoundInZipFile(final File result, final Map<String, byte[]> entries) throws IOException {
-        ZipFile zf = new ZipFile(result);
-        Enumeration<ZipArchiveEntry> entriesInPhysicalOrder = zf.getEntriesInPhysicalOrder();
+        final ZipFile zf = new ZipFile(result);
+        final Enumeration<ZipArchiveEntry> entriesInPhysicalOrder = zf.getEntriesInPhysicalOrder();
         while (entriesInPhysicalOrder.hasMoreElements()){
-            ZipArchiveEntry zipArchiveEntry = entriesInPhysicalOrder.nextElement();
-            InputStream inputStream = zf.getInputStream(zipArchiveEntry);
-            byte[] actual = IOUtils.toByteArray(inputStream);
-            byte[] expected = entries.remove(zipArchiveEntry.getName());
+            final ZipArchiveEntry zipArchiveEntry = entriesInPhysicalOrder.nextElement();
+            final InputStream inputStream = zf.getInputStream(zipArchiveEntry);
+            final byte[] actual = IOUtils.toByteArray(inputStream);
+            final byte[] expected = entries.remove(zipArchiveEntry.getName());
             assertArrayEquals( "For " + zipArchiveEntry.getName(),  expected, actual);
         }
         zf.close();
     }
 
     private Map<String, byte[]> writeEntries(final ParallelScatterZipCreator zipCreator) {
-        Map<String, byte[]> entries = new HashMap<String, byte[]>();
+        final Map<String, byte[]> entries = new HashMap<String, byte[]>();
         for (int i = 0; i < NUMITEMS; i++){
             final byte[] payloadBytes = ("content" + i).getBytes();
-            ZipArchiveEntry za = createZipArchiveEntry(entries, i, payloadBytes);
+            final ZipArchiveEntry za = createZipArchiveEntry(entries, i, payloadBytes);
             zipCreator.addArchiveEntry(za, new InputStreamSupplier() {
                 @Override
                 public InputStream get() {
@@ -124,10 +124,10 @@ public class ParallelScatterZipCreatorTest {
     }
 
     private Map<String, byte[]> writeEntriesAsCallable(final ParallelScatterZipCreator zipCreator) {
-        Map<String, byte[]> entries = new HashMap<String, byte[]>();
+        final Map<String, byte[]> entries = new HashMap<String, byte[]>();
         for (int i = 0; i < NUMITEMS; i++){
             final byte[] payloadBytes = ("content" + i).getBytes();
-            ZipArchiveEntry za = createZipArchiveEntry(entries, i, payloadBytes);
+            final ZipArchiveEntry za = createZipArchiveEntry(entries, i, payloadBytes);
             final Callable<Object> callable = zipCreator.createCallable(za, new InputStreamSupplier() {
                 @Override
                 public InputStream get() {
@@ -140,7 +140,7 @@ public class ParallelScatterZipCreatorTest {
     }
 
     private ZipArchiveEntry createZipArchiveEntry(final Map<String, byte[]> entries, final int i, final byte[] payloadBytes) {
-        ZipArchiveEntry za = new ZipArchiveEntry( "file" + i);
+        final ZipArchiveEntry za = new ZipArchiveEntry( "file" + i);
         entries.put( za.getName(), payloadBytes);
         za.setMethod(ZipEntry.DEFLATED);
         za.setSize(payloadBytes.length);

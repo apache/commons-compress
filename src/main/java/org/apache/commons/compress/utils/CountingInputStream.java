@@ -36,7 +36,7 @@ public class CountingInputStream extends FilterInputStream {
 
     @Override
     public int read() throws IOException {
-        int r = in.read();
+        final int r = in.read();
         if (r >= 0) {
             count(1);
         }
@@ -48,7 +48,7 @@ public class CountingInputStream extends FilterInputStream {
     }
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
-        int r = in.read(b, off, len);
+        final int r = in.read(b, off, len);
         if (r >= 0) {
             count(r);
         }

@@ -55,14 +55,14 @@ class DumpArchiveUtil {
      */
     public static final boolean verify(final byte[] buffer) {
         // verify magic. for now only accept NFS_MAGIC.
-        int magic = convert32(buffer, 24);
+        final int magic = convert32(buffer, 24);
 
         if (magic != DumpArchiveConstants.NFS_MAGIC) {
             return false;
         }
 
         //verify checksum...
-        int checksum = convert32(buffer, 28);
+        final int checksum = convert32(buffer, 28);
 
         if (checksum != calculateChecksum(buffer)) {
             return false;
@@ -138,7 +138,7 @@ class DumpArchiveUtil {
      */
     static String decode(final ZipEncoding encoding, final byte[] b, final int offset, final int len)
         throws IOException {
-        byte[] copy = new byte[len];
+        final byte[] copy = new byte[len];
         System.arraycopy(b, offset, copy, 0, len);
         return encoding.decode(copy);
     }

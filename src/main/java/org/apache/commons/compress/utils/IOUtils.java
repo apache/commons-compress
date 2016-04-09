@@ -98,9 +98,9 @@ public final class IOUtils {
      * @throws IOException on error
      */
     public static long skip(final InputStream input, long numToSkip) throws IOException {
-        long available = numToSkip;
+        final long available = numToSkip;
         while (numToSkip > 0) {
-            long skipped = input.skip(numToSkip);
+            final long skipped = input.skip(numToSkip);
             if (skipped == 0) {
                 break;
             }
@@ -108,7 +108,7 @@ public final class IOUtils {
         }
             
         while (numToSkip > 0) {
-            int read = readFully(input, SKIP_BUF, 0,
+            final int read = readFully(input, SKIP_BUF, 0,
                                  (int) Math.min(numToSkip, SKIP_BUF_SIZE));
             if (read < 1) {
                 break;
@@ -199,7 +199,7 @@ public final class IOUtils {
         if (c != null) {
             try {
                 c.close();
-            } catch (IOException ignored) { // NOPMD
+            } catch (final IOException ignored) { // NOPMD
             }
         }
     }

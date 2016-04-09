@@ -57,7 +57,7 @@ class NioZipEncoding implements ZipEncoding {
      */
     @Override
     public boolean canEncode(final String name) {
-        CharsetEncoder enc = this.charset.newEncoder();
+        final CharsetEncoder enc = this.charset.newEncoder();
         enc.onMalformedInput(CodingErrorAction.REPORT);
         enc.onUnmappableCharacter(CodingErrorAction.REPORT);
 
@@ -70,17 +70,17 @@ class NioZipEncoding implements ZipEncoding {
      */
     @Override
     public ByteBuffer encode(final String name) {
-        CharsetEncoder enc = this.charset.newEncoder();
+        final CharsetEncoder enc = this.charset.newEncoder();
 
         enc.onMalformedInput(CodingErrorAction.REPORT);
         enc.onUnmappableCharacter(CodingErrorAction.REPORT);
 
-        CharBuffer cb = CharBuffer.wrap(name);
+        final CharBuffer cb = CharBuffer.wrap(name);
         ByteBuffer out = ByteBuffer.allocate(name.length()
                                              + (name.length() + 1) / 2);
 
         while (cb.remaining() > 0) {
-            CoderResult res = enc.encode(cb, out,true);
+            final CoderResult res = enc.encode(cb, out,true);
 
             if (res.isUnmappable() || res.isMalformed()) {
 

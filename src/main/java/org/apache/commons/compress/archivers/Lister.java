@@ -40,11 +40,11 @@ public final class Lister {
             return;
         }
         System.out.println("Analysing "+args[0]);
-        File f = new File(args[0]);
+        final File f = new File(args[0]);
         if (!f.isFile()) {
             System.err.println(f + " doesn't exist or is a directory");
         }
-        InputStream fis = new BufferedInputStream(new FileInputStream(f));
+        final InputStream fis = new BufferedInputStream(new FileInputStream(f));
         ArchiveInputStream ais;
         if (args.length > 1) {
             ais = factory.createArchiveInputStream(args[1], fis);

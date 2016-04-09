@@ -49,9 +49,9 @@ public class CLI {
             }
 
             private String getContentMethods(final SevenZArchiveEntry entry) {
-                StringBuilder sb = new StringBuilder();
+                final StringBuilder sb = new StringBuilder();
                 boolean first = true;
-                for (SevenZMethodConfiguration m : entry.getContentMethods()) {
+                for (final SevenZMethodConfiguration m : entry.getContentMethods()) {
                     if (!first) {
                         sb.append(", ");
                     }
@@ -68,7 +68,7 @@ public class CLI {
             @Override
             public void takeAction(final SevenZFile archive, final SevenZArchiveEntry entry) 
                 throws IOException {
-                File outFile = new File(entry.getName());
+                final File outFile = new File(entry.getName());
                 if (entry.isDirectory()) {
                     if (!outFile.isDirectory() && !outFile.mkdirs()) {
                         throw new IOException("Cannot create directory " + outFile);
@@ -78,17 +78,17 @@ public class CLI {
                 }
 
                 System.out.println("extracting to " + outFile);
-                File parent = outFile.getParentFile();
+                final File parent = outFile.getParentFile();
                 if (parent != null && !parent.exists() && !parent.mkdirs()) {
                     throw new IOException("Cannot create " + parent);
                 }
-                FileOutputStream fos = new FileOutputStream(outFile);
+                final FileOutputStream fos = new FileOutputStream(outFile);
                 try {
                     final long total = entry.getSize();
                     long off = 0;
                     while (off < total) {
-                        int toRead = (int) Math.min(total - off, BUF.length);
-                        int bytesRead = archive.read(BUF, 0, toRead);
+                        final int toRead = (int) Math.min(total - off, BUF.length);
+                        final int bytesRead = archive.read(BUF, 0, toRead);
                         if (bytesRead < 1) {
                             throw new IOException("reached end of entry "
                                                   + entry.getName()
@@ -121,13 +121,13 @@ public class CLI {
             usage();
             return;
         }
-        Mode mode = grabMode(args);
+        final Mode mode = grabMode(args);
         System.out.println(mode.getMessage() + " " + args[0]);
-        File f = new File(args[0]);
+        final File f = new File(args[0]);
         if (!f.isFile()) {
             System.err.println(f + " doesn't exist or is a directory");
         }
-        SevenZFile archive = new SevenZFile(f);
+        final SevenZFile archive = new SevenZFile(f);
         try {
             SevenZArchiveEntry ae;
             while((ae=archive.getNextEntry()) != null) {

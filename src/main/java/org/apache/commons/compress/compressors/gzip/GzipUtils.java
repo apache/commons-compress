@@ -34,7 +34,7 @@ public class GzipUtils {
         // using LinkedHashMap so .tgz is preferred over .taz as
         // compressed extension of .tar as FileNameUtil will use the
         // first one found
-        Map<String, String> uncompressSuffix =
+        final Map<String, String> uncompressSuffix =
             new LinkedHashMap<String, String>();
         uncompressSuffix.put(".tgz", ".tar");
         uncompressSuffix.put(".taz", ".tar");

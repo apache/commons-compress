@@ -35,8 +35,8 @@ public class ZipEightByteIntegerTest {
      */
     @Test
     public void testLongToBytes() {
-        ZipEightByteInteger zl = new ZipEightByteInteger(0xAB12345678l);
-        byte[] result = zl.getBytes();
+        final ZipEightByteInteger zl = new ZipEightByteInteger(0xAB12345678l);
+        final byte[] result = zl.getBytes();
         assertEquals("length getBytes", 8, result.length);
         assertEquals("first byte getBytes", 0x78, result[0]);
         assertEquals("second byte getBytes", 0x56, result[1]);
@@ -53,8 +53,8 @@ public class ZipEightByteIntegerTest {
      */
     @Test
     public void testLongFromBytes() {
-        byte[] val = new byte[] {0x78, 0x56, 0x34, 0x12, (byte) 0xAB, 0x00, 0x00, 0x00};
-        ZipEightByteInteger zl = new ZipEightByteInteger(val);
+        final byte[] val = new byte[] {0x78, 0x56, 0x34, 0x12, (byte) 0xAB, 0x00, 0x00, 0x00};
+        final ZipEightByteInteger zl = new ZipEightByteInteger(val);
         assertEquals("longValue from bytes", 0xAB12345678l, zl.getLongValue());
     }
 
@@ -63,10 +63,10 @@ public class ZipEightByteIntegerTest {
      */
     @Test
     public void testBIToBytes() {
-        ZipEightByteInteger zl =
+        final ZipEightByteInteger zl =
             new ZipEightByteInteger(BigInteger.valueOf(Long.MAX_VALUE)
                                     .shiftLeft(1));
-        byte[] result = zl.getBytes();
+        final byte[] result = zl.getBytes();
         assertEquals("length getBytes", 8, result.length);
         assertEquals("first byte getBytes", (byte) 0xFE, result[0]);
         assertEquals("second byte getBytes", (byte) 0xFF, result[1]);
@@ -83,8 +83,8 @@ public class ZipEightByteIntegerTest {
      */
     @Test
     public void testBIFromBytes() {
-        byte[] val = new byte[] {(byte) 0xFE, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
-        ZipEightByteInteger zl = new ZipEightByteInteger(val);
+        final byte[] val = new byte[] {(byte) 0xFE, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
+        final ZipEightByteInteger zl = new ZipEightByteInteger(val);
         assertEquals("value from bytes",
                      BigInteger.valueOf(Long.MAX_VALUE).shiftLeft(1),
                      zl.getValue());
@@ -95,9 +95,9 @@ public class ZipEightByteIntegerTest {
      */
     @Test
     public void testEquals() {
-        ZipEightByteInteger zl = new ZipEightByteInteger(0x12345678);
-        ZipEightByteInteger zl2 = new ZipEightByteInteger(0x12345678);
-        ZipEightByteInteger zl3 = new ZipEightByteInteger(0x87654321);
+        final ZipEightByteInteger zl = new ZipEightByteInteger(0x12345678);
+        final ZipEightByteInteger zl2 = new ZipEightByteInteger(0x12345678);
+        final ZipEightByteInteger zl3 = new ZipEightByteInteger(0x87654321);
 
         assertTrue("reflexive", zl.equals(zl));
 
@@ -115,7 +115,7 @@ public class ZipEightByteIntegerTest {
      */
     @Test
     public void testSign() {
-        ZipEightByteInteger zl = new ZipEightByteInteger(new byte[] {(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF});
+        final ZipEightByteInteger zl = new ZipEightByteInteger(new byte[] {(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF});
         assertEquals(BigInteger.valueOf(Long.MAX_VALUE).shiftLeft(1).setBit(0),
                      zl.getValue());
     }

@@ -35,9 +35,9 @@ class LZMA2Decoder extends CoderBase {
     InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
             final Coder coder, final byte[] password) throws IOException {
         try {
-            int dictionarySize = getDictionarySize(coder);
+            final int dictionarySize = getDictionarySize(coder);
             return new LZMA2InputStream(in, dictionarySize);
-        } catch (IllegalArgumentException ex) {
+        } catch (final IllegalArgumentException ex) {
             throw new IOException(ex.getMessage());
         }
     }
@@ -45,16 +45,16 @@ class LZMA2Decoder extends CoderBase {
     @Override
     OutputStream encode(final OutputStream out, final Object opts)
         throws IOException {
-        LZMA2Options options = getOptions(opts);
-        FinishableOutputStream wrapped = new FinishableWrapperOutputStream(out);
+        final LZMA2Options options = getOptions(opts);
+        final FinishableOutputStream wrapped = new FinishableWrapperOutputStream(out);
         return options.getOutputStream(wrapped);
     }
 
     @Override
     byte[] getOptionsAsProperties(final Object opts) {
-        int dictSize = getDictSize(opts);
-        int lead = Integer.numberOfLeadingZeros(dictSize);
-        int secondBit = (dictSize >>> (30 - lead)) - 2;
+        final int dictSize = getDictSize(opts);
+        final int lead = Integer.numberOfLeadingZeros(dictSize);
+        final int secondBit = (dictSize >>> (30 - lead)) - 2;
         return new byte[] {
             (byte) ((19 - lead) * 2 + secondBit)
         };
@@ -90,7 +90,7 @@ class LZMA2Decoder extends CoderBase {
         if (opts instanceof LZMA2Options) {
             return (LZMA2Options) opts;
         }
-        LZMA2Options options = new LZMA2Options();
+        final LZMA2Options options = new LZMA2Options();
         options.setDictSize(numberOptionOrDefault(opts));
         return options;
     }

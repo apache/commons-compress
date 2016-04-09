@@ -66,7 +66,7 @@ public class LZMAUtilsTestCase {
 
     @Test
     public void testMatches() {
-        byte[] data = {
+        final byte[] data = {
             (byte) 0x5D, 0, 0,
         };
         assertFalse(LZMAUtils.matches(data, 2));

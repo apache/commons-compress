@@ -35,7 +35,7 @@ public class DeflateCompressorInputStreamTest {
         final File input = AbstractTestCase.getFile("bla.tar.deflatez");
         final InputStream is = new FileInputStream(input);
         try {
-            DeflateCompressorInputStream in =
+            final DeflateCompressorInputStream in =
                 new DeflateCompressorInputStream(is);
             Assert.assertTrue(in.available() > 0);
             in.close();
@@ -49,7 +49,7 @@ public class DeflateCompressorInputStreamTest {
         final File input = AbstractTestCase.getFile("bla.tar.deflatez");
         final InputStream is = new FileInputStream(input);
         try {
-            DeflateCompressorInputStream in =
+            final DeflateCompressorInputStream in =
                 new DeflateCompressorInputStream(is);
             Assert.assertEquals(1, in.skip(1));
             in.close();
@@ -63,7 +63,7 @@ public class DeflateCompressorInputStreamTest {
         final File input = AbstractTestCase.getFile("bla.tar.deflatez");
         final InputStream is = new FileInputStream(input);
         try {
-            DeflateCompressorInputStream in =
+            final DeflateCompressorInputStream in =
                 new DeflateCompressorInputStream(is);
             // tar header starts with filename "test1.xml"
             Assert.assertEquals('t', in.read());
@@ -78,7 +78,7 @@ public class DeflateCompressorInputStreamTest {
         final File input = AbstractTestCase.getFile("bla.tar.deflatez");
         final InputStream is = new FileInputStream(input);
         try {
-            DeflateCompressorInputStream in =
+            final DeflateCompressorInputStream in =
                 new DeflateCompressorInputStream(is);
             IOUtils.toByteArray(in);
             Assert.assertEquals(-1, in.read());

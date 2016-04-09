@@ -126,7 +126,7 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream {
     public void finish() throws IOException {
         if (!finished) {
             finished = true;
-            Pack200.Packer p = Pack200.newPacker();
+            final Pack200.Packer p = Pack200.newPacker();
             if (properties != null) {
                 p.properties().putAll(properties);
             }

@@ -134,7 +134,7 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
             fill(len - avail);
         }
 
-        int readable = Math.min(len, available());
+        final int readable = Math.min(len, available());
         if (readable == 0 && len > 0) {
             return -1;
         }
@@ -307,7 +307,7 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
      * @return True if the decompressed data should be flushed
      */
     private boolean expandLiteral(final int length) throws IOException {
-        int bytesRead = IOUtils.readFully(in, decompressBuf, writeIndex, length);
+        final int bytesRead = IOUtils.readFully(in, decompressBuf, writeIndex, length);
         count(bytesRead);
         if (length != bytesRead) {
             throw new IOException("Premature end of stream");
@@ -340,10 +340,10 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
         if (off > blockSize) {
             throw new IOException("Offset is larger than block size");
         }
-        int offset = (int) off;
+        final int offset = (int) off;
 
         if (offset == 1) {
-            byte lastChar = decompressBuf[writeIndex - 1];
+            final byte lastChar = decompressBuf[writeIndex - 1];
             for (int i = 0; i < length; i++) {
                 decompressBuf[writeIndex++] = lastChar;
             }
@@ -353,7 +353,7 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
             writeIndex += length;
         } else {
             int fullRotations = length / offset;
-            int pad = length - (offset * fullRotations);
+            final int pad = length - (offset * fullRotations);
 
             while (fullRotations-- != 0) {
                 System.arraycopy(decompressBuf, writeIndex - offset,
@@ -382,7 +382,7 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
      *             EOF is reached or error reading the stream
      */
     private int readOneByte() throws IOException {
-        int b = in.read();
+        final int b = in.read();
         if (b == -1) {
             throw new IOException("Premature end of stream");
         }

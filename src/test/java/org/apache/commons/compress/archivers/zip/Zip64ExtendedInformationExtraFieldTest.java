@@ -39,20 +39,20 @@ public class Zip64ExtendedInformationExtraFieldTest {
 
     @Test
     public void testWriteCDOnlySizes() {
-        Zip64ExtendedInformationExtraField f =
+        final Zip64ExtendedInformationExtraField f =
             new Zip64ExtendedInformationExtraField(SIZE, CSIZE);
         assertEquals(new ZipShort(16), f.getCentralDirectoryLength());
-        byte[] b = f.getCentralDirectoryData();
+        final byte[] b = f.getCentralDirectoryData();
         assertEquals(16, b.length);
         checkSizes(b);
     }
 
     @Test
     public void testWriteCDSizeAndOffset() {
-        Zip64ExtendedInformationExtraField f =
+        final Zip64ExtendedInformationExtraField f =
             new Zip64ExtendedInformationExtraField(SIZE, CSIZE, OFF, null);
         assertEquals(new ZipShort(24), f.getCentralDirectoryLength());
-        byte[] b = f.getCentralDirectoryData();
+        final byte[] b = f.getCentralDirectoryData();
         assertEquals(24, b.length);
         checkSizes(b);
         checkOffset(b, 16);
@@ -60,10 +60,10 @@ public class Zip64ExtendedInformationExtraFieldTest {
 
     @Test
     public void testWriteCDSizeOffsetAndDisk() {
-        Zip64ExtendedInformationExtraField f =
+        final Zip64ExtendedInformationExtraField f =
             new Zip64ExtendedInformationExtraField(SIZE, CSIZE, OFF, DISK);
         assertEquals(new ZipShort(28), f.getCentralDirectoryLength());
-        byte[] b = f.getCentralDirectoryData();
+        final byte[] b = f.getCentralDirectoryData();
         assertEquals(28, b.length);
         checkSizes(b);
         checkOffset(b, 16);
@@ -72,10 +72,10 @@ public class Zip64ExtendedInformationExtraFieldTest {
 
     @Test
     public void testWriteCDSizeAndDisk() {
-        Zip64ExtendedInformationExtraField f =
+        final Zip64ExtendedInformationExtraField f =
             new Zip64ExtendedInformationExtraField(SIZE, CSIZE, null, DISK);
         assertEquals(new ZipShort(20), f.getCentralDirectoryLength());
-        byte[] b = f.getCentralDirectoryData();
+        final byte[] b = f.getCentralDirectoryData();
         assertEquals(20, b.length);
         checkSizes(b);
         checkDisk(b, 16);
@@ -83,9 +83,9 @@ public class Zip64ExtendedInformationExtraFieldTest {
 
     @Test
     public void testReadLFHSizesOnly() throws ZipException {
-        Zip64ExtendedInformationExtraField f =
+        final Zip64ExtendedInformationExtraField f =
             new Zip64ExtendedInformationExtraField();
-        byte[] b = new byte[16];
+        final byte[] b = new byte[16];
         System.arraycopy(SIZE.getBytes(), 0, b, 0, 8);
         System.arraycopy(CSIZE.getBytes(), 0, b, 8, 8);
         f.parseFromLocalFileData(b, 0, b.length);
@@ -97,9 +97,9 @@ public class Zip64ExtendedInformationExtraFieldTest {
 
     @Test
     public void testReadLFHSizesAndOffset() throws ZipException {
-        Zip64ExtendedInformationExtraField f =
+        final Zip64ExtendedInformationExtraField f =
             new Zip64ExtendedInformationExtraField();
-        byte[] b = new byte[24];
+        final byte[] b = new byte[24];
         System.arraycopy(SIZE.getBytes(), 0, b, 0, 8);
         System.arraycopy(CSIZE.getBytes(), 0, b, 8, 8);
         System.arraycopy(OFF.getBytes(), 0, b, 16, 8);
@@ -112,9 +112,9 @@ public class Zip64ExtendedInformationExtraFieldTest {
 
     @Test
     public void testReadLFHSizesOffsetAndDisk() throws ZipException {
-        Zip64ExtendedInformationExtraField f =
+        final Zip64ExtendedInformationExtraField f =
             new Zip64ExtendedInformationExtraField();
-        byte[] b = new byte[28];
+        final byte[] b = new byte[28];
         System.arraycopy(SIZE.getBytes(), 0, b, 0, 8);
         System.arraycopy(CSIZE.getBytes(), 0, b, 8, 8);
         System.arraycopy(OFF.getBytes(), 0, b, 16, 8);
@@ -128,9 +128,9 @@ public class Zip64ExtendedInformationExtraFieldTest {
 
     @Test
     public void testReadLFHSizesAndDisk() throws ZipException {
-        Zip64ExtendedInformationExtraField f =
+        final Zip64ExtendedInformationExtraField f =
             new Zip64ExtendedInformationExtraField();
-        byte[] b = new byte[20];
+        final byte[] b = new byte[20];
         System.arraycopy(SIZE.getBytes(), 0, b, 0, 8);
         System.arraycopy(CSIZE.getBytes(), 0, b, 8, 8);
         System.arraycopy(DISK.getBytes(), 0, b, 16, 4);
@@ -143,9 +143,9 @@ public class Zip64ExtendedInformationExtraFieldTest {
 
     @Test
     public void testReadCDSizesOffsetAndDisk() throws ZipException {
-        Zip64ExtendedInformationExtraField f =
+        final Zip64ExtendedInformationExtraField f =
             new Zip64ExtendedInformationExtraField();
-        byte[] b = new byte[28];
+        final byte[] b = new byte[28];
         System.arraycopy(SIZE.getBytes(), 0, b, 0, 8);
         System.arraycopy(CSIZE.getBytes(), 0, b, 8, 8);
         System.arraycopy(OFF.getBytes(), 0, b, 16, 8);
@@ -159,9 +159,9 @@ public class Zip64ExtendedInformationExtraFieldTest {
 
     @Test
     public void testReadCDSizesAndOffset() throws ZipException {
-        Zip64ExtendedInformationExtraField f =
+        final Zip64ExtendedInformationExtraField f =
             new Zip64ExtendedInformationExtraField();
-        byte[] b = new byte[24];
+        final byte[] b = new byte[24];
         System.arraycopy(SIZE.getBytes(), 0, b, 0, 8);
         System.arraycopy(CSIZE.getBytes(), 0, b, 8, 8);
         System.arraycopy(OFF.getBytes(), 0, b, 16, 8);
@@ -174,9 +174,9 @@ public class Zip64ExtendedInformationExtraFieldTest {
 
     @Test
     public void testReadCDSomethingAndDisk() throws ZipException {
-        Zip64ExtendedInformationExtraField f =
+        final Zip64ExtendedInformationExtraField f =
             new Zip64ExtendedInformationExtraField();
-        byte[] b = new byte[12];
+        final byte[] b = new byte[12];
         System.arraycopy(SIZE.getBytes(), 0, b, 0, 8);
         System.arraycopy(DISK.getBytes(), 0, b, 8, 4);
         f.parseFromCentralDirectoryData(b, 0, b.length);
@@ -188,9 +188,9 @@ public class Zip64ExtendedInformationExtraFieldTest {
 
     @Test
     public void testReparseCDSingleEightByteData() throws ZipException {
-        Zip64ExtendedInformationExtraField f =
+        final Zip64ExtendedInformationExtraField f =
             new Zip64ExtendedInformationExtraField();
-        byte[] b = new byte[8];
+        final byte[] b = new byte[8];
         System.arraycopy(SIZE.getBytes(), 0, b, 0, 8);
         f.parseFromCentralDirectoryData(b, 0, b.length);
         f.reparseCentralDirectoryData(true, false, false, false);

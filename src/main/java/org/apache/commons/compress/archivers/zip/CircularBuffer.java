@@ -64,7 +64,7 @@ class CircularBuffer {
      */
     public int get() {
         if (available()) {
-            int value = buffer[readIndex];
+            final int value = buffer[readIndex];
             readIndex = (readIndex + 1) % size;
             return value & 0xFF;
         }
@@ -78,8 +78,8 @@ class CircularBuffer {
      * @param length   the number of bytes to copy
      */
     public void copy(final int distance, final int length) {
-        int pos1 = writeIndex - distance;
-        int pos2 = pos1 + length;
+        final int pos1 = writeIndex - distance;
+        final int pos2 = pos1 + length;
         for (int i = pos1; i < pos2; i++) {
             buffer[writeIndex] = buffer[(i + size) % size];
             writeIndex = (writeIndex + 1) % size;

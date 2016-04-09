@@ -33,7 +33,7 @@ public class GeneralPurposeBitTest {
         assertFalse(new GeneralPurposeBit().usesUTF8ForNames());
         assertFalse(new GeneralPurposeBit().usesEncryption());
         assertFalse(new GeneralPurposeBit().usesStrongEncryption());
-        byte[] b = new byte[2];
+        final byte[] b = new byte[2];
         assertTrue(Arrays.equals(b, new GeneralPurposeBit().encode()));
     }
 
@@ -63,27 +63,27 @@ public class GeneralPurposeBitTest {
 
     @Test
     public void testDataDescriptor() {
-        byte[] flags = new byte[] {(byte) 8, (byte) 0};
+        final byte[] flags = new byte[] {(byte) 8, (byte) 0};
         assertTrue(GeneralPurposeBit.parse(flags, 0).usesDataDescriptor());
-        GeneralPurposeBit b = new GeneralPurposeBit();
+        final GeneralPurposeBit b = new GeneralPurposeBit();
         b.useDataDescriptor(true);
         assertTrue(Arrays.equals(flags, b.encode()));
     }
 
     @Test
     public void testLanguageEncodingFlag() {
-        byte[] flags = new byte[] {(byte) 0, (byte) 8};
+        final byte[] flags = new byte[] {(byte) 0, (byte) 8};
         assertTrue(GeneralPurposeBit.parse(flags, 0).usesUTF8ForNames());
-        GeneralPurposeBit b = new GeneralPurposeBit();
+        final GeneralPurposeBit b = new GeneralPurposeBit();
         b.useUTF8ForNames(true);
         assertTrue(Arrays.equals(flags, b.encode()));
     }
 
     @Test
     public void testEncryption() {
-        byte[] flags = new byte[] {(byte) 1, (byte) 0};
+        final byte[] flags = new byte[] {(byte) 1, (byte) 0};
         assertTrue(GeneralPurposeBit.parse(flags, 0).usesEncryption());
-        GeneralPurposeBit b = new GeneralPurposeBit();
+        final GeneralPurposeBit b = new GeneralPurposeBit();
         b.useEncryption(true);
         assertTrue(Arrays.equals(flags, b.encode()));
     }
@@ -92,7 +92,7 @@ public class GeneralPurposeBitTest {
     public void testStrongEncryption() {
         byte[] flags = new byte[] {(byte) 65, (byte) 0};
         assertTrue(GeneralPurposeBit.parse(flags, 0).usesStrongEncryption());
-        GeneralPurposeBit b = new GeneralPurposeBit();
+        final GeneralPurposeBit b = new GeneralPurposeBit();
         b.useStrongEncryption(true);
         assertTrue(b.usesEncryption());
         assertTrue(Arrays.equals(flags, b.encode()));
@@ -103,7 +103,7 @@ public class GeneralPurposeBitTest {
 
     @Test
     public void testClone() {
-        GeneralPurposeBit b = new GeneralPurposeBit();
+        final GeneralPurposeBit b = new GeneralPurposeBit();
         b.useStrongEncryption(true);
         b.useUTF8ForNames(true);
         assertEquals(b, b.clone());

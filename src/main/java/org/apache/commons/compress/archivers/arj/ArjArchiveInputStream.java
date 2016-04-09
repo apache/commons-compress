@@ -67,7 +67,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
             if ((mainHeader.arjFlags & MainHeader.Flags.VOLUME) != 0) {
                 throw new ArchiveException("Multi-volume ARJ files are unsupported");
             }
-        } catch (IOException ioException) {
+        } catch (final IOException ioException) {
             throw new ArchiveException(ioException.getMessage(), ioException);
         }
     }
@@ -89,7 +89,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
     }
 
     private int read8(final DataInputStream dataIn) throws IOException {
-        int value = dataIn.readUnsignedByte();
+        final int value = dataIn.readUnsignedByte();
         count(1);
         return value;
     }
@@ -248,7 +248,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         localFileHeader.name = readString(basicHeader);
         localFileHeader.comment = readString(basicHeader);
 
-        ArrayList<byte[]> extendedHeaders = new ArrayList<byte[]>();
+        final ArrayList<byte[]> extendedHeaders = new ArrayList<byte[]>();
         int extendedHeaderSize;
         while ((extendedHeaderSize = read16(in)) > 0) {
             final byte[] extendedHeaderBytes = new byte[extendedHeaderSize];

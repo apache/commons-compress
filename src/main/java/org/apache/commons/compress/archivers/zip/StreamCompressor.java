@@ -185,7 +185,7 @@ public abstract class StreamCompressor implements Closeable {
      * @throws IOException on error
      */
     long write(final byte[] b, final int offset, final int length, final int method) throws IOException {
-        long current = writtenToOutputStreamForLastEntry;
+        final long current = writtenToOutputStreamForLastEntry;
         crc.update(b, offset, length);
         if (method == ZipEntry.DEFLATED) {
             writeDeflated(b, offset, length);
@@ -245,7 +245,7 @@ public abstract class StreamCompressor implements Closeable {
     }
 
     void deflate() throws IOException {
-        int len = def.deflate(outputBuffer, 0, outputBuffer.length);
+        final int len = def.deflate(outputBuffer, 0, outputBuffer.length);
         if (len > 0) {
             writeCounted(outputBuffer, 0, len);
         }

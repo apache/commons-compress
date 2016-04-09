@@ -64,7 +64,7 @@ public final class ZipShort implements Cloneable, Serializable {
      * @return the value as a a two byte array in big endian byte order
      */
     public byte[] getBytes() {
-        byte[] result = new byte[2];
+        final byte[] result = new byte[2];
         result[0] = (byte) (value & BYTE_MASK);
         result[1] = (byte) ((value & BYTE_1_MASK) >> BYTE_1_SHIFT);
         return result;
@@ -84,7 +84,7 @@ public final class ZipShort implements Cloneable, Serializable {
      * @return the converted int as a byte array in big endian byte order
      */
     public static byte[] getBytes(final int value) {
-        byte[] result = new byte[2];
+        final byte[] result = new byte[2];
         putShort(value, result, 0);
         return result;
     }
@@ -149,7 +149,7 @@ public final class ZipShort implements Cloneable, Serializable {
     public Object clone() {
         try {
             return super.clone();
-        } catch (CloneNotSupportedException cnfe) {
+        } catch (final CloneNotSupportedException cnfe) {
             // impossible
             throw new RuntimeException(cnfe);
         }

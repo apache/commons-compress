@@ -111,12 +111,12 @@ public class ChangeSetPerformer {
     private ChangeSetResults perform(final ArchiveEntryIterator entryIterator,
                                      final ArchiveOutputStream out)
             throws IOException {
-        ChangeSetResults results = new ChangeSetResults();
+        final ChangeSetResults results = new ChangeSetResults();
 
-        Set<Change> workingSet = new LinkedHashSet<Change>(changes);
+        final Set<Change> workingSet = new LinkedHashSet<Change>(changes);
 
-        for (Iterator<Change> it = workingSet.iterator(); it.hasNext();) {
-            Change change = it.next();
+        for (final Iterator<Change> it = workingSet.iterator(); it.hasNext();) {
+            final Change change = it.next();
 
             if (change.type() == Change.TYPE_ADD && change.isReplaceMode()) {
                 copyStream(change.getInput(), out, change.getEntry());
@@ -126,11 +126,11 @@ public class ChangeSetPerformer {
         }
 
         while (entryIterator.hasNext()) {
-            ArchiveEntry entry = entryIterator.next();
+            final ArchiveEntry entry = entryIterator.next();
             boolean copy = true;
 
-            for (Iterator<Change> it = workingSet.iterator(); it.hasNext();) {
-                Change change = it.next();
+            for (final Iterator<Change> it = workingSet.iterator(); it.hasNext();) {
+                final Change change = it.next();
 
                 final int type = change.type();
                 final String name = entry.getName();
@@ -160,8 +160,8 @@ public class ChangeSetPerformer {
         }
 
         // Adds files which hasn't been added from the original and do not have replace mode on
-        for (Iterator<Change> it = workingSet.iterator(); it.hasNext();) {
-            Change change = it.next();
+        for (final Iterator<Change> it = workingSet.iterator(); it.hasNext();) {
+            final Change change = it.next();
 
             if (change.type() == Change.TYPE_ADD && 
                 !change.isReplaceMode() && 
@@ -185,12 +185,12 @@ public class ChangeSetPerformer {
      * @return true, if this entry has an deletion change later, false otherwise
      */
     private boolean isDeletedLater(final Set<Change> workingSet, final ArchiveEntry entry) {
-        String source = entry.getName();
+        final String source = entry.getName();
 
         if (!workingSet.isEmpty()) {
-            for (Change change : workingSet) {
+            for (final Change change : workingSet) {
                 final int type = change.type();
-                String target = change.targetFile();
+                final String target = change.targetFile();
                 if (type == Change.TYPE_DELETE && source.equals(target)) {
                     return true;
                 }

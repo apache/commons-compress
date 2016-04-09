@@ -275,8 +275,8 @@ class BlockSort {
         int j;
         if (hi - lo > 3) {
             for (int i = hi - 4; i >= lo; i--) {
-                int tmp = fmap[i];
-                int ec_tmp = eclass[tmp];
+                final int tmp = fmap[i];
+                final int ec_tmp = eclass[tmp];
                 for (j = i + 4; j <= hi && ec_tmp > eclass[fmap[j]];
                      j += 4) {
                     fmap[j - 4] = fmap[j];
@@ -286,8 +286,8 @@ class BlockSort {
         }
 
         for (int i = hi - 1; i >= lo; i--) {
-            int tmp = fmap[i];
-            int ec_tmp = eclass[tmp];
+            final int tmp = fmap[i];
+            final int ec_tmp = eclass[tmp];
             for (j = i + 1; j <= hi && ec_tmp > eclass[fmap[j]]; j++) {
                 fmap[j - 1] = fmap[j];
             }
@@ -301,7 +301,7 @@ class BlockSort {
      * swaps two values in fmap
      */
     private void fswap(final int[] fmap, final int zz1, final int zz2) {
-        int zztmp = fmap[zz1];
+        final int zztmp = fmap[zz1];
         fmap[zz1] = fmap[zz2];
         fmap[zz2] = zztmp;
     }
@@ -350,7 +350,7 @@ class BlockSort {
         fpush(sp++, loSt, hiSt);
 
         while (sp > 0) {
-            int[] s = fpop(--sp);
+            final int[] s = fpop(--sp);
             lo = s[0]; hi = s[1];
 
             if (hi - lo < FALLBACK_QSORT_SMALL_THRESH) {
@@ -366,7 +366,8 @@ class BlockSort {
                book, chapter 35.
             */
             r = ((r * 7621) + 1) % 32768;
-            long r3 = r % 3, med;
+            final long r3 = r % 3;
+            long med;
             if (r3 == 0) {
                 med = eclass[fmap[lo]]; 
             } else if (r3 == 1) {
@@ -496,7 +497,7 @@ class BlockSort {
         }
 
         nBhtab = 64 + nblock;
-        BitSet bhtab = new BitSet(nBhtab);
+        final BitSet bhtab = new BitSet(nBhtab);
         for (i = 0; i < 256; i++) {
             bhtab.set(ftab[i]);
         }
@@ -783,7 +784,7 @@ class BlockSort {
     private static void vswap(final int[] fmap, int p1, int p2, int n) {
         n += p1;
         while (p1 < n) {
-            int t = fmap[p1];
+            final int t = fmap[p1];
             fmap[p1++] = fmap[p2];
             fmap[p2++] = t;
         }

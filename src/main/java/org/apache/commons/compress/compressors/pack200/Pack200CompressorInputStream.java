@@ -171,8 +171,8 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
         throws IOException {
         originalInput = in;
         streamBridge = mode.newStreamBridge();
-        JarOutputStream jarOut = new JarOutputStream(streamBridge);
-        Pack200.Unpacker u = Pack200.newUnpacker();
+        final JarOutputStream jarOut = new JarOutputStream(streamBridge);
+        final Pack200.Unpacker u = Pack200.newUnpacker();
         if (props != null) {
             u.properties().putAll(props);
         }
@@ -215,7 +215,7 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     public boolean markSupported() {
         try {
             return streamBridge.getInput().markSupported();
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             return false;
         }
     }
@@ -224,7 +224,7 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     public void mark(final int limit) {
         try {
             streamBridge.getInput().mark(limit);
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             throw new RuntimeException(ex);
         }
     }

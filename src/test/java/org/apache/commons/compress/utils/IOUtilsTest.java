@@ -78,10 +78,10 @@ public class IOUtilsTest {
     }
 
     private void skip(final StreamWrapper wrapper) throws Exception {
-        ByteArrayInputStream in = new ByteArrayInputStream(new byte[] {
+        final ByteArrayInputStream in = new ByteArrayInputStream(new byte[] {
                 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
             });
-        InputStream sut = wrapper.wrap(in);
+        final InputStream sut = wrapper.wrap(in);
         Assert.assertEquals(10, IOUtils.skip(sut, 10));
         Assert.assertEquals(11, sut.read());
     }

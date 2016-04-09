@@ -275,7 +275,7 @@ public class ArchiveStreamFactory {
             return new ArArchiveOutputStream(out);
         }
         if (ZIP.equalsIgnoreCase(archiverName)) {
-            ZipArchiveOutputStream zip = new ZipArchiveOutputStream(out);
+            final ZipArchiveOutputStream zip = new ZipArchiveOutputStream(out);
             if (entryEncoding != null) {
                 zip.setEncoding(entryEncoding);
             }
@@ -372,7 +372,7 @@ public class ArchiveStreamFactory {
                     if (tais.getNextTarEntry().isCheckSumOK()) {
                         return createArchiveInputStream(TAR, in);
                     }
-                } catch (Exception e) { // NOPMD
+                } catch (final Exception e) { // NOPMD
                     // can generate IllegalArgumentException as well
                     // as IOException
                     // autodetection, simply not a TAR
@@ -381,7 +381,7 @@ public class ArchiveStreamFactory {
                     IOUtils.closeQuietly(tais);
                 }
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new ArchiveException("Could not use reset and mark operations.", e);
         }
 

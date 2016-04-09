@@ -45,14 +45,14 @@ public class LZMAUtils {
     private static volatile CachedAvailability cachedLZMAAvailability;
 
     static {
-        Map<String, String> uncompressSuffix = new HashMap<String, String>();
+        final Map<String, String> uncompressSuffix = new HashMap<String, String>();
         uncompressSuffix.put(".lzma", "");
         uncompressSuffix.put("-lzma", "");
         fileNameUtil = new FileNameUtil(uncompressSuffix, ".lzma");
         cachedLZMAAvailability = CachedAvailability.DONT_CACHE;
         try {
             Class.forName("org.osgi.framework.BundleEvent");
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             setCacheLZMAAvailablity(true);
         }
     }
@@ -99,7 +99,7 @@ public class LZMAUtils {
         try {
             LZMACompressorInputStream.matches(null, 0);
             return true;
-        } catch (NoClassDefFoundError error) {
+        } catch (final NoClassDefFoundError error) {
             return false;
         }
     }

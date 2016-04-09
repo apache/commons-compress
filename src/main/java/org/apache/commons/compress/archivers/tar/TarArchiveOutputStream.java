@@ -274,14 +274,14 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         if (finished) {
             throw new IOException("Stream has already been finished");
         }
-        TarArchiveEntry entry = (TarArchiveEntry) archiveEntry;
-        Map<String, String> paxHeaders = new HashMap<String, String>();
+        final TarArchiveEntry entry = (TarArchiveEntry) archiveEntry;
+        final Map<String, String> paxHeaders = new HashMap<String, String>();
         final String entryName = entry.getName();
-        boolean paxHeaderContainsPath = handleLongName(entry, entryName, paxHeaders, "path",
+        final boolean paxHeaderContainsPath = handleLongName(entry, entryName, paxHeaders, "path",
                                                        TarConstants.LF_GNUTYPE_LONGNAME, "file name");
 
         final String linkName = entry.getLinkName();
-        boolean paxHeaderContainsLinkPath = linkName != null && linkName.length() > 0
+        final boolean paxHeaderContainsLinkPath = linkName != null && linkName.length() > 0
             && handleLongName(entry, linkName, paxHeaders, "linkpath",
                               TarConstants.LF_GNUTYPE_LONGLINK, "link name");
 
@@ -395,7 +395,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
         if (assemLen > 0) {
             if (assemLen + numToWrite >= recordBuf.length) {
-                int aLen = recordBuf.length - assemLen;
+                final int aLen = recordBuf.length - assemLen;
 
                 System.arraycopy(assemBuf, 0, recordBuf, 0,
                                  assemLen);
@@ -434,7 +434,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
             writeRecord(wBuf, wOffset);
 
-            int num = recordBuf.length;
+            final int num = recordBuf.length;
 
             currBytes += num;
             numToWrite -= num;
@@ -453,14 +453,14 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         if (name.length() >= TarConstants.NAMELEN) {
             name = name.substring(0, TarConstants.NAMELEN - 1);
         }
-        TarArchiveEntry pex = new TarArchiveEntry(name,
+        final TarArchiveEntry pex = new TarArchiveEntry(name,
                                                   TarConstants.LF_PAX_EXTENDED_HEADER_LC);
         transferModTime(entry, pex);
 
-        StringWriter w = new StringWriter();
-        for (Map.Entry<String, String> h : headers.entrySet()) {
-            String key = h.getKey();
-            String value = h.getValue();
+        final StringWriter w = new StringWriter();
+        for (final Map.Entry<String, String> h : headers.entrySet()) {
+            final String key = h.getKey();
+            final String value = h.getValue();
             int len = key.length() + value.length()
                 + 3 /* blank, equals and newline */
                 + 2 /* guess 9 < actual length < 100 */;
@@ -478,7 +478,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             }
             w.write(line);
         }
-        byte[] data = w.toString().getBytes(CharsetNames.UTF_8);
+        final byte[] data = w.toString().getBytes(CharsetNames.UTF_8);
         pex.setSize(data.length);
         putArchiveEntry(pex);
         write(data);
@@ -487,9 +487,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     private String stripTo7Bits(final String name) {
         final int length = name.length();
-        StringBuilder result = new StringBuilder(length);
+        final StringBuilder result = new StringBuilder(length);
         for (int i = 0; i < length; i++) {
-            char stripped = (char) (name.charAt(i) & 0x7F);
+            final char stripped = (char) (name.charAt(i) & 0x7F);
             if (shouldBeReplaced(stripped)) {
                 result.append("_");
             } else {
@@ -573,7 +573,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     private void padAsNeeded() throws IOException {
-        int start = recordsWritten % recordsPerBlock;
+        final int start = recordsWritten % recordsPerBlock;
         if (start != 0) {
             for (int i = start; i < recordsPerBlock; i++) {
                 writeEOFRecord();
@@ -675,7 +675,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             } else if (longFileMode == LONGFILE_GNU) {
                 // create a TarEntry for the LongLink, the contents
                 // of which are the link's name
-                TarArchiveEntry longLinkEntry = new TarArchiveEntry(TarConstants.GNU_LONGLINK, linkType);
+                final TarArchiveEntry longLinkEntry = new TarArchiveEntry(TarConstants.GNU_LONGLINK, linkType);
 
                 longLinkEntry.setSize(len + 1); // +1 for NUL
                 transferModTime(entry, longLinkEntry);
@@ -694,7 +694,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     private void transferModTime(final TarArchiveEntry from, final TarArchiveEntry to) {
         Date fromModTime = from.getModTime();
-        long fromModTimeSeconds = fromModTime.getTime() / 1000;
+        final long fromModTimeSeconds = fromModTime.getTime() / 1000;
         if (fromModTimeSeconds < 0 || fromModTimeSeconds > TarConstants.MAXSIZE) {
             fromModTime = new Date(0);
         }

@@ -25,7 +25,7 @@ import org.junit.Test;
 public class DumpArchiveEntryTest {
     @Test
     public void publicNameAddsTrailingSlashForDirectories() {
-        DumpArchiveEntry ent = new DumpArchiveEntry("foo", "bar", -1,
+        final DumpArchiveEntry ent = new DumpArchiveEntry("foo", "bar", -1,
                                                     DumpArchiveEntry.TYPE
                                                     .DIRECTORY);
         assertEquals("bar", ent.getSimpleName());
@@ -35,7 +35,7 @@ public class DumpArchiveEntryTest {
 
     @Test
     public void publicNameRemovesLeadingDotSlash() {
-        DumpArchiveEntry ent = new DumpArchiveEntry("./foo", "bar");
+        final DumpArchiveEntry ent = new DumpArchiveEntry("./foo", "bar");
         assertEquals("bar", ent.getSimpleName());
         assertEquals("./foo", ent.getOriginalName());
         assertEquals("foo", ent.getName());

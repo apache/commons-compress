@@ -44,9 +44,9 @@ public class ArchiveUtils {
      * @return the representation of the entry
      */
     public static String toString(final ArchiveEntry entry){
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append(entry.isDirectory()? 'd' : '-');// c.f. "ls -l" output
-        String size = Long.toString(entry.getSize());
+        final String size = Long.toString(entry.getSize());
         sb.append(' ');
         // Pad output to 7 places, leading spaces
         for(int i=7; i > size.length(); i--){
@@ -71,7 +71,7 @@ public class ArchiveUtils {
         byte[] buffer1;
         try {
             buffer1 = expected.getBytes(CharsetNames.US_ASCII);
-        } catch (UnsupportedEncodingException e) {
+        } catch (final UnsupportedEncodingException e) {
             throw new RuntimeException(e); // Should not happen
         }
         return isEqual(buffer1, 0, buffer1.length, buffer, offset, length, false);
@@ -98,7 +98,7 @@ public class ArchiveUtils {
     public static byte[] toAsciiBytes(final String inputString){
         try {
             return inputString.getBytes(CharsetNames.US_ASCII);
-        } catch (UnsupportedEncodingException e) {
+        } catch (final UnsupportedEncodingException e) {
            throw new RuntimeException(e); // Should never happen
         }
     }
@@ -112,7 +112,7 @@ public class ArchiveUtils {
     public static String toAsciiString(final byte[] inputBytes){
         try {
             return new String(inputBytes, CharsetNames.US_ASCII);
-        } catch (UnsupportedEncodingException e) {
+        } catch (final UnsupportedEncodingException e) {
             throw new RuntimeException(e); // Should never happen
         }
     }
@@ -128,7 +128,7 @@ public class ArchiveUtils {
     public static String toAsciiString(final byte[] inputBytes, final int offset, final int length){
         try {
             return new String(inputBytes, offset, length, CharsetNames.US_ASCII);
-        } catch (UnsupportedEncodingException e) {
+        } catch (final UnsupportedEncodingException e) {
             throw new RuntimeException(e); // Should never happen
         }
     }
@@ -149,7 +149,7 @@ public class ArchiveUtils {
             final byte[] buffer1, final int offset1, final int length1,
             final byte[] buffer2, final int offset2, final int length2,
             final boolean ignoreTrailingNulls){
-        int minLen=length1 < length2 ? length1 : length2;
+        final int minLen=length1 < length2 ? length1 : length2;
         for (int i=0; i < minLen; i++){
             if (buffer1[offset1+i] != buffer2[offset2+i]){
                 return false;

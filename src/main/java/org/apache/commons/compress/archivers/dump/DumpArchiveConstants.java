@@ -54,7 +54,7 @@ public final class DumpArchiveConstants {
         }
 
         public static SEGMENT_TYPE find(final int code) {
-            for (SEGMENT_TYPE t : values()) {
+            for (final SEGMENT_TYPE t : values()) {
                 if (t.code == code) {
                     return t;
                 }
@@ -79,7 +79,7 @@ public final class DumpArchiveConstants {
         }
 
         public static COMPRESSION_TYPE find(final int code) {
-            for (COMPRESSION_TYPE t : values()) {
+            for (final COMPRESSION_TYPE t : values()) {
                 if (t.code == code) {
                     return t;
                 }

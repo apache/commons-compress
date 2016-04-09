@@ -52,7 +52,7 @@ class UnshrinkingInputStream extends LZWInputStream {
             tableSize++;
         }
         setTableSize(tableSize);
-        int idx = addEntry(previousCode, character, MAX_TABLE_SIZE);
+        final int idx = addEntry(previousCode, character, MAX_TABLE_SIZE);
         if (idx >= 0) {
             isUsed[idx] = true;
         }

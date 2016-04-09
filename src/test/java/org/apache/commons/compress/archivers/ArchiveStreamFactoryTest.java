@@ -53,7 +53,7 @@ public class ArchiveStreamFactoryTest {
             new ArchiveStreamFactory()
                 .createArchiveInputStream(new ByteArrayInputStream("This certainly is not a tar archive, really, no kidding".getBytes()));
             fail("created an input stream for a non-archive");
-        } catch (ArchiveException ae) {
+        } catch (final ArchiveException ae) {
             assertTrue(ae.getMessage().startsWith("No Archiver found"));
         }
     }
@@ -63,13 +63,13 @@ public class ArchiveStreamFactoryTest {
      */
     @Test
     public void aiffFilesAreNoTARs() throws Exception {
-    	FileInputStream fis = new FileInputStream("src/test/resources/testAIFF.aif");
+    	final FileInputStream fis = new FileInputStream("src/test/resources/testAIFF.aif");
     	try {
-            InputStream is = new BufferedInputStream(fis);
+            final InputStream is = new BufferedInputStream(fis);
             try {
                 new ArchiveStreamFactory().createArchiveInputStream(is);
                 fail("created an input stream for a non-archive");
-            } catch (ArchiveException ae) {
+            } catch (final ArchiveException ae) {
                 assertTrue(ae.getMessage().startsWith("No Archiver found"));
             } finally {
                 is.close();
@@ -81,13 +81,13 @@ public class ArchiveStreamFactoryTest {
 
     @Test
     public void testCOMPRESS209() throws Exception {
-    	FileInputStream fis = new FileInputStream("src/test/resources/testCompress209.doc");
+    	final FileInputStream fis = new FileInputStream("src/test/resources/testCompress209.doc");
     	try {
-            InputStream bis = new BufferedInputStream(fis);
+            final InputStream bis = new BufferedInputStream(fis);
             try {
                 new ArchiveStreamFactory().createArchiveInputStream(bis);
                 fail("created an input stream for a non-archive");
-            } catch (ArchiveException ae) {
+            } catch (final ArchiveException ae) {
                 assertTrue(ae.getMessage().startsWith("No Archiver found"));
             } finally {
                 bis.close();
@@ -118,13 +118,13 @@ public class ArchiveStreamFactoryTest {
      */
     @Test
     public void detectsAndThrowsFor7z() throws Exception {
-    	FileInputStream fis = new FileInputStream("src/test/resources/bla.7z");
+    	final FileInputStream fis = new FileInputStream("src/test/resources/bla.7z");
     	try {
-            InputStream bis = new BufferedInputStream(fis);
+            final InputStream bis = new BufferedInputStream(fis);
             try {
                 new ArchiveStreamFactory().createArchiveInputStream(bis);
                 fail("Expected a StreamingNotSupportedException");
-            } catch (StreamingNotSupportedException ex) {
+            } catch (final StreamingNotSupportedException ex) {
                 assertEquals(ArchiveStreamFactory.SEVEN_Z, ex.getFormat());
             } finally {
                 bis.close();
@@ -141,11 +141,11 @@ public class ArchiveStreamFactoryTest {
      */
     @Test
     public void skipsPK00Prefix() throws Exception {
-    	FileInputStream fis = new FileInputStream("src/test/resources/COMPRESS-208.zip");
+    	final FileInputStream fis = new FileInputStream("src/test/resources/COMPRESS-208.zip");
     	try {
-            InputStream bis = new BufferedInputStream(fis);
+            final InputStream bis = new BufferedInputStream(fis);
             try {
-                ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(bis);
+                final ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(bis);
                 try {
                     assertTrue(ais instanceof ZipArchiveInputStream);
                 } finally {
@@ -183,7 +183,7 @@ public class ArchiveStreamFactoryTest {
         try {
             fac.setEntryEncoding("US_ASCII");
             fail("Expected IllegalStateException");
-        } catch (IllegalStateException ise) {
+        } catch (final IllegalStateException ise) {
             // expected
         }
     }
@@ -207,7 +207,7 @@ public class ArchiveStreamFactoryTest {
 
     @SuppressWarnings("deprecation") // test of deprecated method
     static ArchiveStreamFactory getFactory(final String entryEncoding) {
-        ArchiveStreamFactory fac = new ArchiveStreamFactory();
+        final ArchiveStreamFactory fac = new ArchiveStreamFactory();
         fac.setEntryEncoding(entryEncoding);
         return fac;
     }
@@ -233,18 +233,18 @@ public class ArchiveStreamFactoryTest {
         dflt = UNKNOWN;
         try {
             dflt = getField(new ArjArchiveInputStream(new FileInputStream(getFile("bla.arj"))), "charsetName");
-        } catch (ArchiveException e) {
+        } catch (final ArchiveException e) {
             e.printStackTrace();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
         ARJ_DEFAULT = dflt;
         dflt = UNKNOWN;
         try {
             dflt = getField(new DumpArchiveInputStream(new FileInputStream(getFile("bla.dump"))), "encoding");
-        } catch (ArchiveException e) {
+        } catch (final ArchiveException e) {
             e.printStackTrace();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
         DUMP_DEFAULT = dflt;
@@ -292,8 +292,8 @@ public class ArchiveStreamFactoryTest {
     public void testEncodingInputStreamAutodetect() throws Exception {
         int failed = 0;
         for(int i = 1; i <= TESTS.length; i++) {
-            TestData test = TESTS[i-1];
-            ArchiveInputStream ais = getInputStreamFor(test.testFile, test.fac);
+            final TestData test = TESTS[i-1];
+            final ArchiveInputStream ais = getInputStreamFor(test.testFile, test.fac);
             final String field = getField(ais,test.fieldName);
             if (!eq(test.expectedEncoding,field)) {
                 System.out.println("Failed test " + i + ". expected: " + test.expectedEncoding + " actual: " + field + " type: " + test.type);
@@ -309,8 +309,8 @@ public class ArchiveStreamFactoryTest {
     public void testEncodingInputStream() throws Exception {
         int failed = 0;
         for(int i = 1; i <= TESTS.length; i++) {
-            TestData test = TESTS[i-1];
-            ArchiveInputStream ais = getInputStreamFor(test.type, test.testFile, test.fac);
+            final TestData test = TESTS[i-1];
+            final ArchiveInputStream ais = getInputStreamFor(test.type, test.testFile, test.fac);
             final String field = getField(ais,test.fieldName);
             if (!eq(test.expectedEncoding,field)) {
                 System.out.println("Failed test " + i + ". expected: " + test.expectedEncoding + " actual: " + field + " type: " + test.type);
@@ -326,9 +326,9 @@ public class ArchiveStreamFactoryTest {
     public void testEncodingOutputStream() throws Exception {
         int failed = 0;
         for(int i = 1; i <= TESTS.length; i++) {
-            TestData test = TESTS[i-1];
+            final TestData test = TESTS[i-1];
             if (test.hasOutputStream) {
-                ArchiveOutputStream ais = getOutputStreamFor(test.type, test.fac);
+                final ArchiveOutputStream ais = getOutputStreamFor(test.type, test.fac);
                 final String field = getField(ais, test.fieldName);
                 if (!eq(test.expectedEncoding, field)) {
                     System.out.println("Failed test " + i + ". expected: " + test.expectedEncoding + " actual: " + field + " type: " + test.type);
@@ -350,19 +350,19 @@ public class ArchiveStreamFactoryTest {
     }
 
     private static String getField(final Object instance, final String name) {
-        Class<?> cls = instance.getClass();
+        final Class<?> cls = instance.getClass();
         Field fld;
         try {
             fld = cls.getDeclaredField(name);
-        } catch (NoSuchFieldException nsfe) {
+        } catch (final NoSuchFieldException nsfe) {
                 try {
                     fld = cls.getSuperclass().getDeclaredField(name);
-                } catch (NoSuchFieldException e) {
+                } catch (final NoSuchFieldException e) {
                     System.out.println("Cannot find " + name + " in class " + instance.getClass().getSimpleName());
                     return UNKNOWN;
                 }                
         }
-        boolean isAccessible = fld.isAccessible();
+        final boolean isAccessible = fld.isAccessible();
         try {
             if (!isAccessible) {
                 fld.setAccessible(true);
@@ -373,7 +373,7 @@ public class ArchiveStreamFactoryTest {
             }
             System.out.println("Wrong type: " + object.getClass().getCanonicalName() + " for " + name + " in class " + instance.getClass().getSimpleName());
             return UNKNOWN;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
             return UNKNOWN;
         } finally {

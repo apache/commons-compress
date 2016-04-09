@@ -112,7 +112,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         IOUtils.readFully(this, NAME_BUF);
         IOUtils.readFully(this, LAST_MODIFIED_BUF);
         IOUtils.readFully(this, ID_BUF);
-        int userId = asInt(ID_BUF, true);
+        final int userId = asInt(ID_BUF, true);
         IOUtils.readFully(this, ID_BUF);
         IOUtils.readFully(this, FILE_MODE_BUF);
         IOUtils.readFully(this, LENGTH_BUF);
@@ -146,14 +146,14 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         if (temp.endsWith("/")) { // GNU terminator
             temp = temp.substring(0, temp.length() - 1);
         } else if (isGNULongName(temp)) {
-            int off = Integer.parseInt(temp.substring(1));// get the offset
+            final int off = Integer.parseInt(temp.substring(1));// get the offset
             temp = getExtendedName(off); // convert to the long name
         } else if (isBSDLongName(temp)) {
             temp = getBSDLongName(temp);
             // entry length contained the length of the file name in
             // addition to the real length of the entry.
             // assume file name was ASCII, there is no "standard" otherwise
-            int nameLen = temp.length();
+            final int nameLen = temp.length();
             len -= nameLen;
             entryOffset += nameLen;
         }
@@ -203,7 +203,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
     }
 
     private int asInt(final byte[] input, final int base, final boolean treatBlankAsZero) {
-        String string = ArchiveUtils.toAsciiString(input).trim();
+        final String string = ArchiveUtils.toAsciiString(input).trim();
         if (string.length() == 0 && treatBlankAsZero) {
             return 0;
         }
@@ -342,10 +342,10 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      * @since 1.3
      */
     private String getBSDLongName(final String bsdLongName) throws IOException {
-        int nameLen =
+        final int nameLen =
             Integer.parseInt(bsdLongName.substring(BSD_LONGNAME_PREFIX_LEN));
-        byte[] name = new byte[nameLen];
-        int read = IOUtils.readFully(this, name);
+        final byte[] name = new byte[nameLen];
+        final int read = IOUtils.readFully(this, name);
         if (read != nameLen) {
             throw new EOFException();
         }
@@ -381,9 +381,9 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      * @see #isGNUStringTable
      */
     private ArArchiveEntry readGNUStringTable(final byte[] length) throws IOException {
-        int bufflen = asInt(length); // Assume length will fit in an int
+        final int bufflen = asInt(length); // Assume length will fit in an int
         namebuffer = new byte[bufflen];
-        int read = IOUtils.readFully(this, namebuffer, 0, bufflen);
+        final int read = IOUtils.readFully(this, namebuffer, 0, bufflen);
         if (read != bufflen){
             throw new IOException("Failed to read complete // record: expected="
                                   + bufflen + " read=" + read);

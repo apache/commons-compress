@@ -171,7 +171,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      */
     @Override
     public byte[] getLocalFileDataData() {
-        byte[] data = new byte[getLocalFileDataLength().getValue()];
+        final byte[] data = new byte[getLocalFileDataLength().getValue()];
         int pos = 0;
         data[pos++] = 0;
         if (bit0_modifyTimePresent) {
@@ -200,8 +200,8 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      */
     @Override
     public byte[] getCentralDirectoryData() {
-        byte[] centralData = new byte[getCentralDirectoryLength().getValue()];
-        byte[] localData = getLocalFileDataData();
+        final byte[] centralData = new byte[getCentralDirectoryLength().getValue()];
+        final byte[] localData = getLocalFileDataData();
 
         // Truncate out create & access time (last 8 bytes) from
         // the copy of the local data we obtained:
@@ -535,19 +535,19 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      */
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder();
+        final StringBuilder buf = new StringBuilder();
         buf.append("0x5455 Zip Extra Field: Flags=");
         buf.append(Integer.toBinaryString(ZipUtil.unsignedIntToSignedByte(flags))).append(" ");
         if (bit0_modifyTimePresent && modifyTime != null) {
-            Date m = getModifyJavaTime();
+            final Date m = getModifyJavaTime();
             buf.append(" Modify:[").append(m).append("] ");
         }
         if (bit1_accessTimePresent && accessTime != null) {
-            Date a = getAccessJavaTime();
+            final Date a = getAccessJavaTime();
             buf.append(" Access:[").append(a).append("] ");
         }
         if (bit2_createTimePresent && createTime != null) {
-            Date c = getCreateJavaTime();
+            final Date c = getCreateJavaTime();
             buf.append(" Create:[").append(c).append("] ");
         }
         return buf.toString();
@@ -561,7 +561,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     @Override
     public boolean equals(final Object o) {
         if (o instanceof X5455_ExtendedTimestamp) {
-            X5455_ExtendedTimestamp xf = (X5455_ExtendedTimestamp) o;
+            final X5455_ExtendedTimestamp xf = (X5455_ExtendedTimestamp) o;
 
             // The ZipLong==ZipLong clauses handle the cases where both are null.
             // and only last 3 bits of flags matter.

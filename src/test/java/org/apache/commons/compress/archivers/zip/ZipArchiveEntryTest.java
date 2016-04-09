@@ -36,34 +36,34 @@ public class ZipArchiveEntryTest {
      */
     @Test
     public void testExtraFields() {
-        AsiExtraField a = new AsiExtraField();
+        final AsiExtraField a = new AsiExtraField();
         a.setDirectory(true);
         a.setMode(0755);
-        UnrecognizedExtraField u = new UnrecognizedExtraField();
+        final UnrecognizedExtraField u = new UnrecognizedExtraField();
         u.setHeaderId(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
         u.setLocalFileDataData(new byte[0]);
 
-        ZipArchiveEntry ze = new ZipArchiveEntry("test/");
+        final ZipArchiveEntry ze = new ZipArchiveEntry("test/");
         ze.setExtraFields(new ZipExtraField[] {a, u});
-        byte[] data1 = ze.getExtra();
+        final byte[] data1 = ze.getExtra();
         ZipExtraField[] result = ze.getExtraFields();
         assertEquals("first pass", 2, result.length);
         assertSame(a, result[0]);
         assertSame(u, result[1]);
 
-        UnrecognizedExtraField u2 = new UnrecognizedExtraField();
+        final UnrecognizedExtraField u2 = new UnrecognizedExtraField();
         u2.setHeaderId(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
         u2.setLocalFileDataData(new byte[] {1});
 
         ze.addExtraField(u2);
-        byte[] data2 = ze.getExtra();
+        final byte[] data2 = ze.getExtra();
         result = ze.getExtraFields();
         assertEquals("second pass", 2, result.length);
         assertSame(a, result[0]);
         assertSame(u2, result[1]);
         assertEquals("length second pass", data1.length+1, data2.length);
 
-        UnrecognizedExtraField u3 = new UnrecognizedExtraField();
+        final UnrecognizedExtraField u3 = new UnrecognizedExtraField();
         u3.setHeaderId(new ZipShort(2));
         u3.setLocalFileDataData(new byte[] {1});
         ze.addExtraField(u3);
@@ -71,7 +71,7 @@ public class ZipArchiveEntryTest {
         assertEquals("third pass", 3, result.length);
 
         ze.removeExtraField(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
-        byte[] data3 = ze.getExtra();
+        final byte[] data3 = ze.getExtra();
         result = ze.getExtraFields();
         assertEquals("fourth pass", 2, result.length);
         assertSame(a, result[0]);
@@ -81,7 +81,7 @@ public class ZipArchiveEntryTest {
         try {
             ze.removeExtraField(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
             fail("should be no such element");
-        } catch (java.util.NoSuchElementException nse) {
+        } catch (final java.util.NoSuchElementException nse) {
         }
     }
 
@@ -90,19 +90,19 @@ public class ZipArchiveEntryTest {
      */
     @Test
     public void testExtraFieldMerging() {
-        AsiExtraField a = new AsiExtraField();
+        final AsiExtraField a = new AsiExtraField();
         a.setDirectory(true);
         a.setMode(0755);
-        UnrecognizedExtraField u = new UnrecognizedExtraField();
+        final UnrecognizedExtraField u = new UnrecognizedExtraField();
         u.setHeaderId(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
         u.setLocalFileDataData(new byte[0]);
 
-        ZipArchiveEntry ze = new ZipArchiveEntry("test/");
+        final ZipArchiveEntry ze = new ZipArchiveEntry("test/");
         ze.setExtraFields(new ZipExtraField[] {a, u});
 
         // merge
         // Header-ID 1 + length 1 + one byte of data
-        byte[] b = ExtraFieldUtilsTest.UNRECOGNIZED_HEADER.getBytes();
+        final byte[] b = ExtraFieldUtilsTest.UNRECOGNIZED_HEADER.getBytes();
         ze.setCentralDirectoryExtra(new byte[] {b[0], b[1], 1, 0, 127});
 
         ZipExtraField[] result = ze.getExtraFields();
@@ -137,30 +137,30 @@ public class ZipArchiveEntryTest {
      */
     @Test
     public void testAddAsFirstExtraField() {
-        AsiExtraField a = new AsiExtraField();
+        final AsiExtraField a = new AsiExtraField();
         a.setDirectory(true);
         a.setMode(0755);
-        UnrecognizedExtraField u = new UnrecognizedExtraField();
+        final UnrecognizedExtraField u = new UnrecognizedExtraField();
         u.setHeaderId(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
         u.setLocalFileDataData(new byte[0]);
 
-        ZipArchiveEntry ze = new ZipArchiveEntry("test/");
+        final ZipArchiveEntry ze = new ZipArchiveEntry("test/");
         ze.setExtraFields(new ZipExtraField[] {a, u});
-        byte[] data1 = ze.getExtra();
+        final byte[] data1 = ze.getExtra();
 
-        UnrecognizedExtraField u2 = new UnrecognizedExtraField();
+        final UnrecognizedExtraField u2 = new UnrecognizedExtraField();
         u2.setHeaderId(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
         u2.setLocalFileDataData(new byte[] {1});
 
         ze.addAsFirstExtraField(u2);
-        byte[] data2 = ze.getExtra();
+        final byte[] data2 = ze.getExtra();
         ZipExtraField[] result = ze.getExtraFields();
         assertEquals("second pass", 2, result.length);
         assertSame(u2, result[0]);
         assertSame(a, result[1]);
         assertEquals("length second pass", data1.length + 1, data2.length);
 
-        UnrecognizedExtraField u3 = new UnrecognizedExtraField();
+        final UnrecognizedExtraField u3 = new UnrecognizedExtraField();
         u3.setHeaderId(new ZipShort(2));
         u3.setLocalFileDataData(new byte[] {1});
         ze.addAsFirstExtraField(u3);
@@ -209,9 +209,9 @@ public class ZipArchiveEntryTest {
      */
     @Test
     public void testCompressionMethod() throws Exception {
-        ZipArchiveOutputStream zos =
+        final ZipArchiveOutputStream zos =
             new ZipArchiveOutputStream(new ByteArrayOutputStream());
-        ZipArchiveEntry entry = new ZipArchiveEntry("foo");
+        final ZipArchiveEntry entry = new ZipArchiveEntry("foo");
         assertEquals(-1, entry.getMethod());
         assertFalse(zos.canWriteEntryData(entry));
 
@@ -237,8 +237,8 @@ public class ZipArchiveEntryTest {
      */
     @Test
     public void testNotEquals() {
-        ZipArchiveEntry entry1 = new ZipArchiveEntry("foo");
-        ZipArchiveEntry entry2 = new ZipArchiveEntry("bar");
+        final ZipArchiveEntry entry1 = new ZipArchiveEntry("foo");
+        final ZipArchiveEntry entry2 = new ZipArchiveEntry("bar");
         assertFalse(entry1.equals(entry2));
     }
 
@@ -248,9 +248,9 @@ public class ZipArchiveEntryTest {
      */
     @Test
     public void testNullCommentEqualsEmptyComment() {
-        ZipArchiveEntry entry1 = new ZipArchiveEntry("foo");
-        ZipArchiveEntry entry2 = new ZipArchiveEntry("foo");
-        ZipArchiveEntry entry3 = new ZipArchiveEntry("foo");
+        final ZipArchiveEntry entry1 = new ZipArchiveEntry("foo");
+        final ZipArchiveEntry entry2 = new ZipArchiveEntry("foo");
+        final ZipArchiveEntry entry3 = new ZipArchiveEntry("foo");
         entry1.setComment(null);
         entry2.setComment("");
         entry3.setComment("bar");
@@ -261,11 +261,11 @@ public class ZipArchiveEntryTest {
 
     @Test
     public void testCopyConstructor() throws Exception {
-        ZipArchiveEntry archiveEntry = new ZipArchiveEntry("fred");
+        final ZipArchiveEntry archiveEntry = new ZipArchiveEntry("fred");
         archiveEntry.setUnixMode(0664);
         archiveEntry.setMethod(ZipEntry.DEFLATED);
         archiveEntry.getGeneralPurposeBit().useStrongEncryption(true);
-        ZipArchiveEntry copy = new ZipArchiveEntry(archiveEntry);
+        final ZipArchiveEntry copy = new ZipArchiveEntry(archiveEntry);
         assertEquals(archiveEntry, copy);
     }
 }

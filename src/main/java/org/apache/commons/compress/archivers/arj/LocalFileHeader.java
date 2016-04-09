@@ -72,7 +72,7 @@ class LocalFileHeader {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         builder.append("LocalFileHeader [archiverVersionNumber=");
         builder.append(archiverVersionNumber);
         builder.append(", minVersionToExtract=");

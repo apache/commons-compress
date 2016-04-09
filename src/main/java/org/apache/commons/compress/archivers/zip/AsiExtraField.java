@@ -127,10 +127,10 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     @Override
     public byte[] getLocalFileDataData() {
         // CRC will be added later
-        byte[] data = new byte[getLocalFileDataLength().getValue() - WORD];
+        final byte[] data = new byte[getLocalFileDataLength().getValue() - WORD];
         System.arraycopy(ZipShort.getBytes(getMode()), 0, data, 0, 2);
 
-        byte[] linkArray = getLinkedFile().getBytes(); // Uses default charset - see class Javadoc
+        final byte[] linkArray = getLinkedFile().getBytes(); // Uses default charset - see class Javadoc
         // CheckStyle:MagicNumber OFF
         System.arraycopy(ZipLong.getBytes(linkArray.length),
                          0, data, 2, WORD);
@@ -145,9 +145,9 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
 
         crc.reset();
         crc.update(data);
-        long checksum = crc.getValue();
+        final long checksum = crc.getValue();
 
-        byte[] result = new byte[data.length + WORD];
+        final byte[] result = new byte[data.length + WORD];
         System.arraycopy(ZipLong.getBytes(checksum), 0, result, 0, WORD);
         System.arraycopy(data, 0, result, WORD, data.length);
         return result;
@@ -267,12 +267,12 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     public void parseFromLocalFileData(final byte[] data, final int offset, final int length)
         throws ZipException {
 
-        long givenChecksum = ZipLong.getValue(data, offset);
-        byte[] tmp = new byte[length - WORD];
+        final long givenChecksum = ZipLong.getValue(data, offset);
+        final byte[] tmp = new byte[length - WORD];
         System.arraycopy(data, offset + WORD, tmp, 0, length - WORD);
         crc.reset();
         crc.update(tmp);
-        long realChecksum = crc.getValue();
+        final long realChecksum = crc.getValue();
         if (givenChecksum != realChecksum) {
             throw new ZipException("bad CRC checksum "
                                    + Long.toHexString(givenChecksum)
@@ -280,9 +280,9 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
                                    + Long.toHexString(realChecksum));
         }
 
-        int newMode = ZipShort.getValue(tmp, 0);
+        final int newMode = ZipShort.getValue(tmp, 0);
         // CheckStyle:MagicNumber OFF
-        byte[] linkArray = new byte[(int) ZipLong.getValue(tmp, 2)];
+        final byte[] linkArray = new byte[(int) ZipLong.getValue(tmp, 2)];
         uid = ZipShort.getValue(tmp, 6);
         gid = ZipShort.getValue(tmp, 8);
 
@@ -326,10 +326,10 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     @Override
     public Object clone() {
         try {
-            AsiExtraField cloned = (AsiExtraField) super.clone();
+            final AsiExtraField cloned = (AsiExtraField) super.clone();
             cloned.crc = new CRC32();
             return cloned;
-        } catch (CloneNotSupportedException cnfe) {
+        } catch (final CloneNotSupportedException cnfe) {
             // impossible
             throw new RuntimeException(cnfe);
         }

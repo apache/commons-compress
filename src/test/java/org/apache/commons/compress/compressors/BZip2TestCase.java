@@ -41,7 +41,7 @@ public final class BZip2TestCase extends AbstractTestCase {
             output = new File(dir, "test.txt.bz2");
             final OutputStream out = new FileOutputStream(output);
             final CompressorOutputStream cos = new CompressorStreamFactory().createCompressorOutputStream("bzip2", out);
-            FileInputStream in = new FileInputStream(input);
+            final FileInputStream in = new FileInputStream(input);
             IOUtils.copy(in, cos);
             cos.close();
             in.close();
@@ -53,7 +53,7 @@ public final class BZip2TestCase extends AbstractTestCase {
             final InputStream is = new FileInputStream(toDecompress);
             final CompressorInputStream in =
                 new CompressorStreamFactory().createCompressorInputStream("bzip2", is);
-            FileOutputStream os = new FileOutputStream(decompressed);
+            final FileOutputStream os = new FileOutputStream(decompressed);
             IOUtils.copy(in, os);
             is.close();
             os.close();
@@ -68,7 +68,7 @@ public final class BZip2TestCase extends AbstractTestCase {
         final File output = new File(dir, "bla.txt");
         final InputStream is = new FileInputStream(input);
         final CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("bzip2", is);
-        FileOutputStream os = new FileOutputStream(output);
+        final FileOutputStream os = new FileOutputStream(output);
         IOUtils.copy(in, os);
         is.close();
         os.close();

@@ -31,13 +31,13 @@ public class BinaryTreeTest {
 
     @Test
     public void testDecode() throws IOException {
-        InputStream in = new ByteArrayInputStream(new byte[] { 0x02, 0x42, 0x01, 0x13 });
+        final InputStream in = new ByteArrayInputStream(new byte[] { 0x02, 0x42, 0x01, 0x13 });
         
-        BinaryTree tree = BinaryTree.decode(in, 8);
+        final BinaryTree tree = BinaryTree.decode(in, 8);
         
         assertNotNull(tree);
         
-        BitStream stream = new BitStream(new ByteArrayInputStream(new byte[] { (byte) 0x8D, (byte) 0xC5, (byte) 0x11, 0x00 }));
+        final BitStream stream = new BitStream(new ByteArrayInputStream(new byte[] { (byte) 0x8D, (byte) 0xC5, (byte) 0x11, 0x00 }));
         assertEquals(0, tree.read(stream));
         assertEquals(1, tree.read(stream));
         assertEquals(2, tree.read(stream));

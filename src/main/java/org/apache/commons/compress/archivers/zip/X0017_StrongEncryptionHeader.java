@@ -328,7 +328,7 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
      * @param length the length of data
      */
     public void parseFileFormat(final byte[] data, final int offset, final int length) {
-        int ivSize = ZipShort.getValue(data, offset);
+        final int ivSize = ZipShort.getValue(data, offset);
         this.ivData = new byte[ivSize];
         System.arraycopy(data, offset + 4, this.ivData, 0, ivSize);
 
@@ -337,14 +337,14 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
         this.bitlen = ZipShort.getValue(data, offset + ivSize + 10);
         this.flags = ZipShort.getValue(data, offset + ivSize + 12);
 
-        int erdSize = ZipShort.getValue(data, offset + ivSize + 14);
+        final int erdSize = ZipShort.getValue(data, offset + ivSize + 14);
         this.erdData = new byte[erdSize];
         System.arraycopy(data, offset + ivSize + 16, this.erdData, 0, erdSize);
 
         this.rcount = ZipLong.getValue(data, offset + ivSize + 16 + erdSize);
         System.out.println("rcount: " + rcount);
         if (rcount == 0) {
-            int vSize = ZipShort.getValue(data, offset + ivSize + 20 + erdSize);
+            final int vSize = ZipShort.getValue(data, offset + ivSize + 20 + erdSize);
             this.vData = new byte[vSize - 4];
             this.vCRC32 = new byte[4];
             System.arraycopy(data, offset + ivSize + 22 + erdSize , this.vData, 0, vSize - 4);
@@ -352,13 +352,13 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
         } else {
             this.hashAlg = HashAlgorithm.getAlgorithmByCode(ZipShort.getValue(data, offset + ivSize + 20 + erdSize));
             this.hashSize = ZipShort.getValue(data, offset + ivSize + 22 + erdSize);
-            int resize = ZipShort.getValue(data, offset + ivSize + 24 + erdSize);
+            final int resize = ZipShort.getValue(data, offset + ivSize + 24 + erdSize);
             this.recipientKeyHash = new byte[this.hashSize];
             this.keyBlob = new byte[resize - this.hashSize];
             System.arraycopy(data, offset + ivSize + 24 + erdSize, this.recipientKeyHash, 0, this.hashSize);
             System.arraycopy(data, offset + ivSize + 24 + erdSize + this.hashSize, this.keyBlob, 0, resize - this.hashSize);
 
-            int vSize = ZipShort.getValue(data, offset + ivSize + 26 + erdSize + resize);
+            final int vSize = ZipShort.getValue(data, offset + ivSize + 26 + erdSize + resize);
             this.vData = new byte[vSize - 4];
             this.vCRC32 = new byte[4];
             System.arraycopy(data, offset + ivSize + 22 + erdSize + resize, this.vData, 0, vSize - 4);

@@ -214,7 +214,7 @@ public class CompressorStreamFactory {
         final byte[] signature = new byte[12];
         in.mark(signature.length);
         try {
-            int signatureLength = IOUtils.readFully(in, signature);
+            final int signatureLength = IOUtils.readFully(in, signature);
             in.reset();
 
             if (BZip2CompressorInputStream.matches(signature, signatureLength)) {
@@ -251,7 +251,7 @@ public class CompressorStreamFactory {
                 return new LZMACompressorInputStream(in);
             }
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new CompressorException("Failed to detect Compressor from InputStream.", e);
         }
 
@@ -315,7 +315,7 @@ public class CompressorStreamFactory {
                 return new DeflateCompressorInputStream(in);
             }
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new CompressorException(
                     "Could not create CompressorInputStream.", e);
         }
@@ -363,7 +363,7 @@ public class CompressorStreamFactory {
                 return new DeflateCompressorOutputStream(out);
             }
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new CompressorException(
                     "Could not create CompressorOutputStream", e);
         }

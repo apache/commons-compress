@@ -285,7 +285,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         try {
             _raf = new RandomAccessFile(file, "rw");
             _raf.setLength(0);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             IOUtils.closeQuietly(_raf);
             _raf = null;
             o = new FileOutputStream(file);
@@ -451,10 +451,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     private void writeCentralDirectoryInChunks() throws IOException {
-        int NUM_PER_WRITE = 1000;
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(70 * NUM_PER_WRITE);
+        final int NUM_PER_WRITE = 1000;
+        final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(70 * NUM_PER_WRITE);
         int count = 0;
-        for (ZipArchiveEntry ze : entries) {
+        for (final ZipArchiveEntry ze : entries) {
             byteArrayOutputStream.write(createCentralFileHeader(ze));
             if (++count > NUM_PER_WRITE){
                 writeCounted(byteArrayOutputStream.toByteArray());
@@ -478,8 +478,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
         flushDeflater();
 
-        long bytesWritten = streamCompressor.getTotalBytesWritten() - entry.dataStart;
-        long realCrc = streamCompressor.getCrc32();
+        final long bytesWritten = streamCompressor.getTotalBytesWritten() - entry.dataStart;
+        final long realCrc = streamCompressor.getCrc32();
         entry.bytesRead = streamCompressor.getBytesRead();
         final Zip64Mode effectiveMode = getEffectiveZip64Mode(entry.entry);
         final boolean actuallyNeedsZip64 = handleSizesAndCrc(bytesWritten, realCrc, effectiveMode);
@@ -500,8 +500,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private void closeCopiedEntry(final boolean phased) throws IOException {
         preClose();
         entry.bytesRead = entry.entry.getSize();
-        Zip64Mode effectiveMode = getEffectiveZip64Mode(entry.entry);
-        boolean actuallyNeedsZip64 = checkIfNeedsZip64(effectiveMode);
+        final Zip64Mode effectiveMode = getEffectiveZip64Mode(entry.entry);
+        final boolean actuallyNeedsZip64 = checkIfNeedsZip64(effectiveMode);
         closeEntry(actuallyNeedsZip64, phased);
     }
 
@@ -543,14 +543,14 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     public void addRawArchiveEntry(final ZipArchiveEntry entry, final InputStream rawStream)
             throws IOException {
-        ZipArchiveEntry ae = new ZipArchiveEntry(entry);
+        final ZipArchiveEntry ae = new ZipArchiveEntry(entry);
         if (hasZip64Extra(ae)) {
             // Will be re-added as required. this may make the file generated with this method
             // somewhat smaller than standard mode,
             // since standard mode is unable to remove the zip 64 header.
             ae.removeExtraField(Zip64ExtendedInformationExtraField.HEADER_ID);
         }
-        boolean is2PhaseSource = ae.getCrc() != ZipArchiveEntry.CRC_UNKNOWN
+        final boolean is2PhaseSource = ae.getCrc() != ZipArchiveEntry.CRC_UNKNOWN
                 && ae.getSize() != ArchiveEntry.SIZE_UNKNOWN
                 && ae.getCompressedSize() != ArchiveEntry.SIZE_UNKNOWN;
         putArchiveEntry(ae, is2PhaseSource);
@@ -640,7 +640,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     private void rewriteSizesAndCrc(final boolean actuallyNeedsZip64)
         throws IOException {
-        long save = raf.getFilePointer();
+        final long save = raf.getFilePointer();
 
         raf.seek(entry.localDataStart);
         writeOut(ZipLong.getBytes(entry.entry.getCrc()));
@@ -653,8 +653,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         }
 
         if (hasZip64Extra(entry.entry)) {
-            ByteBuffer name = getName(entry.entry);
-            int nameLen = name.limit() - name.position();
+            final ByteBuffer name = getName(entry.entry);
+            final int nameLen = name.limit() - name.position();
             // seek to ZIP64 extra, skip header and size information
             raf.seek(entry.localDataStart + 3 * WORD + 2 * SHORT
                      + nameLen + 2 * SHORT);
@@ -728,7 +728,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
         if (shouldAddZip64Extra(entry.entry, effectiveMode)) {
 
-            Zip64ExtendedInformationExtraField z64 = getZip64Extra(entry.entry);
+            final Zip64ExtendedInformationExtraField z64 = getZip64Extra(entry.entry);
 
             // just a placeholder, real data will be in data
             // descriptor or inserted later via RandomAccessFile
@@ -867,7 +867,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     @Override
     public boolean canWriteEntryData(final ArchiveEntry ae) {
         if (ae instanceof ZipArchiveEntry) {
-            ZipArchiveEntry zae = (ZipArchiveEntry) ae;
+            final ZipArchiveEntry zae = (ZipArchiveEntry) ae;
             return zae.getMethod() != ZipMethod.IMPLODING.getCode()
                 && zae.getMethod() != ZipMethod.UNSHRINKING.getCode()
                 && ZipUtil.canHandleEntryData(zae);
@@ -888,7 +888,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             throw new IllegalStateException("No current entry");
         }
         ZipUtil.checkRequestedFeatures(entry.entry);
-        long writtenThisTime = streamCompressor.write(b, offset, length, entry.entry.getMethod());
+        final long writtenThisTime = streamCompressor.write(b, offset, length, entry.entry.getMethod());
         count(writtenThisTime);
     }
 
@@ -991,15 +991,15 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     private void writeLocalFileHeader(final ZipArchiveEntry ze, final boolean phased) throws IOException {
-        boolean encodable = zipEncoding.canEncode(ze.getName());
-        ByteBuffer name = getName(ze);
+        final boolean encodable = zipEncoding.canEncode(ze.getName());
+        final ByteBuffer name = getName(ze);
 
         if (createUnicodeExtraFields != UnicodeExtraFieldPolicy.NEVER) {
             addUnicodeExtraFields(ze, encodable, name);
         }
 
         final byte[] localHeader = createLocalFileHeader(ze, name, encodable, phased);
-        long localHeaderStart = streamCompressor.getTotalBytesWritten();
+        final long localHeaderStart = streamCompressor.getTotalBytesWritten();
         offsets.put(ze, localHeaderStart);
         entry.localDataStart = localHeaderStart + LFH_CRC_OFFSET; // At crc offset
         writeCounted(localHeader);
@@ -1009,10 +1009,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
     private byte[] createLocalFileHeader(final ZipArchiveEntry ze, final ByteBuffer name, final boolean encodable,
                                          final boolean phased)  {
-        byte[] extra = ze.getLocalFileDataExtra();
+        final byte[] extra = ze.getLocalFileDataExtra();
         final int nameLen = name.limit() - name.position();
-        int len= LFH_FILENAME_OFFSET + nameLen + extra.length;
-        byte[] buf = new byte[len];
+        final int len= LFH_FILENAME_OFFSET + nameLen + extra.length;
+        final byte[] buf = new byte[len];
 
         System.arraycopy(LFH_SIG,  0, buf, LFH_SIG_OFFSET, WORD);
 
@@ -1025,7 +1025,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             putShort(versionNeededToExtract(zipMethod, hasZip64Extra(ze)), buf, LFH_VERSION_NEEDED_OFFSET);
         }
 
-        GeneralPurposeBit generalPurposeBit = getGeneralPurposeBits(zipMethod, !encodable && fallbackToUTF8);
+        final GeneralPurposeBit generalPurposeBit = getGeneralPurposeBits(zipMethod, !encodable && fallbackToUTF8);
         generalPurposeBit.encode(buf, LFH_GPB_OFFSET);
 
         // compression method
@@ -1091,14 +1091,14 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                                                        - name.position()));
         }
 
-        String comm = ze.getComment();
+        final String comm = ze.getComment();
         if (comm != null && !"".equals(comm)) {
 
-            boolean commentEncodable = zipEncoding.canEncode(comm);
+            final boolean commentEncodable = zipEncoding.canEncode(comm);
 
             if (createUnicodeExtraFields == UnicodeExtraFieldPolicy.ALWAYS
                 || !commentEncodable) {
-                ByteBuffer commentB = getEntryEncoding(ze).encode(comm);
+                final ByteBuffer commentB = getEntryEncoding(ze).encode(comm);
                 ze.addExtraField(new UnicodeCommentExtraField(comm,
                                                               commentB.array(),
                                                               commentB.arrayOffset(),
@@ -1138,7 +1138,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * Zip64Mode#Never}.
      */
     protected void writeCentralFileHeader(final ZipArchiveEntry ze) throws IOException {
-        byte[] centralFileHeader = createCentralFileHeader(ze);
+        final byte[] centralFileHeader = createCentralFileHeader(ze);
         writeCounted(centralFileHeader);
     }
 
@@ -1174,7 +1174,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     private byte[] createCentralFileHeader(final ZipArchiveEntry ze, final ByteBuffer name, final long lfhOffset,
                                            final boolean needsZip64Extra) throws IOException {
-        byte[] extra = ze.getCentralDirectoryExtra();
+        final byte[] extra = ze.getCentralDirectoryExtra();
 
         // file comment length
         String comm = ze.getComment();
@@ -1182,11 +1182,11 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             comm = "";
         }
 
-        ByteBuffer commentB = getEntryEncoding(ze).encode(comm);
+        final ByteBuffer commentB = getEntryEncoding(ze).encode(comm);
         final int nameLen = name.limit() - name.position();
         final int commentLen = commentB.limit() - commentB.position();
-        int len= CFH_FILENAME_OFFSET + nameLen + extra.length + commentLen;
-        byte[] buf = new byte[len];
+        final int len= CFH_FILENAME_OFFSET + nameLen + extra.length + commentLen;
+        final byte[] buf = new byte[len];
 
         System.arraycopy(CFH_SIG,  0, buf, CFH_SIG_OFFSET, WORD);
 
@@ -1247,10 +1247,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         // file name
         System.arraycopy(name.array(), name.arrayOffset(), buf, CFH_FILENAME_OFFSET, nameLen);
 
-        int extraStart = CFH_FILENAME_OFFSET + nameLen;
+        final int extraStart = CFH_FILENAME_OFFSET + nameLen;
         System.arraycopy(extra, 0, buf, extraStart, extra.length);
 
-        int commentStart = extraStart + extra.length;
+        final int commentStart = extraStart + extra.length;
 
         // file comment
         System.arraycopy(commentB.array(), commentB.arrayOffset(), buf, commentStart, commentLen);
@@ -1264,7 +1264,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private void handleZip64Extra(final ZipArchiveEntry ze, final long lfhOffset,
                                   final boolean needsZip64Extra) {
         if (needsZip64Extra) {
-            Zip64ExtendedInformationExtraField z64 = getZip64Extra(ze);
+            final Zip64ExtendedInformationExtraField z64 = getZip64Extra(ze);
             if (ze.getCompressedSize() >= ZIP64_MAGIC
                 || ze.getSize() >= ZIP64_MAGIC
                 || zip64Mode == Zip64Mode.Always) {
@@ -1297,7 +1297,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         writeCounted(ZERO);
 
         // number of entries
-        int numberOfEntries = entries.size();
+        final int numberOfEntries = entries.size();
         if (numberOfEntries > ZIP64_MAGIC_SHORT
             && zip64Mode == Zip64Mode.Never) {
             throw new Zip64RequiredException(Zip64RequiredException
@@ -1308,7 +1308,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                                              .ARCHIVE_TOO_BIG_MESSAGE);
         }
 
-        byte[] num = ZipShort.getBytes(Math.min(numberOfEntries,
+        final byte[] num = ZipShort.getBytes(Math.min(numberOfEntries,
                                                 ZIP64_MAGIC_SHORT));
         writeCounted(num);
         writeCounted(num);
@@ -1318,8 +1318,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         writeCounted(ZipLong.getBytes(Math.min(cdOffset, ZIP64_MAGIC)));
 
         // ZIP file comment
-        ByteBuffer data = this.zipEncoding.encode(comment);
-        int dataLen = data.limit() - data.position();
+        final ByteBuffer data = this.zipEncoding.encode(comment);
+        final int dataLen = data.limit() - data.position();
         writeCounted(ZipShort.getBytes(dataLen));
         streamCompressor.writeCounted(data.array(), data.arrayOffset(), dataLen);
     }
@@ -1346,7 +1346,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             return;
         }
 
-        long offset = streamCompressor.getTotalBytesWritten();
+        final long offset = streamCompressor.getTotalBytesWritten();
 
         writeOut(ZIP64_EOCD_SIG);
         // size, we don't have any variable length as we don't support
@@ -1371,7 +1371,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         writeOut(LZERO);
 
         // number of entries
-        byte[] num = ZipEightByteInteger.getBytes(entries.size());
+        final byte[] num = ZipEightByteInteger.getBytes(entries.size());
         writeOut(num);
         writeOut(num);
 
@@ -1416,7 +1416,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
 
     private GeneralPurposeBit getGeneralPurposeBits(final int zipMethod, final boolean utfFallback) {
-        GeneralPurposeBit b = new GeneralPurposeBit();
+        final GeneralPurposeBit b = new GeneralPurposeBit();
         b.useUTF8ForNames(useUTF8Flag || utfFallback);
         if (isDeflatedToOutputStream(zipMethod)) {
             b.useDataDescriptor(true);
@@ -1522,7 +1522,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     private ZipEncoding getEntryEncoding(final ZipArchiveEntry ze) {
-        boolean encodable = zipEncoding.canEncode(ze.getName());
+        final boolean encodable = zipEncoding.canEncode(ze.getName());
         return !encodable && fallbackToUTF8
             ? ZipEncodingHelper.UTF8_ZIP_ENCODING : zipEncoding;
     }

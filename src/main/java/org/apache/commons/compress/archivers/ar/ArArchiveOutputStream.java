@@ -64,7 +64,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     }
 
     private long writeArchiveHeader() throws IOException {
-        byte [] header = ArchiveUtils.toAsciiBytes(ArArchiveEntry.HEADER);
+        final byte [] header = ArchiveUtils.toAsciiBytes(ArArchiveEntry.HEADER);
         out.write(header);
         return header.length;
     }
@@ -89,7 +89,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
             throw new IOException("Stream has already been finished");
         }
 
-        ArArchiveEntry pArEntry = (ArArchiveEntry)pEntry;
+        final ArArchiveEntry pArEntry = (ArArchiveEntry)pEntry;
         if (prevEntry == null) {
             writeArchiveHeader();
         } else {

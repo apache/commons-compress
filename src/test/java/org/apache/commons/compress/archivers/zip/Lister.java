@@ -47,23 +47,23 @@ public final class Lister {
     }
 
     public static void main(final String[] args) throws IOException {
-        CommandLine cl = parse(args);
-        File f = new File(cl.archive);
+        final CommandLine cl = parse(args);
+        final File f = new File(cl.archive);
         if (!f.isFile()) {
             System.err.println(f + " doesn't exists or is a directory");
             usage();
         }
         if (cl.useStream) {
-            BufferedInputStream fs =
+            final BufferedInputStream fs =
                 new BufferedInputStream(new FileInputStream(f));
             try {
-                ZipArchiveInputStream zs =
+                final ZipArchiveInputStream zs =
                     new ZipArchiveInputStream(fs, cl.encoding, true,
                                               cl.allowStoredEntriesWithDataDescriptor);
                 for (ArchiveEntry entry = zs.getNextEntry();
                      entry != null;
                      entry = zs.getNextEntry()) {
-                    ZipArchiveEntry ze = (ZipArchiveEntry) entry;
+                    final ZipArchiveEntry ze = (ZipArchiveEntry) entry;
                     list(ze);
                     if (cl.dir != null) {
                         extract(cl.dir, ze, zs);
@@ -73,14 +73,14 @@ public final class Lister {
                 fs.close();
             }
         } else {
-            ZipFile zf = new ZipFile(f, cl.encoding);
+            final ZipFile zf = new ZipFile(f, cl.encoding);
             try {
-                for (Enumeration<ZipArchiveEntry> entries = zf.getEntries();
+                for (final Enumeration<ZipArchiveEntry> entries = zf.getEntries();
                      entries.hasMoreElements(); ) {
-                    ZipArchiveEntry ze = entries.nextElement();
+                    final ZipArchiveEntry ze = entries.nextElement();
                     list(ze);
                     if (cl.dir != null) {
-                        InputStream is = zf.getInputStream(ze);
+                        final InputStream is = zf.getInputStream(ze);
                         try {
                             extract(cl.dir, ze, is);
                         } finally {
@@ -100,7 +100,7 @@ public final class Lister {
 
     private static void extract(final String dir, final ZipArchiveEntry entry,
                                 final InputStream is) throws IOException {
-        File f = new File(dir, entry.getName());
+        final File f = new File(dir, entry.getName());
         if (!f.getParentFile().exists()) {
             f.getParentFile().mkdirs();
         }
@@ -116,7 +116,7 @@ public final class Lister {
     }
 
     private static CommandLine parse(final String[] args) {
-        CommandLine cl = new CommandLine();
+        final CommandLine cl = new CommandLine();
         boolean error = false;
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-enc")) {

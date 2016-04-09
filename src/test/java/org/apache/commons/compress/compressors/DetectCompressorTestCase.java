@@ -89,30 +89,30 @@ public final class DetectCompressorTestCase {
     
     @Test
     public void testDetection() throws Exception {
-        CompressorInputStream bzip2 = getStreamFor("bla.txt.bz2"); 
+        final CompressorInputStream bzip2 = getStreamFor("bla.txt.bz2"); 
         assertNotNull(bzip2);
         assertTrue(bzip2 instanceof BZip2CompressorInputStream);
 
-        CompressorInputStream gzip = getStreamFor("bla.tgz");
+        final CompressorInputStream gzip = getStreamFor("bla.tgz");
         assertNotNull(gzip);
         assertTrue(gzip instanceof GzipCompressorInputStream);
         
-        CompressorInputStream pack200 = getStreamFor("bla.pack");
+        final CompressorInputStream pack200 = getStreamFor("bla.pack");
         assertNotNull(pack200);
         assertTrue(pack200 instanceof Pack200CompressorInputStream);
 
-        CompressorInputStream xz = getStreamFor("bla.tar.xz");
+        final CompressorInputStream xz = getStreamFor("bla.tar.xz");
         assertNotNull(xz);
         assertTrue(xz instanceof XZCompressorInputStream);
 
-        CompressorInputStream zlib = getStreamFor("bla.tar.deflatez");
+        final CompressorInputStream zlib = getStreamFor("bla.tar.deflatez");
         assertNotNull(zlib);
         assertTrue(zlib instanceof DeflateCompressorInputStream);
 
         try {
             factory.createCompressorInputStream(new ByteArrayInputStream(new byte[0]));
             fail("No exception thrown for an empty input stream");
-        } catch (CompressorException e) {
+        } catch (final CompressorException e) {
             // expected
         }
     }
@@ -129,7 +129,7 @@ public final class DetectCompressorTestCase {
         try {
             fac.setDecompressConcatenated(true);
             fail("Expected IllegalStateException");
-        } catch (IllegalStateException ise) {
+        } catch (final IllegalStateException ise) {
             // expected
         }
 
@@ -138,7 +138,7 @@ public final class DetectCompressorTestCase {
         try {
             fac.setDecompressConcatenated(true);
             fail("Expected IllegalStateException");
-        } catch (IllegalStateException ise) {
+        } catch (final IllegalStateException ise) {
             // expected
         }
     }
@@ -146,13 +146,13 @@ public final class DetectCompressorTestCase {
     @Test
     public void testMutiples() throws Exception {
         for(int i=0; i <tests.length; i++) {
-            TestData test = tests[i];
+            final TestData test = tests[i];
             final CompressorStreamFactory fac = test.factory;
             assertNotNull("Test entry "+i, fac);
             assertEquals("Test entry "+i, test.concat, fac.getDecompressConcatenated());
-            CompressorInputStream in = getStreamFor(test.fileName, fac);
+            final CompressorInputStream in = getStreamFor(test.fileName, fac);
             assertNotNull("Test entry "+i,in);
-            for (char entry : test.entryNames) {
+            for (final char entry : test.entryNames) {
                 assertEquals("Test entry" + i, entry, in.read());                
             }
             assertEquals(0, in.available());

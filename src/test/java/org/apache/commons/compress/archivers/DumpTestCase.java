@@ -55,7 +55,7 @@ public final class DumpTestCase extends AbstractTestCase {
 
             ArchiveEntry entry = in.getNextEntry();
             while (entry != null) {
-                File archiveEntry = new File(dir, entry.getName());
+                final File archiveEntry = new File(dir, entry.getName());
                 archiveEntry.getParentFile().mkdirs();
                 if (entry.isDirectory()) {
                     archiveEntry.mkdir();
@@ -112,7 +112,7 @@ public final class DumpTestCase extends AbstractTestCase {
     }
 
     private void checkDumpArchive(final File f) throws Exception {
-        ArrayList<String> expected = new ArrayList<String>();
+        final ArrayList<String> expected = new ArrayList<String>();
         expected.add("");
         expected.add("lost+found/");
         expected.add("test1.xml");

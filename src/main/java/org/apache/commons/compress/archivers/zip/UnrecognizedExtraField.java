@@ -130,7 +130,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
      */
     @Override
     public void parseFromLocalFileData(final byte[] data, final int offset, final int length) {
-        byte[] tmp = new byte[length];
+        final byte[] tmp = new byte[length];
         System.arraycopy(data, offset, tmp, 0, length);
         setLocalFileDataData(tmp);
     }
@@ -144,7 +144,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     @Override
     public void parseFromCentralDirectoryData(final byte[] data, final int offset,
                                               final int length) {
-        byte[] tmp = new byte[length];
+        final byte[] tmp = new byte[length];
         System.arraycopy(data, offset, tmp, 0, length);
         setCentralDirectoryData(tmp);
         if (localData == null) {

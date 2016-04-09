@@ -37,10 +37,10 @@ class DeltaDecoder extends CoderBase {
 
     @Override
     OutputStream encode(final OutputStream out, final Object options) throws IOException {
-        int distance = numberOptionOrDefault(options, 1);
+        final int distance = numberOptionOrDefault(options, 1);
         try {
             return new DeltaOptions(distance).getOutputStream(new FinishableWrapperOutputStream(out));
-        } catch (UnsupportedOptionsException ex) {
+        } catch (final UnsupportedOptionsException ex) {
             throw new IOException(ex.getMessage());
         }
     }

@@ -51,7 +51,7 @@ public abstract class ZipUtil {
      * @return the date as a byte array
      */
     public static byte[] toDosTime(final long t) {
-        byte[] result = new byte[4];
+        final byte[] result = new byte[4];
         toDosTime(t, result, 0);
         return result;
     }
@@ -73,13 +73,13 @@ public abstract class ZipUtil {
     static void toDosTime(final Calendar c, final long t, final byte[] buf, final int offset) {
         c.setTimeInMillis(t);
 
-        int year = c.get(Calendar.YEAR);
+        final int year = c.get(Calendar.YEAR);
         if (year < 1980) {
             System.arraycopy(DOS_TIME_MIN, 0, buf, offset, DOS_TIME_MIN.length);// stop callers from changing the array
             return;
         }
-        int month = c.get(Calendar.MONTH) + 1;
-        long value =  ((year - 1980) << 25)
+        final int month = c.get(Calendar.MONTH) + 1;
+        final long value =  ((year - 1980) << 25)
                 |         (month << 21)
                 |         (c.get(Calendar.DAY_OF_MONTH) << 16)
                 |         (c.get(Calendar.HOUR_OF_DAY) << 11)
@@ -117,7 +117,7 @@ public abstract class ZipUtil {
     public static byte[] reverse(final byte[] array) {
         final int z = array.length - 1; // position of last element
         for (int i = 0; i < array.length / 2; i++) {
-            byte x = array[i];
+            final byte x = array[i];
             array[i] = array[z - i];
             array[z - i] = x;
         }
@@ -200,7 +200,7 @@ public abstract class ZipUtil {
      * @return a Date instance corresponding to the given time.
      */
     public static Date fromDosTime(final ZipLong zipDosTime) {
-        long dosTime = zipDosTime.getValue();
+        final long dosTime = zipDosTime.getValue();
         return new Date(dosToJavaTime(dosTime));
     }
 
@@ -211,7 +211,7 @@ public abstract class ZipUtil {
      * @return converted time
      */
     public static long dosToJavaTime(final long dosTime) {
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         // CheckStyle:MagicNumberCheck OFF - no point
         cal.set(Calendar.YEAR, (int) ((dosTime >> 25) & 0x7f) + 1980);
         cal.set(Calendar.MONTH, (int) ((dosTime >> 21) & 0x0f) - 1);
@@ -232,19 +232,19 @@ public abstract class ZipUtil {
     static void setNameAndCommentFromExtraFields(final ZipArchiveEntry ze,
                                                  final byte[] originalNameBytes,
                                                  final byte[] commentBytes) {
-        UnicodePathExtraField name = (UnicodePathExtraField)
+        final UnicodePathExtraField name = (UnicodePathExtraField)
             ze.getExtraField(UnicodePathExtraField.UPATH_ID);
-        String originalName = ze.getName();
-        String newName = getUnicodeStringIfOriginalMatches(name,
+        final String originalName = ze.getName();
+        final String newName = getUnicodeStringIfOriginalMatches(name,
                                                            originalNameBytes);
         if (newName != null && !originalName.equals(newName)) {
             ze.setName(newName);
         }
 
         if (commentBytes != null && commentBytes.length > 0) {
-            UnicodeCommentExtraField cmt = (UnicodeCommentExtraField)
+            final UnicodeCommentExtraField cmt = (UnicodeCommentExtraField)
                 ze.getExtraField(UnicodeCommentExtraField.UCOM_ID);
-            String newComment =
+            final String newComment =
                 getUnicodeStringIfOriginalMatches(cmt, commentBytes);
             if (newComment != null) {
                 ze.setComment(newComment);
@@ -263,15 +263,15 @@ public abstract class ZipUtil {
         String getUnicodeStringIfOriginalMatches(final AbstractUnicodeExtraField f,
                                                  final byte[] orig) {
         if (f != null) {
-            CRC32 crc32 = new CRC32();
+            final CRC32 crc32 = new CRC32();
             crc32.update(orig);
-            long origCRC32 = crc32.getValue();
+            final long origCRC32 = crc32.getValue();
 
             if (origCRC32 == f.getNameCRC32()) {
                 try {
                     return ZipEncodingHelper
                         .UTF8_ZIP_ENCODING.decode(f.getUnicodeName());
-                } catch (IOException ex) {
+                } catch (final IOException ex) {
                     // UTF-8 unsupported?  should be impossible the
                     // Unicode*ExtraField must contain some bad bytes
 
@@ -289,7 +289,7 @@ public abstract class ZipUtil {
      */
     static byte[] copy(final byte[] from) {
         if (from != null) {
-            byte[] to = new byte[from.length];
+            final byte[] to = new byte[from.length];
             System.arraycopy(from, 0, to, 0, to.length);
             return to;
         }
@@ -345,7 +345,7 @@ public abstract class ZipUtil {
                                                    .Feature.ENCRYPTION, ze);
         }
         if (!supportsMethodOf(ze)) {
-            ZipMethod m = ZipMethod.getMethodByCode(ze.getMethod());
+            final ZipMethod m = ZipMethod.getMethodByCode(ze.getMethod());
             if (m == null) {
                 throw
                     new UnsupportedZipFeatureException(UnsupportedZipFeatureException

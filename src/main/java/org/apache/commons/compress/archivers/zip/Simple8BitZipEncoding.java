@@ -73,7 +73,7 @@ class Simple8BitZipEncoding implements ZipEncoding {
         @Override
         public boolean equals(final Object o) {
             if (o instanceof Simple8BitChar) {
-                Simple8BitChar other = (Simple8BitChar) o;
+                final Simple8BitChar other = (Simple8BitChar) o;
                 return unicode == other.unicode && code == other.code;
             }
             return false;
@@ -104,12 +104,12 @@ class Simple8BitZipEncoding implements ZipEncoding {
      */
     public Simple8BitZipEncoding(final char[] highChars) {
         this.highChars = highChars.clone();
-        List<Simple8BitChar> temp =
+        final List<Simple8BitChar> temp =
             new ArrayList<Simple8BitChar>(this.highChars.length);
 
         byte code = 127;
 
-        for (char highChar : this.highChars) {
+        for (final char highChar : this.highChars) {
             temp.add(new Simple8BitChar(++code, highChar));
         }
 
@@ -143,7 +143,7 @@ class Simple8BitZipEncoding implements ZipEncoding {
             return true;
         }
 
-        Simple8BitChar r = this.encodeHighChar(c);
+        final Simple8BitChar r = this.encodeHighChar(c);
         return r != null;
     }
 
@@ -163,7 +163,7 @@ class Simple8BitZipEncoding implements ZipEncoding {
             return true;
         }
 
-        Simple8BitChar r = this.encodeHighChar(c);
+        final Simple8BitChar r = this.encodeHighChar(c);
         if (r == null) {
             return false;
         }
@@ -185,9 +185,9 @@ class Simple8BitZipEncoding implements ZipEncoding {
 
         while (i1 > i0) {
 
-            int i = i0 + (i1 - i0) / 2;
+            final int i = i0 + (i1 - i0) / 2;
 
-            Simple8BitChar m = this.reverseMapping.get(i);
+            final Simple8BitChar m = this.reverseMapping.get(i);
 
             if (m.unicode == c) {
                 return m;
@@ -204,7 +204,7 @@ class Simple8BitZipEncoding implements ZipEncoding {
             return null;
         }
 
-        Simple8BitChar r = this.reverseMapping.get(i0);
+        final Simple8BitChar r = this.reverseMapping.get(i0);
 
         if (r.unicode != c) {
             return null;
@@ -222,7 +222,7 @@ class Simple8BitZipEncoding implements ZipEncoding {
 
         for (int i=0;i<name.length();++i) {
 
-            char c = name.charAt(i);
+            final char c = name.charAt(i);
 
             if (!this.canEncodeChar(c)) {
                 return false;
@@ -243,7 +243,7 @@ class Simple8BitZipEncoding implements ZipEncoding {
 
         for (int i=0;i<name.length();++i) {
 
-            char c = name.charAt(i);
+            final char c = name.charAt(i);
 
             if (out.remaining() < 6) {
                 out = ZipEncodingHelper.growBuffer(out,out.position() + 6);
@@ -266,7 +266,7 @@ class Simple8BitZipEncoding implements ZipEncoding {
      */
     @Override
     public String decode(final byte[] data) throws IOException {
-        char [] ret = new char[data.length];
+        final char [] ret = new char[data.length];
 
         for (int i=0;i<data.length;++i) {
             ret[i] = this.decodeByte(data[i]);

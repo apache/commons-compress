@@ -66,15 +66,15 @@ public class ParallelScatterZipCreator {
 
         @Override
         public ScatterGatherBackingStore get() throws IOException {
-            File tempFile = File.createTempFile("parallelscatter", "n" + storeNum.incrementAndGet());
+            final File tempFile = File.createTempFile("parallelscatter", "n" + storeNum.incrementAndGet());
             return new FileBasedScatterGatherBackingStore(tempFile);
         }
     }
 
     private ScatterZipOutputStream createDeferred(final ScatterGatherBackingStoreSupplier scatterGatherBackingStoreSupplier)
             throws IOException {
-        ScatterGatherBackingStore bs = scatterGatherBackingStoreSupplier.get();
-        StreamCompressor sc = StreamCompressor.create(Deflater.DEFAULT_COMPRESSION, bs);
+        final ScatterGatherBackingStore bs = scatterGatherBackingStoreSupplier.get();
+        final StreamCompressor sc = StreamCompressor.create(Deflater.DEFAULT_COMPRESSION, bs);
         return new ScatterZipOutputStream(bs, sc);
     }
 
@@ -82,10 +82,10 @@ public class ParallelScatterZipCreator {
         @Override
         protected ScatterZipOutputStream initialValue() {
             try {
-                ScatterZipOutputStream scatterStream = createDeferred(backingStoreSupplier);
+                final ScatterZipOutputStream scatterStream = createDeferred(backingStoreSupplier);
                 streams.add(scatterStream);
                 return scatterStream;
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -197,7 +197,7 @@ public class ParallelScatterZipCreator {
             throws IOException, InterruptedException, ExecutionException {
 
         // Make sure we catch any exceptions from parallel phase
-        for (Future<?> future : futures) {
+        for (final Future<?> future : futures) {
             future.get();
         }
 
@@ -207,7 +207,7 @@ public class ParallelScatterZipCreator {
         // It is important that all threads terminate before we go on, ensure happens-before relationship
         compressionDoneAt = System.currentTimeMillis();
 
-        for (ScatterZipOutputStream scatterStream : streams) {
+        for (final ScatterZipOutputStream scatterStream : streams) {
             scatterStream.writeTo(targetStream);
             scatterStream.close();
         }

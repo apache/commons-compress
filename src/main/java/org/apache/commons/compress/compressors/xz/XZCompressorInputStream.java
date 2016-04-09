@@ -101,14 +101,14 @@ public class XZCompressorInputStream extends CompressorInputStream {
 
     @Override
     public int read() throws IOException {
-        int ret = in.read();
+        final int ret = in.read();
         count(ret == -1 ? -1 : 1);
         return ret;
     }
 
     @Override
     public int read(final byte[] buf, final int off, final int len) throws IOException {
-        int ret = in.read(buf, off, len);
+        final int ret = in.read(buf, off, len);
         count(ret);
         return ret;
     }

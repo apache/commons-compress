@@ -173,8 +173,8 @@ public enum ZipMethod {
     private static final Map<Integer, ZipMethod> codeToEnum;
 
     static {
-        Map<Integer, ZipMethod> cte = new HashMap<Integer, ZipMethod>();
-        for (ZipMethod method : values()) {
+        final Map<Integer, ZipMethod> cte = new HashMap<Integer, ZipMethod>();
+        for (final ZipMethod method : values()) {
             cte.put(method.getCode(), method);
         }
         codeToEnum = Collections.unmodifiableMap(cte);

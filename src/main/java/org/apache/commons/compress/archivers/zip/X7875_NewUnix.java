@@ -132,8 +132,8 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      */
     @Override
     public ZipShort getLocalFileDataLength() {
-        int uidSize = trimLeadingZeroesForceMinLength(uid.toByteArray()).length;
-        int gidSize = trimLeadingZeroesForceMinLength(gid.toByteArray()).length;
+        final int uidSize = trimLeadingZeroesForceMinLength(uid.toByteArray()).length;
+        final int gidSize = trimLeadingZeroesForceMinLength(gid.toByteArray()).length;
 
         // The 3 comes from:  version=1 + uidsize=1 + gidsize=1
         return new ZipShort(3 + uidSize + gidSize);
@@ -172,7 +172,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
         // optimization is the root of all...
         //
         // The 3 comes from:  version=1 + uidsize=1 + gidsize=1
-        byte[] data = new byte[3 + uidBytes.length + gidBytes.length];
+        final byte[] data = new byte[3 + uidBytes.length + gidBytes.length];
 
         // reverse() switches byte array from big-endian to little-endian.
         reverse(uidBytes);
@@ -213,14 +213,14 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     ) throws ZipException {
         reset();
         this.version = signedByteToUnsignedInt(data[offset++]);
-        int uidSize = signedByteToUnsignedInt(data[offset++]);
-        byte[] uidBytes = new byte[uidSize];
+        final int uidSize = signedByteToUnsignedInt(data[offset++]);
+        final byte[] uidBytes = new byte[uidSize];
         System.arraycopy(data, offset, uidBytes, 0, uidSize);
         offset += uidSize;
         this.uid = new BigInteger(1, reverse(uidBytes)); // sign-bit forced positive
 
-        int gidSize = signedByteToUnsignedInt(data[offset++]);
-        byte[] gidBytes = new byte[gidSize];
+        final int gidSize = signedByteToUnsignedInt(data[offset++]);
+        final byte[] gidBytes = new byte[gidSize];
         System.arraycopy(data, offset, gidBytes, 0, gidSize);
         this.gid = new BigInteger(1, reverse(gidBytes)); // sign-bit forced positive
     }
@@ -265,7 +265,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     @Override
     public boolean equals(final Object o) {
         if (o instanceof X7875_NewUnix) {
-            X7875_NewUnix xf = (X7875_NewUnix) o;
+            final X7875_NewUnix xf = (X7875_NewUnix) o;
             // We assume uid and gid can never be null.
             return version == xf.version && uid.equals(xf.uid) && gid.equals(xf.gid);
         }
@@ -298,7 +298,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
         }
 
         int pos = 0;
-        for (byte b : array) {
+        for (final byte b : array) {
             if (b == 0) {
                 pos++;
             } else {
@@ -345,8 +345,8 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
         */
         final int MIN_LENGTH = 1;
 
-        byte[] trimmedArray = new byte[Math.max(MIN_LENGTH, array.length - pos)];
-        int startPos = trimmedArray.length - (array.length - pos);
+        final byte[] trimmedArray = new byte[Math.max(MIN_LENGTH, array.length - pos)];
+        final int startPos = trimmedArray.length - (array.length - pos);
         System.arraycopy(array, pos, trimmedArray, startPos, trimmedArray.length - startPos);
         return trimmedArray;
     }

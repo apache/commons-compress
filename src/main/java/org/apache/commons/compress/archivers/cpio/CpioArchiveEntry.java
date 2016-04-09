@@ -474,7 +474,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
         if (name != null) {
             size += name.length();
         }
-        int remain = size % this.alignmentBoundary;
+        final int remain = size % this.alignmentBoundary;
         if (remain > 0){
             return this.alignmentBoundary - remain;
         }
@@ -488,8 +488,8 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      */
     public int getDataPadCount(){
         if (this.alignmentBoundary == 0) { return 0; }
-        long size = this.filesize;
-        int remain = (int) (size % this.alignmentBoundary);
+        final long size = this.filesize;
+        final int remain = (int) (size % this.alignmentBoundary);
         if (remain > 0){
             return this.alignmentBoundary - remain;
         }
@@ -884,7 +884,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        CpioArchiveEntry other = (CpioArchiveEntry) obj;
+        final CpioArchiveEntry other = (CpioArchiveEntry) obj;
         if (name == null) {
             if (other.name != null) {
                 return false;

@@ -214,7 +214,7 @@ public class ZipFile implements Closeable {
         archive = new RandomAccessFile(f, "r");
         boolean success = false;
         try {
-            Map<ZipArchiveEntry, NameAndComment> entriesWithoutUTF8Flag =
+            final Map<ZipArchiveEntry, NameAndComment> entriesWithoutUTF8Flag =
                 populateFromCentralDirectory();
             resolveLocalFileHeaderData(entriesWithoutUTF8Flag);
             success = true;
@@ -281,7 +281,7 @@ public class ZipFile implements Closeable {
      * @since 1.1
      */
     public Enumeration<ZipArchiveEntry> getEntriesInPhysicalOrder() {
-        ZipArchiveEntry[] allEntries = entries.toArray(new ZipArchiveEntry[entries.size()]);
+        final ZipArchiveEntry[] allEntries = entries.toArray(new ZipArchiveEntry[entries.size()]);
         Arrays.sort(allEntries, OFFSET_COMPARATOR);
         return Collections.enumeration(Arrays.asList(allEntries));
     }
@@ -299,7 +299,7 @@ public class ZipFile implements Closeable {
      * {@code null} if not present.
      */
     public ZipArchiveEntry getEntry(final String name) {
-        LinkedList<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
+        final LinkedList<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
         return entriesOfThatName != null ? entriesOfThatName.getFirst() : null;
     }
 
@@ -313,7 +313,7 @@ public class ZipFile implements Closeable {
      * @since 1.6
      */
     public Iterable<ZipArchiveEntry> getEntries(final String name) {
-        List<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
+        final List<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
         return entriesOfThatName != null ? entriesOfThatName
             : Collections.<ZipArchiveEntry>emptyList();
     }
@@ -363,8 +363,8 @@ public class ZipFile implements Closeable {
         if (!(ze instanceof Entry)) {
             return null;
         }
-        OffsetEntry offsetEntry = ((Entry) ze).getOffsetEntry();
-        long start = offsetEntry.dataOffset;
+        final OffsetEntry offsetEntry = ((Entry) ze).getOffsetEntry();
+        final long start = offsetEntry.dataOffset;
         return new BoundedInputStream(start, ze.getCompressedSize());
     }
 
@@ -380,9 +380,9 @@ public class ZipFile implements Closeable {
      */
     public void copyRawEntries(final ZipArchiveOutputStream target, final ZipArchiveEntryPredicate predicate)
             throws IOException {
-        Enumeration<ZipArchiveEntry> src = getEntriesInPhysicalOrder();
+        final Enumeration<ZipArchiveEntry> src = getEntriesInPhysicalOrder();
         while (src.hasMoreElements()) {
-            ZipArchiveEntry entry = src.nextElement();
+            final ZipArchiveEntry entry = src.nextElement();
             if (predicate.test( entry)) {
                 target.addRawArchiveEntry(entry, getRawInputStream(entry));
             }
@@ -403,10 +403,10 @@ public class ZipFile implements Closeable {
             return null;
         }
         // cast valididty is checked just above
-        OffsetEntry offsetEntry = ((Entry) ze).getOffsetEntry();
+        final OffsetEntry offsetEntry = ((Entry) ze).getOffsetEntry();
         ZipUtil.checkRequestedFeatures(ze);
-        long start = offsetEntry.dataOffset;
-        BoundedInputStream bis =
+        final long start = offsetEntry.dataOffset;
+        final BoundedInputStream bis =
             new BoundedInputStream(start, ze.getCompressedSize());
         switch (ZipMethod.getMethodByCode(ze.getMethod())) {
             case STORED:
@@ -469,7 +469,7 @@ public class ZipFile implements Closeable {
             InputStream in = null;
             try {
                 in = getInputStream(entry);
-                byte[] symlinkBytes = IOUtils.toByteArray(in);
+                final byte[] symlinkBytes = IOUtils.toByteArray(in);
                 return zipEncoding.decode(symlinkBytes);
             } finally {
                 if (in != null) {
@@ -536,7 +536,7 @@ public class ZipFile implements Closeable {
      */
     private Map<ZipArchiveEntry, NameAndComment> populateFromCentralDirectory()
         throws IOException {
-        HashMap<ZipArchiveEntry, NameAndComment> noUTF8Flag =
+        final HashMap<ZipArchiveEntry, NameAndComment> noUTF8Flag =
             new HashMap<ZipArchiveEntry, NameAndComment>();
 
         positionAtCentralDirectory();
@@ -571,10 +571,10 @@ public class ZipFile implements Closeable {
         throws IOException {
         archive.readFully(CFH_BUF);
         int off = 0;
-        OffsetEntry offset = new OffsetEntry();
-        Entry ze = new Entry(offset);
+        final OffsetEntry offset = new OffsetEntry();
+        final Entry ze = new Entry(offset);
 
-        int versionMadeBy = ZipShort.getValue(CFH_BUF, off);
+        final int versionMadeBy = ZipShort.getValue(CFH_BUF, off);
         off += SHORT;
         ze.setVersionMadeBy(versionMadeBy);
         ze.setPlatform((versionMadeBy >> BYTE_SHIFT) & NIBLET_MASK);
@@ -595,7 +595,7 @@ public class ZipFile implements Closeable {
         ze.setMethod(ZipShort.getValue(CFH_BUF, off));
         off += SHORT;
 
-        long time = ZipUtil.dosToJavaTime(ZipLong.getValue(CFH_BUF, off));
+        final long time = ZipUtil.dosToJavaTime(ZipLong.getValue(CFH_BUF, off));
         ze.setTime(time);
         off += WORD;
 
@@ -608,16 +608,16 @@ public class ZipFile implements Closeable {
         ze.setSize(ZipLong.getValue(CFH_BUF, off));
         off += WORD;
 
-        int fileNameLen = ZipShort.getValue(CFH_BUF, off);
+        final int fileNameLen = ZipShort.getValue(CFH_BUF, off);
         off += SHORT;
 
-        int extraLen = ZipShort.getValue(CFH_BUF, off);
+        final int extraLen = ZipShort.getValue(CFH_BUF, off);
         off += SHORT;
 
-        int commentLen = ZipShort.getValue(CFH_BUF, off);
+        final int commentLen = ZipShort.getValue(CFH_BUF, off);
         off += SHORT;
 
-        int diskStart = ZipShort.getValue(CFH_BUF, off);
+        final int diskStart = ZipShort.getValue(CFH_BUF, off);
         off += SHORT;
 
         ze.setInternalAttributes(ZipShort.getValue(CFH_BUF, off));
@@ -626,7 +626,7 @@ public class ZipFile implements Closeable {
         ze.setExternalAttributes(ZipLong.getValue(CFH_BUF, off));
         off += WORD;
 
-        byte[] fileName = new byte[fileNameLen];
+        final byte[] fileName = new byte[fileNameLen];
         archive.readFully(fileName);
         ze.setName(entryEncoding.decode(fileName), fileName);
 
@@ -635,13 +635,13 @@ public class ZipFile implements Closeable {
         // data offset will be filled later
         entries.add(ze);
 
-        byte[] cdExtraData = new byte[extraLen];
+        final byte[] cdExtraData = new byte[extraLen];
         archive.readFully(cdExtraData);
         ze.setCentralDirectoryExtra(cdExtraData);
 
         setSizesAndOffsetFromZip64Extra(ze, offset, diskStart);
 
-        byte[] comment = new byte[commentLen];
+        final byte[] comment = new byte[commentLen];
         archive.readFully(comment);
         ze.setComment(entryEncoding.decode(comment));
 
@@ -666,13 +666,13 @@ public class ZipFile implements Closeable {
                                                  final OffsetEntry offset,
                                                  final int diskStart)
         throws IOException {
-        Zip64ExtendedInformationExtraField z64 =
+        final Zip64ExtendedInformationExtraField z64 =
             (Zip64ExtendedInformationExtraField)
             ze.getExtraField(Zip64ExtendedInformationExtraField.HEADER_ID);
         if (z64 != null) {
-            boolean hasUncompressedSize = ze.getSize() == ZIP64_MAGIC;
-            boolean hasCompressedSize = ze.getCompressedSize() == ZIP64_MAGIC;
-            boolean hasRelativeHeaderOffset =
+            final boolean hasUncompressedSize = ze.getSize() == ZIP64_MAGIC;
+            final boolean hasCompressedSize = ze.getCompressedSize() == ZIP64_MAGIC;
+            final boolean hasRelativeHeaderOffset =
                 offset.headerOffset == ZIP64_MAGIC;
             z64.reparseCentralDirectoryData(hasUncompressedSize,
                                             hasCompressedSize,
@@ -800,7 +800,7 @@ public class ZipFile implements Closeable {
         throws IOException {
         positionAtEndOfCentralDirectoryRecord();
         boolean found = false;
-        boolean searchedForZip64EOCD =
+        final boolean searchedForZip64EOCD =
             archive.getFilePointer() > ZIP64_EOCDL_LENGTH;
         if (searchedForZip64EOCD) {
             archive.seek(archive.getFilePointer() - ZIP64_EOCDL_LENGTH);
@@ -865,7 +865,7 @@ public class ZipFile implements Closeable {
      */
     private void positionAtEndOfCentralDirectoryRecord()
         throws IOException {
-        boolean found = tryToLocateSignature(MIN_EOCD_SIZE, MAX_EOCD_SIZE,
+        final boolean found = tryToLocateSignature(MIN_EOCD_SIZE, MAX_EOCD_SIZE,
                                              ZipArchiveOutputStream.EOCD_SIG);
         if (!found) {
             throw new ZipException("archive is not a ZIP archive");
@@ -919,7 +919,7 @@ public class ZipFile implements Closeable {
     private void skipBytes(final int count) throws IOException {
         int totalSkipped = 0;
         while (totalSkipped < count) {
-            int skippedNow = archive.skipBytes(count - totalSkipped);
+            final int skippedNow = archive.skipBytes(count - totalSkipped);
             if (skippedNow <= 0) {
                 throw new EOFException();
             }
@@ -952,39 +952,39 @@ public class ZipFile implements Closeable {
     private void resolveLocalFileHeaderData(final Map<ZipArchiveEntry, NameAndComment>
                                             entriesWithoutUTF8Flag)
         throws IOException {
-        for (ZipArchiveEntry zipArchiveEntry : entries) {
+        for (final ZipArchiveEntry zipArchiveEntry : entries) {
             // entries is filled in populateFromCentralDirectory and
             // never modified
-            Entry ze = (Entry) zipArchiveEntry;
-            OffsetEntry offsetEntry = ze.getOffsetEntry();
-            long offset = offsetEntry.headerOffset;
+            final Entry ze = (Entry) zipArchiveEntry;
+            final OffsetEntry offsetEntry = ze.getOffsetEntry();
+            final long offset = offsetEntry.headerOffset;
             archive.seek(offset + LFH_OFFSET_FOR_FILENAME_LENGTH);
             archive.readFully(SHORT_BUF);
-            int fileNameLen = ZipShort.getValue(SHORT_BUF);
+            final int fileNameLen = ZipShort.getValue(SHORT_BUF);
             archive.readFully(SHORT_BUF);
-            int extraFieldLen = ZipShort.getValue(SHORT_BUF);
+            final int extraFieldLen = ZipShort.getValue(SHORT_BUF);
             int lenToSkip = fileNameLen;
             while (lenToSkip > 0) {
-                int skipped = archive.skipBytes(lenToSkip);
+                final int skipped = archive.skipBytes(lenToSkip);
                 if (skipped <= 0) {
                     throw new IOException("failed to skip file name in"
                                           + " local file header");
                 }
                 lenToSkip -= skipped;
             }
-            byte[] localExtraData = new byte[extraFieldLen];
+            final byte[] localExtraData = new byte[extraFieldLen];
             archive.readFully(localExtraData);
             ze.setExtra(localExtraData);
             offsetEntry.dataOffset = offset + LFH_OFFSET_FOR_FILENAME_LENGTH
                 + SHORT + SHORT + fileNameLen + extraFieldLen;
 
             if (entriesWithoutUTF8Flag.containsKey(ze)) {
-                NameAndComment nc = entriesWithoutUTF8Flag.get(ze);
+                final NameAndComment nc = entriesWithoutUTF8Flag.get(ze);
                 ZipUtil.setNameAndCommentFromExtraFields(ze, nc.name,
                                                          nc.comment);
             }
 
-            String name = ze.getName();
+            final String name = ze.getName();
             LinkedList<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
             if (entriesOfThatName == null) {
                 entriesOfThatName = new LinkedList<ZipArchiveEntry>();
@@ -1098,15 +1098,15 @@ public class ZipFile implements Closeable {
                 return 0;
             }
 
-            Entry ent1 = e1 instanceof Entry ? (Entry) e1 : null;
-            Entry ent2 = e2 instanceof Entry ? (Entry) e2 : null;
+            final Entry ent1 = e1 instanceof Entry ? (Entry) e1 : null;
+            final Entry ent2 = e2 instanceof Entry ? (Entry) e2 : null;
             if (ent1 == null) {
                 return 1;
             }
             if (ent2 == null) {
                 return -1;
             }
-            long val = (ent1.getOffsetEntry().headerOffset
+            final long val = (ent1.getOffsetEntry().headerOffset
                         - ent2.getOffsetEntry().headerOffset);
             return val == 0 ? 0 : val < 0 ? -1 : +1;
         }
@@ -1137,7 +1137,7 @@ public class ZipFile implements Closeable {
         public boolean equals(final Object other) {
             if (super.equals(other)) {
                 // super.equals would return false if other were not an Entry
-                Entry otherEntry = (Entry) other;
+                final Entry otherEntry = (Entry) other;
                 return offsetEntry.headerOffset
                         == otherEntry.offsetEntry.headerOffset
                     && offsetEntry.dataOffset

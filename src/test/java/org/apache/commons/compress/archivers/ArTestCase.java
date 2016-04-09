@@ -84,7 +84,7 @@ public final class ArTestCase extends AbstractTestCase {
         final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream(new BufferedInputStream(is));
         final ArArchiveEntry entry = (ArArchiveEntry)in.getNextEntry();
 
-        File target = new File(dir, entry.getName());
+        final File target = new File(dir, entry.getName());
         final OutputStream out = new FileOutputStream(target);
 
         IOUtils.copy(in, out);
@@ -192,7 +192,7 @@ public final class ArTestCase extends AbstractTestCase {
     @Ignore
     @Test
     public void XtestDirectoryEntryFromFile() throws Exception {
-        File[] tmp = createTempDirAndFile();
+        final File[] tmp = createTempDirAndFile();
         File archive = null;
         ArArchiveOutputStream aos = null;
         ArArchiveInputStream ais = null;
@@ -200,14 +200,14 @@ public final class ArTestCase extends AbstractTestCase {
             archive = File.createTempFile("test.", ".ar", tmp[0]);
             archive.deleteOnExit();
             aos = new ArArchiveOutputStream(new FileOutputStream(archive));
-            long beforeArchiveWrite = tmp[0].lastModified();
-            ArArchiveEntry in = new ArArchiveEntry(tmp[0], "foo");
+            final long beforeArchiveWrite = tmp[0].lastModified();
+            final ArArchiveEntry in = new ArArchiveEntry(tmp[0], "foo");
             aos.putArchiveEntry(in);
             aos.closeArchiveEntry();
             aos.close();
             aos = null;
             ais = new ArArchiveInputStream(new FileInputStream(archive));
-            ArArchiveEntry out = ais.getNextArEntry();
+            final ArArchiveEntry out = ais.getNextArEntry();
             ais.close();
             ais = null;
             assertNotNull(out);
@@ -234,7 +234,7 @@ public final class ArTestCase extends AbstractTestCase {
     @Ignore
     @Test
     public void XtestExplicitDirectoryEntry() throws Exception {
-        File[] tmp = createTempDirAndFile();
+        final File[] tmp = createTempDirAndFile();
         File archive = null;
         ArArchiveOutputStream aos = null;
         ArArchiveInputStream ais = null;
@@ -242,15 +242,15 @@ public final class ArTestCase extends AbstractTestCase {
             archive = File.createTempFile("test.", ".ar", tmp[0]);
             archive.deleteOnExit();
             aos = new ArArchiveOutputStream(new FileOutputStream(archive));
-            long beforeArchiveWrite = tmp[0].lastModified();
-            ArArchiveEntry in = new ArArchiveEntry("foo", 0, 0, 0, 0,
+            final long beforeArchiveWrite = tmp[0].lastModified();
+            final ArArchiveEntry in = new ArArchiveEntry("foo", 0, 0, 0, 0,
                                                    tmp[1].lastModified() / 1000);
             aos.putArchiveEntry(in);
             aos.closeArchiveEntry();
             aos.close();
             aos = null;
             ais = new ArArchiveInputStream(new FileInputStream(archive));
-            ArArchiveEntry out = ais.getNextArEntry();
+            final ArArchiveEntry out = ais.getNextArEntry();
             ais.close();
             ais = null;
             assertNotNull(out);
@@ -274,7 +274,7 @@ public final class ArTestCase extends AbstractTestCase {
 
     @Test
     public void testFileEntryFromFile() throws Exception {
-        File[] tmp = createTempDirAndFile();
+        final File[] tmp = createTempDirAndFile();
         File archive = null;
         ArArchiveOutputStream aos = null;
         ArArchiveInputStream ais = null;
@@ -283,9 +283,9 @@ public final class ArTestCase extends AbstractTestCase {
             archive = File.createTempFile("test.", ".ar", tmp[0]);
             archive.deleteOnExit();
             aos = new ArArchiveOutputStream(new FileOutputStream(archive));
-            ArArchiveEntry in = new ArArchiveEntry(tmp[1], "foo");
+            final ArArchiveEntry in = new ArArchiveEntry(tmp[1], "foo");
             aos.putArchiveEntry(in);
-            byte[] b = new byte[(int) tmp[1].length()];
+            final byte[] b = new byte[(int) tmp[1].length()];
             fis = new FileInputStream(tmp[1]);
             while (fis.read(b) > 0) {
                 aos.write(b);
@@ -296,7 +296,7 @@ public final class ArTestCase extends AbstractTestCase {
             aos.close();
             aos = null;
             ais = new ArArchiveInputStream(new FileInputStream(archive));
-            ArArchiveEntry out = ais.getNextArEntry();
+            final ArArchiveEntry out = ais.getNextArEntry();
             ais.close();
             ais = null;
             assertNotNull(out);
@@ -324,7 +324,7 @@ public final class ArTestCase extends AbstractTestCase {
 
     @Test
     public void testExplicitFileEntry() throws Exception {
-        File[] tmp = createTempDirAndFile();
+        final File[] tmp = createTempDirAndFile();
         File archive = null;
         ArArchiveOutputStream aos = null;
         ArArchiveInputStream ais = null;
@@ -333,11 +333,11 @@ public final class ArTestCase extends AbstractTestCase {
             archive = File.createTempFile("test.", ".ar", tmp[0]);
             archive.deleteOnExit();
             aos = new ArArchiveOutputStream(new FileOutputStream(archive));
-            ArArchiveEntry in = new ArArchiveEntry("foo", tmp[1].length(),
+            final ArArchiveEntry in = new ArArchiveEntry("foo", tmp[1].length(),
                                                    0, 0, 0,
                                                    tmp[1].lastModified() / 1000);
             aos.putArchiveEntry(in);
-            byte[] b = new byte[(int) tmp[1].length()];
+            final byte[] b = new byte[(int) tmp[1].length()];
             fis = new FileInputStream(tmp[1]);
             while (fis.read(b) > 0) {
                 aos.write(b);
@@ -348,7 +348,7 @@ public final class ArTestCase extends AbstractTestCase {
             aos.close();
             aos = null;
             ais = new ArArchiveInputStream(new FileInputStream(archive));
-            ArArchiveEntry out = ais.getNextArEntry();
+            final ArArchiveEntry out = ais.getNextArEntry();
             ais.close();
             ais = null;
             assertNotNull(out);

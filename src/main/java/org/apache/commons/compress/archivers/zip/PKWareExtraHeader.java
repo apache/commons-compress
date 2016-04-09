@@ -170,7 +170,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      */
     @Override
     public void parseFromLocalFileData(final byte[] data, final int offset, final int length) {
-        byte[] tmp = new byte[length];
+        final byte[] tmp = new byte[length];
         System.arraycopy(data, offset, tmp, 0, length);
         setLocalFileDataData(tmp);
     }
@@ -186,7 +186,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      */
     @Override
     public void parseFromCentralDirectoryData(final byte[] data, final int offset, final int length) {
-        byte[] tmp = new byte[length];
+        final byte[] tmp = new byte[length];
         System.arraycopy(data, offset, tmp, 0, length);
         setCentralDirectoryData(tmp);
         if (localData == null) {
@@ -216,8 +216,8 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
         private static final Map<Integer, EncryptionAlgorithm> codeToEnum;
 
         static {
-            Map<Integer, EncryptionAlgorithm> cte = new HashMap<Integer, EncryptionAlgorithm>();
-            for (EncryptionAlgorithm method : values()) {
+            final Map<Integer, EncryptionAlgorithm> cte = new HashMap<Integer, EncryptionAlgorithm>();
+            for (final EncryptionAlgorithm method : values()) {
                 cte.put(Integer.valueOf(method.getCode()), method);
             }
             codeToEnum = Collections.unmodifiableMap(cte);
@@ -271,8 +271,8 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
         private static final Map<Integer, HashAlgorithm> codeToEnum;
 
         static {
-            Map<Integer, HashAlgorithm> cte = new HashMap<Integer, HashAlgorithm>();
-            for (HashAlgorithm method : values()) {
+            final Map<Integer, HashAlgorithm> cte = new HashMap<Integer, HashAlgorithm>();
+            for (final HashAlgorithm method : values()) {
                 cte.put(Integer.valueOf(method.getCode()), method);
             }
             codeToEnum = Collections.unmodifiableMap(cte);

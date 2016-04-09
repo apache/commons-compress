@@ -68,7 +68,7 @@ public class Maven221MultiVolumeTest {
     @Test
     public void testRead7ZipMultiVolumeArchiveForStream() throws IOException {
 
-        FileInputStream archive =
+        final FileInputStream archive =
             new FileInputStream(getFile("apache-maven-2.2.1.zip.001"));
         ZipArchiveInputStream zi = null;
         try {
@@ -76,14 +76,14 @@ public class Maven221MultiVolumeTest {
 
             // these are the entries that are supposed to be processed
             // correctly without any problems
-            for (String element : ENTRIES) {
+            for (final String element : ENTRIES) {
                 assertEquals(element, zi.getNextEntry().getName());
             }
 
             // this is the last entry that is truncated
-            ArchiveEntry lastEntry = zi.getNextEntry();
+            final ArchiveEntry lastEntry = zi.getNextEntry();
             assertEquals(LAST_ENTRY_NAME, lastEntry.getName());
-            byte [] buffer = new byte [4096];
+            final byte [] buffer = new byte [4096];
 
             // before the fix, we'd get 0 bytes on this read and all
             // subsequent reads thus a client application might enter
@@ -92,7 +92,7 @@ public class Maven221MultiVolumeTest {
             try {
                 while (zi.read(buffer) > 0) { }
                 fail("shouldn't be able to read from truncated entry");
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 assertEquals("Truncated ZIP file", e.getMessage());
             }
 
@@ -102,7 +102,7 @@ public class Maven221MultiVolumeTest {
                 zi.getNextEntry();
                 fail("shouldn't be able to read another entry from truncated"
                      + " file");
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 // this is to be expected
             }
         } finally {
@@ -114,7 +114,7 @@ public class Maven221MultiVolumeTest {
 
     @Test(expected=IOException.class)
     public void testRead7ZipMultiVolumeArchiveForFile() throws IOException {
-        File file = getFile("apache-maven-2.2.1.zip.001");
+        final File file = getFile("apache-maven-2.2.1.zip.001");
         new ZipFile(file);
     }
 }

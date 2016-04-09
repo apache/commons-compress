@@ -92,7 +92,7 @@ public final class FramedSnappyTestCase
         final File original = getFile("bla.tar");
         final FileInputStream written = new FileInputStream(output);
         try {
-            FileInputStream orig = new FileInputStream(original);
+            final FileInputStream orig = new FileInputStream(original);
             try {
                 assertArrayEquals(IOUtils.toByteArray(written),
                                   IOUtils.toByteArray(orig));

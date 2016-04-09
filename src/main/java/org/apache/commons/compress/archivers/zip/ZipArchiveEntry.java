@@ -115,7 +115,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     public ZipArchiveEntry(final java.util.zip.ZipEntry entry) throws ZipException {
         super(entry);
         setName(entry.getName());
-        byte[] extra = entry.getExtra();
+        final byte[] extra = entry.getExtra();
         if (extra != null) {
             setExtraFields(ExtraFieldUtils.parse(extra, true,
                                                  ExtraFieldUtils
@@ -143,7 +143,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         setExternalAttributes(entry.getExternalAttributes());
         setExtraFields(getAllExtraFieldsNoCopy());
         setPlatform(entry.getPlatform());
-        GeneralPurposeBit other = entry.getGeneralPurposeBit();
+        final GeneralPurposeBit other = entry.getGeneralPurposeBit();
         setGeneralPurposeBit(other == null ? null :
                              (GeneralPurposeBit) other.clone());
     }
@@ -181,7 +181,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      */
     @Override
     public Object clone() {
-        ZipArchiveEntry e = (ZipArchiveEntry) super.clone();
+        final ZipArchiveEntry e = (ZipArchiveEntry) super.clone();
 
         e.setInternalAttributes(getInternalAttributes());
         e.setExternalAttributes(getExternalAttributes());
@@ -321,8 +321,8 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * @param fields an array of extra fields
      */
     public void setExtraFields(final ZipExtraField[] fields) {
-        List<ZipExtraField> newFields = new ArrayList<ZipExtraField>();
-        for (ZipExtraField field : fields) {
+        final List<ZipExtraField> newFields = new ArrayList<ZipExtraField>();
+        for (final ZipExtraField field : fields) {
             if (field instanceof UnparseableExtraFieldData) {
                 unparseableExtra = (UnparseableExtraFieldData) field;
             } else {
@@ -390,7 +390,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     }
 
     private ZipExtraField[] copyOf(final ZipExtraField[] src, final int length) {
-        ZipExtraField[] cpy = new ZipExtraField[length];
+        final ZipExtraField[] cpy = new ZipExtraField[length];
         System.arraycopy(src, 0, cpy, 0, Math.min(src.length, length));
         return cpy;
     }
@@ -449,8 +449,8 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
             if (getExtraField(ze.getHeaderId()) != null){
                 removeExtraField(ze.getHeaderId());
             }
-            ZipExtraField[] copy = extraFields;
-            int newLen = extraFields != null ? extraFields.length + 1: 1;
+            final ZipExtraField[] copy = extraFields;
+            final int newLen = extraFields != null ? extraFields.length + 1: 1;
             extraFields = new ZipExtraField[newLen];
             extraFields[0] = ze;
             if (copy != null){
@@ -469,8 +469,8 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
             throw new java.util.NoSuchElementException();
         }
 
-        List<ZipExtraField> newResult = new ArrayList<ZipExtraField>();
-        for (ZipExtraField extraField : extraFields) {
+        final List<ZipExtraField> newResult = new ArrayList<ZipExtraField>();
+        for (final ZipExtraField extraField : extraFields) {
             if (!type.equals(extraField.getHeaderId())){
                 newResult.add( extraField);
             }
@@ -503,7 +503,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      */
     public ZipExtraField getExtraField(final ZipShort type) {
         if (extraFields != null) {
-            for (ZipExtraField extraField : extraFields) {
+            for (final ZipExtraField extraField : extraFields) {
                 if (type.equals(extraField.getHeaderId())) {
                     return extraField;
                 }
@@ -534,11 +534,11 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     @Override
     public void setExtra(final byte[] extra) throws RuntimeException {
         try {
-            ZipExtraField[] local =
+            final ZipExtraField[] local =
                 ExtraFieldUtils.parse(extra, true,
                                       ExtraFieldUtils.UnparseableExtraField.READ);
             mergeExtraFields(local, true);
-        } catch (ZipException e) {
+        } catch (final ZipException e) {
             // actually this is not possible as of Commons Compress 1.1
             throw new RuntimeException("Error parsing extra fields for entry: "
                                        + getName() + " - " + e.getMessage(), e);
@@ -561,11 +561,11 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      */
     public void setCentralDirectoryExtra(final byte[] b) {
         try {
-            ZipExtraField[] central =
+            final ZipExtraField[] central =
                 ExtraFieldUtils.parse(b, false,
                                       ExtraFieldUtils.UnparseableExtraField.READ);
             mergeExtraFields(central, false);
-        } catch (ZipException e) {
+        } catch (final ZipException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
@@ -575,7 +575,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * @return the extra data for local file
      */
     public byte[] getLocalFileDataExtra() {
-        byte[] extra = getExtra();
+        final byte[] extra = getExtra();
         return extra != null ? extra : EMPTY;
     }
 
@@ -671,7 +671,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      */
     public byte[] getRawName() {
         if (rawName != null) {
-            byte[] b = new byte[rawName.length];
+            final byte[] b = new byte[rawName.length];
             System.arraycopy(rawName, 0, b, 0, rawName.length);
             return b;
         }
@@ -723,7 +723,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         if (extraFields == null) {
             setExtraFields(f);
         } else {
-            for (ZipExtraField element : f) {
+            for (final ZipExtraField element : f) {
                 ZipExtraField existing;
                 if (element instanceof UnparseableExtraFieldData) {
                     existing = unparseableExtra;
@@ -734,10 +734,10 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
                     addExtraField(element);
                 } else {
                     if (local) {
-                        byte[] b = element.getLocalFileDataData();
+                        final byte[] b = element.getLocalFileDataData();
                         existing.parseFromLocalFileData(b, 0, b.length);
                     } else {
-                        byte[] b = element.getCentralDirectoryData();
+                        final byte[] b = element.getCentralDirectoryData();
                         existing.parseFromCentralDirectoryData(b, 0, b.length);
                     }
                 }
@@ -770,9 +770,9 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        ZipArchiveEntry other = (ZipArchiveEntry) obj;
-        String myName = getName();
-        String otherName = other.getName();
+        final ZipArchiveEntry other = (ZipArchiveEntry) obj;
+        final String myName = getName();
+        final String otherName = other.getName();
         if (myName == null) {
             if (otherName != null) {
                 return false;

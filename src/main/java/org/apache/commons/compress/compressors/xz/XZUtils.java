@@ -48,7 +48,7 @@ public class XZUtils {
     private static volatile CachedAvailability cachedXZAvailability;
 
     static {
-        Map<String, String> uncompressSuffix = new HashMap<String, String>();
+        final Map<String, String> uncompressSuffix = new HashMap<String, String>();
         uncompressSuffix.put(".txz", ".tar");
         uncompressSuffix.put(".xz", "");
         uncompressSuffix.put("-xz", "");
@@ -56,7 +56,7 @@ public class XZUtils {
         cachedXZAvailability = CachedAvailability.DONT_CACHE;
         try {
             Class.forName("org.osgi.framework.BundleEvent");
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             setCacheXZAvailablity(true);
         }
     }
@@ -108,7 +108,7 @@ public class XZUtils {
         try {
             XZCompressorInputStream.matches(null, 0);
             return true;
-        } catch (NoClassDefFoundError error) {
+        } catch (final NoClassDefFoundError error) {
             return false;
         }
     }

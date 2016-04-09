@@ -139,8 +139,8 @@ public final class ZipEightByteInteger implements Serializable {
      * @return value as eight bytes in big endian byte order
      */
     public static byte[] getBytes(final BigInteger value) {
-        byte[] result = new byte[8];
-        long val = value.longValue();
+        final byte[] result = new byte[8];
+        final long val = value.longValue();
         result[0] = (byte) ((val & BYTE_MASK));
         result[BYTE_1] = (byte) ((val & BYTE_1_MASK) >> BYTE_1_SHIFT);
         result[BYTE_2] = (byte) ((val & BYTE_2_MASK) >> BYTE_2_SHIFT);
@@ -182,7 +182,7 @@ public final class ZipEightByteInteger implements Serializable {
         value += ((long) bytes[offset + BYTE_2] << BYTE_2_SHIFT) & BYTE_2_MASK;
         value += ((long) bytes[offset + BYTE_1] << BYTE_1_SHIFT) & BYTE_1_MASK;
         value += ((long) bytes[offset] & BYTE_MASK);
-        BigInteger val = BigInteger.valueOf(value);
+        final BigInteger val = BigInteger.valueOf(value);
         return (bytes[offset + BYTE_7] & LEFTMOST_BIT) == LEFTMOST_BIT
             ? val.setBit(LEFTMOST_BIT_SHIFT) : val;
     }

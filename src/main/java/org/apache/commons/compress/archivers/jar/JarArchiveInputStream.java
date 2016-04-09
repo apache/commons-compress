@@ -53,7 +53,7 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
     }
 
     public JarArchiveEntry getNextJarEntry() throws IOException {
-        ZipArchiveEntry entry = getNextZipEntry();
+        final ZipArchiveEntry entry = getNextZipEntry();
         return entry == null ? null : new JarArchiveEntry(entry);
     }
 

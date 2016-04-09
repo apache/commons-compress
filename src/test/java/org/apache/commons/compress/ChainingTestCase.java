@@ -34,7 +34,7 @@ public class ChainingTestCase extends AbstractTestCase {
 
     @Test
     public void testTarGzip() throws Exception {
-        File file = getFile("bla.tgz");
+        final File file = getFile("bla.tgz");
         final TarArchiveInputStream is = new TarArchiveInputStream(new GzipCompressorInputStream(new FileInputStream(file)));
         final TarArchiveEntry entry = (TarArchiveEntry)is.getNextEntry();
         assertNotNull(entry);
@@ -44,7 +44,7 @@ public class ChainingTestCase extends AbstractTestCase {
 
     @Test
     public void testTarBzip2() throws Exception {
-        File file = getFile("bla.tar.bz2");
+        final File file = getFile("bla.tar.bz2");
         final TarArchiveInputStream is = new TarArchiveInputStream(new BZip2CompressorInputStream(new FileInputStream(file)));
         final TarArchiveEntry entry = (TarArchiveEntry)is.getNextEntry();
         assertNotNull(entry);

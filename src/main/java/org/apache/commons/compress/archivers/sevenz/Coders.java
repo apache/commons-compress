@@ -69,7 +69,7 @@ class Coders {
 
     static InputStream addDecoder(final String archiveName, final InputStream is, final long uncompressedLength,
             final Coder coder, final byte[] password) throws IOException {
-        CoderBase cb = findByMethod(SevenZMethod.byId(coder.decompressionMethodId));
+        final CoderBase cb = findByMethod(SevenZMethod.byId(coder.decompressionMethodId));
         if (cb == null) {
             throw new IOException("Unsupported compression method " +
                                   Arrays.toString(coder.decompressionMethodId)
@@ -80,7 +80,7 @@ class Coders {
     
     static OutputStream addEncoder(final OutputStream out, final SevenZMethod method,
                                    final Object options) throws IOException {
-        CoderBase cb = findByMethod(method);
+        final CoderBase cb = findByMethod(method);
         if (cb == null) {
             throw new IOException("Unsupported compression method " + method);
         }
@@ -103,7 +103,7 @@ class Coders {
         @Override
         InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
                 final Coder coder, final byte[] password) throws IOException {
-            byte propsByte = coder.properties[0];
+            final byte propsByte = coder.properties[0];
             long dictSize = coder.properties[1];
             for (int i = 1; i < 4; i++) {
                 dictSize |= (coder.properties[i + 1] & 0xffl) << (8 * i);
@@ -126,7 +126,7 @@ class Coders {
                 final Coder coder, final byte[] password) throws IOException {
             try {
                 return opts.getInputStream(in);
-            } catch (AssertionError e) {
+            } catch (final AssertionError e) {
                 throw new IOException("BCJ filter used in " + archiveName
                                       + " needs XZ for Java > 1.4 - see "
                                       + "http://commons.apache.org/proper/commons-compress/limitations.html#7Z",
@@ -184,7 +184,7 @@ class Coders {
         }
         @Override
         OutputStream encode(final OutputStream out, final Object options) {
-            int level = numberOptionOrDefault(options, 9);
+            final int level = numberOptionOrDefault(options, 9);
             final Deflater deflater = new Deflater(level, true);
             final DeflaterOutputStream deflaterOutputStream = new DeflaterOutputStream(out, deflater);
             return new OutputStream() {
@@ -229,7 +229,7 @@ class Coders {
         @Override
         OutputStream encode(final OutputStream out, final Object options)
                 throws IOException {
-            int blockSize = numberOptionOrDefault(options, BZip2CompressorOutputStream.MAX_BLOCKSIZE);
+            final int blockSize = numberOptionOrDefault(options, BZip2CompressorOutputStream.MAX_BLOCKSIZE);
             return new BZip2CompressorOutputStream(out, blockSize);
         }
     }
@@ -259,7 +259,7 @@ class Coders {
 
         @Override
         public int read(final byte[] b, final int off, final int len) throws IOException {
-            int result = super.read(b, off, len);
+            final int result = super.read(b, off, len);
             if (result == -1 && addDummyByte) {
                 addDummyByte = false;
                 b[off] = 0;

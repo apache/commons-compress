@@ -29,16 +29,16 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void testCpioUnarchive() throws Exception {
-        StringBuilder expected = new StringBuilder();
+        final StringBuilder expected = new StringBuilder();
         expected.append("./test1.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>./test2.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>\n");
 
 
-        CpioArchiveInputStream in = new CpioArchiveInputStream(new FileInputStream(getFile("bla.cpio")));
+        final CpioArchiveInputStream in = new CpioArchiveInputStream(new FileInputStream(getFile("bla.cpio")));
         CpioArchiveEntry entry;
 
-        StringBuilder result = new StringBuilder();
+        final StringBuilder result = new StringBuilder();
         while ((entry = (CpioArchiveEntry) in.getNextEntry()) != null) {
             result.append(entry.getName());
             int tmp;
@@ -52,7 +52,7 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void testCpioUnarchiveCreatedByRedlineRpm() throws Exception {
-        CpioArchiveInputStream in =
+        final CpioArchiveInputStream in =
             new CpioArchiveInputStream(new FileInputStream(getFile("redline.cpio")));
         CpioArchiveEntry entry= null;
 

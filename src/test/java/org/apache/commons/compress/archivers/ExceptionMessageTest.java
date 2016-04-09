@@ -35,9 +35,9 @@ public class ExceptionMessageTest {
         try{
             new ArchiveStreamFactory().createArchiveInputStream(null, System.in);
             fail("Should raise an IllegalArgumentException.");
-        }catch (IllegalArgumentException e) {
+        }catch (final IllegalArgumentException e) {
             assertEquals(ARCHIVER_NULL_MESSAGE, e.getMessage());
-        } catch (ArchiveException e) {
+        } catch (final ArchiveException e) {
             fail("ArchiveException not expected");
         }
     }
@@ -47,9 +47,9 @@ public class ExceptionMessageTest {
         try{
             new ArchiveStreamFactory().createArchiveInputStream("zip", null);
             fail("Should raise an IllegalArgumentException.");
-        }catch (IllegalArgumentException e) {
+        }catch (final IllegalArgumentException e) {
             assertEquals(INPUTSTREAM_NULL_MESSAGE, e.getMessage());
-        } catch (ArchiveException e) {
+        } catch (final ArchiveException e) {
             fail("ArchiveException not expected");
         }
     }
@@ -59,9 +59,9 @@ public class ExceptionMessageTest {
         try{
             new ArchiveStreamFactory().createArchiveOutputStream(null, System.out);
             fail("Should raise an IllegalArgumentException.");
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             assertEquals(ARCHIVER_NULL_MESSAGE, e.getMessage());
-        } catch (ArchiveException e){
+        } catch (final ArchiveException e){
             fail("ArchiveException not expected");
         }
     }
@@ -71,9 +71,9 @@ public class ExceptionMessageTest {
         try{
             new ArchiveStreamFactory().createArchiveOutputStream("zip", null);
             fail("Should raise an IllegalArgumentException.");
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             assertEquals(OUTPUTSTREAM_NULL_MESSAGE, e.getMessage());
-        } catch (ArchiveException e) {
+        } catch (final ArchiveException e) {
             fail("ArchiveException not expected");
         }
     }

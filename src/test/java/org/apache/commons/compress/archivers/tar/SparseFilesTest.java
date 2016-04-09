@@ -30,11 +30,11 @@ public class SparseFilesTest {
 
     @Test
     public void testOldGNU() throws Throwable {
-        File file = getFile("oldgnu_sparse.tar");
+        final File file = getFile("oldgnu_sparse.tar");
         TarArchiveInputStream tin = null;
         try {
             tin = new TarArchiveInputStream(new FileInputStream(file));
-            TarArchiveEntry ae = tin.getNextTarEntry();
+            final TarArchiveEntry ae = tin.getNextTarEntry();
             assertEquals("sparsefile", ae.getName());
             assertTrue(ae.isOldGNUSparse());
             assertTrue(ae.isGNUSparse());
@@ -49,7 +49,7 @@ public class SparseFilesTest {
 
     @Test
     public void testPaxGNU() throws Throwable {
-        File file = getFile("pax_gnu_sparse.tar");
+        final File file = getFile("pax_gnu_sparse.tar");
         TarArchiveInputStream tin = null;
         try {
             tin = new TarArchiveInputStream(new FileInputStream(file));
@@ -64,7 +64,7 @@ public class SparseFilesTest {
     }
 
     private void assertPaxGNUEntry(final TarArchiveInputStream tin, final String suffix) throws Throwable {
-        TarArchiveEntry ae = tin.getNextTarEntry();
+        final TarArchiveEntry ae = tin.getNextTarEntry();
         assertEquals("sparsefile-" + suffix, ae.getName());
         assertTrue(ae.isGNUSparse());
         assertTrue(ae.isPaxGNUSparse());

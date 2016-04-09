@@ -222,7 +222,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
             throw new IOException("Stream has already been finished");
         }
 
-        CpioArchiveEntry e = (CpioArchiveEntry) entry;
+        final CpioArchiveEntry e = (CpioArchiveEntry) entry;
         ensureOpen();
         if (this.entry != null) {
             closeArchiveEntry(); // close previous entry
@@ -263,7 +263,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
             writeOldAsciiEntry(e);
             break;
         case FORMAT_OLD_BINARY:
-            boolean swapHalfWord = true;
+            final boolean swapHalfWord = true;
             writeBinaryLong(MAGIC_OLD_BINARY, 2, swapHalfWord);
             writeOldBinaryEntry(e, swapHalfWord);
             break;
@@ -464,7 +464,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         writeHeader(this.entry);
         closeArchiveEntry();
 
-        int lengthOfLastBlock = (int) (getBytesWritten() % blockSize);
+        final int lengthOfLastBlock = (int) (getBytesWritten() % blockSize);
         if (lengthOfLastBlock != 0) {
             pad(blockSize - lengthOfLastBlock);
         }
@@ -493,7 +493,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
 
     private void pad(final int count) throws IOException{
         if (count > 0){
-            byte buff[] = new byte[count];
+            final byte buff[] = new byte[count];
             out.write(buff);
             count(count);
         }
@@ -501,14 +501,14 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
 
     private void writeBinaryLong(final long number, final int length,
             final boolean swapHalfWord) throws IOException {
-        byte tmp[] = CpioUtil.long2byteArray(number, length, swapHalfWord);
+        final byte tmp[] = CpioUtil.long2byteArray(number, length, swapHalfWord);
         out.write(tmp);
         count(tmp.length);
     }
 
     private void writeAsciiLong(final long number, final int length,
             final int radix) throws IOException {
-        StringBuilder tmp = new StringBuilder();
+        final StringBuilder tmp = new StringBuilder();
         String tmpStr;
         if (radix == 16) {
             tmp.append(Long.toHexString(number));
@@ -519,7 +519,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         }
 
         if (tmp.length() <= length) {
-            long insertLength = length - tmp.length();
+            final long insertLength = length - tmp.length();
             for (int pos = 0; pos < insertLength; pos++) {
                 tmp.insert(0, "0");
             }
@@ -527,7 +527,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         } else {
             tmpStr = tmp.substring(tmp.length() - length);
         }
-        byte[] b = ArchiveUtils.toAsciiBytes(tmpStr);
+        final byte[] b = ArchiveUtils.toAsciiBytes(tmpStr);
         out.write(b);
         count(b.length);
     }
@@ -538,7 +538,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      * @throws IOException if the string couldn't be written
      */
     private void writeCString(final String str) throws IOException {
-        ByteBuffer buf = zipEncoding.encode(str);
+        final ByteBuffer buf = zipEncoding.encode(str);
         final int len = buf.limit() - buf.position();
         out.write(buf.array(), buf.arrayOffset(), len);
         out.write('\0');
