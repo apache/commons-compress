@@ -76,10 +76,7 @@ public abstract class AbstractTestCase {
         try {
             uri = url.toURI();
         } catch (java.net.URISyntaxException ex) {
-//          throw new IOException(ex); // JDK 1.6+
-            IOException ioe = new IOException();
-            ioe.initCause(ex);
-            throw ioe;
+            throw new IOException(ex);
         }
         return new File(uri);
     }

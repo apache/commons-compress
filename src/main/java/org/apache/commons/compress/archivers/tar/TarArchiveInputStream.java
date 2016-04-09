@@ -283,9 +283,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         try {
             currEntry = new TarArchiveEntry(headerBuf, zipEncoding);
         } catch (IllegalArgumentException e) {
-            IOException ioe = new IOException("Error detected parsing the header");
-            ioe.initCause(e);
-            throw ioe;
+            throw new IOException("Error detected parsing the header", e);
         }
 
         entryOffset = 0;
