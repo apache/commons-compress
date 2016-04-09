@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.zip.CRC32;
 import java.util.zip.Deflater;
+import java.util.zip.ZipEntry;
 
 /**
  * Encapsulates a {@link Deflater} and crc calculator, handling multiple types of output streams.
@@ -168,7 +169,7 @@ public abstract class StreamCompressor implements Closeable {
         while ((length = source.read(readerBuf, 0, readerBuf.length)) >= 0) {
             write(readerBuf, 0, length, method);
         }
-        if (method == ZipArchiveEntry.DEFLATED) {
+        if (method == ZipEntry.DEFLATED) {
             flushDeflater();
         }
     }
@@ -186,7 +187,7 @@ public abstract class StreamCompressor implements Closeable {
     long write(byte[] b, int offset, int length, int method) throws IOException {
         long current = writtenToOutputStreamForLastEntry;
         crc.update(b, offset, length);
-        if (method == ZipArchiveEntry.DEFLATED) {
+        if (method == ZipEntry.DEFLATED) {
             writeDeflated(b, offset, length);
         } else {
             writeCounted(b, offset, length);
