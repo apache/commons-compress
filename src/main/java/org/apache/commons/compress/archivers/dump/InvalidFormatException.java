@@ -31,7 +31,7 @@ public class InvalidFormatException extends DumpArchiveException {
         super("there was an error decoding a tape segment");
     }
 
-    public InvalidFormatException(long offset) {
+    public InvalidFormatException(final long offset) {
         super("there was an error decoding a tape segment header at offset " +
             offset + ".");
         this.offset = offset;

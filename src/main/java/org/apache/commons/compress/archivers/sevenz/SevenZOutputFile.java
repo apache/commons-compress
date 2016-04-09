@@ -79,7 +79,7 @@ public class SevenZOutputFile implements Closeable {
      * to {@link #setContentMethods}.</p>
      * @param method the default compression method
      */
-    public void setContentCompression(SevenZMethod method) {
+    public void setContentCompression(final SevenZMethod method) {
         setContentMethods(Collections.singletonList(new SevenZMethodConfiguration(method)));
     }
 
@@ -97,7 +97,7 @@ public class SevenZOutputFile implements Closeable {
      * @since 1.8
      * @param methods the default (compression) methods
      */
-    public void setContentMethods(Iterable<? extends SevenZMethodConfiguration> methods) {
+    public void setContentMethods(final Iterable<? extends SevenZMethodConfiguration> methods) {
         this.contentMethods = reverse(methods);
     }
 
@@ -316,7 +316,7 @@ public class SevenZOutputFile implements Closeable {
         };
     }
 
-    private Iterable<? extends SevenZMethodConfiguration> getContentMethods(SevenZArchiveEntry entry) {
+    private Iterable<? extends SevenZMethodConfiguration> getContentMethods(final SevenZArchiveEntry entry) {
         Iterable<? extends SevenZMethodConfiguration> ms = entry.getContentMethods();
         return ms == null ? contentMethods : ms;
     }
@@ -401,7 +401,7 @@ public class SevenZOutputFile implements Closeable {
         header.write(NID.kEnd);
     }
     
-    private void writeFolder(final DataOutput header, SevenZArchiveEntry entry) throws IOException {
+    private void writeFolder(final DataOutput header, final SevenZArchiveEntry entry) throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         int numCoders = 0;
         for (SevenZMethodConfiguration m : getContentMethods(entry)) {
@@ -417,7 +417,7 @@ public class SevenZOutputFile implements Closeable {
         }
     }
 
-    private void writeSingleCodec(SevenZMethodConfiguration m, OutputStream bos) throws IOException {
+    private void writeSingleCodec(final SevenZMethodConfiguration m, final OutputStream bos) throws IOException {
         byte[] id = m.getMethod().getId();
         byte[] properties = Coders.findByMethod(m.getMethod())
             .getOptionsAsProperties(m.getOptions());
@@ -729,7 +729,7 @@ public class SevenZOutputFile implements Closeable {
         }
     }
 
-    private static <T> Iterable<T> reverse(Iterable<T> i) {
+    private static <T> Iterable<T> reverse(final Iterable<T> i) {
         LinkedList<T> l = new LinkedList<T>();
         for (T t : i) {
             l.addFirst(t);

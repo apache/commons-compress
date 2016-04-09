@@ -85,7 +85,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * Constructor for TarInputStream.
      * @param is the input stream to use
      */
-    public TarArchiveInputStream(InputStream is) {
+    public TarArchiveInputStream(final InputStream is) {
         this(is, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE);
     }
 
@@ -95,7 +95,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @param encoding name of the encoding to use for file names
      * @since 1.4
      */
-    public TarArchiveInputStream(InputStream is, String encoding) {
+    public TarArchiveInputStream(final InputStream is, final String encoding) {
         this(is, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE,
              encoding);
     }
@@ -105,7 +105,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @param is the input stream to use
      * @param blockSize the block size to use
      */
-    public TarArchiveInputStream(InputStream is, int blockSize) {
+    public TarArchiveInputStream(final InputStream is, final int blockSize) {
         this(is, blockSize, TarConstants.DEFAULT_RCDSIZE);
     }
 
@@ -116,8 +116,8 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @param encoding name of the encoding to use for file names
      * @since 1.4
      */
-    public TarArchiveInputStream(InputStream is, int blockSize,
-                                 String encoding) {
+    public TarArchiveInputStream(final InputStream is, final int blockSize,
+                                 final String encoding) {
         this(is, blockSize, TarConstants.DEFAULT_RCDSIZE, encoding);
     }
 
@@ -127,7 +127,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @param blockSize the block size to use
      * @param recordSize the record size to use
      */
-    public TarArchiveInputStream(InputStream is, int blockSize, int recordSize) {
+    public TarArchiveInputStream(final InputStream is, final int blockSize, final int recordSize) {
         this(is, blockSize, recordSize, null);      
     }
 
@@ -139,8 +139,8 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @param encoding name of the encoding to use for file names
      * @since 1.4
      */
-    public TarArchiveInputStream(InputStream is, int blockSize, int recordSize,
-                                 String encoding) {
+    public TarArchiveInputStream(final InputStream is, final int blockSize, final int recordSize,
+                                 final String encoding) {
         this.is = is;
         this.hasHitEOF = false;
         this.encoding = encoding;
@@ -236,7 +236,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @param markLimit The limit to mark.
      */
     @Override
-    public void mark(int markLimit) {
+    public void mark(final int markLimit) {
     }
 
     /**
@@ -414,7 +414,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @param record The record data to check.
      * @return true if the record data is an End of Archive
      */
-    protected boolean isEOFRecord(byte[] record) {
+    protected boolean isEOFRecord(final byte[] record) {
         return record == null || ArchiveUtils.isArrayZero(record, recordSize);
     }
     
@@ -451,7 +451,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     // NOTE, using a Map here makes it impossible to ever support GNU
     // sparse files using the PAX Format 0.0, see
     // https://www.gnu.org/software/tar/manual/html_section/tar_92.html#SEC188
-    Map<String, String> parsePaxHeaders(InputStream i)
+    Map<String, String> parsePaxHeaders(final InputStream i)
         throws IOException {
         Map<String, String> headers = new HashMap<String, String>(globalPaxHeaders);
         // Format is "length keyword=value\n";
@@ -503,7 +503,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         return headers;
     }
 
-    private void applyPaxHeadersToCurrentEntry(Map<String, String> headers) {
+    private void applyPaxHeadersToCurrentEntry(final Map<String, String> headers) {
         /*
          * The following headers are defined for Pax.
          * atime, ctime, charset: cannot use these without changing TarArchiveEntry fields
@@ -640,7 +640,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @throws IOException on error
      */
     @Override
-    public int read(byte[] buf, int offset, int numToRead) throws IOException {
+    public int read(final byte[] buf, final int offset, int numToRead) throws IOException {
     	int totalRead = 0;
 
         if (hasHitEOF || isDirectory() || entryOffset >= entrySize) {
@@ -674,7 +674,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * <p>May return false if the current entry is a sparse file.</p>
      */
     @Override
-    public boolean canReadEntryData(ArchiveEntry ae) {
+    public boolean canReadEntryData(final ArchiveEntry ae) {
         if (ae instanceof TarArchiveEntry) {
             TarArchiveEntry te = (TarArchiveEntry) ae;
             return !te.isSparse();
@@ -691,7 +691,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         return currEntry;
     }
 
-    protected final void setCurrentEntry(TarArchiveEntry e) {
+    protected final void setCurrentEntry(final TarArchiveEntry e) {
         currEntry = e;
     }
 
@@ -699,7 +699,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         return hasHitEOF;
     }
 
-    protected final void setAtEOF(boolean b) {
+    protected final void setAtEOF(final boolean b) {
         hasHitEOF = b;
     }
 
@@ -725,7 +725,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      *            the number of bytes to check
      * @return true, if this stream is a tar archive stream, false otherwise
      */
-    public static boolean matches(byte[] signature, int length) {
+    public static boolean matches(final byte[] signature, final int length) {
         if (length < TarConstants.VERSION_OFFSET+TarConstants.VERSIONLEN) {
             return false;
         }

@@ -95,7 +95,7 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
      * @param length the length of data
      */
     @Override
-    public void parseFromLocalFileData(byte[] buffer, int offset, int length) {
+    public void parseFromLocalFileData(final byte[] buffer, final int offset, final int length) {
         localFileData = new byte[length];
         System.arraycopy(buffer, offset, localFileData, 0, length);
     }
@@ -108,8 +108,8 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
      * @param length the length of data
      */
     @Override
-    public void parseFromCentralDirectoryData(byte[] buffer, int offset,
-                                              int length) {
+    public void parseFromCentralDirectoryData(final byte[] buffer, final int offset,
+                                              final int length) {
         centralDirectoryData = new byte[length];
         System.arraycopy(buffer, offset, centralDirectoryData, 0, length);
         if (localFileData == null) {

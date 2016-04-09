@@ -125,7 +125,7 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
      * {@inheritDoc}
      */
     @Override
-    public int read(byte[] b, int off, int len) throws IOException {
+    public int read(final byte[] b, final int off, final int len) throws IOException {
         if (endReached) {
             return -1;
         }
@@ -152,7 +152,7 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
      *
      * @param len the number of uncompressed bytes to read
      */
-    private void fill(int len) throws IOException {
+    private void fill(final int len) throws IOException {
         if (uncompressedBytesRemaining == 0) {
             endReached = true;
         }
@@ -265,7 +265,7 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
      * or 63 for 1-4 bytes, respectively. The literal itself follows
      * after the length.
      */
-    private int readLiteralLength(int b) throws IOException {
+    private int readLiteralLength(final int b) throws IOException {
         int length;
         switch (b >> 2) {
         case 60:
@@ -336,7 +336,7 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
      *             buffer
      * @return True if the decompressed data should be flushed
      */
-    private boolean expandCopy(final long off, int length) throws IOException {
+    private boolean expandCopy(final long off, final int length) throws IOException {
         if (off > blockSize) {
             throw new IOException("Offset is larger than block size");
         }

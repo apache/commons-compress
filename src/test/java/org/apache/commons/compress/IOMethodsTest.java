@@ -108,7 +108,7 @@ public class IOMethodsTest extends AbstractTestCase {
         compareReads("zip");
     }
 
-    private void compareWrites(String archiverName, ArchiveEntry entry) throws Exception {
+    private void compareWrites(final String archiverName, final ArchiveEntry entry) throws Exception {
         OutputStream out1 = new ByteArrayOutputStream();
         OutputStream out2 = new ByteArrayOutputStream();
         OutputStream out3 = new ByteArrayOutputStream();
@@ -139,7 +139,7 @@ public class IOMethodsTest extends AbstractTestCase {
         assertEquals("out1!=out3",out1.toString(),out3.toString());
     }
 
-    private void compareReads(String archiverName) throws Exception {
+    private void compareReads(final String archiverName) throws Exception {
         OutputStream out1 = new ByteArrayOutputStream();
         OutputStream out2 = new ByteArrayOutputStream();
         OutputStream out3 = new ByteArrayOutputStream();

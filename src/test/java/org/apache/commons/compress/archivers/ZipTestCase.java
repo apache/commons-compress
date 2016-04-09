@@ -314,7 +314,7 @@ public final class ZipTestCase extends AbstractTestCase {
     String second_payload = "AAAAAAAAAAAA";
     ZipArchiveEntryPredicate allFilesPredicate = new ZipArchiveEntryPredicate() {
         @Override
-        public boolean test(ZipArchiveEntry zipArchiveEntry) {
+        public boolean test(final ZipArchiveEntry zipArchiveEntry) {
             return true;
         }
     };
@@ -397,7 +397,7 @@ public final class ZipTestCase extends AbstractTestCase {
         zf1.close();
     }
 
-    private File createReferenceFile(File directory, Zip64Mode zipMode, String prefix) throws IOException {
+    private File createReferenceFile(final File directory, final Zip64Mode zipMode, final String prefix) throws IOException {
         File reference = File.createTempFile(prefix, ".zip", directory);
         ZipArchiveOutputStream zos = new ZipArchiveOutputStream(reference);
         zos.setUseZip64(zipMode);
@@ -407,18 +407,18 @@ public final class ZipTestCase extends AbstractTestCase {
         return reference;
     }
 
-    private ZipArchiveOutputStream createFirstEntry(ZipArchiveOutputStream zos) throws IOException {
+    private ZipArchiveOutputStream createFirstEntry(final ZipArchiveOutputStream zos) throws IOException {
         createArchiveEntry(first_payload, zos, "file1.txt");
         return zos;
     }
 
-    private ZipArchiveOutputStream createSecondEntry(ZipArchiveOutputStream zos) throws IOException {
+    private ZipArchiveOutputStream createSecondEntry(final ZipArchiveOutputStream zos) throws IOException {
         createArchiveEntry(second_payload, zos, "file2.txt");
         return zos;
     }
 
 
-    private void assertSameFileContents(File expectedFile, File actualFile) throws IOException {
+    private void assertSameFileContents(final File expectedFile, final File actualFile) throws IOException {
         int size = (int) Math.max(expectedFile.length(), actualFile.length());
         ZipFile expected = new ZipFile(expectedFile);
         ZipFile actual = new ZipFile(actualFile);
@@ -456,7 +456,7 @@ public final class ZipTestCase extends AbstractTestCase {
     }
 
 
-    private void createArchiveEntry(String payload, ZipArchiveOutputStream zos, String name)
+    private void createArchiveEntry(final String payload, final ZipArchiveOutputStream zos, final String name)
             throws IOException {
         ZipArchiveEntry in = new ZipArchiveEntry(name);
         zos.putArchiveEntry(in);

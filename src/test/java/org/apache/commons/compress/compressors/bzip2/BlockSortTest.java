@@ -134,7 +134,7 @@ public class BlockSortTest {
         return setUpFixture(FIXTURE);
     }
 
-    private void assertFixtureSorted(BZip2CompressorOutputStream.Data data) {
+    private void assertFixtureSorted(final BZip2CompressorOutputStream.Data data) {
         assertFixtureSorted(data, FIXTURE, FIXTURE_BWT);
     }
 
@@ -142,18 +142,18 @@ public class BlockSortTest {
         return setUpFixture(FIXTURE2);
     }
 
-    private void assertFixture2Sorted(BZip2CompressorOutputStream.Data data) {
+    private void assertFixture2Sorted(final BZip2CompressorOutputStream.Data data) {
         assertFixtureSorted(data, FIXTURE2, FIXTURE2_BWT);
     }
 
-    private DS setUpFixture(byte[] fixture) {
+    private DS setUpFixture(final byte[] fixture) {
         BZip2CompressorOutputStream.Data data = new BZip2CompressorOutputStream.Data(1);
         System.arraycopy(fixture, 0, data.block, 1, fixture.length);
         return new DS(data, new BlockSort(data));
     }
 
-    private void assertFixtureSorted(BZip2CompressorOutputStream.Data data,
-                                     byte[] fixture, byte[] fixtureBwt) {
+    private void assertFixtureSorted(final BZip2CompressorOutputStream.Data data,
+                                     final byte[] fixture, final byte[] fixtureBwt) {
         assertEquals(fixture[fixture.length - 1], data.block[0]);
         for (int i = 0; i < fixture.length; i++) {
             assertEquals(fixtureBwt[i], data.block[data.fmap[i]]);
@@ -163,7 +163,7 @@ public class BlockSortTest {
     private static class DS {
         private final BZip2CompressorOutputStream.Data data;
         private final BlockSort s;
-        DS(BZip2CompressorOutputStream.Data data, BlockSort s) {
+        DS(final BZip2CompressorOutputStream.Data data, final BlockSort s) {
             this.data = data;
             this.s = s;
         }

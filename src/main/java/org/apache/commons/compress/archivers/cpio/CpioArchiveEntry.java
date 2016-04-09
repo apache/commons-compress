@@ -309,7 +309,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @param entryName
      *            The name of this entry.
      */
-    public CpioArchiveEntry(File inputFile, String entryName) {
+    public CpioArchiveEntry(final File inputFile, final String entryName) {
         this(FORMAT_NEW, inputFile, entryName);
     }
 
@@ -334,8 +334,8 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * 
      * @since 1.1
      */
-    public CpioArchiveEntry(final short format, File inputFile,
-                            String entryName) {
+    public CpioArchiveEntry(final short format, final File inputFile,
+                            final String entryName) {
         this(format, entryName, inputFile.isFile() ? inputFile.length() : 0);
         if (inputFile.isDirectory()){
             setMode(C_ISDIR);
@@ -877,7 +877,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }

@@ -227,7 +227,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         }
     }
 
-    private boolean init(boolean isFirstStream) throws IOException {
+    private boolean init(final boolean isFirstStream) throws IOException {
         if (null == in) {
             throw new IOException("No InputStream");
         }
@@ -951,7 +951,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         // 4560782 byte
         // ===============
 
-        Data(int blockSize100k) {
+        Data(final int blockSize100k) {
             this.ll8 = new byte[blockSize100k * BZip2Constants.BASEBLOCKSIZE];
         }
 
@@ -962,7 +962,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
          * I don't initialize it at construction time to avoid unneccessary
          * memory allocation when compressing small files.
          */
-        int[] initTT(int length) {
+        int[] initTT(final int length) {
             int[] ttShadow = this.tt;
 
             // tt.length should always be >= length, but theoretically
@@ -989,7 +989,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      * 
      * @since 1.1
      */
-    public static boolean matches(byte[] signature, int length) {
+    public static boolean matches(final byte[] signature, final int length) {
 
         if (length < 3) {
             return false;

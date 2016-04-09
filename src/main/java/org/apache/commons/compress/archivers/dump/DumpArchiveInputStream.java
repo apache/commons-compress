@@ -86,7 +86,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      * @param is stream to read from
      * @throws ArchiveException on error
      */
-    public DumpArchiveInputStream(InputStream is) throws ArchiveException {
+    public DumpArchiveInputStream(final InputStream is) throws ArchiveException {
         this(is, null);
     }
 
@@ -99,7 +99,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      * @since 1.6
      * @throws ArchiveException on error
      */
-    public DumpArchiveInputStream(InputStream is, String encoding)
+    public DumpArchiveInputStream(final InputStream is, final String encoding)
         throws ArchiveException {
         this.raw = new TapeInputStream(is);
         this.hasHitEOF = false;
@@ -139,7 +139,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         queue = new PriorityQueue<DumpArchiveEntry>(10,
                 new Comparator<DumpArchiveEntry>() {
                     @Override
-                    public int compare(DumpArchiveEntry p, DumpArchiveEntry q) {
+                    public int compare(final DumpArchiveEntry p, final DumpArchiveEntry q) {
                         if (p.getOriginalName() == null || q.getOriginalName() == null) {
                             return Integer.MAX_VALUE;
                         }
@@ -412,7 +412,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      * @param entry
      * @return  full path for specified archive entry, or null if there's a gap.
      */
-    private String getPath(DumpArchiveEntry entry) {
+    private String getPath(final DumpArchiveEntry entry) {
         // build the stack of elements. It's possible that we're 
         // still missing an intermediate value and if so we
         Stack<String> elements = new Stack<String>();
@@ -464,7 +464,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      * @throws IOException on error
      */
     @Override
-    public int read(byte[] buf, int off, int len) throws IOException {
+    public int read(final byte[] buf, int off, int len) throws IOException {
         int totalRead = 0;
 
         if (hasHitEOF || isClosed || entryOffset >= entrySize) {
@@ -542,7 +542,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      * @param length length of data
      * @return whether the buffer seems to contain dump data
      */
-    public static boolean matches(byte[] buffer, int length) {
+    public static boolean matches(final byte[] buffer, final int length) {
         // do we have enough of the header?
         if (length < 32) {
             return false;

@@ -49,11 +49,11 @@ public final class DumpArchiveConstants {
 
         int code;
 
-        private SEGMENT_TYPE(int code) {
+        private SEGMENT_TYPE(final int code) {
             this.code = code;
         }
 
-        public static SEGMENT_TYPE find(int code) {
+        public static SEGMENT_TYPE find(final int code) {
             for (SEGMENT_TYPE t : values()) {
                 if (t.code == code) {
                     return t;
@@ -74,11 +74,11 @@ public final class DumpArchiveConstants {
 
         int code;
 
-        private COMPRESSION_TYPE(int code) {
+        private COMPRESSION_TYPE(final int code) {
             this.code = code;
         }
 
-        public static COMPRESSION_TYPE find(int code) {
+        public static COMPRESSION_TYPE find(final int code) {
             for (COMPRESSION_TYPE t : values()) {
                 if (t.code == code) {
                     return t;

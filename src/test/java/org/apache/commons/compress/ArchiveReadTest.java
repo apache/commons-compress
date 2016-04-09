@@ -53,7 +53,7 @@ public class ArchiveReadTest extends AbstractTestCase {
 
     private final File file;
 
-    public ArchiveReadTest(String file){
+    public ArchiveReadTest(final String file){
         this.file = new File(ARCDIR, file);
     }
 
@@ -78,7 +78,7 @@ public class ArchiveReadTest extends AbstractTestCase {
         Collection<Object[]> params = new ArrayList<Object[]>();
         for (String f : ARCDIR.list(new FilenameFilter() {
             @Override
-            public boolean accept(File dir, String name) {
+            public boolean accept(final File dir, final String name) {
                 return !name.endsWith(".txt");
             }
         })) 
@@ -90,7 +90,7 @@ public class ArchiveReadTest extends AbstractTestCase {
 
     // files.txt contains size and filename
     @Override
-    protected String getExpectedString(ArchiveEntry entry) {
+    protected String getExpectedString(final ArchiveEntry entry) {
         return entry.getSize() + " " + entry.getName();
     }
 

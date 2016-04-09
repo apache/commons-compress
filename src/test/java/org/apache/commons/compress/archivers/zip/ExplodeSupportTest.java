@@ -34,7 +34,7 @@ import org.junit.Test;
 
 public class ExplodeSupportTest {
 
-    private void testArchiveWithImplodeCompression(String filename, String entryName) throws IOException {
+    private void testArchiveWithImplodeCompression(final String filename, final String entryName) throws IOException {
         ZipFile zip = new ZipFile(new File(filename));
         ZipArchiveEntry entry = zip.getEntries().nextElement();
         assertEquals("entry name", entryName, entry.getName());
@@ -66,7 +66,7 @@ public class ExplodeSupportTest {
         testArchiveWithImplodeCompression("target/test-classes/moby-imploded.zip", "README");
     }
 
-    private void testZipStreamWithImplodeCompression(String filename, String entryName) throws IOException {
+    private void testZipStreamWithImplodeCompression(final String filename, final String entryName) throws IOException {
         ZipArchiveInputStream zin = new ZipArchiveInputStream(new FileInputStream(new File(filename)));
         ZipArchiveEntry entry = zin.getNextZipEntry();
         assertEquals("entry name", entryName, entry.getName());

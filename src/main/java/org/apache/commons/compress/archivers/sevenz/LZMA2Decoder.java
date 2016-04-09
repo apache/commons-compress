@@ -32,8 +32,8 @@ class LZMA2Decoder extends CoderBase {
     }
 
     @Override
-    InputStream decode(final String archiveName, final InputStream in, long uncompressedLength,
-            final Coder coder, byte[] password) throws IOException {
+    InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
+            final Coder coder, final byte[] password) throws IOException {
         try {
             int dictionarySize = getDictionarySize(coder);
             return new LZMA2InputStream(in, dictionarySize);
@@ -51,7 +51,7 @@ class LZMA2Decoder extends CoderBase {
     }
 
     @Override
-    byte[] getOptionsAsProperties(Object opts) {
+    byte[] getOptionsAsProperties(final Object opts) {
         int dictSize = getDictSize(opts);
         int lead = Integer.numberOfLeadingZeros(dictSize);
         int secondBit = (dictSize >>> (30 - lead)) - 2;
@@ -61,18 +61,18 @@ class LZMA2Decoder extends CoderBase {
     }
 
     @Override
-    Object getOptionsFromCoder(Coder coder, InputStream in) {
+    Object getOptionsFromCoder(final Coder coder, final InputStream in) {
         return getDictionarySize(coder);
     }
 
-    private int getDictSize(Object opts) {
+    private int getDictSize(final Object opts) {
         if (opts instanceof LZMA2Options) {
             return ((LZMA2Options) opts).getDictSize();
         }
         return numberOptionOrDefault(opts);
     }
 
-    private int getDictionarySize(Coder coder) throws IllegalArgumentException {
+    private int getDictionarySize(final Coder coder) throws IllegalArgumentException {
         final int dictionarySizeBits = 0xff & coder.properties[0];
         if ((dictionarySizeBits & (~0x3f)) != 0) {
             throw new IllegalArgumentException("Unsupported LZMA2 property bits");
@@ -86,7 +86,7 @@ class LZMA2Decoder extends CoderBase {
         return (2 | (dictionarySizeBits & 0x1)) << (dictionarySizeBits / 2 + 11);
     }
 
-    private LZMA2Options getOptions(Object opts) throws IOException {
+    private LZMA2Options getOptions(final Object opts) throws IOException {
         if (opts instanceof LZMA2Options) {
             return (LZMA2Options) opts;
         }
@@ -95,7 +95,7 @@ class LZMA2Decoder extends CoderBase {
         return options;
     }
 
-    private int numberOptionOrDefault(Object opts) {
+    private int numberOptionOrDefault(final Object opts) {
         return numberOptionOrDefault(opts, LZMA2Options.DICT_SIZE_DEFAULT);
     }
 }

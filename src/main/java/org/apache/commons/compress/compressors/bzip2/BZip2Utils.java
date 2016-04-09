@@ -55,7 +55,7 @@ public abstract class BZip2Utils {
      * @return {@code true} if the filename has a common bzip2 suffix,
      *         {@code false} otherwise
      */
-    public static boolean isCompressedFilename(String filename) {
+    public static boolean isCompressedFilename(final String filename) {
         return fileNameUtil.isCompressedFilename(filename);
     }
 
@@ -72,7 +72,7 @@ public abstract class BZip2Utils {
      * @param filename name of a file
      * @return name of the corresponding uncompressed file
      */
-    public static String getUncompressedFilename(String filename) {
+    public static String getUncompressedFilename(final String filename) {
         return fileNameUtil.getUncompressedFilename(filename);
     }
 
@@ -86,7 +86,7 @@ public abstract class BZip2Utils {
      * @param filename name of a file
      * @return name of the corresponding compressed file
      */
-    public static String getCompressedFilename(String filename) {
+    public static String getCompressedFilename(final String filename) {
         return fileNameUtil.getCompressedFilename(filename);
     }
 

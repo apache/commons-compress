@@ -46,7 +46,7 @@ public class UnicodePathExtraField extends AbstractUnicodeExtraField {
      * @param len The length of the encoded filename or comment in
      * <code>bytes</code>.
      */
-    public UnicodePathExtraField(String text, byte[] bytes, int off, int len) {
+    public UnicodePathExtraField(final String text, final byte[] bytes, final int off, final int len) {
         super(text, bytes, off, len);
     }
 
@@ -57,7 +57,7 @@ public class UnicodePathExtraField extends AbstractUnicodeExtraField {
      * @param name The file name
      * @param bytes the bytes actually written to the archive
      */
-    public UnicodePathExtraField(String name, byte[] bytes) {
+    public UnicodePathExtraField(final String name, final byte[] bytes) {
         super(name, bytes);
     }
 

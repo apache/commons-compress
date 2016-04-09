@@ -537,7 +537,7 @@ public class X5455_ExtendedTimestampTest {
         }
     }
 
-    private static boolean isFlagSet(byte data, byte flag) { return (data & flag) == flag; }
+    private static boolean isFlagSet(final byte data, final byte flag) { return (data & flag) == flag; }
 
     /**
      * InfoZIP seems to adjust the time stored inside the LFH and CD
@@ -547,7 +547,7 @@ public class X5455_ExtendedTimestampTest {
      * The archive read in {@link #testSampleFile} has been created
      * with GMT-8 so we need to adjust for the difference.
      */
-    private static Date adjustFromGMTToExpectedOffset(Date from) {
+    private static Date adjustFromGMTToExpectedOffset(final Date from) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(from);
         cal.add(Calendar.MILLISECOND, cal.get(Calendar.ZONE_OFFSET));

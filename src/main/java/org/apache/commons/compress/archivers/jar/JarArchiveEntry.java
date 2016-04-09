@@ -36,19 +36,19 @@ public class JarArchiveEntry extends ZipArchiveEntry {
     private final Attributes manifestAttributes = null;
     private final Certificate[] certificates = null;
 
-    public JarArchiveEntry(ZipEntry entry) throws ZipException {
+    public JarArchiveEntry(final ZipEntry entry) throws ZipException {
         super(entry);
     }
 
-    public JarArchiveEntry(String name) {
+    public JarArchiveEntry(final String name) {
         super(name);
     }
 
-    public JarArchiveEntry(ZipArchiveEntry entry) throws ZipException {
+    public JarArchiveEntry(final ZipArchiveEntry entry) throws ZipException {
         super(entry);
     }
 
-    public JarArchiveEntry(JarEntry entry) throws ZipException {
+    public JarArchiveEntry(final JarEntry entry) throws ZipException {
         super(entry);
 
     }

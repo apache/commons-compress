@@ -68,7 +68,7 @@ public class BigFilesIT {
         }
     }
 
-    private void readFileBiggerThan8GByte(String name) throws Exception {
+    private void readFileBiggerThan8GByte(final String name) throws Exception {
         InputStream in = null;
         GzipCompressorInputStream gzin = null;
         TarArchiveInputStream tin = null;

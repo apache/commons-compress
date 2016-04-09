@@ -92,7 +92,7 @@ public class SevenZFileTest extends AbstractTestCase {
         }
     }
 
-    private byte[] readFully(SevenZFile archive) throws IOException {
+    private byte[] readFully(final SevenZFile archive) throws IOException {
         byte [] buf = new byte [1024];
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         for (int len = 0; (len = archive.read(buf)) > 0;) {
@@ -139,7 +139,7 @@ public class SevenZFileTest extends AbstractTestCase {
         }
     }
 
-    private void test7zUnarchive(File f, SevenZMethod m) throws Exception {
+    private void test7zUnarchive(final File f, final SevenZMethod m) throws Exception {
         test7zUnarchive(f, m, null);
     }
 
@@ -260,7 +260,7 @@ public class SevenZFileTest extends AbstractTestCase {
         }
     }
     
-    private void test7zUnarchive(File f, SevenZMethod m, byte[] password) throws Exception {
+    private void test7zUnarchive(final File f, final SevenZMethod m, final byte[] password) throws Exception {
         SevenZFile sevenZFile = new SevenZFile(f, password);
         try {
             SevenZArchiveEntry entry = sevenZFile.getNextEntry();

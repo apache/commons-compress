@@ -34,7 +34,7 @@ public class PasswordRequiredException extends IOException {
      * @param name name of the archive containing encrypted streams or
      * the encrypted file.
      */
-    public PasswordRequiredException(String name) {
+    public PasswordRequiredException(final String name) {
         super("Cannot read encrypted content from " + name + " without a password.");
     }
 }

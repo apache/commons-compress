@@ -37,7 +37,7 @@ public class ZipArchiveEntryRequest {
     private final int method;
 
 
-    private ZipArchiveEntryRequest(ZipArchiveEntry zipArchiveEntry, InputStreamSupplier payloadSupplier) {
+    private ZipArchiveEntryRequest(final ZipArchiveEntry zipArchiveEntry, final InputStreamSupplier payloadSupplier) {
         // this constructor has "safe" access to all member variables on zipArchiveEntry
         this.zipArchiveEntry = zipArchiveEntry;
         this.payloadSupplier = payloadSupplier;
@@ -50,7 +50,7 @@ public class ZipArchiveEntryRequest {
      * @param payloadSupplier The payload that will be added to the zip entry.
      * @return The newly created request
      */
-    public static ZipArchiveEntryRequest createZipArchiveEntryRequest(ZipArchiveEntry zipArchiveEntry, InputStreamSupplier payloadSupplier) {
+    public static ZipArchiveEntryRequest createZipArchiveEntryRequest(final ZipArchiveEntry zipArchiveEntry, final InputStreamSupplier payloadSupplier) {
         return new ZipArchiveEntryRequest(zipArchiveEntry, payloadSupplier);
     }
 

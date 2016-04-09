@@ -77,7 +77,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      */
     private byte[] centralData;
 
-    protected PKWareExtraHeader(ZipShort headerId) {
+    protected PKWareExtraHeader(final ZipShort headerId) {
         this.headerId = headerId;
     }
     
@@ -98,7 +98,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      * @param data
      *            the field data to use
      */
-    public void setLocalFileDataData(byte[] data) {
+    public void setLocalFileDataData(final byte[] data) {
         localData = ZipUtil.copy(data);
     }
 
@@ -128,7 +128,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      * @param data
      *            the data to use
      */
-    public void setCentralDirectoryData(byte[] data) {
+    public void setCentralDirectoryData(final byte[] data) {
         centralData = ZipUtil.copy(data);
     }
 
@@ -169,7 +169,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      * @see ZipExtraField#parseFromLocalFileData(byte[], int, int)
      */
     @Override
-    public void parseFromLocalFileData(byte[] data, int offset, int length) {
+    public void parseFromLocalFileData(final byte[] data, final int offset, final int length) {
         byte[] tmp = new byte[length];
         System.arraycopy(data, offset, tmp, 0, length);
         setLocalFileDataData(tmp);
@@ -185,7 +185,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      * @see ZipExtraField#parseFromCentralDirectoryData(byte[], int, int)
      */
     @Override
-    public void parseFromCentralDirectoryData(byte[] data, int offset, int length) {
+    public void parseFromCentralDirectoryData(final byte[] data, final int offset, final int length) {
         byte[] tmp = new byte[length];
         System.arraycopy(data, offset, tmp, 0, length);
         setCentralDirectoryData(tmp);
@@ -226,7 +226,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
         /**
          * private constructor for enum style class.
          */
-        EncryptionAlgorithm(int code) {
+        EncryptionAlgorithm(final int code) {
             this.code = code;
         }
 
@@ -246,7 +246,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
          * @return the EncryptionAlgorithm for the given code or null
          * if the method is not known
          */
-        public static EncryptionAlgorithm getAlgorithmByCode(int code) {
+        public static EncryptionAlgorithm getAlgorithmByCode(final int code) {
             return codeToEnum.get(Integer.valueOf(code));
         }
     }
@@ -281,7 +281,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
         /**
          * private constructor for enum style class.
          */
-        HashAlgorithm(int code) {
+        HashAlgorithm(final int code) {
             this.code = code;
         }
 
@@ -301,7 +301,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
          * @return the HashAlgorithm for the given code or null
          * if the method is not known
          */
-        public static HashAlgorithm getAlgorithmByCode(int code) {
+        public static HashAlgorithm getAlgorithmByCode(final int code) {
             return codeToEnum.get(Integer.valueOf(code));
         }
     }

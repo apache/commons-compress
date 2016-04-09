@@ -95,7 +95,7 @@ public class ParallelScatterZipCreatorTest {
         assertNotNull(zipCreator.getStatisticsMessage());
     }
 
-    private void removeEntriesFoundInZipFile(File result, Map<String, byte[]> entries) throws IOException {
+    private void removeEntriesFoundInZipFile(final File result, final Map<String, byte[]> entries) throws IOException {
         ZipFile zf = new ZipFile(result);
         Enumeration<ZipArchiveEntry> entriesInPhysicalOrder = zf.getEntriesInPhysicalOrder();
         while (entriesInPhysicalOrder.hasMoreElements()){
@@ -108,7 +108,7 @@ public class ParallelScatterZipCreatorTest {
         zf.close();
     }
 
-    private Map<String, byte[]> writeEntries(ParallelScatterZipCreator zipCreator) {
+    private Map<String, byte[]> writeEntries(final ParallelScatterZipCreator zipCreator) {
         Map<String, byte[]> entries = new HashMap<String, byte[]>();
         for (int i = 0; i < NUMITEMS; i++){
             final byte[] payloadBytes = ("content" + i).getBytes();
@@ -123,7 +123,7 @@ public class ParallelScatterZipCreatorTest {
         return entries;
     }
 
-    private Map<String, byte[]> writeEntriesAsCallable(ParallelScatterZipCreator zipCreator) {
+    private Map<String, byte[]> writeEntriesAsCallable(final ParallelScatterZipCreator zipCreator) {
         Map<String, byte[]> entries = new HashMap<String, byte[]>();
         for (int i = 0; i < NUMITEMS; i++){
             final byte[] payloadBytes = ("content" + i).getBytes();
@@ -139,7 +139,7 @@ public class ParallelScatterZipCreatorTest {
         return entries;
     }
 
-    private ZipArchiveEntry createZipArchiveEntry(Map<String, byte[]> entries, int i, byte[] payloadBytes) {
+    private ZipArchiveEntry createZipArchiveEntry(final Map<String, byte[]> entries, final int i, final byte[] payloadBytes) {
         ZipArchiveEntry za = new ZipArchiveEntry( "file" + i);
         entries.put( za.getName(), payloadBytes);
         za.setMethod(ZipEntry.DEFLATED);

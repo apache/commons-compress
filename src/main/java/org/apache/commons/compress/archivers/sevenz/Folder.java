@@ -92,7 +92,7 @@ class Folder {
         return 0;
     }
 
-    long getUnpackSizeForCoder(Coder coder) {
+    long getUnpackSizeForCoder(final Coder coder) {
         if (coders != null) {
             for (int i = 0; i < coders.length; i++) {
                 if (coders[i] == coder) {

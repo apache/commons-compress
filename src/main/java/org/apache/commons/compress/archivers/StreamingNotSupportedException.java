@@ -34,7 +34,7 @@ public class StreamingNotSupportedException extends ArchiveException {
      * 
      * @param format the format that has been requested/detected.
      */
-    public StreamingNotSupportedException(String format) {
+    public StreamingNotSupportedException(final String format) {
         super("The " + format + " doesn't support streaming.");
         this.format = format;
     }

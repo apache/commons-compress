@@ -43,7 +43,7 @@ public class SevenZMethodConfiguration {
      * Doesn't configure any additional options.
      * @param method the method to use
      */
-    public SevenZMethodConfiguration(SevenZMethod method) {
+    public SevenZMethodConfiguration(final SevenZMethod method) {
         this(method, null);
     }
 
@@ -53,7 +53,7 @@ public class SevenZMethodConfiguration {
      * @param options the options to use
      * @throws IllegalArgumentException if the method doesn't understand the options specified.
      */
-    public SevenZMethodConfiguration(SevenZMethod method, Object options) {
+    public SevenZMethodConfiguration(final SevenZMethod method, final Object options) {
         this.method = method;
         this.options = options;
         if (options != null && !Coders.findByMethod(method).canAcceptOptions(options)) {

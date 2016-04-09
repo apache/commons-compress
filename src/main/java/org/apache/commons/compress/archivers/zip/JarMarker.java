@@ -102,7 +102,7 @@ public final class JarMarker implements ZipExtraField {
      * @throws ZipException on error
      */
     @Override
-    public void parseFromLocalFileData(byte[] data, int offset, int length)
+    public void parseFromLocalFileData(final byte[] data, final int offset, final int length)
         throws ZipException {
         if (length != 0) {
             throw new ZipException("JarMarker doesn't expect any data");
@@ -114,8 +114,8 @@ public final class JarMarker implements ZipExtraField {
      * same data in central directory and local file data.
      */
     @Override
-    public void parseFromCentralDirectoryData(byte[] buffer, int offset,
-                                              int length)
+    public void parseFromCentralDirectoryData(final byte[] buffer, final int offset,
+                                              final int length)
         throws ZipException {
         parseFromLocalFileData(buffer, offset, length);
     }

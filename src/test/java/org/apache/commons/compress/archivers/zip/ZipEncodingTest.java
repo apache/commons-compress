@@ -112,7 +112,7 @@ public class ZipEncodingTest {
         doSimpleEncodingTest("Cp1252",b);
     }
 
-    private static void assertEquals(byte[] expected, ByteBuffer actual) {
+    private static void assertEquals(final byte[] expected, final ByteBuffer actual) {
 
         Assert.assertEquals(expected.length, actual.limit());
 
@@ -123,7 +123,7 @@ public class ZipEncodingTest {
 
     }
 
-    private void doSimpleEncodingTest(String name, byte[] testBytes)
+    private void doSimpleEncodingTest(final String name, byte[] testBytes)
         throws IOException {
 
         ZipEncoding enc = ZipEncodingHelper.getZipEncoding(name);

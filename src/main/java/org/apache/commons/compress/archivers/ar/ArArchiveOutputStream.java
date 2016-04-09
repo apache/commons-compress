@@ -59,7 +59,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
      * @param longFileMode the mode to use
      * @since 1.3
      */
-    public void setLongFileMode(int longFileMode) {
+    public void setLongFileMode(final int longFileMode) {
         this.longFileMode = longFileMode;
     }
 
@@ -195,7 +195,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     }
 
     @Override
-    public void write(byte[] b, int off, int len) throws IOException {
+    public void write(final byte[] b, final int off, final int len) throws IOException {
         out.write(b, off, len);
         count(len);
         entryOffset += len;
@@ -214,7 +214,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     }
 
     @Override
-    public ArchiveEntry createArchiveEntry(File inputFile, String entryName)
+    public ArchiveEntry createArchiveEntry(final File inputFile, final String entryName)
             throws IOException {
         if(finished) {
             throw new IOException("Stream has already been finished");

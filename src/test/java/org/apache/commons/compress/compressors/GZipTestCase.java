@@ -237,7 +237,7 @@ public final class GZipTestCase extends AbstractTestCase {
         }
     }
 
-    private void testExtraFlags(int compressionLevel, int flag) throws Exception {
+    private void testExtraFlags(final int compressionLevel, final int flag) throws Exception {
         FileInputStream fis = new FileInputStream(getFile("test3.xml"));
         byte[] content;
         try {

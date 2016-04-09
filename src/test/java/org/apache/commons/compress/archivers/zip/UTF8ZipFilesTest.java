@@ -143,7 +143,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         }
     }
 
-    private void assertCanRead(ZipFile zf, String fileName) throws IOException {
+    private void assertCanRead(final ZipFile zf, final String fileName) throws IOException {
         ZipArchiveEntry entry = zf.getEntry(fileName);
         assertNotNull("Entry doesn't exist", entry);
         InputStream is = zf.getInputStream(entry);
@@ -239,8 +239,8 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         }
     }
 
-    private static void testFileRoundtrip(String encoding, boolean withEFS,
-                                          boolean withExplicitUnicodeExtra)
+    private static void testFileRoundtrip(final String encoding, final boolean withEFS,
+                                          final boolean withExplicitUnicodeExtra)
         throws IOException {
 
         File file = File.createTempFile(encoding + "-test", ".zip");
@@ -253,9 +253,9 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         }
     }
 
-    private static void createTestFile(File file, String encoding,
-                                       boolean withEFS,
-                                       boolean withExplicitUnicodeExtra)
+    private static void createTestFile(final File file, final String encoding,
+                                       final boolean withEFS,
+                                       final boolean withExplicitUnicodeExtra)
         throws UnsupportedEncodingException, IOException {
 
         ZipEncoding zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
@@ -333,7 +333,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         }
     }
 
-    private static void testFile(File file, String encoding)
+    private static void testFile(final File file, final String encoding)
         throws IOException {
         ZipFile zf = null;
         try {
@@ -358,14 +358,14 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         }
     }
 
-    private static UnicodePathExtraField findUniCodePath(ZipArchiveEntry ze) {
+    private static UnicodePathExtraField findUniCodePath(final ZipArchiveEntry ze) {
         return (UnicodePathExtraField)
             ze.getExtraField(UnicodePathExtraField.UPATH_ID);
     }
 
-    private static void assertUnicodeName(ZipArchiveEntry ze,
-                                          String expectedName,
-                                          String encoding)
+    private static void assertUnicodeName(final ZipArchiveEntry ze,
+                                          final String expectedName,
+                                          final String encoding)
         throws IOException {
         if (!expectedName.equals(ze.getName())) {
             UnicodePathExtraField ucpf = findUniCodePath(ze);
@@ -394,7 +394,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
 
     }
 
-    private static void assertRawNameOfAcsiiTxt(ZipArchiveEntry ze) {
+    private static void assertRawNameOfAcsiiTxt(final ZipArchiveEntry ze) {
         byte[] b = ze.getRawName();
         assertNotNull(b);
         final int len = ASCII_TXT.length();

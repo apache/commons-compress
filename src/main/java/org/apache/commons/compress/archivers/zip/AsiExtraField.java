@@ -166,7 +166,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      * Set the user id.
      * @param uid the user id
      */
-    public void setUserId(int uid) {
+    public void setUserId(final int uid) {
         this.uid = uid;
     }
 
@@ -182,7 +182,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      * Set the group id.
      * @param gid the group id
      */
-    public void setGroupId(int gid) {
+    public void setGroupId(final int gid) {
         this.gid = gid;
     }
 
@@ -200,7 +200,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      * @param name Name of the file this entry links to, empty String
      *             if it is not a symbolic link.
      */
-    public void setLinkedFile(String name) {
+    public void setLinkedFile(final String name) {
         link = name;
         mode = getMode(mode);
     }
@@ -227,7 +227,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      * File mode of this file.
      * @param mode the file mode
      */
-    public void setMode(int mode) {
+    public void setMode(final int mode) {
         this.mode = getMode(mode);
     }
 
@@ -243,7 +243,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      * Indicate whether this entry is a directory.
      * @param dirFlag if true, this entry is a directory
      */
-    public void setDirectory(boolean dirFlag) {
+    public void setDirectory(final boolean dirFlag) {
         this.dirFlag = dirFlag;
         mode = getMode(mode);
     }
@@ -264,7 +264,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      * @throws ZipException on error
      */
     @Override
-    public void parseFromLocalFileData(byte[] data, int offset, int length)
+    public void parseFromLocalFileData(final byte[] data, final int offset, final int length)
         throws ZipException {
 
         long givenChecksum = ZipLong.getValue(data, offset);
@@ -302,8 +302,8 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      * same data in central directory and local file data.
      */
     @Override
-    public void parseFromCentralDirectoryData(byte[] buffer, int offset,
-                                              int length)
+    public void parseFromCentralDirectoryData(final byte[] buffer, final int offset,
+                                              final int length)
         throws ZipException {
         parseFromLocalFileData(buffer, offset, length);
     }
@@ -313,7 +313,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      * @param mode the mode
      * @return the type with the mode
      */
-    protected int getMode(int mode) {
+    protected int getMode(final int mode) {
         int type = FILE_FLAG;
         if (isLink()) {
             type = LINK_FLAG;

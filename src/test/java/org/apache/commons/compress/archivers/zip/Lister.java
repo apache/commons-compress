@@ -46,7 +46,7 @@ public final class Lister {
         String dir;
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(final String[] args) throws IOException {
         CommandLine cl = parse(args);
         File f = new File(cl.archive);
         if (!f.isFile()) {
@@ -94,12 +94,12 @@ public final class Lister {
         }
     }
 
-    private static void list(ZipArchiveEntry entry) {
+    private static void list(final ZipArchiveEntry entry) {
         System.out.println(entry.getName());
     }
 
-    private static void extract(String dir, ZipArchiveEntry entry,
-                                InputStream is) throws IOException {
+    private static void extract(final String dir, final ZipArchiveEntry entry,
+                                final InputStream is) throws IOException {
         File f = new File(dir, entry.getName());
         if (!f.getParentFile().exists()) {
             f.getParentFile().mkdirs();
@@ -115,7 +115,7 @@ public final class Lister {
         }
     }
 
-    private static CommandLine parse(String[] args) {
+    private static CommandLine parse(final String[] args) {
         CommandLine cl = new CommandLine();
         boolean error = false;
         for (int i = 0; i < args.length; i++) {

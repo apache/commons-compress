@@ -34,7 +34,7 @@ import java.io.InputStream;
 public final class Lister {
     private static final ArchiveStreamFactory factory = new ArchiveStreamFactory();
 
-    public static void main(String[] args) throws Exception {
+    public static void main(final String[] args) throws Exception {
         if (args.length == 0) {
             usage();
             return;

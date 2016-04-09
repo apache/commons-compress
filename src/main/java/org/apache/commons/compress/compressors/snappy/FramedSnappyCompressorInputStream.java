@@ -75,7 +75,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
      * @param in  the InputStream from which to read the compressed data
      * @throws IOException if reading fails
      */
-    public FramedSnappyCompressorInputStream(InputStream in) throws IOException {
+    public FramedSnappyCompressorInputStream(final InputStream in) throws IOException {
         this.in = new PushbackInputStream(in, 1);
         readStreamIdentifier();
     }
@@ -98,7 +98,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
 
     /** {@inheritDoc} */
     @Override
-    public int read(byte[] b, int off, int len) throws IOException {
+    public int read(final byte[] b, final int off, final int len) throws IOException {
         int read = readOnce(b, off, len);
         if (read == -1) {
             readNextBlock();
@@ -129,7 +129,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
      * read from the current chunk (which may be -1 if the end of the
      * chunk is reached).
      */
-    private int readOnce(byte[] b, int off, int len) throws IOException {
+    private int readOnce(final byte[] b, final int off, final int len) throws IOException {
         int read = -1;
         if (inUncompressedChunk) {
             int amount = Math.min(uncompressedBytesRemaining, len);
@@ -273,7 +273,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
      * @param length    the number of bytes to check
      * @return          true if this is a .sz stream, false otherwise
      */
-    public static boolean matches(byte[] signature, int length) {
+    public static boolean matches(final byte[] signature, final int length) {
 
         if (length < SZ_SIGNATURE.length) {
             return false;

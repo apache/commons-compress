@@ -81,7 +81,7 @@ public class ArArchiveEntry implements ArchiveEntry {
      * @param name name of the entry
      * @param length length of the entry in bytes
      */
-    public ArArchiveEntry(String name, long length) {
+    public ArArchiveEntry(final String name, final long length) {
         this(name, length, 0, 0, DEFAULT_MODE,
              System.currentTimeMillis() / 1000);
     }
@@ -96,8 +96,8 @@ public class ArArchiveEntry implements ArchiveEntry {
      * @param mode file mode
      * @param lastModified last modified time in seconds since the epoch
      */
-    public ArArchiveEntry(String name, long length, int userId, int groupId,
-                          int mode, long lastModified) {
+    public ArArchiveEntry(final String name, final long length, final int userId, final int groupId,
+                          final int mode, final long lastModified) {
         this.name = name;
         this.length = length;
         this.userId = userId;
@@ -111,7 +111,7 @@ public class ArArchiveEntry implements ArchiveEntry {
      * @param inputFile the file to create an entry from
      * @param entryName the name of the entry
      */
-    public ArArchiveEntry(File inputFile, String entryName) {
+    public ArArchiveEntry(final File inputFile, final String entryName) {
         // TODO sort out mode
         this(entryName, inputFile.isFile() ? inputFile.length() : 0,
              0, 0, DEFAULT_MODE, inputFile.lastModified() / 1000);
@@ -170,7 +170,7 @@ public class ArArchiveEntry implements ArchiveEntry {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }

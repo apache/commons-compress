@@ -70,7 +70,7 @@ public final class IOUtils {
      * @throws IOException
      *             if an error occurs
      */
-    public static long copy(final InputStream input, final OutputStream output, int buffersize) throws IOException {
+    public static long copy(final InputStream input, final OutputStream output, final int buffersize) throws IOException {
         final byte[] buffer = new byte[buffersize];
         int n = 0;
         long count=0;
@@ -97,7 +97,7 @@ public final class IOUtils {
      * @return the number of bytes actually skipped
      * @throws IOException on error
      */
-    public static long skip(InputStream input, long numToSkip) throws IOException {
+    public static long skip(final InputStream input, long numToSkip) throws IOException {
         long available = numToSkip;
         while (numToSkip > 0) {
             long skipped = input.skip(numToSkip);
@@ -130,7 +130,7 @@ public final class IOUtils {
      * @return the number of bytes actually read
      * @throws IOException on error
      */
-    public static int readFully(InputStream input, byte[] b) throws IOException {
+    public static int readFully(final InputStream input, final byte[] b) throws IOException {
         return readFully(input, b, 0, b.length);
     }
 
@@ -150,7 +150,7 @@ public final class IOUtils {
      * @throws IOException
      *             if an I/O error has occurred
      */
-    public static int readFully(InputStream input, byte[] b, int offset, int len)
+    public static int readFully(final InputStream input, final byte[] b, final int offset, final int len)
         throws IOException {
         if (len < 0 || offset < 0 || len + offset > b.length) {
             throw new IndexOutOfBoundsException();
@@ -195,7 +195,7 @@ public final class IOUtils {
      * @param c Closeable to close, can be null
      * @since 1.7
      */
-    public static void closeQuietly(Closeable c) {
+    public static void closeQuietly(final Closeable c) {
         if (c != null) {
             try {
                 c.close();

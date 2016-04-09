@@ -35,7 +35,7 @@ class Dirent {
      * @param type
      * @param name
      */
-    Dirent(int ino, int parentIno, int type, String name) {
+    Dirent(final int ino, final int parentIno, final int type, final String name) {
         this.ino = ino;
         this.parentIno = parentIno;
         this.type = type;

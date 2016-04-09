@@ -170,13 +170,13 @@ public final class FramedSnappyCompressorInputStreamTest
         testChecksumUnmasking(0xffffc757l);
     }
 
-    private void testChecksumUnmasking(long x) {
+    private void testChecksumUnmasking(final long x) {
         assertEquals(Long.toHexString(x),
                      Long.toHexString(FramedSnappyCompressorInputStream
                                       .unmask(mask(x))));
     }
 
-    private long mask(long x) {
+    private long mask(final long x) {
         return (((x >>> 15) | (x << 17))
                 + FramedSnappyCompressorInputStream.MASK_OFFSET)
              & 0xffffFFFFL;

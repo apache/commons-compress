@@ -34,7 +34,7 @@ public class FileBasedScatterGatherBackingStore implements ScatterGatherBackingS
     private final FileOutputStream os;
     private boolean closed;
 
-    public FileBasedScatterGatherBackingStore(File target) throws FileNotFoundException {
+    public FileBasedScatterGatherBackingStore(final File target) throws FileNotFoundException {
         this.target = target;
         os = new FileOutputStream(target);
     }
@@ -54,7 +54,7 @@ public class FileBasedScatterGatherBackingStore implements ScatterGatherBackingS
     }
 
     @Override
-    public void writeOut(byte[] data, int offset, int length) throws IOException {
+    public void writeOut(final byte[] data, final int offset, final int length) throws IOException {
         os.write(data, offset, length);
     }
 

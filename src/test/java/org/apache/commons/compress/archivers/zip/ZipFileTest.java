@@ -311,9 +311,9 @@ public class ZipFileTest {
         zf = new ZipFile(archive);
     }
 
-    private static void assertEntryName(ArrayList<ZipArchiveEntry> entries,
-                                        int index,
-                                        String expectedName) {
+    private static void assertEntryName(final ArrayList<ZipArchiveEntry> entries,
+                                        final int index,
+                                        final String expectedName) {
         ZipArchiveEntry ze = entries.get(index);
         assertEquals("src/main/java/org/apache/commons/compress/archivers/zip/"
                      + expectedName + ".java",

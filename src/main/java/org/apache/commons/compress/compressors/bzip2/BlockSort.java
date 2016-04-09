@@ -264,10 +264,10 @@ class BlockSort {
      * @param lo lower boundary of the fmap-interval to be sorted 
      * @param hi upper boundary of the fmap-interval to be sorted 
      */
-    private void fallbackSimpleSort(int[] fmap, 
-                                    int[] eclass, 
-                                    int lo, 
-                                    int hi) {
+    private void fallbackSimpleSort(final int[] fmap, 
+                                    final int[] eclass, 
+                                    final int lo, 
+                                    final int hi) {
         if (lo == hi) {
             return;
         }
@@ -300,7 +300,7 @@ class BlockSort {
     /**
      * swaps two values in fmap
      */
-    private void fswap(int[] fmap, int zz1, int zz2) {
+    private void fswap(final int[] fmap, final int zz1, final int zz2) {
         int zztmp = fmap[zz1];
         fmap[zz1] = fmap[zz2];
         fmap[zz2] = zztmp;
@@ -309,23 +309,23 @@ class BlockSort {
     /**
      * swaps two intervals starting at yyp1 and yyp2 of length yyn inside fmap.
      */
-    private void fvswap(int[] fmap, int yyp1, int yyp2, int yyn) {
+    private void fvswap(final int[] fmap, int yyp1, int yyp2, int yyn) {
         while (yyn > 0) {
             fswap(fmap, yyp1, yyp2);
             yyp1++; yyp2++; yyn--;
         }
     }
 
-    private int fmin(int a, int b) {
+    private int fmin(final int a, final int b) {
         return a < b ? a : b;
     }
 
-    private void fpush(int sp, int lz, int hz) {
+    private void fpush(final int sp, final int lz, final int hz) {
         stack_ll[sp] = lz;
         stack_hh[sp] = hz;
     }
 
-    private int[] fpop(int sp) {
+    private int[] fpop(final int sp) {
         return new int[] { stack_ll[sp], stack_hh[sp] };
     }
 
@@ -339,10 +339,10 @@ class BlockSort {
      * @param loSt lower boundary of the fmap-interval to be sorted 
      * @param hiSt upper boundary of the fmap-interval to be sorted 
      */
-    private void fallbackQSort3(int[] fmap, 
-                                int[] eclass, 
-                                int loSt, 
-                                int hiSt) {
+    private void fallbackQSort3(final int[] fmap, 
+                                final int[] eclass, 
+                                final int loSt, 
+                                final int hiSt) {
         int lo, unLo, ltLo, hi, unHi, gtHi, n;
 
         long r = 0;
@@ -467,7 +467,7 @@ class BlockSort {
      * @param nblock size of the block
      * @param off offset of first byte to sort in block
      */
-    final void fallbackSort(int[] fmap, byte[] block, int nblock) {
+    final void fallbackSort(final int[] fmap, final byte[] block, final int nblock) {
         final int[] ftab = new int[257];
         int H, i, j, k, l, r, cc, cc1;
         int nNotDone;
@@ -780,7 +780,7 @@ class BlockSort {
    Sedgewick and Jon L. Bentley.
 --*/
 
-    private static void vswap(int[] fmap, int p1, int p2, int n) {
+    private static void vswap(final int[] fmap, int p1, int p2, int n) {
         n += p1;
         while (p1 < n) {
             int t = fmap[p1];
@@ -789,7 +789,7 @@ class BlockSort {
         }
     }
 
-    private static byte med3(byte a, byte b, byte c) {
+    private static byte med3(final byte a, final byte b, final byte c) {
         return (a < b) ? (b < c ? b : a < c ? c : a) : (b > c ? b : a > c ? c
                                                         : a);
     }

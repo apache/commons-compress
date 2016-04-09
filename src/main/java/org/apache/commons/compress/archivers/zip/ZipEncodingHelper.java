@@ -49,7 +49,7 @@ public abstract class ZipEncodingHelper {
          * 
          * @see Simple8BitZipEncoding#Simple8BitZipEncoding(char[])
          */
-        SimpleEncodingHolder(char [] highChars) {
+        SimpleEncodingHolder(final char [] highChars) {
             this.highChars = highChars;
         }
 
@@ -149,7 +149,7 @@ public abstract class ZipEncodingHelper {
      *         of <code>r</code>.
      *
      */
-    static ByteBuffer growBuffer(ByteBuffer b, int newCapacity) {
+    static ByteBuffer growBuffer(final ByteBuffer b, final int newCapacity) {
         b.limit(b.position());
         b.rewind();
 
@@ -178,7 +178,7 @@ public abstract class ZipEncodingHelper {
      * @param bb The byte buffer to write to.
      * @param c The character to write.
      */
-    static void appendSurrogate(ByteBuffer bb, char c) {
+    static void appendSurrogate(final ByteBuffer bb, final char c) {
 
         bb.put((byte) '%');
         bb.put((byte) 'U');
@@ -207,7 +207,7 @@ public abstract class ZipEncodingHelper {
      *             the platform's default encoding.
      * @return A zip encoding for the given encoding name.
      */
-    public static ZipEncoding getZipEncoding(String name) {
+    public static ZipEncoding getZipEncoding(final String name) {
  
         // fallback encoding is good enough for UTF-8.
         if (isUTF8(name)) {

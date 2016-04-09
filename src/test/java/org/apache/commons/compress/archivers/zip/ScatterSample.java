@@ -31,7 +31,7 @@ public class ScatterSample {
     public ScatterSample() throws IOException {
     }
 
-    public void addEntry(ZipArchiveEntry zipArchiveEntry, InputStreamSupplier streamSupplier) throws IOException {
+    public void addEntry(final ZipArchiveEntry zipArchiveEntry, final InputStreamSupplier streamSupplier) throws IOException {
         if (zipArchiveEntry.isDirectory() && !zipArchiveEntry.isUnixSymlink()) {
             dirs.addArchiveEntry(ZipArchiveEntryRequest.createZipArchiveEntryRequest(zipArchiveEntry, streamSupplier));
         } else {
@@ -39,7 +39,7 @@ public class ScatterSample {
         }
     }
 
-    public void writeTo(ZipArchiveOutputStream zipArchiveOutputStream)
+    public void writeTo(final ZipArchiveOutputStream zipArchiveOutputStream)
             throws IOException, ExecutionException, InterruptedException {
         dirs.writeTo(zipArchiveOutputStream);
         dirs.close();

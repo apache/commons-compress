@@ -47,7 +47,7 @@ class NioZipEncoding implements ZipEncoding {
      * 
      * @param charset The NIO charset to wrap.
      */
-    public NioZipEncoding(Charset charset) {
+    public NioZipEncoding(final Charset charset) {
         this.charset = charset;
     }
 
@@ -56,7 +56,7 @@ class NioZipEncoding implements ZipEncoding {
      * org.apache.commons.compress.archivers.zip.ZipEncoding#canEncode(java.lang.String)
      */
     @Override
-    public boolean canEncode(String name) {
+    public boolean canEncode(final String name) {
         CharsetEncoder enc = this.charset.newEncoder();
         enc.onMalformedInput(CodingErrorAction.REPORT);
         enc.onUnmappableCharacter(CodingErrorAction.REPORT);
@@ -69,7 +69,7 @@ class NioZipEncoding implements ZipEncoding {
      * org.apache.commons.compress.archivers.zip.ZipEncoding#encode(java.lang.String)
      */
     @Override
-    public ByteBuffer encode(String name) {
+    public ByteBuffer encode(final String name) {
         CharsetEncoder enc = this.charset.newEncoder();
 
         enc.onMalformedInput(CodingErrorAction.REPORT);
@@ -117,7 +117,7 @@ class NioZipEncoding implements ZipEncoding {
      * org.apache.commons.compress.archivers.zip.ZipEncoding#decode(byte[])
      */
     @Override
-    public String decode(byte[] data) throws IOException {
+    public String decode(final byte[] data) throws IOException {
         return this.charset.newDecoder()
             .onMalformedInput(CodingErrorAction.REPORT)
             .onUnmappableCharacter(CodingErrorAction.REPORT)

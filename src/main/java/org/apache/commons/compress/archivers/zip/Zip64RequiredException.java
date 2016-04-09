@@ -33,7 +33,7 @@ public class Zip64RequiredException extends ZipException {
     /**
      * Helper to format "entry too big" messages.
      */
-    static String getEntryTooBigMessage(ZipArchiveEntry ze) {
+    static String getEntryTooBigMessage(final ZipArchiveEntry ze) {
         return ze.getName() + "'s size exceeds the limit of 4GByte.";
     }
 
@@ -43,7 +43,7 @@ public class Zip64RequiredException extends ZipException {
     static final String TOO_MANY_ENTRIES_MESSAGE =
         "archive contains more than 65535 entries.";
 
-    public Zip64RequiredException(String reason) {
+    public Zip64RequiredException(final String reason) {
         super(reason);
     }
 }

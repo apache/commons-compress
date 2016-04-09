@@ -186,7 +186,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      *            the platform's default.
      * @since 1.6
      */
-    public CpioArchiveOutputStream(final OutputStream out, String encoding) {
+    public CpioArchiveOutputStream(final OutputStream out, final String encoding) {
         this(out, FORMAT_NEW, BLOCK_SIZE, encoding);
     }
 
@@ -217,7 +217,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      * @throws ClassCastException if entry is not an instance of CpioArchiveEntry
      */
     @Override
-    public void putArchiveEntry(ArchiveEntry entry) throws IOException {
+    public void putArchiveEntry(final ArchiveEntry entry) throws IOException {
         if(finished) {
             throw new IOException("Stream has already been finished");
         }
@@ -491,7 +491,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         }
     }
 
-    private void pad(int count) throws IOException{
+    private void pad(final int count) throws IOException{
         if (count > 0){
             byte buff[] = new byte[count];
             out.write(buff);
@@ -551,7 +551,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      * @see org.apache.commons.compress.archivers.ArchiveOutputStream#createArchiveEntry(java.io.File, java.lang.String)
      */
     @Override
-    public ArchiveEntry createArchiveEntry(File inputFile, String entryName)
+    public ArchiveEntry createArchiveEntry(final File inputFile, final String entryName)
             throws IOException {
         if(finished) {
             throw new IOException("Stream has already been finished");

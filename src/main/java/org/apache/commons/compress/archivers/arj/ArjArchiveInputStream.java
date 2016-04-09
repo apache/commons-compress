@@ -119,7 +119,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         return new String(buffer.toByteArray());
     }
     
-    private void readFully(final DataInputStream dataIn, byte[] b)
+    private void readFully(final DataInputStream dataIn, final byte[] b)
         throws IOException {
         dataIn.readFully(b);
         count(b.length);
@@ -266,8 +266,8 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         return localFileHeader;
     }
     
-    private void readExtraData(int firstHeaderSize, DataInputStream firstHeader,
-                               LocalFileHeader localFileHeader) throws IOException {
+    private void readExtraData(final int firstHeaderSize, final DataInputStream firstHeader,
+                               final LocalFileHeader localFileHeader) throws IOException {
         if (firstHeaderSize >= 33) {
             localFileHeader.extendedFilePosition = read32(firstHeader);
             if (firstHeaderSize >= 45) {
@@ -335,7 +335,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
     }
 
     @Override
-    public boolean canReadEntryData(ArchiveEntry ae) {
+    public boolean canReadEntryData(final ArchiveEntry ae) {
         return ae instanceof ArjArchiveEntry
             && ((ArjArchiveEntry) ae).getMethod() == LocalFileHeader.Methods.STORED;
     }

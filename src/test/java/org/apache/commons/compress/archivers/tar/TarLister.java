@@ -33,7 +33,7 @@ import java.io.InputStream;
  */
 public final class TarLister {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(final String[] args) throws Exception {
         if (args.length == 0) {
             usage();
             return;
@@ -63,7 +63,7 @@ public final class TarLister {
         System.out.println("Parameters: archive-name [encoding]");
     }
 
-    private static void log(TarArchiveEntry ae) {
+    private static void log(final TarArchiveEntry ae) {
         StringBuilder sb = new StringBuilder(Integer.toOctalString(ae.getMode()))
             .append(" ");
         String name = ae.getUserName();

@@ -60,14 +60,14 @@ public abstract class AbstractTestCase {
         archive = null;
     }
 
-    public static File mkdir(String name) throws IOException {
+    public static File mkdir(final String name) throws IOException {
         File f = File.createTempFile(name, "");
         f.delete();
         f.mkdir();
         return f;
     }
 
-    public static File getFile(String path) throws IOException {
+    public static File getFile(final String path) throws IOException {
         URL url = AbstractTestCase.class.getClassLoader().getResource(path);
         if (url == null) {
             throw new FileNotFoundException("couldn't find " + path);
@@ -95,7 +95,7 @@ public abstract class AbstractTestCase {
         }
     }
 
-    public static void rmdir(File f) {
+    public static void rmdir(final File f) {
         String[] s = f.list();
         if (s != null) {
             for (String element : s) {
@@ -126,7 +126,7 @@ public abstract class AbstractTestCase {
      * @return whether deletion was successful
      * @since Stolen from FileUtils in Ant 1.8.0
      */
-    public static boolean tryHardToDelete(File f) {
+    public static boolean tryHardToDelete(final File f) {
         if (f != null && f.exists() && !f.delete()) {
             if (ON_WINDOWS) {
                 System.gc();
@@ -165,7 +165,7 @@ public abstract class AbstractTestCase {
      * @throws Exception
      *             in case something goes wrong
      */
-    protected File createArchive(String archivename) throws Exception {
+    protected File createArchive(final String archivename) throws Exception {
         ArchiveOutputStream out = null;
         OutputStream stream = null;
         try {
@@ -212,7 +212,7 @@ public abstract class AbstractTestCase {
      * @throws IOException
      * @throws FileNotFoundException
      */
-    private void addArchiveEntry(ArchiveOutputStream out, String filename, final File infile)
+    private void addArchiveEntry(final ArchiveOutputStream out, final String filename, final File infile)
             throws IOException, FileNotFoundException {
         ArchiveEntry entry = out.createArchiveEntry(infile, filename);
         out.putArchiveEntry(entry);
@@ -227,7 +227,7 @@ public abstract class AbstractTestCase {
      * @return the archive File
      * @throws Exception
      */
-    protected File createEmptyArchive(String archivename) throws Exception {
+    protected File createEmptyArchive(final String archivename) throws Exception {
         ArchiveOutputStream out = null;
         OutputStream stream = null;
         archiveList = new ArrayList<String>();
@@ -254,7 +254,7 @@ public abstract class AbstractTestCase {
      * @return the archive File
      * @throws Exception
      */
-    protected File createSingleEntryArchive(String archivename) throws Exception {
+    protected File createSingleEntryArchive(final String archivename) throws Exception {
         ArchiveOutputStream out = null;
         OutputStream stream = null;
         archiveList = new ArrayList<String>();
@@ -285,7 +285,7 @@ public abstract class AbstractTestCase {
      *            a list with expected string filenames
      * @throws Exception
      */
-    protected void checkArchiveContent(File archive, List<String> expected)
+    protected void checkArchiveContent(final File archive, final List<String> expected)
             throws Exception {
         final InputStream is = new FileInputStream(archive);
         try {
@@ -304,7 +304,7 @@ public abstract class AbstractTestCase {
      * @param expected list of expected entries or {@code null} if no check of names desired
      * @throws Exception
      */
-    protected void checkArchiveContent(ArchiveInputStream in, List<String> expected)
+    protected void checkArchiveContent(final ArchiveInputStream in, final List<String> expected)
             throws Exception {
         checkArchiveContent(in, expected, true);
     }
@@ -318,7 +318,7 @@ public abstract class AbstractTestCase {
      * @return returns the created result file if cleanUp = false, or null otherwise
      * @throws Exception
      */
-    protected File checkArchiveContent(ArchiveInputStream in, List<String> expected, boolean cleanUp)
+    protected File checkArchiveContent(final ArchiveInputStream in, final List<String> expected, final boolean cleanUp)
             throws Exception {
         File result = mkdir("dir-result");
         result.deleteOnExit();
@@ -374,7 +374,7 @@ public abstract class AbstractTestCase {
      * @param entry
      * @return returns the entry name
      */
-    protected String getExpectedString(ArchiveEntry entry) {
+    protected String getExpectedString(final ArchiveEntry entry) {
         return entry.getName();
     }
 
@@ -402,7 +402,7 @@ public abstract class AbstractTestCase {
         return tmpDir;
     }
 
-    protected void closeQuietly(Closeable closeable){
+    protected void closeQuietly(final Closeable closeable){
         if (closeable != null) {
             try {
                 closeable.close();

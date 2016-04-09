@@ -67,11 +67,11 @@ public class ArchiveUtilsTest extends AbstractTestCase {
         asciiToByteAndBackFail("\u8025");
     }
 
-    private void asciiToByteAndBackOK(String inputString) {
+    private void asciiToByteAndBackOK(final String inputString) {
         assertEquals(inputString, ArchiveUtils.toAsciiString(ArchiveUtils.toAsciiBytes(inputString)));
     }
 
-    private void asciiToByteAndBackFail(String inputString) {
+    private void asciiToByteAndBackFail(final String inputString) {
         assertFalse(inputString.equals(ArchiveUtils.toAsciiString(ArchiveUtils.toAsciiBytes(inputString))));
     }
 }

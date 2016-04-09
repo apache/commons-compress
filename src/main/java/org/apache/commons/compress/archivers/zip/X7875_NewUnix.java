@@ -111,7 +111,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      *
      * @param l UID value to set on this extra field.
      */
-    public void setUID(long l) {
+    public void setUID(final long l) {
         this.uid = ZipUtil.longToBig(l);
     }
 
@@ -120,7 +120,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      *
      * @param l GID value to set on this extra field.
      */
-    public void setGID(long l) {
+    public void setGID(final long l) {
         this.gid = ZipUtil.longToBig(l);
     }
 
@@ -209,7 +209,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      */
     @Override
     public void parseFromLocalFileData(
-            byte[] data, int offset, int length
+            final byte[] data, int offset, final int length
     ) throws ZipException {
         reset();
         this.version = signedByteToUnsignedInt(data[offset++]);
@@ -231,7 +231,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      */
     @Override
     public void parseFromCentralDirectoryData(
-            byte[] buffer, int offset, int length
+            final byte[] buffer, final int offset, final int length
     ) throws ZipException {
     }
 
@@ -263,7 +263,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (o instanceof X7875_NewUnix) {
             X7875_NewUnix xf = (X7875_NewUnix) o;
             // We assume uid and gid can never be null.
@@ -292,7 +292,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      * @param array byte[] array to trim & pad.
      * @return trimmed & padded byte[] array.
      */
-    static byte[] trimLeadingZeroesForceMinLength(byte[] array) {
+    static byte[] trimLeadingZeroesForceMinLength(final byte[] array) {
         if (array == null) {
             return array;
         }

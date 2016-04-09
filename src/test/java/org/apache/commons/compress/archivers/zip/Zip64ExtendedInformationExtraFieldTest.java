@@ -212,7 +212,7 @@ public class Zip64ExtendedInformationExtraFieldTest {
         assertNull(f.getDiskStartNumber());
     }
 
-    private static void checkSizes(byte[] b) {
+    private static void checkSizes(final byte[] b) {
         assertEquals(0x78, b[0]);
         assertEquals(0x56, b[1]);
         assertEquals(0x34, b[2]);
@@ -231,7 +231,7 @@ public class Zip64ExtendedInformationExtraFieldTest {
         assertEquals(0x00, b[15]);
     }
 
-    private static void checkOffset(byte[] b, int off) {
+    private static void checkOffset(final byte[] b, final int off) {
         assertEquals(0x78, b[0 + off]);
         assertEquals(0x56, b[1 + off]);
         assertEquals(0x34, b[2 + off]);
@@ -242,7 +242,7 @@ public class Zip64ExtendedInformationExtraFieldTest {
         assertEquals((byte) 0xAB, b[7 + off]);
     }
 
-    private static void checkDisk(byte[] b, int off) {
+    private static void checkDisk(final byte[] b, final int off) {
         assertEquals(0x12, b[0 + off]);
         assertEquals(0x00, b[1 + off]);
         assertEquals(0x00, b[2 + off]);

@@ -71,7 +71,7 @@ public class ParallelScatterZipCreator {
         }
     }
 
-    private ScatterZipOutputStream createDeferred(ScatterGatherBackingStoreSupplier scatterGatherBackingStoreSupplier)
+    private ScatterZipOutputStream createDeferred(final ScatterGatherBackingStoreSupplier scatterGatherBackingStoreSupplier)
             throws IOException {
         ScatterGatherBackingStore bs = scatterGatherBackingStoreSupplier.get();
         StreamCompressor sc = StreamCompressor.create(Deflater.DEFAULT_COMPRESSION, bs);
@@ -105,7 +105,7 @@ public class ParallelScatterZipCreator {
      * @param executorService The executorService to use for parallel scheduling. For technical reasons,
      *                        this will be shut down by this class.
      */
-    public ParallelScatterZipCreator(ExecutorService executorService) {
+    public ParallelScatterZipCreator(final ExecutorService executorService) {
         this(executorService, new DefaultBackingStoreSupplier());
     }
 
@@ -116,8 +116,8 @@ public class ParallelScatterZipCreator {
      *                        by this class.
      * @param backingStoreSupplier The supplier of backing store which shall be used
      */
-    public ParallelScatterZipCreator(ExecutorService executorService,
-                                     ScatterGatherBackingStoreSupplier backingStoreSupplier) {
+    public ParallelScatterZipCreator(final ExecutorService executorService,
+                                     final ScatterGatherBackingStoreSupplier backingStoreSupplier) {
         this.backingStoreSupplier = backingStoreSupplier;
         es = executorService;
     }
@@ -143,7 +143,7 @@ public class ParallelScatterZipCreator {
      *
      * @param callable The callable to run, created by {@link #createCallable createCallable}, possibly wrapped by caller.
      */
-    public final void submit(Callable<Object> callable) {
+    public final void submit(final Callable<Object> callable) {
         futures.add(es.submit(callable));
     }
 
@@ -165,7 +165,7 @@ public class ParallelScatterZipCreator {
      * will be propagated through the callable.
      */
 
-    public final Callable<Object> createCallable(ZipArchiveEntry zipArchiveEntry, InputStreamSupplier source) {
+    public final Callable<Object> createCallable(final ZipArchiveEntry zipArchiveEntry, final InputStreamSupplier source) {
         final int method = zipArchiveEntry.getMethod();
         if (method == ZipMethod.UNKNOWN_CODE) {
             throw new IllegalArgumentException("Method must be set on zipArchiveEntry: " + zipArchiveEntry);
@@ -193,7 +193,7 @@ public class ParallelScatterZipCreator {
      * @throws InterruptedException If we get interrupted
      * @throws ExecutionException   If something happens in the parallel execution
      */
-    public void writeTo(ZipArchiveOutputStream targetStream)
+    public void writeTo(final ZipArchiveOutputStream targetStream)
             throws IOException, InterruptedException, ExecutionException {
 
         // Make sure we catch any exceptions from parallel phase

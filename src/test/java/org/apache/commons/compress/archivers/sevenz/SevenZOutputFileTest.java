@@ -369,7 +369,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         }
     }
 
-    private void testCompress252(int numberOfFiles, int numberOfNonEmptyFiles)
+    private void testCompress252(final int numberOfFiles, final int numberOfNonEmptyFiles)
         throws Exception {
         int nonEmptyModulus = numberOfNonEmptyFiles != 0
             ? numberOfFiles / numberOfNonEmptyFiles
@@ -389,7 +389,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         verifyCompress252(output, numberOfFiles, numberOfNonEmptyFiles);
     }
 
-    private void verifyCompress252(File output, int numberOfFiles, int numberOfNonEmptyFiles)
+    private void verifyCompress252(final File output, final int numberOfFiles, final int numberOfNonEmptyFiles)
         throws Exception {
         SevenZFile archive = new SevenZFile(output);
         int filesFound = 0;
@@ -410,25 +410,25 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         assertEquals(numberOfNonEmptyFiles, nonEmptyFilesFound);
     }
 
-    private void addDir(SevenZOutputFile archive) throws Exception {
+    private void addDir(final SevenZOutputFile archive) throws Exception {
         SevenZArchiveEntry entry = archive.createArchiveEntry(dir, "foo/");
         archive.putArchiveEntry(entry);
         archive.closeArchiveEntry();
     }
 
-    private void verifyDir(SevenZFile archive) throws Exception {
+    private void verifyDir(final SevenZFile archive) throws Exception {
         SevenZArchiveEntry entry = archive.getNextEntry();
         assertNotNull(entry);
         assertEquals("foo/", entry.getName());
         assertTrue(entry.isDirectory());
     }
 
-    private void addFile(SevenZOutputFile archive, int index, boolean nonEmpty)
+    private void addFile(final SevenZOutputFile archive, final int index, final boolean nonEmpty)
         throws Exception {
         addFile(archive, index, nonEmpty, null);
     }
 
-    private void addFile(SevenZOutputFile archive, int index, boolean nonEmpty, Iterable<SevenZMethodConfiguration> methods)
+    private void addFile(final SevenZOutputFile archive, final int index, final boolean nonEmpty, final Iterable<SevenZMethodConfiguration> methods)
         throws Exception {
         SevenZArchiveEntry entry = new SevenZArchiveEntry();
         entry.setName("foo/" + index + ".txt");
@@ -438,12 +438,12 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         archive.closeArchiveEntry();
     }
 
-    private Boolean verifyFile(SevenZFile archive, int index) throws Exception {
+    private Boolean verifyFile(final SevenZFile archive, final int index) throws Exception {
         return verifyFile(archive, index, null);
     }
 
-    private Boolean verifyFile(SevenZFile archive, int index,
-                               Iterable<SevenZMethodConfiguration> methods) throws Exception {
+    private Boolean verifyFile(final SevenZFile archive, final int index,
+                               final Iterable<SevenZMethodConfiguration> methods) throws Exception {
         SevenZArchiveEntry entry = archive.getNextEntry();
         if (entry == null) {
             return null;
@@ -462,14 +462,14 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         return Boolean.TRUE;
     }
 
-    private void testRoundTrip(SevenZMethod method) throws Exception {
+    private void testRoundTrip(final SevenZMethod method) throws Exception {
         output = new File(dir, method + "-roundtrip.7z");
         ArrayList<SevenZMethodConfiguration> methods = new ArrayList<SevenZMethodConfiguration>();
         methods.add(new SevenZMethodConfiguration(method));
         createAndReadBack(output, methods);
     }
 
-    private void testFilterRoundTrip(SevenZMethodConfiguration method) throws Exception {
+    private void testFilterRoundTrip(final SevenZMethodConfiguration method) throws Exception {
         output = new File(dir, method.getMethod() + "-roundtrip.7z");
         ArrayList<SevenZMethodConfiguration> methods = new ArrayList<SevenZMethodConfiguration>();
         methods.add(method);
@@ -477,7 +477,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         createAndReadBack(output, methods);
     }
 
-    private void createAndReadBack(File output, Iterable<SevenZMethodConfiguration> methods) throws Exception {
+    private void createAndReadBack(final File output, final Iterable<SevenZMethodConfiguration> methods) throws Exception {
         SevenZOutputFile outArchive = new SevenZOutputFile(output);
         outArchive.setContentMethods(methods);
         try {
@@ -494,8 +494,8 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         }
     }
 
-    private static void assertContentMethodsEquals(Iterable<? extends SevenZMethodConfiguration> expected,
-                                                   Iterable<? extends SevenZMethodConfiguration> actual) {
+    private static void assertContentMethodsEquals(final Iterable<? extends SevenZMethodConfiguration> expected,
+                                                   final Iterable<? extends SevenZMethodConfiguration> actual) {
         assertNotNull(actual);
         Iterator<? extends SevenZMethodConfiguration> expectedIter = expected.iterator();
         Iterator<? extends SevenZMethodConfiguration> actualIter = actual.iterator();

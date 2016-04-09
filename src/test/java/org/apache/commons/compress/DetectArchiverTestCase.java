@@ -96,7 +96,7 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
 
     }
 
-    private ArchiveInputStream getStreamFor(String resource)
+    private ArchiveInputStream getStreamFor(final String resource)
             throws ArchiveException, IOException {
         return factory.createArchiveInputStream(
                    new BufferedInputStream(new FileInputStream(
@@ -129,7 +129,7 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
         checkEmptyArchive("zip");
     }
 
-    private void checkEmptyArchive(String type) throws Exception{
+    private void checkEmptyArchive(final String type) throws Exception{
         File ar = createEmptyArchive(type); // will be deleted by tearDown()
         ar.deleteOnExit(); // Just in case file cannot be deleted
         ArchiveInputStream ais = null;

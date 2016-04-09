@@ -88,8 +88,8 @@ public class FileNameUtil {
      *
      * @param defaultExtension the format's default extension like ".gz"
      */
-    public FileNameUtil(Map<String, String> uncompressSuffix,
-                        String defaultExtension) {
+    public FileNameUtil(final Map<String, String> uncompressSuffix,
+                        final String defaultExtension) {
         this.uncompressSuffix = Collections.unmodifiableMap(uncompressSuffix);
         int lc = Integer.MIN_VALUE, sc = Integer.MAX_VALUE;
         int lu = Integer.MIN_VALUE, su = Integer.MAX_VALUE;
@@ -130,7 +130,7 @@ public class FileNameUtil {
      * @return {@code true} if the filename has a common format suffix,
      *         {@code false} otherwise
      */
-    public boolean isCompressedFilename(String filename) {
+    public boolean isCompressedFilename(final String filename) {
         final String lower = filename.toLowerCase(Locale.ENGLISH);
         final int n = lower.length();
         for (int i = shortestCompressedSuffix;
@@ -155,7 +155,7 @@ public class FileNameUtil {
      * @param filename name of a file
      * @return name of the corresponding uncompressed file
      */
-    public String getUncompressedFilename(String filename) {
+    public String getUncompressedFilename(final String filename) {
         final String lower = filename.toLowerCase(Locale.ENGLISH);
         final int n = lower.length();
         for (int i = shortestCompressedSuffix;
@@ -179,7 +179,7 @@ public class FileNameUtil {
      * @param filename name of a file
      * @return name of the corresponding compressed file
      */
-    public String getCompressedFilename(String filename) {
+    public String getCompressedFilename(final String filename) {
         final String lower = filename.toLowerCase(Locale.ENGLISH);
         final int n = lower.length();
         for (int i = shortestUncompressedSuffix;

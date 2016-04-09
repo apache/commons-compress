@@ -67,7 +67,7 @@ public class ChangeSetPerformer {
      *             if an read/write error occurs
      * @return the results of this operation
      */
-    public ChangeSetResults perform(ArchiveInputStream in, ArchiveOutputStream out)
+    public ChangeSetResults perform(final ArchiveInputStream in, final ArchiveOutputStream out)
             throws IOException {
         return perform(new ArchiveInputStreamIterator(in), out);
     }
@@ -88,7 +88,7 @@ public class ChangeSetPerformer {
      * @return the results of this operation
      * @since 1.5
      */
-    public ChangeSetResults perform(ZipFile in, ArchiveOutputStream out)
+    public ChangeSetResults perform(final ZipFile in, final ArchiveOutputStream out)
             throws IOException {
         return perform(new ZipFileIterator(in), out);
     }
@@ -108,8 +108,8 @@ public class ChangeSetPerformer {
      *             if an read/write error occurs
      * @return the results of this operation
      */
-    private ChangeSetResults perform(ArchiveEntryIterator entryIterator,
-                                     ArchiveOutputStream out)
+    private ChangeSetResults perform(final ArchiveEntryIterator entryIterator,
+                                     final ArchiveOutputStream out)
             throws IOException {
         ChangeSetResults results = new ChangeSetResults();
 
@@ -184,7 +184,7 @@ public class ChangeSetPerformer {
      *            the entry to check
      * @return true, if this entry has an deletion change later, false otherwise
      */
-    private boolean isDeletedLater(Set<Change> workingSet, ArchiveEntry entry) {
+    private boolean isDeletedLater(final Set<Change> workingSet, final ArchiveEntry entry) {
         String source = entry.getName();
 
         if (!workingSet.isEmpty()) {
@@ -215,8 +215,8 @@ public class ChangeSetPerformer {
      * @throws IOException
      *             if data cannot be read or written
      */
-    private void copyStream(InputStream in, ArchiveOutputStream out,
-            ArchiveEntry entry) throws IOException {
+    private void copyStream(final InputStream in, final ArchiveOutputStream out,
+            final ArchiveEntry entry) throws IOException {
         out.putArchiveEntry(entry);
         IOUtils.copy(in, out);
         out.closeArchiveEntry();
@@ -241,7 +241,7 @@ public class ChangeSetPerformer {
         implements ArchiveEntryIterator {
         private final ArchiveInputStream in;
         private ArchiveEntry next;
-        ArchiveInputStreamIterator(ArchiveInputStream in) {
+        ArchiveInputStreamIterator(final ArchiveInputStream in) {
             this.in = in;
         }
         @Override
@@ -263,7 +263,7 @@ public class ChangeSetPerformer {
         private final ZipFile in;
         private final Enumeration<ZipArchiveEntry> nestedEnum;
         private ZipArchiveEntry current;
-        ZipFileIterator(ZipFile in) {
+        ZipFileIterator(final ZipFile in) {
             this.in = in;
             nestedEnum = in.getEntriesInPhysicalOrder();
         }

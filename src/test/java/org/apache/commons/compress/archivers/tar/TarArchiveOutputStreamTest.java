@@ -194,7 +194,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
               + "0123\n", new String(data, 512, 101, CharsetNames.UTF_8));
     }
 
-    private byte[] writePaxHeader(Map<String, String> m) throws Exception {
+    private byte[] writePaxHeader(final Map<String, String> m) throws Exception {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, "ASCII");
         tos.writePaxHeaders(new TarArchiveEntry("x"), "foo", m);
@@ -375,7 +375,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         testRoundtripWith67CharFileName(TarArchiveOutputStream.LONGFILE_POSIX);
     }
 
-    private void testRoundtripWith67CharFileName(int mode) throws Exception {
+    private void testRoundtripWith67CharFileName(final int mode) throws Exception {
         String n = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
             + "AAAAAAA";
         assertEquals(67, n.length());
@@ -454,7 +454,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         testWriteLongDirectoryName(TarArchiveOutputStream.LONGFILE_POSIX);
     }
 
-    private void testWriteLongDirectoryName(int mode) throws Exception {
+    private void testWriteLongDirectoryName(final int mode) throws Exception {
         String n = "01234567890123456789012345678901234567890123456789"
             + "01234567890123456789012345678901234567890123456789"
             + "01234567890123456789012345678901234567890123456789/";
@@ -584,7 +584,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
     /**
      * @see "https://issues.apache.org/jira/browse/COMPRESS-237"
      */
-    private void testWriteLongLinkName(int mode) throws Exception {
+    private void testWriteLongLinkName(final int mode) throws Exception {
         String linkname = "01234567890123456789012345678901234567890123456789"
             + "01234567890123456789012345678901234567890123456789"
             + "01234567890123456789012345678901234567890123456789/test";
@@ -663,7 +663,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         tarIn.close();
     }
 
-    private static byte[] createTarArchiveContainingOneDirectory(String fname, Date modificationDate) throws IOException {
+    private static byte[] createTarArchiveContainingOneDirectory(final String fname, final Date modificationDate) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         TarArchiveOutputStream tarOut = new TarArchiveOutputStream(baos, 1024);
         tarOut.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);

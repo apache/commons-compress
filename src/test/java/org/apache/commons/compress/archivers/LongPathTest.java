@@ -60,7 +60,7 @@ public class LongPathTest extends AbstractTestCase {
 
     private final File file;
 
-    public LongPathTest(String file){
+    public LongPathTest(final String file){
         this.file = new File(ARCDIR, file);
     }
 
@@ -84,7 +84,7 @@ public class LongPathTest extends AbstractTestCase {
         Collection<Object[]> params = new ArrayList<Object[]>();
         for (String f : ARCDIR.list(new FilenameFilter() {
             @Override
-            public boolean accept(File dir, String name) {
+            public boolean accept(final File dir, final String name) {
                 return !name.endsWith(".txt");
             }
         })) 
@@ -95,7 +95,7 @@ public class LongPathTest extends AbstractTestCase {
     }
 
     @Override
-    protected String getExpectedString(ArchiveEntry entry) {
+    protected String getExpectedString(final ArchiveEntry entry) {
         if (entry instanceof TarArchiveEntry) {
             TarArchiveEntry tarEntry = (TarArchiveEntry) entry;
             if (tarEntry.isSymbolicLink()) {

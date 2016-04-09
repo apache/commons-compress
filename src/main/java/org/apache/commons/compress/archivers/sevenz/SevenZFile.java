@@ -175,7 +175,7 @@ public class SevenZFile implements Closeable {
         return Arrays.asList(archive.files);
     }
     
-    private Archive readHeaders(byte[] password) throws IOException {
+    private Archive readHeaders(final byte[] password) throws IOException {
         final byte[] signature = new byte[6];
         file.readFully(signature);
         if (!Arrays.equals(signature, sevenZSignature)) {
@@ -283,7 +283,7 @@ public class SevenZFile implements Closeable {
     }
     
     private DataInputStream readEncodedHeader(final DataInputStream header, final Archive archive,
-                                              byte[] password) throws IOException {
+                                              final byte[] password) throws IOException {
         readStreamsInfo(header, archive);
         
         // FIXME: merge with buildDecodingStream()/buildDecoderStack() at some stage?
@@ -862,7 +862,7 @@ public class SevenZFile implements Closeable {
     }
 
     private InputStream buildDecoderStack(final Folder folder, final long folderOffset,
-                final int firstPackStreamIndex, SevenZArchiveEntry entry) throws IOException {
+                final int firstPackStreamIndex, final SevenZArchiveEntry entry) throws IOException {
         file.seek(folderOffset);
         InputStream inputStreamStack =
             new BufferedInputStream(
@@ -923,7 +923,7 @@ public class SevenZFile implements Closeable {
      * @throws IOException
      *             if an I/O error has occurred
      */
-    public int read(byte[] b) throws IOException {
+    public int read(final byte[] b) throws IOException {
         return read(b, 0, b.length);
     }
     
@@ -937,7 +937,7 @@ public class SevenZFile implements Closeable {
      * @throws IOException
      *             if an I/O error has occurred
      */
-    public int read(byte[] b, int off, int len) throws IOException {
+    public int read(final byte[] b, final int off, final int len) throws IOException {
         return getCurrentStream().read(b, off, len);
     }
     
@@ -967,7 +967,7 @@ public class SevenZFile implements Closeable {
      * @return true, if this is the signature of a 7z archive.
      * @since 1.8
      */
-    public static boolean matches(byte[] signature, int length) {
+    public static boolean matches(final byte[] signature, final int length) {
         if (length < sevenZSignature.length) {
             return false;
         }
@@ -980,7 +980,7 @@ public class SevenZFile implements Closeable {
         return true;
     }
 
-    private static long skipBytesFully(DataInput input, long bytesToSkip) throws IOException {
+    private static long skipBytesFully(final DataInput input, long bytesToSkip) throws IOException {
         if (bytesToSkip < 1) {
             return 0;
         }

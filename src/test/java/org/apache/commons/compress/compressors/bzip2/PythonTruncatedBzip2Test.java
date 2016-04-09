@@ -102,7 +102,7 @@ public class PythonTruncatedBzip2Test {
         }
     }
 
-    private static ReadableByteChannel makeBZ2C(InputStream source) throws IOException {
+    private static ReadableByteChannel makeBZ2C(final InputStream source) throws IOException {
         BufferedInputStream bin = new BufferedInputStream(source);
         BZip2CompressorInputStream bZin = new BZip2CompressorInputStream(bin, true);
 
@@ -111,7 +111,7 @@ public class PythonTruncatedBzip2Test {
 
     // Helper method since Arrays#copyOfRange is Java 1.6+
     // Does not check parameters, so may fail if they are incompatible
-    private static byte[] copyOfRange(byte[] original, int from, int to) {
+    private static byte[] copyOfRange(final byte[] original, final int from, final int to) {
         int length = to - from;
         byte buff[] = new byte[length];
         System.arraycopy(original, from, buff, 0, length);

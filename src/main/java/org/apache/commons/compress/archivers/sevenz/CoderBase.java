@@ -31,14 +31,14 @@ abstract class CoderBase {
     /**
      * @param acceptableOptions types that can be used as options for this codec.
      */
-    protected CoderBase(Class<?>... acceptableOptions) {
+    protected CoderBase(final Class<?>... acceptableOptions) {
         this.acceptableOptions = acceptableOptions;
     }
 
     /**
      * @return whether this method can extract options from the given object.
      */
-    boolean canAcceptOptions(Object opts) {
+    boolean canAcceptOptions(final Object opts) {
         for (Class<?> c : acceptableOptions) {
             if (c.isInstance(opts)) {
                 return true;
@@ -50,14 +50,14 @@ abstract class CoderBase {
     /**
      * @return property-bytes to write in a Folder block
      */
-    byte[] getOptionsAsProperties(Object options) {
+    byte[] getOptionsAsProperties(final Object options) {
         return NONE;
     }
 
     /**
      * @return configuration options that have been used to create the given InputStream from the given Coder
      */
-    Object getOptionsFromCoder(Coder coder, InputStream in) {
+    Object getOptionsFromCoder(final Coder coder, final InputStream in) {
         return null;
     }
 
@@ -79,7 +79,7 @@ abstract class CoderBase {
      * If the option represents a number, return its integer
      * value, otherwise return the given default value.
      */
-    protected static int numberOptionOrDefault(Object options, int defaultValue) {
+    protected static int numberOptionOrDefault(final Object options, final int defaultValue) {
         return options instanceof Number ? ((Number) options).intValue() : defaultValue;
     }
 }

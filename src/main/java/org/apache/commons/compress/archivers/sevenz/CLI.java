@@ -28,7 +28,7 @@ public class CLI {
     private static enum Mode {
         LIST("Analysing") {
             @Override
-            public void takeAction(SevenZFile archive, SevenZArchiveEntry entry) {
+            public void takeAction(final SevenZFile archive, final SevenZArchiveEntry entry) {
                 System.out.print(entry.getName());
                 if (entry.isDirectory()) {
                     System.out.print(" dir");
@@ -48,7 +48,7 @@ public class CLI {
                 }
             }
 
-            private String getContentMethods(SevenZArchiveEntry entry) {
+            private String getContentMethods(final SevenZArchiveEntry entry) {
                 StringBuilder sb = new StringBuilder();
                 boolean first = true;
                 for (SevenZMethodConfiguration m : entry.getContentMethods()) {
@@ -66,7 +66,7 @@ public class CLI {
         },
         EXTRACT("Extracting") {
             @Override
-            public void takeAction(SevenZFile archive, SevenZArchiveEntry entry) 
+            public void takeAction(final SevenZFile archive, final SevenZArchiveEntry entry) 
                 throws IOException {
                 File outFile = new File(entry.getName());
                 if (entry.isDirectory()) {
@@ -106,7 +106,7 @@ public class CLI {
         };
 
         private final String message;
-        private Mode(String message) {
+        private Mode(final String message) {
             this.message = message;
         }
         public String getMessage() {
@@ -116,7 +116,7 @@ public class CLI {
             throws IOException;
     }        
 
-    public static void main(String[] args) throws Exception {
+    public static void main(final String[] args) throws Exception {
         if (args.length == 0) {
             usage();
             return;
@@ -142,7 +142,7 @@ public class CLI {
         System.out.println("Parameters: archive-name [list|extract]");
     }
 
-    private static Mode grabMode(String[] args) {
+    private static Mode grabMode(final String[] args) {
         if (args.length < 2) {
             return Mode.LIST;
         }

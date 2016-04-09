@@ -87,7 +87,7 @@ public enum SevenZMethod {
 
     private final byte[] id;
 
-    private SevenZMethod(byte[] id) {
+    private SevenZMethod(final byte[] id) {
         this.id = id;
     }
 
@@ -97,7 +97,7 @@ public enum SevenZMethod {
         return copy;
     }
 
-    static SevenZMethod byId(byte[] id) {
+    static SevenZMethod byId(final byte[] id) {
         for (SevenZMethod m : SevenZMethod.class.getEnumConstants()) {
             if (Arrays.equals(m.id, id)) {
                 return m;

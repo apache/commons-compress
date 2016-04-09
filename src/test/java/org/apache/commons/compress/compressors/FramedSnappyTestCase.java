@@ -39,7 +39,7 @@ public final class FramedSnappyTestCase
     public void testDefaultExtraction() throws Exception {
         testUnarchive(new StreamWrapper<CompressorInputStream>() {
             @Override
-            public CompressorInputStream wrap(InputStream is) throws IOException {
+            public CompressorInputStream wrap(final InputStream is) throws IOException {
                 return new FramedSnappyCompressorInputStream(is);
             }
         });
@@ -49,7 +49,7 @@ public final class FramedSnappyTestCase
     public void testDefaultExtractionViaFactory() throws Exception {
         testUnarchive(new StreamWrapper<CompressorInputStream>() {
             @Override
-            public CompressorInputStream wrap(InputStream is) throws Exception {
+            public CompressorInputStream wrap(final InputStream is) throws Exception {
                 return new CompressorStreamFactory()
                     .createCompressorInputStream(CompressorStreamFactory.SNAPPY_FRAMED,
                                                  is);
@@ -61,13 +61,13 @@ public final class FramedSnappyTestCase
     public void testDefaultExtractionViaFactoryAutodetection() throws Exception {
         testUnarchive(new StreamWrapper<CompressorInputStream>() {
             @Override
-            public CompressorInputStream wrap(InputStream is) throws Exception {
+            public CompressorInputStream wrap(final InputStream is) throws Exception {
                 return new CompressorStreamFactory().createCompressorInputStream(is);
             }
         });
     }
 
-    private void testUnarchive(StreamWrapper<CompressorInputStream> wrapper) throws Exception {
+    private void testUnarchive(final StreamWrapper<CompressorInputStream> wrapper) throws Exception {
         final File input = getFile("bla.tar.sz");
         final File output = new File(dir, "bla.tar");
         final FileInputStream is = new FileInputStream(input);

@@ -187,7 +187,7 @@ public enum ZipMethod {
     /**
      * private constructor for enum style class.
      */
-    ZipMethod(int code) {
+    ZipMethod(final int code) {
         this.code = code;
     }
 
@@ -210,7 +210,7 @@ public enum ZipMethod {
      * @return the {@link ZipMethod} for the given code or null if the
      * method is not known.
      */
-    public static ZipMethod getMethodByCode(int code) {
+    public static ZipMethod getMethodByCode(final int code) {
         return codeToEnum.get(code);
     }
 }

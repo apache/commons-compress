@@ -55,7 +55,7 @@ public class Pack200Utils {
      * @param jar the JAR archive to normalize
      * @throws IOException if reading or writing fails
      */
-    public static void normalize(File jar)
+    public static void normalize(final File jar)
         throws IOException {
         normalize(jar, jar, null);
     }
@@ -76,7 +76,7 @@ public class Pack200Utils {
      * method will implicitly set the segment limit to -1.
      * @throws IOException if reading or writing fails
      */
-    public static void normalize(File jar, Map<String, String> props)
+    public static void normalize(final File jar, final Map<String, String> props)
         throws IOException {
         normalize(jar, jar, props);
     }
@@ -101,7 +101,7 @@ public class Pack200Utils {
      * @param to the normalized archive
      * @throws IOException if reading or writing fails
      */
-    public static void normalize(File from, File to)
+    public static void normalize(final File from, final File to)
         throws IOException {
         normalize(from, to, null);
     }
@@ -125,7 +125,7 @@ public class Pack200Utils {
      * method will implicitly set the segment limit to -1.
      * @throws IOException if reading or writing fails
      */
-    public static void normalize(File from, File to, Map<String, String> props)
+    public static void normalize(final File from, final File to, Map<String, String> props)
         throws IOException {
         if (props == null) {
             props = new HashMap<String, String>();

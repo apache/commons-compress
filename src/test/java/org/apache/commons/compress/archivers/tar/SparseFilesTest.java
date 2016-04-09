@@ -63,7 +63,7 @@ public class SparseFilesTest {
         }
     }
 
-    private void assertPaxGNUEntry(TarArchiveInputStream tin, String suffix) throws Throwable {
+    private void assertPaxGNUEntry(final TarArchiveInputStream tin, final String suffix) throws Throwable {
         TarArchiveEntry ae = tin.getNextTarEntry();
         assertEquals("sparsefile-" + suffix, ae.getName());
         assertTrue(ae.isGNUSparse());

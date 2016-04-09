@@ -155,7 +155,7 @@ public class TarUtilsTest {
         checkRoundTripOctalOrBinary(Long.MIN_VALUE + 1, 12);
     }
 
-    private void testRoundTripOctalOrBinary(int length) {
+    private void testRoundTripOctalOrBinary(final int length) {
         checkRoundTripOctalOrBinary(0, length);
         checkRoundTripOctalOrBinary(1, length);
         checkRoundTripOctalOrBinary(TarConstants.MAXSIZE, length); // will need binary format
@@ -217,7 +217,7 @@ public class TarUtilsTest {
         assertEquals(s, TarUtils.parseName(buff, 0, len, enc));
     }
 
-    private void checkName(String string) {
+    private void checkName(final String string) {
         byte buff[] = new byte[100];
         int len = TarUtils.formatNameBytes(string, buff, 0, buff.length);
         assertEquals(string, TarUtils.parseName(buff, 0, len));

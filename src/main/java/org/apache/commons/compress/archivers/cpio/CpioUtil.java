@@ -28,7 +28,7 @@ class CpioUtil {
     /**
      * Extracts the file type bits from a mode.
      */
-    static long fileType(long mode) {
+    static long fileType(final long mode) {
         return mode & CpioConstants.S_IFMT;
     }
 

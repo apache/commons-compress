@@ -335,7 +335,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
      *            The length of the data which will be compressed by
      *            {@code BZip2CompressorOutputStream}.
      */
-    public static int chooseBlockSize(long inputLength) {
+    public static int chooseBlockSize(final long inputLength) {
         return (inputLength > 0) ? (int) Math
             .min((inputLength / 132000) + 1, 9) : MAX_BLOCKSIZE;
     }
@@ -1318,7 +1318,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
          */
         int origPtr;
 
-        Data(int blockSize100k) {
+        Data(final int blockSize100k) {
             final int n = blockSize100k * BZip2Constants.BASEBLOCKSIZE;
             this.block = new byte[(n + 1 + NUM_OVERSHOOT_BYTES)];
             this.fmap = new int[n];

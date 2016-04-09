@@ -43,7 +43,7 @@ public class ArchiveUtils {
      * @param entry the entry
      * @return the representation of the entry
      */
-    public static String toString(ArchiveEntry entry){
+    public static String toString(final ArchiveEntry entry){
         StringBuilder sb = new StringBuilder();
         sb.append(entry.isDirectory()? 'd' : '-');// c.f. "ls -l" output
         String size = Long.toString(entry.getSize());
@@ -67,7 +67,7 @@ public class ArchiveUtils {
      * @return {@code true} if buffer is the same as the expected string
      */
     public static boolean matchAsciiBuffer(
-            String expected, byte[] buffer, int offset, int length){
+            final String expected, final byte[] buffer, final int offset, final int length){
         byte[] buffer1;
         try {
             buffer1 = expected.getBytes(CharsetNames.US_ASCII);
@@ -84,7 +84,7 @@ public class ArchiveUtils {
      * @param buffer the buffer
      * @return {@code true} if buffer is the same as the expected string
      */
-    public static boolean matchAsciiBuffer(String expected, byte[] buffer){
+    public static boolean matchAsciiBuffer(final String expected, final byte[] buffer){
         return matchAsciiBuffer(expected, buffer, 0, buffer.length);
     }
 
@@ -95,7 +95,7 @@ public class ArchiveUtils {
      * @param inputString string to convert
      * @return the bytes
      */
-    public static byte[] toAsciiBytes(String inputString){
+    public static byte[] toAsciiBytes(final String inputString){
         try {
             return inputString.getBytes(CharsetNames.US_ASCII);
         } catch (UnsupportedEncodingException e) {
@@ -125,7 +125,7 @@ public class ArchiveUtils {
      * @param length length of array
      * @return the bytes, interpreted as an Ascii string
      */
-    public static String toAsciiString(final byte[] inputBytes, int offset, int length){
+    public static String toAsciiString(final byte[] inputBytes, final int offset, final int length){
         try {
             return new String(inputBytes, offset, length, CharsetNames.US_ASCII);
         } catch (UnsupportedEncodingException e) {
@@ -148,7 +148,7 @@ public class ArchiveUtils {
     public static boolean isEqual(
             final byte[] buffer1, final int offset1, final int length1,
             final byte[] buffer2, final int offset2, final int length2,
-            boolean ignoreTrailingNulls){
+            final boolean ignoreTrailingNulls){
         int minLen=length1 < length2 ? length1 : length2;
         for (int i=0; i < minLen; i++){
             if (buffer1[offset1+i] != buffer2[offset2+i]){
@@ -213,7 +213,7 @@ public class ArchiveUtils {
      * @param ignoreTrailingNulls whether to ignore tariling nulls
      * @return {@code true} if buffer1 and buffer2 have same contents
      */
-    public static boolean isEqual(final byte[] buffer1, final byte[] buffer2, boolean ignoreTrailingNulls){
+    public static boolean isEqual(final byte[] buffer1, final byte[] buffer2, final boolean ignoreTrailingNulls){
         return isEqual(buffer1, 0, buffer1.length, buffer2, 0, buffer2.length, ignoreTrailingNulls);
     }
 
@@ -243,7 +243,7 @@ public class ArchiveUtils {
      *            The number of characters to check (not the size of the array)
      * @return true if the first N bytes are zero
      */
-    public static boolean isArrayZero(byte[] a, int size) {
+    public static boolean isArrayZero(final byte[] a, final int size) {
         for (int i = 0; i < size; i++) {
             if (a[i] != 0) {
                 return false;

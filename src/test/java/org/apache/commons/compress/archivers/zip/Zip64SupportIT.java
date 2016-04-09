@@ -142,7 +142,7 @@ public class Zip64SupportIT {
         }
     }
 
-    private static File write5GBZerosFile(String testName) throws Throwable {
+    private static File write5GBZerosFile(final String testName) throws Throwable {
         File f = getTempFile(testName);
         ZipArchiveOutputStream zos = new ZipArchiveOutputStream(f);
         try {
@@ -205,7 +205,7 @@ public class Zip64SupportIT {
     private static ZipOutputTest write100KFiles(final Zip64Mode mode) {
         return new ZipOutputTest() {
             @Override
-            public void test(File f, ZipArchiveOutputStream zos)
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 if (mode != Zip64Mode.AsNeeded) {
                     zos.setUseZip64(mode);
@@ -323,7 +323,7 @@ public class Zip64SupportIT {
     private static final ZipOutputTest write100KFilesModeNever =
         new ZipOutputTest() {
             @Override
-            public void test(File f, ZipArchiveOutputStream zos)
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 zos.setUseZip64(Zip64Mode.Never);
                 try {
@@ -351,8 +351,8 @@ public class Zip64SupportIT {
         withTemporaryArchive("readSelfGenerated100KFilesUsingZipFile()",
                              new ZipOutputTest() {
                                  @Override
-                                public void test(File f,
-                                                  ZipArchiveOutputStream zos)
+                                public void test(final File f,
+                                                  final ZipArchiveOutputStream zos)
                                      throws IOException {
                                      write100KFilesToStream(zos);
                                      read100KFilesUsingZipFileImpl(f);
@@ -376,7 +376,7 @@ public class Zip64SupportIT {
         write3EntriesCreatingBigArchive(final Zip64Mode mode) {
         return new ZipOutputTest() {
             @Override
-            public void test(File f, ZipArchiveOutputStream zos)
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 if (mode != Zip64Mode.AsNeeded) {
                     zos.setUseZip64(mode);
@@ -490,7 +490,7 @@ public class Zip64SupportIT {
     private static final ZipOutputTest write3EntriesCreatingBigArchiveModeNever =
         new ZipOutputTest() {
             @Override
-            public void test(File f, ZipArchiveOutputStream zos)
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 zos.setUseZip64(Zip64Mode.Never);
                 try {
@@ -522,8 +522,8 @@ public class Zip64SupportIT {
         withTemporaryArchive("read3EntriesCreatingBigArchiveFileUsingZipFile",
                              new ZipOutputTest() {
                                  @Override
-                                public void test(File f,
-                                                  ZipArchiveOutputStream zos)
+                                public void test(final File f,
+                                                  final ZipArchiveOutputStream zos)
                                      throws IOException {
                                      write3EntriesCreatingBigArchiveToStream(zos);
                                      ZipFile zf = null;
@@ -577,7 +577,7 @@ public class Zip64SupportIT {
                                                      final Zip64Mode mode) {
         return new ZipOutputTest() {
             @Override
-            public void test(File f, ZipArchiveOutputStream zos)
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 if (mode != Zip64Mode.AsNeeded) {
                     zos.setUseZip64(mode);
@@ -759,7 +759,7 @@ public class Zip64SupportIT {
         writeBigStoredEntryModeNever(final boolean knownSize) {
         return new ZipOutputTest() {
             @Override
-            public void test(File f, ZipArchiveOutputStream zos)
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 zos.setUseZip64(Zip64Mode.Never);
                 try {
@@ -817,8 +817,8 @@ public class Zip64SupportIT {
                                       final Zip64Mode mode) {
         return new ZipOutputTest() {
             @Override
-            public void test(File f,
-                             ZipArchiveOutputStream zos)
+            public void test(final File f,
+                             final ZipArchiveOutputStream zos)
                 throws IOException {
                 if (mode != Zip64Mode.AsNeeded) {
                     zos.setUseZip64(mode);
@@ -1004,7 +1004,7 @@ public class Zip64SupportIT {
         writeBigDeflatedEntryUnknownSizeToStream(final Zip64Mode mode) {
         return new ZipOutputTest() {
             @Override
-            public void test(File f, ZipArchiveOutputStream zos)
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 try {
                     if (mode != Zip64Mode.AsNeeded) {
@@ -1061,7 +1061,7 @@ public class Zip64SupportIT {
                                     final Zip64Mode mode) {
         return new ZipOutputTest() {
             @Override
-            public void test(File f, ZipArchiveOutputStream zos)
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 if (mode != Zip64Mode.AsNeeded) {
                     zos.setUseZip64(mode);
@@ -1233,8 +1233,8 @@ public class Zip64SupportIT {
         withTemporaryArchive("writeBigDeflatedEntryKnownSizeToStreamModeNever",
                              new ZipOutputTest() {
                                  @Override
-                                public void test(File f,
-                                                  ZipArchiveOutputStream zos)
+                                public void test(final File f,
+                                                  final ZipArchiveOutputStream zos)
                                      throws IOException {
                                      zos.setUseZip64(Zip64Mode.Never);
                                      try {
@@ -1267,7 +1267,7 @@ public class Zip64SupportIT {
         writeBigDeflatedEntryToFileModeNever(final boolean knownSize) {
         return new ZipOutputTest() {
             @Override
-            public void test(File f, ZipArchiveOutputStream zos)
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 zos.setUseZip64(Zip64Mode.Never);
                 try {
@@ -1323,7 +1323,7 @@ public class Zip64SupportIT {
                                                        final Zip64Mode mode) {
         return new ZipOutputTest() {
             @Override
-            public void test(File f, ZipArchiveOutputStream zos)
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 if (mode != Zip64Mode.AsNeeded) {
                     zos.setUseZip64(mode);
@@ -1502,7 +1502,7 @@ public class Zip64SupportIT {
         writeSmallStoredEntryModeAlways(final boolean knownSize) {
         return new ZipOutputTest() {
             @Override
-            public void test(File f, ZipArchiveOutputStream zos)
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 zos.setUseZip64(Zip64Mode.Always);
                 byte[] buf = new byte[ONE_MILLION];
@@ -1665,7 +1665,7 @@ public class Zip64SupportIT {
                                         final Zip64Mode mode) {
         return new ZipOutputTest() {
             @Override
-            public void test(File f, ZipArchiveOutputStream zos)
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 if (mode != Zip64Mode.AsNeeded) {
                     zos.setUseZip64(mode);
@@ -1838,7 +1838,7 @@ public class Zip64SupportIT {
         writeSmallDeflatedEntryToStreamModeAlways(final boolean knownSize) {
         return new ZipOutputTest() {
             @Override
-            public void test(File f, ZipArchiveOutputStream zos)
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 zos.setUseZip64(Zip64Mode.Always);
                 byte[] buf = new byte[ONE_MILLION];
@@ -2021,7 +2021,7 @@ public class Zip64SupportIT {
                                       final Zip64Mode mode) {
         return new ZipOutputTest() {
             @Override
-            public void test(File f, ZipArchiveOutputStream zos)
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 if (mode != Zip64Mode.AsNeeded) {
                     zos.setUseZip64(mode);
@@ -2196,7 +2196,7 @@ public class Zip64SupportIT {
         writeSmallDeflatedEntryToFileModeAlways(final boolean knownSize) {
         return new ZipOutputTest() {
             @Override
-            public void test(File f, ZipArchiveOutputStream zos)
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 zos.setUseZip64(Zip64Mode.Always);
                 byte[] buf = new byte[ONE_MILLION];
@@ -2348,9 +2348,9 @@ public class Zip64SupportIT {
         void test(File f, ZipArchiveOutputStream zos) throws IOException;
     }
 
-    private static void withTemporaryArchive(String testName,
-                                             ZipOutputTest test,
-                                             boolean useRandomAccessFile)
+    private static void withTemporaryArchive(final String testName,
+                                             final ZipOutputTest test,
+                                             final boolean useRandomAccessFile)
         throws Throwable {
         File f = getTempFile(testName);
         BufferedOutputStream os = null;
@@ -2420,13 +2420,13 @@ public class Zip64SupportIT {
         return getFile("100k_Files_PKZip.zip");
     }
 
-    private static File getTempFile(String testName) throws Throwable {
+    private static File getTempFile(final String testName) throws Throwable {
         File f = File.createTempFile("commons-compress-" + testName, ".zip");
         f.deleteOnExit();
         return f;
     }
 
-    private static void read5GBOfZerosImpl(File f, String expectedName)
+    private static void read5GBOfZerosImpl(final File f, final String expectedName)
         throws IOException {
         FileInputStream fin = new FileInputStream(f);
         ZipArchiveInputStream zin = null;
@@ -2461,8 +2461,8 @@ public class Zip64SupportIT {
         }
     }
 
-    private static void read5GBOfZerosUsingZipFileImpl(File f,
-                                                       String expectedName)
+    private static void read5GBOfZerosUsingZipFileImpl(final File f,
+                                                       final String expectedName)
         throws IOException {
         ZipFile zf = null;
         try {
@@ -2500,7 +2500,7 @@ public class Zip64SupportIT {
         }
     }
 
-    private static void read100KFilesImpl(File f) throws IOException {
+    private static void read100KFilesImpl(final File f) throws IOException {
         FileInputStream fin = new FileInputStream(f);
         ZipArchiveInputStream zin = null;
         try {
@@ -2522,7 +2522,7 @@ public class Zip64SupportIT {
         }
     }
 
-    private static void read100KFilesUsingZipFileImpl(File f)
+    private static void read100KFilesUsingZipFileImpl(final File f)
         throws IOException {
         ZipFile zf = null;
         try {
@@ -2541,7 +2541,7 @@ public class Zip64SupportIT {
         }
     }
 
-    private static long getLengthAndPositionAtCentralDirectory(RandomAccessFile a)
+    private static long getLengthAndPositionAtCentralDirectory(final RandomAccessFile a)
         throws IOException {
         final long end = a.length();
         a.seek(end - 22 - 20);
@@ -2562,7 +2562,7 @@ public class Zip64SupportIT {
         return end;
     }
 
-    private static long getLengthAndPositionAtCentralDirectory32(RandomAccessFile a, final long end)
+    private static long getLengthAndPositionAtCentralDirectory32(final RandomAccessFile a, final long end)
         throws IOException {
         a.seek(end - 22 + 16);
         byte[] cdOffset = new byte[4];
@@ -2571,7 +2571,7 @@ public class Zip64SupportIT {
         return end;
     }
 
-    private static void write100KFilesToStream(ZipArchiveOutputStream zos)
+    private static void write100KFilesToStream(final ZipArchiveOutputStream zos)
         throws IOException {
         for (int i = 0; i < ONE_HUNDRED_THOUSAND; i++) {
             ZipArchiveEntry zae = new ZipArchiveEntry(String.valueOf(i));
@@ -2583,7 +2583,7 @@ public class Zip64SupportIT {
     }
 
     private static void
-        write3EntriesCreatingBigArchiveToStream(ZipArchiveOutputStream zos)
+        write3EntriesCreatingBigArchiveToStream(final ZipArchiveOutputStream zos)
         throws IOException {
         byte[] buf = new byte[ONE_MILLION];
         ZipArchiveEntry zae = null;

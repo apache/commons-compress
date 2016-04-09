@@ -143,15 +143,15 @@ public class TarArchiveEntryTest implements TarConstants {
         assertEquals("/foo", t.getName());
     }
 
-    private void assertGnuMagic(TarArchiveEntry t) {
+    private void assertGnuMagic(final TarArchiveEntry t) {
         assertEquals(MAGIC_GNU + VERSION_GNU_SPACE, readMagic(t));
     }
 
-    private void assertPosixMagic(TarArchiveEntry t) {
+    private void assertPosixMagic(final TarArchiveEntry t) {
         assertEquals(MAGIC_POSIX + VERSION_POSIX, readMagic(t));
     }
 
-    private String readMagic(TarArchiveEntry t) {
+    private String readMagic(final TarArchiveEntry t) {
         byte[] buf = new byte[512];
         t.writeEntryHeader(buf);
         return new String(buf, MAGIC_OFFSET, MAGICLEN + VERSIONLEN);

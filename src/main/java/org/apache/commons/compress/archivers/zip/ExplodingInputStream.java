@@ -70,7 +70,7 @@ class ExplodingInputStream extends InputStream {
      * @param numberOfTrees  the number of trees (2 or 3)
      * @param in             the compressed data stream
      */
-    public ExplodingInputStream(int dictionarySize, int numberOfTrees, InputStream in) {
+    public ExplodingInputStream(final int dictionarySize, final int numberOfTrees, final InputStream in) {
         if (dictionarySize != 4096 && dictionarySize != 8192) {
             throw new IllegalArgumentException("The dictionary size must be 4096 or 8192");
         }

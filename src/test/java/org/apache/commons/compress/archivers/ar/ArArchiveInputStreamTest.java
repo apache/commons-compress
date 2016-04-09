@@ -40,7 +40,7 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
         checkLongNameEntry("longfile_bsd.ar");
     }
 
-    private void checkLongNameEntry(String archive) throws Exception {
+    private void checkLongNameEntry(final String archive) throws Exception {
         FileInputStream fis = new FileInputStream(getFile(archive));
         ArArchiveInputStream s = null;
         try {

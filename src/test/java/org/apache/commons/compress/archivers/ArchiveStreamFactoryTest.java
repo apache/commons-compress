@@ -195,7 +195,7 @@ public class ArchiveStreamFactoryTest {
         final String fieldName;
         final String type;
         final boolean hasOutputStream;
-        TestData(String testFile, String type, boolean hasOut, String expectedEncoding, ArchiveStreamFactory fac, String fieldName) {
+        TestData(final String testFile, final String type, final boolean hasOut, final String expectedEncoding, final ArchiveStreamFactory fac, final String fieldName) {
             this.testFile = testFile;
             this.expectedEncoding = expectedEncoding;
             this.fac = fac;
@@ -206,7 +206,7 @@ public class ArchiveStreamFactoryTest {
     }
 
     @SuppressWarnings("deprecation") // test of deprecated method
-    static ArchiveStreamFactory getFactory(String entryEncoding) {
+    static ArchiveStreamFactory getFactory(final String entryEncoding) {
         ArchiveStreamFactory fac = new ArchiveStreamFactory();
         fac.setEntryEncoding(entryEncoding);
         return fac;
@@ -342,14 +342,14 @@ public class ArchiveStreamFactoryTest {
     }
 
     // equals allowing null
-    private static boolean eq(String exp, String act) {
+    private static boolean eq(final String exp, final String act) {
         if (exp == null) {
             return act == null;
         }
         return exp.equals(act);
     }
 
-    private static String getField(Object instance, String name) {
+    private static String getField(final Object instance, final String name) {
         Class<?> cls = instance.getClass();
         Field fld;
         try {
@@ -383,14 +383,14 @@ public class ArchiveStreamFactoryTest {
         }
     }
 
-    private ArchiveInputStream getInputStreamFor(String resource, ArchiveStreamFactory factory)
+    private ArchiveInputStream getInputStreamFor(final String resource, final ArchiveStreamFactory factory)
             throws IOException, ArchiveException {
         return factory.createArchiveInputStream(
                    new BufferedInputStream(new FileInputStream(
                        getFile(resource))));
     }
 
-    private ArchiveInputStream getInputStreamFor(String type, String resource, ArchiveStreamFactory factory)
+    private ArchiveInputStream getInputStreamFor(final String type, final String resource, final ArchiveStreamFactory factory)
             throws IOException, ArchiveException {
         return factory.createArchiveInputStream(
                    type,
@@ -398,7 +398,7 @@ public class ArchiveStreamFactoryTest {
                        getFile(resource))));
     }
 
-    private ArchiveOutputStream getOutputStreamFor(String type, ArchiveStreamFactory factory)
+    private ArchiveOutputStream getOutputStreamFor(final String type, final ArchiveStreamFactory factory)
             throws IOException, ArchiveException {
         return factory.createArchiveOutputStream(type, new ByteArrayOutputStream());
     }

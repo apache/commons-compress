@@ -46,7 +46,7 @@ class TapeInputStream extends FilterInputStream {
     /**
      * Constructor
      */
-    public TapeInputStream(InputStream in) {
+    public TapeInputStream(final InputStream in) {
         super(in);
     }
 
@@ -64,7 +64,7 @@ class TapeInputStream extends FilterInputStream {
      * @throws IOException
      *             there was an error reading additional blocks.
      */
-    public void resetBlockSize(int recsPerBlock, boolean isCompressed)
+    public void resetBlockSize(final int recsPerBlock, final boolean isCompressed)
         throws IOException {
         this.isCompressed = isCompressed;
 
@@ -113,7 +113,7 @@ class TapeInputStream extends FilterInputStream {
      * record size
      */
     @Override
-    public int read(byte[] b, int off, int len) throws IOException {
+    public int read(final byte[] b, int off, final int len) throws IOException {
         if ((len % recordSize) != 0) {
             throw new IllegalArgumentException(
                 "all reads must be multiple of record size (" + recordSize +
@@ -159,7 +159,7 @@ class TapeInputStream extends FilterInputStream {
      * record size
      */
     @Override
-    public long skip(long len) throws IOException {
+    public long skip(final long len) throws IOException {
         if ((len % recordSize) != 0) {
             throw new IllegalArgumentException(
                 "all reads must be multiple of record size (" + recordSize +
@@ -254,7 +254,7 @@ class TapeInputStream extends FilterInputStream {
      *        This is an optimization for longer seeks.
      * @return false if End-Of-File, else true
      */
-    private boolean readBlock(boolean decompress) throws IOException {
+    private boolean readBlock(final boolean decompress) throws IOException {
         boolean success = true;
 
         if (in == null) {
@@ -334,7 +334,7 @@ class TapeInputStream extends FilterInputStream {
     /**
      * Read buffer
      */
-    private boolean readFully(byte[] b, int off, int len)
+    private boolean readFully(final byte[] b, final int off, final int len)
         throws IOException {
         int count = IOUtils.readFully(in, b, off, len);
         if (count < len) {

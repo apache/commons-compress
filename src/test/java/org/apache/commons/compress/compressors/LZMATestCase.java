@@ -59,7 +59,7 @@ public final class LZMATestCase extends AbstractTestCase {
         }
     }
 
-    private void copy(InputStream in, File output) throws IOException {
+    private void copy(final InputStream in, final File output) throws IOException {
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(output);

@@ -119,7 +119,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
      *            the platform's default.
      * @since 1.6
      */
-    public CpioArchiveInputStream(final InputStream in, String encoding) {
+    public CpioArchiveInputStream(final InputStream in, final String encoding) {
         this(in, BLOCK_SIZE, encoding);
     }
 
@@ -134,7 +134,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
      *            The block size of the archive.
      * @since 1.5
      */
-    public CpioArchiveInputStream(final InputStream in, int blockSize) {
+    public CpioArchiveInputStream(final InputStream in, final int blockSize) {
         this(in, blockSize, CharsetNames.US_ASCII);
     }
 
@@ -150,7 +150,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
      *            the platform's default.
      * @since 1.6
      */
-    public CpioArchiveInputStream(final InputStream in, int blockSize, String encoding) {
+    public CpioArchiveInputStream(final InputStream in, final int blockSize, final String encoding) {
         this.in = in;
         this.blockSize = blockSize;
         this.encoding = encoding;
@@ -269,7 +269,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         return this.entry;
     }
 
-    private void skip(int bytes) throws IOException{
+    private void skip(final int bytes) throws IOException{
         // bytes cannot be more than 3 bytes
         if (bytes > 0) {
             readFully(FOUR_BYTES_BUF, 0, bytes);
@@ -523,7 +523,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
      * @param length length of data
      * @return whether the buffer seems to contain CPIO data
      */
-    public static boolean matches(byte[] signature, int length) {
+    public static boolean matches(final byte[] signature, final int length) {
         if (length < 6) {
             return false;
         }

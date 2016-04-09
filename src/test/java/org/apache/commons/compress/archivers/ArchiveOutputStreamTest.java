@@ -134,7 +134,7 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
         doCallSequence("Zip");
     }
 
-    private void doCallSequence(String archiveType) throws Exception {
+    private void doCallSequence(final String archiveType) throws Exception {
         OutputStream out1 = new ByteArrayOutputStream();
         File dummy = getFile("test1.xml"); // need a real file
 

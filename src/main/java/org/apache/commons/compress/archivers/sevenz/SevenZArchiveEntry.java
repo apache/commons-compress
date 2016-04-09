@@ -67,7 +67,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      *
      * @param name This entry's new name.
      */
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -83,7 +83,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * Sets whether there is any content associated with this entry.
      * @param hasStream whether there is any content associated with this entry.
      */
-    public void setHasStream(boolean hasStream) {
+    public void setHasStream(final boolean hasStream) {
         this.hasStream = hasStream;
     }
 
@@ -102,7 +102,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      *
      * @param isDirectory True if this entry is a directory.
      */
-    public void setDirectory(boolean isDirectory) {
+    public void setDirectory(final boolean isDirectory) {
         this.isDirectory = isDirectory;
     }
     
@@ -120,7 +120,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * meaning it should delete the same file from a previous backup.
      * @param isAntiItem true if it is an anti-item, false otherwise 
      */
-    public void setAntiItem(boolean isAntiItem) {
+    public void setAntiItem(final boolean isAntiItem) {
         this.isAntiItem = isAntiItem;
     }
 
@@ -136,7 +136,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * Sets whether this entry has got a creation date at all.
      * @param hasCreationDate whether the entry has got a creation date
      */
-    public void setHasCreationDate(boolean hasCreationDate) {
+    public void setHasCreationDate(final boolean hasCreationDate) {
         this.hasCreationDate = hasCreationDate;
     }
     
@@ -159,7 +159,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * since 1 January 1601)
      * @param ntfsCreationDate the creation date
      */
-    public void setCreationDate(long ntfsCreationDate) {
+    public void setCreationDate(final long ntfsCreationDate) {
         this.creationDate = ntfsCreationDate;
     }
     
@@ -167,7 +167,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * Sets the creation date,
      * @param creationDate the creation date
      */
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         hasCreationDate = creationDate != null;
         if (hasCreationDate) {
             this.creationDate = javaTimeToNtfsTime(creationDate);
@@ -187,7 +187,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * @param hasLastModifiedDate whether this entry has got a last
      * modified date at all
      */
-    public void setHasLastModifiedDate(boolean hasLastModifiedDate) {
+    public void setHasLastModifiedDate(final boolean hasLastModifiedDate) {
         this.hasLastModifiedDate = hasLastModifiedDate;
     }
 
@@ -211,7 +211,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * units since 1 January 1601)
      * @param ntfsLastModifiedDate the last modified date
      */
-    public void setLastModifiedDate(long ntfsLastModifiedDate) {
+    public void setLastModifiedDate(final long ntfsLastModifiedDate) {
         this.lastModifiedDate = ntfsLastModifiedDate;
     }
     
@@ -219,7 +219,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * Sets the last modified date,
      * @param lastModifiedDate the last modified date
      */
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         hasLastModifiedDate = lastModifiedDate != null;
         if (hasLastModifiedDate) {
             this.lastModifiedDate = javaTimeToNtfsTime(lastModifiedDate);
@@ -238,7 +238,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * Sets whether this entry has got an access date at all.
      * @param hasAcessDate whether this entry has got an access date at all.
      */
-    public void setHasAccessDate(boolean hasAcessDate) {
+    public void setHasAccessDate(final boolean hasAcessDate) {
         this.hasAccessDate = hasAcessDate;
     }
 
@@ -261,7 +261,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * since 1 January 1601)
      * @param ntfsAccessDate the access date
      */
-    public void setAccessDate(long ntfsAccessDate) {
+    public void setAccessDate(final long ntfsAccessDate) {
         this.accessDate = ntfsAccessDate;
     }
     
@@ -269,7 +269,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * Sets the access date,
      * @param accessDate the access date
      */
-    public void setAccessDate(Date accessDate) {
+    public void setAccessDate(final Date accessDate) {
         hasAccessDate = accessDate != null;
         if (hasAccessDate) {
             this.accessDate = javaTimeToNtfsTime(accessDate);
@@ -288,7 +288,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * Sets whether this entry has windows attributes.
      * @param hasWindowsAttributes whether this entry has windows attributes.
      */
-    public void setHasWindowsAttributes(boolean hasWindowsAttributes) {
+    public void setHasWindowsAttributes(final boolean hasWindowsAttributes) {
         this.hasWindowsAttributes = hasWindowsAttributes;
     }
 
@@ -304,7 +304,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * Sets the windows attributes.
      * @param windowsAttributes the windows attributes
      */
-    public void setWindowsAttributes(int windowsAttributes) {
+    public void setWindowsAttributes(final int windowsAttributes) {
         this.windowsAttributes = windowsAttributes;
     }
 
@@ -322,7 +322,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * Sets whether this entry has got a crc.
      * @param hasCrc whether this entry has got a crc.
      */
-    public void setHasCrc(boolean hasCrc) {
+    public void setHasCrc(final boolean hasCrc) {
         this.hasCrc = hasCrc;
     }
 
@@ -342,7 +342,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * @param crc the CRC
      */
     @Deprecated
-    public void setCrc(int crc) {
+    public void setCrc(final int crc) {
         this.crc = crc;
     }
 
@@ -360,7 +360,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * @since Compress 1.7
      * @param crc the CRC
      */
-    public void setCrcValue(long crc) {
+    public void setCrcValue(final long crc) {
         this.crc = crc;
     }
 
@@ -380,7 +380,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * @param crc the CRC
      */
     @Deprecated
-    void setCompressedCrc(int crc) {
+    void setCompressedCrc(final int crc) {
         this.compressedCrc = crc;
     }
 
@@ -398,7 +398,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * @since Compress 1.7
      * @param crc the CRC
      */
-    void setCompressedCrcValue(long crc) {
+    void setCompressedCrcValue(final long crc) {
         this.compressedCrc = crc;
     }
 
@@ -417,7 +417,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      *
      * @param size This entry's new file size.
      */
-    public void setSize(long size) {
+    public void setSize(final long size) {
         this.size = size;
     }
 
@@ -435,7 +435,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      *
      * @param size This entry's new compressed file size.
      */
-    void setCompressedSize(long size) {
+    void setCompressedSize(final long size) {
         this.compressedSize = size;
     }
 
@@ -453,7 +453,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * @param methods the methods to use for the content
      * @since 1.8
      */
-    public void setContentMethods(Iterable<? extends SevenZMethodConfiguration> methods) {
+    public void setContentMethods(final Iterable<? extends SevenZMethodConfiguration> methods) {
         if (methods != null) {
             LinkedList<SevenZMethodConfiguration> l = new LinkedList<SevenZMethodConfiguration>();
             for (SevenZMethodConfiguration m : methods) {

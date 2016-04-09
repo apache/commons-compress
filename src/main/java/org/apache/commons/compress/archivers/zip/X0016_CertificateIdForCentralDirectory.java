@@ -68,7 +68,7 @@ public class X0016_CertificateIdForCentralDirectory extends PKWareExtraHeader {
     }
 
     @Override
-    public void parseFromCentralDirectoryData(byte[] data, int offset, int length) {
+    public void parseFromCentralDirectoryData(final byte[] data, final int offset, final int length) {
         this.rcount = ZipShort.getValue(data, offset);
         this.hashAlg = HashAlgorithm.getAlgorithmByCode(ZipShort.getValue(data, offset + 2));
     }

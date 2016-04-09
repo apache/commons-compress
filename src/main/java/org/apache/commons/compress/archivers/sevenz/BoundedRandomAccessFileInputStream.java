@@ -41,7 +41,7 @@ class BoundedRandomAccessFileInputStream extends InputStream {
     }
 
     @Override
-    public int read(byte[] b, int off, int len) throws IOException {
+    public int read(final byte[] b, final int off, final int len) throws IOException {
         if (bytesRemaining == 0) {
             return -1;
         }

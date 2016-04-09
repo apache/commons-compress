@@ -299,7 +299,7 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
      * @param offset offset into buffer to read data
      * @param length the length of data
      */
-    public void parseCentralDirectoryFormat(byte[] data, int offset, int length) {
+    public void parseCentralDirectoryFormat(final byte[] data, final int offset, final int length) {
         this.format = ZipShort.getValue(data, offset);
         this.algId = EncryptionAlgorithm.getAlgorithmByCode(ZipShort.getValue(data, offset + 2));
         this.bitlen = ZipShort.getValue(data, offset + 4);
@@ -327,7 +327,7 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
      * @param offset offset into buffer to read data
      * @param length the length of data
      */
-    public void parseFileFormat(byte[] data, int offset, int length) {
+    public void parseFileFormat(final byte[] data, final int offset, final int length) {
         int ivSize = ZipShort.getValue(data, offset);
         this.ivData = new byte[ivSize];
         System.arraycopy(data, offset + 4, this.ivData, 0, ivSize);
@@ -369,13 +369,13 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
     }
 
     @Override
-    public void parseFromLocalFileData(byte[] data, int offset, int length) {
+    public void parseFromLocalFileData(final byte[] data, final int offset, final int length) {
         super.parseFromLocalFileData(data, offset, length);
         parseFileFormat(data, offset, length);
     }
 
     @Override
-    public void parseFromCentralDirectoryData(byte[] data, int offset, int length) {
+    public void parseFromCentralDirectoryData(final byte[] data, final int offset, final int length) {
         super.parseFromCentralDirectoryData(data, offset, length);
         parseCentralDirectoryFormat(data, offset, length);
     }

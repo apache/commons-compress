@@ -61,7 +61,7 @@ public class ExtraFieldUtils {
      * the {@link ZipExtraField ZipExtraField interface}.</p>
      * @param c the class to register
      */
-    public static void register(Class<?> c) {
+    public static void register(final Class<?> c) {
         try {
             ZipExtraField ze = (ZipExtraField) c.newInstance();
             implementations.put(ze.getHeaderId(), c);
@@ -82,7 +82,7 @@ public class ExtraFieldUtils {
      * @exception InstantiationException if unable to instantiate the class
      * @exception IllegalAccessException if not allowed to instantiate the class
      */
-    public static ZipExtraField createExtraField(ZipShort headerId)
+    public static ZipExtraField createExtraField(final ZipShort headerId)
         throws InstantiationException, IllegalAccessException {
         Class<?> c = implementations.get(headerId);
         if (c != null) {
@@ -101,7 +101,7 @@ public class ExtraFieldUtils {
      * @return an array of ExtraFields
      * @throws ZipException on error
      */
-    public static ZipExtraField[] parse(byte[] data) throws ZipException {
+    public static ZipExtraField[] parse(final byte[] data) throws ZipException {
         return parse(data, true, UnparseableExtraField.THROW);
     }
 
@@ -114,7 +114,7 @@ public class ExtraFieldUtils {
      * @return an array of ExtraFields
      * @throws ZipException on error
      */
-    public static ZipExtraField[] parse(byte[] data, boolean local)
+    public static ZipExtraField[] parse(final byte[] data, final boolean local)
         throws ZipException {
         return parse(data, local, UnparseableExtraField.THROW);
     }
@@ -132,8 +132,8 @@ public class ExtraFieldUtils {
      *
      * @since 1.1
      */
-    public static ZipExtraField[] parse(byte[] data, boolean local,
-                                        UnparseableExtraField onUnparseableData)
+    public static ZipExtraField[] parse(final byte[] data, final boolean local,
+                                        final UnparseableExtraField onUnparseableData)
         throws ZipException {
         List<ZipExtraField> v = new ArrayList<ZipExtraField>();
         int start = 0;
@@ -198,7 +198,7 @@ public class ExtraFieldUtils {
      * @param data an array of ExtraFiles
      * @return an array of bytes
      */
-    public static byte[] mergeLocalFileDataData(ZipExtraField[] data) {
+    public static byte[] mergeLocalFileDataData(final ZipExtraField[] data) {
         final boolean lastIsUnparseableHolder = data.length > 0
             && data[data.length - 1] instanceof UnparseableExtraFieldData;
         int regularExtraFieldCount =
@@ -237,7 +237,7 @@ public class ExtraFieldUtils {
      * @param data an array of ExtraFields
      * @return an array of bytes
      */
-    public static byte[] mergeCentralDirectoryData(ZipExtraField[] data) {
+    public static byte[] mergeCentralDirectoryData(final ZipExtraField[] data) {
         final boolean lastIsUnparseableHolder = data.length > 0
             && data[data.length - 1] instanceof UnparseableExtraFieldData;
         int regularExtraFieldCount =
@@ -312,7 +312,7 @@ public class ExtraFieldUtils {
 
         private final int key;
 
-        private UnparseableExtraField(int k) {
+        private UnparseableExtraField(final int k) {
             key = k;
         }
 

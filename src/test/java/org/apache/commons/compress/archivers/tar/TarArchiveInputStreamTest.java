@@ -135,7 +135,7 @@ public class TarArchiveInputStreamTest {
         datePriorToEpoch("preepoch-posix.tar");
     }
 
-    private void datePriorToEpoch(String archive) throws Exception {
+    private void datePriorToEpoch(final String archive) throws Exception {
         TarArchiveInputStream in = null;
         try {
             in = new TarArchiveInputStream(new FileInputStream(getFile(archive)));
@@ -297,7 +297,7 @@ public class TarArchiveInputStreamTest {
         }
     }
 
-    private TarArchiveInputStream getTestStream(String name) {
+    private TarArchiveInputStream getTestStream(final String name) {
         return new TarArchiveInputStream(
                 TarArchiveInputStreamTest.class.getResourceAsStream(name));
     }

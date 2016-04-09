@@ -91,7 +91,7 @@ public final class GeneralPurposeBit implements Cloneable {
      * whether the current entry will use UTF8 for file name and comment.
      * @param b whether the current entry will use UTF8 for file name and comment.
      */
-    public void useUTF8ForNames(boolean b) {
+    public void useUTF8ForNames(final boolean b) {
         languageEncodingFlag = b;
     }
 
@@ -111,7 +111,7 @@ public final class GeneralPurposeBit implements Cloneable {
      * @param b whether the current entry will use the data descriptor to store
      * CRC and size information
      */
-    public void useDataDescriptor(boolean b) {
+    public void useDataDescriptor(final boolean b) {
         dataDescriptorFlag = b;
     }
 
@@ -127,7 +127,7 @@ public final class GeneralPurposeBit implements Cloneable {
      * whether the current entry will be encrypted.
      * @param b whether the current entry will be encrypted
      */
-    public void useEncryption(boolean b) {
+    public void useEncryption(final boolean b) {
         encryptionFlag = b;
     }
 
@@ -143,7 +143,7 @@ public final class GeneralPurposeBit implements Cloneable {
      * whether the current entry will be encrypted  using strong encryption.
      * @param b whether the current entry will be encrypted  using strong encryption
      */
-    public void useStrongEncryption(boolean b) {
+    public void useStrongEncryption(final boolean b) {
         strongEncryptionFlag = b;
         if (b) {
             useEncryption(true);
@@ -183,7 +183,7 @@ public final class GeneralPurposeBit implements Cloneable {
      *         The offset within the output buffer of the first byte to be written.
      *         must be non-negative and no larger than <tt>buf.length-2</tt>
      */
-    public void encode(byte[] buf, int offset) {
+    public void encode(final byte[] buf, final int offset) {
                 ZipShort.putShort((dataDescriptorFlag ? DATA_DESCRIPTOR_FLAG : 0)
                         |
                         (languageEncodingFlag ? UFT8_NAMES_FLAG : 0)
@@ -222,7 +222,7 @@ public final class GeneralPurposeBit implements Cloneable {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (!(o instanceof GeneralPurposeBit)) {
             return false;
         }

@@ -37,7 +37,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
      * Set the header id.
      * @param headerId the header id to use
      */
-    public void setHeaderId(ZipShort headerId) {
+    public void setHeaderId(final ZipShort headerId) {
         this.headerId = headerId;
     }
 
@@ -61,7 +61,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
      * without Header-ID or length specifier.
      * @param data the field data to use
      */
-    public void setLocalFileDataData(byte[] data) {
+    public void setLocalFileDataData(final byte[] data) {
         localData = ZipUtil.copy(data);
     }
 
@@ -93,7 +93,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
      * Set the extra field data in central directory.
      * @param data the data to use
      */
-    public void setCentralDirectoryData(byte[] data) {
+    public void setCentralDirectoryData(final byte[] data) {
         centralData = ZipUtil.copy(data);
     }
 
@@ -129,7 +129,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
      * @see ZipExtraField#parseFromLocalFileData(byte[], int, int)
      */
     @Override
-    public void parseFromLocalFileData(byte[] data, int offset, int length) {
+    public void parseFromLocalFileData(final byte[] data, final int offset, final int length) {
         byte[] tmp = new byte[length];
         System.arraycopy(data, offset, tmp, 0, length);
         setLocalFileDataData(tmp);
@@ -142,8 +142,8 @@ public class UnrecognizedExtraField implements ZipExtraField {
      * @see ZipExtraField#parseFromCentralDirectoryData(byte[], int, int)
      */
     @Override
-    public void parseFromCentralDirectoryData(byte[] data, int offset,
-                                              int length) {
+    public void parseFromCentralDirectoryData(final byte[] data, final int offset,
+                                              final int length) {
         byte[] tmp = new byte[length];
         System.arraycopy(data, offset, tmp, 0, length);
         setCentralDirectoryData(tmp);

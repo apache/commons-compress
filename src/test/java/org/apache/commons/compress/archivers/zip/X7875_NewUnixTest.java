@@ -133,7 +133,7 @@ public class X7875_NewUnixTest {
         assertTrue(Arrays.equals(SEQUENCE6, trimTest(SEQUENCE6_LEADING_ZERO)));
     }
 
-    private static byte[] trimTest(byte[] b) { return X7875_NewUnix.trimLeadingZeroesForceMinLength(b); }
+    private static byte[] trimTest(final byte[] b) { return X7875_NewUnix.trimLeadingZeroesForceMinLength(b); }
 
     @Test
     public void testParseReparse() throws ZipException {

@@ -33,7 +33,7 @@ public class ChangeSetResults {
      * Adds the filename of a recently deleted file to the result list.
      * @param fileName the file which has been deleted
      */
-    void deleted(String fileName) {
+    void deleted(final String fileName) {
         deleted.add(fileName);
     }
 
@@ -42,7 +42,7 @@ public class ChangeSetResults {
      * copied from the source stream to the target stream.
      * @param fileName the file name which has been added from the original stream
      */
-    void addedFromStream(String fileName) {
+    void addedFromStream(final String fileName) {
         addedFromStream.add(fileName);
     }
 
@@ -51,7 +51,7 @@ public class ChangeSetResults {
      * copied from the changeset to the target stream
      * @param fileName the name of the file
      */
-    void addedFromChangeSet(String fileName) {
+    void addedFromChangeSet(final String fileName) {
         addedFromChangeSet.add(fileName);
     }
 
@@ -84,7 +84,7 @@ public class ChangeSetResults {
      * @param filename the filename to check
      * @return true, if this filename already has been added
      */
-    boolean hasBeenAdded(String filename) {
+    boolean hasBeenAdded(final String filename) {
         if(addedFromChangeSet.contains(filename) || addedFromStream.contains(filename)) {
             return true;
         } 

@@ -64,7 +64,7 @@ public final class Pack200TestCase extends AbstractTestCase {
         jarUnarchiveAll(true, Pack200Strategy.TEMP_FILE);
     }
 
-    private void jarUnarchiveAll(boolean useFile, Pack200Strategy mode)
+    private void jarUnarchiveAll(final boolean useFile, final Pack200Strategy mode)
         throws Exception {
         final File input = getFile("bla.pack");
         final InputStream is = useFile
@@ -106,7 +106,7 @@ public final class Pack200TestCase extends AbstractTestCase {
         jarArchiveCreation(Pack200Strategy.TEMP_FILE);
     }
 
-    private void jarArchiveCreation(Pack200Strategy mode) throws Exception {
+    private void jarArchiveCreation(final Pack200Strategy mode) throws Exception {
         final File output = new File(dir, "bla.pack");
 
         final File file1 = getFile("test1.xml");

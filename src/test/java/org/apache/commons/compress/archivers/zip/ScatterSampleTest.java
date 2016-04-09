@@ -40,7 +40,7 @@ public class ScatterSampleTest {
         checkFile(result);
     }
 
-    private void createFile(File result) throws IOException, ExecutionException, InterruptedException {
+    private void createFile(final File result) throws IOException, ExecutionException, InterruptedException {
         ScatterSample scatterSample = new ScatterSample();
         ZipArchiveEntry archiveEntry = new ZipArchiveEntry("test1.xml");
         archiveEntry.setMethod(ZipEntry.DEFLATED);
@@ -57,7 +57,7 @@ public class ScatterSampleTest {
         zipArchiveOutputStream.close();
     }
 
-    private void checkFile(File result) throws IOException {
+    private void checkFile(final File result) throws IOException {
         ZipFile zf = new ZipFile(result);
         ZipArchiveEntry archiveEntry1 = zf.getEntries().nextElement();
         assertEquals( "test1.xml", archiveEntry1.getName());

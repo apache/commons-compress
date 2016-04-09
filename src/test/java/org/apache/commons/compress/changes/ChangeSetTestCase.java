@@ -49,7 +49,7 @@ import org.junit.Test;
 public final class ChangeSetTestCase extends AbstractTestCase {
 
     // Delete a directory tree
-    private void archiveListDeleteDir(String prefix){
+    private void archiveListDeleteDir(final String prefix){
         Iterator<String> it = archiveList.iterator();
         while(it.hasNext()){
             String entry = it.next();
@@ -60,7 +60,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     }
 
     // Delete a single file
-    private void archiveListDelete(String prefix){
+    private void archiveListDelete(final String prefix){
         Iterator<String> it = archiveList.iterator();
         while(it.hasNext()){
             String entry = it.next();

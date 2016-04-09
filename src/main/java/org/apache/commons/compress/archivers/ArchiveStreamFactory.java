@@ -143,7 +143,7 @@ public class ArchiveStreamFactory {
      *
      * @since 1.10
      */
-    public ArchiveStreamFactory(String encoding) {
+    public ArchiveStreamFactory(final String encoding) {
         super();
         this.encoding = encoding;
         // Also set the original field so can continue to use it.
@@ -171,7 +171,7 @@ public class ArchiveStreamFactory {
      * was used to specify the factory encoding.
      */
     @Deprecated
-    public void setEntryEncoding(String entryEncoding) {
+    public void setEntryEncoding(final String entryEncoding) {
         // Note: this does not detect new ArchiveStreamFactory(null) but that does not set the encoding anyway
         if (encoding != null) {
             throw new IllegalStateException("Cannot overide encoding set by the constructor");

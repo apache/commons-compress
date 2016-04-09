@@ -59,7 +59,7 @@ public final class DetectCompressorTestCase {
         final char[] entryNames; // expected entries ...
         final CompressorStreamFactory factory; // ... when using this factory
         final boolean concat; // expected value for decompressConcatenated
-        TestData(String name, char[] names, CompressorStreamFactory factory, boolean concat) {
+        TestData(final String name, final char[] names, final CompressorStreamFactory factory, final boolean concat) {
             this.fileName = name;
             this.entryNames = names;
             this.factory = factory;
@@ -160,14 +160,14 @@ public final class DetectCompressorTestCase {
         }
     }
 
-    private CompressorInputStream getStreamFor(String resource)
+    private CompressorInputStream getStreamFor(final String resource)
             throws CompressorException, IOException {
         return factory.createCompressorInputStream(
                    new BufferedInputStream(new FileInputStream(
                        getFile(resource))));
     }
 
-    private CompressorInputStream getStreamFor(String resource, CompressorStreamFactory factory)
+    private CompressorInputStream getStreamFor(final String resource, final CompressorStreamFactory factory)
             throws CompressorException, IOException {
         return factory.createCompressorInputStream(
                    new BufferedInputStream(new FileInputStream(
