@@ -113,7 +113,7 @@ public class SevenZFile implements Closeable {
     }
     
     /**
-     * Reads a file as unecrypted 7z archive
+     * Reads a file as unencrypted 7z archive
      *
      * @param filename the file to read
      * @throws IOException if reading the archive fails
