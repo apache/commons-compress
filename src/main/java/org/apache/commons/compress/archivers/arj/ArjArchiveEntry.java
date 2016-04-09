@@ -50,9 +50,8 @@ public class ArjArchiveEntry implements ArchiveEntry {
         if ((localFileHeader.arjFlags & LocalFileHeader.Flags.PATHSYM) != 0) {
             return localFileHeader.name.replaceAll("/",
                     Matcher.quoteReplacement(File.separator));
-        } else {
-            return localFileHeader.name;
         }
+        return localFileHeader.name;
     }
 
     /**

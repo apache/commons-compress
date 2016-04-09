@@ -475,9 +475,8 @@ public class ZipFile implements Closeable {
                     in.close();
                 }
             }
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**

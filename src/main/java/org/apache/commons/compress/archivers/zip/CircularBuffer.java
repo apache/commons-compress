@@ -67,9 +67,8 @@ class CircularBuffer {
             int value = buffer[readIndex];
             readIndex = (readIndex + 1) % size;
             return value & 0xFF;
-        } else {
-            return -1;
         }
+        return -1;
     }
 
     /**

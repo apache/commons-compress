@@ -562,9 +562,8 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
                     (modifyTime == xf.modifyTime || (modifyTime != null && modifyTime.equals(xf.modifyTime))) &&
                     (accessTime == xf.accessTime || (accessTime != null && accessTime.equals(xf.accessTime))) &&
                     (createTime == xf.createTime || (createTime != null && createTime.equals(xf.createTime)));
-        } else {
-            return false;
         }
+        return false;
     }
 
     @Override

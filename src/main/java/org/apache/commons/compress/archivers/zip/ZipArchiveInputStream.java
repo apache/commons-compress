@@ -654,10 +654,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             long n = in.read(buf.array(), 0, (int) Math.min(buf.capacity(), remaining));
             if (n < 0) {
                 throw new EOFException("Truncated ZIP entry: " + current.entry.getName());
-            } else {
-                count(n);
-                remaining -= n;
             }
+            count(n);
+            remaining -= n;
         }
     }
 

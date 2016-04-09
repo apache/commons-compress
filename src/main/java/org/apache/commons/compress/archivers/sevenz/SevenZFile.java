@@ -381,10 +381,9 @@ public class SevenZFile implements Closeable {
         final int external = header.readUnsignedByte();
         if (external != 0) {
             throw new IOException("External unsupported");
-        } else {
-            for (int i = 0; i < (int)numFolders; i++) {
-                folders[i] = readFolder(header);
-            }
+        }
+        for (int i = 0; i < (int)numFolders; i++) {
+            folders[i] = readFolder(header);
         }
         
         nid = header.readUnsignedByte();
@@ -647,23 +646,22 @@ public class SevenZFile implements Closeable {
                     final int external = header.readUnsignedByte();
                     if (external != 0) {
                         throw new IOException("Not implemented");
-                    } else {
-                        if (((size - 1) & 1) != 0) {
-                            throw new IOException("File names length invalid");
+                    }
+                    if (((size - 1) & 1) != 0) {
+                        throw new IOException("File names length invalid");
+                    }
+                    final byte[] names = new byte[(int)(size - 1)];
+                    header.readFully(names);
+                    int nextFile = 0;
+                    int nextName = 0;
+                    for (int i = 0; i < names.length; i += 2) {
+                        if (names[i] == 0 && names[i+1] == 0) {
+                            files[nextFile++].setName(new String(names, nextName, i-nextName, CharsetNames.UTF_16LE));
+                            nextName = i + 2;
                         }
-                        final byte[] names = new byte[(int)(size - 1)];
-                        header.readFully(names);
-                        int nextFile = 0;
-                        int nextName = 0;
-                        for (int i = 0; i < names.length; i += 2) {
-                            if (names[i] == 0 && names[i+1] == 0) {
-                                files[nextFile++].setName(new String(names, nextName, i-nextName, CharsetNames.UTF_16LE));
-                                nextName = i + 2;
-                            }
-                        }
-                        if (nextName != names.length || nextFile != files.length) {
-                            throw new IOException("Error parsing file names");
-                        }
+                    }
+                    if (nextName != names.length || nextFile != files.length) {
+                        throw new IOException("Error parsing file names");
                     }
                     break;
                 }
@@ -672,12 +670,11 @@ public class SevenZFile implements Closeable {
                     final int external = header.readUnsignedByte();
                     if (external != 0) {
                         throw new IOException("Unimplemented");
-                    } else {
-                        for (int i = 0; i < files.length; i++) {
-                            files[i].setHasCreationDate(timesDefined.get(i));
-                            if (files[i].getHasCreationDate()) {
-                                files[i].setCreationDate(Long.reverseBytes(header.readLong()));
-                            }
+                    }
+                    for (int i = 0; i < files.length; i++) {
+                        files[i].setHasCreationDate(timesDefined.get(i));
+                        if (files[i].getHasCreationDate()) {
+                            files[i].setCreationDate(Long.reverseBytes(header.readLong()));
                         }
                     }
                     break;
@@ -687,12 +684,11 @@ public class SevenZFile implements Closeable {
                     final int external = header.readUnsignedByte();
                     if (external != 0) {
                         throw new IOException("Unimplemented");
-                    } else {
-                        for (int i = 0; i < files.length; i++) {
-                            files[i].setHasAccessDate(timesDefined.get(i));
-                            if (files[i].getHasAccessDate()) {
-                                files[i].setAccessDate(Long.reverseBytes(header.readLong()));
-                            }
+                    }
+                    for (int i = 0; i < files.length; i++) {
+                        files[i].setHasAccessDate(timesDefined.get(i));
+                        if (files[i].getHasAccessDate()) {
+                            files[i].setAccessDate(Long.reverseBytes(header.readLong()));
                         }
                     }
                     break;
@@ -702,12 +698,11 @@ public class SevenZFile implements Closeable {
                     final int external = header.readUnsignedByte();
                     if (external != 0) {
                         throw new IOException("Unimplemented");
-                    } else {
-                        for (int i = 0; i < files.length; i++) {
-                            files[i].setHasLastModifiedDate(timesDefined.get(i));
-                            if (files[i].getHasLastModifiedDate()) {
-                                files[i].setLastModifiedDate(Long.reverseBytes(header.readLong()));
-                            }
+                    }
+                    for (int i = 0; i < files.length; i++) {
+                        files[i].setHasLastModifiedDate(timesDefined.get(i));
+                        if (files[i].getHasLastModifiedDate()) {
+                            files[i].setLastModifiedDate(Long.reverseBytes(header.readLong()));
                         }
                     }
                     break;
@@ -717,12 +712,11 @@ public class SevenZFile implements Closeable {
                     final int external = header.readUnsignedByte();
                     if (external != 0) {
                         throw new IOException("Unimplemented");
-                    } else {
-                        for (int i = 0; i < files.length; i++) {
-                            files[i].setHasWindowsAttributes(attributesDefined.get(i));
-                            if (files[i].getHasWindowsAttributes()) {
-                                files[i].setWindowsAttributes(Integer.reverseBytes(header.readInt()));
-                            }
+                    }
+                    for (int i = 0; i < files.length; i++) {
+                        files[i].setHasWindowsAttributes(attributesDefined.get(i));
+                        if (files[i].getHasWindowsAttributes()) {
+                            files[i].setWindowsAttributes(Integer.reverseBytes(header.readInt()));
                         }
                     }
                     break;
@@ -888,9 +882,8 @@ public class SevenZFile implements Closeable {
         if (folder.hasCrc) {
             return new CRC32VerifyingInputStream(inputStreamStack,
                     folder.getUnpackSize(), folder.crc);
-        } else {
-            return inputStreamStack;
         }
+        return inputStreamStack;
     }
     
     /**

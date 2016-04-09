@@ -114,10 +114,9 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         }
         if (charsetName != null) {
             return new String(buffer.toByteArray(), charsetName);
-        } else {
-            // intentionally using the default encoding as that's the contract for a null charsetName
-            return new String(buffer.toByteArray());
         }
+        // intentionally using the default encoding as that's the contract for a null charsetName
+        return new String(buffer.toByteArray());
     }
     
     private void readFully(final DataInputStream dataIn, byte[] b)
@@ -330,10 +329,9 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
                         currentLocalFileHeader.originalSize, currentLocalFileHeader.originalCrc32);
             }
             return new ArjArchiveEntry(currentLocalFileHeader);
-        } else {
-            currentInputStream = null;
-            return null;
         }
+        currentInputStream = null;
+        return null;
     }
 
     @Override

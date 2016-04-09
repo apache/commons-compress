@@ -98,9 +98,8 @@ public class ChecksumVerifyingInputStream extends InputStream {
         // Can't really skip, we have to hash everything to verify the checksum
         if (read() >= 0) {
             return 1;
-        } else {
-            return 0;
         }
+        return 0;
     }
 
     @Override

@@ -36,9 +36,8 @@ class BoundedRandomAccessFileInputStream extends InputStream {
         if (bytesRemaining > 0) {
             --bytesRemaining;
             return file.read();
-        } else {
-            return -1;
         }
+        return -1;
     }
 
     @Override

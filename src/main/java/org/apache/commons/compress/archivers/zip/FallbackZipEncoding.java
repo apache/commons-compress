@@ -76,9 +76,8 @@ class FallbackZipEncoding implements ZipEncoding {
     public ByteBuffer encode(String name) throws IOException {
         if (this.charsetName == null) { // i.e. use default charset, see no-args constructor
             return ByteBuffer.wrap(name.getBytes());
-        } else {
-            return ByteBuffer.wrap(name.getBytes(this.charsetName));
         }
+        return ByteBuffer.wrap(name.getBytes(this.charsetName));
     }
 
     /**
@@ -88,8 +87,7 @@ class FallbackZipEncoding implements ZipEncoding {
     public String decode(byte[] data) throws IOException {
         if (this.charsetName == null) { // i.e. use default charset, see no-args constructor
             return new String(data);
-        } else {
-            return new String(data,this.charsetName);
         }
+        return new String(data,this.charsetName);
     }
 }

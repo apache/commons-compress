@@ -321,9 +321,8 @@ public class X000A_NTFS implements ZipExtraField {
             return (modifyTime == xf.modifyTime || (modifyTime != null && modifyTime.equals(xf.modifyTime))) &&
                     (accessTime == xf.accessTime || (accessTime != null && accessTime.equals(xf.accessTime))) &&
                     (createTime == xf.createTime || (createTime != null && createTime.equals(xf.createTime)));
-        } else {
-            return false;
         }
+        return false;
     }
 
     @Override

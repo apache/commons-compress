@@ -147,10 +147,9 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     public Date getCreationDate() {
         if (hasCreationDate) {
             return ntfsTimeToJavaTime(creationDate);
-        } else {
-            throw new UnsupportedOperationException(
-                    "The entry doesn't have this timestamp");
         }
+        throw new UnsupportedOperationException(
+                "The entry doesn't have this timestamp");
     }
     
     /**
@@ -199,10 +198,9 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     public Date getLastModifiedDate() {
         if (hasLastModifiedDate) {
             return ntfsTimeToJavaTime(lastModifiedDate);
-        } else {
-            throw new UnsupportedOperationException(
-                    "The entry doesn't have this timestamp");
         }
+        throw new UnsupportedOperationException(
+                "The entry doesn't have this timestamp");
     }
     
     /**
@@ -250,10 +248,9 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     public Date getAccessDate() {
         if (hasAccessDate) {
             return ntfsTimeToJavaTime(accessDate);
-        } else {
-            throw new UnsupportedOperationException(
-                    "The entry doesn't have this timestamp");
         }
+        throw new UnsupportedOperationException(
+                "The entry doesn't have this timestamp");
     }
     
     /**

@@ -45,9 +45,8 @@ public class BoundedInputStream extends InputStream {
         if (bytesRemaining > 0) {
             --bytesRemaining;
             return in.read();
-        } else {
-            return -1;
         }
+        return -1;
     }
 
     @Override

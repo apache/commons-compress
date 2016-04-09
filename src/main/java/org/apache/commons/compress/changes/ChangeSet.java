@@ -108,10 +108,9 @@ public final class ChangeSet {
                             it.remove();
                             changes.add(pChange);
                             return;
-                        } else {
-                            // do not add this change
-                            return;
                         }
+                        // do not add this change
+                        return;
                     }
                 }
             }

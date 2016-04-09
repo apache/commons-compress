@@ -99,9 +99,8 @@ public abstract class ZipUtil {
     public static long adjustToLong(int i) {
         if (i < 0) {
             return 2 * ((long) Integer.MAX_VALUE) + 2 + i;
-        } else {
-            return i;
         }
+        return i;
     }
 
     /**
@@ -135,9 +134,8 @@ public abstract class ZipUtil {
     static long bigToLong(BigInteger big) {
         if (big.bitLength() <= 63) { // bitLength() doesn't count the sign bit.
             return big.longValue();
-        } else {
-            throw new NumberFormatException("The BigInteger cannot fit inside a 64 bit java long: [" + big + "]");
         }
+        throw new NumberFormatException("The BigInteger cannot fit inside a 64 bit java long: [" + big + "]");
     }
 
     /**
@@ -173,9 +171,8 @@ public abstract class ZipUtil {
     public static int signedByteToUnsignedInt(byte b) {
         if (b >= 0) {
             return b;
-        } else {
-            return 256 + b;
         }
+        return 256 + b;
     }
 
     /**
@@ -192,9 +189,8 @@ public abstract class ZipUtil {
         }
         if (i < 128) {
             return (byte) i;
-        } else {
-            return (byte) (i - 256);
         }
+        return (byte) (i - 256);
     }
 
     /**
@@ -354,9 +350,8 @@ public abstract class ZipUtil {
                 throw
                     new UnsupportedZipFeatureException(UnsupportedZipFeatureException
                                                        .Feature.METHOD, ze);
-            } else {
-                throw new UnsupportedZipFeatureException(m, ze);
             }
+            throw new UnsupportedZipFeatureException(m, ze);
         }
     }
 }
