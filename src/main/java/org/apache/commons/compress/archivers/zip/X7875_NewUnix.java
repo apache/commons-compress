@@ -81,6 +81,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      *
      * @return the value for the header id for this extrafield
      */
+    @Override
     public ZipShort getHeaderId() {
         return HEADER_ID;
     }
@@ -129,6 +130,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      *
      * @return a <code>ZipShort</code> for the length of the data of this extra field
      */
+    @Override
     public ZipShort getLocalFileDataLength() {
         int uidSize = trimLeadingZeroesForceMinLength(uid.toByteArray()).length;
         int gidSize = trimLeadingZeroesForceMinLength(gid.toByteArray()).length;
@@ -143,6 +145,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      *
      * @return a <code>ZipShort</code> for the length of the data of this extra field
      */
+    @Override
     public ZipShort getCentralDirectoryLength() {
         return ZERO;
     }
@@ -153,6 +156,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      *
      * @return get the data
      */
+    @Override
     public byte[] getLocalFileDataData() {
         byte[] uidBytes = uid.toByteArray();
         byte[] gidBytes = gid.toByteArray();
@@ -190,6 +194,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      *
      * @return get the data
      */
+    @Override
     public byte[] getCentralDirectoryData() {
         return new byte[0];
     }
@@ -202,6 +207,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      * @param length the number of bytes in the array from offset
      * @throws java.util.zip.ZipException on error
      */
+    @Override
     public void parseFromLocalFileData(
             byte[] data, int offset, int length
     ) throws ZipException {
@@ -223,6 +229,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      * Doesn't do anything since this class doesn't store anything
      * inside the central directory.
      */
+    @Override
     public void parseFromCentralDirectoryData(
             byte[] buffer, int offset, int length
     ) throws ZipException {

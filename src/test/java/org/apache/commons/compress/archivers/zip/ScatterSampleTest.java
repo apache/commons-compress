@@ -45,6 +45,7 @@ public class ScatterSampleTest {
         ZipArchiveEntry archiveEntry = new ZipArchiveEntry("test1.xml");
         archiveEntry.setMethod(ZipEntry.DEFLATED);
         InputStreamSupplier supp = new InputStreamSupplier() {
+            @Override
             public InputStream get() {
                 return new ByteArrayInputStream("Hello".getBytes());
             }

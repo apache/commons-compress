@@ -106,6 +106,7 @@ public class SevenZOutputFile implements Closeable {
      * 
      * @throws IOException on error
      */
+    @Override
     public void close() throws IOException {
         if (!finished) {
             finish();

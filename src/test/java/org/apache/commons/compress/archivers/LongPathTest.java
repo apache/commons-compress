@@ -83,6 +83,7 @@ public class LongPathTest extends AbstractTestCase {
     public static Collection<Object[]> data() {
         Collection<Object[]> params = new ArrayList<Object[]>();
         for (String f : ARCDIR.list(new FilenameFilter() {
+            @Override
             public boolean accept(File dir, String name) {
                 return !name.endsWith(".txt");
             }

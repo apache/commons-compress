@@ -126,6 +126,7 @@ public class SevenZFile implements Closeable {
      * Closes the archive.
      * @throws IOException if closing the file fails
      */
+    @Override
     public void close() throws IOException {
         if (file != null) {
             try {

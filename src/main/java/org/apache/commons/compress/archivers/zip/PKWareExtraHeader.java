@@ -86,6 +86,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      *
      * @return the header id
      */
+    @Override
     public ZipShort getHeaderId() {
         return headerId;
     }
@@ -106,6 +107,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      *
      * @return the length of the local data
      */
+    @Override
     public ZipShort getLocalFileDataLength() {
         return new ZipShort(localData != null ? localData.length : 0);
     }
@@ -115,6 +117,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      *
      * @return the local data
      */
+    @Override
     public byte[] getLocalFileDataData() {
         return ZipUtil.copy(localData);
     }
@@ -135,6 +138,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      *
      * @return the central data length
      */
+    @Override
     public ZipShort getCentralDirectoryLength() {
         if (centralData != null) {
             return new ZipShort(centralData.length);
@@ -147,6 +151,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      *
      * @return the central data if present, else return the local file data
      */
+    @Override
     public byte[] getCentralDirectoryData() {
         if (centralData != null) {
             return ZipUtil.copy(centralData);
@@ -163,6 +168,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      *            the number of bytes to use in the data array.
      * @see ZipExtraField#parseFromLocalFileData(byte[], int, int)
      */
+    @Override
     public void parseFromLocalFileData(byte[] data, int offset, int length) {
         byte[] tmp = new byte[length];
         System.arraycopy(data, offset, tmp, 0, length);
@@ -178,6 +184,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      *            the number of bytes to use in the data array.
      * @see ZipExtraField#parseFromCentralDirectoryData(byte[], int, int)
      */
+    @Override
     public void parseFromCentralDirectoryData(byte[] data, int offset, int length) {
         byte[] tmp = new byte[length];
         System.arraycopy(data, offset, tmp, 0, length);

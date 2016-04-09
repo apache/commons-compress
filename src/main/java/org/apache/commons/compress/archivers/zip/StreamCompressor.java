@@ -204,6 +204,7 @@ public abstract class StreamCompressor implements Closeable {
         writtenToOutputStreamForLastEntry = 0;
     }
 
+    @Override
     public void close() throws IOException {
         def.end();
     }

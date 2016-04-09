@@ -563,6 +563,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
      * Returns the name of the entry.
      * @return the name of the entry.
      */
+    @Override
     public String getName() {
         return name;
     }
@@ -596,6 +597,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
      * The last modified date.
      * @return the last modified date
      */
+    @Override
     public Date getLastModifiedDate() {
         return new Date(mtime);
     }
@@ -604,6 +606,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
      * Is this a directory?
      * @return whether this is a directory
      */
+    @Override
     public boolean isDirectory() {
         return type == TYPE.DIRECTORY;
     }
@@ -693,6 +696,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
      * Returns the size of the entry.
      * @return the size
      */
+    @Override
     public long getSize() {
         return isDirectory() ? SIZE_UNKNOWN : size;
     }

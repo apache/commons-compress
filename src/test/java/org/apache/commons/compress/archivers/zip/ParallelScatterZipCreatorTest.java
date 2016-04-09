@@ -78,6 +78,7 @@ public class ParallelScatterZipCreatorTest {
         ExecutorService es = Executors.newFixedThreadPool(1);
 
         ScatterGatherBackingStoreSupplier supp = new ScatterGatherBackingStoreSupplier() {
+            @Override
             public ScatterGatherBackingStore get() throws IOException {
                 return new FileBasedScatterGatherBackingStore(tmp = File.createTempFile("parallelscatter", "n1"));
             }
@@ -113,6 +114,7 @@ public class ParallelScatterZipCreatorTest {
             final byte[] payloadBytes = ("content" + i).getBytes();
             ZipArchiveEntry za = createZipArchiveEntry(entries, i, payloadBytes);
             zipCreator.addArchiveEntry(za, new InputStreamSupplier() {
+                @Override
                 public InputStream get() {
                     return new ByteArrayInputStream(payloadBytes);
                 }
@@ -127,6 +129,7 @@ public class ParallelScatterZipCreatorTest {
             final byte[] payloadBytes = ("content" + i).getBytes();
             ZipArchiveEntry za = createZipArchiveEntry(entries, i, payloadBytes);
             final Callable<Object> callable = zipCreator.createCallable(za, new InputStreamSupplier() {
+                @Override
                 public InputStream get() {
                     return new ByteArrayInputStream(payloadBytes);
                 }

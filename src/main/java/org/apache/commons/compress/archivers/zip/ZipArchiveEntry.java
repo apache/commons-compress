@@ -754,6 +754,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * leak through and the returned value may depend on your local
      * time zone as well as your version of Java.</p>
      */
+    @Override
     public Date getLastModifiedDate() {
         return new Date(getTime());
     }

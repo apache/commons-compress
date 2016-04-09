@@ -124,6 +124,7 @@ public class ScatterZipOutputStream implements Closeable {
      * Closes this stream, freeing all resources involved in the creation of this stream.
      * @throws IOException If closing fails
      */
+    @Override
     public void close() throws IOException {
         backingStore.close();
     }

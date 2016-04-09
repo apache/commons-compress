@@ -313,6 +313,7 @@ public final class ZipTestCase extends AbstractTestCase {
     String first_payload = "ABBA";
     String second_payload = "AAAAAAAAAAAA";
     ZipArchiveEntryPredicate allFilesPredicate = new ZipArchiveEntryPredicate() {
+        @Override
         public boolean test(ZipArchiveEntry zipArchiveEntry) {
             return true;
         }

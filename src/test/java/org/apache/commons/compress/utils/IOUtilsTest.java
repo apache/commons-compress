@@ -34,6 +34,7 @@ public class IOUtilsTest {
     @Test
     public void skipUsingSkip() throws Exception {
         skip(new StreamWrapper() {
+                @Override
                 public InputStream wrap(InputStream toWrap) {
                     return toWrap;
                 }
@@ -43,6 +44,7 @@ public class IOUtilsTest {
     @Test
     public void skipUsingRead() throws Exception {
         skip(new StreamWrapper() {
+                @Override
                 public InputStream wrap(InputStream toWrap) {
                     return new FilterInputStream(toWrap) {
                         @Override
@@ -57,6 +59,7 @@ public class IOUtilsTest {
     @Test
     public void skipUsingSkipAndRead() throws Exception {
         skip(new StreamWrapper() {
+                @Override
                 public InputStream wrap(final InputStream toWrap) {
                     return new FilterInputStream(toWrap) {
                         boolean skipped;

@@ -64,6 +64,7 @@ public class ParallelScatterZipCreator {
     private static class DefaultBackingStoreSupplier implements ScatterGatherBackingStoreSupplier {
         final AtomicInteger storeNum = new AtomicInteger(0);
 
+        @Override
         public ScatterGatherBackingStore get() throws IOException {
             File tempFile = File.createTempFile("parallelscatter", "n" + storeNum.incrementAndGet());
             return new FileBasedScatterGatherBackingStore(tempFile);
@@ -171,6 +172,7 @@ public class ParallelScatterZipCreator {
         }
         final ZipArchiveEntryRequest zipArchiveEntryRequest = createZipArchiveEntryRequest(zipArchiveEntry, source);
         return new Callable<Object>() {
+            @Override
             public Object call() throws Exception {
                 tlScatterStreams.get().addArchiveEntry(zipArchiveEntryRequest);
                 return null;

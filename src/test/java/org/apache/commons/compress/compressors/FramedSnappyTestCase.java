@@ -38,6 +38,7 @@ public final class FramedSnappyTestCase
     @Test
     public void testDefaultExtraction() throws Exception {
         testUnarchive(new StreamWrapper<CompressorInputStream>() {
+            @Override
             public CompressorInputStream wrap(InputStream is) throws IOException {
                 return new FramedSnappyCompressorInputStream(is);
             }
@@ -47,6 +48,7 @@ public final class FramedSnappyTestCase
     @Test
     public void testDefaultExtractionViaFactory() throws Exception {
         testUnarchive(new StreamWrapper<CompressorInputStream>() {
+            @Override
             public CompressorInputStream wrap(InputStream is) throws Exception {
                 return new CompressorStreamFactory()
                     .createCompressorInputStream(CompressorStreamFactory.SNAPPY_FRAMED,
@@ -58,6 +60,7 @@ public final class FramedSnappyTestCase
     @Test
     public void testDefaultExtractionViaFactoryAutodetection() throws Exception {
         testUnarchive(new StreamWrapper<CompressorInputStream>() {
+            @Override
             public CompressorInputStream wrap(InputStream is) throws Exception {
                 return new CompressorStreamFactory().createCompressorInputStream(is);
             }

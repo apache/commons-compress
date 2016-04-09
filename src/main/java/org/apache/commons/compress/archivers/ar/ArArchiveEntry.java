@@ -117,10 +117,12 @@ public class ArArchiveEntry implements ArchiveEntry {
              0, 0, DEFAULT_MODE, inputFile.lastModified() / 1000);
     }
 
+    @Override
     public long getSize() {
         return this.getLength();
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -145,6 +147,7 @@ public class ArArchiveEntry implements ArchiveEntry {
         return lastModified;
     }
 
+    @Override
     public Date getLastModifiedDate() {
         return new Date(1000 * getLastModified());
     }
@@ -153,6 +156,7 @@ public class ArArchiveEntry implements ArchiveEntry {
         return length;
     }
 
+    @Override
     public boolean isDirectory() {
         return false;
     }

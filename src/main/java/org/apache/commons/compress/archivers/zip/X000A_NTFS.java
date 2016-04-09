@@ -77,6 +77,7 @@ public class X000A_NTFS implements ZipExtraField {
      *
      * @return the value for the header id for this extrafield
      */
+    @Override
     public ZipShort getHeaderId() {
         return HEADER_ID;
     }
@@ -87,6 +88,7 @@ public class X000A_NTFS implements ZipExtraField {
      *
      * @return a <code>ZipShort</code> for the length of the data of this extra field
      */
+    @Override
     public ZipShort getLocalFileDataLength() {
         return new ZipShort(4 /* reserved */
                             + 2 /* Tag#1 */
@@ -104,6 +106,7 @@ public class X000A_NTFS implements ZipExtraField {
      *
      * @return a <code>ZipShort</code> for the length of the data of this extra field
      */
+    @Override
     public ZipShort getCentralDirectoryLength() {
         return getLocalFileDataLength();
     }
@@ -114,6 +117,7 @@ public class X000A_NTFS implements ZipExtraField {
      *
      * @return get the data
      */
+    @Override
     public byte[] getLocalFileDataData() {
         byte[] data = new byte[getLocalFileDataLength().getValue()];
         int pos = 4;
@@ -135,6 +139,7 @@ public class X000A_NTFS implements ZipExtraField {
      *
      * @return the central directory data
      */
+    @Override
     public byte[] getCentralDirectoryData() {
         return getLocalFileDataData();
     }
@@ -147,6 +152,7 @@ public class X000A_NTFS implements ZipExtraField {
      * @param length the number of bytes in the array from offset
      * @throws java.util.zip.ZipException on error
      */
+    @Override
     public void parseFromLocalFileData(
             byte[] data, int offset, int length
     ) throws ZipException {
@@ -171,6 +177,7 @@ public class X000A_NTFS implements ZipExtraField {
      * Doesn't do anything special since this class always uses the
      * same parsing logic for both central directory and local file data.
      */
+    @Override
     public void parseFromCentralDirectoryData(
             byte[] buffer, int offset, int length
     ) throws ZipException {

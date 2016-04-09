@@ -57,6 +57,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      *
      * @return This entry's name.
      */
+    @Override
     public String getName() {
         return name;
     }
@@ -91,6 +92,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      *
      * @return True if this entry is a directory.
      */
+    @Override
     public boolean isDirectory() {
         return isDirectory;
     }
@@ -195,6 +197,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * last modified date.
      * @return the last modified date
      */
+    @Override
     public Date getLastModifiedDate() {
         if (hasLastModifiedDate) {
             return ntfsTimeToJavaTime(lastModifiedDate);
@@ -404,6 +407,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      *
      * @return This entry's file size.
      */
+    @Override
     public long getSize() {
         return size;
     }

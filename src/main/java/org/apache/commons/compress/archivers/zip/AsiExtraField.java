@@ -89,6 +89,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      * The Header-ID.
      * @return the value for the header id for this extrafield
      */
+    @Override
     public ZipShort getHeaderId() {
         return HEADER_ID;
     }
@@ -98,6 +99,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      * Header-ID or length specifier.
      * @return a <code>ZipShort</code> for the length of the data of this extra field
      */
+    @Override
     public ZipShort getLocalFileDataLength() {
         return new ZipShort(WORD         // CRC
                           + 2         // Mode
@@ -112,6 +114,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      * Delegate to local file data.
      * @return the centralDirectory length
      */
+    @Override
     public ZipShort getCentralDirectoryLength() {
         return getLocalFileDataLength();
     }
@@ -121,6 +124,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      * or length specifier.
      * @return get the data
      */
+    @Override
     public byte[] getLocalFileDataData() {
         // CRC will be added later
         byte[] data = new byte[getLocalFileDataLength().getValue() - WORD];
@@ -153,6 +157,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      * Delegate to local file data.
      * @return the local file data
      */
+    @Override
     public byte[] getCentralDirectoryData() {
         return getLocalFileDataData();
     }
@@ -258,6 +263,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      * @param length the number of bytes in the array from offset
      * @throws ZipException on error
      */
+    @Override
     public void parseFromLocalFileData(byte[] data, int offset, int length)
         throws ZipException {
 
@@ -295,6 +301,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      * Doesn't do anything special since this class always uses the
      * same data in central directory and local file data.
      */
+    @Override
     public void parseFromCentralDirectoryData(byte[] buffer, int offset,
                                               int length)
         throws ZipException {

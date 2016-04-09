@@ -138,6 +138,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         // released first.
         queue = new PriorityQueue<DumpArchiveEntry>(10,
                 new Comparator<DumpArchiveEntry>() {
+                    @Override
                     public int compare(DumpArchiveEntry p, DumpArchiveEntry q) {
                         if (p.getOriginalName() == null || q.getOriginalName() == null) {
                             return Integer.MAX_VALUE;

@@ -79,6 +79,7 @@ public class ScatterZipOutputStreamTest {
 
     private InputStreamSupplier createPayloadSupplier(final ByteArrayInputStream payload) {
         return new InputStreamSupplier() {
+            @Override
             public InputStream get() {
                 return payload;
             }

@@ -419,6 +419,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      *
      * @return This entry's name.
      */
+    @Override
     public String getName() {
         return name;
     }
@@ -629,6 +630,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         return new Date(modTime * MILLIS_PER_SECOND);
     }
 
+    @Override
     public Date getLastModifiedDate() {
         return getModTime();
     }
@@ -667,6 +669,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      *
      * @return This entry's file size.
      */
+    @Override
     public long getSize() {
         return size;
     }
@@ -841,6 +844,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      *
      * @return True if this entry is a directory.
      */
+    @Override
     public boolean isDirectory() {
         if (file != null) {
             return file.isDirectory();

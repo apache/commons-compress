@@ -45,8 +45,10 @@ public class TarUtils {
      * ZipEncoding.
      */
     static final ZipEncoding FALLBACK_ENCODING = new ZipEncoding() {
+            @Override
             public boolean canEncode(String name) { return true; }
 
+            @Override
             public ByteBuffer encode(String name) {
                 final int length = name.length();
                 byte[] buf = new byte[length];
@@ -58,6 +60,7 @@ public class TarUtils {
                 return ByteBuffer.wrap(buf);
             }
 
+            @Override
             public String decode(byte[] buffer) {
                 final int length = buffer.length;
                 StringBuilder result = new StringBuilder(length);

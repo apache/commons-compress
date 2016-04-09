@@ -239,6 +239,7 @@ public class ZipFile implements Closeable {
      * Closes the archive.
      * @throws IOException if an error occurs closing the archive.
      */
+    @Override
     public void close() throws IOException {
         // this flag is only written here and read in finalize() which
         // can never be run in parallel.
@@ -1091,6 +1092,7 @@ public class ZipFile implements Closeable {
      */
     private final Comparator<ZipArchiveEntry> OFFSET_COMPARATOR =
         new Comparator<ZipArchiveEntry>() {
+        @Override
         public int compare(ZipArchiveEntry e1, ZipArchiveEntry e2) {
             if (e1 == e2) {
                 return 0;

@@ -244,12 +244,15 @@ public class ChangeSetPerformer {
         ArchiveInputStreamIterator(ArchiveInputStream in) {
             this.in = in;
         }
+        @Override
         public boolean hasNext() throws IOException {
             return (next = in.getNextEntry()) != null;
         }
+        @Override
         public ArchiveEntry next() {
             return next;
         }
+        @Override
         public InputStream getInputStream() {
             return in;
         }
@@ -264,12 +267,15 @@ public class ChangeSetPerformer {
             this.in = in;
             nestedEnum = in.getEntriesInPhysicalOrder();
         }
+        @Override
         public boolean hasNext() {
             return nestedEnum.hasMoreElements();
         }
+        @Override
         public ArchiveEntry next() {
             return current = nestedEnum.nextElement();
         }
+        @Override
         public InputStream getInputStream() throws IOException {
             return in.getInputStream(current);
         }

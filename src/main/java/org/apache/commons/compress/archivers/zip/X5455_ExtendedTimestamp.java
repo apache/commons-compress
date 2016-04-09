@@ -126,6 +126,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      *
      * @return the value for the header id for this extrafield
      */
+    @Override
     public ZipShort getHeaderId() {
         return HEADER_ID;
     }
@@ -136,6 +137,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      *
      * @return a <code>ZipShort</code> for the length of the data of this extra field
      */
+    @Override
     public ZipShort getLocalFileDataLength() {
         return new ZipShort(1 +
                 (bit0_modifyTimePresent ? 4 : 0) +
@@ -154,6 +156,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      *
      * @return a <code>ZipShort</code> for the length of the data of this extra field
      */
+    @Override
     public ZipShort getCentralDirectoryLength() {
         return new ZipShort(1 +
                 (bit0_modifyTimePresent ? 4 : 0)
@@ -166,6 +169,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      *
      * @return get the data
      */
+    @Override
     public byte[] getLocalFileDataData() {
         byte[] data = new byte[getLocalFileDataLength().getValue()];
         int pos = 0;
@@ -194,6 +198,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      *
      * @return the central directory data
      */
+    @Override
     public byte[] getCentralDirectoryData() {
         byte[] centralData = new byte[getCentralDirectoryLength().getValue()];
         byte[] localData = getLocalFileDataData();
@@ -212,6 +217,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * @param length the number of bytes in the array from offset
      * @throws java.util.zip.ZipException on error
      */
+    @Override
     public void parseFromLocalFileData(
             byte[] data, int offset, int length
     ) throws ZipException {
@@ -239,6 +245,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * Doesn't do anything special since this class always uses the
      * same parsing logic for both central directory and local file data.
      */
+    @Override
     public void parseFromCentralDirectoryData(
             byte[] buffer, int offset, int length
     ) throws ZipException {

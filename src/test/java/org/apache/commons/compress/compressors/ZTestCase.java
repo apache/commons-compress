@@ -37,6 +37,7 @@ public final class ZTestCase extends AbstractTestCase {
     @Test
     public void testZUnarchive() throws Exception {
         testUnarchive(new StreamWrapper<CompressorInputStream>() {
+            @Override
             public CompressorInputStream wrap(InputStream is) throws IOException {
                 return new ZCompressorInputStream(is);
             }
@@ -46,6 +47,7 @@ public final class ZTestCase extends AbstractTestCase {
     @Test
     public void testZUnarchiveViaFactory() throws Exception {
         testUnarchive(new StreamWrapper<CompressorInputStream>() {
+            @Override
             public CompressorInputStream wrap(InputStream is) throws Exception {
                 return new CompressorStreamFactory()
                     .createCompressorInputStream(CompressorStreamFactory.Z, is);
@@ -56,6 +58,7 @@ public final class ZTestCase extends AbstractTestCase {
     @Test
     public void testZUnarchiveViaAutoDetection() throws Exception {
         testUnarchive(new StreamWrapper<CompressorInputStream>() {
+            @Override
             public CompressorInputStream wrap(InputStream is) throws Exception {
                 return new CompressorStreamFactory()
                     .createCompressorInputStream(new BufferedInputStream(is));

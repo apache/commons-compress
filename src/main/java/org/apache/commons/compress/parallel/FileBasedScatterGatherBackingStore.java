@@ -39,10 +39,12 @@ public class FileBasedScatterGatherBackingStore implements ScatterGatherBackingS
         os = new FileOutputStream(target);
     }
 
+    @Override
     public InputStream getInputStream() throws IOException {
         return new FileInputStream(target);
     }
 
+    @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public void closeForWriting() throws IOException {
         if (!closed) {
@@ -51,10 +53,12 @@ public class FileBasedScatterGatherBackingStore implements ScatterGatherBackingS
         }
     }
 
+    @Override
     public void writeOut(byte[] data, int offset, int length) throws IOException {
         os.write(data, offset, length);
     }
 
+    @Override
     public void close() throws IOException {
         closeForWriting();
         target.delete();
