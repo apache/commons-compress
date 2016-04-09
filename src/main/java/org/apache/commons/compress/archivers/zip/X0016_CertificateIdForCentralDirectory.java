@@ -43,7 +43,6 @@ package org.apache.commons.compress.archivers.zip;
  * @since 1.11
  */
 public class X0016_CertificateIdForCentralDirectory extends PKWareExtraHeader {
-    private static final long serialVersionUID = 1L;
 
     public X0016_CertificateIdForCentralDirectory() {
         super(new ZipShort(0x0016));

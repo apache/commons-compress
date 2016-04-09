@@ -243,7 +243,6 @@ package org.apache.commons.compress.archivers.zip;
  * @since 1.11
  */
 public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
-    private static final long serialVersionUID = 1L;
 
     public X0017_StrongEncryptionHeader() {
         super(new ZipShort(0x0017));
