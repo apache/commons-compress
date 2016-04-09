@@ -143,6 +143,8 @@ import org.apache.commons.compress.utils.ArchiveUtils;
  */
 
 public class TarArchiveEntry implements TarConstants, ArchiveEntry {
+    private static final TarArchiveEntry[] EMPTY_TAR_ARCHIVE_ENTRIES = new TarArchiveEntry[0];
+
     /** The entry's name. */
     private String name = "";
 
@@ -945,11 +947,14 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      */
     public TarArchiveEntry[] getDirectoryEntries() {
         if (file == null || !file.isDirectory()) {
-            return new TarArchiveEntry[0];
+            return EMPTY_TAR_ARCHIVE_ENTRIES;
         }
 
         String[] list = file.list();
-        TarArchiveEntry[] result = new TarArchiveEntry[list == null ? 0 : list.length];
+        if (list == null) {
+            return EMPTY_TAR_ARCHIVE_ENTRIES;
+        }
+        TarArchiveEntry[] result = new TarArchiveEntry[list.length];
 
         for (int i = 0; i < result.length; ++i) {
             result[i] = new TarArchiveEntry(new File(file, list[i]));

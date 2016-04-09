@@ -44,8 +44,11 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.12" date="not released, yet"
              description="Release 1.12">
-      <action issue="COMPRESS-349" type="update" date="2016-04-09">
+      <action issue="COMPRESS-349" type="update" date="2016-04-09" dev="ggregory">
         Update requirement from Java 5 to 6.
+      </action>
+      <action issue="COMPRESS-350" type="update" date="2016-04-09" dev="ggregory">
+        TarArchiveEntry wastefully allocates empty arrays.
       </action>
     </release>
     <release version="1.11" date="2016-04-06"
