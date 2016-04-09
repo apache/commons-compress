@@ -58,7 +58,7 @@ public class LongSymLinkTest extends AbstractTestCase {
     private static final File ARCDIR = new File(CLASSLOADER.getResource("longsymlink").getFile());
     private static final ArrayList<String> FILELIST = new ArrayList<String>();
 
-    private File file;
+    private final File file;
 
     public LongSymLinkTest(String file){
         this.file = new File(ARCDIR, file);

@@ -58,7 +58,7 @@ public class LongPathTest extends AbstractTestCase {
     private static final File ARCDIR = new File(CLASSLOADER.getResource("longpath").getFile());
     private static final ArrayList<String> FILELIST = new ArrayList<String>();
 
-    private File file;
+    private final File file;
 
     public LongPathTest(String file){
         this.file = new File(ARCDIR, file);

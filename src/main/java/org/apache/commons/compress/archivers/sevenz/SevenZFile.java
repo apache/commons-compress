@@ -77,7 +77,7 @@ public class SevenZFile implements Closeable {
     private InputStream currentFolderInputStream = null;
     private byte[] password;
 
-    private ArrayList<InputStream> deferredBlockStreams = new ArrayList<InputStream>();
+    private final ArrayList<InputStream> deferredBlockStreams = new ArrayList<InputStream>();
 
     static final byte[] sevenZSignature = {
         (byte)'7', (byte)'z', (byte)0xBC, (byte)0xAF, (byte)0x27, (byte)0x1C

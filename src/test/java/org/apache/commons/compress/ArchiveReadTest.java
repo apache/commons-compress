@@ -51,7 +51,7 @@ public class ArchiveReadTest extends AbstractTestCase {
     private static final File ARCDIR = new File(CLASSLOADER.getResource("archives").getFile());
     private static final ArrayList<String> FILELIST = new ArrayList<String>();
 
-    private File file;
+    private final File file;
 
     public ArchiveReadTest(String file){
         this.file = new File(ARCDIR, file);
