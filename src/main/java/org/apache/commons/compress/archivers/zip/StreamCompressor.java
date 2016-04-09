@@ -270,6 +270,7 @@ public abstract class StreamCompressor implements Closeable {
             this.bs = bs;
         }
 
+        @Override
         protected final void writeOut(byte[] data, int offset, int length)
                 throws IOException {
             bs.writeOut(data, offset, length);
@@ -284,6 +285,7 @@ public abstract class StreamCompressor implements Closeable {
             this.os = os;
         }
 
+        @Override
         protected final void writeOut(byte[] data, int offset, int length)
                 throws IOException {
             os.write(data, offset, length);
@@ -298,6 +300,7 @@ public abstract class StreamCompressor implements Closeable {
             this.raf = raf;
         }
 
+        @Override
         protected final void writeOut(byte[] data, int offset, int length)
                 throws IOException {
             raf.write(data, offset, length);
