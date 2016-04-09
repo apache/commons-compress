@@ -248,10 +248,10 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
         super(new ZipShort(0x0017));
     }
 
-    private int format;
+    private int format; // TODO written but not read
     private EncryptionAlgorithm algId;
-    private int bitlen;
-    private int flags;
+    private int bitlen; // TODO written but not read
+    private int flags; // TODO written but not read
     private long rcount;
     private HashAlgorithm hashAlg;
     private int hashSize;
