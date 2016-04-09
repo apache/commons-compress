@@ -127,11 +127,10 @@ class Coders {
             try {
                 return opts.getInputStream(in);
             } catch (AssertionError e) {
-                IOException ex = new IOException("BCJ filter used in " + archiveName
-                                                 + " needs XZ for Java > 1.4 - see "
-                                                 + "http://commons.apache.org/proper/commons-compress/limitations.html#7Z");
-                ex.initCause(e);
-                throw ex;
+                throw new IOException("BCJ filter used in " + archiveName
+                                      + " needs XZ for Java > 1.4 - see "
+                                      + "http://commons.apache.org/proper/commons-compress/limitations.html#7Z",
+                                      e);
             }
         }
         @Override

@@ -68,12 +68,8 @@ class AES256SHA256Decoder extends CoderBase {
                     try {
                         digest = MessageDigest.getInstance("SHA-256");
                     } catch (NoSuchAlgorithmException noSuchAlgorithmException) {
-                        IOException ioe = new IOException("SHA-256 is unsupported by your Java implementation");
-                        ioe.initCause(noSuchAlgorithmException);
-                        throw ioe;
-                        // TODO: simplify when Compress requires Java 1.6                
-//                      throw new IOException("SHA-256 is unsupported by your Java implementation",
-//                              noSuchAlgorithmException);
+                        throw new IOException("SHA-256 is unsupported by your Java implementation",
+                            noSuchAlgorithmException);
                     }
                     final byte[] extra = new byte[8];
                     for (long j = 0; j < (1L << numCyclesPower); j++) {
@@ -98,14 +94,9 @@ class AES256SHA256Decoder extends CoderBase {
                     isInitialized = true;
                     return cipherInputStream;
                 } catch (GeneralSecurityException generalSecurityException) {
-                    IOException ioe = new IOException("Decryption error " +
-                                                      "(do you have the JCE Unlimited Strength Jurisdiction Policy Files installed?)");
-                    ioe.initCause(generalSecurityException);
-                    throw ioe;
-                    // TODO: simplify when Compress requires Java 1.6                
-//                  throw new IOException("Decryption error " +
-//                          "(do you have the JCE Unlimited Strength Jurisdiction Policy Files installed?)",
-//                          generalSecurityException);
+                    throw new IOException("Decryption error " +
+                        "(do you have the JCE Unlimited Strength Jurisdiction Policy Files installed?)",
+                        generalSecurityException);
                     }
             }
                 
