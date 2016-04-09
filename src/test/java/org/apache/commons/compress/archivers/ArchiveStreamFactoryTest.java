@@ -42,6 +42,8 @@ import org.junit.Test;
 
 public class ArchiveStreamFactoryTest {
 
+    private static final String UNKNOWN = "??";
+
     /**
      * see https://issues.apache.org/jira/browse/COMPRESS-171
      */
@@ -228,7 +230,7 @@ public class ArchiveStreamFactoryTest {
 
     static {
         String dflt;
-        dflt = "??";
+        dflt = UNKNOWN;
         try {
             dflt = getField(new ArjArchiveInputStream(new FileInputStream(getFile("bla.arj"))), "charsetName");
         } catch (ArchiveException e) {
@@ -237,7 +239,7 @@ public class ArchiveStreamFactoryTest {
             e.printStackTrace();
         }
         ARJ_DEFAULT = dflt;
-        dflt = "??";
+        dflt = UNKNOWN;
         try {
             dflt = getField(new DumpArchiveInputStream(new FileInputStream(getFile("bla.dump"))), "encoding");
         } catch (ArchiveException e) {
@@ -357,7 +359,7 @@ public class ArchiveStreamFactoryTest {
                     fld = cls.getSuperclass().getDeclaredField(name);
                 } catch (NoSuchFieldException e) {
                     System.out.println("Cannot find " + name + " in class " + instance.getClass().getSimpleName());
-                    return "??";
+                    return UNKNOWN;
                 }                
         }
         boolean isAccessible = fld.isAccessible();
@@ -370,10 +372,10 @@ public class ArchiveStreamFactoryTest {
                 return (String) object;
             }
             System.out.println("Wrong type: " + object.getClass().getCanonicalName() + " for " + name + " in class " + instance.getClass().getSimpleName());
-            return "??";
+            return UNKNOWN;
         } catch (Exception e) {
             e.printStackTrace();
-            return "??";
+            return UNKNOWN;
         } finally {
             if (!isAccessible) {
                 fld.setAccessible(isAccessible);
