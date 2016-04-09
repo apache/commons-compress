@@ -40,7 +40,6 @@ import java.util.zip.ZipEntry;
 import static org.apache.commons.compress.AbstractTestCase.tryHardToDelete;
 import static org.junit.Assert.*;
 
-@SuppressWarnings("OctalInteger")
 public class ParallelScatterZipCreatorTest {
 
     private final int NUMITEMS = 5000;
