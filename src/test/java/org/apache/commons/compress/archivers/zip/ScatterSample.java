@@ -32,10 +32,11 @@ public class ScatterSample {
     }
 
     public void addEntry(ZipArchiveEntry zipArchiveEntry, InputStreamSupplier streamSupplier) throws IOException {
-        if (zipArchiveEntry.isDirectory() && !zipArchiveEntry.isUnixSymlink())
+        if (zipArchiveEntry.isDirectory() && !zipArchiveEntry.isUnixSymlink()) {
             dirs.addArchiveEntry(ZipArchiveEntryRequest.createZipArchiveEntryRequest(zipArchiveEntry, streamSupplier));
-        else
+        } else {
             scatterZipCreator.addArchiveEntry( zipArchiveEntry, streamSupplier);
+        }
     }
 
     public void writeTo(ZipArchiveOutputStream zipArchiveOutputStream)
