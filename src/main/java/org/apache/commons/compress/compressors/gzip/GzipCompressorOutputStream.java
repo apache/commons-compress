@@ -163,6 +163,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
             }
             
             crc.update(buffer, offset, length);
+            count(length);
         }
     }
 

@@ -34,6 +34,7 @@ public abstract class CompressorOutputStream extends OutputStream {
      * <p>Not all streams support progress notifications.</p>
      *
      * @param l the listener to add
+     * @since 1.12
      */
     public void addCompressionProgressListener(CompressionProgressListener l) {
         listeners.add(l);
@@ -43,6 +44,7 @@ public abstract class CompressorOutputStream extends OutputStream {
      * Removes a listener that is notified of compression progress.
      *
      * @param l the listener to remove
+     * @since 1.12
      */
     public void removeCompressionProgressListener(CompressionProgressListener l) {
         listeners.remove(l);
@@ -55,6 +57,7 @@ public abstract class CompressorOutputStream extends OutputStream {
      * @param streamNumer number of the stream that is getting
      *        processed now
      * @param compressedBytesWritten number of compressed bytes written
+     * @since 1.12
      */
     protected void fireProgress(int blockNumber, int streamNumber, long compressedBytesWritten) {
         CompressionProgressEvent e = new CompressionProgressEvent(this, blockNumber, streamNumber,
@@ -72,14 +75,16 @@ public abstract class CompressorOutputStream extends OutputStream {
      * Increments the counter of already written bytes.
      *
      * @param written the number of bytes written
+     * @since 1.12
      */
     protected void count(long written) {
         bytesWritten += written;
     }
 
     /**
-     * Returns the current number of bytes written from this stream.
+     * Returns the current number of bytes written to this stream.
      * @return the number of written bytes
+     * @since 1.12
      */
     public long getBytesWritten() {
         return bytesWritten;

@@ -88,6 +88,7 @@ public abstract class CompressorInputStream extends InputStream {
      * <p>Not all streams support progress notifications.</p>
      *
      * @param l the listener to add
+     * @since 1.12
      */
     public void addCompressionProgressListener(CompressionProgressListener l) {
         listeners.add(l);
@@ -97,6 +98,7 @@ public abstract class CompressorInputStream extends InputStream {
      * Removes a listener that is notified of decompression progress.
      *
      * @param l the listener to remove
+     * @since 1.12
      */
     public void removeCompressionProgressListener(CompressionProgressListener l) {
         listeners.remove(l);
@@ -109,6 +111,7 @@ public abstract class CompressorInputStream extends InputStream {
      * @param streamNumer number of the stream that is getting
      *        processed now
      * @param compressedBytesRead number of compressed bytes read
+     * @since 1.12
      */
     protected void fireProgress(int blockNumber, int streamNumber, long compressedBytesRead) {
         CompressionProgressEvent e = new CompressionProgressEvent(this, blockNumber, streamNumber,

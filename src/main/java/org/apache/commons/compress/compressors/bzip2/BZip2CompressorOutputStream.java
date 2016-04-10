@@ -394,6 +394,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     public void write(final int b) throws IOException {
         if (this.out != null) {
             write0(b);
+            count(1);
         } else {
             throw new IOException("closed");
         }
@@ -632,6 +633,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         for (final int hi = offs + len; offs < hi;) {
             write0(buf[offs++]);
         }
+        count(len);
     }
 
     /**

@@ -44,6 +44,10 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.12" date="not released, yet"
              description="Release 1.12 - API compatible to 1.11 but requires Java6 at runtime">
+      <action type="add" date="2016-04-10">
+        The CompressorOutputStreams now provide a count of the
+        uncompressed bytes written to the stream.
+      </action>
       <action issue="COMPRESS-349" type="update" date="2016-04-09" dev="ggregory">
         Update requirement from Java 5 to 6.
       </action>

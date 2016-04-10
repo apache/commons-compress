@@ -57,11 +57,13 @@ public class DeflateCompressorOutputStream extends CompressorOutputStream {
     @Override
     public void write(final int b) throws IOException {
         out.write(b);
+        count(1);
     }
 
     @Override
     public void write(final byte[] buf, final int off, final int len) throws IOException {
         out.write(buf, off, len);
+        count(len);
     }
 
     /**

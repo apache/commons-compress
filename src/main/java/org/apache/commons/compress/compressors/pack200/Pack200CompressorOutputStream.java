@@ -101,16 +101,19 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream {
     @Override
     public void write(final int b) throws IOException {
         streamBridge.write(b);
+        count(1);
     }
 
     @Override
     public void write(final byte[] b) throws IOException {
         streamBridge.write(b);
+        count(b.length);
     }
 
     @Override
     public void write(final byte[] b, final int from, final int length) throws IOException {
         streamBridge.write(b, from, length);
+        count(length);
     }
 
     @Override
