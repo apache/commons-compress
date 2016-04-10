@@ -32,18 +32,18 @@ public class EncryptedArchiveTest {
     @Test
     public void testReadPasswordEncryptedEntryViaZipFile()
         throws IOException {
-        File file = getFile("password-encrypted.zip");
+        final File file = getFile("password-encrypted.zip");
         ZipFile zf = null;
         try {
             zf = new ZipFile(file);
-            ZipArchiveEntry zae = zf.getEntry("LICENSE.txt");
+            final ZipArchiveEntry zae = zf.getEntry("LICENSE.txt");
             assertTrue(zae.getGeneralPurposeBit().usesEncryption());
             assertFalse(zae.getGeneralPurposeBit().usesStrongEncryption());
             assertFalse(zf.canReadEntryData(zae));
             try {
                 zf.getInputStream(zae);
                 fail("expected an exception");
-            } catch (UnsupportedZipFeatureException ex) {
+            } catch (final UnsupportedZipFeatureException ex) {
                 assertSame(UnsupportedZipFeatureException.Feature.ENCRYPTION,
                            ex.getFeature());
             }
@@ -55,20 +55,20 @@ public class EncryptedArchiveTest {
     @Test
     public void testReadPasswordEncryptedEntryViaStream()
         throws IOException {
-        File file = getFile("password-encrypted.zip");
+        final File file = getFile("password-encrypted.zip");
         ZipArchiveInputStream zin = null;
         try {
             zin = new ZipArchiveInputStream(new FileInputStream(file));
-            ZipArchiveEntry zae = zin.getNextZipEntry();
+            final ZipArchiveEntry zae = zin.getNextZipEntry();
             assertEquals("LICENSE.txt", zae.getName());
             assertTrue(zae.getGeneralPurposeBit().usesEncryption());
             assertFalse(zae.getGeneralPurposeBit().usesStrongEncryption());
             assertFalse(zin.canReadEntryData(zae));
             try {
-                byte[] buf = new byte[1024];
+                final byte[] buf = new byte[1024];
                 zin.read(buf, 0, buf.length);
                 fail("expected an exception");
-            } catch (UnsupportedZipFeatureException ex) {
+            } catch (final UnsupportedZipFeatureException ex) {
                 assertSame(UnsupportedZipFeatureException.Feature.ENCRYPTION,
                            ex.getFeature());
             }

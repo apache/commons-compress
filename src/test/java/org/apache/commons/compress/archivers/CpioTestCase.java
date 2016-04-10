@@ -92,10 +92,10 @@ public final class CpioTestCase extends AbstractTestCase {
         final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("cpio", is);
 
 
-        Map<String, File> result = new HashMap<String, File>();
+        final Map<String, File> result = new HashMap<String, File>();
         ArchiveEntry entry = null;
         while ((entry = in.getNextEntry()) != null) {
-            File cpioget = new File(dir, entry.getName());
+            final File cpioget = new File(dir, entry.getName());
             final OutputStream out = new FileOutputStream(cpioget);
             IOUtils.copy(in, out);
             out.close();
@@ -115,7 +115,7 @@ public final class CpioTestCase extends AbstractTestCase {
 
     @Test
     public void testDirectoryEntryFromFile() throws Exception {
-        File[] tmp = createTempDirAndFile();
+        final File[] tmp = createTempDirAndFile();
         File archive = null;
         CpioArchiveOutputStream tos = null;
         CpioArchiveInputStream tis = null;
@@ -123,14 +123,14 @@ public final class CpioTestCase extends AbstractTestCase {
             archive = File.createTempFile("test.", ".cpio", tmp[0]);
             archive.deleteOnExit();
             tos = new CpioArchiveOutputStream(new FileOutputStream(archive));
-            long beforeArchiveWrite = tmp[0].lastModified();
-            CpioArchiveEntry in = new CpioArchiveEntry(tmp[0], "foo");
+            final long beforeArchiveWrite = tmp[0].lastModified();
+            final CpioArchiveEntry in = new CpioArchiveEntry(tmp[0], "foo");
             tos.putArchiveEntry(in);
             tos.closeArchiveEntry();
             tos.close();
             tos = null;
             tis = new CpioArchiveInputStream(new FileInputStream(archive));
-            CpioArchiveEntry out = tis.getNextCPIOEntry();
+            final CpioArchiveEntry out = tis.getNextCPIOEntry();
             tis.close();
             tis = null;
             assertNotNull(out);
@@ -155,7 +155,7 @@ public final class CpioTestCase extends AbstractTestCase {
 
     @Test
     public void testExplicitDirectoryEntry() throws Exception {
-        File[] tmp = createTempDirAndFile();
+        final File[] tmp = createTempDirAndFile();
         File archive = null;
         CpioArchiveOutputStream tos = null;
         CpioArchiveInputStream tis = null;
@@ -163,8 +163,8 @@ public final class CpioTestCase extends AbstractTestCase {
             archive = File.createTempFile("test.", ".cpio", tmp[0]);
             archive.deleteOnExit();
             tos = new CpioArchiveOutputStream(new FileOutputStream(archive));
-            long beforeArchiveWrite = tmp[0].lastModified();
-            CpioArchiveEntry in = new CpioArchiveEntry("foo/");
+            final long beforeArchiveWrite = tmp[0].lastModified();
+            final CpioArchiveEntry in = new CpioArchiveEntry("foo/");
             in.setTime(beforeArchiveWrite / 1000);
             in.setMode(CpioConstants.C_ISDIR);
             tos.putArchiveEntry(in);
@@ -172,7 +172,7 @@ public final class CpioTestCase extends AbstractTestCase {
             tos.close();
             tos = null;
             tis = new CpioArchiveInputStream(new FileInputStream(archive));
-            CpioArchiveEntry out = tis.getNextCPIOEntry();
+            final CpioArchiveEntry out = tis.getNextCPIOEntry();
             tis.close();
             tis = null;
             assertNotNull(out);
@@ -196,7 +196,7 @@ public final class CpioTestCase extends AbstractTestCase {
 
     @Test
     public void testFileEntryFromFile() throws Exception {
-        File[] tmp = createTempDirAndFile();
+        final File[] tmp = createTempDirAndFile();
         File archive = null;
         CpioArchiveOutputStream tos = null;
         CpioArchiveInputStream tis = null;
@@ -205,9 +205,9 @@ public final class CpioTestCase extends AbstractTestCase {
             archive = File.createTempFile("test.", ".cpio", tmp[0]);
             archive.deleteOnExit();
             tos = new CpioArchiveOutputStream(new FileOutputStream(archive));
-            CpioArchiveEntry in = new CpioArchiveEntry(tmp[1], "foo");
+            final CpioArchiveEntry in = new CpioArchiveEntry(tmp[1], "foo");
             tos.putArchiveEntry(in);
-            byte[] b = new byte[(int) tmp[1].length()];
+            final byte[] b = new byte[(int) tmp[1].length()];
             fis = new FileInputStream(tmp[1]);
             while (fis.read(b) > 0) {
                 tos.write(b);
@@ -218,7 +218,7 @@ public final class CpioTestCase extends AbstractTestCase {
             tos.close();
             tos = null;
             tis = new CpioArchiveInputStream(new FileInputStream(archive));
-            CpioArchiveEntry out = tis.getNextCPIOEntry();
+            final CpioArchiveEntry out = tis.getNextCPIOEntry();
             tis.close();
             tis = null;
             assertNotNull(out);
@@ -245,7 +245,7 @@ public final class CpioTestCase extends AbstractTestCase {
 
     @Test
     public void testExplicitFileEntry() throws Exception {
-        File[] tmp = createTempDirAndFile();
+        final File[] tmp = createTempDirAndFile();
         File archive = null;
         CpioArchiveOutputStream tos = null;
         CpioArchiveInputStream tis = null;
@@ -254,12 +254,12 @@ public final class CpioTestCase extends AbstractTestCase {
             archive = File.createTempFile("test.", ".cpio", tmp[0]);
             archive.deleteOnExit();
             tos = new CpioArchiveOutputStream(new FileOutputStream(archive));
-            CpioArchiveEntry in = new CpioArchiveEntry("foo");
+            final CpioArchiveEntry in = new CpioArchiveEntry("foo");
             in.setTime(tmp[1].lastModified() / 1000);
             in.setSize(tmp[1].length());
             in.setMode(CpioConstants.C_ISREG);
             tos.putArchiveEntry(in);
-            byte[] b = new byte[(int) tmp[1].length()];
+            final byte[] b = new byte[(int) tmp[1].length()];
             fis = new FileInputStream(tmp[1]);
             while (fis.read(b) > 0) {
                 tos.write(b);
@@ -270,7 +270,7 @@ public final class CpioTestCase extends AbstractTestCase {
             tos.close();
             tos = null;
             tis = new CpioArchiveInputStream(new FileInputStream(archive));
-            CpioArchiveEntry out = tis.getNextCPIOEntry();
+            final CpioArchiveEntry out = tis.getNextCPIOEntry();
             tis.close();
             tis = null;
             assertNotNull(out);

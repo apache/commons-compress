@@ -242,17 +242,16 @@ package org.apache.commons.compress.archivers.zip;
  * @NotThreadSafe
  * @since 1.11
  */
-public class X0017_StrongEncryptionHeader extends PKWareExtraHeader implements ZipExtraField {
-    private static final long serialVersionUID = 1L;
+public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
 
     public X0017_StrongEncryptionHeader() {
         super(new ZipShort(0x0017));
     }
 
-    private int format;
+    private int format; // TODO written but not read
     private EncryptionAlgorithm algId;
-    private int bitlen;
-    private int flags;
+    private int bitlen; // TODO written but not read
+    private int flags; // TODO written but not read
     private long rcount;
     private HashAlgorithm hashAlg;
     private int hashSize;
@@ -300,7 +299,7 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader implements Z
      * @param offset offset into buffer to read data
      * @param length the length of data
      */
-    public void parseCentralDirectoryFormat(byte[] data, int offset, int length) {
+    public void parseCentralDirectoryFormat(final byte[] data, final int offset, final int length) {
         this.format = ZipShort.getValue(data, offset);
         this.algId = EncryptionAlgorithm.getAlgorithmByCode(ZipShort.getValue(data, offset + 2));
         this.bitlen = ZipShort.getValue(data, offset + 4);
@@ -328,8 +327,8 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader implements Z
      * @param offset offset into buffer to read data
      * @param length the length of data
      */
-    public void parseFileFormat(byte[] data, int offset, int length) {
-        int ivSize = ZipShort.getValue(data, offset);
+    public void parseFileFormat(final byte[] data, final int offset, final int length) {
+        final int ivSize = ZipShort.getValue(data, offset);
         this.ivData = new byte[ivSize];
         System.arraycopy(data, offset + 4, this.ivData, 0, ivSize);
 
@@ -338,14 +337,14 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader implements Z
         this.bitlen = ZipShort.getValue(data, offset + ivSize + 10);
         this.flags = ZipShort.getValue(data, offset + ivSize + 12);
 
-        int erdSize = ZipShort.getValue(data, offset + ivSize + 14);
+        final int erdSize = ZipShort.getValue(data, offset + ivSize + 14);
         this.erdData = new byte[erdSize];
         System.arraycopy(data, offset + ivSize + 16, this.erdData, 0, erdSize);
 
         this.rcount = ZipLong.getValue(data, offset + ivSize + 16 + erdSize);
         System.out.println("rcount: " + rcount);
         if (rcount == 0) {
-            int vSize = ZipShort.getValue(data, offset + ivSize + 20 + erdSize);
+            final int vSize = ZipShort.getValue(data, offset + ivSize + 20 + erdSize);
             this.vData = new byte[vSize - 4];
             this.vCRC32 = new byte[4];
             System.arraycopy(data, offset + ivSize + 22 + erdSize , this.vData, 0, vSize - 4);
@@ -353,13 +352,13 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader implements Z
         } else {
             this.hashAlg = HashAlgorithm.getAlgorithmByCode(ZipShort.getValue(data, offset + ivSize + 20 + erdSize));
             this.hashSize = ZipShort.getValue(data, offset + ivSize + 22 + erdSize);
-            int resize = ZipShort.getValue(data, offset + ivSize + 24 + erdSize);
+            final int resize = ZipShort.getValue(data, offset + ivSize + 24 + erdSize);
             this.recipientKeyHash = new byte[this.hashSize];
             this.keyBlob = new byte[resize - this.hashSize];
             System.arraycopy(data, offset + ivSize + 24 + erdSize, this.recipientKeyHash, 0, this.hashSize);
             System.arraycopy(data, offset + ivSize + 24 + erdSize + this.hashSize, this.keyBlob, 0, resize - this.hashSize);
 
-            int vSize = ZipShort.getValue(data, offset + ivSize + 26 + erdSize + resize);
+            final int vSize = ZipShort.getValue(data, offset + ivSize + 26 + erdSize + resize);
             this.vData = new byte[vSize - 4];
             this.vCRC32 = new byte[4];
             System.arraycopy(data, offset + ivSize + 22 + erdSize + resize, this.vData, 0, vSize - 4);
@@ -370,13 +369,13 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader implements Z
     }
 
     @Override
-    public void parseFromLocalFileData(byte[] data, int offset, int length) {
+    public void parseFromLocalFileData(final byte[] data, final int offset, final int length) {
         super.parseFromLocalFileData(data, offset, length);
         parseFileFormat(data, offset, length);
     }
 
     @Override
-    public void parseFromCentralDirectoryData(byte[] data, int offset, int length) {
+    public void parseFromCentralDirectoryData(final byte[] data, final int offset, final int length) {
         super.parseFromCentralDirectoryData(data, offset, length);
         parseCentralDirectoryFormat(data, offset, length);
     }

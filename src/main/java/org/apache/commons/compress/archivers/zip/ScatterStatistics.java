@@ -27,7 +27,7 @@ public class ScatterStatistics {
     private final long compressionElapsed;
     private final long mergingElapsed;
 
-    ScatterStatistics(long compressionElapsed, long mergingElapsed) {
+    ScatterStatistics(final long compressionElapsed, final long mergingElapsed) {
         this.compressionElapsed = compressionElapsed;
         this.mergingElapsed = mergingElapsed;
     }

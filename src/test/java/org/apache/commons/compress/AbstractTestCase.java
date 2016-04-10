@@ -60,26 +60,23 @@ public abstract class AbstractTestCase {
         archive = null;
     }
 
-    public static File mkdir(String name) throws IOException {
-        File f = File.createTempFile(name, "");
+    public static File mkdir(final String name) throws IOException {
+        final File f = File.createTempFile(name, "");
         f.delete();
         f.mkdir();
         return f;
     }
 
-    public static File getFile(String path) throws IOException {
-        URL url = AbstractTestCase.class.getClassLoader().getResource(path);
+    public static File getFile(final String path) throws IOException {
+        final URL url = AbstractTestCase.class.getClassLoader().getResource(path);
         if (url == null) {
             throw new FileNotFoundException("couldn't find " + path);
         }
         URI uri = null;
         try {
             uri = url.toURI();
-        } catch (java.net.URISyntaxException ex) {
-//          throw new IOException(ex); // JDK 1.6+
-            IOException ioe = new IOException();
-            ioe.initCause(ex);
-            throw ioe;
+        } catch (final java.net.URISyntaxException ex) {
+            throw new IOException(ex);
         }
         return new File(uri);
     }
@@ -95,15 +92,15 @@ public abstract class AbstractTestCase {
         }
     }
 
-    public static void rmdir(File f) {
-        String[] s = f.list();
+    public static void rmdir(final File f) {
+        final String[] s = f.list();
         if (s != null) {
-            for (String element : s) {
+            for (final String element : s) {
                 final File file = new File(f, element);
                 if (file.isDirectory()){
                     rmdir(file);
                 }
-                boolean ok = tryHardToDelete(file);
+                final boolean ok = tryHardToDelete(file);
                 if (!ok && file.exists()){
                     System.out.println("Failed to delete "+element+" in "+f.getPath());
                 }
@@ -126,14 +123,14 @@ public abstract class AbstractTestCase {
      * @return whether deletion was successful
      * @since Stolen from FileUtils in Ant 1.8.0
      */
-    public static boolean tryHardToDelete(File f) {
+    public static boolean tryHardToDelete(final File f) {
         if (f != null && f.exists() && !f.delete()) {
             if (ON_WINDOWS) {
                 System.gc();
             }
             try {
                 Thread.sleep(10);
-            } catch (InterruptedException ex) {
+            } catch (final InterruptedException ex) {
                 // Ignore Exception
             }
             return f.delete();
@@ -165,7 +162,7 @@ public abstract class AbstractTestCase {
      * @throws Exception
      *             in case something goes wrong
      */
-    protected File createArchive(String archivename) throws Exception {
+    protected File createArchive(final String archivename) throws Exception {
         ArchiveOutputStream out = null;
         OutputStream stream = null;
         try {
@@ -212,9 +209,9 @@ public abstract class AbstractTestCase {
      * @throws IOException
      * @throws FileNotFoundException
      */
-    private void addArchiveEntry(ArchiveOutputStream out, String filename, final File infile)
+    private void addArchiveEntry(final ArchiveOutputStream out, final String filename, final File infile)
             throws IOException, FileNotFoundException {
-        ArchiveEntry entry = out.createArchiveEntry(infile, filename);
+        final ArchiveEntry entry = out.createArchiveEntry(infile, filename);
         out.putArchiveEntry(entry);
         IOUtils.copy(new FileInputStream(infile), out);
         out.closeArchiveEntry();
@@ -227,7 +224,7 @@ public abstract class AbstractTestCase {
      * @return the archive File
      * @throws Exception
      */
-    protected File createEmptyArchive(String archivename) throws Exception {
+    protected File createEmptyArchive(final String archivename) throws Exception {
         ArchiveOutputStream out = null;
         OutputStream stream = null;
         archiveList = new ArrayList<String>();
@@ -254,7 +251,7 @@ public abstract class AbstractTestCase {
      * @return the archive File
      * @throws Exception
      */
-    protected File createSingleEntryArchive(String archivename) throws Exception {
+    protected File createSingleEntryArchive(final String archivename) throws Exception {
         ArchiveOutputStream out = null;
         OutputStream stream = null;
         archiveList = new ArrayList<String>();
@@ -285,7 +282,7 @@ public abstract class AbstractTestCase {
      *            a list with expected string filenames
      * @throws Exception
      */
-    protected void checkArchiveContent(File archive, List<String> expected)
+    protected void checkArchiveContent(final File archive, final List<String> expected)
             throws Exception {
         final InputStream is = new FileInputStream(archive);
         try {
@@ -304,7 +301,7 @@ public abstract class AbstractTestCase {
      * @param expected list of expected entries or {@code null} if no check of names desired
      * @throws Exception
      */
-    protected void checkArchiveContent(ArchiveInputStream in, List<String> expected)
+    protected void checkArchiveContent(final ArchiveInputStream in, final List<String> expected)
             throws Exception {
         checkArchiveContent(in, expected, true);
     }
@@ -318,22 +315,22 @@ public abstract class AbstractTestCase {
      * @return returns the created result file if cleanUp = false, or null otherwise
      * @throws Exception
      */
-    protected File checkArchiveContent(ArchiveInputStream in, List<String> expected, boolean cleanUp)
+    protected File checkArchiveContent(final ArchiveInputStream in, final List<String> expected, final boolean cleanUp)
             throws Exception {
-        File result = mkdir("dir-result");
+        final File result = mkdir("dir-result");
         result.deleteOnExit();
 
         try {
             ArchiveEntry entry = null;
             while ((entry = in.getNextEntry()) != null) {
-                File outfile = new File(result.getCanonicalPath() + "/result/"
+                final File outfile = new File(result.getCanonicalPath() + "/result/"
                         + entry.getName());
                 long copied=0;
                 if (entry.isDirectory()){
                     outfile.mkdirs();
                 } else {
                     outfile.getParentFile().mkdirs();
-                    OutputStream out = new FileOutputStream(outfile);
+                    final OutputStream out = new FileOutputStream(outfile);
                     try {
                         copied=IOUtils.copy(in, out);
                     } finally {
@@ -374,7 +371,7 @@ public abstract class AbstractTestCase {
      * @param entry
      * @return returns the entry name
      */
-    protected String getExpectedString(ArchiveEntry entry) {
+    protected String getExpectedString(final ArchiveEntry entry) {
         return entry.getName();
     }
 
@@ -384,10 +381,10 @@ public abstract class AbstractTestCase {
      * element of the two element array).
      */
     protected File[] createTempDirAndFile() throws IOException {
-        File tmpDir = createTempDir();
-        File tmpFile = File.createTempFile("testfile", "", tmpDir);
+        final File tmpDir = createTempDir();
+        final File tmpFile = File.createTempFile("testfile", "", tmpDir);
         tmpFile.deleteOnExit();
-        FileOutputStream fos = new FileOutputStream(tmpFile);
+        final FileOutputStream fos = new FileOutputStream(tmpFile);
         try {
             fos.write(new byte[] {'f', 'o', 'o'});
             return new File[] {tmpDir, tmpFile};
@@ -397,16 +394,16 @@ public abstract class AbstractTestCase {
     }
 
     protected File createTempDir() throws IOException {
-        File tmpDir = mkdir("testdir");
+        final File tmpDir = mkdir("testdir");
         tmpDir.deleteOnExit();
         return tmpDir;
     }
 
-    protected void closeQuietly(Closeable closeable){
+    protected void closeQuietly(final Closeable closeable){
         if (closeable != null) {
             try {
                 closeable.close();
-            } catch (IOException ignored) {
+            } catch (final IOException ignored) {
                 // ignored
             }
         }

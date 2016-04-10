@@ -70,7 +70,7 @@ public class XZUtilsTestCase {
 
     @Test
     public void testMatches() {
-        byte[] data = {
+        final byte[] data = {
             (byte) 0xFD, '7', 'z', 'X', 'Z', '\0'
         };
         assertFalse(XZUtils.matches(data, 5));

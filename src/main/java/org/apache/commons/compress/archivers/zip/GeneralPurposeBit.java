@@ -91,7 +91,7 @@ public final class GeneralPurposeBit implements Cloneable {
      * whether the current entry will use UTF8 for file name and comment.
      * @param b whether the current entry will use UTF8 for file name and comment.
      */
-    public void useUTF8ForNames(boolean b) {
+    public void useUTF8ForNames(final boolean b) {
         languageEncodingFlag = b;
     }
 
@@ -111,7 +111,7 @@ public final class GeneralPurposeBit implements Cloneable {
      * @param b whether the current entry will use the data descriptor to store
      * CRC and size information
      */
-    public void useDataDescriptor(boolean b) {
+    public void useDataDescriptor(final boolean b) {
         dataDescriptorFlag = b;
     }
 
@@ -127,7 +127,7 @@ public final class GeneralPurposeBit implements Cloneable {
      * whether the current entry will be encrypted.
      * @param b whether the current entry will be encrypted
      */
-    public void useEncryption(boolean b) {
+    public void useEncryption(final boolean b) {
         encryptionFlag = b;
     }
 
@@ -143,7 +143,7 @@ public final class GeneralPurposeBit implements Cloneable {
      * whether the current entry will be encrypted  using strong encryption.
      * @param b whether the current entry will be encrypted  using strong encryption
      */
-    public void useStrongEncryption(boolean b) {
+    public void useStrongEncryption(final boolean b) {
         strongEncryptionFlag = b;
         if (b) {
             useEncryption(true);
@@ -169,7 +169,7 @@ public final class GeneralPurposeBit implements Cloneable {
      * @return the encoded general purpose bits
      */
     public byte[] encode() {
-        byte[] result = new byte[2];
+        final byte[] result = new byte[2];
         encode(result, 0);
         return result;
     }
@@ -183,7 +183,7 @@ public final class GeneralPurposeBit implements Cloneable {
      *         The offset within the output buffer of the first byte to be written.
      *         must be non-negative and no larger than <tt>buf.length-2</tt>
      */
-    public void encode(byte[] buf, int offset) {
+    public void encode(final byte[] buf, final int offset) {
                 ZipShort.putShort((dataDescriptorFlag ? DATA_DESCRIPTOR_FLAG : 0)
                         |
                         (languageEncodingFlag ? UFT8_NAMES_FLAG : 0)
@@ -203,7 +203,7 @@ public final class GeneralPurposeBit implements Cloneable {
      */
     public static GeneralPurposeBit parse(final byte[] data, final int offset) {
         final int generalPurposeFlag = ZipShort.getValue(data, offset);
-        GeneralPurposeBit b = new GeneralPurposeBit();
+        final GeneralPurposeBit b = new GeneralPurposeBit();
         b.useDataDescriptor((generalPurposeFlag & DATA_DESCRIPTOR_FLAG) != 0);
         b.useUTF8ForNames((generalPurposeFlag & UFT8_NAMES_FLAG) != 0);
         b.useStrongEncryption((generalPurposeFlag & STRONG_ENCRYPTION_FLAG) != 0);
@@ -222,11 +222,11 @@ public final class GeneralPurposeBit implements Cloneable {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (!(o instanceof GeneralPurposeBit)) {
             return false;
         }
-        GeneralPurposeBit g = (GeneralPurposeBit) o;
+        final GeneralPurposeBit g = (GeneralPurposeBit) o;
         return g.encryptionFlag == encryptionFlag
             && g.strongEncryptionFlag == strongEncryptionFlag
             && g.languageEncodingFlag == languageEncodingFlag
@@ -237,7 +237,7 @@ public final class GeneralPurposeBit implements Cloneable {
     public Object clone() {
         try {
             return super.clone();
-        } catch (CloneNotSupportedException ex) {
+        } catch (final CloneNotSupportedException ex) {
             // impossible
             throw new RuntimeException("GeneralPurposeBit is not Cloneable?", ex);
         }

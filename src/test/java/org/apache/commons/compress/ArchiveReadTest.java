@@ -51,18 +51,18 @@ public class ArchiveReadTest extends AbstractTestCase {
     private static final File ARCDIR = new File(CLASSLOADER.getResource("archives").getFile());
     private static final ArrayList<String> FILELIST = new ArrayList<String>();
 
-    private File file;
+    private final File file;
 
-    public ArchiveReadTest(String file){
+    public ArchiveReadTest(final String file){
         this.file = new File(ARCDIR, file);
     }
 
     @BeforeClass
     public static void setUpFileList() throws Exception {
         assertTrue(ARCDIR.exists());
-        File listing= new File(ARCDIR,"files.txt");
+        final File listing= new File(ARCDIR,"files.txt");
         assertTrue("files.txt is readable",listing.canRead());
-        BufferedReader br = new BufferedReader(new FileReader(listing));
+        final BufferedReader br = new BufferedReader(new FileReader(listing));
         String line;
         while ((line=br.readLine())!=null){
             if (!line.startsWith("#")){
@@ -75,9 +75,10 @@ public class ArchiveReadTest extends AbstractTestCase {
     @Parameters(name = "file={0}")
     public static Collection<Object[]> data() {
         assertTrue(ARCDIR.exists());
-        Collection<Object[]> params = new ArrayList<Object[]>();
-        for (String f : ARCDIR.list(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
+        final Collection<Object[]> params = new ArrayList<Object[]>();
+        for (final String f : ARCDIR.list(new FilenameFilter() {
+            @Override
+            public boolean accept(final File dir, final String name) {
                 return !name.endsWith(".txt");
             }
         })) 
@@ -89,19 +90,20 @@ public class ArchiveReadTest extends AbstractTestCase {
 
     // files.txt contains size and filename
     @Override
-    protected String getExpectedString(ArchiveEntry entry) {
+    protected String getExpectedString(final ArchiveEntry entry) {
         return entry.getSize() + " " + entry.getName();
     }
 
     @Test
     public void testArchive() throws Exception{
         @SuppressWarnings("unchecked") // fileList is correct type already
+        final
         ArrayList<String> expected= (ArrayList<String>) FILELIST.clone();
         try {
            checkArchiveContent(file, expected);
-        } catch (ArchiveException e) {
+        } catch (final ArchiveException e) {
             fail("Problem checking "+file);
-        } catch (AssertionError e) { // show error in context
+        } catch (final AssertionError e) { // show error in context
             fail("Problem checking " + file + " " +e);
         }
     }

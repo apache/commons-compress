@@ -62,7 +62,7 @@ public class ZipArchiveInputStreamTest {
         ZipArchiveInputStream in = null;
         try {
             zf = new ZipFile(getFile("COMPRESS-189.zip"));
-            ZipArchiveEntry zae = zf.getEntry("USD0558682-20080101.ZIP");
+            final ZipArchiveEntry zae = zf.getEntry("USD0558682-20080101.ZIP");
             in = new ZipArchiveInputStream(new BufferedInputStream(zf.getInputStream(zae)));
             ZipArchiveEntry innerEntry;
             while ((innerEntry = in.getNextZipEntry()) != null) {
@@ -82,16 +82,16 @@ public class ZipArchiveInputStreamTest {
 
     @Test
     public void shouldConsumeArchiveCompletely() throws Exception {
-        InputStream is = ZipArchiveInputStreamTest.class
+        final InputStream is = ZipArchiveInputStreamTest.class
             .getResourceAsStream("/archive_with_trailer.zip");
-        ZipArchiveInputStream zip = new ZipArchiveInputStream(is);
+        final ZipArchiveInputStream zip = new ZipArchiveInputStream(is);
         while (zip.getNextZipEntry() != null) {
             // just consume the archive
         }
-        byte[] expected = new byte[] {
+        final byte[] expected = new byte[] {
             'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '\n'
         };
-        byte[] actual = new byte[expected.length];
+        final byte[] actual = new byte[expected.length];
         is.read(actual);
         assertArrayEquals(expected, actual);
         zip.close();
@@ -126,7 +126,7 @@ public class ZipArchiveInputStreamTest {
 
     @Test
     public void testUnshrinkEntry() throws Exception {
-        ZipArchiveInputStream in = new ZipArchiveInputStream(new FileInputStream(getFile("SHRUNK.ZIP")));
+        final ZipArchiveInputStream in = new ZipArchiveInputStream(new FileInputStream(getFile("SHRUNK.ZIP")));
         
         ZipArchiveEntry entry = in.getNextZipEntry();
         assertEquals("method", ZipMethod.UNSHRINKING.getCode(), entry.getMethod());
@@ -159,10 +159,10 @@ public class ZipArchiveInputStreamTest {
      */
     @Test
     public void testReadingOfFirstStoredEntry() throws Exception {
-        ZipArchiveInputStream in = new ZipArchiveInputStream(new FileInputStream(getFile("COMPRESS-264.zip")));
+        final ZipArchiveInputStream in = new ZipArchiveInputStream(new FileInputStream(getFile("COMPRESS-264.zip")));
         
         try {
-            ZipArchiveEntry ze = in.getNextZipEntry();
+            final ZipArchiveEntry ze = in.getNextZipEntry();
             assertEquals(5, ze.getSize());
             assertArrayEquals(new byte[] {'d', 'a', 't', 'a', '\n'},
                               IOUtils.toByteArray(in));
@@ -173,12 +173,12 @@ public class ZipArchiveInputStreamTest {
 
     @Test
     public void testUnzipBZip2CompressedEntry() throws Exception {
-        ZipArchiveInputStream in = new ZipArchiveInputStream(new FileInputStream(getFile("bzip2-zip.zip")));
+        final ZipArchiveInputStream in = new ZipArchiveInputStream(new FileInputStream(getFile("bzip2-zip.zip")));
         
         try {
-            ZipArchiveEntry ze = in.getNextZipEntry();
+            final ZipArchiveEntry ze = in.getNextZipEntry();
             assertEquals(42, ze.getSize());
-            byte[] expected = new byte[42];
+            final byte[] expected = new byte[42];
             Arrays.fill(expected , (byte)'a');
             assertArrayEquals(expected, IOUtils.toByteArray(in));
         } finally {

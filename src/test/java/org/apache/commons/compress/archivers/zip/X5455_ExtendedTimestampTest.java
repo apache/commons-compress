@@ -107,37 +107,37 @@ public class X5455_ExtendedTimestampTest {
         http://hg.openjdk.java.net/jdk8u/jdk8u/jdk/rev/90df6756406f
          */
 
-        File archive = getFile("COMPRESS-210_unix_time_zip_test.zip");
+        final File archive = getFile("COMPRESS-210_unix_time_zip_test.zip");
         ZipFile zf = null;
 
         try {
             zf = new ZipFile(archive);
-            Enumeration<ZipArchiveEntry> en = zf.getEntries();
+            final Enumeration<ZipArchiveEntry> en = zf.getEntries();
 
             // We expect EVERY entry of this zip file
             // to contain extra field 0x5455.
             while (en.hasMoreElements()) {
 
-                ZipArchiveEntry zae = en.nextElement();
-                String name = zae.getName();
-                X5455_ExtendedTimestamp xf = (X5455_ExtendedTimestamp) zae.getExtraField(X5455);
-                Date rawZ = zae.getLastModifiedDate();
-                Date m = xf.getModifyJavaTime();
-                boolean zipTimeUsesExtendedTimestamp = rawZ.equals(m);
-                Date z = zipTimeUsesExtendedTimestamp ? rawZ : adjustFromGMTToExpectedOffset(rawZ);
-                Date a = xf.getAccessJavaTime();
+                final ZipArchiveEntry zae = en.nextElement();
+                final String name = zae.getName();
+                final X5455_ExtendedTimestamp xf = (X5455_ExtendedTimestamp) zae.getExtraField(X5455);
+                final Date rawZ = zae.getLastModifiedDate();
+                final Date m = xf.getModifyJavaTime();
+                final boolean zipTimeUsesExtendedTimestamp = rawZ.equals(m);
+                final Date z = zipTimeUsesExtendedTimestamp ? rawZ : adjustFromGMTToExpectedOffset(rawZ);
+                final Date a = xf.getAccessJavaTime();
 
-                String zipTime = DATE_FORMAT.format(z);
-                String modTime = DATE_FORMAT.format(m);
-                String accTime = DATE_FORMAT.format(a);
+                final String zipTime = DATE_FORMAT.format(z);
+                final String modTime = DATE_FORMAT.format(m);
+                final String accTime = DATE_FORMAT.format(a);
 
                 if (!zae.isDirectory()) {
-                    int x = name.lastIndexOf('/');
-                    String yearString = name.substring(x + 1);
+                    final int x = name.lastIndexOf('/');
+                    final String yearString = name.substring(x + 1);
                     int year;
                     try {
                         year = Integer.parseInt(yearString);
-                    } catch (NumberFormatException nfe) {
+                    } catch (final NumberFormatException nfe) {
                         year = -1;
                     }
                     if (year >= 0) {
@@ -229,22 +229,22 @@ public class X5455_ExtendedTimestampTest {
     public void testGettersSetters() {
         // X5455 is concerned with time, so let's
         // get a timestamp to play with (Jan 1st, 2000).
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        final Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         cal.set(Calendar.YEAR, 2000);
         cal.set(Calendar.MONTH, Calendar.JANUARY);
         cal.set(Calendar.DATE, 1);
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.MILLISECOND, 0);
-        Date timeMillis = cal.getTime();
-        ZipLong time = new ZipLong(timeMillis.getTime() / 1000);
+        final Date timeMillis = cal.getTime();
+        final ZipLong time = new ZipLong(timeMillis.getTime() / 1000);
 
         // set too big
         try {
             // Java time is 1000 x larger (milliseconds).
             xf.setModifyJavaTime(new Date(1000L * (MAX_TIME_SECONDS.getValue() + 1L)));
             fail("Time too big for 32 bits!");
-        } catch (IllegalArgumentException iae) {
+        } catch (final IllegalArgumentException iae) {
             // All is good.
         }
 
@@ -423,13 +423,13 @@ public class X5455_ExtendedTimestampTest {
     @Test
     public void testWriteReadRoundtrip() throws IOException {
         tmpDir = mkdir("X5455");
-        File output = new File(tmpDir, "write_rewrite.zip");
+        final File output = new File(tmpDir, "write_rewrite.zip");
         final OutputStream out = new FileOutputStream(output);
-        Date d = new Date(97, 8, 24, 15, 10, 2);
+        final Date d = new Date(97, 8, 24, 15, 10, 2);
         ZipArchiveOutputStream os = null;
         try {
             os = new ZipArchiveOutputStream(out);
-            ZipArchiveEntry ze = new ZipArchiveEntry("foo");
+            final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
             xf.setModifyJavaTime(d);
             xf.setFlags((byte) 1);
             ze.addExtraField(xf);
@@ -442,9 +442,9 @@ public class X5455_ExtendedTimestampTest {
         }
         out.close();
         
-        ZipFile zf = new ZipFile(output);
-        ZipArchiveEntry ze = zf.getEntry("foo");
-        X5455_ExtendedTimestamp ext =
+        final ZipFile zf = new ZipFile(output);
+        final ZipArchiveEntry ze = zf.getEntry("foo");
+        final X5455_ExtendedTimestamp ext =
             (X5455_ExtendedTimestamp) ze.getExtraField(X5455);
         assertNotNull(ext);
         assertTrue(ext.isBit0_modifyTimePresent());
@@ -537,7 +537,7 @@ public class X5455_ExtendedTimestampTest {
         }
     }
 
-    private static boolean isFlagSet(byte data, byte flag) { return (data & flag) == flag; }
+    private static boolean isFlagSet(final byte data, final byte flag) { return (data & flag) == flag; }
 
     /**
      * InfoZIP seems to adjust the time stored inside the LFH and CD
@@ -547,8 +547,8 @@ public class X5455_ExtendedTimestampTest {
      * The archive read in {@link #testSampleFile} has been created
      * with GMT-8 so we need to adjust for the difference.
      */
-    private static Date adjustFromGMTToExpectedOffset(Date from) {
-        Calendar cal = Calendar.getInstance();
+    private static Date adjustFromGMTToExpectedOffset(final Date from) {
+        final Calendar cal = Calendar.getInstance();
         cal.setTime(from);
         cal.add(Calendar.MILLISECOND, cal.get(Calendar.ZONE_OFFSET));
         if (cal.getTimeZone().inDaylightTime(from)) {

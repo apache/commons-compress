@@ -60,7 +60,7 @@ public class ZipEncodingTest {
         // the defined ones
         // retrieved by
         //    awk '/^0x/ && NF>2 {print $1;}' CP1252.TXT
-        byte[] b =
+        final byte[] b =
             new byte[] { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
                          0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
                          0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
@@ -112,21 +112,21 @@ public class ZipEncodingTest {
         doSimpleEncodingTest("Cp1252",b);
     }
 
-    private static void assertEquals(byte[] expected, ByteBuffer actual) {
+    private static void assertEquals(final byte[] expected, final ByteBuffer actual) {
 
         Assert.assertEquals(expected.length, actual.limit());
 
-        for (byte anExpected : expected) {
-            byte a = actual.get();
+        for (final byte anExpected : expected) {
+            final byte a = actual.get();
             Assert.assertEquals(anExpected, a);
         }
 
     }
 
-    private void doSimpleEncodingTest(String name, byte[] testBytes)
+    private void doSimpleEncodingTest(final String name, byte[] testBytes)
         throws IOException {
 
-        ZipEncoding enc = ZipEncodingHelper.getZipEncoding(name);
+        final ZipEncoding enc = ZipEncodingHelper.getZipEncoding(name);
 
         if (testBytes == null) {
 
@@ -136,11 +136,11 @@ public class ZipEncodingTest {
             }
         }
 
-        String decoded = enc.decode(testBytes);
+        final String decoded = enc.decode(testBytes);
 
         assertTrue(enc.canEncode(decoded));
 
-        ByteBuffer encoded = enc.encode(decoded);
+        final ByteBuffer encoded = enc.encode(decoded);
 
         assertEquals(testBytes, encoded);
 

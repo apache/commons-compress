@@ -33,7 +33,7 @@ public class ArchiveException extends Exception {
      * @param message
      *            the detail message
      */
-    public ArchiveException(String message) {
+    public ArchiveException(final String message) {
         super(message);
     }
 
@@ -45,7 +45,7 @@ public class ArchiveException extends Exception {
      * @param cause
      *            the cause
      */
-    public ArchiveException(String message, Exception cause) {
+    public ArchiveException(final String message, final Exception cause) {
         super(message);
         this.initCause(cause);
     }

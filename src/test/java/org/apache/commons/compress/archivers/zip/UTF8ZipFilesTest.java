@@ -96,7 +96,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
      */
     @Test
     public void testRead7ZipArchive() throws IOException {
-        File archive = getFile("utf8-7zip-test.zip");
+        final File archive = getFile("utf8-7zip-test.zip");
         ZipFile zf = null;
         try {
             zf = new ZipFile(archive, CP437, false);
@@ -110,7 +110,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
 
     @Test
     public void testRead7ZipArchiveForStream() throws IOException {
-        FileInputStream archive =
+        final FileInputStream archive =
             new FileInputStream(getFile("utf8-7zip-test.zip"));
         ZipArchiveInputStream zi = null;
         try {
@@ -131,7 +131,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
      */
     @Test
     public void testReadWinZipArchive() throws IOException {
-        File archive = getFile("utf8-winzip-test.zip");
+        final File archive = getFile("utf8-winzip-test.zip");
         ZipFile zf = null;
         try {
             zf = new ZipFile(archive, null, true);
@@ -143,10 +143,10 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         }
     }
 
-    private void assertCanRead(ZipFile zf, String fileName) throws IOException {
-        ZipArchiveEntry entry = zf.getEntry(fileName);
+    private void assertCanRead(final ZipFile zf, final String fileName) throws IOException {
+        final ZipArchiveEntry entry = zf.getEntry(fileName);
         assertNotNull("Entry doesn't exist", entry);
-        InputStream is = zf.getInputStream(entry);
+        final InputStream is = zf.getInputStream(entry);
         assertNotNull("InputStream is null", is);
         try {
             is.read();
@@ -157,7 +157,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
 
     @Test
     public void testReadWinZipArchiveForStream() throws IOException {
-        FileInputStream archive =
+        final FileInputStream archive =
             new FileInputStream(getFile("utf8-winzip-test.zip"));
         ZipArchiveInputStream zi = null;
         try {
@@ -174,12 +174,12 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
 
     @Test
     public void testZipFileReadsUnicodeFields() throws IOException {
-        File file = File.createTempFile("unicode-test", ".zip");
+        final File file = File.createTempFile("unicode-test", ".zip");
         file.deleteOnExit();
         ZipArchiveInputStream zi = null;
         try {
             createTestFile(file, CharsetNames.US_ASCII, false, true);
-            FileInputStream archive = new FileInputStream(file);
+            final FileInputStream archive = new FileInputStream(file);
             zi = new ZipArchiveInputStream(archive, CharsetNames.US_ASCII, true);
             assertEquals(OIL_BARREL_TXT, zi.getNextEntry().getName());
             assertEquals(EURO_FOR_DOLLAR_TXT, zi.getNextEntry().getName());
@@ -195,7 +195,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
     @Test
     public void testZipArchiveInputStreamReadsUnicodeFields()
         throws IOException {
-        File file = File.createTempFile("unicode-test", ".zip");
+        final File file = File.createTempFile("unicode-test", ".zip");
         file.deleteOnExit();
         ZipFile zf = null;
         try {
@@ -213,7 +213,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
     @Test
     public void testRawNameReadFromZipFile()
         throws IOException {
-        File archive = getFile("utf8-7zip-test.zip");
+        final File archive = getFile("utf8-7zip-test.zip");
         ZipFile zf = null;
         try {
             zf = new ZipFile(archive, CP437, false);
@@ -226,7 +226,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
     @Test
     public void testRawNameReadFromStream()
         throws IOException {
-        FileInputStream archive =
+        final FileInputStream archive =
             new FileInputStream(getFile("utf8-7zip-test.zip"));
         ZipArchiveInputStream zi = null;
         try {
@@ -239,11 +239,11 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         }
     }
 
-    private static void testFileRoundtrip(String encoding, boolean withEFS,
-                                          boolean withExplicitUnicodeExtra)
+    private static void testFileRoundtrip(final String encoding, final boolean withEFS,
+                                          final boolean withExplicitUnicodeExtra)
         throws IOException {
 
-        File file = File.createTempFile(encoding + "-test", ".zip");
+        final File file = File.createTempFile(encoding + "-test", ".zip");
         file.deleteOnExit();
         try {
             createTestFile(file, encoding, withEFS, withExplicitUnicodeExtra);
@@ -253,12 +253,12 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         }
     }
 
-    private static void createTestFile(File file, String encoding,
-                                       boolean withEFS,
-                                       boolean withExplicitUnicodeExtra)
+    private static void createTestFile(final File file, final String encoding,
+                                       final boolean withEFS,
+                                       final boolean withExplicitUnicodeExtra)
         throws UnsupportedEncodingException, IOException {
 
-        ZipEncoding zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
+        final ZipEncoding zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
 
         ZipArchiveOutputStream zos = null;
         try {
@@ -275,7 +275,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
             if (withExplicitUnicodeExtra
                 && !zipEncoding.canEncode(ze.getName())) {
 
-                ByteBuffer en = zipEncoding.encode(ze.getName());
+                final ByteBuffer en = zipEncoding.encode(ze.getName());
 
                 ze.addExtraField(new UnicodePathExtraField(ze.getName(),
                                                            en.array(),
@@ -292,7 +292,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
             if (withExplicitUnicodeExtra
                 && !zipEncoding.canEncode(ze.getName())) {
 
-                ByteBuffer en = zipEncoding.encode(ze.getName());
+                final ByteBuffer en = zipEncoding.encode(ze.getName());
 
                 ze.addExtraField(new UnicodePathExtraField(ze.getName(),
                                                            en.array(),
@@ -310,7 +310,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
             if (withExplicitUnicodeExtra
                 && !zipEncoding.canEncode(ze.getName())) {
 
-                ByteBuffer en = zipEncoding.encode(ze.getName());
+                final ByteBuffer en = zipEncoding.encode(ze.getName());
 
                 ze.addExtraField(new UnicodePathExtraField(ze.getName(),
                                                            en.array(),
@@ -328,20 +328,20 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
             if (zos != null) {
                 try {
                     zos.close();
-                } catch (IOException e) { /* swallow */ }
+                } catch (final IOException e) { /* swallow */ }
             }
         }
     }
 
-    private static void testFile(File file, String encoding)
+    private static void testFile(final File file, final String encoding)
         throws IOException {
         ZipFile zf = null;
         try {
             zf = new ZipFile(file, encoding, false);
 
-            Enumeration<ZipArchiveEntry> e = zf.getEntries();
+            final Enumeration<ZipArchiveEntry> e = zf.getEntries();
             while (e.hasMoreElements()) {
-                ZipArchiveEntry ze = e.nextElement();
+                final ZipArchiveEntry ze = e.nextElement();
 
                 if (ze.getName().endsWith("sser.txt")) {
                     assertUnicodeName(ze, OIL_BARREL_TXT, encoding);
@@ -358,23 +358,23 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         }
     }
 
-    private static UnicodePathExtraField findUniCodePath(ZipArchiveEntry ze) {
+    private static UnicodePathExtraField findUniCodePath(final ZipArchiveEntry ze) {
         return (UnicodePathExtraField)
             ze.getExtraField(UnicodePathExtraField.UPATH_ID);
     }
 
-    private static void assertUnicodeName(ZipArchiveEntry ze,
-                                          String expectedName,
-                                          String encoding)
+    private static void assertUnicodeName(final ZipArchiveEntry ze,
+                                          final String expectedName,
+                                          final String encoding)
         throws IOException {
         if (!expectedName.equals(ze.getName())) {
-            UnicodePathExtraField ucpf = findUniCodePath(ze);
+            final UnicodePathExtraField ucpf = findUniCodePath(ze);
             assertNotNull(ucpf);
 
-            ZipEncoding enc = ZipEncodingHelper.getZipEncoding(encoding);
-            ByteBuffer ne = enc.encode(ze.getName());
+            final ZipEncoding enc = ZipEncodingHelper.getZipEncoding(encoding);
+            final ByteBuffer ne = enc.encode(ze.getName());
 
-            CRC32 crc = new CRC32();
+            final CRC32 crc = new CRC32();
             crc.update(ne.array(), ne.arrayOffset(),
                        ne.limit() - ne.position());
 
@@ -386,16 +386,16 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
 
     @Test
     public void testUtf8Interoperability() throws IOException {
-        File file1 = getFile("utf8-7zip-test.zip");
-        File file2 = getFile("utf8-winzip-test.zip");
+        final File file1 = getFile("utf8-7zip-test.zip");
+        final File file2 = getFile("utf8-winzip-test.zip");
 
         testFile(file1,CP437);
         testFile(file2,CP437);
 
     }
 
-    private static void assertRawNameOfAcsiiTxt(ZipArchiveEntry ze) {
-        byte[] b = ze.getRawName();
+    private static void assertRawNameOfAcsiiTxt(final ZipArchiveEntry ze) {
+        final byte[] b = ze.getRawName();
         assertNotNull(b);
         final int len = ASCII_TXT.length();
         assertEquals(len, b.length);

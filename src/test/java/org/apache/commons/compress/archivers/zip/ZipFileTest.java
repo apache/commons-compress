@@ -48,7 +48,7 @@ public class ZipFileTest {
     @Test
     public void testCDOrder() throws Exception {
         readOrderTest();
-        ArrayList<ZipArchiveEntry> l = Collections.list(zf.getEntries());
+        final ArrayList<ZipArchiveEntry> l = Collections.list(zf.getEntries());
         assertEntryName(l, 0, "AbstractUnicodeExtraField");
         assertEntryName(l, 1, "AsiExtraField");
         assertEntryName(l, 2, "ExtraFieldUtils");
@@ -77,7 +77,7 @@ public class ZipFileTest {
     @Test
     public void testPhysicalOrder() throws Exception {
         readOrderTest();
-        ArrayList<ZipArchiveEntry> l = Collections.list(zf.getEntriesInPhysicalOrder());
+        final ArrayList<ZipArchiveEntry> l = Collections.list(zf.getEntriesInPhysicalOrder());
         assertEntryName(l, 0, "AbstractUnicodeExtraField");
         assertEntryName(l, 1, "AsiExtraField");
         assertEntryName(l, 2, "ExtraFieldUtils");
@@ -109,20 +109,20 @@ public class ZipFileTest {
         zf.close();
         try {
             zf.close();
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             fail("Caught exception of second close");
         }
     }
 
     @Test
     public void testReadingOfStoredEntry() throws Exception {
-        File f = File.createTempFile("commons-compress-zipfiletest", ".zip");
+        final File f = File.createTempFile("commons-compress-zipfiletest", ".zip");
         f.deleteOnExit();
         OutputStream o = null;
         InputStream i = null;
         try {
             o = new FileOutputStream(f);
-            ZipArchiveOutputStream zo = new ZipArchiveOutputStream(o);
+            final ZipArchiveOutputStream zo = new ZipArchiveOutputStream(o);
             ZipArchiveEntry ze = new ZipArchiveEntry("foo");
             ze.setMethod(ZipEntry.STORED);
             ze.setSize(4);
@@ -138,7 +138,7 @@ public class ZipFileTest {
             ze = zf.getEntry("foo");
             assertNotNull(ze);
             i = zf.getInputStream(ze);
-            byte[] b = new byte[4];
+            final byte[] b = new byte[4];
             assertEquals(4, i.read(b));
             assertEquals(-1, i.read());
         } finally {
@@ -157,7 +157,7 @@ public class ZipFileTest {
      */
     @Test
     public void testWinzipBackSlashWorkaround() throws Exception {
-        File archive = getFile("test-winzip.zip");
+        final File archive = getFile("test-winzip.zip");
         zf = new ZipFile(archive);
         assertNull(zf.getEntry("\u00e4\\\u00fc.txt"));
         assertNotNull(zf.getEntry("\u00e4/\u00fc.txt"));
@@ -170,7 +170,7 @@ public class ZipFileTest {
      */
     @Test
     public void testSkipsPK00Prefix() throws Exception {
-        File archive = getFile("COMPRESS-208.zip");
+        final File archive = getFile("COMPRESS-208.zip");
         zf = new ZipFile(archive);
         assertNotNull(zf.getEntry("test1.xml"));
         assertNotNull(zf.getEntry("test2.xml"));
@@ -198,16 +198,16 @@ public class ZipFileTest {
         // I looked into creating a test with hard links, but zip does not appear to
         // support hard links, so nevermind.
 
-        File archive = getFile("COMPRESS-214_unix_symlinks.zip");
+        final File archive = getFile("COMPRESS-214_unix_symlinks.zip");
 
         zf = new ZipFile(archive);
-        Enumeration<ZipArchiveEntry> en = zf.getEntries();
+        final Enumeration<ZipArchiveEntry> en = zf.getEntries();
         while (en.hasMoreElements()) {
-            ZipArchiveEntry zae = en.nextElement();
-            String link = zf.getUnixSymlink(zae);
+            final ZipArchiveEntry zae = en.nextElement();
+            final String link = zf.getUnixSymlink(zae);
             if (zae.isUnixSymlink()) {
-                String name = zae.getName();
-                String expected = expectedVals.get(name);
+                final String name = zae.getName();
+                final String expected = expectedVals.get(name);
                 assertEquals(expected, link);
             } else {
                 // Should be null if it's not a symlink!
@@ -221,15 +221,15 @@ public class ZipFileTest {
      */
     @Test
     public void testDuplicateEntry() throws Exception {
-        File archive = getFile("COMPRESS-227.zip");
+        final File archive = getFile("COMPRESS-227.zip");
         zf = new ZipFile(archive);
 
-        ZipArchiveEntry ze = zf.getEntry("test1.txt");
+        final ZipArchiveEntry ze = zf.getEntry("test1.txt");
         assertNotNull(ze);
         assertNotNull(zf.getInputStream(ze));
 
         int numberOfEntries = 0;
-        for (ZipArchiveEntry entry : zf.getEntries("test1.txt")) {
+        for (final ZipArchiveEntry entry : zf.getEntries("test1.txt")) {
             numberOfEntries++;
             assertNotNull(zf.getInputStream(entry));
         }
@@ -241,11 +241,11 @@ public class ZipFileTest {
      */
     @Test
     public void testExcessDataInZip64ExtraField() throws Exception {
-        File archive = getFile("COMPRESS-228.zip");
+        final File archive = getFile("COMPRESS-228.zip");
         zf = new ZipFile(archive);
         // actually, if we get here, the test already has passed
 
-        ZipArchiveEntry ze = zf.getEntry("src/main/java/org/apache/commons/compress/archivers/zip/ZipFile.java");
+        final ZipArchiveEntry ze = zf.getEntry("src/main/java/org/apache/commons/compress/archivers/zip/ZipFile.java");
         assertEquals(26101, ze.getSize());
     }
 
@@ -277,9 +277,9 @@ public class ZipFileTest {
      */
     @Test
     public void testReadingOfFirstStoredEntry() throws Exception {
-        File archive = getFile("COMPRESS-264.zip");
+        final File archive = getFile("COMPRESS-264.zip");
         zf = new ZipFile(archive);
-        ZipArchiveEntry ze = zf.getEntry("test.txt");
+        final ZipArchiveEntry ze = zf.getEntry("test.txt");
         assertEquals(5, ze.getSize());
         assertArrayEquals(new byte[] {'d', 'a', 't', 'a', '\n'},
                           IOUtils.toByteArray(zf.getInputStream(ze)));
@@ -287,11 +287,11 @@ public class ZipFileTest {
 
     @Test
     public void testUnzipBZip2CompressedEntry() throws Exception {
-        File archive = getFile("bzip2-zip.zip");
+        final File archive = getFile("bzip2-zip.zip");
         zf = new ZipFile(archive);
-        ZipArchiveEntry ze = zf.getEntry("lots-of-as");
+        final ZipArchiveEntry ze = zf.getEntry("lots-of-as");
         assertEquals(42, ze.getSize());
-        byte[] expected = new byte[42];
+        final byte[] expected = new byte[42];
         Arrays.fill(expected , (byte)'a');
         assertArrayEquals(expected, IOUtils.toByteArray(zf.getInputStream(ze)));
     }
@@ -307,14 +307,14 @@ public class ZipFileTest {
      * central directory order is different from entry data order.
      */
     private void readOrderTest() throws Exception {
-        File archive = getFile("ordertest.zip");
+        final File archive = getFile("ordertest.zip");
         zf = new ZipFile(archive);
     }
 
-    private static void assertEntryName(ArrayList<ZipArchiveEntry> entries,
-                                        int index,
-                                        String expectedName) {
-        ZipArchiveEntry ze = entries.get(index);
+    private static void assertEntryName(final ArrayList<ZipArchiveEntry> entries,
+                                        final int index,
+                                        final String expectedName) {
+        final ZipArchiveEntry ze = entries.get(index);
         assertEquals("src/main/java/org/apache/commons/compress/archivers/zip/"
                      + expectedName + ".java",
                      ze.getName());

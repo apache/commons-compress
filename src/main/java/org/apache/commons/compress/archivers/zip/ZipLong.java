@@ -90,7 +90,7 @@ public final class ZipLong implements Cloneable, Serializable {
      * Create instance from a number.
      * @param value the long to store as a ZipLong
      */
-    public ZipLong(long value) {
+    public ZipLong(final long value) {
         this.value = value;
     }
 
@@ -98,7 +98,7 @@ public final class ZipLong implements Cloneable, Serializable {
      * Create instance from bytes.
      * @param bytes the bytes to store as a ZipLong
      */
-    public ZipLong (byte[] bytes) {
+    public ZipLong (final byte[] bytes) {
         this(bytes, 0);
     }
 
@@ -107,7 +107,7 @@ public final class ZipLong implements Cloneable, Serializable {
      * @param bytes the bytes to store as a ZipLong
      * @param offset the offset to start
      */
-    public ZipLong (byte[] bytes, int offset) {
+    public ZipLong (final byte[] bytes, final int offset) {
         value = ZipLong.getValue(bytes, offset);
     }
 
@@ -132,8 +132,8 @@ public final class ZipLong implements Cloneable, Serializable {
      * @param value the value to convert
      * @return value as four bytes in big endian byte order
      */
-    public static byte[] getBytes(long value) {
-        byte[] result = new byte[WORD];
+    public static byte[] getBytes(final long value) {
+        final byte[] result = new byte[WORD];
         putLong(value, result, 0);
         return result;
     }
@@ -147,14 +147,14 @@ public final class ZipLong implements Cloneable, Serializable {
      *         must be non-negative and no larger than <tt>buf.length-4</tt>
      */
 
-    public static void putLong(long value, byte[] buf, int offset) {
+    public static void putLong(final long value, final byte[] buf, int offset) {
         buf[offset++] = (byte) ((value & BYTE_MASK));
         buf[offset++] = (byte) ((value & BYTE_1_MASK) >> BYTE_1_SHIFT);
         buf[offset++] = (byte) ((value & BYTE_2_MASK) >> BYTE_2_SHIFT);
         buf[offset] = (byte) ((value & BYTE_3_MASK) >> BYTE_3_SHIFT);
     }
 
-    public void putLong(byte[] buf, int offset) {
+    public void putLong(final byte[] buf, final int offset) {
         putLong(value, buf, offset);
     }
 
@@ -164,7 +164,7 @@ public final class ZipLong implements Cloneable, Serializable {
      * @param offset the offset to start
      * @return the corresponding Java long value
      */
-    public static long getValue(byte[] bytes, int offset) {
+    public static long getValue(final byte[] bytes, final int offset) {
         long value = (bytes[offset + BYTE_3] << BYTE_3_SHIFT) & BYTE_3_MASK;
         value += (bytes[offset + BYTE_2] << BYTE_2_SHIFT) & BYTE_2_MASK;
         value += (bytes[offset + BYTE_1] << BYTE_1_SHIFT) & BYTE_1_MASK;
@@ -177,7 +177,7 @@ public final class ZipLong implements Cloneable, Serializable {
      * @param bytes the array of bytes
      * @return the corresponding Java long value
      */
-    public static long getValue(byte[] bytes) {
+    public static long getValue(final byte[] bytes) {
         return getValue(bytes, 0);
     }
 
@@ -187,7 +187,7 @@ public final class ZipLong implements Cloneable, Serializable {
      * @return true if the objects are equal
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (o == null || !(o instanceof ZipLong)) {
             return false;
         }
@@ -207,7 +207,7 @@ public final class ZipLong implements Cloneable, Serializable {
     public Object clone() {
         try {
             return super.clone();
-        } catch (CloneNotSupportedException cnfe) {
+        } catch (final CloneNotSupportedException cnfe) {
             // impossible
             throw new RuntimeException(cnfe);
         }

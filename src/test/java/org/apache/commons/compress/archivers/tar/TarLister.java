@@ -33,17 +33,17 @@ import java.io.InputStream;
  */
 public final class TarLister {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(final String[] args) throws Exception {
         if (args.length == 0) {
             usage();
             return;
         }
         System.out.println("Analysing " + args[0]);
-        File f = new File(args[0]);
+        final File f = new File(args[0]);
         if (!f.isFile()) {
             System.err.println(f + " doesn't exist or is a directory");
         }
-        InputStream fis = new BufferedInputStream(new FileInputStream(f));
+        final InputStream fis = new BufferedInputStream(new FileInputStream(f));
         TarArchiveInputStream ais;
         if (args.length > 1) {
             ais = new TarArchiveInputStream(fis, args[1]);
@@ -63,8 +63,8 @@ public final class TarLister {
         System.out.println("Parameters: archive-name [encoding]");
     }
 
-    private static void log(TarArchiveEntry ae) {
-        StringBuilder sb = new StringBuilder(Integer.toOctalString(ae.getMode()))
+    private static void log(final TarArchiveEntry ae) {
+        final StringBuilder sb = new StringBuilder(Integer.toOctalString(ae.getMode()))
             .append(" ");
         String name = ae.getUserName();
         if (name != null && name.length() > 0) {

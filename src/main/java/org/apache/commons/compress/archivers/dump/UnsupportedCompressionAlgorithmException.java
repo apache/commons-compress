@@ -31,7 +31,7 @@ public class UnsupportedCompressionAlgorithmException
         super("this file uses an unsupported compression algorithm.");
     }
 
-    public UnsupportedCompressionAlgorithmException(String alg) {
+    public UnsupportedCompressionAlgorithmException(final String alg) {
         super("this file uses an unsupported compression algorithm: " + alg +
             ".");
     }

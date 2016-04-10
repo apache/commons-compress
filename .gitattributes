@@ -1,3 +1,9 @@
-src/test/resources/longfile_gnu.ar      eol=lf
-src/test/resources/longfile_bsd.ar      eol=lf
-src/test/resources/longpath/minotaur.ar eol=lf
+*.ar                                    binary
+*.arj                                   binary
+# These must be identical to the copies in SHRUNK.ZIP
+src/test/resources/test1.xml            eol=lf
+src/test/resources/test2.xml            eol=lf
+src/test/resources/test3.xml            eol=lf
+src/test/resources/test4.xml            eol=lf
+src/test/resources/test?with?spaces.txt eol=lf
+src/test/resources/test.txt             eol=lf

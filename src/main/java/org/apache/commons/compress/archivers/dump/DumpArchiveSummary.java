@@ -43,7 +43,7 @@ public class DumpArchiveSummary {
     private int firstrec;
     private int ntrec;
 
-    DumpArchiveSummary(byte[] buffer, ZipEncoding encoding) throws IOException {
+    DumpArchiveSummary(final byte[] buffer, final ZipEncoding encoding) throws IOException {
         dumpDate = 1000L * DumpArchiveUtil.convert32(buffer, 4);
         previousDumpDate = 1000L * DumpArchiveUtil.convert32(buffer, 8);
         volume = DumpArchiveUtil.convert32(buffer, 12);
@@ -71,7 +71,7 @@ public class DumpArchiveSummary {
      * Set dump date.
      * @param dumpDate the dump date
      */
-    public void setDumpDate(Date dumpDate) {
+    public void setDumpDate(final Date dumpDate) {
         this.dumpDate = dumpDate.getTime();
     }
 
@@ -87,7 +87,7 @@ public class DumpArchiveSummary {
      * Set previous dump date.
      * @param previousDumpDate the previous dump dat
      */
-    public void setPreviousDumpDate(Date previousDumpDate) {
+    public void setPreviousDumpDate(final Date previousDumpDate) {
         this.previousDumpDate = previousDumpDate.getTime();
     }
 
@@ -103,7 +103,7 @@ public class DumpArchiveSummary {
      * Set volume (tape) number.
      * @param volume the volume number
      */
-    public void setVolume(int volume) {
+    public void setVolume(final int volume) {
         this.volume = volume;
     }
 
@@ -123,7 +123,7 @@ public class DumpArchiveSummary {
      * Set level.
      * @param level the level
      */
-    public void setLevel(int level) {
+    public void setLevel(final int level) {
         this.level = level;
     }
 
@@ -140,7 +140,7 @@ public class DumpArchiveSummary {
      * Set dump label.
      * @param label the label
      */
-    public void setLabel(String label) {
+    public void setLabel(final String label) {
         this.label = label;
     }
 
@@ -156,7 +156,7 @@ public class DumpArchiveSummary {
      * Set the last mountpoint.
      * @param filesystem the last mountpoint
      */
-    public void setFilesystem(String filesystem) {
+    public void setFilesystem(final String filesystem) {
         this.filesys = filesystem;
     }
 
@@ -172,7 +172,7 @@ public class DumpArchiveSummary {
      * Set the device name.
      * @param devname the device name
      */
-    public void setDevname(String devname) {
+    public void setDevname(final String devname) {
         this.devname = devname;
     }
 
@@ -188,7 +188,7 @@ public class DumpArchiveSummary {
      * Set the hostname.
      * @param hostname the host name
      */
-    public void setHostname(String hostname) {
+    public void setHostname(final String hostname) {
         this.hostname = hostname;
     }
 
@@ -204,7 +204,7 @@ public class DumpArchiveSummary {
      * Set the miscellaneous flags.
      * @param flags flags
      */
-    public void setFlags(int flags) {
+    public void setFlags(final int flags) {
         this.flags = flags;
     }
 
@@ -220,7 +220,7 @@ public class DumpArchiveSummary {
      * Set the inode of the first record.
      * @param firstrec the first record
      */
-    public void setFirstRecord(int firstrec) {
+    public void setFirstRecord(final int firstrec) {
         this.firstrec = firstrec;
     }
 
@@ -237,7 +237,7 @@ public class DumpArchiveSummary {
      * Set the number of records per tape block.
      * @param ntrec the number of records per tape block
      */
-    public void setNTRec(int ntrec) {
+    public void setNTRec(final int ntrec) {
         this.ntrec = ntrec;
     }
 
@@ -307,7 +307,7 @@ public class DumpArchiveSummary {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -316,7 +316,7 @@ public class DumpArchiveSummary {
             return false;
         }
 
-        DumpArchiveSummary rhs = (DumpArchiveSummary) o;
+        final DumpArchiveSummary rhs = (DumpArchiveSummary) o;
 
         if (dumpDate != rhs.dumpDate) {
             return false;

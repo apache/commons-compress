@@ -32,8 +32,8 @@ public class CountingStreamTest {
     public void output() throws Exception {
         // I don't like "test all at once" tests either, but the class
         // is so trivial
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        CountingOutputStream o = new CountingOutputStream(bos);
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final CountingOutputStream o = new CountingOutputStream(bos);
         o.write(1);
         assertEquals(1, o.getBytesWritten());
         o.write(new byte[] { 2, 3 });
@@ -52,9 +52,9 @@ public class CountingStreamTest {
     public void input() throws Exception {
         // I don't like "test all at once" tests either, but the class
         // is so trivial
-        ByteArrayInputStream bis =
+        final ByteArrayInputStream bis =
             new ByteArrayInputStream(new byte[] { 1, 2, 3, 4 });
-        CountingInputStream i = new CountingInputStream(bis);
+        final CountingInputStream i = new CountingInputStream(bis);
         assertEquals(1, i.read());
         assertEquals(1, i.getBytesRead());
         byte[] b = new byte[2];

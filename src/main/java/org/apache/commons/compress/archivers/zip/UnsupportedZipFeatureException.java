@@ -36,8 +36,8 @@ public class UnsupportedZipFeatureException extends ZipException {
      * @param reason the feature that is not supported
      * @param entry the entry using the feature
      */
-    public UnsupportedZipFeatureException(Feature reason,
-                                          ZipArchiveEntry entry) {
+    public UnsupportedZipFeatureException(final Feature reason,
+                                          final ZipArchiveEntry entry) {
         super("unsupported feature " + reason +  " used in entry "
               + entry.getName());
         this.reason = reason;
@@ -51,8 +51,8 @@ public class UnsupportedZipFeatureException extends ZipException {
      * @param entry the entry using the feature
      * @since 1.5
      */
-    public UnsupportedZipFeatureException(ZipMethod method,
-                                          ZipArchiveEntry entry) {
+    public UnsupportedZipFeatureException(final ZipMethod method,
+                                          final ZipArchiveEntry entry) {
         super("unsupported feature method '" + method.name()
               +  "' used in entry " + entry.getName());
         this.reason = Feature.METHOD;
@@ -66,7 +66,7 @@ public class UnsupportedZipFeatureException extends ZipException {
      * @param reason the feature that is not supported
      * @since 1.5
      */
-    public UnsupportedZipFeatureException(Feature reason) {
+    public UnsupportedZipFeatureException(final Feature reason) {
         super("unsupported feature " + reason +  " used in archive.");
         this.reason = reason;
         this.entry = null;
@@ -113,7 +113,7 @@ public class UnsupportedZipFeatureException extends ZipException {
 
         private final String name;
 
-        private Feature(String name) {
+        private Feature(final String name) {
             this.name = name;
         }
 

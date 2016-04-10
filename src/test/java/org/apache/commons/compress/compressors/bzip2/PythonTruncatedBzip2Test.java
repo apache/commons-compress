@@ -48,8 +48,8 @@ public class PythonTruncatedBzip2Test {
 
     @BeforeClass
     public static void initializeTestData() throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        BZip2CompressorOutputStream bz2out = new BZip2CompressorOutputStream(out);
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final BZip2CompressorOutputStream bz2out = new BZip2CompressorOutputStream(out);
         bz2out.write(TEXT.getBytes(), 0, TEXT.getBytes().length);
         bz2out.close();
         DATA = out.toByteArray();
@@ -60,7 +60,7 @@ public class PythonTruncatedBzip2Test {
 
     @Before
     public void initializeChannel() throws IOException {
-        InputStream source = new ByteArrayInputStream(TRUNCATED_DATA);
+        final InputStream source = new ByteArrayInputStream(TRUNCATED_DATA);
         this.bz2Channel = makeBZ2C(source);
     }
 
@@ -75,7 +75,7 @@ public class PythonTruncatedBzip2Test {
         //with BZ2File(self.filename) as f:
         //    self.assertRaises(EOFError, f.read)
         System.out.println("Attempt to read the whole thing in, should throw ...");
-        ByteBuffer buffer = ByteBuffer.allocate(8192);
+        final ByteBuffer buffer = ByteBuffer.allocate(8192);
         bz2Channel.read(buffer);
     }
 
@@ -97,23 +97,23 @@ public class PythonTruncatedBzip2Test {
         try {
             bz2Channel.read(buffer);
             Assert.fail("The read should have thrown.");
-        } catch (IOException e) {
+        } catch (final IOException e) {
             // pass
         }
     }
 
-    private static ReadableByteChannel makeBZ2C(InputStream source) throws IOException {
-        BufferedInputStream bin = new BufferedInputStream(source);
-        BZip2CompressorInputStream bZin = new BZip2CompressorInputStream(bin, true);
+    private static ReadableByteChannel makeBZ2C(final InputStream source) throws IOException {
+        final BufferedInputStream bin = new BufferedInputStream(source);
+        final BZip2CompressorInputStream bZin = new BZip2CompressorInputStream(bin, true);
 
         return Channels.newChannel(bZin);
     }
 
     // Helper method since Arrays#copyOfRange is Java 1.6+
     // Does not check parameters, so may fail if they are incompatible
-    private static byte[] copyOfRange(byte[] original, int from, int to) {
-        int length = to - from;
-        byte buff[] = new byte[length];
+    private static byte[] copyOfRange(final byte[] original, final int from, final int to) {
+        final int length = to - from;
+        final byte buff[] = new byte[length];
         System.arraycopy(original, from, buff, 0, length);
         return buff;
     }

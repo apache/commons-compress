@@ -78,8 +78,8 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
      *
      * @throws IllegalArgumentException if size or compressedSize is null
      */
-    public Zip64ExtendedInformationExtraField(ZipEightByteInteger size,
-                                              ZipEightByteInteger compressedSize) {
+    public Zip64ExtendedInformationExtraField(final ZipEightByteInteger size,
+                                              final ZipEightByteInteger compressedSize) {
         this(size, compressedSize, null, null);
     }
 
@@ -93,24 +93,27 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
      *
      * @throws IllegalArgumentException if size or compressedSize is null
      */
-    public Zip64ExtendedInformationExtraField(ZipEightByteInteger size,
-                                              ZipEightByteInteger compressedSize,
-                                              ZipEightByteInteger relativeHeaderOffset,
-                                              ZipLong diskStart) {
+    public Zip64ExtendedInformationExtraField(final ZipEightByteInteger size,
+                                              final ZipEightByteInteger compressedSize,
+                                              final ZipEightByteInteger relativeHeaderOffset,
+                                              final ZipLong diskStart) {
         this.size = size;
         this.compressedSize = compressedSize;
         this.relativeHeaderOffset = relativeHeaderOffset;
         this.diskStart = diskStart;
     }
 
+    @Override
     public ZipShort getHeaderId() {
         return HEADER_ID;
     }
 
+    @Override
     public ZipShort getLocalFileDataLength() {
         return new ZipShort(size != null ? 2 * DWORD : 0);
     }
 
+    @Override
     public ZipShort getCentralDirectoryLength() {
         return new ZipShort((size != null ? DWORD : 0)
                             + (compressedSize != null ? DWORD : 0)
@@ -118,20 +121,22 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
                             + (diskStart != null ? WORD : 0));
     }
 
+    @Override
     public byte[] getLocalFileDataData() {
         if (size != null || compressedSize != null) {
             if (size == null || compressedSize == null) {
                 throw new IllegalArgumentException(LFH_MUST_HAVE_BOTH_SIZES_MSG);
             }
-            byte[] data = new byte[2 * DWORD];
+            final byte[] data = new byte[2 * DWORD];
             addSizes(data);
             return data;
         }
         return EMPTY;
     }
 
+    @Override
     public byte[] getCentralDirectoryData() {
-        byte[] data = new byte[getCentralDirectoryLength().getValue()];
+        final byte[] data = new byte[getCentralDirectoryLength().getValue()];
         int off = addSizes(data);
         if (relativeHeaderOffset != null) {
             System.arraycopy(relativeHeaderOffset.getBytes(), 0, data, off, DWORD);
@@ -144,7 +149,8 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
         return data;
     }
 
-    public void parseFromLocalFileData(byte[] buffer, int offset, int length)
+    @Override
+    public void parseFromLocalFileData(final byte[] buffer, int offset, final int length)
         throws ZipException {
         if (length == 0) {
             // no local file data at all, may happen if an archive
@@ -173,8 +179,9 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
         }
     }
 
-    public void parseFromCentralDirectoryData(byte[] buffer, int offset,
-                                              int length)
+    @Override
+    public void parseFromCentralDirectoryData(final byte[] buffer, int offset,
+                                              final int length)
         throws ZipException {
         // store for processing in reparseCentralDirectoryData
         rawCentralDirectoryData = new byte[length];
@@ -214,13 +221,13 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
      * @param hasDiskStart flag to read from central directory
      * @throws ZipException on error
      */
-    public void reparseCentralDirectoryData(boolean hasUncompressedSize,
-                                            boolean hasCompressedSize,
-                                            boolean hasRelativeHeaderOffset,
-                                            boolean hasDiskStart)
+    public void reparseCentralDirectoryData(final boolean hasUncompressedSize,
+                                            final boolean hasCompressedSize,
+                                            final boolean hasRelativeHeaderOffset,
+                                            final boolean hasDiskStart)
         throws ZipException {
         if (rawCentralDirectoryData != null) {
-            int expectedLength = (hasUncompressedSize ? DWORD : 0)
+            final int expectedLength = (hasUncompressedSize ? DWORD : 0)
                 + (hasCompressedSize ? DWORD : 0)
                 + (hasRelativeHeaderOffset ? DWORD : 0)
                 + (hasDiskStart ? WORD : 0);
@@ -266,7 +273,7 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
      * The uncompressed size stored in this extra field.
      * @param size The uncompressed size stored in this extra field.
      */
-    public void setSize(ZipEightByteInteger size) {
+    public void setSize(final ZipEightByteInteger size) {
         this.size = size;
     }
 
@@ -282,7 +289,7 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
      * The uncompressed size stored in this extra field.
      * @param compressedSize The uncompressed size stored in this extra field.
      */
-    public void setCompressedSize(ZipEightByteInteger compressedSize) {
+    public void setCompressedSize(final ZipEightByteInteger compressedSize) {
         this.compressedSize = compressedSize;
     }
 
@@ -298,7 +305,7 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
      * The relative header offset stored in this extra field.
      * @param rho The relative header offset stored in this extra field.
      */
-    public void setRelativeHeaderOffset(ZipEightByteInteger rho) {
+    public void setRelativeHeaderOffset(final ZipEightByteInteger rho) {
         relativeHeaderOffset = rho;
     }
 
@@ -314,11 +321,11 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
      * The disk start number stored in this extra field.
      * @param ds The disk start number stored in this extra field.
      */
-    public void setDiskStartNumber(ZipLong ds) {
+    public void setDiskStartNumber(final ZipLong ds) {
         diskStart = ds;
     }
 
-    private int addSizes(byte[] data) {
+    private int addSizes(final byte[] data) {
         int off = 0;
         if (size != null) {
             System.arraycopy(size.getBytes(), 0, data, 0, DWORD);

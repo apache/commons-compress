@@ -112,7 +112,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         IOUtils.readFully(this, NAME_BUF);
         IOUtils.readFully(this, LAST_MODIFIED_BUF);
         IOUtils.readFully(this, ID_BUF);
-        int userId = asInt(ID_BUF, true);
+        final int userId = asInt(ID_BUF, true);
         IOUtils.readFully(this, ID_BUF);
         IOUtils.readFully(this, FILE_MODE_BUF);
         IOUtils.readFully(this, LENGTH_BUF);
@@ -146,14 +146,14 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         if (temp.endsWith("/")) { // GNU terminator
             temp = temp.substring(0, temp.length() - 1);
         } else if (isGNULongName(temp)) {
-            int off = Integer.parseInt(temp.substring(1));// get the offset
+            final int off = Integer.parseInt(temp.substring(1));// get the offset
             temp = getExtendedName(off); // convert to the long name
         } else if (isBSDLongName(temp)) {
             temp = getBSDLongName(temp);
             // entry length contained the length of the file name in
             // addition to the real length of the entry.
             // assume file name was ASCII, there is no "standard" otherwise
-            int nameLen = temp.length();
+            final int nameLen = temp.length();
             len -= nameLen;
             entryOffset += nameLen;
         }
@@ -172,7 +172,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      * @return the extended file name; without trailing "/" if present.
      * @throws IOException if name not found or buffer not set up
      */
-    private String getExtendedName(int offset) throws IOException{
+    private String getExtendedName(final int offset) throws IOException{
         if (namebuffer == null) {
             throw new IOException("Cannot process GNU long filename as no // record was found");
         }
@@ -186,24 +186,24 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         }
         throw new IOException("Failed to read entry: "+offset);
     }
-    private long asLong(byte[] input) {
+    private long asLong(final byte[] input) {
         return Long.parseLong(ArchiveUtils.toAsciiString(input).trim());
     }
 
-    private int asInt(byte[] input) {
+    private int asInt(final byte[] input) {
         return asInt(input, 10, false);
     }
 
-    private int asInt(byte[] input, boolean treatBlankAsZero) {
+    private int asInt(final byte[] input, final boolean treatBlankAsZero) {
         return asInt(input, 10, treatBlankAsZero);
     }
 
-    private int asInt(byte[] input, int base) {
+    private int asInt(final byte[] input, final int base) {
         return asInt(input, base, false);
     }
 
-    private int asInt(byte[] input, int base, boolean treatBlankAsZero) {
-        String string = ArchiveUtils.toAsciiString(input).trim();
+    private int asInt(final byte[] input, final int base, final boolean treatBlankAsZero) {
+        final String string = ArchiveUtils.toAsciiString(input).trim();
         if (string.length() == 0 && treatBlankAsZero) {
             return 0;
         }
@@ -241,7 +241,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      * @see java.io.InputStream#read(byte[], int, int)
      */
     @Override
-    public int read(byte[] b, final int off, final int len) throws IOException {
+    public int read(final byte[] b, final int off, final int len) throws IOException {
         int toRead = len;
         if (currentEntry != null) {
             final long entryEnd = entryOffset + currentEntry.getLength();
@@ -267,7 +267,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      *            the number of bytes to check
      * @return true, if this stream is an Ar archive stream, false otherwise
      */
-    public static boolean matches(byte[] signature, int length) {
+    public static boolean matches(final byte[] signature, final int length) {
         // 3c21 7261 6863 0a3e
 
         if (length < 8) {
@@ -329,7 +329,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      *
      * @since 1.3
      */
-    private static boolean isBSDLongName(String name) {
+    private static boolean isBSDLongName(final String name) {
         return name != null && name.matches(BSD_LONGNAME_PATTERN);
     }
 
@@ -341,11 +341,11 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      *
      * @since 1.3
      */
-    private String getBSDLongName(String bsdLongName) throws IOException {
-        int nameLen =
+    private String getBSDLongName(final String bsdLongName) throws IOException {
+        final int nameLen =
             Integer.parseInt(bsdLongName.substring(BSD_LONGNAME_PREFIX_LEN));
-        byte[] name = new byte[nameLen];
-        int read = IOUtils.readFully(this, name);
+        final byte[] name = new byte[nameLen];
+        final int read = IOUtils.readFully(this, name);
         if (read != nameLen) {
             throw new EOFException();
         }
@@ -371,7 +371,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      * characters. Note that the decimal offsets are number of
      * characters, not line or string number within the "//" file.</p>
      */
-    private static boolean isGNUStringTable(String name) {
+    private static boolean isGNUStringTable(final String name) {
         return GNU_STRING_TABLE_NAME.equals(name);
     }
 
@@ -380,10 +380,10 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      *
      * @see #isGNUStringTable
      */
-    private ArArchiveEntry readGNUStringTable(byte[] length) throws IOException {
-        int bufflen = asInt(length); // Assume length will fit in an int
+    private ArArchiveEntry readGNUStringTable(final byte[] length) throws IOException {
+        final int bufflen = asInt(length); // Assume length will fit in an int
         namebuffer = new byte[bufflen];
-        int read = IOUtils.readFully(this, namebuffer, 0, bufflen);
+        final int read = IOUtils.readFully(this, namebuffer, 0, bufflen);
         if (read != bufflen){
             throw new IOException("Failed to read complete // record: expected="
                                   + bufflen + " read=" + read);
@@ -399,7 +399,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      *
      * @see #isGNUStringTable
      */
-    private boolean isGNULongName(String name) {
+    private boolean isGNULongName(final String name) {
         return name != null && name.matches(GNU_LONGNAME_PATTERN);
     }
 }

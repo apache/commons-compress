@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.zip.CRC32;
 import java.util.zip.Deflater;
+import java.util.zip.ZipEntry;
 
 /**
  * Encapsulates a {@link Deflater} and crc calculator, handling multiple types of output streams.
@@ -57,7 +58,7 @@ public abstract class StreamCompressor implements Closeable {
     private final byte[] outputBuffer = new byte[bufferSize];
     private final byte[] readerBuf = new byte[bufferSize];
 
-    StreamCompressor(Deflater deflater) {
+    StreamCompressor(final Deflater deflater) {
         this.def = deflater;
     }
 
@@ -68,7 +69,7 @@ public abstract class StreamCompressor implements Closeable {
      * @param deflater The deflater to use
      * @return A stream compressor
      */
-    static StreamCompressor create(OutputStream os, Deflater deflater) {
+    static StreamCompressor create(final OutputStream os, final Deflater deflater) {
         return new OutputStreamCompressor(deflater, os);
     }
 
@@ -78,7 +79,7 @@ public abstract class StreamCompressor implements Closeable {
      * @param os The stream to receive output
      * @return A stream compressor
      */
-    static StreamCompressor create(OutputStream os) {
+    static StreamCompressor create(final OutputStream os) {
         return create(os, new Deflater(Deflater.DEFAULT_COMPRESSION, true));
     }
 
@@ -89,7 +90,7 @@ public abstract class StreamCompressor implements Closeable {
      * @param deflater The deflater to use for the compressor
      * @return A stream compressor
      */
-    static StreamCompressor create(DataOutput os, Deflater deflater) {
+    static StreamCompressor create(final DataOutput os, final Deflater deflater) {
         return new DataOutputCompressor(deflater, os);
     }
 
@@ -100,7 +101,7 @@ public abstract class StreamCompressor implements Closeable {
      * @param bs               The ScatterGatherBackingStore to receive output
      * @return A stream compressor
      */
-    public static StreamCompressor create(int compressionLevel, ScatterGatherBackingStore bs) {
+    public static StreamCompressor create(final int compressionLevel, final ScatterGatherBackingStore bs) {
         final Deflater deflater = new Deflater(compressionLevel, true);
         return new ScatterGatherBackingStoreCompressor(deflater, bs);
     }
@@ -111,7 +112,7 @@ public abstract class StreamCompressor implements Closeable {
      * @param bs The ScatterGatherBackingStore to receive output
      * @return A stream compressor
      */
-    public static StreamCompressor create(ScatterGatherBackingStore bs) {
+    public static StreamCompressor create(final ScatterGatherBackingStore bs) {
         return create(Deflater.DEFAULT_COMPRESSION, bs);
     }
 
@@ -161,14 +162,14 @@ public abstract class StreamCompressor implements Closeable {
      * @throws IOException When failures happen
      */
 
-    public void deflate(InputStream source, int method) throws IOException {
+    public void deflate(final InputStream source, final int method) throws IOException {
         reset();
         int length;
 
         while ((length = source.read(readerBuf, 0, readerBuf.length)) >= 0) {
             write(readerBuf, 0, length, method);
         }
-        if (method == ZipArchiveEntry.DEFLATED) {
+        if (method == ZipEntry.DEFLATED) {
             flushDeflater();
         }
     }
@@ -183,10 +184,10 @@ public abstract class StreamCompressor implements Closeable {
      * @return the number of bytes written to the stream this time
      * @throws IOException on error
      */
-    long write(byte[] b, int offset, int length, int method) throws IOException {
-        long current = writtenToOutputStreamForLastEntry;
+    long write(final byte[] b, final int offset, final int length, final int method) throws IOException {
+        final long current = writtenToOutputStreamForLastEntry;
         crc.update(b, offset, length);
-        if (method == ZipArchiveEntry.DEFLATED) {
+        if (method == ZipEntry.DEFLATED) {
             writeDeflated(b, offset, length);
         } else {
             writeCounted(b, offset, length);
@@ -203,6 +204,7 @@ public abstract class StreamCompressor implements Closeable {
         writtenToOutputStreamForLastEntry = 0;
     }
 
+    @Override
     public void close() throws IOException {
         def.end();
     }
@@ -214,7 +216,7 @@ public abstract class StreamCompressor implements Closeable {
         }
     }
 
-    private void writeDeflated(byte[] b, int offset, int length)
+    private void writeDeflated(final byte[] b, final int offset, final int length)
             throws IOException {
         if (length > 0 && !def.finished()) {
             if (length <= DEFLATER_BLOCK_SIZE) {
@@ -243,17 +245,17 @@ public abstract class StreamCompressor implements Closeable {
     }
 
     void deflate() throws IOException {
-        int len = def.deflate(outputBuffer, 0, outputBuffer.length);
+        final int len = def.deflate(outputBuffer, 0, outputBuffer.length);
         if (len > 0) {
             writeCounted(outputBuffer, 0, len);
         }
     }
 
-    public void writeCounted(byte[] data) throws IOException {
+    public void writeCounted(final byte[] data) throws IOException {
         writeCounted(data, 0, data.length);
     }
 
-    public void writeCounted(byte[] data, int offset, int length) throws IOException {
+    public void writeCounted(final byte[] data, final int offset, final int length) throws IOException {
         writeOut(data, offset, length);
         writtenToOutputStreamForLastEntry += length;
         totalWrittenToOutputStream += length;
@@ -264,12 +266,13 @@ public abstract class StreamCompressor implements Closeable {
     private static final class ScatterGatherBackingStoreCompressor extends StreamCompressor {
         private final ScatterGatherBackingStore bs;
 
-        public ScatterGatherBackingStoreCompressor(Deflater deflater, ScatterGatherBackingStore bs) {
+        public ScatterGatherBackingStoreCompressor(final Deflater deflater, final ScatterGatherBackingStore bs) {
             super(deflater);
             this.bs = bs;
         }
 
-        protected final void writeOut(byte[] data, int offset, int length)
+        @Override
+        protected final void writeOut(final byte[] data, final int offset, final int length)
                 throws IOException {
             bs.writeOut(data, offset, length);
         }
@@ -278,12 +281,13 @@ public abstract class StreamCompressor implements Closeable {
     private static final class OutputStreamCompressor extends StreamCompressor {
         private final OutputStream os;
 
-        public OutputStreamCompressor(Deflater deflater, OutputStream os) {
+        public OutputStreamCompressor(final Deflater deflater, final OutputStream os) {
             super(deflater);
             this.os = os;
         }
 
-        protected final void writeOut(byte[] data, int offset, int length)
+        @Override
+        protected final void writeOut(final byte[] data, final int offset, final int length)
                 throws IOException {
             os.write(data, offset, length);
         }
@@ -292,12 +296,13 @@ public abstract class StreamCompressor implements Closeable {
     private static final class DataOutputCompressor extends StreamCompressor {
         private final DataOutput raf;
 
-        public DataOutputCompressor(Deflater deflater, DataOutput raf) {
+        public DataOutputCompressor(final Deflater deflater, final DataOutput raf) {
             super(deflater);
             this.raf = raf;
         }
 
-        protected final void writeOut(byte[] data, int offset, int length)
+        @Override
+        protected final void writeOut(final byte[] data, final int offset, final int length)
                 throws IOException {
             raf.write(data, offset, length);
         }

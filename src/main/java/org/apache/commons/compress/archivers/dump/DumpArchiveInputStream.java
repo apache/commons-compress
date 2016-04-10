@@ -86,7 +86,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      * @param is stream to read from
      * @throws ArchiveException on error
      */
-    public DumpArchiveInputStream(InputStream is) throws ArchiveException {
+    public DumpArchiveInputStream(final InputStream is) throws ArchiveException {
         this(is, null);
     }
 
@@ -99,7 +99,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      * @since 1.6
      * @throws ArchiveException on error
      */
-    public DumpArchiveInputStream(InputStream is, String encoding)
+    public DumpArchiveInputStream(final InputStream is, final String encoding)
         throws ArchiveException {
         this.raw = new TapeInputStream(is);
         this.hasHitEOF = false;
@@ -108,7 +108,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
         try {
             // read header, verify it's a dump archive.
-            byte[] headerBytes = raw.readRecord();
+            final byte[] headerBytes = raw.readRecord();
 
             if (!DumpArchiveUtil.verify(headerBytes)) {
                 throw new UnrecognizedFormatException();
@@ -126,19 +126,20 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
             // skip past CLRI and BITS segments since we don't handle them yet.
             readCLRI();
             readBITS();
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             throw new ArchiveException(ex.getMessage(), ex);
         }
 
         // put in a dummy record for the root node.
-        Dirent root = new Dirent(2, 2, 4, ".");
+        final Dirent root = new Dirent(2, 2, 4, ".");
         names.put(2, root);
 
         // use priority based on queue to ensure parent directories are
         // released first.
         queue = new PriorityQueue<DumpArchiveEntry>(10,
                 new Comparator<DumpArchiveEntry>() {
-                    public int compare(DumpArchiveEntry p, DumpArchiveEntry q) {
+                    @Override
+                    public int compare(final DumpArchiveEntry p, final DumpArchiveEntry q) {
                         if (p.getOriginalName() == null || q.getOriginalName() == null) {
                             return Integer.MAX_VALUE;
                         }
@@ -171,7 +172,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      * Read CLRI (deleted inode) segment.
      */
     private void readCLRI() throws IOException {
-        byte[] buffer = raw.readRecord();
+        final byte[] buffer = raw.readRecord();
 
         if (!DumpArchiveUtil.verify(buffer)) {
             throw new InvalidFormatException();
@@ -195,7 +196,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      * Read BITS segment.
      */
     private void readBITS() throws IOException {
-        byte[] buffer = raw.readRecord();
+        final byte[] buffer = raw.readRecord();
 
         if (!DumpArchiveUtil.verify(buffer)) {
             throw new InvalidFormatException();
@@ -337,7 +338,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
                 pending.put(entry.getIno(), entry);
             }
 
-            int datalen = DumpArchiveConstants.TP_SIZE * entry.getHeaderCount();
+            final int datalen = DumpArchiveConstants.TP_SIZE * entry.getHeaderCount();
 
             if (blockBuffer.length < datalen) {
                 blockBuffer = new byte[datalen];
@@ -351,19 +352,19 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
             for (int i = 0; i < datalen - 8 && i < size - 8;
                     i += reclen) {
-                int ino = DumpArchiveUtil.convert32(blockBuffer, i);
+                final int ino = DumpArchiveUtil.convert32(blockBuffer, i);
                 reclen = DumpArchiveUtil.convert16(blockBuffer, i + 4);
 
-                byte type = blockBuffer[i + 6];
+                final byte type = blockBuffer[i + 6];
 
-                String name = DumpArchiveUtil.decode(zipEncoding, blockBuffer, i + 8, blockBuffer[i + 7]);
+                final String name = DumpArchiveUtil.decode(zipEncoding, blockBuffer, i + 8, blockBuffer[i + 7]);
 
                 if (".".equals(name) || "..".equals(name)) {
                     // do nothing...
                     continue;
                 }
 
-                Dirent d = new Dirent(ino, entry.getIno(), type, name);
+                final Dirent d = new Dirent(ino, entry.getIno(), type, name);
 
                 /*
                 if ((type == 4) && names.containsKey(ino)) {
@@ -375,8 +376,8 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
                 names.put(ino, d);
 
                 // check whether this allows us to fill anything in the pending list.
-                for (Map.Entry<Integer, DumpArchiveEntry> e : pending.entrySet()) {
-                    String path = getPath(e.getValue());
+                for (final Map.Entry<Integer, DumpArchiveEntry> e : pending.entrySet()) {
+                    final String path = getPath(e.getValue());
 
                     if (path != null) {
                         e.getValue().setName(path);
@@ -388,12 +389,12 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
                 // remove anything that we found. (We can't do it earlier
                 // because of concurrent modification exceptions.)
-                for (DumpArchiveEntry e : queue) {
+                for (final DumpArchiveEntry e : queue) {
                     pending.remove(e.getIno());
                 }
             }
 
-            byte[] peekBytes = raw.peek();
+            final byte[] peekBytes = raw.peek();
 
             if (!DumpArchiveUtil.verify(peekBytes)) {
                 throw new InvalidFormatException();
@@ -411,10 +412,10 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      * @param entry
      * @return  full path for specified archive entry, or null if there's a gap.
      */
-    private String getPath(DumpArchiveEntry entry) {
+    private String getPath(final DumpArchiveEntry entry) {
         // build the stack of elements. It's possible that we're 
         // still missing an intermediate value and if so we
-        Stack<String> elements = new Stack<String>();
+        final Stack<String> elements = new Stack<String>();
         Dirent dirent = null;
 
         for (int i = entry.getIno();; i = dirent.getParentIno()) {
@@ -439,7 +440,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         }
 
         // generate full path from stack of elements.
-        StringBuilder sb = new StringBuilder(elements.pop());
+        final StringBuilder sb = new StringBuilder(elements.pop());
 
         while (!elements.isEmpty()) {
             sb.append('/');
@@ -463,7 +464,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      * @throws IOException on error
      */
     @Override
-    public int read(byte[] buf, int off, int len) throws IOException {
+    public int read(final byte[] buf, int off, int len) throws IOException {
         int totalRead = 0;
 
         if (hasHitEOF || isClosed || entryOffset >= entrySize) {
@@ -479,7 +480,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         }
 
         while (len > 0) {
-            int sz = len > readBuf.length - recordOffset
+            final int sz = len > readBuf.length - recordOffset
                 ? readBuf.length - recordOffset : len;
 
             // copy any data we have
@@ -494,7 +495,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
             // load next block if necessary.
             if (len > 0) {
                 if (readIdx >= 512) {
-                    byte[] headerBytes = raw.readRecord();
+                    final byte[] headerBytes = raw.readRecord();
 
                     if (!DumpArchiveUtil.verify(headerBytes)) {
                         throw new InvalidFormatException();
@@ -505,7 +506,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
                 }
 
                 if (!active.isSparseRecord(readIdx++)) {
-                    int r = raw.read(readBuf, 0, readBuf.length);
+                    final int r = raw.read(readBuf, 0, readBuf.length);
                     if (r != readBuf.length) {
                         throw new EOFException();
                     }
@@ -541,7 +542,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      * @param length length of data
      * @return whether the buffer seems to contain dump data
      */
-    public static boolean matches(byte[] buffer, int length) {
+    public static boolean matches(final byte[] buffer, final int length) {
         // do we have enough of the header?
         if (length < 32) {
             return false;

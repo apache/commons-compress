@@ -309,7 +309,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @param entryName
      *            The name of this entry.
      */
-    public CpioArchiveEntry(File inputFile, String entryName) {
+    public CpioArchiveEntry(final File inputFile, final String entryName) {
         this(FORMAT_NEW, inputFile, entryName);
     }
 
@@ -334,8 +334,8 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * 
      * @since 1.1
      */
-    public CpioArchiveEntry(final short format, File inputFile,
-                            String entryName) {
+    public CpioArchiveEntry(final short format, final File inputFile,
+                            final String entryName) {
         this(format, entryName, inputFile.isFile() ? inputFile.length() : 0);
         if (inputFile.isDirectory()){
             setMode(C_ISDIR);
@@ -422,6 +422,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @return Returns the filesize.
      * @see org.apache.commons.compress.archivers.ArchiveEntry#getSize()
      */
+    @Override
     public long getSize() {
         return this.filesize;
     }
@@ -473,7 +474,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
         if (name != null) {
             size += name.length();
         }
-        int remain = size % this.alignmentBoundary;
+        final int remain = size % this.alignmentBoundary;
         if (remain > 0){
             return this.alignmentBoundary - remain;
         }
@@ -487,8 +488,8 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      */
     public int getDataPadCount(){
         if (this.alignmentBoundary == 0) { return 0; }
-        long size = this.filesize;
-        int remain = (int) (size % this.alignmentBoundary);
+        final long size = this.filesize;
+        final int remain = (int) (size % this.alignmentBoundary);
         if (remain > 0){
             return this.alignmentBoundary - remain;
         }
@@ -518,6 +519,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * 
      * @return Returns the name.
      */
+    @Override
     public String getName() {
         return this.name;
     }
@@ -581,6 +583,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
         return this.mtime;
     }
 
+    @Override
     public Date getLastModifiedDate() {
         return new Date(1000 * getTime());
     }
@@ -617,6 +620,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * 
      * @return TRUE if this entry is a directory.
      */
+    @Override
     public boolean isDirectory() {
         return CpioUtil.fileType(mode) == C_ISDIR;
     }
@@ -873,14 +877,14 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        CpioArchiveEntry other = (CpioArchiveEntry) obj;
+        final CpioArchiveEntry other = (CpioArchiveEntry) obj;
         if (name == null) {
             if (other.name != null) {
                 return false;

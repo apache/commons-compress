@@ -37,11 +37,11 @@ public class ArArchiveOutputStreamTest extends AbstractTestCase {
         ArArchiveOutputStream os = null;
         try {
             os = new ArArchiveOutputStream(new ByteArrayOutputStream());
-            ArArchiveEntry ae = new ArArchiveEntry("this_is_a_long_name.txt",
+            final ArArchiveEntry ae = new ArArchiveEntry("this_is_a_long_name.txt",
                                                    0);
             os.putArchiveEntry(ae);
             fail("Expected an exception");
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             assertTrue(ex.getMessage().startsWith("filename too long"));
         } finally {
             closeQuietly(os);
@@ -52,12 +52,12 @@ public class ArArchiveOutputStreamTest extends AbstractTestCase {
     public void testLongFileNamesWorkUsingBSDDialect() throws Exception {
         FileOutputStream fos = null;
         ArArchiveOutputStream os = null;
-        File[] df = createTempDirAndFile();
+        final File[] df = createTempDirAndFile();
         try {
             fos = new FileOutputStream(df[1]);
             os = new ArArchiveOutputStream(fos);
             os.setLongFileMode(ArArchiveOutputStream.LONGFILE_BSD);
-            ArArchiveEntry ae = new ArArchiveEntry("this_is_a_long_name.txt",
+            final ArArchiveEntry ae = new ArArchiveEntry("this_is_a_long_name.txt",
                                                    14);
             os.putArchiveEntry(ae);
             os.write(new byte[] {
@@ -69,7 +69,7 @@ public class ArArchiveOutputStreamTest extends AbstractTestCase {
             os = null;
             fos = null;
 
-            List<String> expected = new ArrayList<String>();
+            final List<String> expected = new ArrayList<String>();
             expected.add("this_is_a_long_name.txt");
             checkArchiveContent(df[1], expected);
         } finally {

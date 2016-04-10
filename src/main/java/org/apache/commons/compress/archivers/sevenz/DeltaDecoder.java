@@ -30,34 +30,34 @@ class DeltaDecoder extends CoderBase {
     }
 
     @Override
-    InputStream decode(final String archiveName, final InputStream in, long uncompressedLength,
-            final Coder coder, byte[] password) throws IOException {
+    InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
+            final Coder coder, final byte[] password) throws IOException {
         return new DeltaOptions(getOptionsFromCoder(coder)).getInputStream(in);
     }
 
     @Override
     OutputStream encode(final OutputStream out, final Object options) throws IOException {
-        int distance = numberOptionOrDefault(options, 1);
+        final int distance = numberOptionOrDefault(options, 1);
         try {
             return new DeltaOptions(distance).getOutputStream(new FinishableWrapperOutputStream(out));
-        } catch (UnsupportedOptionsException ex) {
+        } catch (final UnsupportedOptionsException ex) {
             throw new IOException(ex.getMessage());
         }
     }
 
     @Override
-    byte[] getOptionsAsProperties(Object options) {
+    byte[] getOptionsAsProperties(final Object options) {
         return new byte[] {
             (byte) (numberOptionOrDefault(options, 1) - 1)
         };
     }
 
     @Override
-    Object getOptionsFromCoder(Coder coder, InputStream in) {
+    Object getOptionsFromCoder(final Coder coder, final InputStream in) {
         return getOptionsFromCoder(coder);
     }
 
-    private int getOptionsFromCoder(Coder coder) {
+    private int getOptionsFromCoder(final Coder coder) {
         if (coder.properties == null || coder.properties.length == 0) {
             return 1;
         }

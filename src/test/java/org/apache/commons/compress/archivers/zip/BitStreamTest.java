@@ -29,7 +29,7 @@ public class BitStreamTest {
 
     @Test
     public void testEmptyStream() throws Exception {
-        BitStream stream = new BitStream(new ByteArrayInputStream(new byte[0]));
+        final BitStream stream = new BitStream(new ByteArrayInputStream(new byte[0]));
         assertEquals("next bit", -1, stream.nextBit());
         assertEquals("next bit", -1, stream.nextBit());
         assertEquals("next bit", -1, stream.nextBit());
@@ -38,7 +38,7 @@ public class BitStreamTest {
 
     @Test
     public void testStream() throws Exception {
-        BitStream stream = new BitStream(new ByteArrayInputStream(new byte[] { (byte) 0xEA, 0x03 }));
+        final BitStream stream = new BitStream(new ByteArrayInputStream(new byte[] { (byte) 0xEA, 0x03 }));
 
         assertEquals("bit 0", 0, stream.nextBit());
         assertEquals("bit 1", 1, stream.nextBit());
@@ -64,7 +64,7 @@ public class BitStreamTest {
 
     @Test
     public void testNextByteFromEmptyStream() throws Exception {
-        BitStream stream = new BitStream(new ByteArrayInputStream(new byte[0]));
+        final BitStream stream = new BitStream(new ByteArrayInputStream(new byte[0]));
         assertEquals("next byte", -1, stream.nextByte());
         assertEquals("next byte", -1, stream.nextByte());
         stream.close();
@@ -72,7 +72,7 @@ public class BitStreamTest {
 
     @Test
     public void testReadAlignedBytes() throws Exception {
-        BitStream stream = new BitStream(new ByteArrayInputStream(new byte[] { (byte) 0xEA, 0x35 }));
+        final BitStream stream = new BitStream(new ByteArrayInputStream(new byte[] { (byte) 0xEA, 0x35 }));
         assertEquals("next byte", 0xEA, stream.nextByte());
         assertEquals("next byte", 0x35, stream.nextByte());
         assertEquals("next byte", -1, stream.nextByte());
@@ -81,7 +81,7 @@ public class BitStreamTest {
 
     @Test
     public void testNextByte() throws Exception {
-        BitStream stream = new BitStream(new ByteArrayInputStream(new byte[] { (byte) 0xEA, 0x35 }));
+        final BitStream stream = new BitStream(new ByteArrayInputStream(new byte[] { (byte) 0xEA, 0x35 }));
         assertEquals("bit 0", 0, stream.nextBit());
         assertEquals("bit 1", 1, stream.nextBit());
         assertEquals("bit 2", 0, stream.nextBit());

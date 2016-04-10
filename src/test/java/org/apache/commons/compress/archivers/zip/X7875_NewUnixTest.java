@@ -46,20 +46,20 @@ public class X7875_NewUnixTest {
 
     @Test
     public void testSampleFile() throws Exception {
-        File archive = getFile("COMPRESS-211_uid_gid_zip_test.zip");
+        final File archive = getFile("COMPRESS-211_uid_gid_zip_test.zip");
         ZipFile zf = null;
 
         try {
             zf = new ZipFile(archive);
-            Enumeration<ZipArchiveEntry> en = zf.getEntries();
+            final Enumeration<ZipArchiveEntry> en = zf.getEntries();
 
             // We expect EVERY entry of this zip file (dir & file) to
             // contain extra field 0x7875.
             while (en.hasMoreElements()) {
 
-                ZipArchiveEntry zae = en.nextElement();
-                String name = zae.getName();
-                X7875_NewUnix xf = (X7875_NewUnix) zae.getExtraField(X7875);
+                final ZipArchiveEntry zae = en.nextElement();
+                final String name = zae.getName();
+                final X7875_NewUnix xf = (X7875_NewUnix) zae.getExtraField(X7875);
 
                 // The directory entry in the test zip file is uid/gid 1000.
                 long expected = 1000;
@@ -97,7 +97,7 @@ public class X7875_NewUnixTest {
     public void testMisc() throws Exception {
         assertFalse(xf.equals(new Object()));
         assertTrue(xf.toString().startsWith("0x7875 Zip Extra Field"));
-        Object o = xf.clone();
+        final Object o = xf.clone();
         assertEquals(o.hashCode(), xf.hashCode());
         assertTrue(xf.equals(o));
         xf.setUID(12345);
@@ -133,7 +133,7 @@ public class X7875_NewUnixTest {
         assertTrue(Arrays.equals(SEQUENCE6, trimTest(SEQUENCE6_LEADING_ZERO)));
     }
 
-    private static byte[] trimTest(byte[] b) { return X7875_NewUnix.trimLeadingZeroesForceMinLength(b); }
+    private static byte[] trimTest(final byte[] b) { return X7875_NewUnix.trimLeadingZeroesForceMinLength(b); }
 
     @Test
     public void testParseReparse() throws ZipException {

@@ -58,18 +58,18 @@ public class LongSymLinkTest extends AbstractTestCase {
     private static final File ARCDIR = new File(CLASSLOADER.getResource("longsymlink").getFile());
     private static final ArrayList<String> FILELIST = new ArrayList<String>();
 
-    private File file;
+    private final File file;
 
-    public LongSymLinkTest(String file){
+    public LongSymLinkTest(final String file){
         this.file = new File(ARCDIR, file);
     }
 
     @BeforeClass
     public static void setUpFileList() throws Exception {
         assertTrue(ARCDIR.exists());
-        File listing= new File(ARCDIR,"files.txt");
+        final File listing= new File(ARCDIR,"files.txt");
         assertTrue("files.txt is readable",listing.canRead());
-        BufferedReader br = new BufferedReader(new FileReader(listing));
+        final BufferedReader br = new BufferedReader(new FileReader(listing));
         String line;
         while ((line=br.readLine())!=null){
             if (!line.startsWith("#")){
@@ -81,9 +81,10 @@ public class LongSymLinkTest extends AbstractTestCase {
 
     @Parameters(name = "file={0}")
     public static Collection<Object[]> data() {
-        Collection<Object[]> params = new ArrayList<Object[]>();
-        for (String f : ARCDIR.list(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
+        final Collection<Object[]> params = new ArrayList<Object[]>();
+        for (final String f : ARCDIR.list(new FilenameFilter() {
+            @Override
+            public boolean accept(final File dir, final String name) {
                 return !name.endsWith(".txt");
             }
         })) 
@@ -95,9 +96,9 @@ public class LongSymLinkTest extends AbstractTestCase {
 
 
     @Override
-    protected String getExpectedString(ArchiveEntry entry) {
+    protected String getExpectedString(final ArchiveEntry entry) {
         if (entry instanceof TarArchiveEntry) {
-            TarArchiveEntry tarEntry = (TarArchiveEntry) entry;
+            final TarArchiveEntry tarEntry = (TarArchiveEntry) entry;
             if (tarEntry.isSymbolicLink()) {
                 return tarEntry.getName() + " -> " + tarEntry.getLinkName();
             }
@@ -108,13 +109,14 @@ public class LongSymLinkTest extends AbstractTestCase {
     @Test
     public void testArchive() throws Exception {
         @SuppressWarnings("unchecked") // fileList is of correct type
+        final
         ArrayList<String> expected = (ArrayList<String>) FILELIST.clone();
-        String name = file.getName();
+        final String name = file.getName();
         if ("minotaur.jar".equals(name) || "minotaur-0.jar".equals(name)){
             expected.add("META-INF/");
             expected.add("META-INF/MANIFEST.MF");
         }
-        ArchiveInputStream ais = factory.createArchiveInputStream(new BufferedInputStream(new FileInputStream(file)));
+        final ArchiveInputStream ais = factory.createArchiveInputStream(new BufferedInputStream(new FileInputStream(file)));
         // check if expected type recognised
         if (name.endsWith(".tar")){
             assertTrue(ais instanceof TarArchiveInputStream);
@@ -124,7 +126,7 @@ public class LongSymLinkTest extends AbstractTestCase {
             assertTrue(ais instanceof CpioArchiveInputStream);
             // Hack: cpio does not add trailing "/" to directory names
             for(int i=0; i < expected.size(); i++){
-                String ent = expected.get(i);
+                final String ent = expected.get(i);
                 if (ent.endsWith("/")){
                     expected.set(i, ent.substring(0, ent.length()-1));
                 }
@@ -133,7 +135,7 @@ public class LongSymLinkTest extends AbstractTestCase {
             assertTrue(ais instanceof ArArchiveInputStream);
             // CPIO does not store directories or directory names
             expected.clear();
-            for (String ent : FILELIST) {
+            for (final String ent : FILELIST) {
                 if (!ent.endsWith("/")) {// not a directory
                     final int lastSlash = ent.lastIndexOf('/');
                     if (lastSlash >= 0) { // extract path name
@@ -148,7 +150,7 @@ public class LongSymLinkTest extends AbstractTestCase {
         }
         try {
             checkArchiveContent(ais, expected);
-        } catch (AssertionFailedError e) {
+        } catch (final AssertionFailedError e) {
             fail("Error processing "+file.getName()+" "+e);
         } finally {
             ais.close();

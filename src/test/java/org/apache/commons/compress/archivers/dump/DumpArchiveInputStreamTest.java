@@ -31,11 +31,11 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void testNotADumpArchive() throws Exception {
-        FileInputStream is = new FileInputStream(getFile("bla.zip"));
+        final FileInputStream is = new FileInputStream(getFile("bla.zip"));
         try {
             new DumpArchiveInputStream(is);
             fail("expected an exception");
-        } catch (ArchiveException ex) {
+        } catch (final ArchiveException ex) {
             // expected
             assertTrue(ex.getCause() instanceof ShortFileException);
         } finally {
@@ -45,11 +45,11 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void testNotADumpArchiveButBigEnough() throws Exception {
-        FileInputStream is = new FileInputStream(getFile("zip64support.tar.bz2"));
+        final FileInputStream is = new FileInputStream(getFile("zip64support.tar.bz2"));
         try {
             new DumpArchiveInputStream(is);
             fail("expected an exception");
-        } catch (ArchiveException ex) {
+        } catch (final ArchiveException ex) {
             // expected
             assertTrue(ex.getCause() instanceof UnrecognizedFormatException);
         } finally {
@@ -59,16 +59,16 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void testConsumesArchiveCompletely() throws Exception {
-        InputStream is = DumpArchiveInputStreamTest.class
+        final InputStream is = DumpArchiveInputStreamTest.class
             .getResourceAsStream("/archive_with_trailer.dump");
-        DumpArchiveInputStream dump = new DumpArchiveInputStream(is);
+        final DumpArchiveInputStream dump = new DumpArchiveInputStream(is);
         while (dump.getNextDumpEntry() != null) {
             // just consume the archive
         }
-        byte[] expected = new byte[] {
+        final byte[] expected = new byte[] {
             'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '\n'
         };
-        byte[] actual = new byte[expected.length];
+        final byte[] actual = new byte[expected.length];
         is.read(actual);
         assertArrayEquals(expected, actual);
         dump.close();

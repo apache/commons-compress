@@ -173,8 +173,8 @@ public enum ZipMethod {
     private static final Map<Integer, ZipMethod> codeToEnum;
 
     static {
-        Map<Integer, ZipMethod> cte = new HashMap<Integer, ZipMethod>();
-        for (ZipMethod method : values()) {
+        final Map<Integer, ZipMethod> cte = new HashMap<Integer, ZipMethod>();
+        for (final ZipMethod method : values()) {
             cte.put(method.getCode(), method);
         }
         codeToEnum = Collections.unmodifiableMap(cte);
@@ -187,7 +187,7 @@ public enum ZipMethod {
     /**
      * private constructor for enum style class.
      */
-    ZipMethod(int code) {
+    ZipMethod(final int code) {
         this.code = code;
     }
 
@@ -210,7 +210,7 @@ public enum ZipMethod {
      * @return the {@link ZipMethod} for the given code or null if the
      * method is not known.
      */
-    public static ZipMethod getMethodByCode(int code) {
+    public static ZipMethod getMethodByCode(final int code) {
         return codeToEnum.get(code);
     }
 }

@@ -37,7 +37,7 @@ class DumpArchiveUtil {
      * @param buffer buffer containing tape segment header
      * @returns checksum
      */
-    public static int calculateChecksum(byte[] buffer) {
+    public static int calculateChecksum(final byte[] buffer) {
         int calc = 0;
 
         for (int i = 0; i < 256; i++) {
@@ -53,16 +53,16 @@ class DumpArchiveUtil {
      *
      * @param buffer
      */
-    public static final boolean verify(byte[] buffer) {
+    public static final boolean verify(final byte[] buffer) {
         // verify magic. for now only accept NFS_MAGIC.
-        int magic = convert32(buffer, 24);
+        final int magic = convert32(buffer, 24);
 
         if (magic != DumpArchiveConstants.NFS_MAGIC) {
             return false;
         }
 
         //verify checksum...
-        int checksum = convert32(buffer, 28);
+        final int checksum = convert32(buffer, 28);
 
         if (checksum != calculateChecksum(buffer)) {
             return false;
@@ -76,7 +76,7 @@ class DumpArchiveUtil {
      *
      * @param buffer
      */
-    public static final int getIno(byte[] buffer) {
+    public static final int getIno(final byte[] buffer) {
         return convert32(buffer, 20);
     }
 
@@ -87,7 +87,7 @@ class DumpArchiveUtil {
      * @param offset
      * @return the 8-byte entry as a long
      */
-    public static final long convert64(byte[] buffer, int offset) {
+    public static final long convert64(final byte[] buffer, final int offset) {
         long i = 0;
         i += (((long) buffer[offset + 7]) << 56);
         i += (((long) buffer[offset + 6] << 48) & 0x00FF000000000000L);
@@ -108,7 +108,7 @@ class DumpArchiveUtil {
      * @param offset
      * @return the 4-byte entry as an int
      */
-    public static final int convert32(byte[] buffer, int offset) {
+    public static final int convert32(final byte[] buffer, final int offset) {
         int i = 0;
         i = buffer[offset + 3] << 24;
         i += (buffer[offset + 2] << 16) & 0x00FF0000;
@@ -125,7 +125,7 @@ class DumpArchiveUtil {
      * @param offset
      * @return the 2-byte entry as an int
      */
-    public static final int convert16(byte[] buffer, int offset) {
+    public static final int convert16(final byte[] buffer, final int offset) {
         int i = 0;
         i += (buffer[offset + 1] << 8) & 0x0000FF00;
         i += buffer[offset] & 0x000000FF;
@@ -136,9 +136,9 @@ class DumpArchiveUtil {
     /**
      * Decodes a byte array to a string.
      */
-    static String decode(ZipEncoding encoding, byte[] b, int offset, int len)
+    static String decode(final ZipEncoding encoding, final byte[] b, final int offset, final int len)
         throws IOException {
-        byte[] copy = new byte[len];
+        final byte[] copy = new byte[len];
         System.arraycopy(b, offset, copy, 0, len);
         return encoding.decode(copy);
     }

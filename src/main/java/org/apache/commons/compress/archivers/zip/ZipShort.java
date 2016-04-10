@@ -38,7 +38,7 @@ public final class ZipShort implements Cloneable, Serializable {
      * Create instance from a number.
      * @param value the int to store as a ZipShort
      */
-    public ZipShort (int value) {
+    public ZipShort (final int value) {
         this.value = value;
     }
 
@@ -46,7 +46,7 @@ public final class ZipShort implements Cloneable, Serializable {
      * Create instance from bytes.
      * @param bytes the bytes to store as a ZipShort
      */
-    public ZipShort (byte[] bytes) {
+    public ZipShort (final byte[] bytes) {
         this(bytes, 0);
     }
 
@@ -55,7 +55,7 @@ public final class ZipShort implements Cloneable, Serializable {
      * @param bytes the bytes to store as a ZipShort
      * @param offset the offset to start
      */
-    public ZipShort (byte[] bytes, int offset) {
+    public ZipShort (final byte[] bytes, final int offset) {
         value = ZipShort.getValue(bytes, offset);
     }
 
@@ -64,7 +64,7 @@ public final class ZipShort implements Cloneable, Serializable {
      * @return the value as a a two byte array in big endian byte order
      */
     public byte[] getBytes() {
-        byte[] result = new byte[2];
+        final byte[] result = new byte[2];
         result[0] = (byte) (value & BYTE_MASK);
         result[1] = (byte) ((value & BYTE_1_MASK) >> BYTE_1_SHIFT);
         return result;
@@ -83,8 +83,8 @@ public final class ZipShort implements Cloneable, Serializable {
      * @param value the Java int to convert to bytes
      * @return the converted int as a byte array in big endian byte order
      */
-    public static byte[] getBytes(int value) {
-        byte[] result = new byte[2];
+    public static byte[] getBytes(final int value) {
+        final byte[] result = new byte[2];
         putShort(value, result, 0);
         return result;
     }
@@ -97,7 +97,7 @@ public final class ZipShort implements Cloneable, Serializable {
      *         The offset within the output buffer of the first byte to be written.
      *         must be non-negative and no larger than <tt>buf.length-2</tt>
      */
-    public static void putShort(int value, byte[] buf, int offset) {
+    public static void putShort(final int value, final byte[] buf, final int offset) {
         buf[offset] = (byte) (value & BYTE_MASK);
         buf[offset+1] = (byte) ((value & BYTE_1_MASK) >> BYTE_1_SHIFT);
     }
@@ -108,7 +108,7 @@ public final class ZipShort implements Cloneable, Serializable {
      * @param offset the offset to start
      * @return the corresponding java int value
      */
-    public static int getValue(byte[] bytes, int offset) {
+    public static int getValue(final byte[] bytes, final int offset) {
         int value = (bytes[offset + 1] << BYTE_1_SHIFT) & BYTE_1_MASK;
         value += (bytes[offset] & BYTE_MASK);
         return value;
@@ -119,7 +119,7 @@ public final class ZipShort implements Cloneable, Serializable {
      * @param bytes the array of bytes
      * @return the corresponding java int value
      */
-    public static int getValue(byte[] bytes) {
+    public static int getValue(final byte[] bytes) {
         return getValue(bytes, 0);
     }
 
@@ -129,7 +129,7 @@ public final class ZipShort implements Cloneable, Serializable {
      * @return true if the objects are equal
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (o == null || !(o instanceof ZipShort)) {
             return false;
         }
@@ -149,7 +149,7 @@ public final class ZipShort implements Cloneable, Serializable {
     public Object clone() {
         try {
             return super.clone();
-        } catch (CloneNotSupportedException cnfe) {
+        } catch (final CloneNotSupportedException cnfe) {
             // impossible
             throw new RuntimeException(cnfe);
         }

@@ -46,7 +46,7 @@ class TapeInputStream extends FilterInputStream {
     /**
      * Constructor
      */
-    public TapeInputStream(InputStream in) {
+    public TapeInputStream(final InputStream in) {
         super(in);
     }
 
@@ -64,14 +64,14 @@ class TapeInputStream extends FilterInputStream {
      * @throws IOException
      *             there was an error reading additional blocks.
      */
-    public void resetBlockSize(int recsPerBlock, boolean isCompressed)
+    public void resetBlockSize(final int recsPerBlock, final boolean isCompressed)
         throws IOException {
         this.isCompressed = isCompressed;
 
         blockSize = recordSize * recsPerBlock;
 
         // save first block in case we need it again
-        byte[] oldBuffer = blockBuffer;
+        final byte[] oldBuffer = blockBuffer;
 
         // read rest of new block
         blockBuffer = new byte[blockSize];
@@ -113,7 +113,7 @@ class TapeInputStream extends FilterInputStream {
      * record size
      */
     @Override
-    public int read(byte[] b, int off, int len) throws IOException {
+    public int read(final byte[] b, int off, final int len) throws IOException {
         if ((len % recordSize) != 0) {
             throw new IllegalArgumentException(
                 "all reads must be multiple of record size (" + recordSize +
@@ -159,7 +159,7 @@ class TapeInputStream extends FilterInputStream {
      * record size
      */
     @Override
-    public long skip(long len) throws IOException {
+    public long skip(final long len) throws IOException {
         if ((len % recordSize) != 0) {
             throw new IllegalArgumentException(
                 "all reads must be multiple of record size (" + recordSize +
@@ -223,7 +223,7 @@ class TapeInputStream extends FilterInputStream {
         }
 
         // copy data, increment counters.
-        byte[] b = new byte[recordSize];
+        final byte[] b = new byte[recordSize];
         System.arraycopy(blockBuffer, readOffset, b, 0, b.length);
 
         return b;
@@ -236,7 +236,7 @@ class TapeInputStream extends FilterInputStream {
      * @throws IOException on error
      */
     public byte[] readRecord() throws IOException {
-        byte[] result = new byte[recordSize];
+        final byte[] result = new byte[recordSize];
 
         // the read implementation will loop internally as long as
         // input is available
@@ -254,7 +254,7 @@ class TapeInputStream extends FilterInputStream {
      *        This is an optimization for longer seeks.
      * @return false if End-Of-File, else true
      */
-    private boolean readBlock(boolean decompress) throws IOException {
+    private boolean readBlock(final boolean decompress) throws IOException {
         boolean success = true;
 
         if (in == null) {
@@ -271,8 +271,8 @@ class TapeInputStream extends FilterInputStream {
             }
             bytesRead += 4;
 
-            int h = DumpArchiveUtil.convert32(blockBuffer, 0);
-            boolean compressed = (h & 0x01) == 0x01;
+            final int h = DumpArchiveUtil.convert32(blockBuffer, 0);
+            final boolean compressed = (h & 0x01) == 0x01;
 
             if (!compressed) {
                 // file is compressed but this block is not.
@@ -280,9 +280,9 @@ class TapeInputStream extends FilterInputStream {
                 bytesRead += blockSize;
             } else {
                 // this block is compressed.
-                int flags = (h >> 1) & 0x07;
+                final int flags = (h >> 1) & 0x07;
                 int length = (h >> 4) & 0x0FFFFFFF;
-                byte[] compBuffer = new byte[length];
+                final byte[] compBuffer = new byte[length];
                 success = readFully(compBuffer, 0, length);
                 bytesRead += length;
 
@@ -294,7 +294,7 @@ class TapeInputStream extends FilterInputStream {
                         0x03)) {
                     case ZLIB:
 
-                        Inflater inflator = new Inflater();
+                        final Inflater inflator = new Inflater();
                         try {
                             inflator.setInput(compBuffer, 0, compBuffer.length);
                             length = inflator.inflate(blockBuffer);
@@ -302,7 +302,7 @@ class TapeInputStream extends FilterInputStream {
                             if (length != blockSize) {
                                 throw new ShortFileException();
                             }
-                        } catch (DataFormatException e) {
+                        } catch (final DataFormatException e) {
                             throw new DumpArchiveException("bad data", e);
                         } finally {
                             inflator.end();
@@ -334,9 +334,9 @@ class TapeInputStream extends FilterInputStream {
     /**
      * Read buffer
      */
-    private boolean readFully(byte[] b, int off, int len)
+    private boolean readFully(final byte[] b, final int off, final int len)
         throws IOException {
-        int count = IOUtils.readFully(in, b, off, len);
+        final int count = IOUtils.readFully(in, b, off, len);
         if (count < len) {
             throw new ShortFileException();
         }

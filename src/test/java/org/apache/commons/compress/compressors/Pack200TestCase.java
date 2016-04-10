@@ -64,7 +64,7 @@ public final class Pack200TestCase extends AbstractTestCase {
         jarUnarchiveAll(true, Pack200Strategy.TEMP_FILE);
     }
 
-    private void jarUnarchiveAll(boolean useFile, Pack200Strategy mode)
+    private void jarUnarchiveAll(final boolean useFile, final Pack200Strategy mode)
         throws Exception {
         final File input = getFile("bla.pack");
         final InputStream is = useFile
@@ -77,14 +77,14 @@ public final class Pack200TestCase extends AbstractTestCase {
 
             ArchiveEntry entry = in.getNextEntry();
             while (entry != null) {
-                File archiveEntry = new File(dir, entry.getName());
+                final File archiveEntry = new File(dir, entry.getName());
                 archiveEntry.getParentFile().mkdirs();
                 if (entry.isDirectory()) {
                     archiveEntry.mkdir();
                     entry = in.getNextEntry();
                     continue;
                 }
-                OutputStream out = new FileOutputStream(archiveEntry);
+                final OutputStream out = new FileOutputStream(archiveEntry);
                 IOUtils.copy(in, out);
                 out.close();
                 entry = in.getNextEntry();
@@ -106,7 +106,7 @@ public final class Pack200TestCase extends AbstractTestCase {
         jarArchiveCreation(Pack200Strategy.TEMP_FILE);
     }
 
-    private void jarArchiveCreation(Pack200Strategy mode) throws Exception {
+    private void jarArchiveCreation(final Pack200Strategy mode) throws Exception {
         final File output = new File(dir, "bla.pack");
 
         final File file1 = getFile("test1.xml");
@@ -136,7 +136,7 @@ public final class Pack200TestCase extends AbstractTestCase {
         try {
             final ArchiveInputStream in = new ArchiveStreamFactory()
                 .createArchiveInputStream("jar", is);
-            List<String> files = new ArrayList<String>();
+            final List<String> files = new ArrayList<String>();
             files.add("testdata/test1.xml");
             files.add("testdata/test2.xml");
             checkArchiveContent(in, files);
@@ -150,7 +150,7 @@ public final class Pack200TestCase extends AbstractTestCase {
     public void testGoodSignature() throws Exception {
         final InputStream is = new FileInputStream(getFile("bla.pack"));
         try {
-            byte[] sig = new byte[4];
+            final byte[] sig = new byte[4];
             is.read(sig);
             assertTrue(Pack200CompressorInputStream.matches(sig, 4));
         } finally {
@@ -162,7 +162,7 @@ public final class Pack200TestCase extends AbstractTestCase {
     public void testBadSignature() throws Exception {
         final InputStream is = new FileInputStream(getFile("bla.jar"));
         try {
-            byte[] sig = new byte[4];
+            final byte[] sig = new byte[4];
             is.read(sig);
             assertFalse(Pack200CompressorInputStream.matches(sig, 4));
         } finally {
@@ -174,7 +174,7 @@ public final class Pack200TestCase extends AbstractTestCase {
     public void testShortSignature() throws Exception {
         final InputStream is = new FileInputStream(getFile("bla.pack"));
         try {
-            byte[] sig = new byte[2];
+            final byte[] sig = new byte[2];
             is.read(sig);
             assertFalse(Pack200CompressorInputStream.matches(sig, 2));
         } finally {
@@ -184,7 +184,7 @@ public final class Pack200TestCase extends AbstractTestCase {
 
     @Test
     public void testInputStreamMethods() throws Exception {
-        Map<String, String> m = new HashMap<String, String>();
+        final Map<String, String> m = new HashMap<String, String>();
         m.put("foo", "bar");
         final InputStream is =
             new Pack200CompressorInputStream(new FileInputStream(getFile("bla.jar")),
@@ -195,7 +195,7 @@ public final class Pack200TestCase extends AbstractTestCase {
             assertTrue(is.markSupported());
             is.mark(5);
             assertEquals(0x50, is.read());
-            byte[] rest = new byte[3];
+            final byte[] rest = new byte[3];
             assertEquals(3, is.read(rest));
             assertEquals(0x4b, rest[0]);
             assertEquals(3, rest[1]);
@@ -212,7 +212,7 @@ public final class Pack200TestCase extends AbstractTestCase {
     @Test
     public void testOutputStreamMethods() throws Exception {
         final File output = new File(dir, "bla.pack");
-        Map<String, String> m = new HashMap<String, String>();
+        final Map<String, String> m = new HashMap<String, String>();
         m.put("foo", "bar");
         final OutputStream out = new FileOutputStream(output);
         try {

@@ -38,7 +38,8 @@ public final class FramedSnappyTestCase
     @Test
     public void testDefaultExtraction() throws Exception {
         testUnarchive(new StreamWrapper<CompressorInputStream>() {
-            public CompressorInputStream wrap(InputStream is) throws IOException {
+            @Override
+            public CompressorInputStream wrap(final InputStream is) throws IOException {
                 return new FramedSnappyCompressorInputStream(is);
             }
         });
@@ -47,7 +48,8 @@ public final class FramedSnappyTestCase
     @Test
     public void testDefaultExtractionViaFactory() throws Exception {
         testUnarchive(new StreamWrapper<CompressorInputStream>() {
-            public CompressorInputStream wrap(InputStream is) throws Exception {
+            @Override
+            public CompressorInputStream wrap(final InputStream is) throws Exception {
                 return new CompressorStreamFactory()
                     .createCompressorInputStream(CompressorStreamFactory.SNAPPY_FRAMED,
                                                  is);
@@ -58,13 +60,14 @@ public final class FramedSnappyTestCase
     @Test
     public void testDefaultExtractionViaFactoryAutodetection() throws Exception {
         testUnarchive(new StreamWrapper<CompressorInputStream>() {
-            public CompressorInputStream wrap(InputStream is) throws Exception {
+            @Override
+            public CompressorInputStream wrap(final InputStream is) throws Exception {
                 return new CompressorStreamFactory().createCompressorInputStream(is);
             }
         });
     }
 
-    private void testUnarchive(StreamWrapper<CompressorInputStream> wrapper) throws Exception {
+    private void testUnarchive(final StreamWrapper<CompressorInputStream> wrapper) throws Exception {
         final File input = getFile("bla.tar.sz");
         final File output = new File(dir, "bla.tar");
         final FileInputStream is = new FileInputStream(input);
@@ -89,7 +92,7 @@ public final class FramedSnappyTestCase
         final File original = getFile("bla.tar");
         final FileInputStream written = new FileInputStream(output);
         try {
-            FileInputStream orig = new FileInputStream(original);
+            final FileInputStream orig = new FileInputStream(original);
             try {
                 assertArrayEquals(IOUtils.toByteArray(written),
                                   IOUtils.toByteArray(orig));

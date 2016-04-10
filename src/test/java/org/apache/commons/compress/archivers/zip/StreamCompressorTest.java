@@ -30,8 +30,8 @@ public class StreamCompressorTest {
 
     @Test
     public void storedEntries() throws Exception {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        StreamCompressor sc = StreamCompressor.create( baos);
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final StreamCompressor sc = StreamCompressor.create( baos);
         sc.deflate(new ByteArrayInputStream("A".getBytes()), ZipEntry.STORED);
         sc.deflate(new ByteArrayInputStream("BAD".getBytes()), ZipEntry.STORED);
         assertEquals(3, sc.getBytesRead());
@@ -43,15 +43,15 @@ public class StreamCompressorTest {
 
     @Test
     public void deflatedEntries() throws Exception {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        StreamCompressor sc = StreamCompressor.create( baos);
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final StreamCompressor sc = StreamCompressor.create( baos);
         sc.deflate(new ByteArrayInputStream("AAAAAABBBBBB".getBytes()), ZipEntry.DEFLATED);
         assertEquals(12, sc.getBytesRead());
         assertEquals(8, sc.getBytesWrittenForLastEntry());
         assertEquals(3299542, sc.getCrc32());
 
         final byte[] actuals = baos.toByteArray();
-        byte[] expected = new byte[]{115,116,4,1,39,48,0,0};
+        final byte[] expected = new byte[]{115,116,4,1,39,48,0,0};
         // Note that this test really asserts stuff about the java Deflater, which might be a little bit brittle
         assertArrayEquals(expected, actuals);
     }

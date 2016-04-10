@@ -79,7 +79,7 @@ public class BlockSortTest {
 
     @Test
     public void testSortFixture() {
-        DS ds = setUpFixture();
+        final DS ds = setUpFixture();
         ds.s.blockSort(ds.data, FIXTURE.length - 1);
         assertFixtureSorted(ds.data);
         assertEquals(0, ds.data.origPtr);
@@ -87,21 +87,21 @@ public class BlockSortTest {
 
     @Test
     public void testSortFixtureMainSort() {
-        DS ds = setUpFixture();
+        final DS ds = setUpFixture();
         ds.s.mainSort(ds.data, FIXTURE.length - 1);
         assertFixtureSorted(ds.data);
     }
 
     @Test
     public void testSortFixtureFallbackSort() {
-        DS ds = setUpFixture();
+        final DS ds = setUpFixture();
         ds.s.fallbackSort(ds.data, FIXTURE.length - 1);
         assertFixtureSorted(ds.data);
     }
 
     @Test
     public void testSortFixture2() {
-        DS ds = setUpFixture2();
+        final DS ds = setUpFixture2();
         ds.s.blockSort(ds.data, FIXTURE2.length - 1);
         assertFixture2Sorted(ds.data);
         assertEquals(1, ds.data.origPtr);
@@ -109,23 +109,23 @@ public class BlockSortTest {
 
     @Test
     public void testSortFixture2MainSort() {
-        DS ds = setUpFixture2();
+        final DS ds = setUpFixture2();
         ds.s.mainSort(ds.data, FIXTURE2.length - 1);
         assertFixture2Sorted(ds.data);
     }
 
     @Test
     public void testSortFixture2FallbackSort() {
-        DS ds = setUpFixture2();
+        final DS ds = setUpFixture2();
         ds.s.fallbackSort(ds.data, FIXTURE2.length - 1);
         assertFixture2Sorted(ds.data);
     }
 
     @Test
     public void testFallbackSort() {
-        BZip2CompressorOutputStream.Data data = new BZip2CompressorOutputStream.Data(1);
-        BlockSort s = new BlockSort(data);
-        int[] fmap = new int[FIXTURE.length];
+        final BZip2CompressorOutputStream.Data data = new BZip2CompressorOutputStream.Data(1);
+        final BlockSort s = new BlockSort(data);
+        final int[] fmap = new int[FIXTURE.length];
         s.fallbackSort(fmap, FIXTURE, FIXTURE.length);
         assertArrayEquals(FIXTURE_SORTED, fmap);
     }
@@ -134,7 +134,7 @@ public class BlockSortTest {
         return setUpFixture(FIXTURE);
     }
 
-    private void assertFixtureSorted(BZip2CompressorOutputStream.Data data) {
+    private void assertFixtureSorted(final BZip2CompressorOutputStream.Data data) {
         assertFixtureSorted(data, FIXTURE, FIXTURE_BWT);
     }
 
@@ -142,18 +142,18 @@ public class BlockSortTest {
         return setUpFixture(FIXTURE2);
     }
 
-    private void assertFixture2Sorted(BZip2CompressorOutputStream.Data data) {
+    private void assertFixture2Sorted(final BZip2CompressorOutputStream.Data data) {
         assertFixtureSorted(data, FIXTURE2, FIXTURE2_BWT);
     }
 
-    private DS setUpFixture(byte[] fixture) {
-        BZip2CompressorOutputStream.Data data = new BZip2CompressorOutputStream.Data(1);
+    private DS setUpFixture(final byte[] fixture) {
+        final BZip2CompressorOutputStream.Data data = new BZip2CompressorOutputStream.Data(1);
         System.arraycopy(fixture, 0, data.block, 1, fixture.length);
         return new DS(data, new BlockSort(data));
     }
 
-    private void assertFixtureSorted(BZip2CompressorOutputStream.Data data,
-                                     byte[] fixture, byte[] fixtureBwt) {
+    private void assertFixtureSorted(final BZip2CompressorOutputStream.Data data,
+                                     final byte[] fixture, final byte[] fixtureBwt) {
         assertEquals(fixture[fixture.length - 1], data.block[0]);
         for (int i = 0; i < fixture.length; i++) {
             assertEquals(fixtureBwt[i], data.block[data.fmap[i]]);
@@ -163,7 +163,7 @@ public class BlockSortTest {
     private static class DS {
         private final BZip2CompressorOutputStream.Data data;
         private final BlockSort s;
-        DS(BZip2CompressorOutputStream.Data data, BlockSort s) {
+        DS(final BZip2CompressorOutputStream.Data data, final BlockSort s) {
             this.data = data;
             this.s = s;
         }

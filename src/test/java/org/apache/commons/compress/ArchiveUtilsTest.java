@@ -37,9 +37,9 @@ public class ArchiveUtilsTest extends AbstractTestCase {
 
     @Test
     public void testCompareBA(){
-        byte[] buffer1 = {1,2,3};
-        byte[] buffer2 = {1,2,3,0};
-        byte[] buffer3 = {1,2,3};
+        final byte[] buffer1 = {1,2,3};
+        final byte[] buffer2 = {1,2,3,0};
+        final byte[] buffer3 = {1,2,3};
         assertTrue(ArchiveUtils.isEqual(buffer1, buffer2, true));
         assertFalse(ArchiveUtils.isEqual(buffer1, buffer2, false));
         assertFalse(ArchiveUtils.isEqual(buffer1, buffer2));
@@ -52,8 +52,8 @@ public class ArchiveUtilsTest extends AbstractTestCase {
 
     @Test
     public void testCompareAscii(){
-        byte[] buffer1 = {'a','b','c'};
-        byte[] buffer2 = {'d','e','f',0};
+        final byte[] buffer1 = {'a','b','c'};
+        final byte[] buffer2 = {'d','e','f',0};
         assertTrue(ArchiveUtils.matchAsciiBuffer("abc", buffer1));
         assertFalse(ArchiveUtils.matchAsciiBuffer("abc\0", buffer1));
         assertTrue(ArchiveUtils.matchAsciiBuffer("def\0", buffer2));
@@ -67,11 +67,11 @@ public class ArchiveUtilsTest extends AbstractTestCase {
         asciiToByteAndBackFail("\u8025");
     }
 
-    private void asciiToByteAndBackOK(String inputString) {
+    private void asciiToByteAndBackOK(final String inputString) {
         assertEquals(inputString, ArchiveUtils.toAsciiString(ArchiveUtils.toAsciiBytes(inputString)));
     }
 
-    private void asciiToByteAndBackFail(String inputString) {
+    private void asciiToByteAndBackFail(final String inputString) {
         assertFalse(inputString.equals(ArchiveUtils.toAsciiString(ArchiveUtils.toAsciiBytes(inputString))));
     }
 }

@@ -67,7 +67,7 @@ public class ChangeSetPerformer {
      *             if an read/write error occurs
      * @return the results of this operation
      */
-    public ChangeSetResults perform(ArchiveInputStream in, ArchiveOutputStream out)
+    public ChangeSetResults perform(final ArchiveInputStream in, final ArchiveOutputStream out)
             throws IOException {
         return perform(new ArchiveInputStreamIterator(in), out);
     }
@@ -88,7 +88,7 @@ public class ChangeSetPerformer {
      * @return the results of this operation
      * @since 1.5
      */
-    public ChangeSetResults perform(ZipFile in, ArchiveOutputStream out)
+    public ChangeSetResults perform(final ZipFile in, final ArchiveOutputStream out)
             throws IOException {
         return perform(new ZipFileIterator(in), out);
     }
@@ -108,15 +108,15 @@ public class ChangeSetPerformer {
      *             if an read/write error occurs
      * @return the results of this operation
      */
-    private ChangeSetResults perform(ArchiveEntryIterator entryIterator,
-                                     ArchiveOutputStream out)
+    private ChangeSetResults perform(final ArchiveEntryIterator entryIterator,
+                                     final ArchiveOutputStream out)
             throws IOException {
-        ChangeSetResults results = new ChangeSetResults();
+        final ChangeSetResults results = new ChangeSetResults();
 
-        Set<Change> workingSet = new LinkedHashSet<Change>(changes);
+        final Set<Change> workingSet = new LinkedHashSet<Change>(changes);
 
-        for (Iterator<Change> it = workingSet.iterator(); it.hasNext();) {
-            Change change = it.next();
+        for (final Iterator<Change> it = workingSet.iterator(); it.hasNext();) {
+            final Change change = it.next();
 
             if (change.type() == Change.TYPE_ADD && change.isReplaceMode()) {
                 copyStream(change.getInput(), out, change.getEntry());
@@ -126,11 +126,11 @@ public class ChangeSetPerformer {
         }
 
         while (entryIterator.hasNext()) {
-            ArchiveEntry entry = entryIterator.next();
+            final ArchiveEntry entry = entryIterator.next();
             boolean copy = true;
 
-            for (Iterator<Change> it = workingSet.iterator(); it.hasNext();) {
-                Change change = it.next();
+            for (final Iterator<Change> it = workingSet.iterator(); it.hasNext();) {
+                final Change change = it.next();
 
                 final int type = change.type();
                 final String name = entry.getName();
@@ -160,8 +160,8 @@ public class ChangeSetPerformer {
         }
 
         // Adds files which hasn't been added from the original and do not have replace mode on
-        for (Iterator<Change> it = workingSet.iterator(); it.hasNext();) {
-            Change change = it.next();
+        for (final Iterator<Change> it = workingSet.iterator(); it.hasNext();) {
+            final Change change = it.next();
 
             if (change.type() == Change.TYPE_ADD && 
                 !change.isReplaceMode() && 
@@ -184,13 +184,13 @@ public class ChangeSetPerformer {
      *            the entry to check
      * @return true, if this entry has an deletion change later, false otherwise
      */
-    private boolean isDeletedLater(Set<Change> workingSet, ArchiveEntry entry) {
-        String source = entry.getName();
+    private boolean isDeletedLater(final Set<Change> workingSet, final ArchiveEntry entry) {
+        final String source = entry.getName();
 
         if (!workingSet.isEmpty()) {
-            for (Change change : workingSet) {
+            for (final Change change : workingSet) {
                 final int type = change.type();
-                String target = change.targetFile();
+                final String target = change.targetFile();
                 if (type == Change.TYPE_DELETE && source.equals(target)) {
                     return true;
                 }
@@ -215,8 +215,8 @@ public class ChangeSetPerformer {
      * @throws IOException
      *             if data cannot be read or written
      */
-    private void copyStream(InputStream in, ArchiveOutputStream out,
-            ArchiveEntry entry) throws IOException {
+    private void copyStream(final InputStream in, final ArchiveOutputStream out,
+            final ArchiveEntry entry) throws IOException {
         out.putArchiveEntry(entry);
         IOUtils.copy(in, out);
         out.closeArchiveEntry();
@@ -241,15 +241,18 @@ public class ChangeSetPerformer {
         implements ArchiveEntryIterator {
         private final ArchiveInputStream in;
         private ArchiveEntry next;
-        ArchiveInputStreamIterator(ArchiveInputStream in) {
+        ArchiveInputStreamIterator(final ArchiveInputStream in) {
             this.in = in;
         }
+        @Override
         public boolean hasNext() throws IOException {
             return (next = in.getNextEntry()) != null;
         }
+        @Override
         public ArchiveEntry next() {
             return next;
         }
+        @Override
         public InputStream getInputStream() {
             return in;
         }
@@ -260,16 +263,19 @@ public class ChangeSetPerformer {
         private final ZipFile in;
         private final Enumeration<ZipArchiveEntry> nestedEnum;
         private ZipArchiveEntry current;
-        ZipFileIterator(ZipFile in) {
+        ZipFileIterator(final ZipFile in) {
             this.in = in;
             nestedEnum = in.getEntriesInPhysicalOrder();
         }
+        @Override
         public boolean hasNext() {
             return nestedEnum.hasMoreElements();
         }
+        @Override
         public ArchiveEntry next() {
             return current = nestedEnum.nextElement();
         }
+        @Override
         public InputStream getInputStream() throws IOException {
             return in.getInputStream(current);
         }

@@ -33,7 +33,7 @@ public class AsiExtraFieldTest implements UnixStat {
      */    
     @Test
     public void testModes() {
-        AsiExtraField a = new AsiExtraField();
+        final AsiExtraField a = new AsiExtraField();
         a.setMode(0123);
         assertEquals("plain file", 0100123, a.getMode());
         a.setDirectory(true);
@@ -47,7 +47,7 @@ public class AsiExtraFieldTest implements UnixStat {
      */
     @Test
     public void testContent() {
-        AsiExtraField a = new AsiExtraField();
+        final AsiExtraField a = new AsiExtraField();
         a.setMode(0123);
         a.setUserId(5);
         a.setGroupId(6);
@@ -135,7 +135,7 @@ public class AsiExtraFieldTest implements UnixStat {
         try {
             a.parseFromLocalFileData(data, 0, data.length);
             fail("should raise bad CRC exception");
-        } catch (Exception e) {
+        } catch (final Exception e) {
             assertEquals("bad CRC checksum 0 instead of ebf018e",
                          e.getMessage());
         }
@@ -143,13 +143,13 @@ public class AsiExtraFieldTest implements UnixStat {
 
     @Test
     public void testClone() {
-        AsiExtraField s1 = new AsiExtraField();
+        final AsiExtraField s1 = new AsiExtraField();
         s1.setUserId(42);
         s1.setGroupId(12);
         s1.setLinkedFile("foo");
         s1.setMode(0644);
         s1.setDirectory(true);
-        AsiExtraField s2 = (AsiExtraField) s1.clone();
+        final AsiExtraField s2 = (AsiExtraField) s1.clone();
         assertNotSame(s1, s2);
         assertEquals(s1.getUserId(), s2.getUserId());
         assertEquals(s1.getGroupId(), s2.getGroupId());

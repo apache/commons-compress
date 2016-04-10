@@ -30,15 +30,15 @@ public class DumpArchiveException extends IOException {
     public DumpArchiveException() {
     }
 
-    public DumpArchiveException(String msg) {
+    public DumpArchiveException(final String msg) {
         super(msg);
     }
 
-    public DumpArchiveException(Throwable cause) {
+    public DumpArchiveException(final Throwable cause) {
         initCause(cause);
     }
 
-    public DumpArchiveException(String msg, Throwable cause) {
+    public DumpArchiveException(final String msg, final Throwable cause) {
         super(msg);
         initCause(cause);
     }

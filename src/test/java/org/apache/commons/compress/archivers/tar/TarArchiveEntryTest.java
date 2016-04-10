@@ -43,13 +43,13 @@ public class TarArchiveEntryTest implements TarConstants {
      */
     @Test
     public void testFileSystemRoot() {
-        TarArchiveEntry t = new TarArchiveEntry(new File(ROOT));
+        final TarArchiveEntry t = new TarArchiveEntry(new File(ROOT));
         assertEquals("/", t.getName());
     }
 
     @Test
     public void testTarFileWithFSRoot() throws IOException {
-        File f = File.createTempFile("taetest", ".tar");
+        final File f = File.createTempFile("taetest", ".tar");
         f.deleteOnExit();
         TarArchiveOutputStream tout = null;
         TarArchiveInputStream tin = null;
@@ -109,13 +109,13 @@ public class TarArchiveEntryTest implements TarConstants {
 
     @Test
     public void testMaxFileSize(){
-        TarArchiveEntry t = new TarArchiveEntry("");
+        final TarArchiveEntry t = new TarArchiveEntry("");
         t.setSize(0);
         t.setSize(1);
         try {
             t.setSize(-1);
             fail("Should have generated IllegalArgumentException");
-        } catch (IllegalArgumentException expected) {
+        } catch (final IllegalArgumentException expected) {
         }
         t.setSize(077777777777L);
         t.setSize(0100000000000L);
@@ -123,36 +123,36 @@ public class TarArchiveEntryTest implements TarConstants {
 
     @Test
     public void testLinkFlagConstructor() {
-        TarArchiveEntry t = new TarArchiveEntry("/foo", LF_GNUTYPE_LONGNAME);
+        final TarArchiveEntry t = new TarArchiveEntry("/foo", LF_GNUTYPE_LONGNAME);
         assertGnuMagic(t);
         assertEquals("foo", t.getName());
     }
 
     @Test
     public void testLinkFlagConstructorWithFileFlag() {
-        TarArchiveEntry t = new TarArchiveEntry("/foo", LF_NORMAL);
+        final TarArchiveEntry t = new TarArchiveEntry("/foo", LF_NORMAL);
         assertPosixMagic(t);
         assertEquals("foo", t.getName());
     }
 
     @Test
     public void testLinkFlagConstructorWithPreserve() {
-        TarArchiveEntry t = new TarArchiveEntry("/foo", LF_GNUTYPE_LONGNAME,
+        final TarArchiveEntry t = new TarArchiveEntry("/foo", LF_GNUTYPE_LONGNAME,
                                                 true);
         assertGnuMagic(t);
         assertEquals("/foo", t.getName());
     }
 
-    private void assertGnuMagic(TarArchiveEntry t) {
+    private void assertGnuMagic(final TarArchiveEntry t) {
         assertEquals(MAGIC_GNU + VERSION_GNU_SPACE, readMagic(t));
     }
 
-    private void assertPosixMagic(TarArchiveEntry t) {
+    private void assertPosixMagic(final TarArchiveEntry t) {
         assertEquals(MAGIC_POSIX + VERSION_POSIX, readMagic(t));
     }
 
-    private String readMagic(TarArchiveEntry t) {
-        byte[] buf = new byte[512];
+    private String readMagic(final TarArchiveEntry t) {
+        final byte[] buf = new byte[512];
         t.writeEntryHeader(buf);
         return new String(buf, MAGIC_OFFSET, MAGICLEN + VERSIONLEN);
     }

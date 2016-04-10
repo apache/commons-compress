@@ -42,8 +42,7 @@ package org.apache.commons.compress.archivers.zip;
  * @NotThreadSafe
  * @since 1.11
  */
-public class X0016_CertificateIdForCentralDirectory extends PKWareExtraHeader implements ZipExtraField {
-    private static final long serialVersionUID = 1L;
+public class X0016_CertificateIdForCentralDirectory extends PKWareExtraHeader {
 
     public X0016_CertificateIdForCentralDirectory() {
         super(new ZipShort(0x0016));
@@ -69,7 +68,7 @@ public class X0016_CertificateIdForCentralDirectory extends PKWareExtraHeader im
     }
 
     @Override
-    public void parseFromCentralDirectoryData(byte[] data, int offset, int length) {
+    public void parseFromCentralDirectoryData(final byte[] data, final int offset, final int length) {
         this.rcount = ZipShort.getValue(data, offset);
         this.hashAlg = HashAlgorithm.getAlgorithmByCode(ZipShort.getValue(data, offset + 2));
     }

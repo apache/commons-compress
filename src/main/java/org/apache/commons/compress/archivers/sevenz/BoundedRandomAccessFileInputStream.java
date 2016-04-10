@@ -36,13 +36,12 @@ class BoundedRandomAccessFileInputStream extends InputStream {
         if (bytesRemaining > 0) {
             --bytesRemaining;
             return file.read();
-        } else {
-            return -1;
         }
+        return -1;
     }
 
     @Override
-    public int read(byte[] b, int off, int len) throws IOException {
+    public int read(final byte[] b, final int off, final int len) throws IOException {
         if (bytesRemaining == 0) {
             return -1;
         }

@@ -48,6 +48,7 @@ public final class JarMarker implements ZipExtraField {
      * The Header-ID.
      * @return the header id
      */
+    @Override
     public ZipShort getHeaderId() {
         return ID;
     }
@@ -57,6 +58,7 @@ public final class JarMarker implements ZipExtraField {
      * Header-ID or length specifier.
      * @return 0
      */
+    @Override
     public ZipShort getLocalFileDataLength() {
         return NULL;
     }
@@ -66,6 +68,7 @@ public final class JarMarker implements ZipExtraField {
      * Header-ID or length specifier.
      * @return 0
      */
+    @Override
     public ZipShort getCentralDirectoryLength() {
         return NULL;
     }
@@ -75,6 +78,7 @@ public final class JarMarker implements ZipExtraField {
      * or length specifier.
      * @return the data
      */
+    @Override
     public byte[] getLocalFileDataData() {
         return NO_BYTES;
     }
@@ -84,6 +88,7 @@ public final class JarMarker implements ZipExtraField {
      * length specifier.
      * @return the data
      */
+    @Override
     public byte[] getCentralDirectoryData() {
         return NO_BYTES;
     }
@@ -96,7 +101,8 @@ public final class JarMarker implements ZipExtraField {
      *
      * @throws ZipException on error
      */
-    public void parseFromLocalFileData(byte[] data, int offset, int length)
+    @Override
+    public void parseFromLocalFileData(final byte[] data, final int offset, final int length)
         throws ZipException {
         if (length != 0) {
             throw new ZipException("JarMarker doesn't expect any data");
@@ -107,8 +113,9 @@ public final class JarMarker implements ZipExtraField {
      * Doesn't do anything special since this class always uses the
      * same data in central directory and local file data.
      */
-    public void parseFromCentralDirectoryData(byte[] buffer, int offset,
-                                              int length)
+    @Override
+    public void parseFromCentralDirectoryData(final byte[] buffer, final int offset,
+                                              final int length)
         throws ZipException {
         parseFromLocalFileData(buffer, offset, length);
     }

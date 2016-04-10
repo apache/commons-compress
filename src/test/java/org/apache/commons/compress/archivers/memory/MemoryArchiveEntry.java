@@ -30,20 +30,24 @@ public final class MemoryArchiveEntry implements ArchiveEntry {
         name = pName;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public long getSize() {
         // TODO Auto-generated method stub
         return 0;
     }
 
+    @Override
     public boolean isDirectory() {
         // TODO Auto-generated method stub
         return false;
     }
 
+    @Override
     public Date getLastModifiedDate() {
         return new Date();
     }

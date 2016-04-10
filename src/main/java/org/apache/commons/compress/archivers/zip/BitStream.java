@@ -32,7 +32,7 @@ import java.nio.ByteOrder;
  */
 class BitStream extends BitInputStream {
 
-    BitStream(InputStream in) {
+    BitStream(final InputStream in) {
         super(in, ByteOrder.LITTLE_ENDIAN);
     }
 

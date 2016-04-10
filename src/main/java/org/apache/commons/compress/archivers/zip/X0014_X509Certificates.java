@@ -40,8 +40,7 @@ package org.apache.commons.compress.archivers.zip;
  * @NotThreadSafe
  * @since 1.11
  */
-public class X0014_X509Certificates extends PKWareExtraHeader implements ZipExtraField {
-    private static final long serialVersionUID = 1L;
+public class X0014_X509Certificates extends PKWareExtraHeader {
 
     public X0014_X509Certificates() {
         super(new ZipShort(0x0014));

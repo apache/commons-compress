@@ -90,28 +90,27 @@ public final class ChangeSet {
      * @param pChange
      *            the change which should result in an addition
      */
-    private void addAddition(Change pChange) {
+    private void addAddition(final Change pChange) {
         if (Change.TYPE_ADD != pChange.type() ||
             pChange.getInput() == null) {
             return;
         }
 
         if (!changes.isEmpty()) {
-            for (Iterator<Change> it = changes.iterator(); it.hasNext();) {
-                Change change = it.next();
+            for (final Iterator<Change> it = changes.iterator(); it.hasNext();) {
+                final Change change = it.next();
                 if (change.type() == Change.TYPE_ADD
                         && change.getEntry() != null) {
-                    ArchiveEntry entry = change.getEntry();
+                    final ArchiveEntry entry = change.getEntry();
 
                     if(entry.equals(pChange.getEntry())) {
                         if(pChange.isReplaceMode()) {
                             it.remove();
                             changes.add(pChange);
                             return;
-                        } else {
-                            // do not add this change
-                            return;
                         }
+                        // do not add this change
+                        return;
                     }
                 }
             }
@@ -125,20 +124,20 @@ public final class ChangeSet {
      * @param pChange
      *            the change which should result in a deletion
      */
-    private void addDeletion(Change pChange) {
+    private void addDeletion(final Change pChange) {
         if ((Change.TYPE_DELETE != pChange.type() &&
             Change.TYPE_DELETE_DIR != pChange.type()) ||
             pChange.targetFile() == null) {
             return;
         }
-        String source = pChange.targetFile();
+        final String source = pChange.targetFile();
 
         if (source != null && !changes.isEmpty()) {
-            for (Iterator<Change> it = changes.iterator(); it.hasNext();) {
-                Change change = it.next();
+            for (final Iterator<Change> it = changes.iterator(); it.hasNext();) {
+                final Change change = it.next();
                 if (change.type() == Change.TYPE_ADD
                         && change.getEntry() != null) {
-                    String target = change.getEntry().getName();
+                    final String target = change.getEntry().getName();
 
                     if (target == null) {
                         continue;

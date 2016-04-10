@@ -78,7 +78,7 @@ public abstract class ArchiveInputStream extends InputStream {
      */
     @Override
     public int read() throws IOException {
-        int num = read(SINGLE, 0, 1);
+        final int num = read(SINGLE, 0, 1);
         return num == -1 ? -1 : SINGLE[0] & BYTE_MASK;
     }
 
@@ -88,7 +88,7 @@ public abstract class ArchiveInputStream extends InputStream {
      * 
      * @param read the number of bytes read
      */
-    protected void count(int read) {
+    protected void count(final int read) {
         count((long) read);
     }
 
@@ -99,7 +99,7 @@ public abstract class ArchiveInputStream extends InputStream {
      * @param read the number of bytes read
      * @since 1.1
      */
-    protected void count(long read) {
+    protected void count(final long read) {
         if (read != -1) {
             bytesRead = bytesRead + read;
         }
@@ -111,7 +111,7 @@ public abstract class ArchiveInputStream extends InputStream {
      * @param pushedBack the number of bytes pushed back.
      * @since 1.1
      */
-    protected void pushedBackBytes(long pushedBack) {
+    protected void pushedBackBytes(final long pushedBack) {
         bytesRead -= pushedBack;
     }
 
@@ -148,7 +148,7 @@ public abstract class ArchiveInputStream extends InputStream {
      * 
      * @since 1.1
      */
-    public boolean canReadEntryData(ArchiveEntry archiveEntry) {
+    public boolean canReadEntryData(final ArchiveEntry archiveEntry) {
         return true;
     }
 

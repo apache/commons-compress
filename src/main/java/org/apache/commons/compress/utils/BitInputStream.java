@@ -54,6 +54,7 @@ public class BitInputStream implements Closeable {
         this.byteOrder = byteOrder;
     }
     
+    @Override
     public void close() throws IOException {
         in.close();
     }

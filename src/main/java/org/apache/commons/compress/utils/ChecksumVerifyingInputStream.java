@@ -52,7 +52,7 @@ public class ChecksumVerifyingInputStream extends InputStream {
         if (bytesRemaining <= 0) {
             return -1;
         }
-        int ret = in.read();
+        final int ret = in.read();
         if (ret >= 0) {
             checksum.update(ret);
             --bytesRemaining;
@@ -70,7 +70,7 @@ public class ChecksumVerifyingInputStream extends InputStream {
      * value
      */
     @Override
-    public int read(byte[] b) throws IOException {
+    public int read(final byte[] b) throws IOException {
         return read(b, 0, b.length);
     }
 
@@ -81,8 +81,8 @@ public class ChecksumVerifyingInputStream extends InputStream {
      * value
      */
     @Override
-    public int read(byte[] b, int off, int len) throws IOException {
-        int ret = in.read(b, off, len);
+    public int read(final byte[] b, final int off, final int len) throws IOException {
+        final int ret = in.read(b, off, len);
         if (ret >= 0) {
             checksum.update(b, off, ret);
             bytesRemaining -= ret;
@@ -94,13 +94,12 @@ public class ChecksumVerifyingInputStream extends InputStream {
     }
 
     @Override
-    public long skip(long n) throws IOException {
+    public long skip(final long n) throws IOException {
         // Can't really skip, we have to hash everything to verify the checksum
         if (read() >= 0) {
             return 1;
-        } else {
-            return 0;
         }
+        return 0;
     }
 
     @Override

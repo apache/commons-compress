@@ -37,7 +37,8 @@ public final class ZTestCase extends AbstractTestCase {
     @Test
     public void testZUnarchive() throws Exception {
         testUnarchive(new StreamWrapper<CompressorInputStream>() {
-            public CompressorInputStream wrap(InputStream is) throws IOException {
+            @Override
+            public CompressorInputStream wrap(final InputStream is) throws IOException {
                 return new ZCompressorInputStream(is);
             }
         });
@@ -46,7 +47,8 @@ public final class ZTestCase extends AbstractTestCase {
     @Test
     public void testZUnarchiveViaFactory() throws Exception {
         testUnarchive(new StreamWrapper<CompressorInputStream>() {
-            public CompressorInputStream wrap(InputStream is) throws Exception {
+            @Override
+            public CompressorInputStream wrap(final InputStream is) throws Exception {
                 return new CompressorStreamFactory()
                     .createCompressorInputStream(CompressorStreamFactory.Z, is);
             }
@@ -56,7 +58,8 @@ public final class ZTestCase extends AbstractTestCase {
     @Test
     public void testZUnarchiveViaAutoDetection() throws Exception {
         testUnarchive(new StreamWrapper<CompressorInputStream>() {
-            public CompressorInputStream wrap(InputStream is) throws Exception {
+            @Override
+            public CompressorInputStream wrap(final InputStream is) throws Exception {
                 return new CompressorStreamFactory()
                     .createCompressorInputStream(new BufferedInputStream(is));
             }
@@ -75,7 +78,7 @@ public final class ZTestCase extends AbstractTestCase {
                                                   4));
     }
 
-    private void testUnarchive(StreamWrapper<CompressorInputStream> wrapper) throws Exception {
+    private void testUnarchive(final StreamWrapper<CompressorInputStream> wrapper) throws Exception {
         final File input = getFile("bla.tar.Z");
         final File output = new File(dir, "bla.tar");
         final InputStream is = new FileInputStream(input);

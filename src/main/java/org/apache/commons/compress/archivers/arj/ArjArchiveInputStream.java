@@ -67,7 +67,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
             if ((mainHeader.arjFlags & MainHeader.Flags.VOLUME) != 0) {
                 throw new ArchiveException("Multi-volume ARJ files are unsupported");
             }
-        } catch (IOException ioException) {
+        } catch (final IOException ioException) {
             throw new ArchiveException(ioException.getMessage(), ioException);
         }
     }
@@ -89,7 +89,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
     }
 
     private int read8(final DataInputStream dataIn) throws IOException {
-        int value = dataIn.readUnsignedByte();
+        final int value = dataIn.readUnsignedByte();
         count(1);
         return value;
     }
@@ -114,13 +114,12 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         }
         if (charsetName != null) {
             return new String(buffer.toByteArray(), charsetName);
-        } else {
-            // intentionally using the default encoding as that's the contract for a null charsetName
-            return new String(buffer.toByteArray());
         }
+        // intentionally using the default encoding as that's the contract for a null charsetName
+        return new String(buffer.toByteArray());
     }
     
-    private void readFully(final DataInputStream dataIn, byte[] b)
+    private void readFully(final DataInputStream dataIn, final byte[] b)
         throws IOException {
         dataIn.readFully(b);
         count(b.length);
@@ -249,7 +248,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         localFileHeader.name = readString(basicHeader);
         localFileHeader.comment = readString(basicHeader);
 
-        ArrayList<byte[]> extendedHeaders = new ArrayList<byte[]>();
+        final ArrayList<byte[]> extendedHeaders = new ArrayList<byte[]>();
         int extendedHeaderSize;
         while ((extendedHeaderSize = read16(in)) > 0) {
             final byte[] extendedHeaderBytes = new byte[extendedHeaderSize];
@@ -267,8 +266,8 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         return localFileHeader;
     }
     
-    private void readExtraData(int firstHeaderSize, DataInputStream firstHeader,
-                               LocalFileHeader localFileHeader) throws IOException {
+    private void readExtraData(final int firstHeaderSize, final DataInputStream firstHeader,
+                               final LocalFileHeader localFileHeader) throws IOException {
         if (firstHeaderSize >= 33) {
             localFileHeader.extendedFilePosition = read32(firstHeader);
             if (firstHeaderSize >= 45) {
@@ -330,14 +329,13 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
                         currentLocalFileHeader.originalSize, currentLocalFileHeader.originalCrc32);
             }
             return new ArjArchiveEntry(currentLocalFileHeader);
-        } else {
-            currentInputStream = null;
-            return null;
         }
+        currentInputStream = null;
+        return null;
     }
 
     @Override
-    public boolean canReadEntryData(ArchiveEntry ae) {
+    public boolean canReadEntryData(final ArchiveEntry ae) {
         return ae instanceof ArjArchiveEntry
             && ((ArjArchiveEntry) ae).getMethod() == LocalFileHeader.Methods.STORED;
     }

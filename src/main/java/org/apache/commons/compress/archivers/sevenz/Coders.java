@@ -63,13 +63,13 @@ class Coders {
             put(SevenZMethod.DELTA_FILTER, new DeltaDecoder());
         }};
 
-    static CoderBase findByMethod(SevenZMethod method) {
+    static CoderBase findByMethod(final SevenZMethod method) {
         return CODER_MAP.get(method);
     }
 
-    static InputStream addDecoder(final String archiveName, final InputStream is, long uncompressedLength,
+    static InputStream addDecoder(final String archiveName, final InputStream is, final long uncompressedLength,
             final Coder coder, final byte[] password) throws IOException {
-        CoderBase cb = findByMethod(SevenZMethod.byId(coder.decompressionMethodId));
+        final CoderBase cb = findByMethod(SevenZMethod.byId(coder.decompressionMethodId));
         if (cb == null) {
             throw new IOException("Unsupported compression method " +
                                   Arrays.toString(coder.decompressionMethodId)
@@ -79,8 +79,8 @@ class Coders {
     }
     
     static OutputStream addEncoder(final OutputStream out, final SevenZMethod method,
-                                   Object options) throws IOException {
-        CoderBase cb = findByMethod(method);
+                                   final Object options) throws IOException {
+        final CoderBase cb = findByMethod(method);
         if (cb == null) {
             throw new IOException("Unsupported compression method " + method);
         }
@@ -89,8 +89,8 @@ class Coders {
 
     static class CopyDecoder extends CoderBase {
         @Override
-        InputStream decode(final String archiveName, final InputStream in, long uncompressedLength,
-                final Coder coder, byte[] password) throws IOException {
+        InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
+                final Coder coder, final byte[] password) throws IOException {
             return in; 
         }
         @Override
@@ -101,9 +101,9 @@ class Coders {
 
     static class LZMADecoder extends CoderBase {
         @Override
-        InputStream decode(final String archiveName, final InputStream in, long uncompressedLength,
-                final Coder coder, byte[] password) throws IOException {
-            byte propsByte = coder.properties[0];
+        InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
+                final Coder coder, final byte[] password) throws IOException {
+            final byte propsByte = coder.properties[0];
             long dictSize = coder.properties[1];
             for (int i = 1; i < 4; i++) {
                 dictSize |= (coder.properties[i + 1] & 0xffl) << (8 * i);
@@ -117,21 +117,20 @@ class Coders {
     
     static class BCJDecoder extends CoderBase {
         private final FilterOptions opts;
-        BCJDecoder(FilterOptions opts) {
+        BCJDecoder(final FilterOptions opts) {
             this.opts = opts;
         }
 
         @Override
-        InputStream decode(final String archiveName, final InputStream in, long uncompressedLength,
-                final Coder coder, byte[] password) throws IOException {
+        InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
+                final Coder coder, final byte[] password) throws IOException {
             try {
                 return opts.getInputStream(in);
-            } catch (AssertionError e) {
-                IOException ex = new IOException("BCJ filter used in " + archiveName
-                                                 + " needs XZ for Java > 1.4 - see "
-                                                 + "http://commons.apache.org/proper/commons-compress/limitations.html#7Z");
-                ex.initCause(e);
-                throw ex;
+            } catch (final AssertionError e) {
+                throw new IOException("BCJ filter used in " + archiveName
+                                      + " needs XZ for Java > 1.4 - see "
+                                      + "http://commons.apache.org/proper/commons-compress/limitations.html#7Z",
+                                      e);
             }
         }
         @Override
@@ -151,7 +150,7 @@ class Coders {
         }
 
         @Override
-        InputStream decode(final String archiveName, final InputStream in, long uncompressedLength,
+        InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
                 final Coder coder, final byte[] password)
             throws IOException {
             final Inflater inflater = new Inflater(true);
@@ -164,12 +163,12 @@ class Coders {
                 }
 
                 @Override
-                public int read(byte[] b, int off, int len) throws IOException {
+                public int read(final byte[] b, final int off, final int len) throws IOException {
                     return inflaterInputStream.read(b, off, len);
                 }
 
                 @Override
-                public int read(byte[] b) throws IOException {
+                public int read(final byte[] b) throws IOException {
                     return inflaterInputStream.read(b);
                 }
 
@@ -185,22 +184,22 @@ class Coders {
         }
         @Override
         OutputStream encode(final OutputStream out, final Object options) {
-            int level = numberOptionOrDefault(options, 9);
+            final int level = numberOptionOrDefault(options, 9);
             final Deflater deflater = new Deflater(level, true);
             final DeflaterOutputStream deflaterOutputStream = new DeflaterOutputStream(out, deflater);
             return new OutputStream() {
                 @Override
-                public void write(int b) throws IOException {
+                public void write(final int b) throws IOException {
                     deflaterOutputStream.write(b);
                 }
 
                 @Override
-                public void write(byte[] b) throws IOException {
+                public void write(final byte[] b) throws IOException {
                     deflaterOutputStream.write(b);
                 }
 
                 @Override
-                public void write(byte[] b, int off, int len) throws IOException {
+                public void write(final byte[] b, final int off, final int len) throws IOException {
                     deflaterOutputStream.write(b, off, len);
                 }
 
@@ -222,7 +221,7 @@ class Coders {
         }
 
         @Override
-        InputStream decode(final String archiveName, final InputStream in, long uncompressedLength,
+        InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
                 final Coder coder, final byte[] password)
                 throws IOException {
             return new BZip2CompressorInputStream(in);
@@ -230,7 +229,7 @@ class Coders {
         @Override
         OutputStream encode(final OutputStream out, final Object options)
                 throws IOException {
-            int blockSize = numberOptionOrDefault(options, BZip2CompressorOutputStream.MAX_BLOCKSIZE);
+            final int blockSize = numberOptionOrDefault(options, BZip2CompressorOutputStream.MAX_BLOCKSIZE);
             return new BZip2CompressorOutputStream(out, blockSize);
         }
     }
@@ -244,7 +243,7 @@ class Coders {
     private static class DummyByteAddingInputStream extends FilterInputStream {
         private boolean addDummyByte = true;
 
-        private DummyByteAddingInputStream(InputStream in) {
+        private DummyByteAddingInputStream(final InputStream in) {
             super(in);
         }
 
@@ -259,8 +258,8 @@ class Coders {
         }
 
         @Override
-        public int read(byte[] b, int off, int len) throws IOException {
-            int result = super.read(b, off, len);
+        public int read(final byte[] b, final int off, final int len) throws IOException {
+            final int result = super.read(b, off, len);
             if (result == -1 && addDummyByte) {
                 addDummyByte = false;
                 b[off] = 0;

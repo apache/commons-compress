@@ -49,7 +49,7 @@ public abstract class ZipEncodingHelper {
          * 
          * @see Simple8BitZipEncoding#Simple8BitZipEncoding(char[])
          */
-        SimpleEncodingHolder(char [] highChars) {
+        SimpleEncodingHolder(final char [] highChars) {
             this.highChars = highChars;
         }
 
@@ -68,10 +68,10 @@ public abstract class ZipEncodingHelper {
     private static final Map<String, SimpleEncodingHolder> simpleEncodings;
 
     static {
-        Map<String, SimpleEncodingHolder> se =
+        final Map<String, SimpleEncodingHolder> se =
             new HashMap<String, SimpleEncodingHolder>();
 
-        char[] cp437_high_chars =
+        final char[] cp437_high_chars =
             new char[] { 0x00c7, 0x00fc, 0x00e9, 0x00e2, 0x00e4, 0x00e0,
                          0x00e5, 0x00e7, 0x00ea, 0x00eb, 0x00e8, 0x00ef,
                          0x00ee, 0x00ec, 0x00c4, 0x00c5, 0x00c9, 0x00e6,
@@ -95,7 +95,7 @@ public abstract class ZipEncodingHelper {
                          0x00b0, 0x2219, 0x00b7, 0x221a, 0x207f, 0x00b2,
                          0x25a0, 0x00a0 };
 
-        SimpleEncodingHolder cp437 = new SimpleEncodingHolder(cp437_high_chars);
+        final SimpleEncodingHolder cp437 = new SimpleEncodingHolder(cp437_high_chars);
 
         se.put("CP437", cp437);
         se.put("Cp437", cp437);
@@ -103,7 +103,7 @@ public abstract class ZipEncodingHelper {
         se.put("IBM437", cp437);
         se.put("ibm437", cp437);
 
-        char[] cp850_high_chars =
+        final char[] cp850_high_chars =
             new char[] { 0x00c7, 0x00fc, 0x00e9, 0x00e2, 0x00e4, 0x00e0,
                          0x00e5, 0x00e7, 0x00ea, 0x00eb, 0x00e8, 0x00ef,
                          0x00ee, 0x00ec, 0x00c4, 0x00c5, 0x00c9, 0x00e6,
@@ -127,7 +127,7 @@ public abstract class ZipEncodingHelper {
                          0x00b0, 0x00a8, 0x00b7, 0x00b9, 0x00b3, 0x00b2,
                          0x25a0, 0x00a0 };
 
-        SimpleEncodingHolder cp850 = new SimpleEncodingHolder(cp850_high_chars);
+        final SimpleEncodingHolder cp850 = new SimpleEncodingHolder(cp850_high_chars);
 
         se.put("CP850", cp850);
         se.put("Cp850", cp850);
@@ -149,12 +149,12 @@ public abstract class ZipEncodingHelper {
      *         of <code>r</code>.
      *
      */
-    static ByteBuffer growBuffer(ByteBuffer b, int newCapacity) {
+    static ByteBuffer growBuffer(final ByteBuffer b, final int newCapacity) {
         b.limit(b.position());
         b.rewind();
 
-        int c2 = b.capacity() * 2;
-        ByteBuffer on = ByteBuffer.allocate(c2 < newCapacity ? newCapacity : c2);
+        final int c2 = b.capacity() * 2;
+        final ByteBuffer on = ByteBuffer.allocate(c2 < newCapacity ? newCapacity : c2);
 
         on.put(b);
         return on;
@@ -178,7 +178,7 @@ public abstract class ZipEncodingHelper {
      * @param bb The byte buffer to write to.
      * @param c The character to write.
      */
-    static void appendSurrogate(ByteBuffer bb, char c) {
+    static void appendSurrogate(final ByteBuffer bb, final char c) {
 
         bb.put((byte) '%');
         bb.put((byte) 'U');
@@ -207,7 +207,7 @@ public abstract class ZipEncodingHelper {
      *             the platform's default encoding.
      * @return A zip encoding for the given encoding name.
      */
-    public static ZipEncoding getZipEncoding(String name) {
+    public static ZipEncoding getZipEncoding(final String name) {
  
         // fallback encoding is good enough for UTF-8.
         if (isUTF8(name)) {
@@ -218,7 +218,7 @@ public abstract class ZipEncodingHelper {
             return new FallbackZipEncoding();
         }
 
-        SimpleEncodingHolder h = simpleEncodings.get(name);
+        final SimpleEncodingHolder h = simpleEncodings.get(name);
 
         if (h!=null) {
             return h.getEncoding();
@@ -226,10 +226,10 @@ public abstract class ZipEncodingHelper {
 
         try {
 
-            Charset cs = Charset.forName(name);
+            final Charset cs = Charset.forName(name);
             return new NioZipEncoding(cs);
 
-        } catch (UnsupportedCharsetException e) {
+        } catch (final UnsupportedCharsetException e) {
             return new FallbackZipEncoding(name);
         }
     }
@@ -248,7 +248,7 @@ public abstract class ZipEncodingHelper {
         if (Charsets.UTF_8.name().equalsIgnoreCase(charsetName)) {
             return true;
         }
-        for (String alias : Charsets.UTF_8.aliases()) {
+        for (final String alias : Charsets.UTF_8.aliases()) {
             if (alias.equalsIgnoreCase(charsetName)) {
                 return true;
             }

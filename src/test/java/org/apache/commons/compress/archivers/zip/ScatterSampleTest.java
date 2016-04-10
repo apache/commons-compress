@@ -34,35 +34,36 @@ public class ScatterSampleTest {
 
     @Test
     public void testSample() throws Exception {
-        File result = File.createTempFile("testSample", "fe");
+        final File result = File.createTempFile("testSample", "fe");
 
         createFile(result);
         checkFile(result);
     }
 
-    private void createFile(File result) throws IOException, ExecutionException, InterruptedException {
-        ScatterSample scatterSample = new ScatterSample();
-        ZipArchiveEntry archiveEntry = new ZipArchiveEntry("test1.xml");
+    private void createFile(final File result) throws IOException, ExecutionException, InterruptedException {
+        final ScatterSample scatterSample = new ScatterSample();
+        final ZipArchiveEntry archiveEntry = new ZipArchiveEntry("test1.xml");
         archiveEntry.setMethod(ZipEntry.DEFLATED);
-        InputStreamSupplier supp = new InputStreamSupplier() {
+        final InputStreamSupplier supp = new InputStreamSupplier() {
+            @Override
             public InputStream get() {
                 return new ByteArrayInputStream("Hello".getBytes());
             }
         };
 
         scatterSample.addEntry(archiveEntry, supp);
-        ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(result);
+        final ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(result);
         scatterSample.writeTo(zipArchiveOutputStream);
         zipArchiveOutputStream.close();
     }
 
-    private void checkFile(File result) throws IOException {
-        ZipFile zf = new ZipFile(result);
-        ZipArchiveEntry archiveEntry1 = zf.getEntries().nextElement();
+    private void checkFile(final File result) throws IOException {
+        final ZipFile zf = new ZipFile(result);
+        final ZipArchiveEntry archiveEntry1 = zf.getEntries().nextElement();
         assertEquals( "test1.xml", archiveEntry1.getName());
-        InputStream inputStream = zf.getInputStream(archiveEntry1);
-        byte[] b = new byte[6];
-        int i = IOUtils.readFully(inputStream, b);
+        final InputStream inputStream = zf.getInputStream(archiveEntry1);
+        final byte[] b = new byte[6];
+        final int i = IOUtils.readFully(inputStream, b);
         assertEquals(5, i);
         assertEquals('H', b[0]);
         assertEquals('o', b[4]);

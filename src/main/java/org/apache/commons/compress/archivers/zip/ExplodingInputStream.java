@@ -70,7 +70,7 @@ class ExplodingInputStream extends InputStream {
      * @param numberOfTrees  the number of trees (2 or 3)
      * @param in             the compressed data stream
      */
-    public ExplodingInputStream(int dictionarySize, int numberOfTrees, InputStream in) {
+    public ExplodingInputStream(final int dictionarySize, final int numberOfTrees, final InputStream in) {
         if (dictionarySize != 4096 && dictionarySize != 8192) {
             throw new IllegalArgumentException("The dictionary size must be 4096 or 8192");
         }
@@ -117,7 +117,7 @@ class ExplodingInputStream extends InputStream {
     private void fillBuffer() throws IOException {
         init();
         
-        int bit = bits.nextBit();
+        final int bit = bits.nextBit();
         if (bit == 1) {
             // literal value
             int literal;
@@ -136,14 +136,14 @@ class ExplodingInputStream extends InputStream {
 
         } else if (bit == 0) {
             // back reference
-            int distanceLowSize = dictionarySize == 4096 ? 6 : 7;
-            int distanceLow = (int) bits.nextBits(distanceLowSize);
-            int distanceHigh = distanceTree.read(bits);
+            final int distanceLowSize = dictionarySize == 4096 ? 6 : 7;
+            final int distanceLow = (int) bits.nextBits(distanceLowSize);
+            final int distanceHigh = distanceTree.read(bits);
             if (distanceHigh == -1 && distanceLow <= 0) {
                 // end of stream reached, nothing left to decode
                 return;
             }
-            int distance = distanceHigh << distanceLowSize | distanceLow;
+            final int distance = distanceHigh << distanceLowSize | distanceLow;
             
             int length = lengthTree.read(bits);
             if (length == 63) {

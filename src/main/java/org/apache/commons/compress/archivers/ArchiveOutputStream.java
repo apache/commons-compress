@@ -104,7 +104,7 @@ public abstract class ArchiveOutputStream extends OutputStream {
      * @throws IOException on error
      */
     @Override
-    public void write(int b) throws IOException {
+    public void write(final int b) throws IOException {
         oneByte[0] = (byte) (b & BYTE_MASK);
         write(oneByte, 0, 1);
     }
@@ -115,7 +115,7 @@ public abstract class ArchiveOutputStream extends OutputStream {
      * 
      * @param written the number of bytes written
      */
-    protected void count(int written) {
+    protected void count(final int written) {
         count((long) written);
     }
 
@@ -126,7 +126,7 @@ public abstract class ArchiveOutputStream extends OutputStream {
      * @param written the number of bytes written
      * @since 1.1
      */
-    protected void count(long written) {
+    protected void count(final long written) {
         if (written != -1) {
             bytesWritten = bytesWritten + written;
         }
@@ -163,7 +163,7 @@ public abstract class ArchiveOutputStream extends OutputStream {
      * @return This implementation always returns true.
      * @since 1.1
      */
-    public boolean canWriteEntryData(ArchiveEntry archiveEntry) {
+    public boolean canWriteEntryData(final ArchiveEntry archiveEntry) {
         return true;
     }
 }

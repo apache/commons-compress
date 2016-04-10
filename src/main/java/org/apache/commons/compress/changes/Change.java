@@ -46,7 +46,7 @@ class Change {
      * from the stream as argument.
      * @param pFilename the filename of the file to delete
      */
-    Change(final String pFilename, int type) {
+    Change(final String pFilename, final int type) {
         if(pFilename == null) {
             throw new NullPointerException();
         }
@@ -63,7 +63,7 @@ class Change {
      * @param pEntry the entry details
      * @param pInput the InputStream for the entry data
      */
-    Change(final ArchiveEntry pEntry, final InputStream pInput, boolean replace) {
+    Change(final ArchiveEntry pEntry, final InputStream pInput, final boolean replace) {
         if(pEntry == null || pInput == null) {
             throw new NullPointerException();
         }

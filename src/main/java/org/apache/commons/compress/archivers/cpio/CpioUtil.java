@@ -28,7 +28,7 @@ class CpioUtil {
     /**
      * Extracts the file type bits from a mode.
      */
-    static long fileType(long mode) {
+    static long fileType(final long mode) {
         return mode & CpioConstants.S_IFMT;
     }
 
@@ -50,7 +50,7 @@ class CpioUtil {
 
         long ret = 0;
         int pos = 0;
-        byte tmp_number[] = new byte[number.length];
+        final byte tmp_number[] = new byte[number.length];
         System.arraycopy(number, 0, tmp_number, 0, number.length);
 
         if (!swapHalfWord) {
@@ -86,7 +86,7 @@ class CpioUtil {
      */
     static byte[] long2byteArray(final long number, final int length,
             final boolean swapHalfWord) {
-        byte[] ret = new byte[length];
+        final byte[] ret = new byte[length];
         int pos = 0;
         long tmp_number = 0;
 

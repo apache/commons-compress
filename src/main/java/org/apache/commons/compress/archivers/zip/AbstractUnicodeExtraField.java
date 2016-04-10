@@ -48,14 +48,14 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
      * @param len The length of the encoded filename or commentin
      * <code>bytes</code>.
      */
-    protected AbstractUnicodeExtraField(String text, byte[] bytes, int off, int len) {
-        CRC32 crc32 = new CRC32();
+    protected AbstractUnicodeExtraField(final String text, final byte[] bytes, final int off, final int len) {
+        final CRC32 crc32 = new CRC32();
         crc32.update(bytes, off, len);
         nameCRC32 = crc32.getValue();
 
         try {
             unicodeName = text.getBytes(CharsetNames.UTF_8);
-        } catch (UnsupportedEncodingException e) {
+        } catch (final UnsupportedEncodingException e) {
             throw new RuntimeException("FATAL: UTF-8 encoding not supported.", e);
         }
     }
@@ -68,7 +68,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
      * @param bytes The encoded of the filename or comment in the zip
      * file.
      */
-    protected AbstractUnicodeExtraField(String text, byte[] bytes) {
+    protected AbstractUnicodeExtraField(final String text, final byte[] bytes) {
         this(text, bytes, 0, bytes.length);
     }
 
@@ -96,7 +96,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
      * @param nameCRC32 The CRC32 checksum of the filename as encoded
      *         in the central directory of the zip file to set.
      */
-    public void setNameCRC32(long nameCRC32) {
+    public void setNameCRC32(final long nameCRC32) {
         this.nameCRC32 = nameCRC32;
         data = null;
     }
@@ -116,7 +116,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
     /**
      * @param unicodeName The UTF-8 encoded name to set.
      */
-    public void setUnicodeName(byte[] unicodeName) {
+    public void setUnicodeName(final byte[] unicodeName) {
         if (unicodeName != null) {
             this.unicodeName = new byte[unicodeName.length];
             System.arraycopy(unicodeName, 0, this.unicodeName, 0,
@@ -127,6 +127,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
         data = null;
     }
 
+    @Override
     public byte[] getCentralDirectoryData() {
         if (data == null) {
             this.assembleData();
@@ -139,6 +140,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
         return b;
     }
 
+    @Override
     public ZipShort getCentralDirectoryLength() {
         if (data == null) {
             assembleData();
@@ -146,22 +148,25 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
         return new ZipShort(data != null ? data.length : 0);
     }
 
+    @Override
     public byte[] getLocalFileDataData() {
         return getCentralDirectoryData();
     }
 
+    @Override
     public ZipShort getLocalFileDataLength() {
         return getCentralDirectoryLength();
     }
 
-    public void parseFromLocalFileData(byte[] buffer, int offset, int length)
+    @Override
+    public void parseFromLocalFileData(final byte[] buffer, final int offset, final int length)
         throws ZipException {
 
         if (length < 5) {
             throw new ZipException("UniCode path extra data must have at least 5 bytes.");
         }
 
-        int version = buffer[offset];
+        final int version = buffer[offset];
 
         if (version != 0x01) {
             throw new ZipException("Unsupported version [" + version
@@ -178,8 +183,9 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
      * Doesn't do anything special since this class always uses the
      * same data in central directory and local file data.
      */
-    public void parseFromCentralDirectoryData(byte[] buffer, int offset,
-                                              int length)
+    @Override
+    public void parseFromCentralDirectoryData(final byte[] buffer, final int offset,
+                                              final int length)
         throws ZipException {
         parseFromLocalFileData(buffer, offset, length);
     }

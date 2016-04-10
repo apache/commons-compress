@@ -24,7 +24,7 @@ import org.junit.Test;
 public class XZCompressorInputStreamTest {
     @Test
     public void redundantTestOfAlmostDeprecatedMatchesMethod() {
-        byte[] data = {
+        final byte[] data = {
             (byte) 0xFD, '7', 'z', 'X', 'Z', '\0'
         };
         Assert.assertFalse(XZCompressorInputStream.matches(data, 5));

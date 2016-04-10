@@ -40,14 +40,14 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
 
     @Test
     public void testFinish() throws Exception {
-        OutputStream out1 = new ByteArrayOutputStream();
+        final OutputStream out1 = new ByteArrayOutputStream();
 
         ArchiveOutputStream aos1 = factory.createArchiveOutputStream("zip", out1);
         aos1.putArchiveEntry(new ZipArchiveEntry("dummy"));
         try {
             aos1.finish();
             fail("After putArchive should follow closeArchive");
-        } catch (IOException io) {
+        } catch (final IOException io) {
             // Exception expected
         }
 
@@ -56,7 +56,7 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
         try {
             aos1.finish();
             fail("After putArchive should follow closeArchive");
-        } catch (IOException io) {
+        } catch (final IOException io) {
             // Exception expected
         }
 
@@ -65,7 +65,7 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
         try {
             aos1.finish();
             fail("After putArchive should follow closeArchive");
-        } catch (IOException io) {
+        } catch (final IOException io) {
             // Exception expected
         }
 
@@ -74,7 +74,7 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
         try {
             aos1.finish();
             fail("After putArchive should follow closeArchive");
-        } catch (IOException io) {
+        } catch (final IOException io) {
             // Exception expected
         }
 
@@ -83,14 +83,14 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
         try {
             aos1.finish();
             fail("After putArchive should follow closeArchive");
-        } catch (IOException io) {
+        } catch (final IOException io) {
             // Exception expected
         }
     }
 
     @Test
     public void testOptionalFinish() throws Exception {
-        OutputStream out1 = new ByteArrayOutputStream();
+        final OutputStream out1 = new ByteArrayOutputStream();
 
         ArchiveOutputStream aos1 = factory.createArchiveOutputStream("zip", out1);
         aos1.putArchiveEntry(new ZipArchiveEntry("dummy"));
@@ -104,7 +104,7 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
         try {
             aos1.finish();
             fail("finish() cannot follow close()");
-        } catch (IOException io) {
+        } catch (final IOException io) {
             // Exception expected
         }
     }
@@ -134,9 +134,9 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
         doCallSequence("Zip");
     }
 
-    private void doCallSequence(String archiveType) throws Exception {
-        OutputStream out1 = new ByteArrayOutputStream();
-        File dummy = getFile("test1.xml"); // need a real file
+    private void doCallSequence(final String archiveType) throws Exception {
+        final OutputStream out1 = new ByteArrayOutputStream();
+        final File dummy = getFile("test1.xml"); // need a real file
 
         ArchiveOutputStream aos1;
         aos1 = factory.createArchiveOutputStream(archiveType, out1);
@@ -153,7 +153,7 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
         try {
             aos1.closeArchiveEntry();
             fail("Should have raised IOException - closeArchiveEntry() called before putArchiveEntry()");
-        } catch (IOException expected) {
+        } catch (final IOException expected) {
         }
 
         aos1.putArchiveEntry(aos1.createArchiveEntry(dummy, "dummy"));
@@ -166,25 +166,25 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
         try {
             aos1.finish();
             fail("Should have raised IOException - finish() called before closeArchiveEntry()");
-        } catch (IOException expected) {
+        } catch (final IOException expected) {
         }
         try {
             aos1.close();
             fail("Should have raised IOException - close() called before closeArchiveEntry()");
-        } catch (IOException expected) {
+        } catch (final IOException expected) {
         }
         aos1.closeArchiveEntry();
         try {
             aos1.closeArchiveEntry();
             fail("Should have raised IOException - closeArchiveEntry() called with no open entry");
-        } catch (IOException expected) {
+        } catch (final IOException expected) {
         }
         aos1.finish();
         aos1.close();
         try {
             aos1.finish();
             fail("Should have raised IOException - finish() called after close()");
-        } catch (IOException expected) {
+        } catch (final IOException expected) {
         }
     }
 }

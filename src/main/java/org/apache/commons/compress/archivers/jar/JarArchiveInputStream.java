@@ -53,7 +53,7 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
     }
 
     public JarArchiveEntry getNextJarEntry() throws IOException {
-        ZipArchiveEntry entry = getNextZipEntry();
+        final ZipArchiveEntry entry = getNextZipEntry();
         return entry == null ? null : new JarArchiveEntry(entry);
     }
 
@@ -72,7 +72,7 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
      *            the number of bytes to check
      * @return true, if this stream is a jar archive stream, false otherwise
      */
-    public static boolean matches(byte[] signature, int length ) {
+    public static boolean matches(final byte[] signature, final int length ) {
         return ZipArchiveInputStream.matches(signature, length);
     }
 }

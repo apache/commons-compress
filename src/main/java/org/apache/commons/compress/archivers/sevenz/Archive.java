@@ -45,11 +45,11 @@ class Archive {
             + " files and " + streamMap;
     }
 
-    private static String lengthOf(long[] a) {
+    private static String lengthOf(final long[] a) {
         return a == null ? "(null)" : String.valueOf(a.length); 
     }
 
-    private static String lengthOf(Object[] a) {
+    private static String lengthOf(final Object[] a) {
         return a == null ? "(null)" : String.valueOf(a.length); 
     }
 }

@@ -33,8 +33,8 @@ public class ZipLongTest {
      */
     @Test
     public void testToBytes() {
-        ZipLong zl = new ZipLong(0x12345678);
-        byte[] result = zl.getBytes();
+        final ZipLong zl = new ZipLong(0x12345678);
+        final byte[] result = zl.getBytes();
         assertEquals("length getBytes", 4, result.length);
         assertEquals("first byte getBytes", 0x78, result[0]);
         assertEquals("second byte getBytes", 0x56, result[1]);
@@ -47,7 +47,7 @@ public class ZipLongTest {
      */
     @Test
     public void testPut() {
-        byte[] arr = new byte[5];
+        final byte[] arr = new byte[5];
         ZipLong.putLong(0x12345678, arr, 1);
         assertEquals("first byte getBytes", 0x78, arr[1]);
         assertEquals("second byte getBytes", 0x56, arr[2]);
@@ -60,8 +60,8 @@ public class ZipLongTest {
      */
     @Test
     public void testFromBytes() {
-        byte[] val = new byte[] {0x78, 0x56, 0x34, 0x12};
-        ZipLong zl = new ZipLong(val);
+        final byte[] val = new byte[] {0x78, 0x56, 0x34, 0x12};
+        final ZipLong zl = new ZipLong(val);
         assertEquals("value from bytes", 0x12345678, zl.getValue());
     }
 
@@ -70,9 +70,9 @@ public class ZipLongTest {
      */
     @Test
     public void testEquals() {
-        ZipLong zl = new ZipLong(0x12345678);
-        ZipLong zl2 = new ZipLong(0x12345678);
-        ZipLong zl3 = new ZipLong(0x87654321);
+        final ZipLong zl = new ZipLong(0x12345678);
+        final ZipLong zl2 = new ZipLong(0x12345678);
+        final ZipLong zl3 = new ZipLong(0x87654321);
 
         assertTrue("reflexive", zl.equals(zl));
 
@@ -90,14 +90,14 @@ public class ZipLongTest {
      */
     @Test
     public void testSign() {
-        ZipLong zl = new ZipLong(new byte[] {(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF});
+        final ZipLong zl = new ZipLong(new byte[] {(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF});
         assertEquals(0x00000000FFFFFFFFl, zl.getValue());
     }
 
     @Test
     public void testClone() {
-        ZipLong s1 = new ZipLong(42);
-        ZipLong s2 = (ZipLong) s1.clone();
+        final ZipLong s1 = new ZipLong(42);
+        final ZipLong s2 = (ZipLong) s1.clone();
         assertNotSame(s1, s2);
         assertEquals(s1, s2);
         assertEquals(s1.getValue(), s2.getValue());

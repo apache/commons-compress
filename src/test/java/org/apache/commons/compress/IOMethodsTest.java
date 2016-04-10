@@ -54,32 +54,32 @@ public class IOMethodsTest extends AbstractTestCase {
 
     @Test
     public void testWriteAr() throws Exception {
-        ArchiveEntry entry = new ArArchiveEntry("dummy", bytesToTest);
+        final ArchiveEntry entry = new ArArchiveEntry("dummy", bytesToTest);
         compareWrites("ar", entry);
     }
 
     @Test
     public void testWriteCpio() throws Exception {
-        ArchiveEntry entry = new CpioArchiveEntry("dummy", bytesToTest);
+        final ArchiveEntry entry = new CpioArchiveEntry("dummy", bytesToTest);
         compareWrites("cpio", entry);
     }
 
     @Test
     public void testWriteJar() throws Exception {
-        ArchiveEntry entry = new JarArchiveEntry("dummy");
+        final ArchiveEntry entry = new JarArchiveEntry("dummy");
         compareWrites("jar", entry);
     }
 
     @Test
     public void testWriteTar() throws Exception {
-        TarArchiveEntry entry = new TarArchiveEntry("dummy");
+        final TarArchiveEntry entry = new TarArchiveEntry("dummy");
         entry.setSize(bytesToTest);
         compareWrites("tar", entry);
     }
 
     @Test
     public void testWriteZip() throws Exception {
-        ArchiveEntry entry = new ZipArchiveEntry("dummy");
+        final ArchiveEntry entry = new ZipArchiveEntry("dummy");
         compareWrites("zip", entry);
     }
 
@@ -108,17 +108,17 @@ public class IOMethodsTest extends AbstractTestCase {
         compareReads("zip");
     }
 
-    private void compareWrites(String archiverName, ArchiveEntry entry) throws Exception {
-        OutputStream out1 = new ByteArrayOutputStream();
-        OutputStream out2 = new ByteArrayOutputStream();
-        OutputStream out3 = new ByteArrayOutputStream();
-        ArchiveOutputStream aos1 = factory.createArchiveOutputStream(archiverName, out1);
+    private void compareWrites(final String archiverName, final ArchiveEntry entry) throws Exception {
+        final OutputStream out1 = new ByteArrayOutputStream();
+        final OutputStream out2 = new ByteArrayOutputStream();
+        final OutputStream out3 = new ByteArrayOutputStream();
+        final ArchiveOutputStream aos1 = factory.createArchiveOutputStream(archiverName, out1);
         aos1.putArchiveEntry(entry);
-        ArchiveOutputStream aos2 = factory.createArchiveOutputStream(archiverName, out2);
+        final ArchiveOutputStream aos2 = factory.createArchiveOutputStream(archiverName, out2);
         aos2.putArchiveEntry(entry);
-        ArchiveOutputStream aos3 = factory.createArchiveOutputStream(archiverName, out3);
+        final ArchiveOutputStream aos3 = factory.createArchiveOutputStream(archiverName, out3);
         aos3.putArchiveEntry(entry);
-        for (byte element : byteTest) {
+        for (final byte element : byteTest) {
             aos1.write(element);
         }
         aos1.closeArchiveEntry();
@@ -139,32 +139,32 @@ public class IOMethodsTest extends AbstractTestCase {
         assertEquals("out1!=out3",out1.toString(),out3.toString());
     }
 
-    private void compareReads(String archiverName) throws Exception {
-        OutputStream out1 = new ByteArrayOutputStream();
-        OutputStream out2 = new ByteArrayOutputStream();
-        OutputStream out3 = new ByteArrayOutputStream();
-        File file = createSingleEntryArchive(archiverName);
+    private void compareReads(final String archiverName) throws Exception {
+        final OutputStream out1 = new ByteArrayOutputStream();
+        final OutputStream out2 = new ByteArrayOutputStream();
+        final OutputStream out3 = new ByteArrayOutputStream();
+        final File file = createSingleEntryArchive(archiverName);
         file.deleteOnExit();
 
-        InputStream is1 = new FileInputStream(file);
-        ArchiveInputStream ais1 = factory.createArchiveInputStream(archiverName, is1);
+        final InputStream is1 = new FileInputStream(file);
+        final ArchiveInputStream ais1 = factory.createArchiveInputStream(archiverName, is1);
         final ArchiveEntry nextEntry = ais1.getNextEntry();
         assertNotNull(nextEntry);
 
-        byte [] buff = new byte[10]; // small so multiple reads are needed;
-        long size = nextEntry.getSize();
+        final byte [] buff = new byte[10]; // small so multiple reads are needed;
+        final long size = nextEntry.getSize();
         if (size != ArchiveEntry.SIZE_UNKNOWN) {
             assertTrue("Size should be > 0, found: "+size, size > 0);
         }
 
-        InputStream is2 = new FileInputStream(file);
-        ArchiveInputStream ais2 = factory.createArchiveInputStream(archiverName, is2);
+        final InputStream is2 = new FileInputStream(file);
+        final ArchiveInputStream ais2 = factory.createArchiveInputStream(archiverName, is2);
         final ArchiveEntry nextEntry2 = ais2.getNextEntry();
         assertNotNull(nextEntry2);
         assertEquals("Expected same entry size", size, nextEntry2.getSize());
 
-        InputStream is3 = new FileInputStream(file);
-        ArchiveInputStream ais3 = factory.createArchiveInputStream(archiverName, is3);
+        final InputStream is3 = new FileInputStream(file);
+        final ArchiveInputStream ais3 = factory.createArchiveInputStream(archiverName, is3);
         final ArchiveEntry nextEntry3 = ais3.getNextEntry();
         assertNotNull(nextEntry3);
         assertEquals("Expected same entry size", size, nextEntry3.getSize());

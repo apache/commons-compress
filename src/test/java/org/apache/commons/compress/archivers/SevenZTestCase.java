@@ -52,7 +52,7 @@ public class SevenZTestCase extends AbstractTestCase {
         testSevenZArchiveCreation(SevenZMethod.DEFLATE);
     }
     
-    private void testSevenZArchiveCreation(SevenZMethod method) throws Exception {
+    private void testSevenZArchiveCreation(final SevenZMethod method) throws Exception {
         final File output = new File(dir, "bla.7z");
         final File file1 = getFile("test1.xml");
         final File file2 = getFile("test2.xml");

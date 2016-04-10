@@ -39,7 +39,7 @@ class CircularBuffer {
     /** Index of the next data written in the buffer */
     private int writeIndex;
 
-    CircularBuffer(int size) {
+    CircularBuffer(final int size) {
         this.size = size;
         buffer = new byte[size];
     }
@@ -54,7 +54,7 @@ class CircularBuffer {
     /**
      * Writes a byte to the buffer.
      */
-    public void put(int value) {
+    public void put(final int value) {
         buffer[writeIndex] = (byte) value;
         writeIndex = (writeIndex + 1) % size;
     }
@@ -64,12 +64,11 @@ class CircularBuffer {
      */
     public int get() {
         if (available()) {
-            int value = buffer[readIndex];
+            final int value = buffer[readIndex];
             readIndex = (readIndex + 1) % size;
             return value & 0xFF;
-        } else {
-            return -1;
         }
+        return -1;
     }
 
     /**
@@ -78,9 +77,9 @@ class CircularBuffer {
      * @param distance the distance from the current write position
      * @param length   the number of bytes to copy
      */
-    public void copy(int distance, int length) {
-        int pos1 = writeIndex - distance;
-        int pos2 = pos1 + length;
+    public void copy(final int distance, final int length) {
+        final int pos1 = writeIndex - distance;
+        final int pos2 = pos1 + length;
         for (int i = pos1; i < pos2; i++) {
             buffer[writeIndex] = buffer[(i + size) % size];
             writeIndex = (writeIndex + 1) % size;

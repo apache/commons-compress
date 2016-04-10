@@ -37,18 +37,18 @@ public class ZipUtilTest {
     @Before
     public void setUp() throws Exception {
         time = new Date();
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         cal.setTime(time);
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH) + 1;
-        long value =  ((year - 1980) << 25)
+        final int year = cal.get(Calendar.YEAR);
+        final int month = cal.get(Calendar.MONTH) + 1;
+        final long value =  ((year - 1980) << 25)
             |         (month << 21)
             |         (cal.get(Calendar.DAY_OF_MONTH) << 16)
             |         (cal.get(Calendar.HOUR_OF_DAY) << 11)
             |         (cal.get(Calendar.MINUTE) << 5)
             |         (cal.get(Calendar.SECOND) >> 1);
 
-        byte[] result = new byte[4];
+        final byte[] result = new byte[4];
         result[0] = (byte) ((value & 0xFF));
         result[1] = (byte) ((value & 0xFF00) >> 8);
         result[2] = (byte) ((value & 0xFF0000) >> 16);
@@ -58,7 +58,7 @@ public class ZipUtilTest {
 
     @Test
     public void testZipLong() throws Exception {
-        ZipLong test = ZipUtil.toDosTime(time);
+        final ZipLong test = ZipUtil.toDosTime(time);
         assertEquals(test.getValue(), zl.getValue());
     }
 
@@ -74,16 +74,16 @@ public class ZipUtilTest {
 
     @Test
     public void testMinTime(){
-        byte[] b1 = ZipUtil.toDosTime(0);
-        byte b10 = b1[0]; // Save the first byte
+        final byte[] b1 = ZipUtil.toDosTime(0);
+        final byte b10 = b1[0]; // Save the first byte
         b1[0]++; // change it
-        byte[] b2 = ZipUtil.toDosTime(0); // get the same time
+        final byte[] b2 = ZipUtil.toDosTime(0); // get the same time
         assertEquals(b10,b2[0]); // first byte should still be the same
     }
 
     @Test
     public void testOutsideCalendar(){
-        byte[] b1 = ZipUtil.toDosTime(160441200000L); // 1.1..1975
+        final byte[] b1 = ZipUtil.toDosTime(160441200000L); // 1.1..1975
         assertEquals(0, b1[0]);
         assertEquals(33, b1[1]);
         assertEquals(0, b1[2]);
@@ -92,9 +92,9 @@ public class ZipUtilTest {
 
     @Test
     public void testInsideCalendar(){
-        TimeZone tz = TimeZone.getDefault();
-        long date = 476096400000L; // 1.1.1985, 10:00 am GMT
-        byte[] b1 = ZipUtil.toDosTime(date - tz.getOffset(date));
+        final TimeZone tz = TimeZone.getDefault();
+        final long date = 476096400000L; // 1.1.1985, 10:00 am GMT
+        final byte[] b1 = ZipUtil.toDosTime(date - tz.getOffset(date));
         assertEquals(0, b1[0]);
         assertEquals(72, b1[1]);
         assertEquals(65, b1[2]);
@@ -103,7 +103,7 @@ public class ZipUtilTest {
 
     @Test
     public void testReverse() {
-        byte[][] bTest = new byte[6][];
+        final byte[][] bTest = new byte[6][];
         bTest[0] = new byte[]{};
         bTest[1] = new byte[]{1};
         bTest[2] = new byte[]{1, 2};
@@ -111,7 +111,7 @@ public class ZipUtilTest {
         bTest[4] = new byte[]{1, 2, 3, 4};
         bTest[5] = new byte[]{1, 2, 3, 4, 5};
 
-        byte[][] rTest = new byte[6][];
+        final byte[][] rTest = new byte[6][];
         rTest[0] = new byte[]{};
         rTest[1] = new byte[]{1};
         rTest[2] = new byte[]{2, 1};
@@ -122,7 +122,7 @@ public class ZipUtilTest {
         assertEquals("test and result arrays are same length", bTest.length, rTest.length);
 
         for (int i = 0; i < bTest.length; i++) {
-            byte[] result = ZipUtil.reverse(bTest[i]);
+            final byte[] result = ZipUtil.reverse(bTest[i]);
             assertTrue("reverse mutates in-place", bTest[i] == result);
             assertTrue("reverse actually reverses", Arrays.equals(rTest[i], result));
         }
@@ -130,45 +130,45 @@ public class ZipUtilTest {
 
     @Test
     public void testBigToLong() {
-        BigInteger big1 = BigInteger.valueOf(1);
-        BigInteger big2 = BigInteger.valueOf(Long.MAX_VALUE);
-        BigInteger big3 = BigInteger.valueOf(Long.MIN_VALUE);
+        final BigInteger big1 = BigInteger.valueOf(1);
+        final BigInteger big2 = BigInteger.valueOf(Long.MAX_VALUE);
+        final BigInteger big3 = BigInteger.valueOf(Long.MIN_VALUE);
 
         assertEquals(1L, ZipUtil.bigToLong(big1));
         assertEquals(Long.MAX_VALUE, ZipUtil.bigToLong(big2));
         assertEquals(Long.MIN_VALUE, ZipUtil.bigToLong(big3));
 
-        BigInteger big4 = big2.add(big1);
+        final BigInteger big4 = big2.add(big1);
         try {
             ZipUtil.bigToLong(big4);
             fail("Should have thrown IllegalArgumentException");
-        } catch (IllegalArgumentException iae) {
+        } catch (final IllegalArgumentException iae) {
             // All is good.
         }
 
-        BigInteger big5 = big3.subtract(big1);
+        final BigInteger big5 = big3.subtract(big1);
         try {
             ZipUtil.bigToLong(big5);
             fail("ZipUtil.bigToLong(BigInteger) should have thrown IllegalArgumentException");
-        } catch (IllegalArgumentException iae) {
+        } catch (final IllegalArgumentException iae) {
             // All is good.
         }
     }
 
     @Test
     public void testLongToBig() {
-        long l0 = 0;
-        long l1 = 1;
-        long l2 = -1;
-        long l3 = Integer.MIN_VALUE;
-        long l4 = Long.MAX_VALUE;
-        long l5 = Long.MIN_VALUE;
+        final long l0 = 0;
+        final long l1 = 1;
+        final long l2 = -1;
+        final long l3 = Integer.MIN_VALUE;
+        final long l4 = Long.MAX_VALUE;
+        final long l5 = Long.MIN_VALUE;
 
-        BigInteger big0 = ZipUtil.longToBig(l0);
-        BigInteger big1 = ZipUtil.longToBig(l1);
-        BigInteger big2 = ZipUtil.longToBig(l2);
-        BigInteger big3 = ZipUtil.longToBig(l3);
-        BigInteger big4 = ZipUtil.longToBig(l4);
+        final BigInteger big0 = ZipUtil.longToBig(l0);
+        final BigInteger big1 = ZipUtil.longToBig(l1);
+        final BigInteger big2 = ZipUtil.longToBig(l2);
+        final BigInteger big3 = ZipUtil.longToBig(l3);
+        final BigInteger big4 = ZipUtil.longToBig(l4);
 
         assertEquals(0, big0.longValue());
         assertEquals(1, big1.longValue());
@@ -179,7 +179,7 @@ public class ZipUtilTest {
         try {
             ZipUtil.longToBig(l5);
             fail("ZipUtil.longToBig(long) should have thrown IllegalArgumentException");
-        } catch (IllegalArgumentException iae) {
+        } catch (final IllegalArgumentException iae) {
 
         }
     }
@@ -189,7 +189,7 @@ public class ZipUtilTest {
         // Yay, we can completely test all possible input values in this case!
         int expectedVal = 128;
         for (int i = Byte.MIN_VALUE; i <= Byte.MAX_VALUE; i++) {
-            byte b = (byte) i;
+            final byte b = (byte) i;
             assertEquals(expectedVal, ZipUtil.signedByteToUnsignedInt(b));
             expectedVal++;
             if (expectedVal == 256) {
@@ -202,7 +202,7 @@ public class ZipUtilTest {
     public void testUnsignedIntToSignedByte() {
         int unsignedVal = 128;
         for (int i = Byte.MIN_VALUE; i <= Byte.MAX_VALUE; i++) {
-            byte expectedVal = (byte) i;
+            final byte expectedVal = (byte) i;
             assertEquals(expectedVal, ZipUtil.unsignedIntToSignedByte(unsignedVal));
             unsignedVal++;
             if (unsignedVal == 256) {
@@ -213,14 +213,14 @@ public class ZipUtilTest {
         try {
             ZipUtil.unsignedIntToSignedByte(-1);
             fail("ZipUtil.unsignedIntToSignedByte(-1) should have thrown IllegalArgumentException");
-        } catch (IllegalArgumentException iae) {
+        } catch (final IllegalArgumentException iae) {
             // All is good.
         }
 
         try {
             ZipUtil.unsignedIntToSignedByte(256);
             fail("ZipUtil.unsignedIntToSignedByte(256) should have thrown IllegalArgumentException");
-        } catch (IllegalArgumentException iae) {
+        } catch (final IllegalArgumentException iae) {
             // All is good.
         }
 

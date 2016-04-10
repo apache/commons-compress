@@ -142,13 +142,13 @@ public class Zip64SupportIT {
         }
     }
 
-    private static File write5GBZerosFile(String testName) throws Throwable {
-        File f = getTempFile(testName);
-        ZipArchiveOutputStream zos = new ZipArchiveOutputStream(f);
+    private static File write5GBZerosFile(final String testName) throws Throwable {
+        final File f = getTempFile(testName);
+        final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(f);
         try {
             zos.setUseZip64(Zip64Mode.Always);
-            byte[] buf = new byte[ONE_MILLION];
-            ZipArchiveEntry zae = new ZipArchiveEntry("5GB_of_Zeros");
+            final byte[] buf = new byte[ONE_MILLION];
+            final ZipArchiveEntry zae = new ZipArchiveEntry("5GB_of_Zeros");
             zae.setSize(FIVE_BILLION);
             zae.setMethod(ZipEntry.DEFLATED);
             zae.setCrc(0x8a408f16L);
@@ -158,7 +158,7 @@ public class Zip64SupportIT {
             }
             zos.closeArchiveEntry();
             zos.close();
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             System.err.println("Failed to write archive because of: "
                                + ex.getMessage()
                                + " - likely not enough disk space.");
@@ -204,13 +204,14 @@ public class Zip64SupportIT {
 
     private static ZipOutputTest write100KFiles(final Zip64Mode mode) {
         return new ZipOutputTest() {
-            public void test(File f, ZipArchiveOutputStream zos)
+            @Override
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 if (mode != Zip64Mode.AsNeeded) {
                     zos.setUseZip64(mode);
                 }
                 write100KFilesToStream(zos);
-                RandomAccessFile a = new RandomAccessFile(f, "r");
+                final RandomAccessFile a = new RandomAccessFile(f, "r");
                 try {
                     final long end = a.length();
 
@@ -219,7 +220,7 @@ public class Zip64SupportIT {
                     // value 0xFFFF as "number of entries".
                     a.seek(end
                            - 22 /* length of EOCD without file comment */);
-                    byte[] eocd = new byte[12];
+                    final byte[] eocd = new byte[12];
                     a.readFully(eocd);
                     assertArrayEquals(new byte[] {
                             // sig
@@ -235,13 +236,13 @@ public class Zip64SupportIT {
                     // locator" is right in front of the EOCD and
                     // the location of the "Zip64 end of central
                     // directory record" seems correct
-                    long expectedZ64EocdOffset = end - 22 /* eocd.length */
+                    final long expectedZ64EocdOffset = end - 22 /* eocd.length */
                         - 20 /* z64 eocd locator.length */
                         - 56 /* z64 eocd without extensible data sector */;
-                    byte[] loc =
+                    final byte[] loc =
                         ZipEightByteInteger.getBytes(expectedZ64EocdOffset);
                     a.seek(end - 22 - 20);
-                    byte[] z64EocdLoc = new byte[20];
+                    final byte[] z64EocdLoc = new byte[20];
                     a.readFully(z64EocdLoc);
                     assertArrayEquals(new byte[] {
                             // sig
@@ -260,7 +261,7 @@ public class Zip64SupportIT {
                     // known values are fine and read the location
                     // of the central directory from it
                     a.seek(expectedZ64EocdOffset);
-                    byte[] z64EocdStart = new byte[40];
+                    final byte[] z64EocdStart = new byte[40];
                     a.readFully(z64EocdStart);
                     assertArrayEquals(new byte[] {
                             // sig
@@ -282,14 +283,14 @@ public class Zip64SupportIT {
                             0, 0, 0, 0,
                         }, z64EocdStart);
                     a.seek(expectedZ64EocdOffset + 48 /* skip size */);
-                    byte[] cdOffset = new byte[8];
+                    final byte[] cdOffset = new byte[8];
                     a.readFully(cdOffset);
-                    long cdLoc = ZipEightByteInteger.getLongValue(cdOffset);
+                    final long cdLoc = ZipEightByteInteger.getLongValue(cdOffset);
 
                     // finally verify there really is a central
                     // directory entry where the Zip64 EOCD claims
                     a.seek(cdLoc);
-                    byte[] sig = new byte[4];
+                    final byte[] sig = new byte[4];
                     a.readFully(sig);
                     assertArrayEquals(new byte[] {
                             (byte) 0x50, (byte) 0x4b, 1, 2,
@@ -321,13 +322,14 @@ public class Zip64SupportIT {
 
     private static final ZipOutputTest write100KFilesModeNever =
         new ZipOutputTest() {
-            public void test(File f, ZipArchiveOutputStream zos)
+            @Override
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 zos.setUseZip64(Zip64Mode.Never);
                 try {
                     write100KFilesToStream(zos);
                     fail("expected a Zip64RequiredException");
-                } catch (Zip64RequiredException ex) {
+                } catch (final Zip64RequiredException ex) {
                     assertEquals(Zip64RequiredException.TOO_MANY_ENTRIES_MESSAGE,
                                  ex.getMessage());
                 }
@@ -348,8 +350,9 @@ public class Zip64SupportIT {
         throws Throwable {
         withTemporaryArchive("readSelfGenerated100KFilesUsingZipFile()",
                              new ZipOutputTest() {
-                                 public void test(File f,
-                                                  ZipArchiveOutputStream zos)
+                                 @Override
+                                public void test(final File f,
+                                                  final ZipArchiveOutputStream zos)
                                      throws IOException {
                                      write100KFilesToStream(zos);
                                      read100KFilesUsingZipFileImpl(f);
@@ -372,14 +375,15 @@ public class Zip64SupportIT {
     private static ZipOutputTest
         write3EntriesCreatingBigArchive(final Zip64Mode mode) {
         return new ZipOutputTest() {
-            public void test(File f, ZipArchiveOutputStream zos)
+            @Override
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 if (mode != Zip64Mode.AsNeeded) {
                     zos.setUseZip64(mode);
                 }
                 write3EntriesCreatingBigArchiveToStream(zos);
 
-                RandomAccessFile a = new RandomAccessFile(f, "r");
+                final RandomAccessFile a = new RandomAccessFile(f, "r");
                 try {
                     getLengthAndPositionAtCentralDirectory(a);
                     // skip first two entries
@@ -393,7 +397,7 @@ public class Zip64SupportIT {
                     // grab third entry, verify offset is
                     // 0xFFFFFFFF and it has a ZIP64 extended
                     // information extra field
-                    byte[] header = new byte[12];
+                    final byte[] header = new byte[12];
                     a.readFully(header);
                     assertArrayEquals(new byte[] {
                             // sig
@@ -409,7 +413,7 @@ public class Zip64SupportIT {
                         }, header);
                     // ignore timestamp, CRC, compressed size
                     a.skipBytes(12);
-                    byte[] rest = new byte[23];
+                    final byte[] rest = new byte[23];
                     a.readFully(rest);
                     assertArrayEquals(new byte[] {
                             // Original Size
@@ -431,7 +435,7 @@ public class Zip64SupportIT {
                             // file name
                             (byte) '2'
                         }, rest);
-                    byte[] extra = new byte[4];
+                    final byte[] extra = new byte[4];
                     a.readFully(extra);
                     assertArrayEquals(new byte[] {
                             // Header-ID
@@ -441,11 +445,11 @@ public class Zip64SupportIT {
                         }, extra);
 
                     // read offset of LFH
-                    byte[] offset = new byte[8];
+                    final byte[] offset = new byte[8];
                     a.readFully(offset);
                     // verify there is a LFH where the CD claims it
                     a.seek(ZipEightByteInteger.getLongValue(offset));
-                    byte[] sig = new byte[4];
+                    final byte[] sig = new byte[4];
                     a.readFully(sig);
                     assertArrayEquals(new byte[] {
                             (byte) 0x50, (byte) 0x4b, 3, 4,
@@ -485,13 +489,14 @@ public class Zip64SupportIT {
 
     private static final ZipOutputTest write3EntriesCreatingBigArchiveModeNever =
         new ZipOutputTest() {
-            public void test(File f, ZipArchiveOutputStream zos)
+            @Override
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 zos.setUseZip64(Zip64Mode.Never);
                 try {
                     write3EntriesCreatingBigArchiveToStream(zos);
                     fail("expected a Zip64RequiredException");
-                } catch (Zip64RequiredException ex) {
+                } catch (final Zip64RequiredException ex) {
                     assertEquals(Zip64RequiredException.ARCHIVE_TOO_BIG_MESSAGE,
                                  ex.getMessage());
                 }
@@ -516,18 +521,19 @@ public class Zip64SupportIT {
         throws Throwable {
         withTemporaryArchive("read3EntriesCreatingBigArchiveFileUsingZipFile",
                              new ZipOutputTest() {
-                                 public void test(File f,
-                                                  ZipArchiveOutputStream zos)
+                                 @Override
+                                public void test(final File f,
+                                                  final ZipArchiveOutputStream zos)
                                      throws IOException {
                                      write3EntriesCreatingBigArchiveToStream(zos);
                                      ZipFile zf = null;
                                      try {
                                          zf = new ZipFile(f);
                                          int idx = 0;
-                                         for (Enumeration<ZipArchiveEntry> e =
+                                         for (final Enumeration<ZipArchiveEntry> e =
                                                   zf.getEntriesInPhysicalOrder();
                                               e.hasMoreElements(); ) {
-                                             ZipArchiveEntry zae = e.nextElement();
+                                             final ZipArchiveEntry zae = e.nextElement();
                                              assertEquals(String.valueOf(idx),
                                                           zae.getName());
                                              if (idx++ < 2) {
@@ -536,7 +542,7 @@ public class Zip64SupportIT {
                                              } else {
                                                  assertEquals(1,
                                                               zae.getSize());
-                                                 InputStream i =
+                                                 final InputStream i =
                                                      zf.getInputStream(zae);
                                                  try {
                                                      assertNotNull(i);
@@ -570,13 +576,14 @@ public class Zip64SupportIT {
     private static ZipOutputTest writeBigStoredEntry(final boolean knownSize,
                                                      final Zip64Mode mode) {
         return new ZipOutputTest() {
-            public void test(File f, ZipArchiveOutputStream zos)
+            @Override
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 if (mode != Zip64Mode.AsNeeded) {
                     zos.setUseZip64(mode);
                 }
-                byte[] buf = new byte[ONE_MILLION];
-                ZipArchiveEntry zae = new ZipArchiveEntry("0");
+                final byte[] buf = new byte[ONE_MILLION];
+                final ZipArchiveEntry zae = new ZipArchiveEntry("0");
                 if (knownSize) {
                     zae.setSize(FIVE_BILLION);
                     zae.setCrc(0x5c316f50L);
@@ -589,7 +596,7 @@ public class Zip64SupportIT {
                 zos.closeArchiveEntry();
                 zos.close();
 
-                RandomAccessFile a = new RandomAccessFile(f, "r");
+                final RandomAccessFile a = new RandomAccessFile(f, "r");
                 try {
                     getLengthAndPositionAtCentralDirectory(a);
 
@@ -637,7 +644,7 @@ public class Zip64SupportIT {
                             // file name
                             (byte) '0'
                         }, rest);
-                    byte[] extra = new byte[20];
+                    final byte[] extra = new byte[20];
                     a.readFully(extra);
                     // 5e9 == 0x12A05F200
                     assertArrayEquals(new byte[] {
@@ -751,12 +758,13 @@ public class Zip64SupportIT {
     private static ZipOutputTest
         writeBigStoredEntryModeNever(final boolean knownSize) {
         return new ZipOutputTest() {
-            public void test(File f, ZipArchiveOutputStream zos)
+            @Override
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 zos.setUseZip64(Zip64Mode.Never);
                 try {
-                    byte[] buf = new byte[ONE_MILLION];
-                    ZipArchiveEntry zae = new ZipArchiveEntry("0");
+                    final byte[] buf = new byte[ONE_MILLION];
+                    final ZipArchiveEntry zae = new ZipArchiveEntry("0");
                     if (knownSize) {
                         zae.setSize(FIVE_BILLION);
                         zae.setCrc(0x5c316f50L);
@@ -768,7 +776,7 @@ public class Zip64SupportIT {
                     }
                     zos.closeArchiveEntry();
                     fail("expected a Zip64RequiredException");
-                } catch (Zip64RequiredException ex) {
+                } catch (final Zip64RequiredException ex) {
                     assertTrue(ex.getMessage().startsWith("0's size"));
                 }
             }
@@ -808,14 +816,15 @@ public class Zip64SupportIT {
         writeBigDeflatedEntryToStream(final boolean knownSize,
                                       final Zip64Mode mode) {
         return new ZipOutputTest() {
-            public void test(File f,
-                             ZipArchiveOutputStream zos)
+            @Override
+            public void test(final File f,
+                             final ZipArchiveOutputStream zos)
                 throws IOException {
                 if (mode != Zip64Mode.AsNeeded) {
                     zos.setUseZip64(mode);
                 }
-                byte[] buf = new byte[ONE_MILLION];
-                ZipArchiveEntry zae = new ZipArchiveEntry("0");
+                final byte[] buf = new byte[ONE_MILLION];
+                final ZipArchiveEntry zae = new ZipArchiveEntry("0");
                 if (knownSize) {
                     zae.setSize(FIVE_BILLION);
                 }
@@ -827,12 +836,12 @@ public class Zip64SupportIT {
                 zos.closeArchiveEntry();
                 zos.close();
 
-                RandomAccessFile a =
+                final RandomAccessFile a =
                     new RandomAccessFile(f, "r");
                 try {
                     getLengthAndPositionAtCentralDirectory(a);
 
-                    long cfhPos = a.getFilePointer();
+                    final long cfhPos = a.getFilePointer();
                     // grab first entry, verify
                     // sizes are 0xFFFFFFFF and
                     // it has a ZIP64 extended
@@ -878,7 +887,7 @@ public class Zip64SupportIT {
                             // file name
                             (byte) '0'
                         }, rest);
-                    byte[] extra = new byte[20];
+                    final byte[] extra = new byte[20];
                     a.readFully(extra);
                     // 5e9 == 0x12A05F200
                     assertArrayEquals(new byte[] {
@@ -994,14 +1003,15 @@ public class Zip64SupportIT {
     private static ZipOutputTest
         writeBigDeflatedEntryUnknownSizeToStream(final Zip64Mode mode) {
         return new ZipOutputTest() {
-            public void test(File f, ZipArchiveOutputStream zos)
+            @Override
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 try {
                     if (mode != Zip64Mode.AsNeeded) {
                         zos.setUseZip64(mode);
                     }
-                    byte[] buf = new byte[ONE_MILLION];
-                    ZipArchiveEntry zae = new ZipArchiveEntry("0");
+                    final byte[] buf = new byte[ONE_MILLION];
+                    final ZipArchiveEntry zae = new ZipArchiveEntry("0");
                     zae.setMethod(ZipEntry.DEFLATED);
                     zos.putArchiveEntry(zae);
                     for (int j = 0; j < FIVE_BILLION / 1000 / 1000; j++) {
@@ -1009,7 +1019,7 @@ public class Zip64SupportIT {
                     }
                     zos.closeArchiveEntry();
                     fail("expected a Zip64RequiredException");
-                } catch (Zip64RequiredException ex) {
+                } catch (final Zip64RequiredException ex) {
                     assertTrue(ex.getMessage().startsWith("0's size"));
                 }
             }
@@ -1050,13 +1060,14 @@ public class Zip64SupportIT {
         writeBigDeflatedEntryToFile(final boolean knownSize,
                                     final Zip64Mode mode) {
         return new ZipOutputTest() {
-            public void test(File f, ZipArchiveOutputStream zos)
+            @Override
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 if (mode != Zip64Mode.AsNeeded) {
                     zos.setUseZip64(mode);
                 }
-                byte[] buf = new byte[ONE_MILLION];
-                ZipArchiveEntry zae = new ZipArchiveEntry("0");
+                final byte[] buf = new byte[ONE_MILLION];
+                final ZipArchiveEntry zae = new ZipArchiveEntry("0");
                 if (knownSize) {
                     zae.setSize(FIVE_BILLION);
                 }
@@ -1070,7 +1081,7 @@ public class Zip64SupportIT {
                 zos.closeArchiveEntry();
                 zos.close();
 
-                RandomAccessFile a = new RandomAccessFile(f, "r");
+                final RandomAccessFile a = new RandomAccessFile(f, "r");
                 try {
                     getLengthAndPositionAtCentralDirectory(a);
 
@@ -1221,19 +1232,20 @@ public class Zip64SupportIT {
         throws Throwable {
         withTemporaryArchive("writeBigDeflatedEntryKnownSizeToStreamModeNever",
                              new ZipOutputTest() {
-                                 public void test(File f,
-                                                  ZipArchiveOutputStream zos)
+                                 @Override
+                                public void test(final File f,
+                                                  final ZipArchiveOutputStream zos)
                                      throws IOException {
                                      zos.setUseZip64(Zip64Mode.Never);
                                      try {
-                                         ZipArchiveEntry zae =
+                                         final ZipArchiveEntry zae =
                                              new ZipArchiveEntry("0");
                                          zae.setSize(FIVE_BILLION);
                                          zae.setMethod(ZipEntry.DEFLATED);
                                          zos.putArchiveEntry(zae);
                                          fail("expected a"
                                               + " Zip64RequiredException");
-                                     } catch (Zip64RequiredException ex) {
+                                     } catch (final Zip64RequiredException ex) {
                                          assertTrue(ex.getMessage()
                                                     .startsWith("0's size"));
                                      }
@@ -1254,12 +1266,13 @@ public class Zip64SupportIT {
     private static ZipOutputTest
         writeBigDeflatedEntryToFileModeNever(final boolean knownSize) {
         return new ZipOutputTest() {
-            public void test(File f, ZipArchiveOutputStream zos)
+            @Override
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 zos.setUseZip64(Zip64Mode.Never);
                 try {
-                    byte[] buf = new byte[ONE_MILLION];
-                    ZipArchiveEntry zae = new ZipArchiveEntry("0");
+                    final byte[] buf = new byte[ONE_MILLION];
+                    final ZipArchiveEntry zae = new ZipArchiveEntry("0");
                     if (knownSize) {
                         zae.setSize(FIVE_BILLION);
                     }
@@ -1272,7 +1285,7 @@ public class Zip64SupportIT {
                     }
                     zos.closeArchiveEntry();
                     fail("expected a Zip64RequiredException");
-                } catch (Zip64RequiredException ex) {
+                } catch (final Zip64RequiredException ex) {
                     assertTrue(ex.getMessage().startsWith("0's size"));
                 }
             }
@@ -1309,13 +1322,14 @@ public class Zip64SupportIT {
     private static ZipOutputTest writeSmallStoredEntry(final boolean knownSize,
                                                        final Zip64Mode mode) {
         return new ZipOutputTest() {
-            public void test(File f, ZipArchiveOutputStream zos)
+            @Override
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 if (mode != Zip64Mode.AsNeeded) {
                     zos.setUseZip64(mode);
                 }
-                byte[] buf = new byte[ONE_MILLION];
-                ZipArchiveEntry zae = new ZipArchiveEntry("0");
+                final byte[] buf = new byte[ONE_MILLION];
+                final ZipArchiveEntry zae = new ZipArchiveEntry("0");
                 if (knownSize) {
                     zae.setSize(ONE_MILLION);
                     zae.setCrc(0x1279CB9EL);
@@ -1326,7 +1340,7 @@ public class Zip64SupportIT {
                 zos.closeArchiveEntry();
                 zos.close();
 
-                RandomAccessFile a = new RandomAccessFile(f, "r");
+                final RandomAccessFile a = new RandomAccessFile(f, "r");
                 try {
                     getLengthAndPositionAtCentralDirectory(a);
 
@@ -1380,7 +1394,7 @@ public class Zip64SupportIT {
                     // has a ZIP64 extra field if and only if size was
                     // unknown and mode was not Never or the mode was
                     // Always (regardless of size)
-                    boolean hasExtra = mode == Zip64Mode.Always
+                    final boolean hasExtra = mode == Zip64Mode.Always
                         || (mode == Zip64Mode.AsNeeded && !knownSize);
                     a.seek(0);
                     header = new byte[10];
@@ -1415,7 +1429,7 @@ public class Zip64SupportIT {
                             (byte) '0'
                         }, rest);
                     if (hasExtra) {
-                        byte[] extra = new byte[20];
+                        final byte[] extra = new byte[20];
                         a.readFully(extra);
                         assertArrayEquals(new byte[] {
                                 // Header-ID
@@ -1487,11 +1501,12 @@ public class Zip64SupportIT {
     private static ZipOutputTest
         writeSmallStoredEntryModeAlways(final boolean knownSize) {
         return new ZipOutputTest() {
-            public void test(File f, ZipArchiveOutputStream zos)
+            @Override
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 zos.setUseZip64(Zip64Mode.Always);
-                byte[] buf = new byte[ONE_MILLION];
-                ZipArchiveEntry zae = new ZipArchiveEntry("0");
+                final byte[] buf = new byte[ONE_MILLION];
+                final ZipArchiveEntry zae = new ZipArchiveEntry("0");
                 if (knownSize) {
                     zae.setSize(ONE_MILLION);
                     zae.setCrc(0x1279CB9EL);
@@ -1502,7 +1517,7 @@ public class Zip64SupportIT {
                 zos.closeArchiveEntry();
                 zos.close();
 
-                RandomAccessFile a = new RandomAccessFile(f, "r");
+                final RandomAccessFile a = new RandomAccessFile(f, "r");
                 try {
                     getLengthAndPositionAtCentralDirectory(a);
 
@@ -1649,13 +1664,14 @@ public class Zip64SupportIT {
         writeSmallDeflatedEntryToStream(final boolean knownSize,
                                         final Zip64Mode mode) {
         return new ZipOutputTest() {
-            public void test(File f, ZipArchiveOutputStream zos)
+            @Override
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 if (mode != Zip64Mode.AsNeeded) {
                     zos.setUseZip64(mode);
                 }
-                byte[] buf = new byte[ONE_MILLION];
-                ZipArchiveEntry zae = new ZipArchiveEntry("0");
+                final byte[] buf = new byte[ONE_MILLION];
+                final ZipArchiveEntry zae = new ZipArchiveEntry("0");
                 if (knownSize) {
                     zae.setSize(ONE_MILLION);
                 }
@@ -1665,11 +1681,11 @@ public class Zip64SupportIT {
                 zos.closeArchiveEntry();
                 zos.close();
 
-                RandomAccessFile a = new RandomAccessFile(f, "r");
+                final RandomAccessFile a = new RandomAccessFile(f, "r");
                 try {
                     getLengthAndPositionAtCentralDirectory(a);
 
-                    long cfhPos = a.getFilePointer();
+                    final long cfhPos = a.getFilePointer();
                     // grab first entry, verify sizes are not
                     // 0xFFFFFFF and it has no ZIP64 extended
                     // information extra field
@@ -1689,7 +1705,7 @@ public class Zip64SupportIT {
                         }, header);
                     // ignore timestamp
                     a.skipBytes(4);
-                    byte[] crc = new byte[4];
+                    final byte[] crc = new byte[4];
                     a.readFully(crc);
                     assertArrayEquals(new byte[] {
                             (byte) 0x9E, (byte) 0xCB,
@@ -1821,11 +1837,12 @@ public class Zip64SupportIT {
     private static ZipOutputTest
         writeSmallDeflatedEntryToStreamModeAlways(final boolean knownSize) {
         return new ZipOutputTest() {
-            public void test(File f, ZipArchiveOutputStream zos)
+            @Override
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 zos.setUseZip64(Zip64Mode.Always);
-                byte[] buf = new byte[ONE_MILLION];
-                ZipArchiveEntry zae = new ZipArchiveEntry("0");
+                final byte[] buf = new byte[ONE_MILLION];
+                final ZipArchiveEntry zae = new ZipArchiveEntry("0");
                 if (knownSize) {
                     zae.setSize(ONE_MILLION);
                 }
@@ -1835,11 +1852,11 @@ public class Zip64SupportIT {
                 zos.closeArchiveEntry();
                 zos.close();
 
-                RandomAccessFile a = new RandomAccessFile(f, "r");
+                final RandomAccessFile a = new RandomAccessFile(f, "r");
                 try {
                     getLengthAndPositionAtCentralDirectory(a);
 
-                    long cfhPos = a.getFilePointer();
+                    final long cfhPos = a.getFilePointer();
                     // grab first entry, verify sizes are not
                     // 0xFFFFFFF and it has an empty ZIP64 extended
                     // information extra field
@@ -1859,7 +1876,7 @@ public class Zip64SupportIT {
                         }, header);
                     // ignore timestamp
                     a.skipBytes(4);
-                    byte[] crc = new byte[4];
+                    final byte[] crc = new byte[4];
                     a.readFully(crc);
                     assertArrayEquals(new byte[] {
                             (byte) 0x9E, (byte) 0xCB,
@@ -2003,13 +2020,14 @@ public class Zip64SupportIT {
         writeSmallDeflatedEntryToFile(final boolean knownSize,
                                       final Zip64Mode mode) {
         return new ZipOutputTest() {
-            public void test(File f, ZipArchiveOutputStream zos)
+            @Override
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 if (mode != Zip64Mode.AsNeeded) {
                     zos.setUseZip64(mode);
                 }
-                byte[] buf = new byte[ONE_MILLION];
-                ZipArchiveEntry zae = new ZipArchiveEntry("0");
+                final byte[] buf = new byte[ONE_MILLION];
+                final ZipArchiveEntry zae = new ZipArchiveEntry("0");
                 if (knownSize) {
                     zae.setSize(ONE_MILLION);
                 }
@@ -2019,7 +2037,7 @@ public class Zip64SupportIT {
                 zos.closeArchiveEntry();
                 zos.close();
 
-                RandomAccessFile a = new RandomAccessFile(f, "r");
+                final RandomAccessFile a = new RandomAccessFile(f, "r");
                 try {
                     getLengthAndPositionAtCentralDirectory(a);
 
@@ -2099,7 +2117,7 @@ public class Zip64SupportIT {
                     rest = new byte[9];
                     a.readFully(rest);
 
-                    boolean hasExtra = 
+                    final boolean hasExtra = 
                         mode == Zip64Mode.AsNeeded && !knownSize;
 
                     assertArrayEquals(new byte[] {
@@ -2113,7 +2131,7 @@ public class Zip64SupportIT {
                             (byte) '0'
                         }, rest);
                     if (hasExtra) {
-                        byte[] extra = new byte[12];
+                        final byte[] extra = new byte[12];
                         a.readFully(extra);
                         assertArrayEquals(new byte[] {
                                 // Header-ID
@@ -2177,11 +2195,12 @@ public class Zip64SupportIT {
     private static ZipOutputTest
         writeSmallDeflatedEntryToFileModeAlways(final boolean knownSize) {
         return new ZipOutputTest() {
-            public void test(File f, ZipArchiveOutputStream zos)
+            @Override
+            public void test(final File f, final ZipArchiveOutputStream zos)
                 throws IOException {
                 zos.setUseZip64(Zip64Mode.Always);
-                byte[] buf = new byte[ONE_MILLION];
-                ZipArchiveEntry zae = new ZipArchiveEntry("0");
+                final byte[] buf = new byte[ONE_MILLION];
+                final ZipArchiveEntry zae = new ZipArchiveEntry("0");
                 if (knownSize) {
                     zae.setSize(ONE_MILLION);
                 }
@@ -2191,7 +2210,7 @@ public class Zip64SupportIT {
                 zos.closeArchiveEntry();
                 zos.close();
 
-                RandomAccessFile a = new RandomAccessFile(f, "r");
+                final RandomAccessFile a = new RandomAccessFile(f, "r");
                 try {
                     getLengthAndPositionAtCentralDirectory(a);
 
@@ -2329,18 +2348,18 @@ public class Zip64SupportIT {
         void test(File f, ZipArchiveOutputStream zos) throws IOException;
     }
 
-    private static void withTemporaryArchive(String testName,
-                                             ZipOutputTest test,
-                                             boolean useRandomAccessFile)
+    private static void withTemporaryArchive(final String testName,
+                                             final ZipOutputTest test,
+                                             final boolean useRandomAccessFile)
         throws Throwable {
-        File f = getTempFile(testName);
+        final File f = getTempFile(testName);
         BufferedOutputStream os = null;
-        ZipArchiveOutputStream zos = useRandomAccessFile
+        final ZipArchiveOutputStream zos = useRandomAccessFile
             ? new ZipArchiveOutputStream(f)
             : new ZipArchiveOutputStream(os = new BufferedOutputStream(new FileOutputStream(f)));
         try {
             test.test(f, zos);
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             System.err.println("Failed to write archive because of: "
                                + ex.getMessage()
                                + " - likely not enough disk space.");
@@ -2401,15 +2420,15 @@ public class Zip64SupportIT {
         return getFile("100k_Files_PKZip.zip");
     }
 
-    private static File getTempFile(String testName) throws Throwable {
-        File f = File.createTempFile("commons-compress-" + testName, ".zip");
+    private static File getTempFile(final String testName) throws Throwable {
+        final File f = File.createTempFile("commons-compress-" + testName, ".zip");
         f.deleteOnExit();
         return f;
     }
 
-    private static void read5GBOfZerosImpl(File f, String expectedName)
+    private static void read5GBOfZerosImpl(final File f, final String expectedName)
         throws IOException {
-        FileInputStream fin = new FileInputStream(f);
+        final FileInputStream fin = new FileInputStream(f);
         ZipArchiveInputStream zin = null;
         try {
             zin = new ZipArchiveInputStream(fin);
@@ -2418,15 +2437,15 @@ public class Zip64SupportIT {
                 zae = zin.getNextZipEntry();
             }
             assertEquals(expectedName, zae.getName());
-            byte[] buf = new byte[1024 * 1024];
+            final byte[] buf = new byte[1024 * 1024];
             long read = 0;
-            Random r = new Random(System.currentTimeMillis());
+            final Random r = new Random(System.currentTimeMillis());
             int readNow;
             while ((readNow = zin.read(buf, 0, buf.length)) > 0) {
                 // testing all bytes for a value of 0 is going to take
                 // too long, just pick a few ones randomly
                 for (int i = 0; i < 1024; i++) {
-                    int idx = r.nextInt(readNow);
+                    final int idx = r.nextInt(readNow);
                     assertEquals("testing byte " + (read + idx), 0, buf[idx]);
                 }
                 read += readNow;
@@ -2442,13 +2461,13 @@ public class Zip64SupportIT {
         }
     }
 
-    private static void read5GBOfZerosUsingZipFileImpl(File f,
-                                                       String expectedName)
+    private static void read5GBOfZerosUsingZipFileImpl(final File f,
+                                                       final String expectedName)
         throws IOException {
         ZipFile zf = null;
         try {
             zf = new ZipFile(f);
-            Enumeration<ZipArchiveEntry> e = zf.getEntries();
+            final Enumeration<ZipArchiveEntry> e = zf.getEntries();
             assertTrue(e.hasMoreElements());
             ZipArchiveEntry zae = e.nextElement();
             while (zae.isDirectory()) {
@@ -2456,17 +2475,17 @@ public class Zip64SupportIT {
             }
             assertEquals(expectedName, zae.getName());
             assertEquals(FIVE_BILLION, zae.getSize());
-            byte[] buf = new byte[1024 * 1024];
+            final byte[] buf = new byte[1024 * 1024];
             long read = 0;
-            Random r = new Random(System.currentTimeMillis());
+            final Random r = new Random(System.currentTimeMillis());
             int readNow;
-            InputStream zin = zf.getInputStream(zae);
+            final InputStream zin = zf.getInputStream(zae);
             try {
                 while ((readNow = zin.read(buf, 0, buf.length)) > 0) {
                     // testing all bytes for a value of 0 is going to take
                     // too long, just pick a few ones randomly
                     for (int i = 0; i < 1024; i++) {
-                        int idx = r.nextInt(readNow);
+                        final int idx = r.nextInt(readNow);
                         assertEquals("testing byte " + (read + idx), 0, buf[idx]);
                     }
                     read += readNow;
@@ -2481,8 +2500,8 @@ public class Zip64SupportIT {
         }
     }
 
-    private static void read100KFilesImpl(File f) throws IOException {
-        FileInputStream fin = new FileInputStream(f);
+    private static void read100KFilesImpl(final File f) throws IOException {
+        final FileInputStream fin = new FileInputStream(f);
         ZipArchiveInputStream zin = null;
         try {
             zin = new ZipArchiveInputStream(fin);
@@ -2503,14 +2522,14 @@ public class Zip64SupportIT {
         }
     }
 
-    private static void read100KFilesUsingZipFileImpl(File f)
+    private static void read100KFilesUsingZipFileImpl(final File f)
         throws IOException {
         ZipFile zf = null;
         try {
             zf = new ZipFile(f);
             int files = 0;
-            for (Enumeration<ZipArchiveEntry> e = zf.getEntries(); e.hasMoreElements(); ) {
-                ZipArchiveEntry zae = e.nextElement();
+            for (final Enumeration<ZipArchiveEntry> e = zf.getEntries(); e.hasMoreElements(); ) {
+                final ZipArchiveEntry zae = e.nextElement();
                 if (!zae.isDirectory()) {
                     files++;
                     assertEquals(0, zae.getSize());
@@ -2522,11 +2541,11 @@ public class Zip64SupportIT {
         }
     }
 
-    private static long getLengthAndPositionAtCentralDirectory(RandomAccessFile a)
+    private static long getLengthAndPositionAtCentralDirectory(final RandomAccessFile a)
         throws IOException {
         final long end = a.length();
         a.seek(end - 22 - 20);
-        byte[] sig = new byte[4];
+        final byte[] sig = new byte[4];
         a.readFully(sig);
         if (sig[0] != (byte) 0x50 || sig[1] != (byte) 0x4b
             || sig[2] != 6 || sig[3] != 7) {
@@ -2534,28 +2553,28 @@ public class Zip64SupportIT {
             return getLengthAndPositionAtCentralDirectory32(a, end);
         }
 
-        long cdOffsetLoc = end - 22 - 20 - 56 + 48;
+        final long cdOffsetLoc = end - 22 - 20 - 56 + 48;
         // seek to central directory locator
         a.seek(cdOffsetLoc);
-        byte[] cdOffset = new byte[8];
+        final byte[] cdOffset = new byte[8];
         a.readFully(cdOffset);
         a.seek(ZipEightByteInteger.getLongValue(cdOffset));
         return end;
     }
 
-    private static long getLengthAndPositionAtCentralDirectory32(RandomAccessFile a, final long end)
+    private static long getLengthAndPositionAtCentralDirectory32(final RandomAccessFile a, final long end)
         throws IOException {
         a.seek(end - 22 + 16);
-        byte[] cdOffset = new byte[4];
+        final byte[] cdOffset = new byte[4];
         a.readFully(cdOffset);
         a.seek(ZipLong.getValue(cdOffset));
         return end;
     }
 
-    private static void write100KFilesToStream(ZipArchiveOutputStream zos)
+    private static void write100KFilesToStream(final ZipArchiveOutputStream zos)
         throws IOException {
         for (int i = 0; i < ONE_HUNDRED_THOUSAND; i++) {
-            ZipArchiveEntry zae = new ZipArchiveEntry(String.valueOf(i));
+            final ZipArchiveEntry zae = new ZipArchiveEntry(String.valueOf(i));
             zae.setSize(0);
             zos.putArchiveEntry(zae);
             zos.closeArchiveEntry();
@@ -2564,9 +2583,9 @@ public class Zip64SupportIT {
     }
 
     private static void
-        write3EntriesCreatingBigArchiveToStream(ZipArchiveOutputStream zos)
+        write3EntriesCreatingBigArchiveToStream(final ZipArchiveOutputStream zos)
         throws IOException {
-        byte[] buf = new byte[ONE_MILLION];
+        final byte[] buf = new byte[ONE_MILLION];
         ZipArchiveEntry zae = null;
         for (int i = 0; i < 2; i++) {
             zae = new ZipArchiveEntry(String.valueOf(i));

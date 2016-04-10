@@ -57,7 +57,7 @@ class FallbackZipEncoding implements ZipEncoding {
      * @param charsetName The name of the charset or {@code null} for
      *                the platform's default character set.
      */
-    public FallbackZipEncoding(String charsetName) {
+    public FallbackZipEncoding(final String charsetName) {
         this.charsetName = charsetName;
     }
 
@@ -65,7 +65,8 @@ class FallbackZipEncoding implements ZipEncoding {
      * @see
      * org.apache.commons.compress.archivers.zip.ZipEncoding#canEncode(java.lang.String)
      */
-    public boolean canEncode(String name) {
+    @Override
+    public boolean canEncode(final String name) {
         return true;
     }
 
@@ -73,23 +74,23 @@ class FallbackZipEncoding implements ZipEncoding {
      * @see
      * org.apache.commons.compress.archivers.zip.ZipEncoding#encode(java.lang.String)
      */
-    public ByteBuffer encode(String name) throws IOException {
+    @Override
+    public ByteBuffer encode(final String name) throws IOException {
         if (this.charsetName == null) { // i.e. use default charset, see no-args constructor
             return ByteBuffer.wrap(name.getBytes());
-        } else {
-            return ByteBuffer.wrap(name.getBytes(this.charsetName));
         }
+        return ByteBuffer.wrap(name.getBytes(this.charsetName));
     }
 
     /**
      * @see
      * org.apache.commons.compress.archivers.zip.ZipEncoding#decode(byte[])
      */
-    public String decode(byte[] data) throws IOException {
+    @Override
+    public String decode(final byte[] data) throws IOException {
         if (this.charsetName == null) { // i.e. use default charset, see no-args constructor
             return new String(data);
-        } else {
-            return new String(data,this.charsetName);
         }
+        return new String(data,this.charsetName);
     }
 }

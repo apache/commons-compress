@@ -34,15 +34,17 @@ public class FileBasedScatterGatherBackingStore implements ScatterGatherBackingS
     private final FileOutputStream os;
     private boolean closed;
 
-    public FileBasedScatterGatherBackingStore(File target) throws FileNotFoundException {
+    public FileBasedScatterGatherBackingStore(final File target) throws FileNotFoundException {
         this.target = target;
         os = new FileOutputStream(target);
     }
 
+    @Override
     public InputStream getInputStream() throws IOException {
         return new FileInputStream(target);
     }
 
+    @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public void closeForWriting() throws IOException {
         if (!closed) {
@@ -51,10 +53,12 @@ public class FileBasedScatterGatherBackingStore implements ScatterGatherBackingS
         }
     }
 
-    public void writeOut(byte[] data, int offset, int length) throws IOException {
+    @Override
+    public void writeOut(final byte[] data, final int offset, final int length) throws IOException {
         os.write(data, offset, length);
     }
 
+    @Override
     public void close() throws IOException {
         closeForWriting();
         target.delete();

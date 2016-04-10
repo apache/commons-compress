@@ -35,7 +35,7 @@ public class JarArchiveOutputStreamTest {
 
     @Test
     public void testJarMarker() throws IOException {
-        File testArchive = File.createTempFile("jar-aostest", ".jar");
+        final File testArchive = File.createTempFile("jar-aostest", ".jar");
         testArchive.deleteOnExit();
         JarArchiveOutputStream out = null;
         ZipFile zf = null;
@@ -65,7 +65,7 @@ public class JarArchiveOutputStreamTest {
             if (out != null) {
                 try {
                     out.close();
-                } catch (IOException e) { /* swallow */ }
+                } catch (final IOException e) { /* swallow */ }
             }
             ZipFile.closeQuietly(zf);
             AbstractTestCase.tryHardToDelete(testArchive);

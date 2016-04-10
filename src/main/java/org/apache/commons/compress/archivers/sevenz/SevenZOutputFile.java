@@ -79,7 +79,7 @@ public class SevenZOutputFile implements Closeable {
      * to {@link #setContentMethods}.</p>
      * @param method the default compression method
      */
-    public void setContentCompression(SevenZMethod method) {
+    public void setContentCompression(final SevenZMethod method) {
         setContentMethods(Collections.singletonList(new SevenZMethodConfiguration(method)));
     }
 
@@ -97,7 +97,7 @@ public class SevenZOutputFile implements Closeable {
      * @since 1.8
      * @param methods the default (compression) methods
      */
-    public void setContentMethods(Iterable<? extends SevenZMethodConfiguration> methods) {
+    public void setContentMethods(final Iterable<? extends SevenZMethodConfiguration> methods) {
         this.contentMethods = reverse(methods);
     }
 
@@ -106,6 +106,7 @@ public class SevenZOutputFile implements Closeable {
      * 
      * @throws IOException on error
      */
+    @Override
     public void close() throws IOException {
         if (!finished) {
             finish();
@@ -165,7 +166,7 @@ public class SevenZOutputFile implements Closeable {
             entry.setCompressedCrcValue(compressedCrc32.getValue());
             entry.setHasCrc(true);
             if (additionalCountingStreams != null) {
-                long[] sizes = new long[additionalCountingStreams.length];
+                final long[] sizes = new long[additionalCountingStreams.length];
                 for (int i = 0; i < additionalCountingStreams.length; i++) {
                     sizes[i] = additionalCountingStreams[i].getBytesWritten();
                 }
@@ -279,11 +280,11 @@ public class SevenZOutputFile implements Closeable {
         }
 
         OutputStream out = new OutputStreamWrapper();
-        ArrayList<CountingOutputStream> moreStreams = new ArrayList<CountingOutputStream>();
+        final ArrayList<CountingOutputStream> moreStreams = new ArrayList<CountingOutputStream>();
         boolean first = true;
-        for (SevenZMethodConfiguration m : getContentMethods(files.get(files.size() - 1))) {
+        for (final SevenZMethodConfiguration m : getContentMethods(files.get(files.size() - 1))) {
             if (!first) {
-                CountingOutputStream cos = new CountingOutputStream(out);
+                final CountingOutputStream cos = new CountingOutputStream(out);
                 moreStreams.add(cos);
                 out = cos;
             }
@@ -315,8 +316,8 @@ public class SevenZOutputFile implements Closeable {
         };
     }
 
-    private Iterable<? extends SevenZMethodConfiguration> getContentMethods(SevenZArchiveEntry entry) {
-        Iterable<? extends SevenZMethodConfiguration> ms = entry.getContentMethods();
+    private Iterable<? extends SevenZMethodConfiguration> getContentMethods(final SevenZArchiveEntry entry) {
+        final Iterable<? extends SevenZMethodConfiguration> ms = entry.getContentMethods();
         return ms == null ? contentMethods : ms;
     }
 
@@ -370,7 +371,7 @@ public class SevenZOutputFile implements Closeable {
         header.write(NID.kFolder);
         writeUint64(header, numNonEmptyStreams);
         header.write(0);
-        for (SevenZArchiveEntry entry : files) {
+        for (final SevenZArchiveEntry entry : files) {
             if (entry.hasStream()) {
                 writeFolder(header, entry);
             }
@@ -379,9 +380,9 @@ public class SevenZOutputFile implements Closeable {
         header.write(NID.kCodersUnpackSize);
         for (final SevenZArchiveEntry entry : files) {
             if (entry.hasStream()) {
-                long[] moreSizes = additionalSizes.get(entry);
+                final long[] moreSizes = additionalSizes.get(entry);
                 if (moreSizes != null) {
-                    for (long s : moreSizes) {
+                    for (final long s : moreSizes) {
                         writeUint64(header, s);
                     }
                 }
@@ -400,10 +401,10 @@ public class SevenZOutputFile implements Closeable {
         header.write(NID.kEnd);
     }
     
-    private void writeFolder(final DataOutput header, SevenZArchiveEntry entry) throws IOException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    private void writeFolder(final DataOutput header, final SevenZArchiveEntry entry) throws IOException {
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         int numCoders = 0;
-        for (SevenZMethodConfiguration m : getContentMethods(entry)) {
+        for (final SevenZMethodConfiguration m : getContentMethods(entry)) {
             numCoders++;
             writeSingleCodec(m, bos);
         }
@@ -416,9 +417,9 @@ public class SevenZOutputFile implements Closeable {
         }
     }
 
-    private void writeSingleCodec(SevenZMethodConfiguration m, OutputStream bos) throws IOException {
-        byte[] id = m.getMethod().getId();
-        byte[] properties = Coders.findByMethod(m.getMethod())
+    private void writeSingleCodec(final SevenZMethodConfiguration m, final OutputStream bos) throws IOException {
+        final byte[] id = m.getMethod().getId();
+        final byte[] properties = Coders.findByMethod(m.getMethod())
             .getOptionsAsProperties(m.getOptions());
 
         int codecFlags = id.length;
@@ -492,9 +493,9 @@ public class SevenZOutputFile implements Closeable {
         boolean hasEmptyFiles = false;
         int emptyStreamCounter = 0;
         final BitSet emptyFiles = new BitSet(0);
-        for (SevenZArchiveEntry file1 : files) {
+        for (final SevenZArchiveEntry file1 : files) {
             if (!file1.hasStream()) {
-                boolean isDir = file1.isDirectory();
+                final boolean isDir = file1.isDirectory();
                 emptyFiles.set(emptyStreamCounter++, !isDir);
                 hasEmptyFiles |= !isDir;
             }
@@ -515,9 +516,9 @@ public class SevenZOutputFile implements Closeable {
         boolean hasAntiItems = false;
         final BitSet antiItems = new BitSet(0);
         int antiItemCounter = 0;
-        for (SevenZArchiveEntry file1 : files) {
+        for (final SevenZArchiveEntry file1 : files) {
             if (!file1.hasStream()) {
-                boolean isAnti = file1.isAntiItem();
+                final boolean isAnti = file1.isAntiItem();
                 antiItems.set(antiItemCounter++, isAnti);
                 hasAntiItems |= isAnti;
             }
@@ -728,9 +729,9 @@ public class SevenZOutputFile implements Closeable {
         }
     }
 
-    private static <T> Iterable<T> reverse(Iterable<T> i) {
-        LinkedList<T> l = new LinkedList<T>();
-        for (T t : i) {
+    private static <T> Iterable<T> reverse(final Iterable<T> i) {
+        final LinkedList<T> l = new LinkedList<T>();
+        for (final T t : i) {
             l.addFirst(t);
         }
         return l;

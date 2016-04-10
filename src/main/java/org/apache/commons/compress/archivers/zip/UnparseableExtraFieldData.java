@@ -39,6 +39,7 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
      *
      * @return a completely arbitrary value that should be ignored.
      */
+    @Override
     public ZipShort getHeaderId() {
         return HEADER_ID;
     }
@@ -48,6 +49,7 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
      *
      * @return The LocalFileDataLength value
      */
+    @Override
     public ZipShort getLocalFileDataLength() {
         return new ZipShort(localFileData == null ? 0 : localFileData.length);
     }
@@ -57,6 +59,7 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
      *
      * @return The CentralDirectoryLength value
      */
+    @Override
     public ZipShort getCentralDirectoryLength() {
         return centralDirectoryData == null
             ? getLocalFileDataLength()
@@ -68,6 +71,7 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
      *
      * @return The LocalFileDataData value
      */
+    @Override
     public byte[] getLocalFileDataData() {
         return ZipUtil.copy(localFileData);
     }
@@ -77,6 +81,7 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
      *
      * @return The CentralDirectoryData value
      */
+    @Override
     public byte[] getCentralDirectoryData() {
         return centralDirectoryData == null
             ? getLocalFileDataData() : ZipUtil.copy(centralDirectoryData);
@@ -89,7 +94,8 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
      * @param offset offset into buffer to read data
      * @param length the length of data
      */
-    public void parseFromLocalFileData(byte[] buffer, int offset, int length) {
+    @Override
+    public void parseFromLocalFileData(final byte[] buffer, final int offset, final int length) {
         localFileData = new byte[length];
         System.arraycopy(buffer, offset, localFileData, 0, length);
     }
@@ -101,8 +107,9 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
      * @param offset offset into buffer to read data
      * @param length the length of data
      */
-    public void parseFromCentralDirectoryData(byte[] buffer, int offset,
-                                              int length) {
+    @Override
+    public void parseFromCentralDirectoryData(final byte[] buffer, final int offset,
+                                              final int length) {
         centralDirectoryData = new byte[length];
         System.arraycopy(buffer, offset, centralDirectoryData, 0, length);
         if (localFileData == null) {

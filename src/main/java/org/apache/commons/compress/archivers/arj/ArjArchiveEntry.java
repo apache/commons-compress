@@ -46,13 +46,13 @@ public class ArjArchiveEntry implements ArchiveEntry {
      *
      * @return This entry's name.
      */
+    @Override
     public String getName() {
         if ((localFileHeader.arjFlags & LocalFileHeader.Flags.PATHSYM) != 0) {
             return localFileHeader.name.replaceAll("/",
                     Matcher.quoteReplacement(File.separator));
-        } else {
-            return localFileHeader.name;
         }
+        return localFileHeader.name;
     }
 
     /**
@@ -60,6 +60,7 @@ public class ArjArchiveEntry implements ArchiveEntry {
      *
      * @return This entry's file size.
      */
+    @Override
     public long getSize() {
         return localFileHeader.originalSize;
     }
@@ -68,6 +69,7 @@ public class ArjArchiveEntry implements ArchiveEntry {
      *
      * @return True if the entry refers to a directory
      */
+    @Override
     public boolean isDirectory() {
         return localFileHeader.fileType == LocalFileHeader.FileTypes.DIRECTORY;
     }
@@ -87,8 +89,9 @@ public class ArjArchiveEntry implements ArchiveEntry {
      *
      * @return the last modified date
      */
+    @Override
     public Date getLastModifiedDate() {
-        long ts = isHostOsUnix() ? localFileHeader.dateTimeModified * 1000l
+        final long ts = isHostOsUnix() ? localFileHeader.dateTimeModified * 1000l
             : ZipUtil.dosToJavaTime(0xFFFFFFFFL & localFileHeader.dateTimeModified);
         return new Date(ts);
     }

@@ -143,7 +143,7 @@ public class ArchiveStreamFactory {
      *
      * @since 1.10
      */
-    public ArchiveStreamFactory(String encoding) {
+    public ArchiveStreamFactory(final String encoding) {
         super();
         this.encoding = encoding;
         // Also set the original field so can continue to use it.
@@ -171,7 +171,7 @@ public class ArchiveStreamFactory {
      * was used to specify the factory encoding.
      */
     @Deprecated
-    public void setEntryEncoding(String entryEncoding) {
+    public void setEntryEncoding(final String entryEncoding) {
         // Note: this does not detect new ArchiveStreamFactory(null) but that does not set the encoding anyway
         if (encoding != null) {
             throw new IllegalStateException("Cannot overide encoding set by the constructor");
@@ -209,44 +209,38 @@ public class ArchiveStreamFactory {
         if (ARJ.equalsIgnoreCase(archiverName)) {
             if (entryEncoding != null) {
                 return new ArjArchiveInputStream(in, entryEncoding);
-            } else {
-                return new ArjArchiveInputStream(in);
             }
+            return new ArjArchiveInputStream(in);
         }
         if (ZIP.equalsIgnoreCase(archiverName)) {
             if (entryEncoding != null) {
                 return new ZipArchiveInputStream(in, entryEncoding);
-            } else {
-                return new ZipArchiveInputStream(in);
             }
+            return new ZipArchiveInputStream(in);
         }
         if (TAR.equalsIgnoreCase(archiverName)) {
             if (entryEncoding != null) {
                 return new TarArchiveInputStream(in, entryEncoding);
-            } else {
-                return new TarArchiveInputStream(in);
             }
+            return new TarArchiveInputStream(in);
         }
         if (JAR.equalsIgnoreCase(archiverName)) {
             if (entryEncoding != null) {
                 return new JarArchiveInputStream(in, entryEncoding);
-            } else {
-                return new JarArchiveInputStream(in);
             }
+            return new JarArchiveInputStream(in);
         }
         if (CPIO.equalsIgnoreCase(archiverName)) {
             if (entryEncoding != null) {
                 return new CpioArchiveInputStream(in, entryEncoding);
-            } else {
-                return new CpioArchiveInputStream(in);
             }
+            return new CpioArchiveInputStream(in);
         }
         if (DUMP.equalsIgnoreCase(archiverName)) {
             if (entryEncoding != null) {
                 return new DumpArchiveInputStream(in, entryEncoding);
-            } else {
-                return new DumpArchiveInputStream(in);
             }
+            return new DumpArchiveInputStream(in);
         }
         if (SEVEN_Z.equalsIgnoreCase(archiverName)) {
             throw new StreamingNotSupportedException(SEVEN_Z);
@@ -281,7 +275,7 @@ public class ArchiveStreamFactory {
             return new ArArchiveOutputStream(out);
         }
         if (ZIP.equalsIgnoreCase(archiverName)) {
-            ZipArchiveOutputStream zip = new ZipArchiveOutputStream(out);
+            final ZipArchiveOutputStream zip = new ZipArchiveOutputStream(out);
             if (entryEncoding != null) {
                 zip.setEncoding(entryEncoding);
             }
@@ -290,23 +284,20 @@ public class ArchiveStreamFactory {
         if (TAR.equalsIgnoreCase(archiverName)) {
             if (entryEncoding != null) {
                 return new TarArchiveOutputStream(out, entryEncoding);
-            } else {
-                return new TarArchiveOutputStream(out);
             }
+            return new TarArchiveOutputStream(out);
         }
         if (JAR.equalsIgnoreCase(archiverName)) {
             if (entryEncoding != null) {
                 return new JarArchiveOutputStream(out, entryEncoding);
-            } else {
-                return new JarArchiveOutputStream(out);
             }
+            return new JarArchiveOutputStream(out);
         }
         if (CPIO.equalsIgnoreCase(archiverName)) {
             if (entryEncoding != null) {
                 return new CpioArchiveOutputStream(out, entryEncoding);
-            } else {
-                return new CpioArchiveOutputStream(out);
             }
+            return new CpioArchiveOutputStream(out);
         }
         if (SEVEN_Z.equalsIgnoreCase(archiverName)) {
             throw new StreamingNotSupportedException(SEVEN_Z);
@@ -381,7 +372,7 @@ public class ArchiveStreamFactory {
                     if (tais.getNextTarEntry().isCheckSumOK()) {
                         return createArchiveInputStream(TAR, in);
                     }
-                } catch (Exception e) { // NOPMD
+                } catch (final Exception e) { // NOPMD
                     // can generate IllegalArgumentException as well
                     // as IOException
                     // autodetection, simply not a TAR
@@ -390,7 +381,7 @@ public class ArchiveStreamFactory {
                     IOUtils.closeQuietly(tais);
                 }
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new ArchiveException("Could not use reset and mark operations.", e);
         }
 

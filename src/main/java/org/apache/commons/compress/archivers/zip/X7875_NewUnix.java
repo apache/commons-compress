@@ -81,6 +81,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      *
      * @return the value for the header id for this extrafield
      */
+    @Override
     public ZipShort getHeaderId() {
         return HEADER_ID;
     }
@@ -110,7 +111,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      *
      * @param l UID value to set on this extra field.
      */
-    public void setUID(long l) {
+    public void setUID(final long l) {
         this.uid = ZipUtil.longToBig(l);
     }
 
@@ -119,7 +120,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      *
      * @param l GID value to set on this extra field.
      */
-    public void setGID(long l) {
+    public void setGID(final long l) {
         this.gid = ZipUtil.longToBig(l);
     }
 
@@ -129,9 +130,10 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      *
      * @return a <code>ZipShort</code> for the length of the data of this extra field
      */
+    @Override
     public ZipShort getLocalFileDataLength() {
-        int uidSize = trimLeadingZeroesForceMinLength(uid.toByteArray()).length;
-        int gidSize = trimLeadingZeroesForceMinLength(gid.toByteArray()).length;
+        final int uidSize = trimLeadingZeroesForceMinLength(uid.toByteArray()).length;
+        final int gidSize = trimLeadingZeroesForceMinLength(gid.toByteArray()).length;
 
         // The 3 comes from:  version=1 + uidsize=1 + gidsize=1
         return new ZipShort(3 + uidSize + gidSize);
@@ -143,6 +145,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      *
      * @return a <code>ZipShort</code> for the length of the data of this extra field
      */
+    @Override
     public ZipShort getCentralDirectoryLength() {
         return ZERO;
     }
@@ -153,6 +156,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      *
      * @return get the data
      */
+    @Override
     public byte[] getLocalFileDataData() {
         byte[] uidBytes = uid.toByteArray();
         byte[] gidBytes = gid.toByteArray();
@@ -168,7 +172,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
         // optimization is the root of all...
         //
         // The 3 comes from:  version=1 + uidsize=1 + gidsize=1
-        byte[] data = new byte[3 + uidBytes.length + gidBytes.length];
+        final byte[] data = new byte[3 + uidBytes.length + gidBytes.length];
 
         // reverse() switches byte array from big-endian to little-endian.
         reverse(uidBytes);
@@ -190,6 +194,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      *
      * @return get the data
      */
+    @Override
     public byte[] getCentralDirectoryData() {
         return new byte[0];
     }
@@ -202,19 +207,20 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      * @param length the number of bytes in the array from offset
      * @throws java.util.zip.ZipException on error
      */
+    @Override
     public void parseFromLocalFileData(
-            byte[] data, int offset, int length
+            final byte[] data, int offset, final int length
     ) throws ZipException {
         reset();
         this.version = signedByteToUnsignedInt(data[offset++]);
-        int uidSize = signedByteToUnsignedInt(data[offset++]);
-        byte[] uidBytes = new byte[uidSize];
+        final int uidSize = signedByteToUnsignedInt(data[offset++]);
+        final byte[] uidBytes = new byte[uidSize];
         System.arraycopy(data, offset, uidBytes, 0, uidSize);
         offset += uidSize;
         this.uid = new BigInteger(1, reverse(uidBytes)); // sign-bit forced positive
 
-        int gidSize = signedByteToUnsignedInt(data[offset++]);
-        byte[] gidBytes = new byte[gidSize];
+        final int gidSize = signedByteToUnsignedInt(data[offset++]);
+        final byte[] gidBytes = new byte[gidSize];
         System.arraycopy(data, offset, gidBytes, 0, gidSize);
         this.gid = new BigInteger(1, reverse(gidBytes)); // sign-bit forced positive
     }
@@ -223,8 +229,9 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      * Doesn't do anything since this class doesn't store anything
      * inside the central directory.
      */
+    @Override
     public void parseFromCentralDirectoryData(
-            byte[] buffer, int offset, int length
+            final byte[] buffer, final int offset, final int length
     ) throws ZipException {
     }
 
@@ -256,9 +263,9 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (o instanceof X7875_NewUnix) {
-            X7875_NewUnix xf = (X7875_NewUnix) o;
+            final X7875_NewUnix xf = (X7875_NewUnix) o;
             // We assume uid and gid can never be null.
             return version == xf.version && uid.equals(xf.uid) && gid.equals(xf.gid);
         }
@@ -285,13 +292,13 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      * @param array byte[] array to trim & pad.
      * @return trimmed & padded byte[] array.
      */
-    static byte[] trimLeadingZeroesForceMinLength(byte[] array) {
+    static byte[] trimLeadingZeroesForceMinLength(final byte[] array) {
         if (array == null) {
             return array;
         }
 
         int pos = 0;
-        for (byte b : array) {
+        for (final byte b : array) {
             if (b == 0) {
                 pos++;
             } else {
@@ -338,8 +345,8 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
         */
         final int MIN_LENGTH = 1;
 
-        byte[] trimmedArray = new byte[Math.max(MIN_LENGTH, array.length - pos)];
-        int startPos = trimmedArray.length - (array.length - pos);
+        final byte[] trimmedArray = new byte[Math.max(MIN_LENGTH, array.length - pos)];
+        final int startPos = trimmedArray.length - (array.length - pos);
         System.arraycopy(array, pos, trimmedArray, startPos, trimmedArray.length - startPos);
         return trimmedArray;
     }

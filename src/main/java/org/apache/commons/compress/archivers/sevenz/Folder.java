@@ -52,11 +52,11 @@ class Folder {
      * from the output of the first and so on.</p>
      */
     Iterable<Coder> getOrderedCoders() {
-        LinkedList<Coder> l = new LinkedList<Coder>();
+        final LinkedList<Coder> l = new LinkedList<Coder>();
         int current = (int) packedStreams[0]; // more that 2^31 coders?
         while (current != -1) {
             l.addLast(coders[current]);
-            int pair = findBindPairForOutStream(current);
+            final int pair = findBindPairForOutStream(current);
             current = pair != -1 ? (int) bindPairs[pair].inIndex : -1;
         }
         return l;
@@ -92,7 +92,7 @@ class Folder {
         return 0;
     }
 
-    long getUnpackSizeForCoder(Coder coder) {
+    long getUnpackSizeForCoder(final Coder coder) {
         if (coders != null) {
             for (int i = 0; i < coders.length; i++) {
                 if (coders[i] == coder) {

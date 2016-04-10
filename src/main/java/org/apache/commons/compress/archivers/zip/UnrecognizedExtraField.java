@@ -37,7 +37,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
      * Set the header id.
      * @param headerId the header id to use
      */
-    public void setHeaderId(ZipShort headerId) {
+    public void setHeaderId(final ZipShort headerId) {
         this.headerId = headerId;
     }
 
@@ -45,6 +45,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
      * Get the header id.
      * @return the header id
      */
+    @Override
     public ZipShort getHeaderId() {
         return headerId;
     }
@@ -60,7 +61,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
      * without Header-ID or length specifier.
      * @param data the field data to use
      */
-    public void setLocalFileDataData(byte[] data) {
+    public void setLocalFileDataData(final byte[] data) {
         localData = ZipUtil.copy(data);
     }
 
@@ -68,6 +69,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
      * Get the length of the local data.
      * @return the length of the local data
      */
+    @Override
     public ZipShort getLocalFileDataLength() {
         return new ZipShort(localData != null ? localData.length : 0);
     }
@@ -76,6 +78,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
      * Get the local data.
      * @return the local data
      */
+    @Override
     public byte[] getLocalFileDataData() {
         return ZipUtil.copy(localData);
     }
@@ -90,7 +93,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
      * Set the extra field data in central directory.
      * @param data the data to use
      */
-    public void setCentralDirectoryData(byte[] data) {
+    public void setCentralDirectoryData(final byte[] data) {
         centralData = ZipUtil.copy(data);
     }
 
@@ -99,6 +102,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
      * If there is no central data, get the local file data length.
      * @return the central data length
      */
+    @Override
     public ZipShort getCentralDirectoryLength() {
         if (centralData != null) {
             return new ZipShort(centralData.length);
@@ -110,6 +114,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
      * Get the central data.
      * @return the central data if present, else return the local file data
      */
+    @Override
     public byte[] getCentralDirectoryData() {
         if (centralData != null) {
             return ZipUtil.copy(centralData);
@@ -123,8 +128,9 @@ public class UnrecognizedExtraField implements ZipExtraField {
      * @param length the number of bytes to use in the data array.
      * @see ZipExtraField#parseFromLocalFileData(byte[], int, int)
      */
-    public void parseFromLocalFileData(byte[] data, int offset, int length) {
-        byte[] tmp = new byte[length];
+    @Override
+    public void parseFromLocalFileData(final byte[] data, final int offset, final int length) {
+        final byte[] tmp = new byte[length];
         System.arraycopy(data, offset, tmp, 0, length);
         setLocalFileDataData(tmp);
     }
@@ -135,9 +141,10 @@ public class UnrecognizedExtraField implements ZipExtraField {
      * @param length the number of bytes to use in the data array.
      * @see ZipExtraField#parseFromCentralDirectoryData(byte[], int, int)
      */
-    public void parseFromCentralDirectoryData(byte[] data, int offset,
-                                              int length) {
-        byte[] tmp = new byte[length];
+    @Override
+    public void parseFromCentralDirectoryData(final byte[] data, final int offset,
+                                              final int length) {
+        final byte[] tmp = new byte[length];
         System.arraycopy(data, offset, tmp, 0, length);
         setCentralDirectoryData(tmp);
         if (localData == null) {

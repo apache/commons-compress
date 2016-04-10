@@ -77,7 +77,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      */
     private byte[] centralData;
 
-    protected PKWareExtraHeader(ZipShort headerId) {
+    protected PKWareExtraHeader(final ZipShort headerId) {
         this.headerId = headerId;
     }
     
@@ -86,6 +86,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      *
      * @return the header id
      */
+    @Override
     public ZipShort getHeaderId() {
         return headerId;
     }
@@ -97,7 +98,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      * @param data
      *            the field data to use
      */
-    public void setLocalFileDataData(byte[] data) {
+    public void setLocalFileDataData(final byte[] data) {
         localData = ZipUtil.copy(data);
     }
 
@@ -106,6 +107,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      *
      * @return the length of the local data
      */
+    @Override
     public ZipShort getLocalFileDataLength() {
         return new ZipShort(localData != null ? localData.length : 0);
     }
@@ -115,6 +117,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      *
      * @return the local data
      */
+    @Override
     public byte[] getLocalFileDataData() {
         return ZipUtil.copy(localData);
     }
@@ -125,7 +128,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      * @param data
      *            the data to use
      */
-    public void setCentralDirectoryData(byte[] data) {
+    public void setCentralDirectoryData(final byte[] data) {
         centralData = ZipUtil.copy(data);
     }
 
@@ -135,6 +138,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      *
      * @return the central data length
      */
+    @Override
     public ZipShort getCentralDirectoryLength() {
         if (centralData != null) {
             return new ZipShort(centralData.length);
@@ -147,6 +151,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      *
      * @return the central data if present, else return the local file data
      */
+    @Override
     public byte[] getCentralDirectoryData() {
         if (centralData != null) {
             return ZipUtil.copy(centralData);
@@ -163,8 +168,9 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      *            the number of bytes to use in the data array.
      * @see ZipExtraField#parseFromLocalFileData(byte[], int, int)
      */
-    public void parseFromLocalFileData(byte[] data, int offset, int length) {
-        byte[] tmp = new byte[length];
+    @Override
+    public void parseFromLocalFileData(final byte[] data, final int offset, final int length) {
+        final byte[] tmp = new byte[length];
         System.arraycopy(data, offset, tmp, 0, length);
         setLocalFileDataData(tmp);
     }
@@ -178,8 +184,9 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      *            the number of bytes to use in the data array.
      * @see ZipExtraField#parseFromCentralDirectoryData(byte[], int, int)
      */
-    public void parseFromCentralDirectoryData(byte[] data, int offset, int length) {
-        byte[] tmp = new byte[length];
+    @Override
+    public void parseFromCentralDirectoryData(final byte[] data, final int offset, final int length) {
+        final byte[] tmp = new byte[length];
         System.arraycopy(data, offset, tmp, 0, length);
         setCentralDirectoryData(tmp);
         if (localData == null) {
@@ -209,8 +216,8 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
         private static final Map<Integer, EncryptionAlgorithm> codeToEnum;
 
         static {
-            Map<Integer, EncryptionAlgorithm> cte = new HashMap<Integer, EncryptionAlgorithm>();
-            for (EncryptionAlgorithm method : values()) {
+            final Map<Integer, EncryptionAlgorithm> cte = new HashMap<Integer, EncryptionAlgorithm>();
+            for (final EncryptionAlgorithm method : values()) {
                 cte.put(Integer.valueOf(method.getCode()), method);
             }
             codeToEnum = Collections.unmodifiableMap(cte);
@@ -219,7 +226,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
         /**
          * private constructor for enum style class.
          */
-        EncryptionAlgorithm(int code) {
+        EncryptionAlgorithm(final int code) {
             this.code = code;
         }
 
@@ -239,7 +246,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
          * @return the EncryptionAlgorithm for the given code or null
          * if the method is not known
          */
-        public static EncryptionAlgorithm getAlgorithmByCode(int code) {
+        public static EncryptionAlgorithm getAlgorithmByCode(final int code) {
             return codeToEnum.get(Integer.valueOf(code));
         }
     }
@@ -264,8 +271,8 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
         private static final Map<Integer, HashAlgorithm> codeToEnum;
 
         static {
-            Map<Integer, HashAlgorithm> cte = new HashMap<Integer, HashAlgorithm>();
-            for (HashAlgorithm method : values()) {
+            final Map<Integer, HashAlgorithm> cte = new HashMap<Integer, HashAlgorithm>();
+            for (final HashAlgorithm method : values()) {
                 cte.put(Integer.valueOf(method.getCode()), method);
             }
             codeToEnum = Collections.unmodifiableMap(cte);
@@ -274,7 +281,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
         /**
          * private constructor for enum style class.
          */
-        HashAlgorithm(int code) {
+        HashAlgorithm(final int code) {
             this.code = code;
         }
 
@@ -294,7 +301,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
          * @return the HashAlgorithm for the given code or null
          * if the method is not known
          */
-        public static HashAlgorithm getAlgorithmByCode(int code) {
+        public static HashAlgorithm getAlgorithmByCode(final int code) {
             return codeToEnum.get(Integer.valueOf(code));
         }
     }

@@ -47,14 +47,14 @@ public final class Pack200UtilsTest extends AbstractTestCase {
 
                 ArchiveEntry entry = in.getNextEntry();
                 while (entry != null) {
-                    File archiveEntry = new File(dir, entry.getName());
+                    final File archiveEntry = new File(dir, entry.getName());
                     archiveEntry.getParentFile().mkdirs();
                     if (entry.isDirectory()) {
                         archiveEntry.mkdir();
                         entry = in.getNextEntry();
                         continue;
                     }
-                    OutputStream out = new FileOutputStream(archiveEntry);
+                    final OutputStream out = new FileOutputStream(archiveEntry);
                     IOUtils.copy(in, out);
                     out.close();
                     entry = in.getNextEntry();
@@ -95,14 +95,14 @@ public final class Pack200UtilsTest extends AbstractTestCase {
 
                 ArchiveEntry entry = in.getNextEntry();
                 while (entry != null) {
-                    File archiveEntry = new File(dir, entry.getName());
+                    final File archiveEntry = new File(dir, entry.getName());
                     archiveEntry.getParentFile().mkdirs();
                     if (entry.isDirectory()) {
                         archiveEntry.mkdir();
                         entry = in.getNextEntry();
                         continue;
                     }
-                    OutputStream out = new FileOutputStream(archiveEntry);
+                    final OutputStream out = new FileOutputStream(archiveEntry);
                     IOUtils.copy(in, out);
                     out.close();
                     entry = in.getNextEntry();

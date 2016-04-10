@@ -44,7 +44,7 @@ class BinaryTree {
      */
     private final int[] tree;
 
-    public BinaryTree(int depth) {
+    public BinaryTree(final int depth) {
         tree = new int[(1 << (depth + 1)) - 1];
         Arrays.fill(tree, UNDEFINED);
     }
@@ -57,7 +57,7 @@ class BinaryTree {
      * @param depth  the number of nodes in the path
      * @param value  the value of the leaf (must be positive)
      */
-    public void addLeaf(int node, int path, int depth, int value) {
+    public void addLeaf(final int node, final int path, final int depth, final int value) {
         if (depth == 0) {
             // end of the path reached, add the value to the current node
             if (tree[node] == UNDEFINED) {
@@ -70,7 +70,7 @@ class BinaryTree {
             tree[node] = NODE;
             
             // move down the path recursively
-            int nextChild = 2 * node + 1 + (path & 1);
+            final int nextChild = 2 * node + 1 + (path & 1);
             addLeaf(nextChild, path >>> 1, depth - 1, value);
         }
     }
@@ -81,17 +81,17 @@ class BinaryTree {
      * @param stream
      * @return the value decoded, or -1 if the end of the stream is reached
      */
-    public int read(BitStream stream) throws IOException {
+    public int read(final BitStream stream) throws IOException {
         int currentIndex = 0;
 
         while (true) {
-            int bit = stream.nextBit();
+            final int bit = stream.nextBit();
             if (bit == -1) {
                 return -1;
             }
 
-            int childIndex = 2 * currentIndex + 1 + bit;
-            int value = tree[childIndex];
+            final int childIndex = 2 * currentIndex + 1 + bit;
+            final int value = tree[childIndex];
             if (value == NODE) {
                 // consume the next bit
                 currentIndex = childIndex;
@@ -107,25 +107,25 @@ class BinaryTree {
     /**
      * Decodes the packed binary tree from the specified stream.
      */
-    static BinaryTree decode(InputStream in, final int totalNumberOfValues) throws IOException {
+    static BinaryTree decode(final InputStream in, final int totalNumberOfValues) throws IOException {
         // the first byte contains the size of the structure minus one
-        int size = in.read() + 1;
+        final int size = in.read() + 1;
         if (size == 0) {
             throw new IOException("Cannot read the size of the encoded tree, unexpected end of stream");
         }
 
-        byte[] encodedTree = new byte[size];
+        final byte[] encodedTree = new byte[size];
         new DataInputStream(in).readFully(encodedTree);
 
         /** The maximum bit length for a value (16 or lower) */
         int maxLength = 0;
         
-        int[] originalBitLengths = new int[totalNumberOfValues];
+        final int[] originalBitLengths = new int[totalNumberOfValues];
         int pos = 0;
-        for (byte b : encodedTree) {
+        for (final byte b : encodedTree) {
             // each byte encodes the number of values (upper 4 bits) for a bit length (lower 4 bits)
-            int numberOfValues = ((b & 0xF0) >> 4) + 1;
-            int bitLength = (b & 0x0F) + 1;
+            final int numberOfValues = ((b & 0xF0) >> 4) + 1;
+            final int bitLength = (b & 0x0F) + 1;
 
             for (int j = 0; j < numberOfValues; j++) {
                 originalBitLengths[pos++] = bitLength;
@@ -135,13 +135,13 @@ class BinaryTree {
         }
 
         // sort the array of bit lengths and memorize the permutation used to restore the order of the codes
-        int[] permutation = new int[originalBitLengths.length];
+        final int[] permutation = new int[originalBitLengths.length];
         for (int k = 0; k < permutation.length; k++) {
             permutation[k] = k;
         }
         
         int c = 0;
-        int[] sortedBitLengths = new int[originalBitLengths.length];
+        final int[] sortedBitLengths = new int[originalBitLengths.length];
         for (int k = 0; k < originalBitLengths.length; k++) {
             // iterate over the values
             for (int l = 0; l < originalBitLengths.length; l++) {
@@ -163,7 +163,7 @@ class BinaryTree {
         int codeIncrement = 0;
         int lastBitLength = 0;
 
-        int[] codes = new int[totalNumberOfValues];
+        final int[] codes = new int[totalNumberOfValues];
 
         for (int i = totalNumberOfValues - 1; i >= 0; i--) {
             code = code + codeIncrement;
@@ -175,10 +175,10 @@ class BinaryTree {
         }
         
         // build the tree
-        BinaryTree tree = new BinaryTree(maxLength);
+        final BinaryTree tree = new BinaryTree(maxLength);
         
         for (int k = 0; k < codes.length; k++) {
-            int bitLength = originalBitLengths[k];
+            final int bitLength = originalBitLengths[k];
             if (bitLength > 0) {
                 tree.addLeaf(0, Integer.reverse(codes[k] << 16), bitLength, k);
             }
