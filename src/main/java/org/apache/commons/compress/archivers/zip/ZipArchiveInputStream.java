@@ -653,7 +653,12 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         while (remaining > 0) {
             final long n = in.read(buf.array(), 0, (int) Math.min(buf.capacity(), remaining));
             if (n < 0) {
-                throw new EOFException("Truncated ZIP entry: " + current.entry.getName());
+                String name = current.entry.getName();
+                int idx = firstUnprintableCharacter(current.entry.getName());
+                if (idx >= 0) {
+                    name = "corrupted name starting with '" + name.substring(0, idx) + "'";
+                }
+                throw new EOFException("Truncated ZIP entry: " + name);
             }
             count(n);
             remaining -= n;
@@ -981,6 +986,17 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
 
     private boolean isFirstByteOfEocdSig(final int b) {
         return b == ZipArchiveOutputStream.EOCD_SIG[0];
+    }
+
+    private int firstUnprintableCharacter(String name) {
+        final char[] chars = name.toCharArray();
+        final int len = chars.length;
+        for (int i = 0; i < len; i++) {
+            if (Character.isISOControl(chars[i]) || !Character.isDefined(chars[i])) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     /**
