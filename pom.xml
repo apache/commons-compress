@@ -238,7 +238,6 @@ jar, tar, zip, dump, 7z, arj.
           </ignorePathsToDelete>
         </configuration>
       </plugin>
-      <!-- use PMD 5.1.3 because of false positives for "unused private method" -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
