@@ -899,6 +899,9 @@ public class SevenZFile implements Closeable {
     }
     
     private InputStream getCurrentStream() throws IOException {
+        if (archive.files[currentEntryIndex].getSize() == 0) {
+            return new ByteArrayInputStream(new byte[0]);
+        }
         if (deferredBlockStreams.isEmpty()) {
             throw new IllegalStateException("No current 7z entry (call getNextEntry() first).");
         }
