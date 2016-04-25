@@ -22,12 +22,14 @@ import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.BufferedInputStream;
+import java.io.EOFException;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.io.IOException;
 
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Test;
@@ -166,6 +168,28 @@ public class ZipArchiveInputStreamTest {
             assertEquals(5, ze.getSize());
             assertArrayEquals(new byte[] {'d', 'a', 't', 'a', '\n'},
                               IOUtils.toByteArray(in));
+        } finally {
+            in.close();
+        }
+    }
+
+    /**
+     * Test case for
+     * <a href="https://issues.apache.org/jira/browse/COMPRESS-351"
+     * >COMPRESS-351</a>.
+     */
+    @Test
+    public void testMessageWithCorruptFileName() throws Exception {
+        final ZipArchiveInputStream in = new ZipArchiveInputStream(new FileInputStream(getFile("COMPRESS-351.zip")));
+        try {
+            ZipArchiveEntry ze = in.getNextZipEntry();
+            while (ze != null) {
+                ze = in.getNextZipEntry();
+            }
+            fail("expected EOFException");
+        } catch (EOFException ex) {
+            String m = ex.getMessage();
+            assertTrue(m.startsWith("Truncated ZIP entry: ?2016")); // the first character is not printable
         } finally {
             in.close();
         }
