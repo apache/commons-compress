@@ -34,6 +34,7 @@ import java.util.zip.ZipException;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
 
 import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
@@ -653,12 +654,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         while (remaining > 0) {
             final long n = in.read(buf.array(), 0, (int) Math.min(buf.capacity(), remaining));
             if (n < 0) {
-                String name = current.entry.getName();
-                int idx = firstUnprintableCharacter(current.entry.getName());
-                if (idx >= 0) {
-                    name = "corrupted name starting with '" + name.substring(0, idx) + "'";
-                }
-                throw new EOFException("Truncated ZIP entry: " + name);
+                throw new EOFException("Truncated ZIP entry: "
+                                       + ArchiveUtils.sanitize(current.entry.getName()));
             }
             count(n);
             remaining -= n;
@@ -986,17 +983,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
 
     private boolean isFirstByteOfEocdSig(final int b) {
         return b == ZipArchiveOutputStream.EOCD_SIG[0];
-    }
-
-    private int firstUnprintableCharacter(String name) {
-        final char[] chars = name.toCharArray();
-        final int len = chars.length;
-        for (int i = 0; i < len; i++) {
-            if (Character.isISOControl(chars[i]) || !Character.isDefined(chars[i])) {
-                return i;
-            }
-        }
-        return -1;
     }
 
     /**

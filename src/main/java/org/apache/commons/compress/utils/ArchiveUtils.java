@@ -251,4 +251,37 @@ public class ArchiveUtils {
         }
         return true;
     }
+
+    /**
+     * Returns a "sanitized" version of the string given as arguments,
+     * where sanitized means non-printable characters have been
+     * replaced with a question mark.
+     *
+     * <p>This method is used to clean up file names when they are
+     * used in exception messages as they may end up in log files or
+     * as console output and may have been read from a corrupted
+     * input.</p>
+     *
+     * @param s the string to sanitize
+     * @return a sanitized version of the argument
+     * @since Compress 1.12
+     */
+    public static String sanitize(String s) {
+        final char[] chars = s.toCharArray();
+        final int len = chars.length;
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < len; i++) {
+            final char c = chars[i];
+            if (!Character.isISOControl(c)) {
+                Character.UnicodeBlock block = Character.UnicodeBlock.of(c);
+                if (block != null && block != Character.UnicodeBlock.SPECIALS) {
+                    sb.append(c);
+                    continue;
+                }
+            }
+            sb.append('?');
+        }
+        return sb.toString();
+    }
+
 }
