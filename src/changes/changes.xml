@@ -51,7 +51,7 @@ The <action> type attribute can be add,update,fix,remove.
         TarArchiveEntry wastefully allocates empty arrays.
       </action>
       <action issue="COMPRESS-353" type="update" date="2016-05-06" dev="ggregory">
-        Javadoc for BZip2CompressorInputStream.BZip2CompressorInputStream(InputStream, boolean) should refer to IOEx, not NPE.
+        Javadoc for BZip2CompressorInputStream(InputStream, boolean) should refer to IOEx, not NPE.
       </action>
     </release>
     <release version="1.11" date="2016-04-06"
