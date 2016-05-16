@@ -53,6 +53,10 @@ The <action> type attribute can be add,update,fix,remove.
       <action issue="COMPRESS-353" type="update" date="2016-05-06" dev="ggregory">
         Javadoc for BZip2CompressorInputStream(InputStream, boolean) should refer to IOEx, not NPE.
       </action>
+      <action issue="COMPRESS-354" type="update" date="2016-05-16">
+        PureJavaCrc32C in the snappy package is now final so it is now
+        safe to call a virtual method inside the constructor.
+      </action>
     </release>
     <release version="1.11" date="2016-04-06"
              description="Release 1.11">
