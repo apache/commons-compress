@@ -23,6 +23,7 @@ import static org.apache.commons.compress.AbstractTestCase.mkdir;
 import static org.apache.commons.compress.AbstractTestCase.rmdir;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -292,6 +293,21 @@ public class TarArchiveInputStreamTest {
                          + "1234567890123456789012345678901234567890123456789012345678901234567890"
                          + "1234567890123456789012345678901234567890.txt",
                          entry.getName());
+        } finally {
+            is.close();
+        }
+    }
+
+    /**
+     * @link "https://issues.apache.org/jira/browse/COMPRESS-355"
+     */
+    @Test
+    public void survivesBlankLinesInPaxHeader() throws Exception {
+        final TarArchiveInputStream is = getTestStream("/COMPRESS-355.tar");
+        try {
+            final TarArchiveEntry entry = is.getNextTarEntry();
+            assertEquals("package/package.json", entry.getName());
+            assertNull(is.getNextTarEntry());
         } finally {
             is.close();
         }

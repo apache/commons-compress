@@ -60,6 +60,11 @@ The <action> type attribute can be add,update,fix,remove.
         PureJavaCrc32C in the snappy package is now final so it is now
         safe to call a virtual method inside the constructor.
       </action>
+      <action issue="COMPRESS-355" type="fix" date="2016-05-20"
+              due-to="Jeremy Gustie">
+        TarArchiveInputStream failed to parse PAX headers that
+        included blank lines.
+      </action>
     </release>
     <release version="1.11" date="2016-04-06"
              description="Release 1.11">
