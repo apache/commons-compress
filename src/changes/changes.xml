@@ -65,6 +65,11 @@ The <action> type attribute can be add,update,fix,remove.
         TarArchiveInputStream failed to parse PAX headers that
         included blank lines.
       </action>
+      <action issue="COMPRESS-356" type="fix" date="2016-05-20"
+              due-to="Jeremy Gustie">
+        TarArchiveInputStream failed to parse PAX headers whose tar
+        entry name ended with a slash.
+      </action>
     </release>
     <release version="1.11" date="2016-04-06"
              description="Release 1.11">

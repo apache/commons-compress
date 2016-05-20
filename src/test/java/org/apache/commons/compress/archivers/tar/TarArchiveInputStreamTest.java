@@ -313,6 +313,21 @@ public class TarArchiveInputStreamTest {
         }
     }
 
+    /**
+     * @link "https://issues.apache.org/jira/browse/COMPRESS-356"
+     */
+    @Test
+    public void survivesPaxHeaderWithNameEndingInSlash() throws Exception {
+        final TarArchiveInputStream is = getTestStream("/COMPRESS-356.tar");
+        try {
+            final TarArchiveEntry entry = is.getNextTarEntry();
+            assertEquals("package/package.json", entry.getName());
+            assertNull(is.getNextTarEntry());
+        } finally {
+            is.close();
+        }
+    }
+
     private TarArchiveInputStream getTestStream(final String name) {
         return new TarArchiveInputStream(
                 TarArchiveInputStreamTest.class.getResourceAsStream(name));
