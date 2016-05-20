@@ -825,7 +825,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @since 1.1
      *
      */
-    public boolean isPaxHeader(){
+    public boolean isPaxHeader() {
         return linkFlag == LF_PAX_EXTENDED_HEADER_LC
             || linkFlag == LF_PAX_EXTENDED_HEADER_UC;
     }
@@ -837,7 +837,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      *
      * @since 1.1
      */
-    public boolean isGlobalPaxHeader(){
+    public boolean isGlobalPaxHeader() {
         return linkFlag == LF_PAX_GLOBAL_EXTENDED_HEADER;
     }
 
