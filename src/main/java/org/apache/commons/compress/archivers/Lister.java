@@ -27,7 +27,7 @@ import java.io.InputStream;
  * Simple command line application that lists the contents of an archive.
  *
  * <p>The name of the archive must be given as a command line argument.</p>
- * <p>The optional second argument defines the archive type, in case the format is not recognised.</p>
+ * <p>The optional second argument defines the archive type, in case the format is not recognized.</p>
  *
  * @since 1.1
  */

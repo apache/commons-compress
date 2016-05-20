@@ -138,7 +138,7 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
             in = new BufferedInputStream(new FileInputStream(ar));
             ais = factory.createArchiveInputStream(in);
         } catch (final ArchiveException ae) {
-            fail("Should have recognised empty archive for "+type);
+            fail("Should have recognized empty archive for "+type);
         } finally {
             if (ais != null) {
                 ais.close(); // will close input as well
