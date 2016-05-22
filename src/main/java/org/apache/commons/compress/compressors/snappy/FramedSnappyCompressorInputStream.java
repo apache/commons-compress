@@ -58,6 +58,8 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
 
     /** The underlying stream to read compressed data from */
     private final PushbackInputStream in;
+    /** The dialect to expect */
+    private final FramedSnappyDialect dialect;
 
     private SnappyCompressorInputStream currentCompressedChunk;
 
@@ -71,14 +73,31 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
     private final PureJavaCrc32C checksum = new PureJavaCrc32C();
 
     /**
-     * Constructs a new input stream that decompresses snappy-framed-compressed data
-     * from the specified input stream.
+     * Constructs a new input stream that decompresses
+     * snappy-framed-compressed data from the specified input stream
+     * using the {@link FramedSnappyDialect#STANDARD} dialect.
      * @param in  the InputStream from which to read the compressed data
      * @throws IOException if reading fails
      */
     public FramedSnappyCompressorInputStream(final InputStream in) throws IOException {
+        this(in, FramedSnappyDialect.STANDARD);
+    }
+
+    /**
+     * Constructs a new input stream that decompresses snappy-framed-compressed data
+     * from the specified input stream.
+     * @param in  the InputStream from which to read the compressed data
+     * @param dialect the dialect used by the compressed stream
+     * @throws IOException if reading fails
+     */
+    public FramedSnappyCompressorInputStream(final InputStream in,
+                                             final FramedSnappyDialect dialect)
+        throws IOException {
         this.in = new PushbackInputStream(in, 1);
-        readStreamIdentifier();
+        this.dialect = dialect;
+        if (dialect.hasStreamIdentifier()) {
+            readStreamIdentifier();
+        }
     }
 
     /** {@inheritDoc} */
@@ -182,8 +201,13 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream {
             uncompressedBytesRemaining = readSize() - 4 /* CRC */;
             expectedChecksum = unmask(readCrc());
         } else if (type == COMPRESSED_CHUNK_TYPE) {
-            final long size = readSize() - 4 /* CRC */;
-            expectedChecksum = unmask(readCrc());
+            boolean expectChecksum = dialect.usesChecksumWithCompressedChunks();
+            final long size = readSize() - (expectChecksum ? 4 : 0);
+            if (expectChecksum) {
+                expectedChecksum = unmask(readCrc());
+            } else {
+                expectedChecksum = -1;
+            }
             currentCompressedChunk =
                 new SnappyCompressorInputStream(new BoundedInputStream(in, size));
             // constructor reads uncompressed size

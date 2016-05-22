@@ -28,6 +28,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Test;
@@ -168,6 +169,32 @@ public final class FramedSnappyCompressorInputStreamTest
     public void testChecksumUnmasking() {
         testChecksumUnmasking(0xc757l);
         testChecksumUnmasking(0xffffc757l);
+    }
+
+    @Test
+    public void readIWAFile() throws Exception {
+        final ZipFile zip = new ZipFile(getFile("testNumbersNew.numbers"));
+        try {
+            InputStream is = zip.getInputStream(zip.getEntry("Index/Document.iwa"));
+            try {
+                final FramedSnappyCompressorInputStream in =
+                    new FramedSnappyCompressorInputStream(is, FramedSnappyDialect.IWORK_ARCHIVE);
+                FileOutputStream out = null;
+                try {
+                    out = new FileOutputStream(new File(dir, "snappyIWATest.raw"));
+                    IOUtils.copy(in, out);
+                } finally {
+                    if (out != null) {
+                        out.close();
+                    }
+                    in.close();
+                }
+            } finally {
+                is.close();
+            }
+        } finally {
+            zip.close();
+        }
     }
 
     private void testChecksumUnmasking(final long x) {
