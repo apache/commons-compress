@@ -71,7 +71,7 @@ The <action> type attribute can be add,update,fix,remove.
         entry name ended with a slash.
       </action>
       <action issue="COMPRESS-357" type="fix" date="2016-05-26">
-        BZip2CompressorOutputStream#finished is now synchronized to
+        BZip2CompressorOutputStream#finish is now synchronized to
         avoid a race condition with the finalize method.
       </action>
     </release>
