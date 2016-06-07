@@ -74,6 +74,13 @@ The <action> type attribute can be add,update,fix,remove.
         BZip2CompressorOutputStream#finish is now synchronized to
         avoid a race condition with the finalize method.
       </action>
+      <action issue="COMPRESS-351" type="update" date="2016-06-07">
+        ZipArchiveInputStream and CpioArchiveInputStream could throw
+        exceptions who's messages contained potentially corrupt entry
+        names read from a broken archive. They will now sanitize the
+        names by replacing unprintable characters and restricting the
+        length to 255 characters.
+      </action>
     </release>
     <release version="1.11" date="2016-04-06"
              description="Release 1.11">
