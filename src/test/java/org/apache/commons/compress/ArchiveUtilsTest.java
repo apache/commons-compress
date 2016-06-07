@@ -82,6 +82,19 @@ public class ArchiveUtilsTest extends AbstractTestCase {
         assertEquals(expected, ArchiveUtils.sanitize(input));
     }
 
+    @Test
+    public void sanitizeLeavesShortStringsAlone() {
+        String input = "012345678901234567890123456789012345678901234567890123456789";
+        assertEquals(input, ArchiveUtils.sanitize(input));
+    }
+
+    @Test
+    public void sanitizeRemovesUnprintableCharacters() {
+        String input = "\b12345678901234567890123456789012345678901234567890123456789";
+        String expected = "?12345678901234567890123456789012345678901234567890123456789";
+        assertEquals(expected, ArchiveUtils.sanitize(input));
+    }
+
     private void asciiToByteAndBackOK(final String inputString) {
         assertEquals(inputString, ArchiveUtils.toAsciiString(ArchiveUtils.toAsciiBytes(inputString)));
     }
