@@ -204,7 +204,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @param n
      *            the number of bytes to be skipped.
      * @return the actual number of bytes skipped.
-     * @exception IOException
+     * @throws IOException
      *                if some other I/O error occurs.
      */
     @Override

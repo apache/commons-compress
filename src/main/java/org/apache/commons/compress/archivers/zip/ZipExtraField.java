@@ -72,7 +72,7 @@ public interface ZipExtraField {
      * @param buffer the buffer to read data from
      * @param offset offset into buffer to read data
      * @param length the length of data
-     * @exception ZipException on error
+     * @throws ZipException on error
      */
     void parseFromLocalFileData(byte[] buffer, int offset, int length)
         throws ZipException;
@@ -83,7 +83,7 @@ public interface ZipExtraField {
      * @param buffer the buffer to read data from
      * @param offset offset into buffer to read data
      * @param length the length of data
-     * @exception ZipException on error
+     * @throws ZipException on error
      */
     void parseFromCentralDirectoryData(byte[] buffer, int offset, int length)
         throws ZipException;

@@ -919,7 +919,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * Closes this output stream and releases any system resources
      * associated with the stream.
      *
-     * @exception  IOException  if an I/O error occurs.
+     * @throws  IOException  if an I/O error occurs.
      * @throws Zip64RequiredException if the archive's size exceeds 4
      * GByte or there are more than 65535 entries inside the archive
      * and {@link #setUseZip64} is {@link Zip64Mode#Never}.
@@ -936,7 +936,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * Flushes this output stream and forces any buffered output bytes
      * to be written out to the stream.
      *
-     * @exception  IOException  if an I/O error occurs.
+     * @throws  IOException  if an I/O error occurs.
      */
     @Override
     public void flush() throws IOException {

@@ -634,7 +634,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     /**
      * Sets the uncompressed size of the entry data.
      * @param size the uncompressed size in bytes
-     * @exception IllegalArgumentException if the specified size is less
+     * @throws IllegalArgumentException if the specified size is less
      *            than 0
      */
     @Override
