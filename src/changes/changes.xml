@@ -70,6 +70,11 @@ The <action> type attribute can be add,update,fix,remove.
         TarArchiveInputStream failed to parse PAX headers whose tar
         entry name ended with a slash.
       </action>
+      <action issue="COMPRESS-352" type="add" date="2016-05-22">
+        FramedSnappyCompressorInputStream now supports the dialect of
+        Snappy used by the IWA files contained within the zip archives
+        used in Apple's iWork 13 files.
+      </action>
       <action issue="COMPRESS-357" type="fix" date="2016-05-26">
         BZip2CompressorOutputStream#finish is now synchronized to
         avoid a race condition with the finalize method.
