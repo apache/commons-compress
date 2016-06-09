@@ -625,6 +625,16 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
         higher level "framing format" - Commons Compress offers two
         different stream classes for reading either format.</p>
 
+        <p>Starting with 1.12 we've added support for different
+        dialects of the framing format that can be specified when
+        constructing the stream. The <code>STANDARD</code> dialect
+        follows the "framing format" specification while the
+        <code>IWORK_ARCHIVE</code> dialect can be used to parse IWA
+        files that are part of Apple's iWork 13 format. If no dialect
+        has been specified, <code>STANDARD</code> is used. Only the
+        <code>STANDARD</code> format can be detected by
+        <code>CompressorStreamFactory</code>.</p>
+
         <p>Uncompressing a given framed Snappy file (you would
           certainly add exception handling and make sure all streams
           get closed properly):</p>
