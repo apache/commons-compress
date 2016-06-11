@@ -76,8 +76,8 @@ The <action> type attribute can be add,update,fix,remove.
         used in Apple's iWork 13 files.
       </action>
       <action issue="COMPRESS-357" type="fix" date="2016-05-26">
-        A race-condition between BZip2CompressorOutputStream's finish
-        and finalize methods could lead to corrupted streams.
+        BZip2CompressorOutputStream#finish is now synchronized to
+        avoid a race condition with the finalize method.
       </action>
       <action issue="COMPRESS-351" type="update" date="2016-06-07">
         ZipArchiveInputStream and CpioArchiveInputStream could throw
