@@ -321,6 +321,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     private Data data;
     private BlockSort blockSorter;
 
+    private final Object outLock = new Object();
     private OutputStream out;
 
     /**
@@ -476,21 +477,23 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     }
 
 
-    public synchronized void finish() throws IOException {
-        if (out != null) {
-            try {
-                if (this.runLength > 0) {
-                    writeRun();
+    public void finish() throws IOException {
+        synchronized(outLock) {
+            if (out != null) {
+                try {
+                    if (this.runLength > 0) {
+                        writeRun();
+                    }
+                    this.currentChar = -1;
+                    endBlock();
+                    endCompression();
+                } finally {
+                    this.out = null;
                 }
-                this.currentChar = -1;
-                endBlock();
-                endCompression();
-            } finally {
-                this.out = null;
-                this.data = null;
-                this.blockSorter = null;
             }
         }
+        this.blockSorter = null;
+        this.data = null;
     }
 
     @Override
