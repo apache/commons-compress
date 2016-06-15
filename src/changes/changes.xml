@@ -52,7 +52,8 @@ Release 1.12 changes the behavior of BZip2CompressorOutputStream's
 finalize method so that it no longer invokes finish. This is going to
 break code that relied on the finalizer to clean up an unfinished
 stream. The code will need to be changed to call finish or
-close itself.
+close itself. Note that a finalizer is not guaranteed to run, so
+the feature was not 100% effective in any case.
 ">
       <action issue="COMPRESS-349" type="update" date="2016-04-09" dev="ggregory">
         Update requirement from Java 5 to 6.
