@@ -43,7 +43,17 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
     <release version="1.12" date="not released, yet"
-             description="Release 1.12 - API compatible to 1.11 but requires Java6 at runtime">
+             description="Release 1.12 - API compatible to 1.11 but requires Java6 at runtime.
+------------
+
+
+
+Release 1.12 changes the behavior of BZip2CompressorOutputStream's
+finalize method so that it no longer invokes finish. This is going to
+break code that relied on the finalizer to clean up an unfinished
+stream. The code will need to be changed to call finish or
+close itself.
+">
       <action issue="COMPRESS-349" type="update" date="2016-04-09" dev="ggregory">
         Update requirement from Java 5 to 6.
       </action>
@@ -75,16 +85,17 @@ The <action> type attribute can be add,update,fix,remove.
         Snappy used by the IWA files contained within the zip archives
         used in Apple's iWork 13 files.
       </action>
-      <action issue="COMPRESS-357" type="fix" date="2016-05-26">
-        BZip2CompressorOutputStream#finish is now synchronized to
-        avoid a race condition with the finalize method.
-      </action>
       <action issue="COMPRESS-351" type="update" date="2016-06-07">
         ZipArchiveInputStream and CpioArchiveInputStream could throw
         exceptions who's messages contained potentially corrupt entry
         names read from a broken archive. They will now sanitize the
         names by replacing unprintable characters and restricting the
         length to 255 characters.
+      </action>
+      <action issue="COMPRESS-357" type="update" date="2016-06-15">
+        BZip2CompressorOutputStream no longer tries to finish the
+        output stream in finalize. This is a breaking change for code
+        that relied on the finalizer.
       </action>
     </release>
     <release version="1.11" date="2016-04-06"
