@@ -5,6 +5,61 @@ compression and archive formats.  These include: bzip2, gzip, pack200,
 lzma, xz, Snappy, traditional Unix Compress, DEFLATE and ar, cpio,
 jar, tar, zip, dump, 7z, arj.
 
+Release 1.12 (not released, yet)
+------------
+
+Commons Compress 1.12 is the first version to require Java6 at
+runtime.
+
+Release 1.12 changes the behavior of BZip2CompressorOutputStream's
+finalize method so that it no longer invokes finish. This is going to
+break code that relied on the finalizer to clean up an unfinished
+stream. The code will need to be changed to call finish or close
+itself. Note that a finalizer is not guaranteed to run, so the feature
+was not 100% effective in any case.
+
+New features:
+
+o FramedSnappyCompressorInputStream now supports the dialect of
+  Snappy used by the IWA files contained within the zip archives
+  used in Apple's iWork 13 files.
+  Issue: COMPRESS-352.
+
+Fixed Bugs:
+
+o SevenZFile.read() throws an IllegalStateException for empty entries.
+  Issue: COMPRESS-348.
+o TarArchiveInputStream failed to parse PAX headers that included
+  blank lines.
+  Issue: COMPRESS-355. Thanks to Jeremy Gustie.
+o TarArchiveInputStream failed to parse PAX headers whose tar entry
+  name ended with a slash.
+  Issue: COMPRESS-356. Thanks to Jeremy Gustie.
+
+Changes:
+o Update requirement from Java 5 to 6.
+  Issue: COMPRESS-349. 
+o TarArchiveEntry wastefully allocates empty arrays.
+  Issue: COMPRESS-350. 
+o Javadoc for BZip2CompressorInputStream(InputStream, boolean) should
+  refer to IOEx, not NPE.
+  Issue: COMPRESS-353.
+o PureJavaCrc32C in the snappy package is now final so it is now safe
+  to call a virtual method inside the constructor.
+  Issue: COMPRESS-354.
+
+o ZipArchiveInputStream and CpioArchiveInputStream could throw
+  exceptions who's messages contained potentially corrupt entry names
+  read from a broken archive. They will now sanitize the names by
+  replacing unprintable characters and restricting the length to 255
+  characters.
+  Issue: COMPRESS-351.
+o BZip2CompressorOutputStream no longer tries to finish the output
+  stream in finalize. This is a breaking change for code that relied
+  on the finalizer.
+  Issue: COMPRESS-357.
+
+
 Release 1.11
 ------------
 
