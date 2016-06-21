@@ -138,8 +138,8 @@
      </section>
      <section name="Z">
        <ul>
-         <li>In Compress 1.7 and 1.8
-         <code>CompressorStreamFactory</code> is not able to
+         <li>Prior to Compress 1.8.1
+         <code>CompressorStreamFactory</code> was not able to
          auto-detect streams using .Z compression.</li>
          <li>read-only support</li>
        </ul>
