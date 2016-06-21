@@ -52,10 +52,10 @@
        </ul>
      </section>
      <section name="AR">
-       <p>AR archives can not contain directories - this is a
-       limitation of the format rather than one of Compress'
-       implementation.</p>
        <ul>
+         <li>AR archives can not contain directories - this is a
+         limitation of the format rather than one of Compress'
+         implementation.</li>
          <li>file names longer than 16 characters are only fully
          supported using the BSD dialect, the GNU/SRV4 dialect is only
          supported when reading archives.</li>
