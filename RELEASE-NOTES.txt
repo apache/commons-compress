@@ -8,7 +8,7 @@ jar, tar, zip, dump, 7z, arj.
 Release 1.12
 ------------
 
-Commons Compress 1.12 is the first version to require Java6 at
+Commons Compress 1.12 is the first version to require Java 6 at
 runtime.
 
 Release 1.12 changes the behavior of BZip2CompressorOutputStream's
