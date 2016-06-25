@@ -52,7 +52,7 @@ class Folder {
      * from the output of the first and so on.</p>
      */
     Iterable<Coder> getOrderedCoders() {
-        final LinkedList<Coder> l = new LinkedList<Coder>();
+        final LinkedList<Coder> l = new LinkedList<>();
         int current = (int) packedStreams[0]; // more that 2^31 coders?
         while (current != -1) {
             l.addLast(coders[current]);

@@ -823,7 +823,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
         }
 
         public static Set<PERMISSION> find(final int code) {
-            final Set<PERMISSION> set = new HashSet<PERMISSION>();
+            final Set<PERMISSION> set = new HashSet<>();
 
             for (final PERMISSION p : PERMISSION.values()) {
                 if ((code & p.code) == p.code) {

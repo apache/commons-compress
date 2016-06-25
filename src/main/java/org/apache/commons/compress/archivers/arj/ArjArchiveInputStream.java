@@ -248,7 +248,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         localFileHeader.name = readString(basicHeader);
         localFileHeader.comment = readString(basicHeader);
 
-        final ArrayList<byte[]> extendedHeaders = new ArrayList<byte[]>();
+        final ArrayList<byte[]> extendedHeaders = new ArrayList<>();
         int extendedHeaderSize;
         while ((extendedHeaderSize = read16(in)) > 0) {
             final byte[] extendedHeaderBytes = new byte[extendedHeaderSize];

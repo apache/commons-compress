@@ -63,10 +63,10 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     protected TapeInputStream raw;
 
     // map of ino -> dirent entry. We can use this to reconstruct full paths.
-    private final Map<Integer, Dirent> names = new HashMap<Integer, Dirent>();
+    private final Map<Integer, Dirent> names = new HashMap<>();
 
     // map of ino -> (directory) entry when we're missing one or more elements in the path.
-    private final Map<Integer, DumpArchiveEntry> pending = new HashMap<Integer, DumpArchiveEntry>();
+    private final Map<Integer, DumpArchiveEntry> pending = new HashMap<>();
 
     // queue of (directory) entries where we now have the full path.
     private Queue<DumpArchiveEntry> queue;
@@ -136,7 +136,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
         // use priority based on queue to ensure parent directories are
         // released first.
-        queue = new PriorityQueue<DumpArchiveEntry>(10,
+        queue = new PriorityQueue<>(10,
                 new Comparator<DumpArchiveEntry>() {
                     @Override
                     public int compare(final DumpArchiveEntry p, final DumpArchiveEntry q) {
@@ -415,7 +415,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     private String getPath(final DumpArchiveEntry entry) {
         // build the stack of elements. It's possible that we're 
         // still missing an intermediate value and if so we
-        final Stack<String> elements = new Stack<String>();
+        final Stack<String> elements = new Stack<>();
         Dirent dirent = null;
 
         for (int i = entry.getIno();; i = dirent.getParentIno()) {

@@ -77,7 +77,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     private final short entryFormat;
 
     private final HashMap<String, CpioArchiveEntry> names =
-        new HashMap<String, CpioArchiveEntry>();
+        new HashMap<>();
 
     private long crc = 0;
 

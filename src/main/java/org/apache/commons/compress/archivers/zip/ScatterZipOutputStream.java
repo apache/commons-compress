@@ -46,7 +46,7 @@ import java.util.zip.Deflater;
  * @since 1.10
  */
 public class ScatterZipOutputStream implements Closeable {
-    private final Queue<CompressedEntry> items = new ConcurrentLinkedQueue<CompressedEntry>();
+    private final Queue<CompressedEntry> items = new ConcurrentLinkedQueue<>();
     private final ScatterGatherBackingStore backingStore;
     private final StreamCompressor streamCompressor;
 

@@ -455,7 +455,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      */
     public void setContentMethods(final Iterable<? extends SevenZMethodConfiguration> methods) {
         if (methods != null) {
-            final LinkedList<SevenZMethodConfiguration> l = new LinkedList<SevenZMethodConfiguration>();
+            final LinkedList<SevenZMethodConfiguration> l = new LinkedList<>();
             for (final SevenZMethodConfiguration m : methods) {
                 l.addLast(m);
             }

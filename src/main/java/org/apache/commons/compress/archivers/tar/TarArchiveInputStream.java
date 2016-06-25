@@ -79,7 +79,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     final String encoding;
 
     // the global PAX header
-    private Map<String, String> globalPaxHeaders = new HashMap<String, String>();
+    private Map<String, String> globalPaxHeaders = new HashMap<>();
 
     /**
      * Constructor for TarInputStream.
@@ -451,7 +451,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     // https://www.gnu.org/software/tar/manual/html_section/tar_92.html#SEC188
     Map<String, String> parsePaxHeaders(final InputStream i)
         throws IOException {
-        final Map<String, String> headers = new HashMap<String, String>(globalPaxHeaders);
+        final Map<String, String> headers = new HashMap<>(globalPaxHeaders);
         // Format is "length keyword=value\n";
         while(true){ // get length
             int ch;

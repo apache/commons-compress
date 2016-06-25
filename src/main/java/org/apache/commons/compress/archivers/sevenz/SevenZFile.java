@@ -77,7 +77,7 @@ public class SevenZFile implements Closeable {
     private InputStream currentFolderInputStream = null;
     private byte[] password;
 
-    private final ArrayList<InputStream> deferredBlockStreams = new ArrayList<InputStream>();
+    private final ArrayList<InputStream> deferredBlockStreams = new ArrayList<>();
 
     static final byte[] sevenZSignature = {
         (byte)'7', (byte)'z', (byte)0xBC, (byte)0xAF, (byte)0x27, (byte)0x1C
@@ -868,7 +868,7 @@ public class SevenZFile implements Closeable {
             new BufferedInputStream(
               new BoundedRandomAccessFileInputStream(file,
                   archive.packSizes[firstPackStreamIndex]));
-        final LinkedList<SevenZMethodConfiguration> methods = new LinkedList<SevenZMethodConfiguration>();
+        final LinkedList<SevenZMethodConfiguration> methods = new LinkedList<>();
         for (final Coder coder : folder.getOrderedCoders()) {
             if (coder.numInStreams != 1 || coder.numOutStreams != 1) {
                 throw new IOException("Multi input/output stream coders are not yet supported");

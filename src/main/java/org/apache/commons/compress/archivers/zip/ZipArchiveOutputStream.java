@@ -171,7 +171,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * List of ZipArchiveEntries written so far.
      */
     private final List<ZipArchiveEntry> entries =
-        new LinkedList<ZipArchiveEntry>();
+        new LinkedList<>();
 
     private final StreamCompressor streamCompressor;
 
@@ -201,7 +201,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * Holds the offsets of the LFH starts for each entry.
      */
     private final Map<ZipArchiveEntry, Long> offsets =
-        new HashMap<ZipArchiveEntry, Long>();
+        new HashMap<>();
 
     /**
      * The encoding to use for filenames and the file comment.

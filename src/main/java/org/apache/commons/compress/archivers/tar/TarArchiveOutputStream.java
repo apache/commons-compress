@@ -275,7 +275,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             throw new IOException("Stream has already been finished");
         }
         final TarArchiveEntry entry = (TarArchiveEntry) archiveEntry;
-        final Map<String, String> paxHeaders = new HashMap<String, String>();
+        final Map<String, String> paxHeaders = new HashMap<>();
         final String entryName = entry.getName();
         final boolean paxHeaderContainsPath = handleLongName(entry, entryName, paxHeaders, "path",
                                                        TarConstants.LF_GNUTYPE_LONGNAME, "file name");

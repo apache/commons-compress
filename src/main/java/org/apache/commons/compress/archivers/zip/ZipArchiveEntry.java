@@ -321,7 +321,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * @param fields an array of extra fields
      */
     public void setExtraFields(final ZipExtraField[] fields) {
-        final List<ZipExtraField> newFields = new ArrayList<ZipExtraField>();
+        final List<ZipExtraField> newFields = new ArrayList<>();
         for (final ZipExtraField field : fields) {
             if (field instanceof UnparseableExtraFieldData) {
                 unparseableExtra = (UnparseableExtraFieldData) field;
@@ -469,7 +469,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
             throw new java.util.NoSuchElementException();
         }
 
-        final List<ZipExtraField> newResult = new ArrayList<ZipExtraField>();
+        final List<ZipExtraField> newResult = new ArrayList<>();
         for (final ZipExtraField extraField : extraFields) {
             if (!type.equals(extraField.getHeaderId())){
                 newResult.add( extraField);

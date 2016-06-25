@@ -113,7 +113,7 @@ public class ChangeSetPerformer {
             throws IOException {
         final ChangeSetResults results = new ChangeSetResults();
 
-        final Set<Change> workingSet = new LinkedHashSet<Change>(changes);
+        final Set<Change> workingSet = new LinkedHashSet<>(changes);
 
         for (final Iterator<Change> it = workingSet.iterator(); it.hasNext();) {
             final Change change = it.next();

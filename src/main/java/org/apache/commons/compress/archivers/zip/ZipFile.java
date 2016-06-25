@@ -90,13 +90,13 @@ public class ZipFile implements Closeable {
      * directory.
      */
     private final List<ZipArchiveEntry> entries =
-        new LinkedList<ZipArchiveEntry>();
+        new LinkedList<>();
 
     /**
      * Maps String to list of ZipArchiveEntrys, name -> actual entries.
      */
     private final Map<String, LinkedList<ZipArchiveEntry>> nameMap =
-        new HashMap<String, LinkedList<ZipArchiveEntry>>(HASH_SIZE);
+        new HashMap<>(HASH_SIZE);
 
     private static final class OffsetEntry {
         private long headerOffset = -1;
@@ -537,7 +537,7 @@ public class ZipFile implements Closeable {
     private Map<ZipArchiveEntry, NameAndComment> populateFromCentralDirectory()
         throws IOException {
         final HashMap<ZipArchiveEntry, NameAndComment> noUTF8Flag =
-            new HashMap<ZipArchiveEntry, NameAndComment>();
+            new HashMap<>();
 
         positionAtCentralDirectory();
 
@@ -987,7 +987,7 @@ public class ZipFile implements Closeable {
             final String name = ze.getName();
             LinkedList<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
             if (entriesOfThatName == null) {
-                entriesOfThatName = new LinkedList<ZipArchiveEntry>();
+                entriesOfThatName = new LinkedList<>();
                 nameMap.put(name, entriesOfThatName);
             }
             entriesOfThatName.addLast(ze);

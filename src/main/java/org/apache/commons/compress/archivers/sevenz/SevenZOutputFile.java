@@ -44,7 +44,7 @@ import org.apache.commons.compress.utils.CountingOutputStream;
  */
 public class SevenZOutputFile implements Closeable {
     private final RandomAccessFile file;
-    private final List<SevenZArchiveEntry> files = new ArrayList<SevenZArchiveEntry>();
+    private final List<SevenZArchiveEntry> files = new ArrayList<>();
     private int numNonEmptyStreams = 0;
     private final CRC32 crc32 = new CRC32();
     private final CRC32 compressedCrc32 = new CRC32();
@@ -54,7 +54,7 @@ public class SevenZOutputFile implements Closeable {
     private CountingOutputStream[] additionalCountingStreams;
     private Iterable<? extends SevenZMethodConfiguration> contentMethods =
             Collections.singletonList(new SevenZMethodConfiguration(SevenZMethod.LZMA2));
-    private final Map<SevenZArchiveEntry, long[]> additionalSizes = new HashMap<SevenZArchiveEntry, long[]>();
+    private final Map<SevenZArchiveEntry, long[]> additionalSizes = new HashMap<>();
     
     /**
      * Opens file to write a 7z archive to.
@@ -280,7 +280,7 @@ public class SevenZOutputFile implements Closeable {
         }
 
         OutputStream out = new OutputStreamWrapper();
-        final ArrayList<CountingOutputStream> moreStreams = new ArrayList<CountingOutputStream>();
+        final ArrayList<CountingOutputStream> moreStreams = new ArrayList<>();
         boolean first = true;
         for (final SevenZMethodConfiguration m : getContentMethods(files.get(files.size() - 1))) {
             if (!first) {
@@ -730,7 +730,7 @@ public class SevenZOutputFile implements Closeable {
     }
 
     private static <T> Iterable<T> reverse(final Iterable<T> i) {
-        final LinkedList<T> l = new LinkedList<T>();
+        final LinkedList<T> l = new LinkedList<>();
         for (final T t : i) {
             l.addFirst(t);
         }
