@@ -44,7 +44,7 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.13" date="not released, yet" 
              description="Release 1.13 - API compatible to 1.12 but requires Java 7 at runtime.">
-      <action issue="COMPRESS-360" type="update" date="2016-04-09" dev="ggregory">
+      <action issue="COMPRESS-360" type="update" date="2016-06-25" dev="ggregory">
         Update Java requirement from 6 to 7.
       </action>
     </release>
