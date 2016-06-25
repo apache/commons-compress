@@ -34,6 +34,12 @@ class UnshrinkingInputStream extends LZWInputStream {
     private static final int MAX_TABLE_SIZE = 1 << MAX_CODE_SIZE;
     private final boolean[] isUsed;
     
+    /**
+     * IOException is not actually thrown!
+     * 
+     * @param inputStream
+     * @throws IOException IOException is not actually thrown!
+     */
     public UnshrinkingInputStream(final InputStream inputStream) throws IOException {
         super(inputStream, ByteOrder.LITTLE_ENDIAN);
         setClearCode(DEFAULT_CODE_SIZE);
