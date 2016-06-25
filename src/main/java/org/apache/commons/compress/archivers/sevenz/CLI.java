@@ -82,8 +82,7 @@ public class CLI {
                 if (parent != null && !parent.exists() && !parent.mkdirs()) {
                     throw new IOException("Cannot create " + parent);
                 }
-                final FileOutputStream fos = new FileOutputStream(outFile);
-                try {
+                try (final FileOutputStream fos = new FileOutputStream(outFile)) {
                     final long total = entry.getSize();
                     long off = 0;
                     while (off < total) {
@@ -99,8 +98,6 @@ public class CLI {
                         off += bytesRead;
                         fos.write(BUF, 0, bytesRead);
                     }
-                } finally {
-                    fos.close();
                 }
             }
         };
@@ -127,14 +124,11 @@ public class CLI {
         if (!f.isFile()) {
             System.err.println(f + " doesn't exist or is a directory");
         }
-        final SevenZFile archive = new SevenZFile(f);
-        try {
+        try (final SevenZFile archive = new SevenZFile(f)) {
             SevenZArchiveEntry ae;
             while((ae=archive.getNextEntry()) != null) {
                 mode.takeAction(archive, ae);
             }
-        } finally {
-            archive.close();
         }
     }
 

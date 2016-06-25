@@ -110,13 +110,14 @@ public class ScatterZipOutputStream implements Closeable {
      */
     public void writeTo(final ZipArchiveOutputStream target) throws IOException {
         backingStore.closeForWriting();
-        final InputStream data = backingStore.getInputStream();
-        for (final CompressedEntry compressedEntry : items) {
-            final BoundedInputStream rawStream = new BoundedInputStream(data, compressedEntry.compressedSize);
-            target.addRawArchiveEntry(compressedEntry.transferToArchiveEntry(), rawStream);
-            rawStream.close();
+        try (final InputStream data = backingStore.getInputStream()) {
+            for (final CompressedEntry compressedEntry : items) {
+                try (final BoundedInputStream rawStream = new BoundedInputStream(data,
+                        compressedEntry.compressedSize)) {
+                    target.addRawArchiveEntry(compressedEntry.transferToArchiveEntry(), rawStream);
+                }
+            }
         }
-        data.close();
     }
 
 

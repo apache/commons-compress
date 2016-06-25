@@ -44,20 +44,23 @@ public final class Lister {
         if (!f.isFile()) {
             System.err.println(f + " doesn't exist or is a directory");
         }
-        final InputStream fis = new BufferedInputStream(new FileInputStream(f));
-        ArchiveInputStream ais;
+        try (final InputStream fis = new BufferedInputStream(new FileInputStream(f));
+                final ArchiveInputStream ais = createArchiveInputStream(args, fis)) {
+            System.out.println("Created " + ais.toString());
+            ArchiveEntry ae;
+            while ((ae = ais.getNextEntry()) != null) {
+                System.out.println(ae.getName());
+            }
+        }
+    }
+
+    private static ArchiveInputStream createArchiveInputStream(final String[] args, final InputStream fis)
+            throws ArchiveException {
         if (args.length > 1) {
-            ais = factory.createArchiveInputStream(args[1], fis);
+            return factory.createArchiveInputStream(args[1], fis);
         } else {
-            ais = factory.createArchiveInputStream(fis);
+            return factory.createArchiveInputStream(fis);
         }
-        System.out.println("Created " + ais.toString());
-        ArchiveEntry ae;
-        while ((ae = ais.getNextEntry()) != null) {
-            System.out.println(ae.getName());
-        }
-        ais.close();
-        fis.close();
     }
 
     private static void usage() {
