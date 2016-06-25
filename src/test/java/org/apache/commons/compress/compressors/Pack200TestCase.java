@@ -136,7 +136,7 @@ public final class Pack200TestCase extends AbstractTestCase {
         try {
             final ArchiveInputStream in = new ArchiveStreamFactory()
                 .createArchiveInputStream("jar", is);
-            final List<String> files = new ArrayList<String>();
+            final List<String> files = new ArrayList<>();
             files.add("testdata/test1.xml");
             files.add("testdata/test2.xml");
             checkArchiveContent(in, files);
@@ -184,7 +184,7 @@ public final class Pack200TestCase extends AbstractTestCase {
 
     @Test
     public void testInputStreamMethods() throws Exception {
-        final Map<String, String> m = new HashMap<String, String>();
+        final Map<String, String> m = new HashMap<>();
         m.put("foo", "bar");
         final InputStream is =
             new Pack200CompressorInputStream(new FileInputStream(getFile("bla.jar")),
@@ -212,7 +212,7 @@ public final class Pack200TestCase extends AbstractTestCase {
     @Test
     public void testOutputStreamMethods() throws Exception {
         final File output = new File(dir, "bla.pack");
-        final Map<String, String> m = new HashMap<String, String>();
+        final Map<String, String> m = new HashMap<>();
         m.put("foo", "bar");
         final OutputStream out = new FileOutputStream(output);
         try {

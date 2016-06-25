@@ -144,7 +144,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
 
     @Test
     public void testWriteSimplePaxHeaders() throws Exception {
-        final Map<String, String> m = new HashMap<String, String>();
+        final Map<String, String> m = new HashMap<>();
         m.put("a", "b");
         final byte[] data = writePaxHeader(m);
         assertEquals("00000000006 ",
@@ -158,7 +158,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
 
     @Test
     public void testPaxHeadersWithLength99() throws Exception {
-        final Map<String, String> m = new HashMap<String, String>();
+        final Map<String, String> m = new HashMap<>();
         m.put("a",
               "0123456789012345678901234567890123456789"
               + "01234567890123456789012345678901234567890123456789"
@@ -177,7 +177,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
 
     @Test
     public void testPaxHeadersWithLength101() throws Exception {
-        final Map<String, String> m = new HashMap<String, String>();
+        final Map<String, String> m = new HashMap<>();
         m.put("a",
               "0123456789012345678901234567890123456789"
               + "01234567890123456789012345678901234567890123456789"

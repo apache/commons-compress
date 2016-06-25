@@ -179,7 +179,7 @@ public class ZipFileTest {
     @Test
     public void testUnixSymlinkSampleFile() throws Exception {
         final String entryPrefix = "COMPRESS-214_unix_symlinks/";
-        final TreeMap<String, String> expectedVals = new TreeMap<String, String>();
+        final TreeMap<String, String> expectedVals = new TreeMap<>();
 
         // I threw in some Japanese characters to keep things interesting.
         expectedVals.put(entryPrefix + "link1", "../COMPRESS-214_unix_symlinks/./a/b/c/../../../\uF999");

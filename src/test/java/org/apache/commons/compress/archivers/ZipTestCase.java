@@ -77,7 +77,7 @@ public final class ZipTestCase extends AbstractTestCase {
         out.close();
 
         // Unarchive the same
-        final List<File> results = new ArrayList<File>();
+        final List<File> results = new ArrayList<>();
 
         final InputStream is = new FileInputStream(output);
         ArchiveInputStream in = null;
@@ -136,7 +136,7 @@ public final class ZipTestCase extends AbstractTestCase {
     public void testSkipsPK00Prefix() throws Exception {
         final File input = getFile("COMPRESS-208.zip");
         final InputStream is = new FileInputStream(input);
-        final ArrayList<String> al = new ArrayList<String>();
+        final ArrayList<String> al = new ArrayList<>();
         al.add("test1.xml");
         al.add("test2.xml");
         try {
@@ -208,7 +208,7 @@ public final class ZipTestCase extends AbstractTestCase {
     public void testListAllFilesWithNestedArchive() throws Exception {
         final File input = getFile("OSX_ArchiveWithNestedArchive.zip");
 
-        final List<String> results = new ArrayList<String>();
+        final List<String> results = new ArrayList<>();
 
         final InputStream is = new FileInputStream(input);
         ArchiveInputStream in = null;

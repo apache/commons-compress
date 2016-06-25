@@ -56,7 +56,7 @@ public class LongPathTest extends AbstractTestCase {
 
     private static final ClassLoader CLASSLOADER = LongPathTest.class.getClassLoader();
     private static final File ARCDIR = new File(CLASSLOADER.getResource("longpath").getFile());
-    private static final ArrayList<String> FILELIST = new ArrayList<String>();
+    private static final ArrayList<String> FILELIST = new ArrayList<>();
 
     private final File file;
 
@@ -81,7 +81,7 @@ public class LongPathTest extends AbstractTestCase {
 
     @Parameters(name = "file={0}")
     public static Collection<Object[]> data() {
-        final Collection<Object[]> params = new ArrayList<Object[]>();
+        final Collection<Object[]> params = new ArrayList<>();
         for (final String f : ARCDIR.list(new FilenameFilter() {
             @Override
             public boolean accept(final File dir, final String name) {

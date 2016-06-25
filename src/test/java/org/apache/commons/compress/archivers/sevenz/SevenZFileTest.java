@@ -43,7 +43,7 @@ public class SevenZFileTest extends AbstractTestCase {
     @Test
     public void testRandomlySkippingEntries() throws Exception {
         // Read sequential reference.
-        final Map<String, byte[]> entriesByName = new HashMap<String, byte[]>();
+        final Map<String, byte[]> entriesByName = new HashMap<>();
         SevenZFile archive = new SevenZFile(getFile("COMPRESS-320/Copy.7z"));
         SevenZArchiveEntry entry;
         while ((entry = archive.getNextEntry()) != null) {

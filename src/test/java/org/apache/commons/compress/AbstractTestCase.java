@@ -168,7 +168,7 @@ public abstract class AbstractTestCase {
         try {
             archive = File.createTempFile("test", "." + archivename);
             archive.deleteOnExit();
-            archiveList = new ArrayList<String>();
+            archiveList = new ArrayList<>();
 
             stream = new FileOutputStream(archive);
             out = factory.createArchiveOutputStream(archivename, stream);
@@ -227,7 +227,7 @@ public abstract class AbstractTestCase {
     protected File createEmptyArchive(final String archivename) throws Exception {
         ArchiveOutputStream out = null;
         OutputStream stream = null;
-        archiveList = new ArrayList<String>();
+        archiveList = new ArrayList<>();
         try {
             archive = File.createTempFile("empty", "." + archivename);
             archive.deleteOnExit();
@@ -254,7 +254,7 @@ public abstract class AbstractTestCase {
     protected File createSingleEntryArchive(final String archivename) throws Exception {
         ArchiveOutputStream out = null;
         OutputStream stream = null;
-        archiveList = new ArrayList<String>();
+        archiveList = new ArrayList<>();
         try {
             archive = File.createTempFile("empty", "." + archivename);
             archive.deleteOnExit();

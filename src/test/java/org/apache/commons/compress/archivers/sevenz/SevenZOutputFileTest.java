@@ -307,7 +307,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
     @Test
     public void testStackOfContentCompressions() throws Exception {
         output = new File(dir, "multiple-methods.7z");
-        final ArrayList<SevenZMethodConfiguration> methods = new ArrayList<SevenZMethodConfiguration>();
+        final ArrayList<SevenZMethodConfiguration> methods = new ArrayList<>();
         methods.add(new SevenZMethodConfiguration(SevenZMethod.LZMA2));
         methods.add(new SevenZMethodConfiguration(SevenZMethod.COPY));
         methods.add(new SevenZMethodConfiguration(SevenZMethod.DEFLATE));
@@ -464,14 +464,14 @@ public class SevenZOutputFileTest extends AbstractTestCase {
 
     private void testRoundTrip(final SevenZMethod method) throws Exception {
         output = new File(dir, method + "-roundtrip.7z");
-        final ArrayList<SevenZMethodConfiguration> methods = new ArrayList<SevenZMethodConfiguration>();
+        final ArrayList<SevenZMethodConfiguration> methods = new ArrayList<>();
         methods.add(new SevenZMethodConfiguration(method));
         createAndReadBack(output, methods);
     }
 
     private void testFilterRoundTrip(final SevenZMethodConfiguration method) throws Exception {
         output = new File(dir, method.getMethod() + "-roundtrip.7z");
-        final ArrayList<SevenZMethodConfiguration> methods = new ArrayList<SevenZMethodConfiguration>();
+        final ArrayList<SevenZMethodConfiguration> methods = new ArrayList<>();
         methods.add(method);
         methods.add(new SevenZMethodConfiguration(SevenZMethod.LZMA2));
         createAndReadBack(output, methods);

@@ -112,7 +112,7 @@ public final class DumpTestCase extends AbstractTestCase {
     }
 
     private void checkDumpArchive(final File f) throws Exception {
-        final ArrayList<String> expected = new ArrayList<String>();
+        final ArrayList<String> expected = new ArrayList<>();
         expected.add("");
         expected.add("lost+found/");
         expected.add("test1.xml");

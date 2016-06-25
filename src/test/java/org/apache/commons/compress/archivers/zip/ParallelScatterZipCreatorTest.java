@@ -109,7 +109,7 @@ public class ParallelScatterZipCreatorTest {
     }
 
     private Map<String, byte[]> writeEntries(final ParallelScatterZipCreator zipCreator) {
-        final Map<String, byte[]> entries = new HashMap<String, byte[]>();
+        final Map<String, byte[]> entries = new HashMap<>();
         for (int i = 0; i < NUMITEMS; i++){
             final byte[] payloadBytes = ("content" + i).getBytes();
             final ZipArchiveEntry za = createZipArchiveEntry(entries, i, payloadBytes);
@@ -124,7 +124,7 @@ public class ParallelScatterZipCreatorTest {
     }
 
     private Map<String, byte[]> writeEntriesAsCallable(final ParallelScatterZipCreator zipCreator) {
-        final Map<String, byte[]> entries = new HashMap<String, byte[]>();
+        final Map<String, byte[]> entries = new HashMap<>();
         for (int i = 0; i < NUMITEMS; i++){
             final byte[] payloadBytes = ("content" + i).getBytes();
             final ZipArchiveEntry za = createZipArchiveEntry(entries, i, payloadBytes);

@@ -766,7 +766,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             }
         }
 
-        final List<String> expected = new ArrayList<String>();
+        final List<String> expected = new ArrayList<>();
         expected.add("test1.xml");
 
         this.checkArchiveContent(temp, expected);
@@ -805,7 +805,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                 ais.close();
             }
         }
-        final List<String> expected = new ArrayList<String>();
+        final List<String> expected = new ArrayList<>();
         expected.add("test1.xml");
         this.checkArchiveContent(temp, expected);
     }
@@ -846,7 +846,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                 ais.close();
             }
         }
-        final List<String> expected = new ArrayList<String>();
+        final List<String> expected = new ArrayList<>();
         expected.add("test1.xml");
         this.checkArchiveContent(temp, expected);
     }
@@ -893,7 +893,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                 ais.close();
             }
         }
-        final List<String> expected = new ArrayList<String>();
+        final List<String> expected = new ArrayList<>();
         expected.add("test1.xml");
         expected.add("testdata/test.txt");
         final ArchiveInputStream in = factory.createArchiveInputStream("tar", new FileInputStream(temp));
@@ -940,7 +940,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                 ais.close();
             }
         }
-        final List<String> expected = new ArrayList<String>();
+        final List<String> expected = new ArrayList<>();
         expected.add("test1.xml");
         expected.add("testdata/test.txt");
         this.checkArchiveContent(temp, expected);
@@ -980,7 +980,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             }
         }
 
-        final List<String> expected = new ArrayList<String>();
+        final List<String> expected = new ArrayList<>();
         expected.add("test1.xml");
         this.checkArchiveContent(temp, expected);
     }

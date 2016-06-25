@@ -69,7 +69,7 @@ public class ArArchiveOutputStreamTest extends AbstractTestCase {
             os = null;
             fos = null;
 
-            final List<String> expected = new ArrayList<String>();
+            final List<String> expected = new ArrayList<>();
             expected.add("this_is_a_long_name.txt");
             checkArchiveContent(df[1], expected);
         } finally {
