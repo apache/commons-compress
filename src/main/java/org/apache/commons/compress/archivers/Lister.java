@@ -58,9 +58,8 @@ public final class Lister {
             throws ArchiveException {
         if (args.length > 1) {
             return factory.createArchiveInputStream(args[1], fis);
-        } else {
-            return factory.createArchiveInputStream(fis);
         }
+        return factory.createArchiveInputStream(fis);
     }
 
     private static void usage() {
