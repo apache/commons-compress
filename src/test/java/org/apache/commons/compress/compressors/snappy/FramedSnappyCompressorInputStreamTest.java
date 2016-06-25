@@ -175,7 +175,7 @@ public final class FramedSnappyCompressorInputStreamTest
     public void readIWAFile() throws Exception {
         final ZipFile zip = new ZipFile(getFile("testNumbersNew.numbers"));
         try {
-            InputStream is = zip.getInputStream(zip.getEntry("Index/Document.iwa"));
+            final InputStream is = zip.getInputStream(zip.getEntry("Index/Document.iwa"));
             try {
                 final FramedSnappyCompressorInputStream in =
                     new FramedSnappyCompressorInputStream(is, FramedSnappyDialect.IWORK_ARCHIVE);

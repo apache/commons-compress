@@ -187,8 +187,8 @@ public class ZipArchiveInputStreamTest {
                 ze = in.getNextZipEntry();
             }
             fail("expected EOFException");
-        } catch (EOFException ex) {
-            String m = ex.getMessage();
+        } catch (final EOFException ex) {
+            final String m = ex.getMessage();
             assertTrue(m.startsWith("Truncated ZIP entry: ?2016")); // the first character is not printable
         } finally {
             in.close();

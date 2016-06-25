@@ -283,7 +283,7 @@ public class ArchiveUtils {
         for (int i = 0; i < len; i++) {
             final char c = chars[i];
             if (!Character.isISOControl(c)) {
-                Character.UnicodeBlock block = Character.UnicodeBlock.of(c);
+                final Character.UnicodeBlock block = Character.UnicodeBlock.of(c);
                 if (block != null && block != Character.UnicodeBlock.SPECIALS) {
                     sb.append(c);
                     continue;

@@ -271,7 +271,7 @@ public class SevenZFileTest extends AbstractTestCase {
             SevenZArchiveEntry entry = sevenZFile.getNextEntry();
             while (entry != null) {
                 entries++;
-                int b = sevenZFile.read();
+                final int b = sevenZFile.read();
                 if ("2.txt".equals(entry.getName()) || "5.txt".equals(entry.getName())) {
                     assertEquals(-1, b);
                 } else {
