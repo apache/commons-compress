@@ -270,7 +270,7 @@ public class ArchiveUtils {
      * @return a sanitized version of the argument
      * @since Compress 1.12
      */
-    public static String sanitize(String s) {
+    public static String sanitize(final String s) {
         final char[] cs = s.toCharArray();
         final char[] chars = cs.length <= MAX_SANITIZED_NAME_LENGTH ? cs : Arrays.copyOf(cs, MAX_SANITIZED_NAME_LENGTH);
         if (cs.length > MAX_SANITIZED_NAME_LENGTH) {
