@@ -39,7 +39,7 @@ public final class Lister {
             usage();
             return;
         }
-        System.out.println("Analysing "+args[0]);
+        System.out.println("Analysing " + args[0]);
         final File f = new File(args[0]);
         if (!f.isFile()) {
             System.err.println(f + " doesn't exist or is a directory");
@@ -51,9 +51,9 @@ public final class Lister {
         } else {
             ais = factory.createArchiveInputStream(fis);
         }
-        System.out.println("Created "+ais.toString());
+        System.out.println("Created " + ais.toString());
         ArchiveEntry ae;
-        while((ae=ais.getNextEntry()) != null){
+        while ((ae = ais.getNextEntry()) != null) {
             System.out.println(ae.getName());
         }
         ais.close();
