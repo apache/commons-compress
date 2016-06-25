@@ -228,18 +228,12 @@ public class SevenZFile implements Closeable {
     
     private StartHeader readStartHeader(final long startHeaderCrc) throws IOException {
         final StartHeader startHeader = new StartHeader();
-        DataInputStream dataInputStream = null;
-        try {
-             dataInputStream = new DataInputStream(new CRC32VerifyingInputStream(
-                    new BoundedRandomAccessFileInputStream(file, 20), 20, startHeaderCrc));
+        try (DataInputStream dataInputStream = new DataInputStream(new CRC32VerifyingInputStream(
+                new BoundedRandomAccessFileInputStream(file, 20), 20, startHeaderCrc))) {
              startHeader.nextHeaderOffset = Long.reverseBytes(dataInputStream.readLong());
              startHeader.nextHeaderSize = Long.reverseBytes(dataInputStream.readLong());
              startHeader.nextHeaderCrc = 0xffffFFFFL & Integer.reverseBytes(dataInputStream.readInt());
              return startHeader;
-        } finally {
-            if (dataInputStream != null) {
-                dataInputStream.close();
-            }
         }
     }
     
@@ -910,9 +904,9 @@ public class SevenZFile implements Closeable {
             // In solid compression mode we need to decompress all leading folder'
             // streams to get access to an entry. We defer this until really needed
             // so that entire blocks can be skipped without wasting time for decompression.
-            final InputStream stream = deferredBlockStreams.remove(0);
-            IOUtils.skip(stream, Long.MAX_VALUE);
-            stream.close();
+            try (final InputStream stream = deferredBlockStreams.remove(0)) {
+                IOUtils.skip(stream, Long.MAX_VALUE);
+            }
         }
 
         return deferredBlockStreams.get(0);
