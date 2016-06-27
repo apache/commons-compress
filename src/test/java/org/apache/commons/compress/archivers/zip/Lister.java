@@ -54,12 +54,10 @@ public final class Lister {
             usage();
         }
         if (cl.useStream) {
-            final BufferedInputStream fs =
-                new BufferedInputStream(new FileInputStream(f));
-            try {
+            try (BufferedInputStream fs = new BufferedInputStream(new FileInputStream(f))) {
                 final ZipArchiveInputStream zs =
-                    new ZipArchiveInputStream(fs, cl.encoding, true,
-                                              cl.allowStoredEntriesWithDataDescriptor);
+                        new ZipArchiveInputStream(fs, cl.encoding, true,
+                                cl.allowStoredEntriesWithDataDescriptor);
                 for (ArchiveEntry entry = zs.getNextEntry();
                      entry != null;
                      entry = zs.getNextEntry()) {
@@ -69,27 +67,19 @@ public final class Lister {
                         extract(cl.dir, ze, zs);
                     }
                 }
-            } finally {
-                fs.close();
             }
         } else {
-            final ZipFile zf = new ZipFile(f, cl.encoding);
-            try {
+            try (ZipFile zf = new ZipFile(f, cl.encoding)) {
                 for (final Enumeration<ZipArchiveEntry> entries = zf.getEntries();
                      entries.hasMoreElements(); ) {
                     final ZipArchiveEntry ze = entries.nextElement();
                     list(ze);
                     if (cl.dir != null) {
-                        final InputStream is = zf.getInputStream(ze);
-                        try {
+                        try (InputStream is = zf.getInputStream(ze)) {
                             extract(cl.dir, ze, is);
-                        } finally {
-                            is.close();
                         }
                     }
                 }
-            } finally {
-                zf.close();
             }
         }
     }

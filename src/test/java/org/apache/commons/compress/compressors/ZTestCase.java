@@ -81,8 +81,7 @@ public final class ZTestCase extends AbstractTestCase {
     private void testUnarchive(final StreamWrapper<CompressorInputStream> wrapper) throws Exception {
         final File input = getFile("bla.tar.Z");
         final File output = new File(dir, "bla.tar");
-        final InputStream is = new FileInputStream(input);
-        try {
+        try (InputStream is = new FileInputStream(input)) {
             final InputStream in = wrapper.wrap(is);
             FileOutputStream out = null;
             try {
@@ -94,8 +93,6 @@ public final class ZTestCase extends AbstractTestCase {
                 }
                 in.close();
             }
-        } finally {
-            is.close();
         }
     }
 

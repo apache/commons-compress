@@ -246,14 +246,18 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
             readFully(SIX_BYTES_BUF, TWO_BYTES_BUF.length,
                       FOUR_BYTES_BUF.length);
             final String magicString = ArchiveUtils.toAsciiString(SIX_BYTES_BUF);
-            if (magicString.equals(MAGIC_NEW)) {
-                this.entry = readNewEntry(false);
-            } else if (magicString.equals(MAGIC_NEW_CRC)) {
-                this.entry = readNewEntry(true);
-            } else if (magicString.equals(MAGIC_OLD_ASCII)) {
-                this.entry = readOldAsciiEntry();
-            } else {
-                throw new IOException("Unknown magic [" + magicString + "]. Occured at byte: " + getBytesRead());
+            switch (magicString) {
+                case MAGIC_NEW:
+                    this.entry = readNewEntry(false);
+                    break;
+                case MAGIC_NEW_CRC:
+                    this.entry = readNewEntry(true);
+                    break;
+                case MAGIC_OLD_ASCII:
+                    this.entry = readOldAsciiEntry();
+                    break;
+                default:
+                    throw new IOException("Unknown magic [" + magicString + "]. Occured at byte: " + getBytesRead());
             }
         }
 

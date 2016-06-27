@@ -89,11 +89,8 @@ public final class ZipTestCase extends AbstractTestCase {
             while((entry = (ZipArchiveEntry)in.getNextEntry()) != null) {
                 final File outfile = new File(resultDir.getCanonicalPath() + "/result/" + entry.getName());
                 outfile.getParentFile().mkdirs();
-                final OutputStream o = new FileOutputStream(outfile);
-                try {
+                try (OutputStream o = new FileOutputStream(outfile)) {
                     IOUtils.copy(in, o);
-                } finally {
-                    o.close();
                 }
                 results.add(outfile);
             }
@@ -135,14 +132,11 @@ public final class ZipTestCase extends AbstractTestCase {
     @Test
     public void testSkipsPK00Prefix() throws Exception {
         final File input = getFile("COMPRESS-208.zip");
-        final InputStream is = new FileInputStream(input);
         final ArrayList<String> al = new ArrayList<>();
         al.add("test1.xml");
         al.add("test2.xml");
-        try {
+        try (InputStream is = new FileInputStream(input)) {
             checkArchiveContent(new ZipArchiveInputStream(is), al);
-        } finally {
-            is.close();
         }
     }
 
@@ -177,9 +171,7 @@ public final class ZipTestCase extends AbstractTestCase {
     @Test
     public void testSkipEntryWithUnsupportedCompressionMethod()
             throws IOException {
-        final ZipArchiveInputStream zip =
-            new ZipArchiveInputStream(new FileInputStream(getFile("moby.zip")));
-        try {
+        try (ZipArchiveInputStream zip = new ZipArchiveInputStream(new FileInputStream(getFile("moby.zip")))) {
             final ZipArchiveEntry entry = zip.getNextZipEntry();
             assertEquals("method", ZipMethod.TOKENIZATION.getCode(), entry.getMethod());
             assertEquals("README", entry.getName());
@@ -190,8 +182,6 @@ public final class ZipTestCase extends AbstractTestCase {
                 e.printStackTrace();
                 fail("COMPRESS-93: Unable to skip an unsupported zip entry");
             }
-        } finally {
-            zip.close();
         }
     }
 

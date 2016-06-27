@@ -74,22 +74,19 @@ public class SevenZTestCase extends AbstractTestCase {
         } finally {
             outArchive.close();
         }
-        
-        final SevenZFile archive = new SevenZFile(output);
-        try {
+
+        try (SevenZFile archive = new SevenZFile(output)) {
             SevenZArchiveEntry entry;
-            
+
             entry = archive.getNextEntry();
-            assert(entry != null);
+            assert (entry != null);
             assertEquals(entry.getName(), file1.getName());
-            
+
             entry = archive.getNextEntry();
-            assert(entry != null);
+            assert (entry != null);
             assertEquals(entry.getName(), file2.getName());
-            
-            assert(archive.getNextEntry() == null);
-        } finally {
-            archive.close();
+
+            assert (archive.getNextEntry() == null);
         }
     }
 

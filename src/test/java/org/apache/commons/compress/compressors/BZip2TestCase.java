@@ -77,59 +77,39 @@ public final class BZip2TestCase extends AbstractTestCase {
     @Test
     public void testConcatenatedStreamsReadFirstOnly() throws Exception {
         final File input = getFile("multiple.bz2");
-        final InputStream is = new FileInputStream(input);
-        try {
-            final CompressorInputStream in = new CompressorStreamFactory()
-                .createCompressorInputStream("bzip2", is);
-            try {
+        try (InputStream is = new FileInputStream(input)) {
+            try (CompressorInputStream in = new CompressorStreamFactory()
+                    .createCompressorInputStream("bzip2", is)) {
                 assertEquals('a', in.read());
                 assertEquals(-1, in.read());
-            } finally {
-                in.close();
             }
-        } finally {
-            is.close();
         }
     }
 
     @Test
     public void testConcatenatedStreamsReadFully() throws Exception {
         final File input = getFile("multiple.bz2");
-        final InputStream is = new FileInputStream(input);
-        try {
-            final CompressorInputStream in =
-                new BZip2CompressorInputStream(is, true);
-            try {
+        try (InputStream is = new FileInputStream(input)) {
+            try (CompressorInputStream in = new BZip2CompressorInputStream(is, true)) {
                 assertEquals('a', in.read());
                 assertEquals('b', in.read());
                 assertEquals(0, in.available());
                 assertEquals(-1, in.read());
-            } finally {
-                in.close();
             }
-        } finally {
-            is.close();
         }
     }
 
     @Test
     public void testCOMPRESS131() throws Exception {
         final File input = getFile("COMPRESS-131.bz2");
-        final InputStream is = new FileInputStream(input);
-        try {
-            final CompressorInputStream in =
-                new BZip2CompressorInputStream(is, true);
-            try {
+        try (InputStream is = new FileInputStream(input)) {
+            try (CompressorInputStream in = new BZip2CompressorInputStream(is, true)) {
                 int l = 0;
-                while(in.read() != -1) {
+                while (in.read() != -1) {
                     l++;
                 }
                 assertEquals(539, l);
-            } finally {
-                in.close();
             }
-        } finally {
-            is.close();
         }
     }
 

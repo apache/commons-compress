@@ -301,11 +301,8 @@ public class SevenZFile implements Closeable {
                     folder.getUnpackSize(), folder.crc);
         }
         final byte[] nextHeader = new byte[(int)folder.getUnpackSize()];
-        final DataInputStream nextHeaderInputStream = new DataInputStream(inputStreamStack);
-        try {
+        try (DataInputStream nextHeaderInputStream = new DataInputStream(inputStreamStack)) {
             nextHeaderInputStream.readFully(nextHeader);
-        } finally {
-            nextHeaderInputStream.close();
         }
         return new DataInputStream(new ByteArrayInputStream(nextHeader));
     }

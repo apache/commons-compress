@@ -278,10 +278,8 @@ public class ArchiveUtils {
                 chars[i] = '.';
             }
         }
-        final int len = chars.length;
         final StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < len; i++) {
-            final char c = chars[i];
+        for (final char c : chars) {
             if (!Character.isISOControl(c)) {
                 final Character.UnicodeBlock block = Character.UnicodeBlock.of(c);
                 if (block != null && block != Character.UnicodeBlock.SPECIALS) {

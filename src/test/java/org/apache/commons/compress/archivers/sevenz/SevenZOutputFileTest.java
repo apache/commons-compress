@@ -61,8 +61,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         cal.add(Calendar.HOUR, -1);
         final Date creationDate = cal.getTime();
 
-        final SevenZOutputFile outArchive = new SevenZOutputFile(output);
-        try {
+        try (SevenZOutputFile outArchive = new SevenZOutputFile(output)) {
             SevenZArchiveEntry entry = outArchive.createArchiveEntry(dir, "foo/");
             outArchive.putArchiveEntry(entry);
             outArchive.closeArchiveEntry();
@@ -96,20 +95,17 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             outArchive.closeArchiveEntry();
 
             outArchive.finish();
-        } finally {
-            outArchive.close();
         }
 
-        final SevenZFile archive = new SevenZFile(output);
-        try {
+        try (SevenZFile archive = new SevenZFile(output)) {
             SevenZArchiveEntry entry = archive.getNextEntry();
-            assert(entry != null);
+            assert (entry != null);
             assertEquals("foo/", entry.getName());
             assertTrue(entry.isDirectory());
             assertFalse(entry.isAntiItem());
 
             entry = archive.getNextEntry();
-            assert(entry != null);
+            assert (entry != null);
             assertEquals("foo/bar", entry.getName());
             assertFalse(entry.isDirectory());
             assertFalse(entry.isAntiItem());
@@ -119,7 +115,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             assertEquals(creationDate, entry.getCreationDate());
 
             entry = archive.getNextEntry();
-            assert(entry != null);
+            assert (entry != null);
             assertEquals("xyzzy", entry.getName());
             assertEquals(1, entry.getSize());
             assertFalse(entry.getHasAccessDate());
@@ -127,13 +123,13 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             assertEquals(0, archive.read());
 
             entry = archive.getNextEntry();
-            assert(entry != null);
+            assert (entry != null);
             assertEquals("baz/", entry.getName());
             assertTrue(entry.isDirectory());
             assertTrue(entry.isAntiItem());
 
             entry = archive.getNextEntry();
-            assert(entry != null);
+            assert (entry != null);
             assertEquals("dada", entry.getName());
             assertEquals(2, entry.getSize());
             final byte[] content = new byte[2];
@@ -142,9 +138,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             assertEquals(42, content[1]);
             assertEquals(17, entry.getWindowsAttributes());
 
-            assert(archive.getNextEntry() == null);
-        } finally {
-            archive.close();
+            assert (archive.getNextEntry() == null);
         }
 
     }
@@ -152,28 +146,22 @@ public class SevenZOutputFileTest extends AbstractTestCase {
     @Test
     public void testDirectoriesOnly() throws Exception {
         output = new File(dir, "dirs.7z");
-        final SevenZOutputFile outArchive = new SevenZOutputFile(output);
-        try {
+        try (SevenZOutputFile outArchive = new SevenZOutputFile(output)) {
             final SevenZArchiveEntry entry = new SevenZArchiveEntry();
             entry.setName("foo/");
             entry.setDirectory(true);
             outArchive.putArchiveEntry(entry);
             outArchive.closeArchiveEntry();
-        } finally {
-            outArchive.close();
         }
 
-        final SevenZFile archive = new SevenZFile(output);
-        try {
+        try (SevenZFile archive = new SevenZFile(output)) {
             final SevenZArchiveEntry entry = archive.getNextEntry();
-            assert(entry != null);
+            assert (entry != null);
             assertEquals("foo/", entry.getName());
             assertTrue(entry.isDirectory());
             assertFalse(entry.isAntiItem());
 
-            assert(archive.getNextEntry() == null);
-        } finally {
-            archive.close();
+            assert (archive.getNextEntry() == null);
         }
 
     }
@@ -181,15 +169,12 @@ public class SevenZOutputFileTest extends AbstractTestCase {
     @Test
     public void testCantFinishTwice() throws Exception {
         output = new File(dir, "finish.7z");
-        final SevenZOutputFile outArchive = new SevenZOutputFile(output);
-        try {
+        try (SevenZOutputFile outArchive = new SevenZOutputFile(output)) {
             outArchive.finish();
             outArchive.finish();
             fail("shouldn't be able to call finish twice");
         } catch (final IOException ex) {
             assertEquals("This archive has already been finished", ex.getMessage());
-        } finally {
-            outArchive.close();
         }
     }
 
@@ -350,22 +335,16 @@ public class SevenZOutputFileTest extends AbstractTestCase {
     @Test
     public void testArchiveWithMixedMethods() throws Exception {
         output = new File(dir, "mixed-methods.7z");
-        final SevenZOutputFile outArchive = new SevenZOutputFile(output);
-        try {
+        try (SevenZOutputFile outArchive = new SevenZOutputFile(output)) {
             addFile(outArchive, 0, true);
             addFile(outArchive, 1, true, Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.BZIP2)));
-        } finally {
-            outArchive.close();
         }
 
-        final SevenZFile archive = new SevenZFile(output);
-        try {
+        try (SevenZFile archive = new SevenZFile(output)) {
             assertEquals(Boolean.TRUE,
-                         verifyFile(archive, 0, Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.LZMA2))));
+                    verifyFile(archive, 0, Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.LZMA2))));
             assertEquals(Boolean.TRUE,
-                         verifyFile(archive, 1, Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.BZIP2))));
-        } finally {
-            archive.close();
+                    verifyFile(archive, 1, Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.BZIP2))));
         }
     }
 
@@ -376,25 +355,21 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             : numberOfFiles + 1;
         int nonEmptyFilesAdded = 0;
         output = new File(dir, "COMPRESS252-" + numberOfFiles + "-" + numberOfNonEmptyFiles + ".7z");
-        final SevenZOutputFile archive = new SevenZOutputFile(output);
-        try {
+        try (SevenZOutputFile archive = new SevenZOutputFile(output)) {
             addDir(archive);
             for (int i = 0; i < numberOfFiles; i++) {
                 addFile(archive, i,
                         (i + 1) % nonEmptyModulus == 0 && nonEmptyFilesAdded++ < numberOfNonEmptyFiles);
             }
-        } finally {
-            archive.close();
         }
         verifyCompress252(output, numberOfFiles, numberOfNonEmptyFiles);
     }
 
     private void verifyCompress252(final File output, final int numberOfFiles, final int numberOfNonEmptyFiles)
         throws Exception {
-        final SevenZFile archive = new SevenZFile(output);
         int filesFound = 0;
         int nonEmptyFilesFound = 0;
-        try {
+        try (SevenZFile archive = new SevenZFile(output)) {
             verifyDir(archive);
             Boolean b = verifyFile(archive, filesFound++);
             while (b != null) {
@@ -403,8 +378,6 @@ public class SevenZOutputFileTest extends AbstractTestCase {
                 }
                 b = verifyFile(archive, filesFound++);
             }
-        } finally {
-            archive.close();
         }
         assertEquals(numberOfFiles + 1, filesFound);
         assertEquals(numberOfNonEmptyFiles, nonEmptyFilesFound);
@@ -486,11 +459,8 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             outArchive.close();
         }
 
-        final SevenZFile archive = new SevenZFile(output);
-        try {
+        try (SevenZFile archive = new SevenZFile(output)) {
             assertEquals(Boolean.TRUE, verifyFile(archive, 0, methods));
-        } finally {
-            archive.close();
         }
     }
 

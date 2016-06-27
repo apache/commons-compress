@@ -181,10 +181,8 @@ public class ExtraFieldUtils {
                                                      length);
                 }
                 v.add(ze);
-            } catch (final InstantiationException ie) {
+            } catch (final InstantiationException | IllegalAccessException ie) {
                 throw (ZipException) new ZipException(ie.getMessage()).initCause(ie);
-            } catch (final IllegalAccessException iae) {
-                throw (ZipException) new ZipException(iae.getMessage()).initCause(iae);
             }
             start += length + WORD;
         }

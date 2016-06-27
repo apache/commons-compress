@@ -70,8 +70,7 @@ public final class FramedSnappyTestCase
     private void testUnarchive(final StreamWrapper<CompressorInputStream> wrapper) throws Exception {
         final File input = getFile("bla.tar.sz");
         final File output = new File(dir, "bla.tar");
-        final FileInputStream is = new FileInputStream(input);
-        try {
+        try (FileInputStream is = new FileInputStream(input)) {
             // the intermediate BufferedInputStream is there for mark
             // support in the autodetection test
             final CompressorInputStream in = wrapper.wrap(new BufferedInputStream(is));
@@ -86,21 +85,13 @@ public final class FramedSnappyTestCase
                 }
                 in.close();
             }
-        } finally {
-            is.close();
         }
         final File original = getFile("bla.tar");
-        final FileInputStream written = new FileInputStream(output);
-        try {
-            final FileInputStream orig = new FileInputStream(original);
-            try {
+        try (FileInputStream written = new FileInputStream(output)) {
+            try (FileInputStream orig = new FileInputStream(original)) {
                 assertArrayEquals(IOUtils.toByteArray(written),
-                                  IOUtils.toByteArray(orig));
-            } finally {
-                orig.close();
+                        IOUtils.toByteArray(orig));
             }
-        } finally {
-            written.close();
         }
     }
 

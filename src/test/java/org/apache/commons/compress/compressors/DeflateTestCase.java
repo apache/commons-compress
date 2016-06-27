@@ -42,17 +42,11 @@ public final class DeflateTestCase extends AbstractTestCase {
     public void testDeflateCreation()  throws Exception {
         final File input = getFile("test1.xml");
         final File output = new File(dir, "test1.xml.deflatez");
-        final OutputStream out = new FileOutputStream(output);
-        try {
-            final CompressorOutputStream cos = new CompressorStreamFactory()
-                .createCompressorOutputStream("deflate", out); // zlib header is used by default
-            try {
+        try (OutputStream out = new FileOutputStream(output)) {
+            try (CompressorOutputStream cos = new CompressorStreamFactory()
+                    .createCompressorOutputStream("deflate", out)) {
                 IOUtils.copy(new FileInputStream(input), cos);
-            } finally {
-                cos.close();
             }
-        } finally {
-            out.close();
         }
     }
 
@@ -65,18 +59,12 @@ public final class DeflateTestCase extends AbstractTestCase {
     public void testRawDeflateCreation()  throws Exception {
         final File input = getFile("test1.xml");
         final File output = new File(dir, "test1.xml.deflate");
-        final OutputStream out = new FileOutputStream(output);
-        try {
+        try (OutputStream out = new FileOutputStream(output)) {
             final DeflateParameters params = new DeflateParameters();
             params.setWithZlibHeader(false);
-            final CompressorOutputStream cos = new DeflateCompressorOutputStream(out, params);
-            try {
+            try (CompressorOutputStream cos = new DeflateCompressorOutputStream(out, params)) {
                 IOUtils.copy(new FileInputStream(input), cos);
-            } finally {
-                cos.close();
             }
-        } finally {
-            out.close();
         }
     }
 
@@ -89,10 +77,9 @@ public final class DeflateTestCase extends AbstractTestCase {
     public void testDeflateUnarchive() throws Exception {
         final File input = getFile("bla.tar.deflatez");
         final File output = new File(dir, "bla.tar");
-        final InputStream is = new FileInputStream(input);
-        try {
+        try (InputStream is = new FileInputStream(input)) {
             final CompressorInputStream in = new CompressorStreamFactory()
-                .createCompressorInputStream("deflate", is); // zlib header is expected by default
+                    .createCompressorInputStream("deflate", is); // zlib header is expected by default
             FileOutputStream out = null;
             try {
                 out = new FileOutputStream(output);
@@ -103,8 +90,6 @@ public final class DeflateTestCase extends AbstractTestCase {
                 }
                 in.close();
             }
-        } finally {
-            is.close();
         }
     }
 
@@ -117,8 +102,7 @@ public final class DeflateTestCase extends AbstractTestCase {
     public void testRawDeflateUnarchive() throws Exception {
         final File input = getFile("bla.tar.deflate");
         final File output = new File(dir, "bla.tar");
-        final InputStream is = new FileInputStream(input);
-        try {
+        try (InputStream is = new FileInputStream(input)) {
             final DeflateParameters params = new DeflateParameters();
             params.setWithZlibHeader(false);
             final CompressorInputStream in = new DeflateCompressorInputStream(is, params);
@@ -132,8 +116,6 @@ public final class DeflateTestCase extends AbstractTestCase {
                 }
                 in.close();
             }
-        } finally {
-            is.close();
         }
     }
 }

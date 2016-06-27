@@ -31,11 +31,8 @@ public class BZip2CompressorInputStreamTest {
 
     @Test(expected = IOException.class)
     public void shouldThrowAnIOExceptionWhenAppliedToAZipFile() throws Exception {
-        final FileInputStream in = new FileInputStream(getFile("bla.zip"));
-        try {
+        try (FileInputStream in = new FileInputStream(getFile("bla.zip"))) {
             new BZip2CompressorInputStream(in);
-        } finally {
-            in.close();
         }
     }
 

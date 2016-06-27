@@ -211,15 +211,14 @@ public class Zip64SupportIT {
                     zos.setUseZip64(mode);
                 }
                 write100KFilesToStream(zos);
-                final RandomAccessFile a = new RandomAccessFile(f, "r");
-                try {
+                try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
                     final long end = a.length();
 
                     // validate "end of central directory" is at
                     // the end of the file and contains the magic
                     // value 0xFFFF as "number of entries".
                     a.seek(end
-                           - 22 /* length of EOCD without file comment */);
+                            - 22 /* length of EOCD without file comment */);
                     final byte[] eocd = new byte[12];
                     a.readFully(eocd);
                     assertArrayEquals(new byte[] {
@@ -230,17 +229,17 @@ public class Zip64SupportIT {
                             // entries
                             (byte) 0xff, (byte) 0xff,
                             (byte) 0xff, (byte) 0xff,
-                        }, eocd); 
+                    }, eocd);
 
                     // validate "Zip64 end of central directory
                     // locator" is right in front of the EOCD and
                     // the location of the "Zip64 end of central
                     // directory record" seems correct
                     final long expectedZ64EocdOffset = end - 22 /* eocd.length */
-                        - 20 /* z64 eocd locator.length */
-                        - 56 /* z64 eocd without extensible data sector */;
+                            - 20 /* z64 eocd locator.length */
+                            - 56 /* z64 eocd without extensible data sector */;
                     final byte[] loc =
-                        ZipEightByteInteger.getBytes(expectedZ64EocdOffset);
+                            ZipEightByteInteger.getBytes(expectedZ64EocdOffset);
                     a.seek(end - 22 - 20);
                     final byte[] z64EocdLoc = new byte[20];
                     a.readFully(z64EocdLoc);
@@ -254,7 +253,7 @@ public class Zip64SupportIT {
                             loc[4], loc[5], loc[6], loc[7],
                             // total number of disks
                             1, 0, 0, 0,
-                        }, z64EocdLoc);
+                    }, z64EocdLoc);
 
                     // validate "Zip64 end of central directory
                     // record" is where it is supposed to be, the
@@ -281,7 +280,7 @@ public class Zip64SupportIT {
                             0, 0, 0, 0,
                             (byte) 0xA0, (byte) 0x86, 1, 0,
                             0, 0, 0, 0,
-                        }, z64EocdStart);
+                    }, z64EocdStart);
                     a.seek(expectedZ64EocdOffset + 48 /* skip size */);
                     final byte[] cdOffset = new byte[8];
                     a.readFully(cdOffset);
@@ -294,9 +293,7 @@ public class Zip64SupportIT {
                     a.readFully(sig);
                     assertArrayEquals(new byte[] {
                             (byte) 0x50, (byte) 0x4b, 1, 2,
-                        }, sig);
-                } finally {
-                    a.close();
+                    }, sig);
                 }
             }
         };
@@ -383,16 +380,15 @@ public class Zip64SupportIT {
                 }
                 write3EntriesCreatingBigArchiveToStream(zos);
 
-                final RandomAccessFile a = new RandomAccessFile(f, "r");
-                try {
+                try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
                     getLengthAndPositionAtCentralDirectory(a);
                     // skip first two entries
                     a.skipBytes(2 * 47 /* CD entry of file with
                                           file name length 1 and no
                                           extra data */
-                                + 2 * (mode == Zip64Mode.Always ? 4 : 0)
+                                    + 2 * (mode == Zip64Mode.Always ? 4 : 0)
                                 /* empty ZIP64 extra fields if mode is Always */
-                                );
+                    );
 
                     // grab third entry, verify offset is
                     // 0xFFFFFFFF and it has a ZIP64 extended
@@ -410,7 +406,7 @@ public class Zip64SupportIT {
                             0, 8,
                             // method
                             0, 0
-                        }, header);
+                    }, header);
                     // ignore timestamp, CRC, compressed size
                     a.skipBytes(12);
                     final byte[] rest = new byte[23];
@@ -434,7 +430,7 @@ public class Zip64SupportIT {
                             (byte) 0xFF, (byte) 0xFF,
                             // file name
                             (byte) '2'
-                        }, rest);
+                    }, rest);
                     final byte[] extra = new byte[4];
                     a.readFully(extra);
                     assertArrayEquals(new byte[] {
@@ -442,7 +438,7 @@ public class Zip64SupportIT {
                             1, 0,
                             // size
                             8, 0
-                        }, extra);
+                    }, extra);
 
                     // read offset of LFH
                     final byte[] offset = new byte[8];
@@ -453,9 +449,7 @@ public class Zip64SupportIT {
                     a.readFully(sig);
                     assertArrayEquals(new byte[] {
                             (byte) 0x50, (byte) 0x4b, 3, 4,
-                        }, sig);
-                } finally {
-                    a.close();
+                    }, sig);
                 }
             }
         };
@@ -542,13 +536,9 @@ public class Zip64SupportIT {
                                              } else {
                                                  assertEquals(1,
                                                               zae.getSize());
-                                                 final InputStream i =
-                                                     zf.getInputStream(zae);
-                                                 try {
+                                                 try (InputStream i = zf.getInputStream(zae)) {
                                                      assertNotNull(i);
                                                      assertEquals(42, i.read());
-                                                 } finally {
-                                                     i.close();
                                                  }
                                              }
                                          }
@@ -596,8 +586,7 @@ public class Zip64SupportIT {
                 zos.closeArchiveEntry();
                 zos.close();
 
-                final RandomAccessFile a = new RandomAccessFile(f, "r");
-                try {
+                try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
                     getLengthAndPositionAtCentralDirectory(a);
 
                     // grab first entry, verify sizes are 0xFFFFFFFF
@@ -616,7 +605,7 @@ public class Zip64SupportIT {
                             0, 8,
                             // method
                             0, 0
-                        }, header);
+                    }, header);
                     // ignore timestamp
                     a.skipBytes(4);
                     byte[] rest = new byte[31];
@@ -643,7 +632,7 @@ public class Zip64SupportIT {
                             0, 0, 0, 0,
                             // file name
                             (byte) '0'
-                        }, rest);
+                    }, rest);
                     final byte[] extra = new byte[20];
                     a.readFully(extra);
                     // 5e9 == 0x12A05F200
@@ -658,7 +647,7 @@ public class Zip64SupportIT {
                             // compressed size
                             0, (byte) 0xF2, 5, (byte) 0x2A,
                             1, 0, 0, 0,
-                        }, extra);
+                    }, extra);
 
                     // and now validate local file header
                     a.seek(0);
@@ -673,7 +662,7 @@ public class Zip64SupportIT {
                             0, 8,
                             // method
                             0, 0
-                        }, header);
+                    }, header);
                     // ignore timestamp
                     a.skipBytes(4);
                     rest = new byte[17];
@@ -691,7 +680,7 @@ public class Zip64SupportIT {
                             20, 0,
                             // file name
                             (byte) '0'
-                        }, rest);
+                    }, rest);
                     a.readFully(extra);
                     // 5e9 == 0x12A05F200
                     assertArrayEquals(new byte[] {
@@ -705,9 +694,7 @@ public class Zip64SupportIT {
                             // compressed size
                             0, (byte) 0xF2, 5, (byte) 0x2A,
                             1, 0, 0, 0,
-                        }, extra);
-                } finally {
-                    a.close();
+                    }, extra);
                 }
             }
         };
@@ -836,9 +823,7 @@ public class Zip64SupportIT {
                 zos.closeArchiveEntry();
                 zos.close();
 
-                final RandomAccessFile a =
-                    new RandomAccessFile(f, "r");
-                try {
+                try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
                     getLengthAndPositionAtCentralDirectory(a);
 
                     final long cfhPos = a.getFilePointer();
@@ -859,7 +844,7 @@ public class Zip64SupportIT {
                             8, 8,
                             // method
                             8, 0,
-                        }, header);
+                    }, header);
                     // ignore timestamp
                     a.skipBytes(4);
                     byte[] rest = new byte[31];
@@ -886,7 +871,7 @@ public class Zip64SupportIT {
                             0, 0, 0, 0,
                             // file name
                             (byte) '0'
-                        }, rest);
+                    }, rest);
                     final byte[] extra = new byte[20];
                     a.readFully(extra);
                     // 5e9 == 0x12A05F200
@@ -901,7 +886,7 @@ public class Zip64SupportIT {
                             // compressed size
                             (byte) 0x68, (byte) 0x27, (byte) 0x4A, 0,
                             0, 0, 0, 0,
-                        }, extra);
+                    }, extra);
 
                     // validate data descriptor
                     a.seek(cfhPos - 24);
@@ -912,7 +897,7 @@ public class Zip64SupportIT {
                             (byte) 0x50, (byte) 0x4b, 7, 8,
                             // CRC
                             (byte) 0x50, (byte) 0x6F, (byte) 0x31, (byte) 0x5c,
-                        }, dd);
+                    }, dd);
                     dd = new byte[16];
                     a.readFully(dd);
                     assertArrayEquals(new byte[] {
@@ -922,7 +907,7 @@ public class Zip64SupportIT {
                             // original size
                             0, (byte) 0xF2, 5, (byte) 0x2A,
                             1, 0, 0, 0,
-                        }, dd);
+                    }, dd);
 
                     // and now validate local file header
                     a.seek(0);
@@ -937,7 +922,7 @@ public class Zip64SupportIT {
                             8, 8,
                             // method
                             8, 0,
-                        }, header);
+                    }, header);
                     // ignore timestamp
                     a.skipBytes(4);
                     rest = new byte[17];
@@ -955,7 +940,7 @@ public class Zip64SupportIT {
                             20, 0,
                             // file name
                             (byte) '0'
-                        }, rest);
+                    }, rest);
                     a.readFully(extra);
                     assertArrayEquals(new byte[] {
                             // Header-ID
@@ -968,9 +953,7 @@ public class Zip64SupportIT {
                             // compressed size
                             0, 0, 0, 0,
                             0, 0, 0, 0,
-                        }, extra);
-                } finally {
-                    a.close();
+                    }, extra);
                 }
             }
         };
@@ -1081,8 +1064,7 @@ public class Zip64SupportIT {
                 zos.closeArchiveEntry();
                 zos.close();
 
-                final RandomAccessFile a = new RandomAccessFile(f, "r");
-                try {
+                try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
                     getLengthAndPositionAtCentralDirectory(a);
 
                     // grab first entry, verify
@@ -1102,7 +1084,7 @@ public class Zip64SupportIT {
                             0, 8,
                             // method
                             8, 0,
-                        }, header);
+                    }, header);
                     // ignore timestamp
                     a.skipBytes(4);
                     byte[] rest = new byte[31];
@@ -1129,7 +1111,7 @@ public class Zip64SupportIT {
                             0, 0, 0, 0,
                             // file name
                             (byte) '0'
-                        }, rest);
+                    }, rest);
                     byte[] extra = new byte[20];
                     a.readFully(extra);
                     // 5e9 == 0x12A05F200
@@ -1144,7 +1126,7 @@ public class Zip64SupportIT {
                             // compressed size
                             (byte) 0x68, (byte) 0x27, (byte) 0x4A, 0,
                             0, 0, 0, 0,
-                        }, extra);
+                    }, extra);
 
                     // and now validate local file header
                     a.seek(0);
@@ -1159,7 +1141,7 @@ public class Zip64SupportIT {
                             0, 8,
                             // method
                             8, 0,
-                        }, header);
+                    }, header);
                     // ignore timestamp
                     a.skipBytes(4);
                     rest = new byte[17];
@@ -1177,7 +1159,7 @@ public class Zip64SupportIT {
                             20, 0,
                             // file name
                             (byte) '0'
-                        }, rest);
+                    }, rest);
                     extra = new byte[20];
                     a.readFully(extra);
                     assertArrayEquals(new byte[] {
@@ -1191,9 +1173,7 @@ public class Zip64SupportIT {
                             // compressed size
                             (byte) 0x68, (byte) 0x27, (byte) 0x4A, 0,
                             0, 0, 0, 0,
-                        }, extra);
-                } finally {
-                    a.close();
+                    }, extra);
                 }
             }
         };
@@ -1340,8 +1320,7 @@ public class Zip64SupportIT {
                 zos.closeArchiveEntry();
                 zos.close();
 
-                final RandomAccessFile a = new RandomAccessFile(f, "r");
-                try {
+                try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
                     getLengthAndPositionAtCentralDirectory(a);
 
                     // grab first CF entry, verify sizes are 1e6 and it
@@ -1360,7 +1339,7 @@ public class Zip64SupportIT {
                             0, 8,
                             // method
                             0, 0
-                        }, header);
+                    }, header);
                     // ignore timestamp
                     a.skipBytes(4);
                     byte[] rest = new byte[31];
@@ -1388,14 +1367,14 @@ public class Zip64SupportIT {
                             0, 0, 0, 0,
                             // file name
                             (byte) '0'
-                        }, rest);
+                    }, rest);
 
                     // and now validate local file header: this one
                     // has a ZIP64 extra field if and only if size was
                     // unknown and mode was not Never or the mode was
                     // Always (regardless of size)
                     final boolean hasExtra = mode == Zip64Mode.Always
-                        || (mode == Zip64Mode.AsNeeded && !knownSize);
+                            || (mode == Zip64Mode.AsNeeded && !knownSize);
                     a.seek(0);
                     header = new byte[10];
                     a.readFully(header);
@@ -1408,7 +1387,7 @@ public class Zip64SupportIT {
                             0, 8,
                             // method
                             0, 0
-                        }, header);
+                    }, header);
                     // ignore timestamp
                     a.skipBytes(4);
                     rest = new byte[17];
@@ -1427,7 +1406,7 @@ public class Zip64SupportIT {
                             (byte) (!hasExtra ? 0 : 20), 0,
                             // file name
                             (byte) '0'
-                        }, rest);
+                    }, rest);
                     if (hasExtra) {
                         final byte[] extra = new byte[20];
                         a.readFully(extra);
@@ -1442,10 +1421,8 @@ public class Zip64SupportIT {
                                 // compressed size
                                 (byte) 0x40, (byte) 0x42, (byte) 0x0F, 0,
                                 0, 0, 0, 0,
-                            }, extra);
+                        }, extra);
                     }
-                } finally {
-                    a.close();
                 }
             }
         };
@@ -1517,8 +1494,7 @@ public class Zip64SupportIT {
                 zos.closeArchiveEntry();
                 zos.close();
 
-                final RandomAccessFile a = new RandomAccessFile(f, "r");
-                try {
+                try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
                     getLengthAndPositionAtCentralDirectory(a);
 
                     // grab first CF entry, verify sizes are 1e6 and it
@@ -1536,7 +1512,7 @@ public class Zip64SupportIT {
                             0, 8,
                             // method
                             0, 0
-                        }, header);
+                    }, header);
                     // ignore timestamp
                     a.skipBytes(4);
                     byte[] rest = new byte[31];
@@ -1564,7 +1540,7 @@ public class Zip64SupportIT {
                             0, 0, 0, 0,
                             // file name
                             (byte) '0'
-                        }, rest);
+                    }, rest);
 
                     byte[] extra = new byte[4];
                     a.readFully(extra);
@@ -1573,7 +1549,7 @@ public class Zip64SupportIT {
                             1, 0,
                             // size of extra
                             0, 0,
-                        }, extra);
+                    }, extra);
 
                     // and now validate local file header: this one
                     // has a ZIP64 extra field as the mode was
@@ -1590,7 +1566,7 @@ public class Zip64SupportIT {
                             0, 8,
                             // method
                             0, 0
-                        }, header);
+                    }, header);
                     // ignore timestamp
                     a.skipBytes(4);
                     rest = new byte[17];
@@ -1609,7 +1585,7 @@ public class Zip64SupportIT {
                             20, 0,
                             // file name
                             (byte) '0'
-                        }, rest);
+                    }, rest);
 
                     extra = new byte[20];
                     a.readFully(extra);
@@ -1624,9 +1600,7 @@ public class Zip64SupportIT {
                             // compressed size
                             (byte) 0x40, (byte) 0x42, (byte) 0x0F, 0,
                             0, 0, 0, 0,
-                        }, extra);
-                } finally {
-                    a.close();
+                    }, extra);
                 }
             }
         };
@@ -1681,8 +1655,7 @@ public class Zip64SupportIT {
                 zos.closeArchiveEntry();
                 zos.close();
 
-                final RandomAccessFile a = new RandomAccessFile(f, "r");
-                try {
+                try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
                     getLengthAndPositionAtCentralDirectory(a);
 
                     final long cfhPos = a.getFilePointer();
@@ -1702,7 +1675,7 @@ public class Zip64SupportIT {
                             8, 8,
                             // method
                             8, 0,
-                        }, header);
+                    }, header);
                     // ignore timestamp
                     a.skipBytes(4);
                     final byte[] crc = new byte[4];
@@ -1710,7 +1683,7 @@ public class Zip64SupportIT {
                     assertArrayEquals(new byte[] {
                             (byte) 0x9E, (byte) 0xCB,
                             (byte) 0x79, (byte) 0x12,
-                        }, crc);
+                    }, crc);
                     // skip compressed size
                     a.skipBytes(4);
                     byte[] rest = new byte[23];
@@ -1734,7 +1707,7 @@ public class Zip64SupportIT {
                             0, 0, 0, 0,
                             // file name
                             (byte) '0'
-                        }, rest);
+                    }, rest);
 
                     // validate data descriptor
                     a.seek(cfhPos - 16);
@@ -1745,7 +1718,7 @@ public class Zip64SupportIT {
                             (byte) 0x50, (byte) 0x4b, 7, 8,
                             // CRC
                             (byte) 0x9E, (byte) 0xCB, (byte) 0x79, (byte) 0x12,
-                        }, dd);
+                    }, dd);
                     // skip uncompressed size
                     a.skipBytes(4);
                     dd = new byte[4];
@@ -1753,7 +1726,7 @@ public class Zip64SupportIT {
                     assertArrayEquals(new byte[] {
                             // original size
                             (byte) 0x40, (byte) 0x42, (byte) 0x0F, 0,
-                        }, dd);
+                    }, dd);
 
                     // and now validate local file header
                     a.seek(0);
@@ -1768,7 +1741,7 @@ public class Zip64SupportIT {
                             8, 8,
                             // method
                             8, 0,
-                        }, header);
+                    }, header);
                     // ignore timestamp
                     a.skipBytes(4);
                     rest = new byte[17];
@@ -1786,9 +1759,7 @@ public class Zip64SupportIT {
                             0, 0,
                             // file name
                             (byte) '0'
-                        }, rest);
-                } finally {
-                    a.close();
+                    }, rest);
                 }
             }
         };
@@ -1852,8 +1823,7 @@ public class Zip64SupportIT {
                 zos.closeArchiveEntry();
                 zos.close();
 
-                final RandomAccessFile a = new RandomAccessFile(f, "r");
-                try {
+                try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
                     getLengthAndPositionAtCentralDirectory(a);
 
                     final long cfhPos = a.getFilePointer();
@@ -1873,7 +1843,7 @@ public class Zip64SupportIT {
                             8, 8,
                             // method
                             8, 0,
-                        }, header);
+                    }, header);
                     // ignore timestamp
                     a.skipBytes(4);
                     final byte[] crc = new byte[4];
@@ -1881,7 +1851,7 @@ public class Zip64SupportIT {
                     assertArrayEquals(new byte[] {
                             (byte) 0x9E, (byte) 0xCB,
                             (byte) 0x79, (byte) 0x12,
-                        }, crc);
+                    }, crc);
                     // skip compressed size
                     a.skipBytes(4);
                     byte[] rest = new byte[23];
@@ -1905,7 +1875,7 @@ public class Zip64SupportIT {
                             0, 0, 0, 0,
                             // file name
                             (byte) '0'
-                        }, rest);
+                    }, rest);
                     byte[] extra = new byte[4];
                     a.readFully(extra);
                     assertArrayEquals(new byte[] {
@@ -1913,7 +1883,7 @@ public class Zip64SupportIT {
                             1, 0,
                             // size of extra
                             0, 0,
-                        }, extra);
+                    }, extra);
 
                     // validate data descriptor
                     a.seek(cfhPos - 24);
@@ -1924,7 +1894,7 @@ public class Zip64SupportIT {
                             (byte) 0x50, (byte) 0x4b, 7, 8,
                             // CRC
                             (byte) 0x9E, (byte) 0xCB, (byte) 0x79, (byte) 0x12,
-                        }, dd);
+                    }, dd);
                     // skip compressed size
                     a.skipBytes(8);
                     dd = new byte[8];
@@ -1933,7 +1903,7 @@ public class Zip64SupportIT {
                             // original size
                             (byte) 0x40, (byte) 0x42, (byte) 0x0F, 0,
                             0, 0, 0, 0
-                        }, dd);
+                    }, dd);
 
                     // and now validate local file header
                     a.seek(0);
@@ -1948,7 +1918,7 @@ public class Zip64SupportIT {
                             8, 8,
                             // method
                             8, 0,
-                        }, header);
+                    }, header);
                     // ignore timestamp
                     a.skipBytes(4);
                     rest = new byte[17];
@@ -1966,7 +1936,7 @@ public class Zip64SupportIT {
                             20, 0,
                             // file name
                             (byte) '0'
-                        }, rest);
+                    }, rest);
 
                     extra = new byte[20];
                     a.readFully(extra);
@@ -1981,9 +1951,7 @@ public class Zip64SupportIT {
                             // compressed size
                             0, 0, 0, 0,
                             0, 0, 0, 0,
-                        }, extra);
-                } finally {
-                    a.close();
+                    }, extra);
                 }
             }
         };
@@ -2037,8 +2005,7 @@ public class Zip64SupportIT {
                 zos.closeArchiveEntry();
                 zos.close();
 
-                final RandomAccessFile a = new RandomAccessFile(f, "r");
-                try {
+                try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
                     getLengthAndPositionAtCentralDirectory(a);
 
                     // grab first CD entry, verify sizes are not
@@ -2057,7 +2024,7 @@ public class Zip64SupportIT {
                             0, 8,
                             // method
                             8, 0,
-                        }, header);
+                    }, header);
                     // ignore timestamp
                     a.skipBytes(4);
                     byte[] crc = new byte[4];
@@ -2065,7 +2032,7 @@ public class Zip64SupportIT {
                     assertArrayEquals(new byte[] {
                             (byte) 0x9E, (byte) 0xCB,
                             (byte) 0x79, (byte) 0x12,
-                        }, crc);
+                    }, crc);
                     // skip compressed size
                     a.skipBytes(4);
                     byte[] rest = new byte[23];
@@ -2088,7 +2055,7 @@ public class Zip64SupportIT {
                             0, 0, 0, 0,
                             // file name
                             (byte) '0'
-                        }, rest);
+                    }, rest);
 
                     // and now validate local file header
                     a.seek(0);
@@ -2103,7 +2070,7 @@ public class Zip64SupportIT {
                             0, 8,
                             // method
                             8, 0,
-                        }, header);
+                    }, header);
                     // ignore timestamp
                     a.skipBytes(4);
                     crc = new byte[4];
@@ -2111,14 +2078,14 @@ public class Zip64SupportIT {
                     assertArrayEquals(new byte[] {
                             (byte) 0x9E, (byte) 0xCB,
                             (byte) 0x79, (byte) 0x12,
-                        }, crc);
+                    }, crc);
                     // skip compressed size
                     a.skipBytes(4);
                     rest = new byte[9];
                     a.readFully(rest);
 
-                    final boolean hasExtra = 
-                        mode == Zip64Mode.AsNeeded && !knownSize;
+                    final boolean hasExtra =
+                            mode == Zip64Mode.AsNeeded && !knownSize;
 
                     assertArrayEquals(new byte[] {
                             // Original Size
@@ -2129,7 +2096,7 @@ public class Zip64SupportIT {
                             (byte) (!hasExtra ? 0 : 20), 0,
                             // file name
                             (byte) '0'
-                        }, rest);
+                    }, rest);
                     if (hasExtra) {
                         final byte[] extra = new byte[12];
                         a.readFully(extra);
@@ -2145,10 +2112,8 @@ public class Zip64SupportIT {
                                 // compressed size,
                                 // don't want to
                                 // hard-code it
-                            }, extra);
+                        }, extra);
                     }
-                } finally {
-                    a.close();
                 }
             }
         };
@@ -2210,8 +2175,7 @@ public class Zip64SupportIT {
                 zos.closeArchiveEntry();
                 zos.close();
 
-                final RandomAccessFile a = new RandomAccessFile(f, "r");
-                try {
+                try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
                     getLengthAndPositionAtCentralDirectory(a);
 
                     // grab first CD entry, verify sizes are not
@@ -2230,14 +2194,14 @@ public class Zip64SupportIT {
                             0, 8,
                             // method
                             8, 0,
-                        }, header);
+                    }, header);
                     // ignore timestamp
                     a.skipBytes(4);
                     byte[] crc = new byte[4];
                     a.readFully(crc);
                     assertArrayEquals(new byte[] {
                             (byte) 0x9E, (byte) 0xCB, (byte) 0x79, (byte) 0x12,
-                        }, crc);
+                    }, crc);
                     // skip compressed size
                     a.skipBytes(4);
                     byte[] rest = new byte[23];
@@ -2260,7 +2224,7 @@ public class Zip64SupportIT {
                             0, 0, 0, 0,
                             // file name
                             (byte) '0'
-                        }, rest);
+                    }, rest);
                     byte[] extra = new byte[4];
                     a.readFully(extra);
                     assertArrayEquals(new byte[] {
@@ -2268,7 +2232,7 @@ public class Zip64SupportIT {
                             1, 0,
                             // size of extra
                             0, 0,
-                        }, extra);
+                    }, extra);
 
                     // and now validate local file header
                     a.seek(0);
@@ -2283,7 +2247,7 @@ public class Zip64SupportIT {
                             0, 8,
                             // method
                             8, 0,
-                        }, header);
+                    }, header);
                     // ignore timestamp
                     a.skipBytes(4);
                     crc = new byte[4];
@@ -2291,7 +2255,7 @@ public class Zip64SupportIT {
                     assertArrayEquals(new byte[] {
                             (byte) 0x9E, (byte) 0xCB,
                             (byte) 0x79, (byte) 0x12,
-                        }, crc);
+                    }, crc);
                     rest = new byte[13];
                     a.readFully(rest);
 
@@ -2306,7 +2270,7 @@ public class Zip64SupportIT {
                             20, 0,
                             // file name
                             (byte) '0'
-                        }, rest);
+                    }, rest);
 
                     extra = new byte[12];
                     a.readFully(extra);
@@ -2322,9 +2286,7 @@ public class Zip64SupportIT {
                             // compressed size,
                             // don't want to
                             // hard-code it
-                        }, extra);
-                } finally {
-                    a.close();
+                    }, extra);
                 }
             }
         };
@@ -2479,8 +2441,7 @@ public class Zip64SupportIT {
             long read = 0;
             final Random r = new Random(System.currentTimeMillis());
             int readNow;
-            final InputStream zin = zf.getInputStream(zae);
-            try {
+            try (InputStream zin = zf.getInputStream(zae)) {
                 while ((readNow = zin.read(buf, 0, buf.length)) > 0) {
                     // testing all bytes for a value of 0 is going to take
                     // too long, just pick a few ones randomly
@@ -2490,8 +2451,6 @@ public class Zip64SupportIT {
                     }
                     read += readNow;
                 }
-            } finally {
-                zin.close();
             }
             assertEquals(FIVE_BILLION, read);
             assertFalse(e.hasMoreElements());

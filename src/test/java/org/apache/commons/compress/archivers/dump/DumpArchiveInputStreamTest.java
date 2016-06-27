@@ -31,29 +31,23 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void testNotADumpArchive() throws Exception {
-        final FileInputStream is = new FileInputStream(getFile("bla.zip"));
-        try {
+        try (FileInputStream is = new FileInputStream(getFile("bla.zip"))) {
             new DumpArchiveInputStream(is);
             fail("expected an exception");
         } catch (final ArchiveException ex) {
             // expected
             assertTrue(ex.getCause() instanceof ShortFileException);
-        } finally {
-            is.close();
         }
     }
 
     @Test
     public void testNotADumpArchiveButBigEnough() throws Exception {
-        final FileInputStream is = new FileInputStream(getFile("zip64support.tar.bz2"));
-        try {
+        try (FileInputStream is = new FileInputStream(getFile("zip64support.tar.bz2"))) {
             new DumpArchiveInputStream(is);
             fail("expected an exception");
         } catch (final ArchiveException ex) {
             // expected
             assertTrue(ex.getCause() instanceof UnrecognizedFormatException);
-        } finally {
-            is.close();
         }
     }
 

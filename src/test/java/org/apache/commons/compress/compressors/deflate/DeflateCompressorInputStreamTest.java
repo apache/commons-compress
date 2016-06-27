@@ -33,58 +33,46 @@ public class DeflateCompressorInputStreamTest {
     @Test
     public void availableShouldReturnNonZero() throws IOException {
         final File input = AbstractTestCase.getFile("bla.tar.deflatez");
-        final InputStream is = new FileInputStream(input);
-        try {
+        try (InputStream is = new FileInputStream(input)) {
             final DeflateCompressorInputStream in =
-                new DeflateCompressorInputStream(is);
+                    new DeflateCompressorInputStream(is);
             Assert.assertTrue(in.available() > 0);
             in.close();
-        } finally {
-            is.close();
         }
     }
 
     @Test
     public void shouldBeAbleToSkipAByte() throws IOException {
         final File input = AbstractTestCase.getFile("bla.tar.deflatez");
-        final InputStream is = new FileInputStream(input);
-        try {
+        try (InputStream is = new FileInputStream(input)) {
             final DeflateCompressorInputStream in =
-                new DeflateCompressorInputStream(is);
+                    new DeflateCompressorInputStream(is);
             Assert.assertEquals(1, in.skip(1));
             in.close();
-        } finally {
-            is.close();
         }
     }
 
     @Test
     public void singleByteReadWorksAsExpected() throws IOException {
         final File input = AbstractTestCase.getFile("bla.tar.deflatez");
-        final InputStream is = new FileInputStream(input);
-        try {
+        try (InputStream is = new FileInputStream(input)) {
             final DeflateCompressorInputStream in =
-                new DeflateCompressorInputStream(is);
+                    new DeflateCompressorInputStream(is);
             // tar header starts with filename "test1.xml"
             Assert.assertEquals('t', in.read());
             in.close();
-        } finally {
-            is.close();
         }
     }
 
     @Test
     public void singleByteReadReturnsMinusOneAtEof() throws IOException {
         final File input = AbstractTestCase.getFile("bla.tar.deflatez");
-        final InputStream is = new FileInputStream(input);
-        try {
+        try (InputStream is = new FileInputStream(input)) {
             final DeflateCompressorInputStream in =
-                new DeflateCompressorInputStream(is);
+                    new DeflateCompressorInputStream(is);
             IOUtils.toByteArray(in);
             Assert.assertEquals(-1, in.read());
             in.close();
-        } finally {
-            is.close();
         }
     }
 

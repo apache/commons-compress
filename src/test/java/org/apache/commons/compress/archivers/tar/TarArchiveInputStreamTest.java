@@ -156,16 +156,13 @@ public class TarArchiveInputStreamTest {
 
     @Test
     public void testCompress197() throws Exception {
-        final TarArchiveInputStream tar = getTestStream("/COMPRESS-197.tar");
-        try {
+        try (TarArchiveInputStream tar = getTestStream("/COMPRESS-197.tar")) {
             TarArchiveEntry entry = tar.getNextTarEntry();
             while (entry != null) {
                 entry = tar.getNextTarEntry();
             }
         } catch (final IOException e) {
             fail("COMPRESS-197: " + e.getMessage());
-        } finally {
-            tar.close();
         }
     }
 
@@ -214,9 +211,8 @@ public class TarArchiveInputStreamTest {
 
     @Test
     public void readsArchiveCompletely_COMPRESS245() throws Exception {
-        final InputStream is = TarArchiveInputStreamTest.class
-            .getResourceAsStream("/COMPRESS-245.tar.gz");
-        try {
+        try (InputStream is = TarArchiveInputStreamTest.class
+                .getResourceAsStream("/COMPRESS-245.tar.gz")) {
             final InputStream gin = new GZIPInputStream(is);
             final TarArchiveInputStream tar = new TarArchiveInputStream(gin);
             int count = 0;
@@ -229,8 +225,6 @@ public class TarArchiveInputStreamTest {
             tar.close();
         } catch (final IOException e) {
             fail("COMPRESS-245: " + e.getMessage());
-        } finally {
-            is.close();
         }
     }
 
@@ -285,16 +279,13 @@ public class TarArchiveInputStreamTest {
      */
     @Test
     public void shouldReadGNULongNameEntryWithWrongName() throws Exception {
-        final TarArchiveInputStream is = getTestStream("/COMPRESS-324.tar");
-        try {
+        try (TarArchiveInputStream is = getTestStream("/COMPRESS-324.tar")) {
             final TarArchiveEntry entry = is.getNextTarEntry();
             assertEquals("1234567890123456789012345678901234567890123456789012345678901234567890"
-                         + "1234567890123456789012345678901234567890123456789012345678901234567890"
-                         + "1234567890123456789012345678901234567890123456789012345678901234567890"
-                         + "1234567890123456789012345678901234567890.txt",
-                         entry.getName());
-        } finally {
-            is.close();
+                            + "1234567890123456789012345678901234567890123456789012345678901234567890"
+                            + "1234567890123456789012345678901234567890123456789012345678901234567890"
+                            + "1234567890123456789012345678901234567890.txt",
+                    entry.getName());
         }
     }
 
@@ -303,13 +294,10 @@ public class TarArchiveInputStreamTest {
      */
     @Test
     public void survivesBlankLinesInPaxHeader() throws Exception {
-        final TarArchiveInputStream is = getTestStream("/COMPRESS-355.tar");
-        try {
+        try (TarArchiveInputStream is = getTestStream("/COMPRESS-355.tar")) {
             final TarArchiveEntry entry = is.getNextTarEntry();
             assertEquals("package/package.json", entry.getName());
             assertNull(is.getNextTarEntry());
-        } finally {
-            is.close();
         }
     }
 
@@ -318,13 +306,10 @@ public class TarArchiveInputStreamTest {
      */
     @Test
     public void survivesPaxHeaderWithNameEndingInSlash() throws Exception {
-        final TarArchiveInputStream is = getTestStream("/COMPRESS-356.tar");
-        try {
+        try (TarArchiveInputStream is = getTestStream("/COMPRESS-356.tar")) {
             final TarArchiveEntry entry = is.getNextTarEntry();
             assertEquals("package/package.json", entry.getName());
             assertNull(is.getNextTarEntry());
-        } finally {
-            is.close();
         }
     }
 

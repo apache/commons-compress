@@ -90,14 +90,11 @@ public final class DumpTestCase extends AbstractTestCase {
     }
 
     private void archiveDetection(final File f) throws Exception {
-        final InputStream is = new FileInputStream(f);
-        try {
+        try (InputStream is = new FileInputStream(f)) {
             assertEquals(DumpArchiveInputStream.class,
-                         new ArchiveStreamFactory()
-                         .createArchiveInputStream(new BufferedInputStream(is))
-                         .getClass());
-        } finally {
-            is.close();
+                    new ArchiveStreamFactory()
+                            .createArchiveInputStream(new BufferedInputStream(is))
+                            .getClass());
         }
     }
 
@@ -117,12 +114,9 @@ public final class DumpTestCase extends AbstractTestCase {
         expected.add("lost+found/");
         expected.add("test1.xml");
         expected.add("test2.xml");
-        final InputStream is = new FileInputStream(f);
-        try {
+        try (InputStream is = new FileInputStream(f)) {
             checkArchiveContent(new DumpArchiveInputStream(is),
-                                expected);
-        } finally {
-            is.close();
+                    expected);
         }
     }
 }

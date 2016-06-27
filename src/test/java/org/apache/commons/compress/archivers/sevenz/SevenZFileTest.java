@@ -103,11 +103,8 @@ public class SevenZFileTest extends AbstractTestCase {
 
     @Test
     public void testAllEmptyFilesArchive() throws Exception {
-        final SevenZFile archive = new SevenZFile(getFile("7z-empty-mhc-off.7z"));
-        try {
+        try (SevenZFile archive = new SevenZFile(getFile("7z-empty-mhc-off.7z"))) {
             assertNotNull(archive.getNextEntry());
-        } finally {
-            archive.close();
         }
     }
 
@@ -164,15 +161,12 @@ public class SevenZFileTest extends AbstractTestCase {
      */
     @Test
     public void testCompressedHeaderWithNonDefaultDictionarySize() throws Exception {
-        final SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-256.7z"));
-        try {
+        try (SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-256.7z"))) {
             int count = 0;
             while (sevenZFile.getNextEntry() != null) {
                 count++;
             }
             assertEquals(446, count);
-        } finally {
-            sevenZFile.close();
         }
     }
 
@@ -194,60 +188,47 @@ public class SevenZFileTest extends AbstractTestCase {
     @Test
     public void testReadingBackLZMA2DictSize() throws Exception {
         final File output = new File(dir, "lzma2-dictsize.7z");
-        final SevenZOutputFile outArchive = new SevenZOutputFile(output);
-        try {
+        try (SevenZOutputFile outArchive = new SevenZOutputFile(output)) {
             outArchive.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.LZMA2, 1 << 20)));
             final SevenZArchiveEntry entry = new SevenZArchiveEntry();
             entry.setName("foo.txt");
             outArchive.putArchiveEntry(entry);
             outArchive.write(new byte[] { 'A' });
             outArchive.closeArchiveEntry();
-        } finally {
-            outArchive.close();
         }
 
-        final SevenZFile archive = new SevenZFile(output);
-        try {
+        try (SevenZFile archive = new SevenZFile(output)) {
             final SevenZArchiveEntry entry = archive.getNextEntry();
             final SevenZMethodConfiguration m = entry.getContentMethods().iterator().next();
             assertEquals(SevenZMethod.LZMA2, m.getMethod());
             assertEquals(1 << 20, m.getOptions());
-        } finally {
-            archive.close();
         }
     }
 
     @Test
     public void testReadingBackDeltaDistance() throws Exception {
         final File output = new File(dir, "delta-distance.7z");
-        final SevenZOutputFile outArchive = new SevenZOutputFile(output);
-        try {
+        try (SevenZOutputFile outArchive = new SevenZOutputFile(output)) {
             outArchive.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER, 32),
-                                                       new SevenZMethodConfiguration(SevenZMethod.LZMA2)));
+                    new SevenZMethodConfiguration(SevenZMethod.LZMA2)));
             final SevenZArchiveEntry entry = new SevenZArchiveEntry();
             entry.setName("foo.txt");
             outArchive.putArchiveEntry(entry);
             outArchive.write(new byte[] { 'A' });
             outArchive.closeArchiveEntry();
-        } finally {
-            outArchive.close();
         }
 
-        final SevenZFile archive = new SevenZFile(output);
-        try {
+        try (SevenZFile archive = new SevenZFile(output)) {
             final SevenZArchiveEntry entry = archive.getNextEntry();
             final SevenZMethodConfiguration m = entry.getContentMethods().iterator().next();
             assertEquals(SevenZMethod.DELTA_FILTER, m.getMethod());
             assertEquals(32, m.getOptions());
-        } finally {
-            archive.close();
         }
     }
 
     @Test
     public void getEntriesOfUnarchiveTest() throws IOException {
-        final SevenZFile sevenZFile = new SevenZFile(getFile("bla.7z"));
-        try {
+        try (SevenZFile sevenZFile = new SevenZFile(getFile("bla.7z"))) {
             final Iterable<SevenZArchiveEntry> entries = sevenZFile.getEntries();
             final Iterator<SevenZArchiveEntry> iter = entries.iterator();
             SevenZArchiveEntry entry = iter.next();
@@ -255,8 +236,6 @@ public class SevenZFileTest extends AbstractTestCase {
             entry = iter.next();
             assertEquals("test2.xml", entry.getName());
             assertFalse(iter.hasNext());
-        } finally {
-            sevenZFile.close();
         }
     }
 
@@ -265,8 +244,7 @@ public class SevenZFileTest extends AbstractTestCase {
      */
     @Test
     public void readEntriesOfSize0() throws IOException {
-        final SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-348.7z"));
-        try {
+        try (SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-348.7z"))) {
             int entries = 0;
             SevenZArchiveEntry entry = sevenZFile.getNextEntry();
             while (entry != null) {
@@ -280,50 +258,42 @@ public class SevenZFileTest extends AbstractTestCase {
                 entry = sevenZFile.getNextEntry();
             }
             assertEquals(5, entries);
-        } finally {
-            sevenZFile.close();
         }
     }
     
     private void test7zUnarchive(final File f, final SevenZMethod m, final byte[] password) throws Exception {
-        final SevenZFile sevenZFile = new SevenZFile(f, password);
-        try {
+        try (SevenZFile sevenZFile = new SevenZFile(f, password)) {
             SevenZArchiveEntry entry = sevenZFile.getNextEntry();
             assertEquals("test1.xml", entry.getName());
             assertEquals(m, entry.getContentMethods().iterator().next().getMethod());
             entry = sevenZFile.getNextEntry();
             assertEquals("test2.xml", entry.getName());
             assertEquals(m, entry.getContentMethods().iterator().next().getMethod());
-            final byte[] contents = new byte[(int)entry.getSize()];
+            final byte[] contents = new byte[(int) entry.getSize()];
             int off = 0;
             while ((off < contents.length)) {
                 final int bytesRead = sevenZFile.read(contents, off, contents.length - off);
-                assert(bytesRead >= 0);
+                assert (bytesRead >= 0);
                 off += bytesRead;
             }
             assertEquals(TEST2_CONTENT, new String(contents, "UTF-8"));
             assertNull(sevenZFile.getNextEntry());
-        } finally {
-            sevenZFile.close();
         }
     }
 
     private void checkHelloWorld(final String filename) throws Exception {
-        final SevenZFile sevenZFile = new SevenZFile(getFile(filename));
-        try {
+        try (SevenZFile sevenZFile = new SevenZFile(getFile(filename))) {
             final SevenZArchiveEntry entry = sevenZFile.getNextEntry();
             assertEquals("Hello world.txt", entry.getName());
-            final byte[] contents = new byte[(int)entry.getSize()];
+            final byte[] contents = new byte[(int) entry.getSize()];
             int off = 0;
             while ((off < contents.length)) {
                 final int bytesRead = sevenZFile.read(contents, off, contents.length - off);
-                assert(bytesRead >= 0);
+                assert (bytesRead >= 0);
                 off += bytesRead;
             }
             assertEquals("Hello, world!\n", new String(contents, "UTF-8"));
             assertNull(sevenZFile.getNextEntry());
-        } finally {
-            sevenZFile.close();
         }
     }
 

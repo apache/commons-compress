@@ -161,15 +161,12 @@ public class ZipArchiveInputStreamTest {
      */
     @Test
     public void testReadingOfFirstStoredEntry() throws Exception {
-        final ZipArchiveInputStream in = new ZipArchiveInputStream(new FileInputStream(getFile("COMPRESS-264.zip")));
-        
-        try {
+
+        try (ZipArchiveInputStream in = new ZipArchiveInputStream(new FileInputStream(getFile("COMPRESS-264.zip")))) {
             final ZipArchiveEntry ze = in.getNextZipEntry();
             assertEquals(5, ze.getSize());
-            assertArrayEquals(new byte[] {'d', 'a', 't', 'a', '\n'},
-                              IOUtils.toByteArray(in));
-        } finally {
-            in.close();
+            assertArrayEquals(new byte[] { 'd', 'a', 't', 'a', '\n' },
+                    IOUtils.toByteArray(in));
         }
     }
 
@@ -180,8 +177,7 @@ public class ZipArchiveInputStreamTest {
      */
     @Test
     public void testMessageWithCorruptFileName() throws Exception {
-        final ZipArchiveInputStream in = new ZipArchiveInputStream(new FileInputStream(getFile("COMPRESS-351.zip")));
-        try {
+        try (ZipArchiveInputStream in = new ZipArchiveInputStream(new FileInputStream(getFile("COMPRESS-351.zip")))) {
             ZipArchiveEntry ze = in.getNextZipEntry();
             while (ze != null) {
                 ze = in.getNextZipEntry();
@@ -190,23 +186,18 @@ public class ZipArchiveInputStreamTest {
         } catch (final EOFException ex) {
             final String m = ex.getMessage();
             assertTrue(m.startsWith("Truncated ZIP entry: ?2016")); // the first character is not printable
-        } finally {
-            in.close();
         }
     }
 
     @Test
     public void testUnzipBZip2CompressedEntry() throws Exception {
-        final ZipArchiveInputStream in = new ZipArchiveInputStream(new FileInputStream(getFile("bzip2-zip.zip")));
-        
-        try {
+
+        try (ZipArchiveInputStream in = new ZipArchiveInputStream(new FileInputStream(getFile("bzip2-zip.zip")))) {
             final ZipArchiveEntry ze = in.getNextZipEntry();
             assertEquals(42, ze.getSize());
             final byte[] expected = new byte[42];
-            Arrays.fill(expected , (byte)'a');
+            Arrays.fill(expected, (byte) 'a');
             assertArrayEquals(expected, IOUtils.toByteArray(in));
-        } finally {
-            in.close();
         }
     }
 }

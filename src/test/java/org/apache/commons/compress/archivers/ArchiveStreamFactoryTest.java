@@ -63,38 +63,26 @@ public class ArchiveStreamFactoryTest {
      */
     @Test
     public void aiffFilesAreNoTARs() throws Exception {
-    	final FileInputStream fis = new FileInputStream("src/test/resources/testAIFF.aif");
-    	try {
-            final InputStream is = new BufferedInputStream(fis);
-            try {
+        try (FileInputStream fis = new FileInputStream("src/test/resources/testAIFF.aif")) {
+            try (InputStream is = new BufferedInputStream(fis)) {
                 new ArchiveStreamFactory().createArchiveInputStream(is);
                 fail("created an input stream for a non-archive");
             } catch (final ArchiveException ae) {
                 assertTrue(ae.getMessage().startsWith("No Archiver found"));
-            } finally {
-                is.close();
             }
-    	} finally {
-            fis.close();
-    	}
+        }
     }
 
     @Test
     public void testCOMPRESS209() throws Exception {
-    	final FileInputStream fis = new FileInputStream("src/test/resources/testCompress209.doc");
-    	try {
-            final InputStream bis = new BufferedInputStream(fis);
-            try {
+        try (FileInputStream fis = new FileInputStream("src/test/resources/testCompress209.doc")) {
+            try (InputStream bis = new BufferedInputStream(fis)) {
                 new ArchiveStreamFactory().createArchiveInputStream(bis);
                 fail("created an input stream for a non-archive");
             } catch (final ArchiveException ae) {
                 assertTrue(ae.getMessage().startsWith("No Archiver found"));
-            } finally {
-                bis.close();
             }
-    	} finally {
-            fis.close();
-    	}
+        }
     }
 
     @Test(expected = StreamingNotSupportedException.class)
@@ -118,20 +106,14 @@ public class ArchiveStreamFactoryTest {
      */
     @Test
     public void detectsAndThrowsFor7z() throws Exception {
-    	final FileInputStream fis = new FileInputStream("src/test/resources/bla.7z");
-    	try {
-            final InputStream bis = new BufferedInputStream(fis);
-            try {
+        try (FileInputStream fis = new FileInputStream("src/test/resources/bla.7z")) {
+            try (InputStream bis = new BufferedInputStream(fis)) {
                 new ArchiveStreamFactory().createArchiveInputStream(bis);
                 fail("Expected a StreamingNotSupportedException");
             } catch (final StreamingNotSupportedException ex) {
                 assertEquals(ArchiveStreamFactory.SEVEN_Z, ex.getFormat());
-            } finally {
-                bis.close();
             }
-    	} finally {
-            fis.close();
-    	}
+        }
     }
 
     /**
@@ -141,22 +123,13 @@ public class ArchiveStreamFactoryTest {
      */
     @Test
     public void skipsPK00Prefix() throws Exception {
-    	final FileInputStream fis = new FileInputStream("src/test/resources/COMPRESS-208.zip");
-    	try {
-            final InputStream bis = new BufferedInputStream(fis);
-            try {
-                final ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(bis);
-                try {
+        try (FileInputStream fis = new FileInputStream("src/test/resources/COMPRESS-208.zip")) {
+            try (InputStream bis = new BufferedInputStream(fis)) {
+                try (ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(bis)) {
                     assertTrue(ais instanceof ZipArchiveInputStream);
-                } finally {
-                    ais.close();
                 }
-            } finally {
-                bis.close();
             }
-    	} finally {
-            fis.close();
-    	}
+        }
     }
     
     @Test
@@ -233,8 +206,6 @@ public class ArchiveStreamFactoryTest {
         dflt = UNKNOWN;
         try {
             dflt = getField(new ArjArchiveInputStream(new FileInputStream(getFile("bla.arj"))), "charsetName");
-        } catch (final ArchiveException e) {
-            e.printStackTrace();
         } catch (final Exception e) {
             e.printStackTrace();
         }
@@ -242,8 +213,6 @@ public class ArchiveStreamFactoryTest {
         dflt = UNKNOWN;
         try {
             dflt = getField(new DumpArchiveInputStream(new FileInputStream(getFile("bla.dump"))), "encoding");
-        } catch (final ArchiveException e) {
-            e.printStackTrace();
         } catch (final Exception e) {
             e.printStackTrace();
         }

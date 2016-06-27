@@ -36,12 +36,9 @@ public final class LZMATestCase extends AbstractTestCase {
     public void testLZMAUnarchive() throws Exception {
         final File input = getFile("bla.tar.lzma");
         final File output = new File(dir, "bla.tar");
-        final InputStream is = new FileInputStream(input);
-        try {
+        try (InputStream is = new FileInputStream(input)) {
             final CompressorInputStream in = new LZMACompressorInputStream(is);
             copy(in, output);
-        } finally {
-            is.close();
         }
     }
 
@@ -49,13 +46,10 @@ public final class LZMATestCase extends AbstractTestCase {
     public void testLZMAUnarchiveWithAutodetection() throws Exception {
         final File input = getFile("bla.tar.lzma");
         final File output = new File(dir, "bla.tar");
-        final InputStream is = new BufferedInputStream(new FileInputStream(input));
-        try {
+        try (InputStream is = new BufferedInputStream(new FileInputStream(input))) {
             final CompressorInputStream in = new CompressorStreamFactory()
-                .createCompressorInputStream(is);
+                    .createCompressorInputStream(is);
             copy(in, output);
-        } finally {
-            is.close();
         }
     }
 

@@ -284,13 +284,10 @@ public abstract class AbstractTestCase {
      */
     protected void checkArchiveContent(final File archive, final List<String> expected)
             throws Exception {
-        final InputStream is = new FileInputStream(archive);
-        try {
+        try (InputStream is = new FileInputStream(archive)) {
             final BufferedInputStream buf = new BufferedInputStream(is);
             final ArchiveInputStream in = factory.createArchiveInputStream(buf);
             this.checkArchiveContent(in, expected);
-        } finally {
-            is.close();
         }
     }
 
@@ -330,11 +327,8 @@ public abstract class AbstractTestCase {
                     outfile.mkdirs();
                 } else {
                     outfile.getParentFile().mkdirs();
-                    final OutputStream out = new FileOutputStream(outfile);
-                    try {
-                        copied=IOUtils.copy(in, out);
-                    } finally {
-                        out.close();
+                    try (OutputStream out = new FileOutputStream(outfile)) {
+                        copied = IOUtils.copy(in, out);
                     }
                 }
                 final long size = entry.getSize();
@@ -384,12 +378,9 @@ public abstract class AbstractTestCase {
         final File tmpDir = createTempDir();
         final File tmpFile = File.createTempFile("testfile", "", tmpDir);
         tmpFile.deleteOnExit();
-        final FileOutputStream fos = new FileOutputStream(tmpFile);
-        try {
-            fos.write(new byte[] {'f', 'o', 'o'});
-            return new File[] {tmpDir, tmpFile};
-        } finally {
-            fos.close();
+        try (FileOutputStream fos = new FileOutputStream(tmpFile)) {
+            fos.write(new byte[] { 'f', 'o', 'o' });
+            return new File[] { tmpDir, tmpFile };
         }
     }
 
