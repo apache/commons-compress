@@ -47,6 +47,11 @@ The <action> type attribute can be add,update,fix,remove.
       <action issue="COMPRESS-360" type="update" date="2016-06-25" dev="ggregory">
         Update Java requirement from 6 to 7.
       </action>
+      <action issue="COMPRESS-363" type="fix" date="2016-07-01">
+        BitInputStream could return bad results when overflowing
+        internally - if two consecutive reads tried to read more than
+        64 bits.
+      </action>
     </release>
     <release version="1.12" date="2016-06-21"
              description="Release 1.12 - API compatible to 1.11 but requires Java 6 at runtime.
