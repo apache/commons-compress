@@ -616,8 +616,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         }
 
         // Ensure all entry bytes are read
-        if (current.bytesReadFromStream <= current.entry.getCompressedSize()
-                && !current.hasDataDescriptor) {
+        if (currentEntryHasOutstandingBytes()) {
             drainCurrentEntryData();
         } else {
             skip(Long.MAX_VALUE);
@@ -632,6 +631,12 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             // Pushback any required bytes
             if (diff > 0) {
                 pushback(buf.array(), buf.limit() - diff, diff);
+                current.bytesReadFromStream -= diff;
+            }
+
+            // Drain remainder of entry if not all data bytes were required
+            if (currentEntryHasOutstandingBytes()) {
+                drainCurrentEntryData();
             }
         }
 
@@ -643,6 +648,18 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         buf.clear().flip();
         current = null;
         lastStoredEntry = null;
+    }
+
+    /**
+     * If the compressed size of the current entry is included in the entry header
+     * and there are any outstanding bytes in the underlying stream, then
+     * this returns true.
+     *
+     * @return true, if current entry is determined to have outstanding bytes, false otherwise
+     */
+    private boolean currentEntryHasOutstandingBytes() {
+        return current.bytesReadFromStream <= current.entry.getCompressedSize()
+                && !current.hasDataDescriptor;
     }
 
     /**
