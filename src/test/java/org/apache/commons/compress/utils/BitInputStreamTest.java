@@ -143,6 +143,7 @@ public class BitInputStreamTest {
         assertEquals(1186, // 01001010-0010
                      bin.readBits(12));
         assertEquals(-1 , bin.readBits(1));
+        bin.close();
     }
 
     @Test
@@ -167,6 +168,7 @@ public class BitInputStreamTest {
         assertEquals(330, // 0001-01001010
                      bin.readBits(12));
         assertEquals(-1 , bin.readBits(1));
+        bin.close();
     }
 
     private ByteArrayInputStream getStream() {
