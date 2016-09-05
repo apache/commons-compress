@@ -33,18 +33,18 @@ public class CountingStreamTest {
         // I don't like "test all at once" tests either, but the class
         // is so trivial
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        final CountingOutputStream o = new CountingOutputStream(bos);
-        o.write(1);
-        assertEquals(1, o.getBytesWritten());
-        o.write(new byte[] { 2, 3 });
-        assertEquals(3, o.getBytesWritten());
-        o.write(new byte[] { 2, 3, 4, 5, }, 2, 1);
-        assertEquals(4, o.getBytesWritten());
-        o.count(-1);
-        assertEquals(4, o.getBytesWritten());
-        o.count(-2);
-        assertEquals(2, o.getBytesWritten());
-        o.close();
+        try (final CountingOutputStream o = new CountingOutputStream(bos)) {
+            o.write(1);
+            assertEquals(1, o.getBytesWritten());
+            o.write(new byte[] { 2, 3 });
+            assertEquals(3, o.getBytesWritten());
+            o.write(new byte[] { 2, 3, 4, 5, }, 2, 1);
+            assertEquals(4, o.getBytesWritten());
+            o.count(-1);
+            assertEquals(4, o.getBytesWritten());
+            o.count(-2);
+            assertEquals(2, o.getBytesWritten());
+        }
         assertArrayEquals(new byte[] { 1, 2, 3, 4 }, bos.toByteArray());
     }
 
@@ -54,22 +54,22 @@ public class CountingStreamTest {
         // is so trivial
         final ByteArrayInputStream bis =
             new ByteArrayInputStream(new byte[] { 1, 2, 3, 4 });
-        final CountingInputStream i = new CountingInputStream(bis);
-        assertEquals(1, i.read());
-        assertEquals(1, i.getBytesRead());
-        byte[] b = new byte[2];
-        i.read(b);
-        assertEquals(3, i.getBytesRead());
-        assertArrayEquals(new byte[] { 2, 3 }, b);
-        b = new byte[3];
-        i.read(b, 1, 1);
-        assertArrayEquals(new byte[] { 0, 4, 0 }, b);
-        assertEquals(4, i.getBytesRead());
-        i.count(-1);
-        assertEquals(4, i.getBytesRead());
-        i.count(-2);
-        assertEquals(2, i.getBytesRead());
-        i.close();
+        try (final CountingInputStream i = new CountingInputStream(bis)) {
+            assertEquals(1, i.read());
+            assertEquals(1, i.getBytesRead());
+            byte[] b = new byte[2];
+            i.read(b);
+            assertEquals(3, i.getBytesRead());
+            assertArrayEquals(new byte[] { 2, 3 }, b);
+            b = new byte[3];
+            i.read(b, 1, 1);
+            assertArrayEquals(new byte[] { 0, 4, 0 }, b);
+            assertEquals(4, i.getBytesRead());
+            i.count(-1);
+            assertEquals(4, i.getBytesRead());
+            i.count(-2);
+            assertEquals(2, i.getBytesRead());
+        }
     }
 
 }
