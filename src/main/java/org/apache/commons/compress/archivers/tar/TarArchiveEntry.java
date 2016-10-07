@@ -651,6 +651,9 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     /**
      * Get this entry's file.
      *
+     * <p>This method is only useful for entries created from a {@code
+     * File} but not for entries read from an archive.</p>
+     *
      * @return This entry's file.
      */
     public File getFile() {
@@ -942,6 +945,9 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
     /**
      * If this entry represents a file, and the file is a directory, return
      * an array of TarEntries for this entry's children.
+     *
+     * <p>This method is only useful for entries created from a {@code
+     * File} but not for entries read from an archive.</p>
      *
      * @return An array of TarEntry's for this entry's children.
      */
