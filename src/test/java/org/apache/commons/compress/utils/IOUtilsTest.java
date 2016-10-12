@@ -18,9 +18,12 @@
 package org.apache.commons.compress.utils;
 
 import java.io.ByteArrayInputStream;
+import java.io.EOFException;
 import java.io.FilterInputStream;
 import java.io.InputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.ReadableByteChannel;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -77,6 +80,47 @@ public class IOUtilsTest {
             });
     }
 
+    @Test
+    public void readFullyOnChannelReadsFully() throws IOException {
+        ByteBuffer b = ByteBuffer.allocate(20);
+        final byte[] source = new byte[20];
+        for (byte i = 0; i < 20; i++) {
+            source[i] = i;
+        }
+        readFully(source, b);
+        Assert.assertArrayEquals(source, b.array());
+    }
+
+    @Test(expected = EOFException.class)
+    public void readFullyOnChannelThrowsEof() throws IOException {
+        ByteBuffer b = ByteBuffer.allocate(21);
+        final byte[] source = new byte[20];
+        for (byte i = 0; i < 20; i++) {
+            source[i] = i;
+        }
+        readFully(source, b);
+    }
+
+    private static void readFully(final byte[] source, ByteBuffer b) throws IOException {
+        IOUtils.readFully(new ReadableByteChannel() {
+                private int idx;
+                @Override
+                public int read(ByteBuffer buf) {
+                    if (idx >= source.length) {
+                        return -1;
+                    }
+                    buf.put(source[idx++]);
+                    return 1;
+                }
+                @Override
+                public void close() { }
+                @Override
+                public boolean isOpen() {
+                    return true;
+                }
+            }, b);
+    }
+
     private void skip(final StreamWrapper wrapper) throws Exception {
         final ByteArrayInputStream in = new ByteArrayInputStream(new byte[] {
                 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
@@ -85,5 +129,4 @@ public class IOUtilsTest {
         Assert.assertEquals(10, IOUtils.skip(sut, 10));
         Assert.assertEquals(11, sut.read());
     }
-
 }

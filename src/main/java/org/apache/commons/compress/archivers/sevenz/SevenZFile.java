@@ -1029,18 +1029,10 @@ public class SevenZFile implements Closeable {
         return skipped;
     }
 
-    private int readFully(ByteBuffer buf) throws IOException {
-        final int expectedLength = buf.rewind().remaining();
-        int read = 0;
-        while (read < expectedLength) {
-            int readNow = channel.read(buf);
-            if (readNow <= 0) {
-                break;
-            }
-            read += readNow;
-        }
+    private void readFully(ByteBuffer buf) throws IOException {
+        buf.rewind();
+        IOUtils.readFully(channel, buf);
         buf.flip();
-        return read;
     }
 
     @Override

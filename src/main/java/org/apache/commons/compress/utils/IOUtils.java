@@ -20,9 +20,12 @@ package org.apache.commons.compress.utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.ReadableByteChannel;
 
 /**
  * Utility functions
@@ -164,6 +167,35 @@ public final class IOUtils {
             count += x;
         }
         return count;
+    }
+
+    /**
+     * Reads {@code b.remaining()} bytes from the given channel
+     * starting at the current channel's position.
+     *
+     * <p>This method reads repeatedly from the channel until the
+     * requested number of bytes are read. This method blocks until
+     * the requested number of bytes are read, the end of the channel
+     * is detected, or an exception is thrown.</p>
+     *
+     * @param channel the channel to read from
+     * @param b the buffer into which the data is read.
+     * @throws IOException - if an I/O error occurs.
+     * @throws EOFException - if the channel reaches the end before reading all the bytes.
+     */
+    public static void readFully(ReadableByteChannel channel, ByteBuffer b) throws IOException {
+        final int expectedLength = b.remaining();
+        int read = 0;
+        while (read < expectedLength) {
+            int readNow = channel.read(b);
+            if (readNow <= 0) {
+                break;
+            }
+            read += readNow;
+        }
+        if (read < expectedLength) {
+            throw new EOFException();
+        }
     }
 
     // toByteArray(InputStream) copied from:
