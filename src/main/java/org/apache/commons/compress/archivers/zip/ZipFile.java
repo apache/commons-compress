@@ -1046,7 +1046,7 @@ public class ZipFile implements Closeable {
 
     /**
      * InputStream that delegates requests to the underlying
-     * RandomAccessFile, making sure that only bytes from a certain
+     * SeekableByteChannel, making sure that only bytes from a certain
      * range can be read.
      */
     private class BoundedInputStream extends InputStream {
