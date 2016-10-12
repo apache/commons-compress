@@ -231,6 +231,7 @@ public class ZipFile implements Closeable {
      * Extra Fields (if present) to set the file names.
      *
      * @throws IOException if an error occurs while reading the file.
+     * @since 1.13
      */
     public ZipFile(final SeekableByteChannel channel, final String archiveName,
                    final String encoding, final boolean useUnicodeExtraFields)

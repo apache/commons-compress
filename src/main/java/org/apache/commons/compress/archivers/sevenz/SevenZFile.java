@@ -110,6 +110,7 @@ public class SevenZFile implements Closeable {
      * the byte array is supposed to be the UTF16-LE encoded
      * representation of the password.
      * @throws IOException if reading the archive fails
+     * @since 1.13
      */
     public SevenZFile(final SeekableByteChannel channel, String filename,
                       final byte[] password) throws IOException {

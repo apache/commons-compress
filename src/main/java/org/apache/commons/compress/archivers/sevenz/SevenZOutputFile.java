@@ -77,6 +77,7 @@ public class SevenZOutputFile implements Closeable {
      *
      * @param channel the channel to write to
      * @throws IOException if the channel cannot be positioned properly
+     * @since 1.13
      */
     public SevenZOutputFile(final SeekableByteChannel channel) throws IOException {
         this.channel = channel;
