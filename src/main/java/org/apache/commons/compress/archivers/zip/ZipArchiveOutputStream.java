@@ -23,9 +23,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.Calendar;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -55,11 +58,11 @@ import static org.apache.commons.compress.archivers.zip.ZipShort.putShort;
  * attributes and extra fields with different layouts for local file
  * data and central directory entries.
  *
- * <p>This class will try to use {@link java.io.RandomAccessFile
- * RandomAccessFile} when you know that the output is going to go to a
- * file.</p>
+ * <p>This class will try to use {@link
+ * java.nio.channels.SeekableByteChannel} when you know that the
+ * output is going to go to a file.</p>
  *
- * <p>If RandomAccessFile cannot be used, this implementation will use
+ * <p>If SeekableByteChannel cannot be used, this implementation will use
  * a Data Descriptor to store size and CRC information for {@link
  * #DEFLATED DEFLATED} entries, this means, you don't need to
  * calculate them yourself.  Unfortunately this is not possible for
@@ -71,7 +74,7 @@ import static org.apache.commons.compress.archivers.zip.ZipShort.putShort;
  * extensions and thus individual entries and archives larger than 4
  * GB or with more than 65536 entries in most cases but explicit
  * control is provided via {@link #setUseZip64}.  If the stream can not
- * user RandomAccessFile and you try to write a ZipArchiveEntry of
+ * use SeekableByteChannel and you try to write a ZipArchiveEntry of
  * unknown size then Zip64 extensions will be disabled by default.</p>
  *
  * @NotThreadSafe
@@ -230,7 +233,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Optional random access output.
      */
-    private final RandomAccessFile raf;
+    private final SeekableByteChannel channel;
 
     private final OutputStream out;
 
@@ -268,7 +271,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     public ZipArchiveOutputStream(final OutputStream out) {
         this.out = out;
-        this.raf = null;
+        this.channel = null;
         def = new Deflater(level, true);
         streamCompressor = StreamCompressor.create(out, def);
     }
@@ -280,20 +283,38 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @throws IOException on error
      */
     public ZipArchiveOutputStream(final File file) throws IOException {
-        OutputStream o = null;
-        RandomAccessFile _raf = null;
-        try {
-            _raf = new RandomAccessFile(file, "rw");
-            _raf.setLength(0);
-        } catch (final IOException e) {
-            IOUtils.closeQuietly(_raf);
-            _raf = null;
-            o = new FileOutputStream(file);
-        }
         def = new Deflater(level, true);
-        streamCompressor = StreamCompressor.create(_raf, def);
+        OutputStream o = null;
+        SeekableByteChannel _channel = null;
+        StreamCompressor _streamCompressor = null;
+        try {
+            _channel = Files.newByteChannel(file.toPath(),
+                EnumSet.of(StandardOpenOption.CREATE, StandardOpenOption.WRITE,
+                           StandardOpenOption.READ,
+                           StandardOpenOption.TRUNCATE_EXISTING));
+            _streamCompressor = StreamCompressor.create(_channel, def);
+        } catch (final IOException e) {
+            IOUtils.closeQuietly(_channel);
+            _channel = null;
+            o = new FileOutputStream(file);
+            _streamCompressor = StreamCompressor.create(o, def);
+        }
         out = o;
-        raf = _raf;
+        channel = _channel;
+        streamCompressor = _streamCompressor;
+    }
+
+    /**
+     * Creates a new ZIP OutputStream writing to a SeekableByteChannel.
+     * @param channel the channel to zip to
+     * @throws IOException on error
+     * @since 1.13
+     */
+    public ZipArchiveOutputStream(SeekableByteChannel channel) throws IOException {
+        this.channel = channel;
+        def = new Deflater(level, true);
+        streamCompressor = StreamCompressor.create(channel, def);
+        out = null;
     }
 
     /**
@@ -306,7 +327,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @return true if seekable
      */
     public boolean isSeekable() {
-        return raf != null;
+        return channel != null;
     }
 
     /**
@@ -506,7 +527,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     private void closeEntry(final boolean actuallyNeedsZip64, final boolean phased) throws IOException {
-        if (!phased && raf != null) {
+        if (!phased && channel != null) {
             rewriteSizesAndCrc(actuallyNeedsZip64);
         }
 
@@ -585,7 +606,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             entry.entry.setCompressedSize(bytesWritten);
             entry.entry.setCrc(crc);
 
-        } else if (raf == null) {
+        } else if (channel == null) {
             if (entry.entry.getCrc() != crc) {
                 throw new ZipException("bad CRC checksum for entry "
                                        + entry.entry.getName() + ": "
@@ -640,9 +661,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     private void rewriteSizesAndCrc(final boolean actuallyNeedsZip64)
         throws IOException {
-        final long save = raf.getFilePointer();
+        final long save = channel.position();
 
-        raf.seek(entry.localDataStart);
+        channel.position(entry.localDataStart);
         writeOut(ZipLong.getBytes(entry.entry.getCrc()));
         if (!hasZip64Extra(entry.entry) || !actuallyNeedsZip64) {
             writeOut(ZipLong.getBytes(entry.entry.getCompressedSize()));
@@ -656,8 +677,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             final ByteBuffer name = getName(entry.entry);
             final int nameLen = name.limit() - name.position();
             // seek to ZIP64 extra, skip header and size information
-            raf.seek(entry.localDataStart + 3 * WORD + 2 * SHORT
-                     + nameLen + 2 * SHORT);
+            channel.position(entry.localDataStart + 3 * WORD + 2 * SHORT
+                             + nameLen + 2 * SHORT);
             // inside the ZIP64 extra uncompressed size comes
             // first, unlike the LFH, CD or data descriptor
             writeOut(ZipEightByteInteger.getBytes(entry.entry.getSize()));
@@ -666,7 +687,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             if (!actuallyNeedsZip64) {
                 // do some cleanup:
                 // * rewrite version needed to extract
-                raf.seek(entry.localDataStart  - 5 * SHORT);
+                channel.position(entry.localDataStart  - 5 * SHORT);
                 writeOut(ZipShort.getBytes(INITIAL_VERSION));
 
                 // * remove ZIP64 extra so it doesn't get written
@@ -682,7 +703,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                 }
             }
         }
-        raf.seek(save);
+        channel.position(save);
     }
 
     /**
@@ -778,7 +799,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private void validateSizeInformation(final Zip64Mode effectiveMode)
         throws ZipException {
         // Size/CRC not required if RandomAccessFile is used
-        if (entry.entry.getMethod() == STORED && raf == null) {
+        if (entry.entry.getMethod() == STORED && channel == null) {
             if (entry.entry.getSize() == ArchiveEntry.SIZE_UNKNOWN) {
                 throw new ZipException("uncompressed size is required for"
                                        + " STORED method when not writing to a"
@@ -818,7 +839,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             || entry.getSize() >= ZIP64_MAGIC
             || entry.getCompressedSize() >= ZIP64_MAGIC
             || (entry.getSize() == ArchiveEntry.SIZE_UNKNOWN
-                && raf != null && mode != Zip64Mode.Never);
+                && channel != null && mode != Zip64Mode.Never);
     }
 
     /**
@@ -1036,7 +1057,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         // CRC
         if (phased){
             putLong(ze.getCrc(), buf, LFH_CRC_OFFSET);
-        } else if (zipMethod == DEFLATED || raf != null) {
+        } else if (zipMethod == DEFLATED || channel != null) {
             System.arraycopy(LZERO, 0, buf, LFH_CRC_OFFSET, WORD);
         } else {
             putLong(ze.getCrc(), buf, LFH_CRC_OFFSET);
@@ -1053,7 +1074,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         } else if (phased) {
             putLong(ze.getCompressedSize(), buf, LFH_COMPRESSED_SIZE_OFFSET);
             putLong(ze.getSize(), buf, LFH_ORIGINAL_SIZE_OFFSET);
-        } else if (zipMethod == DEFLATED || raf != null) {
+        } else if (zipMethod == DEFLATED || channel != null) {
             System.arraycopy(LZERO, 0, buf, LFH_COMPRESSED_SIZE_OFFSET, WORD);
             System.arraycopy(LZERO, 0, buf, LFH_ORIGINAL_SIZE_OFFSET, WORD);
         } else { // Stored
@@ -1115,7 +1136,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @throws IOException on error
      */
     protected void writeDataDescriptor(final ZipArchiveEntry ze) throws IOException {
-        if (ze.getMethod() != DEFLATED || raf != null) {
+        if (ze.getMethod() != DEFLATED || channel != null) {
             return;
         }
         writeCounted(DD_SIG);
@@ -1436,7 +1457,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     private boolean isDeflatedToOutputStream(final int zipMethod) {
-        return zipMethod == DEFLATED && raf == null;
+        return zipMethod == DEFLATED && channel == null;
     }
 
 
@@ -1481,7 +1502,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
               System.err.println("Adding z64 for " + ze.getName()
               + ", method: " + ze.getMethod()
               + " (" + (ze.getMethod() == STORED) + ")"
-              + ", raf: " + (raf != null));
+              + ", channel: " + (channel != null));
             */
             z64 = new Zip64ExtendedInformationExtraField();
         }
@@ -1513,7 +1534,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     private Zip64Mode getEffectiveZip64Mode(final ZipArchiveEntry ze) {
         if (zip64Mode != Zip64Mode.AsNeeded
-            || raf != null
+            || channel != null
             || ze.getMethod() != DEFLATED
             || ze.getSize() != ArchiveEntry.SIZE_UNKNOWN) {
             return zip64Mode;
@@ -1539,8 +1560,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * corrupt archives so they can clean up any temporary files.</p>
      */
     void destroy() throws IOException {
-        if (raf != null) {
-            raf.close();
+        if (channel != null) {
+            channel.close();
         }
         if (out != null) {
             out.close();
