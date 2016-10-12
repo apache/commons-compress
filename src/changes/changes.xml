@@ -61,6 +61,11 @@ The <action> type attribute can be add,update,fix,remove.
         ZipArchiveInputStream.closeEntry does not properly advance to
         next entry if there are junk bytes at end of data section
       </action>
+      <action issue="COMPRESS-327" type="add" date="2016-10-12">
+        SevenZFile, SevenZOutputFile, ZipFile and
+        ZipArchiveOutputStream can now work on non-file resources if
+        they can be accessed via SeekableByteChannel.
+      </action>
     </release>
     <release version="1.12" date="2016-06-21"
              description="Release 1.12 - API compatible to 1.11 but requires Java 6 at runtime.

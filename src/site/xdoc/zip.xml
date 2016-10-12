@@ -107,15 +107,16 @@
       </subsection>
 
       <subsection name="ZipArchiveOutputStream" id="ZipArchiveOutputStream">
-        <p><code>ZipArchiveOutputStream</code> has two constructors,
-          one of them uses a <code>File</code> argument, the other
-          uses an <code>OutputStream</code>.  The <code>File</code>
-          version will try to use <code>RandomAccessFile</code> and
-          fall back to using a <code>FileOutputStream</code>
-          internally if that fails.</p>
+        <p><code>ZipArchiveOutputStream</code> has three constructors,
+        one of them uses a <code>File</code> argument, one a
+        <code>SeekableByteChannel</code> and the last uses an
+        <code>OutputStream</code>.  The <code>File</code> version will
+        try to use <code>SeekableByteChannel</code> and fall back to
+        using a <code>FileOutputStream</code> internally if that
+        fails.</p>
 
         <p>If <code>ZipArchiveOutputStream</code> can
-          use <code>RandomAccessFile</code> it can employ some
+          use <code>SeekableByteChannel</code> it can employ some
           optimizations that lead to smaller archives.  It also makes
           it possible to add uncompressed (<code>setMethod</code> used
           with <code>STORED</code>) entries of unknown size when
@@ -124,7 +125,8 @@
           an <code>OutputStream</code>.</p>
 
         <p>If you know you are writing to a file, you should always
-          prefer the <code>File</code>-arg constructor.</p>
+        prefer the <code>File</code>- or
+        <code>SeekableByteChannel</code>-arg constructors.</p>
       </subsection>
 
       <subsection name="Extra Fields">
@@ -331,7 +333,7 @@
           uncompressed sizes of the entry are known
           when <code>putArchiveEntry</code> is called
           or <code>ZipArchiveOutputStream</code>
-          uses <code>RandomAccessFile</code>
+          uses <code>SeekableByteChannel</code>
           (see <a href="#ZipArchiveOutputStream">above</a>).  If only
           the uncompressed size is
           known <code>ZipArchiveOutputStream</code> will assume the
@@ -375,7 +377,7 @@
           the format's limits is exceeded.  Archives created in this
           mode will be readable by all unarchivers; they may be
           slightly smaller than archives created
-          with <code>RandomAccessFile</code>
+          with <code>SeekableByteChannel</code>
           in <code>Zip64Mode.AsNeeded</code> mode if some of the
           entries had unknown sizes.</p>
 
@@ -391,7 +393,7 @@
           reached because Apache Commons Compress' own API
           (<code>ArchiveEntry</code>'s size information uses
           a <code>long</code>) or its usage of Java collections
-          or <code>RandomAccessFile</code> internally.  The table
+          or <code>SeekableByteChannel</code> internally.  The table
           below shows the theoretical limits supported by Apache
           Commons Compress.  In practice it is very likely that you'd
           run out of memory or your file system won't allow files that

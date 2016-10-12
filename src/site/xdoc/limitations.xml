@@ -31,7 +31,9 @@
          href="http://tukaani.org/xz/java.html">XZ for Java</a>
          library.</li>
          <li>only <code>File</code>s are supported as input/output,
-         not streams.  In Compress 1.7
+         not streams. Starting with Compress 1.13
+         <code>SeekableByteChannel</code> is supported as well.</li>
+         <li>In Compress 1.7
          <code>ArchiveStreamFactory</code> will not auto-detect 7z
          archives, starting with 1.8 it will throw a
          <code>StreamingNotSupportedException</code> when reading from
@@ -168,7 +170,7 @@
          <li><code>ZipArchiveEntry#getLastModifiedDate</code> uses
          <code>ZipEntry#getTime</code> under the covers which may
          return different times for the same archive when using
-         different versions onf Java.</li>
+         different versions of Java.</li>
        </ul>
      </section>
    </body>

@@ -70,10 +70,17 @@
             </ul>
           </subsection>
 
-          <!--subsection name="What's coming in 1.13?">
+          <subsection name="What's coming in 1.13?">
             <ul>
+              <li>The 7z package as well as
+              <code>ZipArchiveOutputStream</code> and
+              <code>ZipFile</code> can now use
+              <code>SeekableByteChannel</code> when random acces is
+              needed. This allows archives to be read from inputs and
+              written to outputs that are seekable but are not
+              represented by <code>File</code>s.</li>
             </ul>
-          </subsection-->
+          </subsection>
         </section>
 
         <section name="Documentation">

@@ -622,7 +622,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                                        + " instead of "
                                        + bytesWritten);
             }
-        } else { /* method is STORED and we used RandomAccessFile */
+        } else { /* method is STORED and we used SeekableByteChannel */
             entry.entry.setSize(bytesWritten);
             entry.entry.setCompressedSize(bytesWritten);
             entry.entry.setCrc(crc);
@@ -752,7 +752,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             final Zip64ExtendedInformationExtraField z64 = getZip64Extra(entry.entry);
 
             // just a placeholder, real data will be in data
-            // descriptor or inserted later via RandomAccessFile
+            // descriptor or inserted later via SeekableByteChannel
             ZipEightByteInteger size = ZipEightByteInteger.ZERO;
             ZipEightByteInteger compressedSize = ZipEightByteInteger.ZERO;
             if (phased){
@@ -798,7 +798,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     private void validateSizeInformation(final Zip64Mode effectiveMode)
         throws ZipException {
-        // Size/CRC not required if RandomAccessFile is used
+        // Size/CRC not required if SeekableByteChannel is used
         if (entry.entry.getMethod() == STORED && channel == null) {
             if (entry.entry.getSize() == ArchiveEntry.SIZE_UNKNOWN) {
                 throw new ZipException("uncompressed size is required for"
