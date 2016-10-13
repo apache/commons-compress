@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -246,9 +247,6 @@ public class SevenZOutputFile implements Closeable {
 
         final long headerPosition = channel.position();
 
-        // TODO use a properly sized buffer for both write operations
-        // and re-write writeHeader and the startHeaderStream
-        // operations to work on ByteBuffer directly.
         final ByteArrayOutputStream headerBaos = new ByteArrayOutputStream();
         final DataOutputStream header = new DataOutputStream(headerBaos);
 
@@ -258,31 +256,31 @@ public class SevenZOutputFile implements Closeable {
         channel.write(ByteBuffer.wrap(headerBytes));
 
         final CRC32 crc32 = new CRC32();
+        crc32.update(headerBytes);
 
+        ByteBuffer bb = ByteBuffer.allocate(SevenZFile.sevenZSignature.length
+                                            + 2 /* version */
+                                            + 4 /* start header CRC */
+                                            + 8 /* next header position */
+                                            + 8 /* next header length */
+                                            + 4 /* next header CRC */)
+            .order(ByteOrder.LITTLE_ENDIAN);
         // signature header
         channel.position(0);
-        ByteBuffer bb = ByteBuffer.allocate(SevenZFile.sevenZSignature.length + 2);
         bb.put(SevenZFile.sevenZSignature);
         // version
         bb.put((byte) 0).put((byte) 2);
-        bb.flip();
-        channel.write(bb);
+
+        // placeholder for start header CRC
+        bb.putInt(0);
 
         // start header
-        final ByteArrayOutputStream startHeaderBaos = new ByteArrayOutputStream();
-        final DataOutputStream startHeaderStream = new DataOutputStream(startHeaderBaos);
-        startHeaderStream.writeLong(Long.reverseBytes(headerPosition - SevenZFile.SIGNATURE_HEADER_SIZE));
-        startHeaderStream.writeLong(Long.reverseBytes(0xffffFFFFL & headerBytes.length));
+        bb.putLong(headerPosition - SevenZFile.SIGNATURE_HEADER_SIZE)
+            .putLong(0xffffFFFFL & headerBytes.length)
+            .putInt((int) crc32.getValue());
         crc32.reset();
-        crc32.update(headerBytes);
-        startHeaderStream.writeInt(Integer.reverseBytes((int)crc32.getValue()));
-        startHeaderStream.flush();
-        final byte[] startHeaderBytes = startHeaderBaos.toByteArray();
-        crc32.reset();
-        crc32.update(startHeaderBytes);
-        bb = ByteBuffer.allocate(startHeaderBytes.length + 4);
-        bb.putInt(Integer.reverseBytes((int) crc32.getValue()));
-        bb.put(startHeaderBytes);
+        crc32.update(bb.array(), SevenZFile.sevenZSignature.length + 6, 20);
+        bb.putInt(SevenZFile.sevenZSignature.length + 2, (int) crc32.getValue());
         bb.flip();
         channel.write(bb);
     }
@@ -763,10 +761,13 @@ public class SevenZOutputFile implements Closeable {
     }
 
     private class OutputStreamWrapper extends OutputStream {
+        private static final int BUF_SIZE = 8192;
+        private final ByteBuffer buffer = ByteBuffer.allocate(BUF_SIZE);
         @Override
         public void write(final int b) throws IOException {
-            // TODO use a cached ByteBuffer
-            channel.write(ByteBuffer.wrap(new byte[] {(byte) b }));
+            buffer.clear();
+            buffer.put((byte) b).flip();
+            channel.write(buffer);
             compressedCrc32.update(b);
             fileBytesWritten++;
         }
@@ -779,8 +780,13 @@ public class SevenZOutputFile implements Closeable {
         @Override
         public void write(final byte[] b, final int off, final int len)
             throws IOException {
-            // TODO use a cached ByteBuffer
-            channel.write(ByteBuffer.wrap(b, off, len));
+            if (len > BUF_SIZE) {
+                channel.write(ByteBuffer.wrap(b, off, len));
+            } else {
+                buffer.clear();
+                buffer.put(b, off, len).flip();
+                channel.write(buffer);
+            }
             compressedCrc32.update(b, off, len);
             fileBytesWritten += len;
         }

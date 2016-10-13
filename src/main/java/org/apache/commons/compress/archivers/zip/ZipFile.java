@@ -1005,11 +1005,12 @@ public class ZipFile implements Closeable {
             final OffsetEntry offsetEntry = ze.getOffsetEntry();
             final long offset = offsetEntry.headerOffset;
             archive.position(offset + LFH_OFFSET_FOR_FILENAME_LENGTH);
-            SHORT_BBUF.rewind();
-            IOUtils.readFully(archive, SHORT_BBUF);
+            WORD_BBUF.rewind();
+            IOUtils.readFully(archive, WORD_BBUF);
+            WORD_BBUF.flip();
+            WORD_BBUF.get(SHORT_BUF);
             final int fileNameLen = ZipShort.getValue(SHORT_BUF);
-            SHORT_BBUF.rewind();
-            IOUtils.readFully(archive, SHORT_BBUF);
+            WORD_BBUF.get(SHORT_BUF);
             final int extraFieldLen = ZipShort.getValue(SHORT_BUF);
             skipBytes(fileNameLen);
             final byte[] localExtraData = new byte[extraFieldLen];

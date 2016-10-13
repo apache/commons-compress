@@ -20,12 +20,12 @@ package org.apache.commons.compress.archivers.sevenz;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.Closeable;
-import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -202,7 +202,8 @@ public class SevenZFile implements Closeable {
     }
 
     private Archive readHeaders(final byte[] password) throws IOException {
-        ByteBuffer buf = ByteBuffer.allocate(12 /* signature + 2 bytes version + 4 bytes CRC */);
+        ByteBuffer buf = ByteBuffer.allocate(12 /* signature + 2 bytes version + 4 bytes CRC */)
+            .order(ByteOrder.LITTLE_ENDIAN);
         readFully(buf);
         final byte[] signature = new byte[6];
         buf.get(signature);
@@ -217,7 +218,7 @@ public class SevenZFile implements Closeable {
                     archiveVersionMajor, archiveVersionMinor));
         }
 
-        final long startHeaderCrc = 0xffffFFFFL & Integer.reverseBytes(buf.getInt());
+        final long startHeaderCrc = 0xffffFFFFL & buf.getInt();
         final StartHeader startHeader = readStartHeader(startHeaderCrc);
 
         final int nextHeaderSizeInt = (int) startHeader.nextHeaderSize;
@@ -225,32 +226,24 @@ public class SevenZFile implements Closeable {
             throw new IOException("cannot handle nextHeaderSize " + startHeader.nextHeaderSize);
         }
         channel.position(SIGNATURE_HEADER_SIZE + startHeader.nextHeaderOffset);
-        buf = ByteBuffer.allocate(nextHeaderSizeInt);
-        // TODO rewrite to use ByteBuffer directly rather than DataInputStream
-        final byte[] nextHeader = new byte[nextHeaderSizeInt];
+        buf = ByteBuffer.allocate(nextHeaderSizeInt).order(ByteOrder.LITTLE_ENDIAN);
         readFully(buf);
-        buf.get(nextHeader);
         final CRC32 crc = new CRC32();
-        crc.update(nextHeader);
+        crc.update(buf.array());
         if (startHeader.nextHeaderCrc != crc.getValue()) {
             throw new IOException("NextHeader CRC mismatch");
         }
 
-        final ByteArrayInputStream byteStream = new ByteArrayInputStream(nextHeader);
-        DataInputStream nextHeaderInputStream = new DataInputStream(
-                byteStream);
         Archive archive = new Archive();
-        int nid = nextHeaderInputStream.readUnsignedByte();
+        int nid = getUnsignedByte(buf);
         if (nid == NID.kEncodedHeader) {
-            nextHeaderInputStream =
-                readEncodedHeader(nextHeaderInputStream, archive, password);
+            buf = readEncodedHeader(buf, archive, password);
             // Archive gets rebuilt with the new header
             archive = new Archive();
-            nid = nextHeaderInputStream.readUnsignedByte();
+            nid = getUnsignedByte(buf);
         }
         if (nid == NID.kHeader) {
-            readHeader(nextHeaderInputStream, archive);
-            nextHeaderInputStream.close();
+            readHeader(buf, archive);
         } else {
             throw new IOException("Broken or unsupported archive: no Header");
         }
@@ -259,7 +252,8 @@ public class SevenZFile implements Closeable {
 
     private StartHeader readStartHeader(final long startHeaderCrc) throws IOException {
         final StartHeader startHeader = new StartHeader();
-        // TODO rewrite to use ByteBuffer directly rather than DataInputStream
+        // using Stream rather than ByteBuffer for the benefit of the
+        // built-in CRC check
         try (DataInputStream dataInputStream = new DataInputStream(new CRC32VerifyingInputStream(
                 new BoundedSeekableByteChannelInputStream(channel, 20), 20, startHeaderCrc))) {
              startHeader.nextHeaderOffset = Long.reverseBytes(dataInputStream.readLong());
@@ -269,12 +263,12 @@ public class SevenZFile implements Closeable {
         }
     }
 
-    private void readHeader(final DataInput header, final Archive archive) throws IOException {
-        int nid = header.readUnsignedByte();
+    private void readHeader(final ByteBuffer header, final Archive archive) throws IOException {
+        int nid = getUnsignedByte(header);
 
         if (nid == NID.kArchiveProperties) {
             readArchiveProperties(header);
-            nid = header.readUnsignedByte();
+            nid = getUnsignedByte(header);
         }
 
         if (nid == NID.kAdditionalStreamsInfo) {
@@ -284,12 +278,12 @@ public class SevenZFile implements Closeable {
 
         if (nid == NID.kMainStreamsInfo) {
             readStreamsInfo(header, archive);
-            nid = header.readUnsignedByte();
+            nid = getUnsignedByte(header);
         }
 
         if (nid == NID.kFilesInfo) {
             readFilesInfo(header, archive);
-            nid = header.readUnsignedByte();
+            nid = getUnsignedByte(header);
         }
 
         if (nid != NID.kEnd) {
@@ -297,19 +291,19 @@ public class SevenZFile implements Closeable {
         }
     }
 
-    private void readArchiveProperties(final DataInput input) throws IOException {
+    private void readArchiveProperties(final ByteBuffer input) throws IOException {
         // FIXME: the reference implementation just throws them away?
-        int nid =  input.readUnsignedByte();
+        int nid =  getUnsignedByte(input);
         while (nid != NID.kEnd) {
             final long propertySize = readUint64(input);
             final byte[] property = new byte[(int)propertySize];
-            input.readFully(property);
-            nid = input.readUnsignedByte();
+            input.get(property);
+            nid = getUnsignedByte(input);
         }
     }
 
-    private DataInputStream readEncodedHeader(final DataInputStream header, final Archive archive,
-                                              final byte[] password) throws IOException {
+    private ByteBuffer readEncodedHeader(final ByteBuffer header, final Archive archive,
+                                         final byte[] password) throws IOException {
         readStreamsInfo(header, archive);
 
         // FIXME: merge with buildDecodingStream()/buildDecoderStack() at some stage?
@@ -336,20 +330,20 @@ public class SevenZFile implements Closeable {
         try (DataInputStream nextHeaderInputStream = new DataInputStream(inputStreamStack)) {
             nextHeaderInputStream.readFully(nextHeader);
         }
-        return new DataInputStream(new ByteArrayInputStream(nextHeader));
+        return ByteBuffer.wrap(nextHeader).order(ByteOrder.LITTLE_ENDIAN);
     }
 
-    private void readStreamsInfo(final DataInput header, final Archive archive) throws IOException {
-        int nid = header.readUnsignedByte();
+    private void readStreamsInfo(final ByteBuffer header, final Archive archive) throws IOException {
+        int nid = getUnsignedByte(header);
 
         if (nid == NID.kPackInfo) {
             readPackInfo(header, archive);
-            nid = header.readUnsignedByte();
+            nid = getUnsignedByte(header);
         }
 
         if (nid == NID.kUnpackInfo) {
             readUnpackInfo(header, archive);
-            nid = header.readUnsignedByte();
+            nid = getUnsignedByte(header);
         } else {
             // archive without unpack/coders info
             archive.folders = new Folder[0];
@@ -357,7 +351,7 @@ public class SevenZFile implements Closeable {
 
         if (nid == NID.kSubStreamsInfo) {
             readSubStreamsInfo(header, archive);
-            nid = header.readUnsignedByte();
+            nid = getUnsignedByte(header);
         }
 
         if (nid != NID.kEnd) {
@@ -365,16 +359,16 @@ public class SevenZFile implements Closeable {
         }
     }
 
-    private void readPackInfo(final DataInput header, final Archive archive) throws IOException {
+    private void readPackInfo(final ByteBuffer header, final Archive archive) throws IOException {
         archive.packPos = readUint64(header);
         final long numPackStreams = readUint64(header);
-        int nid = header.readUnsignedByte();
+        int nid = getUnsignedByte(header);
         if (nid == NID.kSize) {
             archive.packSizes = new long[(int)numPackStreams];
             for (int i = 0; i < archive.packSizes.length; i++) {
                 archive.packSizes[i] = readUint64(header);
             }
-            nid = header.readUnsignedByte();
+            nid = getUnsignedByte(header);
         }
 
         if (nid == NID.kCRC) {
@@ -382,11 +376,11 @@ public class SevenZFile implements Closeable {
             archive.packCrcs = new long[(int)numPackStreams];
             for (int i = 0; i < (int)numPackStreams; i++) {
                 if (archive.packCrcsDefined.get(i)) {
-                    archive.packCrcs[i] = 0xffffFFFFL & Integer.reverseBytes(header.readInt());
+                    archive.packCrcs[i] = 0xffffFFFFL & header.getInt();
                 }
             }
 
-            nid = header.readUnsignedByte();
+            nid = getUnsignedByte(header);
         }
 
         if (nid != NID.kEnd) {
@@ -394,15 +388,15 @@ public class SevenZFile implements Closeable {
         }
     }
 
-    private void readUnpackInfo(final DataInput header, final Archive archive) throws IOException {
-        int nid = header.readUnsignedByte();
+    private void readUnpackInfo(final ByteBuffer header, final Archive archive) throws IOException {
+        int nid = getUnsignedByte(header);
         if (nid != NID.kFolder) {
             throw new IOException("Expected kFolder, got " + nid);
         }
         final long numFolders = readUint64(header);
         final Folder[] folders = new Folder[(int)numFolders];
         archive.folders = folders;
-        final int external = header.readUnsignedByte();
+        final int external = getUnsignedByte(header);
         if (external != 0) {
             throw new IOException("External unsupported");
         }
@@ -410,7 +404,7 @@ public class SevenZFile implements Closeable {
             folders[i] = readFolder(header);
         }
 
-        nid = header.readUnsignedByte();
+        nid = getUnsignedByte(header);
         if (nid != NID.kCodersUnpackSize) {
             throw new IOException("Expected kCodersUnpackSize, got " + nid);
         }
@@ -421,19 +415,19 @@ public class SevenZFile implements Closeable {
             }
         }
 
-        nid = header.readUnsignedByte();
+        nid = getUnsignedByte(header);
         if (nid == NID.kCRC) {
             final BitSet crcsDefined = readAllOrBits(header, (int)numFolders);
             for (int i = 0; i < (int)numFolders; i++) {
                 if (crcsDefined.get(i)) {
                     folders[i].hasCrc = true;
-                    folders[i].crc = 0xffffFFFFL & Integer.reverseBytes(header.readInt());
+                    folders[i].crc = 0xffffFFFFL & header.getInt();
                 } else {
                     folders[i].hasCrc = false;
                 }
             }
 
-            nid = header.readUnsignedByte();
+            nid = getUnsignedByte(header);
         }
 
         if (nid != NID.kEnd) {
@@ -441,13 +435,13 @@ public class SevenZFile implements Closeable {
         }
     }
 
-    private void readSubStreamsInfo(final DataInput header, final Archive archive) throws IOException {
+    private void readSubStreamsInfo(final ByteBuffer header, final Archive archive) throws IOException {
         for (final Folder folder : archive.folders) {
             folder.numUnpackSubStreams = 1;
         }
         int totalUnpackStreams = archive.folders.length;
 
-        int nid = header.readUnsignedByte();
+        int nid = getUnsignedByte(header);
         if (nid == NID.kNumUnpackStream) {
             totalUnpackStreams = 0;
             for (final Folder folder : archive.folders) {
@@ -455,7 +449,7 @@ public class SevenZFile implements Closeable {
                 folder.numUnpackSubStreams = (int)numStreams;
                 totalUnpackStreams += numStreams;
             }
-            nid = header.readUnsignedByte();
+            nid = getUnsignedByte(header);
         }
 
         final SubStreamsInfo subStreamsInfo = new SubStreamsInfo();
@@ -479,7 +473,7 @@ public class SevenZFile implements Closeable {
             subStreamsInfo.unpackSizes[nextUnpackStream++] = folder.getUnpackSize() - sum;
         }
         if (nid == NID.kSize) {
-            nid = header.readUnsignedByte();
+            nid = getUnsignedByte(header);
         }
 
         int numDigests = 0;
@@ -494,7 +488,7 @@ public class SevenZFile implements Closeable {
             final long[] missingCrcs = new long[numDigests];
             for (int i = 0; i < numDigests; i++) {
                 if (hasMissingCrc.get(i)) {
-                    missingCrcs[i] = 0xffffFFFFL & Integer.reverseBytes(header.readInt());
+                    missingCrcs[i] = 0xffffFFFFL & header.getInt();
                 }
             }
             int nextCrc = 0;
@@ -514,7 +508,7 @@ public class SevenZFile implements Closeable {
                 }
             }
 
-            nid = header.readUnsignedByte();
+            nid = getUnsignedByte(header);
         }
 
         if (nid != NID.kEnd) {
@@ -524,7 +518,7 @@ public class SevenZFile implements Closeable {
         archive.subStreamsInfo = subStreamsInfo;
     }
 
-    private Folder readFolder(final DataInput header) throws IOException {
+    private Folder readFolder(final ByteBuffer header) throws IOException {
         final Folder folder = new Folder();
 
         final long numCoders = readUint64(header);
@@ -533,14 +527,14 @@ public class SevenZFile implements Closeable {
         long totalOutStreams = 0;
         for (int i = 0; i < coders.length; i++) {
             coders[i] = new Coder();
-            final int bits = header.readUnsignedByte();
+            final int bits = getUnsignedByte(header);
             final int idSize = bits & 0xf;
             final boolean isSimple = (bits & 0x10) == 0;
             final boolean hasAttributes = (bits & 0x20) != 0;
             final boolean moreAlternativeMethods = (bits & 0x80) != 0;
 
             coders[i].decompressionMethodId = new byte[idSize];
-            header.readFully(coders[i].decompressionMethodId);
+            header.get(coders[i].decompressionMethodId);
             if (isSimple) {
                 coders[i].numInStreams = 1;
                 coders[i].numOutStreams = 1;
@@ -553,7 +547,7 @@ public class SevenZFile implements Closeable {
             if (hasAttributes) {
                 final long propertiesSize = readUint64(header);
                 coders[i].properties = new byte[(int)propertiesSize];
-                header.readFully(coders[i].properties);
+                header.get(coders[i].properties);
             }
             // would need to keep looping as above:
             while (moreAlternativeMethods) {
@@ -603,8 +597,8 @@ public class SevenZFile implements Closeable {
         return folder;
     }
 
-    private BitSet readAllOrBits(final DataInput header, final int size) throws IOException {
-        final int areAllDefined = header.readUnsignedByte();
+    private BitSet readAllOrBits(final ByteBuffer header, final int size) throws IOException {
+        final int areAllDefined = getUnsignedByte(header);
         final BitSet bits;
         if (areAllDefined != 0) {
             bits = new BitSet(size);
@@ -617,14 +611,14 @@ public class SevenZFile implements Closeable {
         return bits;
     }
 
-    private BitSet readBits(final DataInput header, final int size) throws IOException {
+    private BitSet readBits(final ByteBuffer header, final int size) throws IOException {
         final BitSet bits = new BitSet(size);
         int mask = 0;
         int cache = 0;
         for (int i = 0; i < size; i++) {
             if (mask == 0) {
                 mask = 0x80;
-                cache = header.readUnsignedByte();
+                cache = getUnsignedByte(header);
             }
             bits.set(i, (cache & mask) != 0);
             mask >>>= 1;
@@ -632,7 +626,7 @@ public class SevenZFile implements Closeable {
         return bits;
     }
 
-    private void readFilesInfo(final DataInput header, final Archive archive) throws IOException {
+    private void readFilesInfo(final ByteBuffer header, final Archive archive) throws IOException {
         final long numFiles = readUint64(header);
         final SevenZArchiveEntry[] files = new SevenZArchiveEntry[(int)numFiles];
         for (int i = 0; i < files.length; i++) {
@@ -642,7 +636,7 @@ public class SevenZFile implements Closeable {
         BitSet isEmptyFile = null; 
         BitSet isAnti = null;
         while (true) {
-            final int propertyType = header.readUnsignedByte();
+            final int propertyType = getUnsignedByte(header);
             if (propertyType == 0) {
                 break;
             }
@@ -667,7 +661,7 @@ public class SevenZFile implements Closeable {
                     break;
                 }
                 case NID.kName: {
-                    final int external = header.readUnsignedByte();
+                    final int external = getUnsignedByte(header);
                     if (external != 0) {
                         throw new IOException("Not implemented");
                     }
@@ -675,7 +669,7 @@ public class SevenZFile implements Closeable {
                         throw new IOException("File names length invalid");
                     }
                     final byte[] names = new byte[(int)(size - 1)];
-                    header.readFully(names);
+                    header.get(names);
                     int nextFile = 0;
                     int nextName = 0;
                     for (int i = 0; i < names.length; i += 2) {
@@ -691,56 +685,56 @@ public class SevenZFile implements Closeable {
                 }
                 case NID.kCTime: {
                     final BitSet timesDefined = readAllOrBits(header, files.length);
-                    final int external = header.readUnsignedByte();
+                    final int external = getUnsignedByte(header);
                     if (external != 0) {
                         throw new IOException("Unimplemented");
                     }
                     for (int i = 0; i < files.length; i++) {
                         files[i].setHasCreationDate(timesDefined.get(i));
                         if (files[i].getHasCreationDate()) {
-                            files[i].setCreationDate(Long.reverseBytes(header.readLong()));
+                            files[i].setCreationDate(header.getLong());
                         }
                     }
                     break;
                 }
                 case NID.kATime: {
                     final BitSet timesDefined = readAllOrBits(header, files.length);
-                    final int external = header.readUnsignedByte();
+                    final int external = getUnsignedByte(header);
                     if (external != 0) {
                         throw new IOException("Unimplemented");
                     }
                     for (int i = 0; i < files.length; i++) {
                         files[i].setHasAccessDate(timesDefined.get(i));
                         if (files[i].getHasAccessDate()) {
-                            files[i].setAccessDate(Long.reverseBytes(header.readLong()));
+                            files[i].setAccessDate(header.getLong());
                         }
                     }
                     break;
                 }
                 case NID.kMTime: {
                     final BitSet timesDefined = readAllOrBits(header, files.length);
-                    final int external = header.readUnsignedByte();
+                    final int external = getUnsignedByte(header);
                     if (external != 0) {
                         throw new IOException("Unimplemented");
                     }
                     for (int i = 0; i < files.length; i++) {
                         files[i].setHasLastModifiedDate(timesDefined.get(i));
                         if (files[i].getHasLastModifiedDate()) {
-                            files[i].setLastModifiedDate(Long.reverseBytes(header.readLong()));
+                            files[i].setLastModifiedDate(header.getLong());
                         }
                     }
                     break;
                 }
                 case NID.kWinAttributes: {
                     final BitSet attributesDefined = readAllOrBits(header, files.length);
-                    final int external = header.readUnsignedByte();
+                    final int external = getUnsignedByte(header);
                     if (external != 0) {
                         throw new IOException("Unimplemented");
                     }
                     for (int i = 0; i < files.length; i++) {
                         files[i].setHasWindowsAttributes(attributesDefined.get(i));
                         if (files[i].getHasWindowsAttributes()) {
-                            files[i].setWindowsAttributes(Integer.reverseBytes(header.readInt()));
+                            files[i].setWindowsAttributes(header.getInt());
                         }
                     }
                     break;
@@ -967,20 +961,24 @@ public class SevenZFile implements Closeable {
         return getCurrentStream().read(b, off, len);
     }
 
-    private static long readUint64(final DataInput in) throws IOException {
+    private static long readUint64(final ByteBuffer in) throws IOException {
         // long rather than int as it might get shifted beyond the range of an int
-        final long firstByte = in.readUnsignedByte();
+        final long firstByte = getUnsignedByte(in);
         int mask = 0x80;
         long value = 0;
         for (int i = 0; i < 8; i++) {
             if ((firstByte & mask) == 0) {
                 return value | ((firstByte & (mask - 1)) << (8 * i));
             }
-            final long nextByte = in.readUnsignedByte();
+            final long nextByte = getUnsignedByte(in);
             value |= nextByte << (8 * i);
             mask >>>= 1;
         }
         return value;
+    }
+
+    private static int getUnsignedByte(ByteBuffer buf) {
+        return buf.get() & 0xff;
     }
 
     /**
@@ -1006,28 +1004,17 @@ public class SevenZFile implements Closeable {
         return true;
     }
 
-    private static long skipBytesFully(final DataInput input, long bytesToSkip) throws IOException {
+    private static long skipBytesFully(final ByteBuffer input, long bytesToSkip) throws IOException {
         if (bytesToSkip < 1) {
             return 0;
         }
-        long skipped = 0;
-        while (bytesToSkip > Integer.MAX_VALUE) {
-            final long skippedNow = skipBytesFully(input, Integer.MAX_VALUE);
-            if (skippedNow == 0) {
-                return skipped;
-            }
-            skipped += skippedNow;
-            bytesToSkip -= skippedNow;
+        int current = input.position();
+        int maxSkip = input.remaining();
+        if (maxSkip < bytesToSkip) {
+            bytesToSkip = maxSkip;
         }
-        while (bytesToSkip > 0) {
-            final int skippedNow = input.skipBytes((int) bytesToSkip);
-            if (skippedNow == 0) {
-                return skipped;
-            }
-            skipped += skippedNow;
-            bytesToSkip -= skippedNow;
-        }
-        return skipped;
+        input.position(current + (int) bytesToSkip);
+        return bytesToSkip;
     }
 
     private void readFully(ByteBuffer buf) throws IOException {
