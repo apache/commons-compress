@@ -41,6 +41,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipFile; 	
 import org.apache.commons.compress.archivers.zip.ZipMethod;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -100,6 +101,50 @@ public final class ZipTestCase extends AbstractTestCase {
             }
         }
         is.close();
+
+        assertEquals(results.size(), 2);
+        File result = results.get(0);
+        assertEquals(file1.length(), result.length());
+        result = results.get(1);
+        assertEquals(file2.length(), result.length());
+    }
+
+    /**
+     * Archives 2 files and unarchives it again. If the file length of result
+     * and source is the same, it looks like the operations have worked
+     * @throws Exception
+     */
+    @Test
+    public void testZipArchiveCreationInMemory() throws Exception {
+        final File file1 = getFile("test1.xml");
+        final File file2 = getFile("test2.xml");
+        SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel();
+        try (ZipArchiveOutputStream os = new ZipArchiveOutputStream(c)) {
+            os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
+            IOUtils.copy(new FileInputStream(file1), os);
+            os.closeArchiveEntry();
+
+            os.putArchiveEntry(new ZipArchiveEntry("testdata/test2.xml"));
+            IOUtils.copy(new FileInputStream(file2), os);
+            os.closeArchiveEntry();
+        }
+
+        // Unarchive the same
+        final List<File> results = new ArrayList<>();
+
+        try (ArchiveInputStream in = new ArchiveStreamFactory()
+             .createArchiveInputStream("zip", new ByteArrayInputStream(c.array()))) {
+
+            ZipArchiveEntry entry = null;
+            while((entry = (ZipArchiveEntry)in.getNextEntry()) != null) {
+                final File outfile = new File(resultDir.getCanonicalPath() + "/result/" + entry.getName());
+                outfile.getParentFile().mkdirs();
+                try (OutputStream o = new FileOutputStream(outfile)) {
+                    IOUtils.copy(in, o);
+                }
+                results.add(outfile);
+            }
+        }
 
         assertEquals(results.size(), 2);
         File result = results.get(0);

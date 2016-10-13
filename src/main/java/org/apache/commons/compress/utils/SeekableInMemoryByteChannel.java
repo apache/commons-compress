@@ -23,19 +23,25 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.NonWritableChannelException;
 import java.nio.channels.SeekableByteChannel;
+import java.util.Arrays;
 
 /**
  * A {@link SeekableByteChannel} implementation that wraps a byte[].
+ * @since 1.13
  */
 public class SeekableInMemoryByteChannel implements SeekableByteChannel {
 
-    private final byte[] data;
+    private volatile byte[] data;
     private volatile boolean closed;
-    private volatile long position, size;
+    private volatile int position, size;
 
     public SeekableInMemoryByteChannel(byte[] data) {
         this.data = data;
         size = data.length;
+    }
+
+    public SeekableInMemoryByteChannel() {
+        this(new byte[0]);
     }
 
     @Override
@@ -45,7 +51,10 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
 
     @Override
     public SeekableByteChannel position(long newPosition) {
-        position = newPosition;
+        if (newPosition > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("Position cannot exceed " + Integer.MAX_VALUE);
+        }
+        position = (int) newPosition;
         return this;
     }
 
@@ -56,7 +65,12 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
 
     @Override
     public SeekableByteChannel truncate(long newSize) {
-        size = newSize;
+        if (size > newSize) {
+            size = (int) newSize;
+        }
+        if (position > size) {
+            position = size;
+        }
         return this;
     }
 
@@ -65,14 +79,14 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
         if (!isOpen()) {
             throw new ClosedChannelException();
         }
-        long pos = position;
-        long sz = size;
+        int pos = position;
+        int sz = size;
         int wanted = buf.remaining();
-        long possible = sz - pos;
+        int possible = sz - pos;
         if (wanted > possible) {
-            wanted = (int) possible;
+            wanted = possible;
         }
-        buf.put(data, (int) pos, wanted);
+        buf.put(data, pos, wanted);
         position = pos + wanted;
         return wanted;
     }
@@ -87,9 +101,42 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
         return !closed;
     }
 
-    // TODO implement writing
     @Override
     public int write(ByteBuffer b) throws IOException {
-        throw new NonWritableChannelException();
+        if (!isOpen()) {
+            throw new ClosedChannelException();
+        }
+        int pos = position;
+        int sz = data.length;
+        int wanted = b.remaining();
+        int possibleWithoutResize = sz - pos;
+        if (wanted > possibleWithoutResize) {
+            resize(pos + wanted);
+        }
+        b.get(data, pos, wanted);
+        position = pos + wanted;
+        if (size < position) {
+            size = position;
+        }
+        return wanted;
     }
+
+    /**
+     * Obtains the array backing this channel.
+     */
+    public byte[] array() {
+        return data;
+    }
+
+    private void resize(int newLength) {
+        int len = data.length;
+        if (len <= 0) {
+            len = 1;
+        }
+        while (len < newLength) {
+            len <<= 1;
+        }
+        data = Arrays.copyOf(data, len);
+    }
+
 }

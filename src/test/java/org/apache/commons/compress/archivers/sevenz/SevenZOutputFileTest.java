@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.tukaani.xz.LZMA2Options;
 
 public class SevenZOutputFileTest extends AbstractTestCase {
@@ -301,6 +302,16 @@ public class SevenZOutputFileTest extends AbstractTestCase {
     }
 
     @Test
+    public void testStackOfContentCompressionsInMemory() throws Exception {
+        final ArrayList<SevenZMethodConfiguration> methods = new ArrayList<>();
+        methods.add(new SevenZMethodConfiguration(SevenZMethod.LZMA2));
+        methods.add(new SevenZMethodConfiguration(SevenZMethod.COPY));
+        methods.add(new SevenZMethodConfiguration(SevenZMethod.DEFLATE));
+        methods.add(new SevenZMethodConfiguration(SevenZMethod.BZIP2));
+        createAndReadBack(new SeekableInMemoryByteChannel(), methods);
+    }
+
+    @Test
     public void testDeflateWithConfiguration() throws Exception {
         output = new File(dir, "deflate-options.7z");
         // Deflater.BEST_SPEED
@@ -460,6 +471,21 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         }
 
         try (SevenZFile archive = new SevenZFile(output)) {
+            assertEquals(Boolean.TRUE, verifyFile(archive, 0, methods));
+        }
+    }
+
+    private void createAndReadBack(final SeekableInMemoryByteChannel output, final Iterable<SevenZMethodConfiguration> methods) throws Exception {
+        final SevenZOutputFile outArchive = new SevenZOutputFile(output);
+        outArchive.setContentMethods(methods);
+        try {
+            addFile(outArchive, 0, true);
+        } finally {
+            outArchive.close();
+        }
+        try (SevenZFile archive =
+             new SevenZFile(new SeekableInMemoryByteChannel(output.array()), "in memory",
+                            null)) {
             assertEquals(Boolean.TRUE, verifyFile(archive, 0, methods));
         }
     }
