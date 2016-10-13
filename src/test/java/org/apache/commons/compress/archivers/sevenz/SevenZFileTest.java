@@ -21,6 +21,7 @@ import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -33,6 +34,8 @@ import javax.crypto.Cipher;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.PasswordRequiredException;
+import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.junit.Test;
 
 public class SevenZFileTest extends AbstractTestCase {
@@ -229,6 +232,24 @@ public class SevenZFileTest extends AbstractTestCase {
     @Test
     public void getEntriesOfUnarchiveTest() throws IOException {
         try (SevenZFile sevenZFile = new SevenZFile(getFile("bla.7z"))) {
+            final Iterable<SevenZArchiveEntry> entries = sevenZFile.getEntries();
+            final Iterator<SevenZArchiveEntry> iter = entries.iterator();
+            SevenZArchiveEntry entry = iter.next();
+            assertEquals("test1.xml", entry.getName());
+            entry = iter.next();
+            assertEquals("test2.xml", entry.getName());
+            assertFalse(iter.hasNext());
+        }
+    }
+
+    @Test
+    public void getEntriesOfUnarchiveInMemoryTest() throws IOException {
+        byte[] data = null;
+        try (FileInputStream fis = new FileInputStream(getFile("bla.7z"))) {
+            data = IOUtils.toByteArray(fis);
+        }
+        try (SevenZFile sevenZFile = new SevenZFile(new SeekableInMemoryByteChannel(data),
+                                                    "in memory", null)) {
             final Iterable<SevenZArchiveEntry> entries = sevenZFile.getEntries();
             final Iterator<SevenZArchiveEntry> iter = entries.iterator();
             SevenZArchiveEntry entry = iter.next();

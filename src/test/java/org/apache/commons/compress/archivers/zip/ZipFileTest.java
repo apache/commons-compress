@@ -34,6 +34,7 @@ import java.util.TreeMap;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.junit.After;
 import org.junit.Test;
 
@@ -48,6 +49,41 @@ public class ZipFileTest {
     @Test
     public void testCDOrder() throws Exception {
         readOrderTest();
+        final ArrayList<ZipArchiveEntry> l = Collections.list(zf.getEntries());
+        assertEntryName(l, 0, "AbstractUnicodeExtraField");
+        assertEntryName(l, 1, "AsiExtraField");
+        assertEntryName(l, 2, "ExtraFieldUtils");
+        assertEntryName(l, 3, "FallbackZipEncoding");
+        assertEntryName(l, 4, "GeneralPurposeBit");
+        assertEntryName(l, 5, "JarMarker");
+        assertEntryName(l, 6, "NioZipEncoding");
+        assertEntryName(l, 7, "Simple8BitZipEncoding");
+        assertEntryName(l, 8, "UnicodeCommentExtraField");
+        assertEntryName(l, 9, "UnicodePathExtraField");
+        assertEntryName(l, 10, "UnixStat");
+        assertEntryName(l, 11, "UnparseableExtraFieldData");
+        assertEntryName(l, 12, "UnrecognizedExtraField");
+        assertEntryName(l, 13, "ZipArchiveEntry");
+        assertEntryName(l, 14, "ZipArchiveInputStream");
+        assertEntryName(l, 15, "ZipArchiveOutputStream");
+        assertEntryName(l, 16, "ZipEncoding");
+        assertEntryName(l, 17, "ZipEncodingHelper");
+        assertEntryName(l, 18, "ZipExtraField");
+        assertEntryName(l, 19, "ZipUtil");
+        assertEntryName(l, 20, "ZipLong");
+        assertEntryName(l, 21, "ZipShort");
+        assertEntryName(l, 22, "ZipFile");
+    }
+
+    @Test
+    public void testCDOrderInMemory() throws Exception {
+        byte[] data = null;
+        try (FileInputStream fis = new FileInputStream(getFile("ordertest.zip"))) {
+            data = IOUtils.toByteArray(fis);
+        }
+
+        zf = new ZipFile(new SeekableInMemoryByteChannel(data), "in memory",
+                         ZipEncodingHelper.UTF8, true);
         final ArrayList<ZipArchiveEntry> l = Collections.list(zf.getEntries());
         assertEntryName(l, 0, "AbstractUnicodeExtraField");
         assertEntryName(l, 1, "AsiExtraField");
