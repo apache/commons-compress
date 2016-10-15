@@ -224,7 +224,7 @@ public class ZipFile implements Closeable {
      * encoding for file names.
      *
      * @param channel the archive.
-     * @param archiveName name of the archivem used for error messages only.
+     * @param archiveName name of the archive, used for error messages only.
      * @param encoding the encoding to use for file names, use null
      * for the platform's default encoding
      * @param useUnicodeExtraFields whether to use InfoZIP Unicode
