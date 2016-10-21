@@ -24,16 +24,18 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.NonWritableChannelException;
 import java.nio.channels.SeekableByteChannel;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A {@link SeekableByteChannel} implementation that wraps a byte[].
  * @since 1.13
+ * @NotThreadSafe
  */
 public class SeekableInMemoryByteChannel implements SeekableByteChannel {
 
-    private volatile byte[] data;
-    private volatile boolean closed;
-    private volatile int position, size;
+    private byte[] data;
+    private final AtomicBoolean closed = new AtomicBoolean();
+    private int position, size;
 
     public SeekableInMemoryByteChannel(byte[] data) {
         this.data = data;
@@ -79,26 +81,24 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
         if (!isOpen()) {
             throw new ClosedChannelException();
         }
-        int pos = position;
-        int sz = size;
         int wanted = buf.remaining();
-        int possible = sz - pos;
+        int possible = size - position;
         if (wanted > possible) {
             wanted = possible;
         }
-        buf.put(data, pos, wanted);
-        position = pos + wanted;
+        buf.put(data, position, wanted);
+        position += wanted;
         return wanted;
     }
 
     @Override
     public void close() {
-        closed = true;
+        closed.set(true);
     }
 
     @Override
     public boolean isOpen() {
-        return !closed;
+        return !closed.get();
     }
 
     @Override
@@ -106,15 +106,13 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
         if (!isOpen()) {
             throw new ClosedChannelException();
         }
-        int pos = position;
-        int sz = data.length;
         int wanted = b.remaining();
-        int possibleWithoutResize = sz - pos;
+        int possibleWithoutResize = size - position;
         if (wanted > possibleWithoutResize) {
-            resize(pos + wanted);
+            resize(position + wanted);
         }
-        b.get(data, pos, wanted);
-        position = pos + wanted;
+        b.get(data, position, wanted);
+        position += wanted;
         if (size < position) {
             size = position;
         }
