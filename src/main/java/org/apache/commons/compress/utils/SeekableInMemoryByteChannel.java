@@ -21,7 +21,6 @@ package org.apache.commons.compress.utils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
-import java.nio.channels.NonWritableChannelException;
 import java.nio.channels.SeekableByteChannel;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -52,9 +51,10 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
     }
 
     @Override
-    public SeekableByteChannel position(long newPosition) {
-        if (newPosition > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("Position cannot exceed " + Integer.MAX_VALUE);
+    public SeekableByteChannel position(long newPosition) throws IOException {
+        ensureOpen();
+        if (newPosition < 0L || newPosition > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("Position has to be in range 0.. " + Integer.MAX_VALUE);
         }
         position = (int) newPosition;
         return this;
@@ -70,17 +70,14 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
         if (size > newSize) {
             size = (int) newSize;
         }
-        if (position > size) {
-            position = size;
-        }
+        repositionIfNecessary();
         return this;
     }
 
     @Override
     public int read(ByteBuffer buf) throws IOException {
-        if (!isOpen()) {
-            throw new ClosedChannelException();
-        }
+        ensureOpen();
+        repositionIfNecessary();
         int wanted = buf.remaining();
         int possible = size - position;
         if (wanted > possible) {
@@ -103,9 +100,7 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
 
     @Override
     public int write(ByteBuffer b) throws IOException {
-        if (!isOpen()) {
-            throw new ClosedChannelException();
-        }
+        ensureOpen();
         int wanted = b.remaining();
         int possibleWithoutResize = size - position;
         if (wanted > possibleWithoutResize) {
@@ -135,6 +130,18 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
             len <<= 1;
         }
         data = Arrays.copyOf(data, len);
+    }
+
+    private void ensureOpen() throws ClosedChannelException {
+        if (!isOpen()) {
+            throw new ClosedChannelException();
+        }
+    }
+
+    private void repositionIfNecessary() {
+        if (position > size) {
+            position = size;
+        }
     }
 
 }
