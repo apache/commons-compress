@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.zip.Zip64Mode;
@@ -243,6 +244,7 @@ public final class ZipTestCase extends AbstractTestCase {
         final File input = getFile("OSX_ArchiveWithNestedArchive.zip");
 
         final List<String> results = new ArrayList<>();
+        final List<ZipException> expectedExceptions = new ArrayList<>();
 
         final InputStream is = new FileInputStream(input);
         ArchiveInputStream in = null;
@@ -250,15 +252,20 @@ public final class ZipTestCase extends AbstractTestCase {
             in = new ArchiveStreamFactory().createArchiveInputStream("zip", is);
 
             ZipArchiveEntry entry = null;
-            while((entry = (ZipArchiveEntry)in.getNextEntry()) != null) {
+            while ((entry = (ZipArchiveEntry) in.getNextEntry()) != null) {
                 results.add(entry.getName());
 
                 final ArchiveInputStream nestedIn = new ArchiveStreamFactory().createArchiveInputStream("zip", in);
-                ZipArchiveEntry nestedEntry = null;
-                while((nestedEntry = (ZipArchiveEntry)nestedIn.getNextEntry()) != null) {
-                    results.add(nestedEntry.getName());
+                try {
+                    ZipArchiveEntry nestedEntry = null;
+                    while ((nestedEntry = (ZipArchiveEntry) nestedIn.getNextEntry()) != null) {
+                        results.add(nestedEntry.getName());
+                    }
+                } catch (ZipException ex) {
+                    // expected since you cannot create a final ArchiveInputStream from test3.xml
+                    expectedExceptions.add(ex);
                 }
-               // nested stream must not be closed here
+                // nested stream must not be closed here
             }
         } finally {
             if (in != null) {
@@ -267,10 +274,11 @@ public final class ZipTestCase extends AbstractTestCase {
         }
         is.close();
 
-        results.contains("NestedArchiv.zip");
-        results.contains("test1.xml");
-        results.contains("test2.xml");
-        results.contains("test3.xml");
+        assertTrue(results.contains("NestedArchiv.zip"));
+        assertTrue(results.contains("test1.xml"));
+        assertTrue(results.contains("test2.xml"));
+        assertTrue(results.contains("test3.xml"));
+        assertEquals(1, expectedExceptions.size());
     }
 
     @Test

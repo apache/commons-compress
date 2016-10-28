@@ -30,6 +30,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.zip.ZipException;
 
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Test;
@@ -222,6 +223,26 @@ public class ZipArchiveInputStreamTest {
                 zae = zip.getNextZipEntry();
             }
             assertEquals(expectedNumEntries, actualNumEntries);
+        } finally {
+            zip.close();
+        }
+    }
+
+    /**
+     * <code>getNextZipEntry()</code> should throw a <code>ZipException</code> rather than return
+     * <code>null</code> when an unexpected structure is encountered.
+     */
+    @Test
+    public void testThrowOnInvalidEntry() throws Exception {
+        final InputStream is = ZipArchiveInputStreamTest.class
+                .getResourceAsStream("/invalid-zip.zip");
+        final ZipArchiveInputStream zip = new ZipArchiveInputStream(is);
+
+        try {
+            zip.getNextZipEntry();
+            fail("IOException expected");
+        } catch (ZipException expected) {
+            assertTrue(expected.getMessage().contains("Unexpected record signature"));
         } finally {
             zip.close();
         }

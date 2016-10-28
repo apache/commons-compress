@@ -244,9 +244,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         if (sig.equals(ZipLong.CFH_SIG) || sig.equals(ZipLong.AED_SIG)) {
             hitCentralDirectory = true;
             skipRemainderOfArchive();
+            return null;
         }
         if (!sig.equals(ZipLong.LFH_SIG)) {
-            return null;
+            throw new ZipException(String.format("Unexpected record signature: 0X%X", sig.getValue()));
         }
 
         int off = WORD;

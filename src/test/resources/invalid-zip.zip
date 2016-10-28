@@ -1,0 +1,2 @@
+This is not really a valid zip file even though it has the zip extension.
+ZipArchiveInputStream.getNextZipEntry() should throw an exception.
