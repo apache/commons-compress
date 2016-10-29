@@ -173,4 +173,17 @@
     <Bug pattern="REC_CATCH_EXCEPTION" />
   </Match>
   
+  <!-- the class wants to allow outside access to the array, just like
+       ByteBuffer.wrap does -->
+  <Match>
+    <Class name="org.apache.commons.compress.utils.SeekableInMemoryByteChannel" />
+    <Method name="array" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="org.apache.commons.compress.utils.SeekableInMemoryByteChannel" />
+    <Method name="&lt;init&gt;" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+
 </FindBugsFilter>
