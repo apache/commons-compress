@@ -249,7 +249,7 @@ public class SevenZFileTest extends AbstractTestCase {
             data = IOUtils.toByteArray(fis);
         }
         try (SevenZFile sevenZFile = new SevenZFile(new SeekableInMemoryByteChannel(data),
-                                                    "in memory", null)) {
+                                                    null)) {
             final Iterable<SevenZArchiveEntry> entries = sevenZFile.getEntries();
             final Iterator<SevenZArchiveEntry> iter = entries.iterator();
             SevenZArchiveEntry entry = iter.next();

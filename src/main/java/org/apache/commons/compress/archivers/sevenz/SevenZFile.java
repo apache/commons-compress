@@ -104,6 +104,29 @@ public class SevenZFile implements Closeable {
     /**
      * Reads a SeekableByteChannel as 7z archive
      *
+     * <p>{@link
+     * org.apache.commons.compress.utils.SeekableInMemoryByteChannel}
+     * allows you to read from an in-memory archive.</p>
+     *
+     * @param channel the channel to read
+     * @param password optional password if the archive is encrypted -
+     * the byte array is supposed to be the UTF16-LE encoded
+     * representation of the password.
+     * @throws IOException if reading the archive fails
+     * @since 1.13
+     */
+    public SevenZFile(final SeekableByteChannel channel,
+                      final byte[] password) throws IOException {
+        this(channel, "unknown archive", password);
+    }
+
+    /**
+     * Reads a SeekableByteChannel as 7z archive
+     *
+     * <p>{@link
+     * org.apache.commons.compress.utils.SeekableInMemoryByteChannel}
+     * allows you to read from an in-memory archive.</p>
+     *
      * @param channel the channel to read
      * @param filename name of the archive - only used for error reporting
      * @param password optional password if the archive is encrypted -

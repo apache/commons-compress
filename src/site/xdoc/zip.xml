@@ -104,6 +104,12 @@
         <p>If possible, you should always prefer <code>ZipFile</code>
           over <code>ZipArchiveInputStream</code>.</p>
 
+        <p><code>ZipFile</code> requires a
+        <code>SeekableByteChannel</code> that will be obtain
+        transparently when reading from a file. The class
+        <code>org.apache.commons.compress.utils.SeekableInMemoryByteChannel</code>
+        allows you to read from an in-memory archive.</p>
+
       </subsection>
 
       <subsection name="ZipArchiveOutputStream" id="ZipArchiveOutputStream">
@@ -126,7 +132,10 @@
 
         <p>If you know you are writing to a file, you should always
         prefer the <code>File</code>- or
-        <code>SeekableByteChannel</code>-arg constructors.</p>
+        <code>SeekableByteChannel</code>-arg constructors.  The class
+        <code>org.apache.commons.compress.utils.SeekableInMemoryByteChannel</code>
+        allows you to write to an in-memory archive.</p>
+
       </subsection>
 
       <subsection name="Extra Fields">

@@ -76,6 +76,10 @@ public class SevenZOutputFile implements Closeable {
     /**
      * Prepares channel to write a 7z archive to.
      *
+     * <p>{@link
+     * org.apache.commons.compress.utils.SeekableInMemoryByteChannel}
+     * allows you to write to an in-memory archive.</p>
+     *
      * @param channel the channel to write to
      * @throws IOException if the channel cannot be positioned properly
      * @since 1.13

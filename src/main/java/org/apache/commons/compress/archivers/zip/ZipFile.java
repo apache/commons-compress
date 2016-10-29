@@ -220,8 +220,32 @@ public class ZipFile implements Closeable {
     }
 
     /**
-     * Opens the given file for reading, assuming the specified
+     * Opens the given channel for reading, assuming the specified
      * encoding for file names.
+     *
+     * <p>{@link
+     * org.apache.commons.compress.utils.SeekableInMemoryByteChannel}
+     * allows you to read from an in-memory archive.</p>
+     *
+     * @param channel the archive.
+     * @param encoding the encoding to use for file names, use null
+     * for the platform's default encoding
+     *
+     * @throws IOException if an error occurs while reading the file.
+     * @since 1.13
+     */
+    public ZipFile(final SeekableByteChannel channel, final String encoding)
+        throws IOException {
+        this(channel, "unknown archive", encoding, true);
+    }
+
+    /**
+     * Opens the given channel for reading, assuming the specified
+     * encoding for file names.
+     *
+     * <p>{@link
+     * org.apache.commons.compress.utils.SeekableInMemoryByteChannel}
+     * allows you to read from an in-memory archive.</p>
      *
      * @param channel the archive.
      * @param archiveName name of the archive, used for error messages only.

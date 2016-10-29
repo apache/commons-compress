@@ -82,8 +82,7 @@ public class ZipFileTest {
             data = IOUtils.toByteArray(fis);
         }
 
-        zf = new ZipFile(new SeekableInMemoryByteChannel(data), "in memory",
-                         ZipEncodingHelper.UTF8, true);
+        zf = new ZipFile(new SeekableInMemoryByteChannel(data), ZipEncodingHelper.UTF8);
         final ArrayList<ZipArchiveEntry> l = Collections.list(zf.getEntries());
         assertEntryName(l, 0, "AbstractUnicodeExtraField");
         assertEntryName(l, 1, "AsiExtraField");

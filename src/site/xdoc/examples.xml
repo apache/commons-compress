@@ -579,6 +579,13 @@ defIn.close();
         means compression ratio will likely be worse when using
         Commons Compress compared to the native 7z executable.</p>
 
+        <p>Reading or writing requires a
+        <code>SeekableByteChannel</code> that will be obtain
+        transparently when reading from or writing to a file. The
+        class
+        <code>org.apache.commons.compress.utils.SeekableInMemoryByteChannel</code>
+        allows you to read from or write to an in-memory archive.</p>
+
         <p>Adding an entry to a 7z archive:</p>
 <source><![CDATA[
 SevenZOutputFile sevenZOutput = new SevenZOutputFile(file);

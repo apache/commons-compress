@@ -59,7 +59,7 @@ import static org.apache.commons.compress.archivers.zip.ZipShort.putShort;
  * data and central directory entries.
  *
  * <p>This class will try to use {@link
- * java.nio.channels.SeekableByteChannel} when you know that the
+ * java.nio.channels.SeekableByteChannel} when it knows that the
  * output is going to go to a file.</p>
  *
  * <p>If SeekableByteChannel cannot be used, this implementation will use
@@ -306,6 +306,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
     /**
      * Creates a new ZIP OutputStream writing to a SeekableByteChannel.
+     *
+     * <p>{@link
+     * org.apache.commons.compress.utils.SeekableInMemoryByteChannel}
+     * allows you to write to an in-memory archive using random
+     * access.</p>
+     *
      * @param channel the channel to zip to
      * @throws IOException on error
      * @since 1.13
