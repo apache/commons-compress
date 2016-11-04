@@ -37,6 +37,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class SeekableInMemoryByteChannel implements SeekableByteChannel {
 
+    private static final int NAIVE_RESIZE_LIMIT = Integer.MAX_VALUE >> 1;
+
     private byte[] data;
     private final AtomicBoolean closed = new AtomicBoolean();
     private int position, size;
@@ -134,7 +136,13 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
         int wanted = b.remaining();
         int possibleWithoutResize = size - position;
         if (wanted > possibleWithoutResize) {
-            resize(position + wanted);
+            int newSize = position + wanted;
+            if (newSize < 0) { // overflow
+                resize(Integer.MAX_VALUE);
+                wanted = Integer.MAX_VALUE - position;
+            } else {
+                resize(newSize);
+            }
         }
         b.get(data, position, wanted);
         position += wanted;
@@ -162,8 +170,12 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
         if (len <= 0) {
             len = 1;
         }
-        while (len < newLength) {
-            len <<= 1;
+        if (newLength < NAIVE_RESIZE_LIMIT) {
+            while (len < newLength) {
+                len <<= 1;
+            }
+        } else { // avoid overflow
+            len = newLength;
         }
         data = Arrays.copyOf(data, len);
     }
