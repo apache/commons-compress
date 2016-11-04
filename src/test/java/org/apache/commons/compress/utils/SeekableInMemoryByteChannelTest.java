@@ -75,7 +75,7 @@ public class SeekableInMemoryByteChannelTest {
     }
 
     @Test
-    public void shouldReadNoDataWhenPositionAtTheEnd() throws IOException {
+    public void shouldSignalEOFWhenPositionAtTheEnd() throws IOException {
         //given
         SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel(testData);
         ByteBuffer readBuffer = ByteBuffer.allocate(testData.length);
@@ -84,7 +84,7 @@ public class SeekableInMemoryByteChannelTest {
         int readCount = c.read(readBuffer);
         //then
         assertEquals(0L, readBuffer.position());
-        assertEquals(0, readCount);
+        assertEquals(-1, readCount);
     }
 
     @Test(expected = ClosedChannelException.class)

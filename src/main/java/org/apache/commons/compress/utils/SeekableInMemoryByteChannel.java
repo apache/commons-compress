@@ -107,6 +107,9 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
         repositionIfNecessary();
         int wanted = buf.remaining();
         int possible = size - position;
+        if (possible <= 0) {
+            return -1;
+        }
         if (wanted > possible) {
             wanted = possible;
         }
