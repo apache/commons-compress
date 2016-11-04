@@ -27,6 +27,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A {@link SeekableByteChannel} implementation that wraps a byte[].
+ *
+ * <p>When this channel is used for writing an internal buffer grows to accommodate
+ * incoming data. A natural size limit is the value of {@link Integer#MAX_VALUE}.
+ * Internal buffer can be accessed via {@link SeekableInMemoryByteChannel#array()}.</p>
+ *
  * @since 1.13
  * @NotThreadSafe
  */
@@ -36,13 +41,35 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
     private final AtomicBoolean closed = new AtomicBoolean();
     private int position, size;
 
+    /**
+     * Constructor taking a byte array.
+     *
+     * <p>This constructor is intended to be used with pre-allocated buffer or when
+     * reading from a given byte array.</p>
+     *
+     * @param data input data or pre-allocated array.
+     */
     public SeekableInMemoryByteChannel(byte[] data) {
         this.data = data;
         size = data.length;
     }
 
+    /**
+     * Parameterless constructor - allocates internal buffer by itself.
+     */
     public SeekableInMemoryByteChannel() {
         this(new byte[0]);
+    }
+
+    /**
+     * Constructor taking a size of storage to be allocated.
+     *
+     * <p>Creates a channel and allocates internal storage of a given size.</p>
+     *
+     * @param size size of internal buffer to allocate, in bytes.
+     */
+    public SeekableInMemoryByteChannel(int size) {
+        this(new byte[size]);
     }
 
     @Override
@@ -116,6 +143,12 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
 
     /**
      * Obtains the array backing this channel.
+     *
+     * <p>NOTE:
+     * The returned buffer is not aligned with containing data, use
+     * {@link #size()} to obtain the size of data stored in the buffer.</p>
+     *
+     * @return internal byte array.
      */
     public byte[] array() {
         return data;

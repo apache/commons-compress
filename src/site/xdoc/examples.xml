@@ -291,6 +291,17 @@ try {
 }
 ]]></source>
 
+          <p>Reading entries from an in-memory zip archive using
+              <code>SeekableInMemoryByteChannel</code> and <code>ZipFile</code> class:</p>
+<source><![CDATA[
+byte[] inputData; // zip archive contents
+SeekableInMemoryByteChannel inMemoryByteChannel = new SeekableInMemoryByteChannel(inputData);
+ZipFile zipFile = new ZipFile(inMemoryByteChannel);
+ZipArchiveEntry archiveEntry = zipFile.getEntry("entryName");
+InputStream inputStream = zipFile.getInputStream(archiveEntry);
+inputStream.read() // read data from the input stream
+]]></source>
+
           <p>Creating a zip file with multiple threads:</p>
 
           A simple implementation to create a zip file might look like this:
@@ -580,7 +591,7 @@ defIn.close();
         Commons Compress compared to the native 7z executable.</p>
 
         <p>Reading or writing requires a
-        <code>SeekableByteChannel</code> that will be obtain
+        <code>SeekableByteChannel</code> that will be obtained
         transparently when reading from or writing to a file. The
         class
         <code>org.apache.commons.compress.utils.SeekableInMemoryByteChannel</code>
@@ -605,6 +616,15 @@ byte[] content = new byte[entry.getSize()];
 LOOP UNTIL entry.getSize() HAS BEEN READ {
     sevenZFile.read(content, offset, content.length - offset);
 }
+]]></source>
+
+          <p>Uncompressing a given in-memory 7z archive:</p>
+          <source><![CDATA[
+byte[] inputData; // 7z archive contents
+SeekableInMemoryByteChannel inMemoryByteChannel = new SeekableInMemoryByteChannel(inputData);
+SevenZFile sevenZFile = new SevenZFile(inMemoryByteChannel);
+SevenZArchiveEntry entry = sevenZFile.getNextEntry();
+sevenZFile.read();  // read current entry's data
 ]]></source>
       </subsection>
 

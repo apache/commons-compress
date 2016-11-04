@@ -248,8 +248,7 @@ public class SevenZFileTest extends AbstractTestCase {
         try (FileInputStream fis = new FileInputStream(getFile("bla.7z"))) {
             data = IOUtils.toByteArray(fis);
         }
-        try (SevenZFile sevenZFile = new SevenZFile(new SeekableInMemoryByteChannel(data),
-                                                    null)) {
+        try (SevenZFile sevenZFile = new SevenZFile(new SeekableInMemoryByteChannel(data))) {
             final Iterable<SevenZArchiveEntry> entries = sevenZFile.getEntries();
             final Iterator<SevenZArchiveEntry> iter = entries.iterator();
             SevenZArchiveEntry entry = iter.next();
