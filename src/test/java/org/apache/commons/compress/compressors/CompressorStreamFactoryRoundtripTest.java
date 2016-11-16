@@ -54,7 +54,7 @@ public class CompressorStreamFactoryRoundtripTest {
 
     @Test
     public void testCompressorStreamFactoryRoundtrip() throws Exception {
-        final CompressorStreamFactory factory = new CompressorStreamFactory();
+        final CompressorStreamProvider factory = new CompressorStreamFactory();
         final ByteArrayOutputStream compressedOs = new ByteArrayOutputStream();
         final CompressorOutputStream compressorOutputStream = factory.createCompressorOutputStream(compressorName,
                 compressedOs);
