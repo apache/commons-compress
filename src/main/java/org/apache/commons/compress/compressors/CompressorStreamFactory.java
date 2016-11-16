@@ -158,35 +158,6 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     public static final String DEFLATE = "deflate";
 
     /**
-     * If true, decompress until the end of the input. If false, stop after the
-     * first stream and leave the input position to point to the next byte after
-     * the stream
-     */
-    private final Boolean decompressUntilEOF;
-    // This is Boolean so setDecompressConcatenated can determine whether it has
-    // been set by the ctor
-    // once the setDecompressConcatenated method has been removed, it can revert
-    // to boolean
-
-    // Thread-local gate to prevent recursive provider lookups
-    private SortedMap<String, CompressorStreamProvider> compressorInputStreamProviders;
-    private SortedMap<String, CompressorStreamProvider> compressorOutputStreamProviders;
-    
-    /**
-     * If true, decompress until the end of the input. If false, stop after the
-     * first stream and leave the input position to point to the next byte after
-     * the stream
-     */
-    private volatile boolean decompressConcatenated = false;
-
-    static void putAll(Set<String> names, CompressorStreamProvider provider,
-            TreeMap<String, CompressorStreamProvider> map) {
-        for (String name : names) {
-            map.put(toKey(name), provider);
-        }
-    }
-
-    /**
      * Constructs a new sorted map from input stream provider names to provider
      * objects.
      *
@@ -268,24 +239,87 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
 
         });
     }
-
-    @Override
-    public Set<String> getInputStreamCompressorNames() {
-        return Sets.newHashSet(GZIP, BZIP2, XZ, LZMA, PACK200, SNAPPY_RAW, SNAPPY_FRAMED, Z, DEFLATE);
+    private static ArrayList<CompressorStreamProvider> findCompressorStreamProviders() {
+        return Lists.newArrayList(serviceLoaderIterator());
+    }
+    
+    public static String getBzip2() {
+        return BZIP2;
     }
 
-    @Override
-    public Set<String> getOutputStreamCompressorNames() {
-        return Sets.newHashSet(GZIP, BZIP2, XZ, PACK200, DEFLATE);
+    public static String getDeflate() {
+        return DEFLATE;
+    }
+
+    public static String getGzip() {
+        return GZIP;
+    }
+
+    public static String getLzma() {
+        return LZMA;
+    }
+
+    public static String getPack200() {
+        return PACK200;
+    }
+
+    public static CompressorStreamFactory getSingleton() {
+        return SINGLETON;
+    }
+
+    public static String getSnappyFramed() {
+        return SNAPPY_FRAMED;
+    }
+
+    public static String getSnappyRaw() {
+        return SNAPPY_RAW;
+    }
+
+    public static String getXz() {
+        return XZ;
+    }
+
+    public static String getZ() {
+        return Z;
+    }
+
+    static void putAll(Set<String> names, CompressorStreamProvider provider,
+            TreeMap<String, CompressorStreamProvider> map) {
+        for (String name : names) {
+            map.put(toKey(name), provider);
+        }
     }
 
     private static Iterator<CompressorStreamProvider> serviceLoaderIterator() {
         return new ServiceLoaderIterator<>(CompressorStreamProvider.class);
     }
 
-    private static ArrayList<CompressorStreamProvider> findCompressorStreamProviders() {
-        return Lists.newArrayList(serviceLoaderIterator());
+    private static String toKey(final String name) {
+        return name.toUpperCase(Locale.ROOT);
     }
+
+    /**
+     * If true, decompress until the end of the input. If false, stop after the
+     * first stream and leave the input position to point to the next byte after
+     * the stream
+     */
+    private final Boolean decompressUntilEOF;
+    // This is Boolean so setDecompressConcatenated can determine whether it has
+    // been set by the ctor
+    // once the setDecompressConcatenated method has been removed, it can revert
+    // to boolean
+
+    // Thread-local gate to prevent recursive provider lookups
+    private SortedMap<String, CompressorStreamProvider> compressorInputStreamProviders;
+
+    private SortedMap<String, CompressorStreamProvider> compressorOutputStreamProviders;
+    
+    /**
+     * If true, decompress until the end of the input. If false, stop after the
+     * first stream and leave the input position to point to the next byte after
+     * the stream
+     */
+    private volatile boolean decompressConcatenated = false;
 
     /**
      * Create an instance with the decompress Concatenated option set to false.
@@ -309,33 +343,6 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         // Also copy to existing variable so can continue to use that as the
         // current value
         this.decompressConcatenated = decompressUntilEOF;
-    }
-
-    /**
-     * Whether to decompress the full input or only the first stream in formats
-     * supporting multiple concatenated input streams.
-     *
-     * <p>
-     * This setting applies to the gzip, bzip2 and xz formats only.
-     * </p>
-     *
-     * @param decompressConcatenated
-     *            if true, decompress until the end of the input; if false, stop
-     *            after the first stream and leave the input position to point
-     *            to the next byte after the stream
-     * @since 1.5
-     * @deprecated 1.10 use the {@link #CompressorStreamFactory(boolean)}
-     *             constructor instead
-     * @throws IllegalStateException
-     *             if the constructor {@link #CompressorStreamFactory(boolean)}
-     *             was used to create the factory
-     */
-    @Deprecated
-    public void setDecompressConcatenated(final boolean decompressConcatenated) {
-        if (this.decompressUntilEOF != null) {
-            throw new IllegalStateException("Cannot override the setting defined by the constructor");
-        }
-        this.decompressConcatenated = decompressConcatenated;
     }
 
     /**
@@ -479,10 +486,6 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         throw new CompressorException("Compressor: " + name + " not found.");
     }
 
-    private static String toKey(final String name) {
-        return name.toUpperCase(Locale.ROOT);
-    }
-
     /**
      * Creates an compressor output stream from an compressor name and an output
      * stream.
@@ -537,55 +540,6 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         throw new CompressorException("Compressor: " + name + " not found.");
     }
 
-    // For Unit tests
-    boolean getDecompressConcatenated() {
-        return decompressConcatenated;
-    }
-    
-    public static CompressorStreamFactory getSingleton() {
-        return SINGLETON;
-    }
-
-    public static String getBzip2() {
-        return BZIP2;
-    }
-
-    public static String getGzip() {
-        return GZIP;
-    }
-
-    public static String getPack200() {
-        return PACK200;
-    }
-
-    public static String getXz() {
-        return XZ;
-    }
-
-    public static String getLzma() {
-        return LZMA;
-    }
-
-    public static String getSnappyFramed() {
-        return SNAPPY_FRAMED;
-    }
-
-    public static String getSnappyRaw() {
-        return SNAPPY_RAW;
-    }
-
-    public static String getZ() {
-        return Z;
-    }
-
-    public static String getDeflate() {
-        return DEFLATE;
-    }
-
-    public Boolean getDecompressUntilEOF() {
-        return decompressUntilEOF;
-    }
-
     public SortedMap<String, CompressorStreamProvider> getCompressorInputStreamProviders() {
         if (compressorInputStreamProviders == null) {
             compressorInputStreamProviders = Collections
@@ -600,6 +554,52 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
                     .unmodifiableSortedMap(findAvailableCompressorOutputStreamProviders());
         }
         return compressorOutputStreamProviders;
+    }
+
+    // For Unit tests
+    boolean getDecompressConcatenated() {
+        return decompressConcatenated;
+    }
+
+    public Boolean getDecompressUntilEOF() {
+        return decompressUntilEOF;
+    }
+
+    @Override
+    public Set<String> getInputStreamCompressorNames() {
+        return Sets.newHashSet(GZIP, BZIP2, XZ, LZMA, PACK200, SNAPPY_RAW, SNAPPY_FRAMED, Z, DEFLATE);
+    }
+
+    @Override
+    public Set<String> getOutputStreamCompressorNames() {
+        return Sets.newHashSet(GZIP, BZIP2, XZ, PACK200, DEFLATE);
+    }
+
+    /**
+     * Whether to decompress the full input or only the first stream in formats
+     * supporting multiple concatenated input streams.
+     *
+     * <p>
+     * This setting applies to the gzip, bzip2 and xz formats only.
+     * </p>
+     *
+     * @param decompressConcatenated
+     *            if true, decompress until the end of the input; if false, stop
+     *            after the first stream and leave the input position to point
+     *            to the next byte after the stream
+     * @since 1.5
+     * @deprecated 1.10 use the {@link #CompressorStreamFactory(boolean)}
+     *             constructor instead
+     * @throws IllegalStateException
+     *             if the constructor {@link #CompressorStreamFactory(boolean)}
+     *             was used to create the factory
+     */
+    @Deprecated
+    public void setDecompressConcatenated(final boolean decompressConcatenated) {
+        if (this.decompressUntilEOF != null) {
+            throw new IllegalStateException("Cannot override the setting defined by the constructor");
+        }
+        this.decompressConcatenated = decompressConcatenated;
     }
     
 }
