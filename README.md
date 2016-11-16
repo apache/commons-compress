@@ -48,6 +48,11 @@ compression and archive formats.  These include: bzip2, gzip, pack200,
 lzma, xz, Snappy, traditional Unix Compress, DEFLATE and ar, cpio,
 jar, tar, zip, dump, 7z, arj.
 
+[![Build Status](https://travis-ci.org/apache/commons-compress.svg?branch=master)](https://travis-ci.org/apache/commons-compress)
+[![Coverage Status](https://coveralls.io/repos/apache/commons-compress/badge.svg?branch=master)](https://coveralls.io/r/apache/commons-compress)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/commons-compress/commons-compress/badge.svg)](https://maven-badges.herokuapp.com/maven-central/commons-compress/commons-compress/)
+[![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
+
 Documentation
 -------------
 
