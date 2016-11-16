@@ -309,7 +309,6 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     // once the setDecompressConcatenated method has been removed, it can revert
     // to boolean
 
-    // Thread-local gate to prevent recursive provider lookups
     private SortedMap<String, CompressorStreamProvider> compressorInputStreamProviders;
 
     private SortedMap<String, CompressorStreamProvider> compressorOutputStreamProviders;
