@@ -40,6 +40,8 @@ public interface ArchiveStreamProvider {
      *            {@value #DUMP} or {@value #SEVEN_Z}
      * @param in
      *            the input stream
+     * @param encoding,
+     *            or null for the default
      * @return the archive input stream
      * @throws ArchiveException
      *             if the archiver name is not known
@@ -60,6 +62,8 @@ public interface ArchiveStreamProvider {
      *            {@value #TAR}, {@value #JAR} or {@value #CPIO}
      * @param out
      *            the output stream
+     * @param encoding,
+     *            or null for the default
      * @return the archive output stream
      * @throws ArchiveException
      *             if the archiver name is not known
