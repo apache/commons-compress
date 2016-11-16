@@ -277,7 +277,7 @@ public class ArchiveStreamFactoryTest {
             }
         }
         if (failed > 0) {
-            fail("Tests failed: " + failed);
+            fail("Tests failed: " + failed + " out of " + TESTS.length);
         }
     }
 
@@ -294,7 +294,7 @@ public class ArchiveStreamFactoryTest {
             }
         }
         if (failed > 0) {
-            fail("Tests failed: " + failed);
+            fail("Tests failed: " + failed + " out of " + TESTS.length);
         }
     }
 
@@ -313,7 +313,7 @@ public class ArchiveStreamFactoryTest {
             }
         }
         if (failed > 0) {
-            fail("Tests failed: " + failed);
+            fail("Tests failed: " + failed + " out of " + TESTS.length);
         }
     }
 
