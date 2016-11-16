@@ -25,7 +25,6 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Set;
@@ -51,6 +50,7 @@ import org.apache.commons.compress.compressors.z.ZCompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.compress.utils.ServiceLoaderIterator;
+import org.apache.commons.compress.utils.Sets;
 
 /**
  * <p>
@@ -271,16 +271,12 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
 
     @Override
     public Set<String> getInputStreamCompressorNames() {
-        HashSet<String> set = new HashSet<>();
-        Collections.addAll(set, GZIP, BZIP2, XZ, LZMA, PACK200, SNAPPY_RAW, SNAPPY_FRAMED, Z, DEFLATE);
-        return set;
+        return Sets.newHashSet(GZIP, BZIP2, XZ, LZMA, PACK200, SNAPPY_RAW, SNAPPY_FRAMED, Z, DEFLATE);
     }
 
     @Override
     public Set<String> getOutputStreamCompressorNames() {
-        HashSet<String> set = new HashSet<>();
-        Collections.addAll(set, GZIP, BZIP2, XZ, PACK200, DEFLATE);
-        return set;
+        return Sets.newHashSet(GZIP, BZIP2, XZ, PACK200, DEFLATE);
     }
 
     private static Iterator<CompressorStreamProvider> serviceLoaderIterator() {
