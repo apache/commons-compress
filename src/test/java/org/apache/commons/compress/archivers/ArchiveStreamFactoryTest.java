@@ -168,6 +168,7 @@ public class ArchiveStreamFactoryTest {
         final String fieldName;
         final String type;
         final boolean hasOutputStream;
+        
         TestData(final String testFile, final String type, final boolean hasOut, final String expectedEncoding, final ArchiveStreamFactory fac, final String fieldName) {
             this.testFile = testFile;
             this.expectedEncoding = expectedEncoding;
@@ -175,6 +176,12 @@ public class ArchiveStreamFactoryTest {
             this.fieldName = fieldName;
             this.type = type;
             this.hasOutputStream = hasOut;
+        }
+        
+        @Override
+        public String toString() {
+            return "TestData [testFile=" + testFile + ", expectedEncoding=" + expectedEncoding + ", fac=" + fac
+                    + ", fieldName=" + fieldName + ", type=" + type + ", hasOutputStream=" + hasOutputStream + "]";
         }
     }
 
