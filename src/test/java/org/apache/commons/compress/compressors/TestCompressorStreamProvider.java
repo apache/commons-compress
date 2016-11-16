@@ -21,9 +21,9 @@ package org.apache.commons.compress.compressors;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
+
+import org.apache.commons.compress.utils.Sets;
 
 public class TestCompressorStreamProvider implements CompressorStreamProvider {
 
@@ -35,7 +35,7 @@ public class TestCompressorStreamProvider implements CompressorStreamProvider {
             super(message);
         }
     }
-    
+
     @Override
     public CompressorInputStream createCompressorInputStream(String name, InputStream in) throws CompressorException {
         throw new InvocationConfirmationException(name);
@@ -49,16 +49,12 @@ public class TestCompressorStreamProvider implements CompressorStreamProvider {
 
     @Override
     public Set<String> getInputStreamCompressorNames() {
-        HashSet<String> set = new HashSet<>();
-        Collections.addAll(set, "TestInput1");
-        return set;
+        return Sets.newHashSet("TestInput1");
     }
 
     @Override
     public Set<String> getOutputStreamCompressorNames() {
-        HashSet<String> set = new HashSet<>();
-        Collections.addAll(set, "TestOutput1");
-        return set;
+        return Sets.newHashSet("TestOutput1");
     }
 
 }
