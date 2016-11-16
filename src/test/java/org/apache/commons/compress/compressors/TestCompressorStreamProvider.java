@@ -31,18 +31,19 @@ public class TestCompressorStreamProvider implements CompressorStreamProvider {
 
         private static final long serialVersionUID = 1L;
 
-        public InvocationConfirmationException(String message) {
+        public InvocationConfirmationException(final String message) {
             super(message);
         }
     }
 
     @Override
-    public CompressorInputStream createCompressorInputStream(String name, InputStream in) throws CompressorException {
+    public CompressorInputStream createCompressorInputStream(final String name, final InputStream in,
+            final boolean decompressConcatenated) throws CompressorException {
         throw new InvocationConfirmationException(name);
     }
 
     @Override
-    public CompressorOutputStream createCompressorOutputStream(String name, OutputStream out)
+    public CompressorOutputStream createCompressorOutputStream(final String name, final OutputStream out)
             throws CompressorException {
         throw new InvocationConfirmationException(name);
     }

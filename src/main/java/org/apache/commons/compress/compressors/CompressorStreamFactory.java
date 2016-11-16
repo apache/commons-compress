@@ -188,9 +188,9 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         return AccessController.doPrivileged(new PrivilegedAction<SortedMap<String, CompressorStreamProvider>>() {
             @Override
             public SortedMap<String, CompressorStreamProvider> run() {
-                TreeMap<String, CompressorStreamProvider> map = new TreeMap<>();
+                final TreeMap<String, CompressorStreamProvider> map = new TreeMap<>();
                 putAll(SINGLETON.getInputStreamCompressorNames(), SINGLETON, map);
-                for (CompressorStreamProvider provider : findCompressorStreamProviders()) {
+                for (final CompressorStreamProvider provider : findCompressorStreamProviders()) {
                     putAll(provider.getInputStreamCompressorNames(), provider, map);
                 }
                 return map;
@@ -229,9 +229,9 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         return AccessController.doPrivileged(new PrivilegedAction<SortedMap<String, CompressorStreamProvider>>() {
             @Override
             public SortedMap<String, CompressorStreamProvider> run() {
-                TreeMap<String, CompressorStreamProvider> map = new TreeMap<>();
+                final TreeMap<String, CompressorStreamProvider> map = new TreeMap<>();
                 putAll(SINGLETON.getOutputStreamCompressorNames(), SINGLETON, map);
-                for (CompressorStreamProvider provider : findCompressorStreamProviders()) {
+                for (final CompressorStreamProvider provider : findCompressorStreamProviders()) {
                     putAll(provider.getOutputStreamCompressorNames(), provider, map);
                 }
                 return map;
@@ -283,9 +283,9 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         return Z;
     }
 
-    static void putAll(Set<String> names, CompressorStreamProvider provider,
-            TreeMap<String, CompressorStreamProvider> map) {
-        for (String name : names) {
+    static void putAll(final Set<String> names, final CompressorStreamProvider provider,
+            final TreeMap<String, CompressorStreamProvider> map) {
+        for (final String name : names) {
             map.put(toKey(name), provider);
         }
     }
@@ -429,9 +429,14 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      * @throws IllegalArgumentException
      *             if the name or input stream is null
      */
-    @Override
     public CompressorInputStream createCompressorInputStream(final String name, final InputStream in)
             throws CompressorException {
+        return createCompressorInputStream(name, in, decompressConcatenated);
+    }
+
+    @Override
+    public CompressorInputStream createCompressorInputStream(final String name, final InputStream in,
+            final boolean actualDecompressConcatenated) throws CompressorException {
         if (name == null || in == null) {
             throw new IllegalArgumentException("Compressor name and stream must not be null.");
         }
@@ -439,15 +444,15 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         try {
 
             if (GZIP.equalsIgnoreCase(name)) {
-                return new GzipCompressorInputStream(in, decompressConcatenated);
+                return new GzipCompressorInputStream(in, actualDecompressConcatenated);
             }
 
             if (BZIP2.equalsIgnoreCase(name)) {
-                return new BZip2CompressorInputStream(in, decompressConcatenated);
+                return new BZip2CompressorInputStream(in, actualDecompressConcatenated);
             }
 
             if (XZ.equalsIgnoreCase(name)) {
-                return new XZCompressorInputStream(in, decompressConcatenated);
+                return new XZCompressorInputStream(in, actualDecompressConcatenated);
             }
 
             if (LZMA.equalsIgnoreCase(name)) {
@@ -479,7 +484,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         }
         final CompressorStreamProvider compressorStreamProvider = getCompressorInputStreamProviders().get(toKey(name));
         if (compressorStreamProvider != null) {
-            return compressorStreamProvider.createCompressorInputStream(name, in);
+            return compressorStreamProvider.createCompressorInputStream(name, in, actualDecompressConcatenated);
         }
         
         throw new CompressorException("Compressor: " + name + " not found.");
