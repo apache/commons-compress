@@ -64,7 +64,7 @@ jar, tar, zip, dump, 7z, arj.
     <dependency>
       <groupId>org.tukaani</groupId>
       <artifactId>xz</artifactId>
-      <version>1.5</version>
+      <version>1.6</version>
       <optional>true</optional>
     </dependency>
     <dependency>
