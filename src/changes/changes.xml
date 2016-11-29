@@ -72,7 +72,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action issue="COMPRESS-369" type="add" date="2016-11-15">
         Allow archive extensions through a standard JRE ServiceLoader.
       </action>
-      <action issue="COMPRESS-369" type="add" date="2016-11-29">
+      <action issue="COMPRESS-373" type="add" date="2016-11-29">
         Add write support for the legacy LZMA format, this requires XZ
         for Java 1.6.
       </action>
