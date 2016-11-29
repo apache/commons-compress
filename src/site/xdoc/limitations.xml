@@ -38,9 +38,10 @@
          archives, starting with 1.8 it will throw a
          <code>StreamingNotSupportedException</code> when reading from
          a 7z archive.</li>
-         <li>Encryption, solid compression, header compression and
-         LZMA (not LZMA2) are only supported when reading
-         archives</li>
+         <li>Encryption, solid compression and header compression and
+         are only supported when reading archives</li>
+         <li>Commons Compress 1.12 and earlier didn't support writing
+         LZMA.</li>
          <li>Several of the "methods" supported by 7z are not
          implemented in Compress.</li>
          <li>No support for multi-volume archives</li>

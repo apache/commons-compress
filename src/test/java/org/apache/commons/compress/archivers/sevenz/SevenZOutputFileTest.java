@@ -328,6 +328,22 @@ public class SevenZOutputFileTest extends AbstractTestCase {
     }
 
     @Test
+    public void testLzmaWithIntConfiguration() throws Exception {
+        output = new File(dir, "lzma-options.7z");
+        // 1 MB dictionary
+        createAndReadBack(output, Collections
+                          .singletonList(new SevenZMethodConfiguration(SevenZMethod.LZMA, 1 << 20)));
+    }
+
+    @Test
+    public void testLzmaWithOptionsConfiguration() throws Exception {
+        output = new File(dir, "lzma-options2.7z");
+        final LZMA2Options opts = new LZMA2Options(1);
+        createAndReadBack(output, Collections
+                          .singletonList(new SevenZMethodConfiguration(SevenZMethod.LZMA, opts)));
+    }
+
+    @Test
     public void testLzma2WithIntConfiguration() throws Exception {
         output = new File(dir, "lzma2-options.7z");
         // 1 MB dictionary

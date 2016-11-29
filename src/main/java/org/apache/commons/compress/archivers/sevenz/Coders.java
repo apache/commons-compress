@@ -99,22 +99,6 @@ class Coders {
         }
     }
 
-    static class LZMADecoder extends CoderBase {
-        @Override
-        InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
-                final Coder coder, final byte[] password) throws IOException {
-            final byte propsByte = coder.properties[0];
-            long dictSize = coder.properties[1];
-            for (int i = 1; i < 4; i++) {
-                dictSize |= (coder.properties[i + 1] & 0xffl) << (8 * i);
-            }
-            if (dictSize > LZMAInputStream.DICT_SIZE_MAX) {
-                throw new IOException("Dictionary larger than 4GiB maximum size used in " + archiveName);
-            }
-            return new LZMAInputStream(in, uncompressedLength, propsByte, (int) dictSize);
-        }
-    }
-    
     static class BCJDecoder extends CoderBase {
         private final FilterOptions opts;
         BCJDecoder(final FilterOptions opts) {

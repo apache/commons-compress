@@ -1,0 +1,121 @@
+/*
+ *  Licensed to the Apache Software Foundation (ASF) under one or more
+ *  contributor license agreements.  See the NOTICE file distributed with
+ *  this work for additional information regarding copyright ownership.
+ *  The ASF licenses this file to You under the Apache License, Version 2.0
+ *  (the "License"); you may not use this file except in compliance with
+ *  the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+package org.apache.commons.compress.archivers.sevenz;
+
+import java.io.FilterOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import org.tukaani.xz.LZMA2Options;
+import org.tukaani.xz.LZMAInputStream;
+import org.tukaani.xz.LZMAOutputStream;
+import org.tukaani.xz.UnsupportedOptionsException;
+
+class LZMADecoder extends CoderBase {
+    LZMADecoder() {
+        super(LZMA2Options.class, Number.class);
+    }
+
+    @Override
+    InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
+            final Coder coder, final byte[] password) throws IOException {
+        final byte propsByte = coder.properties[0];
+        final int dictSize = getDictionarySize(coder);
+        if (dictSize > LZMAInputStream.DICT_SIZE_MAX) {
+            throw new IOException("Dictionary larger than 4GiB maximum size used in " + archiveName);
+        }
+        return new LZMAInputStream(in, uncompressedLength, propsByte, (int) dictSize);
+    }
+
+    @Override
+    OutputStream encode(final OutputStream out, final Object opts)
+        throws IOException {
+        return new FilterOutputStream(new LZMAOutputStream(out, getOptions(opts), false)) {
+            @Override
+            public void flush() {
+                // NOOP as LZMAOutputStream throws an exception in flush
+            }
+        };
+    }
+
+    @Override
+    byte[] getOptionsAsProperties(final Object opts) {
+        final LZMA2Options options = getOptions(opts);
+        final byte props = (byte) ((options.getPb() * 5 + options.getLp()) * 9 + options.getLc());
+        int dictSize = options.getDictSize();
+        return new byte[] {
+            props,
+            (byte) (dictSize & 0xff),
+            (byte) ((dictSize >> 8) & 0xff),
+            (byte) ((dictSize >> 16) & 0xff),
+            (byte) ((dictSize >> 24) & 0xff),
+        };
+    }
+
+    @Override
+    Object getOptionsFromCoder(final Coder coder, final InputStream in) {
+        try {
+            final byte propsByte = coder.properties[0];
+            int props = propsByte & 0xFF;
+            int pb = props / (9 * 5);
+            props -= pb * 9 * 5;
+            int lp = props / 9;
+            int lc = props - lp * 9;
+            LZMA2Options opts = new LZMA2Options();
+            opts.setPb(pb);
+            opts.setLcLp(lc, lp);
+            opts.setDictSize(getDictionarySize(coder));
+            return opts;
+        } catch (UnsupportedOptionsException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private int getDictSize(final Object opts) {
+        if (opts instanceof LZMA2Options) {
+            return ((LZMA2Options) opts).getDictSize();
+        }
+        return numberOptionOrDefault(opts);
+    }
+
+    private int getDictionarySize(final Coder coder) throws IllegalArgumentException {
+        long dictSize = coder.properties[1];
+        for (int i = 1; i < 4; i++) {
+            dictSize |= (coder.properties[i + 1] & 0xffl) << (8 * i);
+        }
+        return (int) dictSize;
+    }
+
+    private LZMA2Options getOptions(final Object opts) {
+        if (opts instanceof LZMA2Options) {
+            return (LZMA2Options) opts;
+        }
+        final LZMA2Options options = new LZMA2Options();
+        try {
+            options.setDictSize(numberOptionOrDefault(opts));
+        } catch (UnsupportedOptionsException ex) {
+            throw new RuntimeException(ex);
+        }
+        return options;
+    }
+
+    private int numberOptionOrDefault(final Object opts) {
+        return numberOptionOrDefault(opts, LZMA2Options.DICT_SIZE_DEFAULT);
+    }
+}

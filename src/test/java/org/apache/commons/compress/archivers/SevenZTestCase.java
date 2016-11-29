@@ -38,6 +38,11 @@ public class SevenZTestCase extends AbstractTestCase {
     }
     
     @Test
+    public void testSevenZArchiveCreationUsingLZMA() throws Exception {
+        testSevenZArchiveCreation(SevenZMethod.LZMA);
+    }
+
+    @Test
     public void testSevenZArchiveCreationUsingLZMA2() throws Exception {
         testSevenZArchiveCreation(SevenZMethod.LZMA2);
     }
