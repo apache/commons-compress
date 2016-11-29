@@ -110,7 +110,8 @@
          <li>the format requires the otherwise optional <a
          href="http://tukaani.org/xz/java.html">XZ for Java</a>
          library.</li>
-         <li>read-only support</li>
+         <li>Commons Compress 1.12 and earlier only support reading
+         the format</li>
        </ul>
      </section>
      <section name="PACK200">

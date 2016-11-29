@@ -36,7 +36,7 @@
         cpio, dump, tar and zip.  Pack200 is a special case as it can
         only compress JAR files.</p>
 
-        <p>We currently only provide read support for lzma, arj,
+        <p>We currently only provide read support for arj,
         dump and Z.  arj can only read uncompressed archives, 7z can read
         archives with many compression and encryption algorithms
         supported by 7z but doesn't support encryption when writing

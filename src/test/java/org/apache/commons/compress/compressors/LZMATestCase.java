@@ -24,13 +24,37 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.lzma.LZMACompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.Assert;
 import org.junit.Test;
 
 public final class LZMATestCase extends AbstractTestCase {
+
+    @Test
+    public void lzmaRoundtrip() throws Exception {
+        final File input = getFile("test1.xml");
+        final File compressed = new File(dir, "test1.xml.xz");
+        try (OutputStream out = new FileOutputStream(compressed)) {
+            try (CompressorOutputStream cos = new CompressorStreamFactory()
+                    .createCompressorOutputStream("lzma", out)) {
+                IOUtils.copy(new FileInputStream(input), cos);
+            }
+        }
+        byte[] orig;
+        try (InputStream is = new FileInputStream(input)) {
+            orig = IOUtils.toByteArray(is);
+        }
+        byte[] uncompressed;
+        try (InputStream is = new FileInputStream(compressed);
+             CompressorInputStream in = new LZMACompressorInputStream(is)) {
+            uncompressed = IOUtils.toByteArray(in);
+        }
+        Assert.assertArrayEquals(orig, uncompressed);
+    }
 
     @Test
     public void testLZMAUnarchive() throws Exception {

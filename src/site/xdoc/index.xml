@@ -79,6 +79,8 @@
               needed. This allows archives to be read from inputs and
               written to outputs that are seekable but are not
               represented by <code>File</code>s.</li>
+              <li>Added support for writing the legacy LZMA format -
+              this requires XZ for Java 1.6.</li>
             </ul>
           </subsection>
         </section>
