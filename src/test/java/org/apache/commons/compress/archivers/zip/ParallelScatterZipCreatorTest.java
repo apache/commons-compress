@@ -113,12 +113,23 @@ public class ParallelScatterZipCreatorTest {
         for (int i = 0; i < NUMITEMS; i++){
             final byte[] payloadBytes = ("content" + i).getBytes();
             final ZipArchiveEntry za = createZipArchiveEntry(entries, i, payloadBytes);
-            zipCreator.addArchiveEntry(za, new InputStreamSupplier() {
+            final InputStreamSupplier iss = new InputStreamSupplier() {
                 @Override
                 public InputStream get() {
                     return new ByteArrayInputStream(payloadBytes);
                 }
-            });
+            };
+            if (i % 2 == 0) {
+                zipCreator.addArchiveEntry(za, iss);
+            } else {
+                final ZipArchiveEntryRequestSupplier zaSupplier = new ZipArchiveEntryRequestSupplier() {
+                    @Override
+                    public ZipArchiveEntryRequest get() {
+                        return ZipArchiveEntryRequest.createZipArchiveEntryRequest(za, iss);
+                    }
+                };
+                zipCreator.addArchiveEntry(zaSupplier);
+            }
         }
         return entries;
     }
@@ -128,12 +139,25 @@ public class ParallelScatterZipCreatorTest {
         for (int i = 0; i < NUMITEMS; i++){
             final byte[] payloadBytes = ("content" + i).getBytes();
             final ZipArchiveEntry za = createZipArchiveEntry(entries, i, payloadBytes);
-            final Callable<Object> callable = zipCreator.createCallable(za, new InputStreamSupplier() {
+            final InputStreamSupplier iss = new InputStreamSupplier() {
                 @Override
                 public InputStream get() {
                     return new ByteArrayInputStream(payloadBytes);
                 }
-            });
+            };
+            final Callable<Object> callable;
+            if (i % 2 == 0) {
+                callable = zipCreator.createCallable(za, iss);
+            } else {
+                final ZipArchiveEntryRequestSupplier zaSupplier = new ZipArchiveEntryRequestSupplier() {
+                    @Override
+                    public ZipArchiveEntryRequest get() {
+                        return ZipArchiveEntryRequest.createZipArchiveEntryRequest(za, iss);
+                    }
+                };
+                callable = zipCreator.createCallable(zaSupplier);
+            }
+
             zipCreator.submit(callable);
         }
         return entries;
