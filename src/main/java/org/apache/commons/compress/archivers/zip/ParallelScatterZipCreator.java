@@ -137,6 +137,19 @@ public class ParallelScatterZipCreator {
     }
 
     /**
+     * Adds an archive entry to this archive.
+     * <p>
+     * This method is expected to be called from a single client thread
+     * </p>
+     *
+     * @param zipArchiveEntryRequestSupplier Should supply the entry to be added.
+     * @since 1.13
+     */
+    public void addArchiveEntry(final ZipArchiveEntryRequestSupplier zipArchiveEntryRequestSupplier) {
+        submit(createCallable(zipArchiveEntryRequestSupplier));
+    }
+
+    /**
      * Submit a callable for compression.
      *
      * @see ParallelScatterZipCreator#createCallable for details of if/when to use this.
@@ -180,6 +193,31 @@ public class ParallelScatterZipCreator {
         };
     }
 
+    /**
+     * Create a callable that will compress archive entry supplied by {@link ZipArchiveEntryRequestSupplier}.
+     *
+     * <p>This method is expected to be called from a single client thread.</p>
+     *
+     * The same as {@link #createCallable(ZipArchiveEntry, InputStreamSupplier)}, but the archive entry
+     * to be added is supplied by a {@link ZipArchiveEntryRequestSupplier}.
+     *
+     * @see #createCallable(ZipArchiveEntry, InputStreamSupplier)
+     *
+     * @param zipArchiveEntryRequestSupplier Should supply the entry to be added.
+     * @return A callable that should subsequently passed to #submit, possibly in a wrapped/adapted from. The
+     * value of this callable is not used, but any exceptions happening inside the compression
+     * will be propagated through the callable.
+     * @since 1.13
+     */
+    public final Callable<Object> createCallable(final ZipArchiveEntryRequestSupplier zipArchiveEntryRequestSupplier) {
+        return new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                tlScatterStreams.get().addArchiveEntry(zipArchiveEntryRequestSupplier.get());
+                return null;
+            }
+        };
+    }
 
     /**
      * Write the contents this to the target {@link ZipArchiveOutputStream}.
