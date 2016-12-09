@@ -34,51 +34,30 @@ public class ArArchiveOutputStreamTest extends AbstractTestCase {
 
     @Test
     public void testLongFileNamesCauseExceptionByDefault() {
-        ArArchiveOutputStream os = null;
-        try {
-            os = new ArArchiveOutputStream(new ByteArrayOutputStream());
-            final ArArchiveEntry ae = new ArArchiveEntry("this_is_a_long_name.txt",
-                                                   0);
+        try (ArArchiveOutputStream os = new ArArchiveOutputStream(new ByteArrayOutputStream())) {
+            final ArArchiveEntry ae = new ArArchiveEntry("this_is_a_long_name.txt", 0);
             os.putArchiveEntry(ae);
             fail("Expected an exception");
         } catch (final IOException ex) {
             assertTrue(ex.getMessage().startsWith("filename too long"));
-        } finally {
-            closeQuietly(os);
         }
     }
 
     @Test
     public void testLongFileNamesWorkUsingBSDDialect() throws Exception {
-        FileOutputStream fos = null;
-        ArArchiveOutputStream os = null;
         final File[] df = createTempDirAndFile();
-        try {
-            fos = new FileOutputStream(df[1]);
-            os = new ArArchiveOutputStream(fos);
+        try (FileOutputStream fos = new FileOutputStream(df[1]);
+                ArArchiveOutputStream os = new ArArchiveOutputStream(fos)) {
             os.setLongFileMode(ArArchiveOutputStream.LONGFILE_BSD);
-            final ArArchiveEntry ae = new ArArchiveEntry("this_is_a_long_name.txt",
-                                                   14);
+            final ArArchiveEntry ae = new ArArchiveEntry("this_is_a_long_name.txt", 14);
             os.putArchiveEntry(ae);
-            os.write(new byte[] {
-                    'H', 'e', 'l', 'l', 'o', ',', ' ',
-                    'w', 'o', 'r', 'l', 'd', '!', '\n'
-                });
+            os.write(new byte[] { 'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '\n' });
             os.closeArchiveEntry();
-            os.close();
-            os = null;
-            fos = null;
 
             final List<String> expected = new ArrayList<>();
             expected.add("this_is_a_long_name.txt");
             checkArchiveContent(df[1], expected);
         } finally {
-            if (os != null) {
-                os.close();
-            }
-            if (fos != null) {
-                fos.close();
-            }
             rmdir(df[0]);
         }
     }

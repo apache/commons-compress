@@ -267,13 +267,15 @@ public class ArchiveStreamFactoryTest {
     @Test
     public void testEncodingInputStreamAutodetect() throws Exception {
         int failed = 0;
-        for(int i = 1; i <= TESTS.length; i++) {
-            final TestData test = TESTS[i-1];
-            final ArchiveInputStream ais = getInputStreamFor(test.testFile, test.fac);
-            final String field = getField(ais,test.fieldName);
-            if (!eq(test.expectedEncoding,field)) {
-                System.out.println("Failed test " + i + ". expected: " + test.expectedEncoding + " actual: " + field + " type: " + test.type);
-                failed++;
+        for (int i = 1; i <= TESTS.length; i++) {
+            final TestData test = TESTS[i - 1];
+            try (final ArchiveInputStream ais = getInputStreamFor(test.testFile, test.fac)) {
+                final String field = getField(ais, test.fieldName);
+                if (!eq(test.expectedEncoding, field)) {
+                    System.out.println("Failed test " + i + ". expected: " + test.expectedEncoding + " actual: " + field
+                            + " type: " + test.type);
+                    failed++;
+                }
             }
         }
         if (failed > 0) {
@@ -284,13 +286,15 @@ public class ArchiveStreamFactoryTest {
     @Test
     public void testEncodingInputStream() throws Exception {
         int failed = 0;
-        for(int i = 1; i <= TESTS.length; i++) {
-            final TestData test = TESTS[i-1];
-            final ArchiveInputStream ais = getInputStreamFor(test.type, test.testFile, test.fac);
-            final String field = getField(ais,test.fieldName);
-            if (!eq(test.expectedEncoding,field)) {
-                System.out.println("Failed test " + i + ". expected: " + test.expectedEncoding + " actual: " + field + " type: " + test.type);
-                failed++;
+        for (int i = 1; i <= TESTS.length; i++) {
+            final TestData test = TESTS[i - 1];
+            try (final ArchiveInputStream ais = getInputStreamFor(test.type, test.testFile, test.fac)) {
+                final String field = getField(ais, test.fieldName);
+                if (!eq(test.expectedEncoding, field)) {
+                    System.out.println("Failed test " + i + ". expected: " + test.expectedEncoding + " actual: " + field
+                            + " type: " + test.type);
+                    failed++;
+                }
             }
         }
         if (failed > 0) {
@@ -304,11 +308,13 @@ public class ArchiveStreamFactoryTest {
         for(int i = 1; i <= TESTS.length; i++) {
             final TestData test = TESTS[i-1];
             if (test.hasOutputStream) {
-                final ArchiveOutputStream ais = getOutputStreamFor(test.type, test.fac);
-                final String field = getField(ais, test.fieldName);
-                if (!eq(test.expectedEncoding, field)) {
-                    System.out.println("Failed test " + i + ". expected: " + test.expectedEncoding + " actual: " + field + " type: " + test.type);
-                    failed++;
+                try (final ArchiveOutputStream ais = getOutputStreamFor(test.type, test.fac)) {
+                    final String field = getField(ais, test.fieldName);
+                    if (!eq(test.expectedEncoding, field)) {
+                        System.out.println("Failed test " + i + ". expected: " + test.expectedEncoding + " actual: "
+                                + field + " type: " + test.type);
+                        failed++;
+                    }
                 }
             }
         }

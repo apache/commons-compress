@@ -92,17 +92,19 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
     public void testOptionalFinish() throws Exception {
         final OutputStream out1 = new ByteArrayOutputStream();
 
-        ArchiveOutputStream aos1 = factory.createArchiveOutputStream("zip", out1);
-        aos1.putArchiveEntry(new ZipArchiveEntry("dummy"));
-        aos1.closeArchiveEntry();
-        aos1.close();
+        try (ArchiveOutputStream aos1 = factory.createArchiveOutputStream("zip", out1)) {
+            aos1.putArchiveEntry(new ZipArchiveEntry("dummy"));
+            aos1.closeArchiveEntry();
+        }
 
-        aos1 = factory.createArchiveOutputStream("jar", out1);
-        aos1.putArchiveEntry(new JarArchiveEntry("dummy"));
-        aos1.closeArchiveEntry();
-        aos1.close();
+        final ArchiveOutputStream finishTest;
+        try (ArchiveOutputStream aos1 = factory.createArchiveOutputStream("jar", out1)) {
+            finishTest = aos1;
+            aos1.putArchiveEntry(new JarArchiveEntry("dummy"));
+            aos1.closeArchiveEntry();
+        }
         try {
-            aos1.finish();
+            finishTest.finish();
             fail("finish() cannot follow close()");
         } catch (final IOException io) {
             // Exception expected
@@ -141,9 +143,9 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
         ArchiveOutputStream aos1;
         aos1 = factory.createArchiveOutputStream(archiveType, out1);
         aos1.putArchiveEntry(aos1.createArchiveEntry(dummy, "dummy"));
-        InputStream is = new FileInputStream(dummy);
-        IOUtils.copy(is, aos1);
-        is.close();
+        try (InputStream is = new FileInputStream(dummy)) {
+            IOUtils.copy(is, aos1);
+        }
         aos1.closeArchiveEntry();
         aos1.close(); // omitted finish
 
@@ -157,9 +159,9 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
         }
 
         aos1.putArchiveEntry(aos1.createArchiveEntry(dummy, "dummy"));
-        is = new FileInputStream(dummy);
-        IOUtils.copy(is, aos1);
-        is.close();
+        try (InputStream is = new FileInputStream(dummy)) {
+            IOUtils.copy(is, aos1);
+        }
 
         // TODO check if second putArchiveEntry() can follow without closeAE?
 

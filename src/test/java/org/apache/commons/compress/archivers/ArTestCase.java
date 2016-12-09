@@ -80,18 +80,16 @@ public final class ArTestCase extends AbstractTestCase {
 
         // UnArArchive Operation
         final File input = output;
-        final InputStream is = new FileInputStream(input);
-        final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream(new BufferedInputStream(is));
-        final ArArchiveEntry entry = (ArArchiveEntry)in.getNextEntry();
+        try (final InputStream is = new FileInputStream(input);
+                final ArchiveInputStream in = new ArchiveStreamFactory()
+                        .createArchiveInputStream(new BufferedInputStream(is))) {
+            final ArArchiveEntry entry = (ArArchiveEntry) in.getNextEntry();
 
-        final File target = new File(dir, entry.getName());
-        final OutputStream out = new FileOutputStream(target);
-
-        IOUtils.copy(in, out);
-
-        out.close();
-        in.close();
-        is.close();
+            final File target = new File(dir, entry.getName());
+            try (final OutputStream out = new FileOutputStream(target)) {
+                IOUtils.copy(in, out);
+            }
+        }
     }
 
     @Test

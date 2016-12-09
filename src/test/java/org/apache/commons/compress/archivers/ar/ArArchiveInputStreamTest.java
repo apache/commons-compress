@@ -41,10 +41,8 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
     }
 
     private void checkLongNameEntry(final String archive) throws Exception {
-        final FileInputStream fis = new FileInputStream(getFile(archive));
-        ArArchiveInputStream s = null;
-        try {
-            s = new ArArchiveInputStream(new BufferedInputStream(fis));
+        try (final FileInputStream fis = new FileInputStream(getFile(archive));
+                final ArArchiveInputStream s = new ArArchiveInputStream(new BufferedInputStream(fis))) {
             ArchiveEntry e = s.getNextEntry();
             assertEquals("this_is_a_long_file_name.txt", e.getName());
             assertEquals(14, e.getSize());
@@ -58,11 +56,6 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
             s.read(bye);
             assertEquals("Bye\n", ArchiveUtils.toAsciiString(bye));
             assertNull(s.getNextEntry());
-        } finally {
-            if (s != null) {
-                s.close();
-            }
-            fis.close();
         }
     }
 }
