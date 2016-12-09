@@ -510,18 +510,18 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             }
 
             // Tar needs an even bigger buffer to check the signature; read the first block
-            final byte[] tarheader = new byte[TAR_HEADER_SIZE];
-            in.mark(tarheader.length);
-            signatureLength = IOUtils.readFully(in, tarheader);
+            final byte[] tarHeader = new byte[TAR_HEADER_SIZE];
+            in.mark(tarHeader.length);
+            signatureLength = IOUtils.readFully(in, tarHeader);
             in.reset();
-            if (TarArchiveInputStream.matches(tarheader, signatureLength)) {
+            if (TarArchiveInputStream.matches(tarHeader, signatureLength)) {
                 return createArchiveInputStream(TAR, in);
             }
             // COMPRESS-117 - improve auto-recognition
             if (signatureLength >= TAR_HEADER_SIZE) {
                 TarArchiveInputStream tais = null;
                 try {
-                    tais = new TarArchiveInputStream(new ByteArrayInputStream(tarheader));
+                    tais = new TarArchiveInputStream(new ByteArrayInputStream(tarHeader));
                     // COMPRESS-191 - verify the header checksum
                     if (tais.getNextTarEntry().isCheckSumOK()) {
                         return createArchiveInputStream(TAR, in);
