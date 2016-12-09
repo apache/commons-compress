@@ -118,8 +118,7 @@ class Coders {
         }
         @Override
         OutputStream encode(final OutputStream out, final Object options) {
-            final FinishableOutputStream fo = opts.getOutputStream(new FinishableWrapperOutputStream(out));
-            return new FlushShieldFilterOutputStream(fo);
+            return new FlushShieldFilterOutputStream(opts.getOutputStream(new FinishableWrapperOutputStream(out)));
         }
     }
     
