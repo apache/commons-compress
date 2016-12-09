@@ -34,14 +34,21 @@ public interface ArchiveStreamProvider {
      * Creates an archive input stream from an archiver name and an input
      * stream.
      * 
-     * @param archiverName
-     *            the archive name, i.e. {@value #AR}, {@value #ARJ},
-     *            {@value #ZIP}, {@value #TAR}, {@value #JAR}, {@value #CPIO},
-     *            {@value #DUMP} or {@value #SEVEN_Z}
+     * @param name
+     *            the archive name, i.e.
+     *            {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#AR},
+     *            {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#ARJ},
+     *            {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#ZIP},
+     *            {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#TAR},
+     *            {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#JAR},
+     *            {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#CPIO},
+     *            {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#DUMP}
+     *            or
+     *            {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#SEVEN_Z}
      * @param in
      *            the input stream
-     * @param encoding,
-     *            or null for the default
+     * @param encoding
+     *            encoding name or null for the default
      * @return the archive input stream
      * @throws ArchiveException
      *             if the archiver name is not known
@@ -58,12 +65,17 @@ public interface ArchiveStreamProvider {
      * stream.
      * 
      * @param archiverName
-     *            the archive name, i.e. {@value #AR}, {@value #ZIP},
-     *            {@value #TAR}, {@value #JAR} or {@value #CPIO}
+     *            the archive name, i.e.
+     *            {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#AR},
+     *            {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#ZIP},
+     *            {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#TAR},
+     *            {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#JAR}
+     *            or
+     *            {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#CPIO}
      * @param out
      *            the output stream
-     * @param encoding,
-     *            or null for the default
+     * @param encoding
+     *            encoding name or null for the default
      * @return the archive output stream
      * @throws ArchiveException
      *             if the archiver name is not known
