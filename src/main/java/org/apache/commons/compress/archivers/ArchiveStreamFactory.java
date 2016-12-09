@@ -95,38 +95,45 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
      * @since 1.1
      */
     public static final String AR = "ar";
+    
     /**
      * Constant (value {@value}) used to identify the ARJ archive format.
      * Not supported as an output stream type.
      * @since 1.6
      */
     public static final String ARJ = "arj";
+    
     /**
      * Constant (value {@value}) used to identify the CPIO archive format.
      * @since 1.1
      */
     public static final String CPIO = "cpio";
+    
     /**
      * Constant (value {@value}) used to identify the Unix DUMP archive format.
      * Not supported as an output stream type.
      * @since 1.3
      */
     public static final String DUMP = "dump";
+    
     /**
      * Constant (value {@value}) used to identify the JAR archive format.
      * @since 1.1
      */
     public static final String JAR = "jar";
+    
     /**
      * Constant used to identify the TAR archive format.
      * @since 1.1
      */
     public static final String TAR = "tar";
+    
     /**
      * Constant (value {@value}) used to identify the ZIP archive format.
      * @since 1.1
      */
     public static final String ZIP = "zip";
+    
     /**
      * Constant (value {@value}) used to identify the 7z archive format.
      * @since 1.8
@@ -157,6 +164,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             map.put(toKey(name), provider);
         }
     }
+    
     private static Iterator<ArchiveStreamProvider> serviceLoaderIterator() {
         return new ServiceLoaderIterator<>(ArchiveStreamProvider.class);
     }
