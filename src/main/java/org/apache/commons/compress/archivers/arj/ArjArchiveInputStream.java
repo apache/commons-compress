@@ -216,54 +216,54 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         if (basicHeaderBytes == null) {
             return null;
         }
-        final DataInputStream basicHeader = new DataInputStream(
-                new ByteArrayInputStream(basicHeaderBytes));
-        
-        final int firstHeaderSize = basicHeader.readUnsignedByte();
-        final byte[] firstHeaderBytes = new byte[firstHeaderSize - 1];
-        basicHeader.readFully(firstHeaderBytes);
-        final DataInputStream firstHeader = new DataInputStream(
-                new ByteArrayInputStream(firstHeaderBytes));
+        try (final DataInputStream basicHeader = new DataInputStream(new ByteArrayInputStream(basicHeaderBytes))) {
 
-        final LocalFileHeader localFileHeader = new LocalFileHeader();
-        localFileHeader.archiverVersionNumber = firstHeader.readUnsignedByte();
-        localFileHeader.minVersionToExtract = firstHeader.readUnsignedByte();
-        localFileHeader.hostOS = firstHeader.readUnsignedByte();
-        localFileHeader.arjFlags = firstHeader.readUnsignedByte();
-        localFileHeader.method = firstHeader.readUnsignedByte();
-        localFileHeader.fileType = firstHeader.readUnsignedByte();
-        localFileHeader.reserved = firstHeader.readUnsignedByte();
-        localFileHeader.dateTimeModified = read32(firstHeader);
-        localFileHeader.compressedSize = 0xffffFFFFL & read32(firstHeader);
-        localFileHeader.originalSize = 0xffffFFFFL & read32(firstHeader);
-        localFileHeader.originalCrc32 = 0xffffFFFFL & read32(firstHeader);
-        localFileHeader.fileSpecPosition = read16(firstHeader);
-        localFileHeader.fileAccessMode = read16(firstHeader);
-        pushedBackBytes(20);
-        localFileHeader.firstChapter = firstHeader.readUnsignedByte();
-        localFileHeader.lastChapter = firstHeader.readUnsignedByte();
-        
-        readExtraData(firstHeaderSize, firstHeader, localFileHeader);
+            final int firstHeaderSize = basicHeader.readUnsignedByte();
+            final byte[] firstHeaderBytes = new byte[firstHeaderSize - 1];
+            basicHeader.readFully(firstHeaderBytes);
+            try (final DataInputStream firstHeader = new DataInputStream(new ByteArrayInputStream(firstHeaderBytes))) {
 
-        localFileHeader.name = readString(basicHeader);
-        localFileHeader.comment = readString(basicHeader);
+                final LocalFileHeader localFileHeader = new LocalFileHeader();
+                localFileHeader.archiverVersionNumber = firstHeader.readUnsignedByte();
+                localFileHeader.minVersionToExtract = firstHeader.readUnsignedByte();
+                localFileHeader.hostOS = firstHeader.readUnsignedByte();
+                localFileHeader.arjFlags = firstHeader.readUnsignedByte();
+                localFileHeader.method = firstHeader.readUnsignedByte();
+                localFileHeader.fileType = firstHeader.readUnsignedByte();
+                localFileHeader.reserved = firstHeader.readUnsignedByte();
+                localFileHeader.dateTimeModified = read32(firstHeader);
+                localFileHeader.compressedSize = 0xffffFFFFL & read32(firstHeader);
+                localFileHeader.originalSize = 0xffffFFFFL & read32(firstHeader);
+                localFileHeader.originalCrc32 = 0xffffFFFFL & read32(firstHeader);
+                localFileHeader.fileSpecPosition = read16(firstHeader);
+                localFileHeader.fileAccessMode = read16(firstHeader);
+                pushedBackBytes(20);
+                localFileHeader.firstChapter = firstHeader.readUnsignedByte();
+                localFileHeader.lastChapter = firstHeader.readUnsignedByte();
 
-        final ArrayList<byte[]> extendedHeaders = new ArrayList<>();
-        int extendedHeaderSize;
-        while ((extendedHeaderSize = read16(in)) > 0) {
-            final byte[] extendedHeaderBytes = new byte[extendedHeaderSize];
-            readFully(in, extendedHeaderBytes);
-            final long extendedHeaderCrc32 = 0xffffFFFFL & read32(in);
-            final CRC32 crc32 = new CRC32();
-            crc32.update(extendedHeaderBytes);
-            if (extendedHeaderCrc32 != crc32.getValue()) {
-                throw new IOException("Extended header CRC32 verification failure");
+                readExtraData(firstHeaderSize, firstHeader, localFileHeader);
+
+                localFileHeader.name = readString(basicHeader);
+                localFileHeader.comment = readString(basicHeader);
+
+                final ArrayList<byte[]> extendedHeaders = new ArrayList<>();
+                int extendedHeaderSize;
+                while ((extendedHeaderSize = read16(in)) > 0) {
+                    final byte[] extendedHeaderBytes = new byte[extendedHeaderSize];
+                    readFully(in, extendedHeaderBytes);
+                    final long extendedHeaderCrc32 = 0xffffFFFFL & read32(in);
+                    final CRC32 crc32 = new CRC32();
+                    crc32.update(extendedHeaderBytes);
+                    if (extendedHeaderCrc32 != crc32.getValue()) {
+                        throw new IOException("Extended header CRC32 verification failure");
+                    }
+                    extendedHeaders.add(extendedHeaderBytes);
+                }
+                localFileHeader.extendedHeaders = extendedHeaders.toArray(new byte[extendedHeaders.size()][]);
+
+                return localFileHeader;
             }
-            extendedHeaders.add(extendedHeaderBytes);
         }
-        localFileHeader.extendedHeaders = extendedHeaders.toArray(new byte[extendedHeaders.size()][]);
-        
-        return localFileHeader;
     }
     
     private void readExtraData(final int firstHeaderSize, final DataInputStream firstHeader,
