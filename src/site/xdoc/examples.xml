@@ -698,7 +698,7 @@ zIn.close();
           <code>META-INF/services/org.apache.commons.compress.compressors.CompressorStreamProvider</code>.
         </p>
         <p>
-          This file MUST contain one full-qualified class name per line.
+          This file MUST contain one fully-qualified class name per line.
         </p>
         <p>
           For example:
@@ -717,7 +717,7 @@ zIn.close();
           <code>META-INF/services/org.apache.commons.compress.archivers.ArchiveStreamProvider</code>.
         </p>
         <p>
-          This file MUST contain one full-qualified class name per line.
+          This file MUST contain one fully-qualified class name per line.
         </p>
         <p>
           For example:
