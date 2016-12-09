@@ -116,6 +116,8 @@ class Coders {
                                       e);
             }
         }
+        
+        @SuppressWarnings("resource")
         @Override
         OutputStream encode(final OutputStream out, final Object options) {
             return new FlushShieldFilterOutputStream(opts.getOutputStream(new FinishableWrapperOutputStream(out)));
