@@ -43,6 +43,7 @@ class LZMADecoder extends CoderBase {
         return new LZMAInputStream(in, uncompressedLength, propsByte, dictSize);
     }
 
+    @SuppressWarnings("resource")
     @Override
     OutputStream encode(final OutputStream out, final Object opts)
         throws IOException {
