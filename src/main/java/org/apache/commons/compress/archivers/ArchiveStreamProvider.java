@@ -64,7 +64,7 @@ public interface ArchiveStreamProvider {
      * Creates an archive output stream from an archiver name and an output
      * stream.
      * 
-     * @param archiverName
+     * @param name
      *            the archive name, i.e.
      *            {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#AR},
      *            {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#ZIP},
