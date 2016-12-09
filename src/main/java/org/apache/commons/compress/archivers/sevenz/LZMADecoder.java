@@ -40,7 +40,7 @@ class LZMADecoder extends CoderBase {
         if (dictSize > LZMAInputStream.DICT_SIZE_MAX) {
             throw new IOException("Dictionary larger than 4GiB maximum size used in " + archiveName);
         }
-        return new LZMAInputStream(in, uncompressedLength, propsByte, (int) dictSize);
+        return new LZMAInputStream(in, uncompressedLength, propsByte, dictSize);
     }
 
     @Override
