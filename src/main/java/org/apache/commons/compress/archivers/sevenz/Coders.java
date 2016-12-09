@@ -35,7 +35,6 @@ import org.apache.commons.compress.utils.FlushShieldFilterOutputStream;
 import org.tukaani.xz.ARMOptions;
 import org.tukaani.xz.ARMThumbOptions;
 import org.tukaani.xz.FilterOptions;
-import org.tukaani.xz.FinishableOutputStream;
 import org.tukaani.xz.FinishableWrapperOutputStream;
 import org.tukaani.xz.IA64Options;
 import org.tukaani.xz.PowerPCOptions;
