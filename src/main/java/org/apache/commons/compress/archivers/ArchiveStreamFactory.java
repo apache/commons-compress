@@ -88,6 +88,8 @@ import org.apache.commons.compress.utils.Sets;
  */
 public class ArchiveStreamFactory implements ArchiveStreamProvider {
 
+    private static final int SIGNATURE_SIZE = 12;
+
     private static final ArchiveStreamFactory SINGLETON = new ArchiveStreamFactory();
     
     /**
@@ -475,7 +477,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             throw new IllegalArgumentException("Mark is not supported.");
         }
 
-        final byte[] signature = new byte[12];
+        final byte[] signature = new byte[SIGNATURE_SIZE];
         in.mark(signature.length);
         try {
             int signatureLength = IOUtils.readFully(in, signature);
