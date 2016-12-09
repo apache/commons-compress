@@ -38,7 +38,6 @@ import org.tukaani.xz.FilterOptions;
 import org.tukaani.xz.FinishableOutputStream;
 import org.tukaani.xz.FinishableWrapperOutputStream;
 import org.tukaani.xz.IA64Options;
-import org.tukaani.xz.LZMAInputStream;
 import org.tukaani.xz.PowerPCOptions;
 import org.tukaani.xz.SPARCOptions;
 import org.tukaani.xz.X86Options;
