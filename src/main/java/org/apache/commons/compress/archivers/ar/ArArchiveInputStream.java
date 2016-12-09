@@ -186,24 +186,24 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         }
         throw new IOException("Failed to read entry: "+offset);
     }
-    private long asLong(final byte[] input) {
-        return Long.parseLong(ArchiveUtils.toAsciiString(input).trim());
+    private long asLong(final byte[] byteArray) {
+        return Long.parseLong(ArchiveUtils.toAsciiString(byteArray).trim());
     }
 
-    private int asInt(final byte[] input) {
-        return asInt(input, 10, false);
+    private int asInt(final byte[] byteArray) {
+        return asInt(byteArray, 10, false);
     }
 
-    private int asInt(final byte[] input, final boolean treatBlankAsZero) {
-        return asInt(input, 10, treatBlankAsZero);
+    private int asInt(final byte[] byteArray, final boolean treatBlankAsZero) {
+        return asInt(byteArray, 10, treatBlankAsZero);
     }
 
-    private int asInt(final byte[] input, final int base) {
-        return asInt(input, base, false);
+    private int asInt(final byte[] byteArray, final int base) {
+        return asInt(byteArray, base, false);
     }
 
-    private int asInt(final byte[] input, final int base, final boolean treatBlankAsZero) {
-        final String string = ArchiveUtils.toAsciiString(input).trim();
+    private int asInt(final byte[] byteArray, final int base, final boolean treatBlankAsZero) {
+        final String string = ArchiveUtils.toAsciiString(byteArray).trim();
         if (string.length() == 0 && treatBlankAsZero) {
             return 0;
         }
