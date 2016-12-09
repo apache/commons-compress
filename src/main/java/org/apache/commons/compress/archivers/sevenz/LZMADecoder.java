@@ -17,11 +17,11 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
-import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.compress.utils.FlushShieldFilterOutputStream;
 import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.LZMAInputStream;
 import org.tukaani.xz.LZMAOutputStream;
@@ -46,12 +46,8 @@ class LZMADecoder extends CoderBase {
     @Override
     OutputStream encode(final OutputStream out, final Object opts)
         throws IOException {
-        return new FilterOutputStream(new LZMAOutputStream(out, getOptions(opts), false)) {
-            @Override
-            public void flush() {
-                // NOOP as LZMAOutputStream throws an exception in flush
-            }
-        };
+        // NOOP as LZMAOutputStream throws an exception in flush
+        return new FlushShieldFilterOutputStream(new LZMAOutputStream(out, getOptions(opts), false));
     }
 
     @Override

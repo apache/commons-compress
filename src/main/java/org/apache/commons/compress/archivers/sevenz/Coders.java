@@ -18,7 +18,6 @@
 package org.apache.commons.compress.archivers.sevenz;
 
 import java.io.FilterInputStream;
-import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -32,6 +31,7 @@ import java.util.zip.InflaterInputStream;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
+import org.apache.commons.compress.utils.FlushShieldFilterOutputStream;
 import org.tukaani.xz.ARMOptions;
 import org.tukaani.xz.ARMThumbOptions;
 import org.tukaani.xz.FilterOptions;
@@ -118,12 +118,7 @@ class Coders {
         }
         @Override
         OutputStream encode(final OutputStream out, final Object options) {
-            final FinishableOutputStream fo = opts.getOutputStream(new FinishableWrapperOutputStream(out));
-            return new FilterOutputStream(fo) {
-                @Override
-                public void flush() {
-                }
-            };
+            return new FlushShieldFilterOutputStream(opts.getOutputStream(new FinishableWrapperOutputStream(out)));
         }
     }
     
