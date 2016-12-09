@@ -543,15 +543,9 @@ public class ZipFile implements Closeable {
      */
     public String getUnixSymlink(final ZipArchiveEntry entry) throws IOException {
         if (entry != null && entry.isUnixSymlink()) {
-            InputStream in = null;
-            try {
-                in = getInputStream(entry);
+            try (InputStream in = getInputStream(entry)) {
                 final byte[] symlinkBytes = IOUtils.toByteArray(in);
                 return zipEncoding.decode(symlinkBytes);
-            } finally {
-                if (in != null) {
-                    in.close();
-                }
             }
         }
         return null;
