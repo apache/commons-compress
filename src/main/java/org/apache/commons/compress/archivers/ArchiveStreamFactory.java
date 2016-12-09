@@ -88,6 +88,8 @@ import org.apache.commons.compress.utils.Sets;
  */
 public class ArchiveStreamFactory implements ArchiveStreamProvider {
 
+    private static final int TAR_HEADER_SIZE = 512;
+
     private static final int DUMP_SIGNATURE_SIZE = 32;
 
     private static final int SIGNATURE_SIZE = 12;
@@ -508,7 +510,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             }
 
             // Tar needs an even bigger buffer to check the signature; read the first block
-            final byte[] tarheader = new byte[512];
+            final byte[] tarheader = new byte[TAR_HEADER_SIZE];
             in.mark(tarheader.length);
             signatureLength = IOUtils.readFully(in, tarheader);
             in.reset();
@@ -516,7 +518,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
                 return createArchiveInputStream(TAR, in);
             }
             // COMPRESS-117 - improve auto-recognition
-            if (signatureLength >= 512) {
+            if (signatureLength >= TAR_HEADER_SIZE) {
                 TarArchiveInputStream tais = null;
                 try {
                     tais = new TarArchiveInputStream(new ByteArrayInputStream(tarheader));
