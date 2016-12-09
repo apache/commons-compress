@@ -57,7 +57,7 @@
           of changes see the <a href="changes-report.html">Changes
           Report</a>.</p>
 
-          <subsection name="What's coming in 1.13?">
+          <subsection name="What's new in 1.13?">
             <ul>
               <li>The 7z package as well as
               <code>ZipArchiveOutputStream</code> and
