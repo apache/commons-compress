@@ -88,6 +88,8 @@ import org.apache.commons.compress.utils.Sets;
  */
 public class ArchiveStreamFactory implements ArchiveStreamProvider {
 
+    private static final int DUMP_SIGNATURE_SIZE = 32;
+
     private static final int SIGNATURE_SIZE = 12;
 
     private static final ArchiveStreamFactory SINGLETON = new ArchiveStreamFactory();
@@ -497,7 +499,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             }
 
             // Dump needs a bigger buffer to check the signature;
-            final byte[] dumpsig = new byte[32];
+            final byte[] dumpsig = new byte[DUMP_SIGNATURE_SIZE];
             in.mark(dumpsig.length);
             signatureLength = IOUtils.readFully(in, dumpsig);
             in.reset();
