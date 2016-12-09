@@ -51,7 +51,7 @@
         </section>
 
         <section name="Status">
-          <p>The current release is 1.12 and requires Java 6.</p>
+          <p>The current release is 1.13 and requires Java 7.</p>
 
           <p>Below we highlight some new features, for a full list
           of changes see the <a href="changes-report.html">Changes
