@@ -682,6 +682,53 @@ zIn.close();
 
       </subsection>
 
+    <subsection name="Extending Commons Compress">
+    
+        <p>
+          Starting in release 1.13, it is now possible to add Compressor- and ArchiverStream implementations using the 
+          Java's <a href="https://docs.oracle.com/javase/7/docs/api/java/util/ServiceLoader.html">ServiceLoader</a> 
+          mechanism.
+        </p>
+    </subsection>
+    
+    <subsection name="Extending Commons Compress Compressors">
+    
+        <p>
+          To provide your own compressor, you must make available on the classpath a file called 
+          <code>META-INF/services/org.apache.commons.compress.compressors.CompressorStreamProvider</code>.
+        </p>
+        <p>
+          This file MUST contain one full-qualified class name per line.
+        </p>
+        <p>
+          For example:
+        </p>
+        <pre>org.apache.commons.compress.compressors.TestCompressorStreamProvider</pre>
+        <p>
+          This class MUST implement the Commons Compress interface 
+          <a href="apidocs/org/apache/commons/compress/compressors/CompressorStreamProvider.html">org.apache.commons.compress.compressors.CompressorStreamProvider</a>.
+        </p>
+    </subsection>
+    
+    <subsection name="Extending Commons Compress Archivers">
+
+        <p>
+          To provide your own compressor, you must make available on the classpath a file called 
+          <code>META-INF/services/org.apache.commons.compress.archivers.ArchiveStreamProvider</code>.
+        </p>
+        <p>
+          This file MUST contain one full-qualified class name per line.
+        </p>
+        <p>
+          For example:
+        </p>
+        <pre>org.apache.commons.compress.archivers.TestArchiveStreamProvider</pre>
+        <p>
+          This class MUST implement the Commons Compress interface 
+          <a href="apidocs/org/apache/commons/compress/archivers/ArchiveStreamProvider.html">org.apache.commons.compress.archivers.ArchiveStreamProvider</a>.
+        </p>
+    </subsection>
+    
     </section>
   </body>
 </document>

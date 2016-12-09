@@ -68,7 +68,8 @@
               represented by <code>File</code>s.</li>
               <li>It is now possible to add Compressor- and
               ArchiverStream implementations using the JDK's
-              ServiceLoader mechanism.</li>
+              ServiceLoader mechanism. Please see 
+              <a href="examples.html#Extending_Commons_Compress">Extending Commons Compress</a>.</li>
               <li>Added support for writing the legacy LZMA format as
               compressor stream and inside 7z archives - this requires
               XZ for Java 1.6.</li>
