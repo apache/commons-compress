@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Re-implements {@link flush()} to do nothing.
+ * Re-implements {@link FilterOutputStream#flush()} to do nothing.
  */
 public class FlushShieldFilterOutputStream extends FilterOutputStream {
 
