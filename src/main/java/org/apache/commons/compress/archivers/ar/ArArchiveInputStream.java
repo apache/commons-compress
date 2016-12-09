@@ -172,20 +172,21 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      * @return the extended file name; without trailing "/" if present.
      * @throws IOException if name not found or buffer not set up
      */
-    private String getExtendedName(final int offset) throws IOException{
+    private String getExtendedName(final int offset) throws IOException {
         if (namebuffer == null) {
             throw new IOException("Cannot process GNU long filename as no // record was found");
         }
-        for(int i=offset; i < namebuffer.length; i++){
-            if (namebuffer[i] == '\012' || namebuffer[i] == 0){
-                if (namebuffer[i-1]=='/') {
+        for (int i = offset; i < namebuffer.length; i++) {
+            if (namebuffer[i] == '\012' || namebuffer[i] == 0) {
+                if (namebuffer[i - 1] == '/') {
                     i--; // drop trailing /
                 }
-                return ArchiveUtils.toAsciiString(namebuffer, offset, i-offset);
+                return ArchiveUtils.toAsciiString(namebuffer, offset, i - offset);
             }
         }
-        throw new IOException("Failed to read entry: "+offset);
+        throw new IOException("Failed to read entry: " + offset);
     }
+
     private long asLong(final byte[] byteArray) {
         return Long.parseLong(ArchiveUtils.toAsciiString(byteArray).trim());
     }
