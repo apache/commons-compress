@@ -517,12 +517,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Writes all necessary data for this entry.
      *
+     * @param phased              This entry is second phase of a 2-phase zip creation, size, compressed size and crc
+     *                            are known in ZipArchiveEntry
      * @throws IOException            on error
      * @throws Zip64RequiredException if the entry's uncompressed or
      *                                compressed size exceeds 4 GByte and {@link #setUseZip64}
      *                                is {@link Zip64Mode#Never}.
-     * @param phased              This entry is second phase of a 2-phase zip creation, size, compressed size and crc
-     *                            are known in ZipArchiveEntry
      */
     private void closeCopiedEntry(final boolean phased) throws IOException {
         preClose();
