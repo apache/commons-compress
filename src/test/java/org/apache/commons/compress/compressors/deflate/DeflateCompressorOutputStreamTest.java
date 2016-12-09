@@ -28,13 +28,13 @@ public class DeflateCompressorOutputStreamTest {
 
     @Test
     public void canReadASingleByteFlushAndFinish() throws IOException {
-        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        final DeflateCompressorOutputStream cos = new DeflateCompressorOutputStream(bos);
-        cos.write(99);
-        cos.flush();
-        cos.finish();
-        Assert.assertTrue(bos.toByteArray().length > 0);
-        cos.close();
+        try (final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                final DeflateCompressorOutputStream cos = new DeflateCompressorOutputStream(bos)) {
+            cos.write(99);
+            cos.flush();
+            cos.finish();
+            Assert.assertTrue(bos.toByteArray().length > 0);
+        }
     }
 
 }
