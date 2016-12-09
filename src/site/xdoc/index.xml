@@ -57,19 +57,6 @@
           of changes see the <a href="changes-report.html">Changes
           Report</a>.</p>
 
-          <subsection name="What's new in 1.12?">
-            <ul>
-              <li>Added support for the Snappy dialect used in iWork archives.</li>
-              <li><code>SevenZFile</code> throws an
-              IllegalStateException for empty entries.</li>
-              <li>BZip2CompressorOutputStream no longer tries to
-              finish the output stream in finalize. This is a breaking
-              change for code that relied on the finalizer.</li>
-              <li>Various fixes and improvements for tar, cpio
-              and zip.</li>
-            </ul>
-          </subsection>
-
           <subsection name="What's coming in 1.13?">
             <ul>
               <li>The 7z package as well as
@@ -87,6 +74,20 @@
               XZ for Java 1.6.</li>
             </ul>
           </subsection>
+
+          <subsection name="What's new in 1.12?">
+            <ul>
+              <li>Added support for the Snappy dialect used in iWork archives.</li>
+              <li><code>SevenZFile</code> throws an
+              IllegalStateException for empty entries.</li>
+              <li>BZip2CompressorOutputStream no longer tries to
+              finish the output stream in finalize. This is a breaking
+              change for code that relied on the finalizer.</li>
+              <li>Various fixes and improvements for tar, cpio
+              and zip.</li>
+            </ul>
+          </subsection>
+
         </section>
 
         <section name="Documentation">
