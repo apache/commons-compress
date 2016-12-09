@@ -35,6 +35,7 @@ class DeltaDecoder extends CoderBase {
         return new DeltaOptions(getOptionsFromCoder(coder)).getInputStream(in);
     }
 
+    @SuppressWarnings("resource")
     @Override
     OutputStream encode(final OutputStream out, final Object options) throws IOException {
         final int distance = numberOptionOrDefault(options, 1);
