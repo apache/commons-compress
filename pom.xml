@@ -195,6 +195,19 @@ jar, tar, zip, dump, 7z, arj.
             </tags>
           </configuration> 
         </plugin>
+        <plugin>
+          <groupId>org.apache.rat</groupId>
+          <artifactId>apache-rat-plugin</artifactId>
+          <version>${commons.rat.version}</version>
+          <configuration>
+            <excludes>
+              <!-- files used during tests -->
+              <exclude>src/test/resources/**</exclude>
+              <exclude>.pmd</exclude>
+              <exclude>.projectile</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
@@ -309,21 +322,6 @@ jar, tar, zip, dump, 7z, arj.
           <effort>Default</effort>
           <excludeFilterFile>${basedir}/findbugs-exclude-filter.xml</excludeFilterFile>
        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.rat</groupId>
-        <artifactId>apache-rat-plugin</artifactId>
-        <version>${commons.rat.version}</version>
-        <configuration>
-          <excludes>
-            <!-- files used during tests -->
-            <exclude>src/test/resources/**</exclude>
-            <exclude>.pmd</exclude>
-            <exclude>.gitignore</exclude>
-            <exclude>.gitattributes</exclude>
-            <exclude>.projectile</exclude>
-          </excludes>
-        </configuration>
       </plugin>
     </plugins>
   </reporting>
