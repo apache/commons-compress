@@ -50,14 +50,14 @@ abstract class CoderBase {
     /**
      * @return property-bytes to write in a Folder block
      */
-    byte[] getOptionsAsProperties(final Object options) {
+    byte[] getOptionsAsProperties(final Object options) throws IOException {
         return NONE;
     }
 
     /**
      * @return configuration options that have been used to create the given InputStream from the given Coder
      */
-    Object getOptionsFromCoder(final Coder coder, final InputStream in) {
+    Object getOptionsFromCoder(final Coder coder, final InputStream in) throws IOException {
         return null;
     }
 

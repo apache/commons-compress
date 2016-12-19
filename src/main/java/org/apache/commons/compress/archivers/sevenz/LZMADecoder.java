@@ -52,7 +52,7 @@ class LZMADecoder extends CoderBase {
     }
 
     @Override
-    byte[] getOptionsAsProperties(final Object opts) {
+    byte[] getOptionsAsProperties(final Object opts) throws IOException {
         final LZMA2Options options = getOptions(opts);
         final byte props = (byte) ((options.getPb() * 5 + options.getLp()) * 9 + options.getLc());
         int dictSize = options.getDictSize();
@@ -66,8 +66,7 @@ class LZMADecoder extends CoderBase {
     }
 
     @Override
-    Object getOptionsFromCoder(final Coder coder, final InputStream in) {
-        try {
+    Object getOptionsFromCoder(final Coder coder, final InputStream in) throws IOException {
             final byte propsByte = coder.properties[0];
             int props = propsByte & 0xFF;
             int pb = props / (9 * 5);
@@ -79,9 +78,6 @@ class LZMADecoder extends CoderBase {
             opts.setLcLp(lc, lp);
             opts.setDictSize(getDictionarySize(coder));
             return opts;
-        } catch (UnsupportedOptionsException ex) {
-            throw new RuntimeException(ex);
-        }
     }
 
     private int getDictSize(final Object opts) {
@@ -99,16 +95,12 @@ class LZMADecoder extends CoderBase {
         return (int) dictSize;
     }
 
-    private LZMA2Options getOptions(final Object opts) {
+    private LZMA2Options getOptions(final Object opts) throws IOException {
         if (opts instanceof LZMA2Options) {
             return (LZMA2Options) opts;
         }
         final LZMA2Options options = new LZMA2Options();
-        try {
             options.setDictSize(numberOptionOrDefault(opts));
-        } catch (UnsupportedOptionsException ex) {
-            throw new RuntimeException(ex);
-        }
         return options;
     }
 
