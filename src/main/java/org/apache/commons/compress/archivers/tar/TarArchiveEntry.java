@@ -376,7 +376,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
      * @return True if the entries are equal.
      */
     public boolean equals(final TarArchiveEntry it) {
-        return getName().equals(it.getName());
+        return it != null && getName().equals(it.getName());
     }
 
     /**
