@@ -67,17 +67,17 @@ class LZMADecoder extends CoderBase {
 
     @Override
     Object getOptionsFromCoder(final Coder coder, final InputStream in) throws IOException {
-            final byte propsByte = coder.properties[0];
-            int props = propsByte & 0xFF;
-            int pb = props / (9 * 5);
-            props -= pb * 9 * 5;
-            int lp = props / 9;
-            int lc = props - lp * 9;
-            LZMA2Options opts = new LZMA2Options();
-            opts.setPb(pb);
-            opts.setLcLp(lc, lp);
-            opts.setDictSize(getDictionarySize(coder));
-            return opts;
+        final byte propsByte = coder.properties[0];
+        int props = propsByte & 0xFF;
+        int pb = props / (9 * 5);
+        props -= pb * 9 * 5;
+        int lp = props / 9;
+        int lc = props - lp * 9;
+        LZMA2Options opts = new LZMA2Options();
+        opts.setPb(pb);
+        opts.setLcLp(lc, lp);
+        opts.setDictSize(getDictionarySize(coder));
+        return opts;
     }
 
     private int getDictSize(final Object opts) {
@@ -100,7 +100,7 @@ class LZMADecoder extends CoderBase {
             return (LZMA2Options) opts;
         }
         final LZMA2Options options = new LZMA2Options();
-            options.setDictSize(numberOptionOrDefault(opts));
+        options.setDictSize(numberOptionOrDefault(opts));
         return options;
     }
 
