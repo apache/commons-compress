@@ -28,8 +28,8 @@ import java.util.zip.ZipException;
 public class UnsupportedZipFeatureException extends ZipException {
 
     private final Feature reason;
-    private final ZipArchiveEntry entry;
-    private static final long serialVersionUID = 20130101L;
+    private transient final ZipArchiveEntry entry;
+    private static final long serialVersionUID = 20161219L;
 
     /**
      * Creates an exception.
@@ -92,7 +92,7 @@ public class UnsupportedZipFeatureException extends ZipException {
      * ZIP Features that may or may not be supported.
      * @since 1.1
      */
-    public static class Feature {
+    public static class Feature implements java.io.Serializable {
         /**
          * The entry is encrypted.
          */
