@@ -984,7 +984,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
                 writeEntryHeader(outbuf, TarUtils.FALLBACK_ENCODING, false);
             } catch (final IOException ex2) {
                 // impossible
-                throw new RuntimeException(ex2);
+                throw new RuntimeException(ex2); //NOSONAR
             }
         }
     }
@@ -1071,7 +1071,7 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
                 parseTarHeader(header, TarUtils.DEFAULT_ENCODING, true);
             } catch (final IOException ex2) {
                 // not really possible
-                throw new RuntimeException(ex2);
+                throw new RuntimeException(ex2); //NOSONAR
             }
         }
     }

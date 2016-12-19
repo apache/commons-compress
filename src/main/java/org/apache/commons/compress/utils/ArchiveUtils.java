@@ -75,7 +75,8 @@ public class ArchiveUtils {
         try {
             buffer1 = expected.getBytes(CharsetNames.US_ASCII);
         } catch (final UnsupportedEncodingException e) {
-            throw new RuntimeException(e); // Should not happen
+            // Should not happen
+            throw new RuntimeException(e); //NOSONAR
         }
         return isEqual(buffer1, 0, buffer1.length, buffer, offset, length, false);
     }
@@ -102,7 +103,8 @@ public class ArchiveUtils {
         try {
             return inputString.getBytes(CharsetNames.US_ASCII);
         } catch (final UnsupportedEncodingException e) {
-           throw new RuntimeException(e); // Should never happen
+            // Should never happen
+            throw new RuntimeException(e); //NOSONAR
         }
     }
 
@@ -116,7 +118,8 @@ public class ArchiveUtils {
         try {
             return new String(inputBytes, CharsetNames.US_ASCII);
         } catch (final UnsupportedEncodingException e) {
-            throw new RuntimeException(e); // Should never happen
+            // Should never happen
+            throw new RuntimeException(e); //NOSONAR
         }
     }
 
@@ -132,7 +135,8 @@ public class ArchiveUtils {
         try {
             return new String(inputBytes, offset, length, CharsetNames.US_ASCII);
         } catch (final UnsupportedEncodingException e) {
-            throw new RuntimeException(e); // Should never happen
+            // Should never happen
+            throw new RuntimeException(e); //NOSONAR
         }
     }
 

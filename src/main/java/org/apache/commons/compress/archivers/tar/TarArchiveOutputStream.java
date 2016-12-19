@@ -635,7 +635,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         if (value < 0 || value > maxValue) {
             throw new RuntimeException(field + " '" + value
                     + "' is too big ( > "
-                    + maxValue + " )." + additionalMsg);
+                    + maxValue + " )." + additionalMsg); //NOSONAR
         }
     }
 
@@ -686,7 +686,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             } else if (longFileMode != LONGFILE_TRUNCATE) {
                 throw new RuntimeException(fieldName + " '" + name
                                            + "' is too long ( > "
-                                           + TarConstants.NAMELEN + " bytes)");
+                                           + TarConstants.NAMELEN + " bytes)"); //NOSONAR
             }
         }
         return false;
