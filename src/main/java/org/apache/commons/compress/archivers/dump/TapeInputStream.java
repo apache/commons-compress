@@ -182,7 +182,7 @@ class TapeInputStream extends FilterInputStream {
 
             if ((readOffset + (len - bytes)) <= blockSize) {
                 // we can read entirely from the buffer.
-                n = len - bytes;
+                n = (long) len - bytes;
             } else {
                 // copy what we can from the buffer.
                 n = blockSize - readOffset;

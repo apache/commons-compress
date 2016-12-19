@@ -185,7 +185,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         }
 
         // we don't do anything with this yet.
-        if (raw.skip(DumpArchiveConstants.TP_SIZE * active.getHeaderCount())
+        if (raw.skip((long) DumpArchiveConstants.TP_SIZE * active.getHeaderCount())
             == -1) {
             throw new EOFException();
         }
@@ -209,7 +209,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         }
 
         // we don't do anything with this yet.
-        if (raw.skip(DumpArchiveConstants.TP_SIZE * active.getHeaderCount())
+        if (raw.skip((long) DumpArchiveConstants.TP_SIZE * active.getHeaderCount())
             == -1) {
             throw new EOFException();
         }
@@ -264,7 +264,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
             // skip any remaining segments for prior file.
             while (DumpArchiveConstants.SEGMENT_TYPE.ADDR == active.getHeaderType()) {
-                if (raw.skip(DumpArchiveConstants.TP_SIZE
+                if (raw.skip((long) DumpArchiveConstants.TP_SIZE
                              * (active.getHeaderCount()
                                 - active.getHeaderHoles())) == -1) {
                     throw new EOFException();

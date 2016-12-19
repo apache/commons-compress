@@ -1020,7 +1020,7 @@ public class ZipFile implements Closeable {
         /* last mod file date              */ + SHORT
         /* crc-32                          */ + WORD
         /* compressed size                 */ + WORD
-        /* uncompressed size               */ + WORD;
+        /* uncompressed size               */ + (long) WORD;
 
     /**
      * Walks through all recorded entries and adds the data available

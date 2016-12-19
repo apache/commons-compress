@@ -916,9 +916,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         // skip over central directory. One LFH has been read too much
         // already.  The calculation discounts file names and extra
         // data so it will be too short.
-        realSkip(entriesRead * CFH_LEN - LFH_LEN);
+        realSkip((long) entriesRead * CFH_LEN - LFH_LEN);
         findEocdRecord();
-        realSkip(ZipFile.MIN_EOCD_SIZE - WORD /* signature */ - SHORT /* comment len */);
+        realSkip((long) ZipFile.MIN_EOCD_SIZE - WORD /* signature */ - SHORT /* comment len */);
         readFully(SHORT_BUF);
         // file comment
         realSkip(ZipShort.getValue(SHORT_BUF));

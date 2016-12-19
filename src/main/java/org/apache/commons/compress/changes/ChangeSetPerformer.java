@@ -273,7 +273,8 @@ public class ChangeSetPerformer {
         }
         @Override
         public ArchiveEntry next() {
-            return current = nestedEnum.nextElement();
+            current = nestedEnum.nextElement();
+            return current;
         }
         @Override
         public InputStream getInputStream() throws IOException {

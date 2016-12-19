@@ -438,7 +438,7 @@ public class SevenZOutputFile implements Closeable {
 
         writeUint64(header, numCoders);
         header.write(bos.toByteArray());
-        for (int i = 0; i < numCoders - 1; i++) {
+        for (long i = 0; i < numCoders - 1; i++) {
             writeUint64(header, i + 1);
             writeUint64(header, i);
         }

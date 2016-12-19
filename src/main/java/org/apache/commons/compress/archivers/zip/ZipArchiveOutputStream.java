@@ -1386,7 +1386,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                            + DWORD /* number of entries in CD on this disk */
                            + DWORD /* total number of entries */
                            + DWORD /* size of CD */
-                           + DWORD /* offset of CD */
+                           + (long) DWORD /* offset of CD */
                            ));
 
         // version made by and version needed to extract
