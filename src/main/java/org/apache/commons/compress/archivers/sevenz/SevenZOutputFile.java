@@ -179,10 +179,10 @@ public class SevenZOutputFile implements Closeable {
         }
 
         final SevenZArchiveEntry entry = files.get(files.size() - 1);
-        if (fileBytesWritten > 0) {
+        if (fileBytesWritten > 0) { // this implies currentOutputStream != null
             entry.setHasStream(true);
             ++numNonEmptyStreams;
-            entry.setSize(currentOutputStream.getBytesWritten());
+            entry.setSize(currentOutputStream.getBytesWritten()); //NOSONAR
             entry.setCompressedSize(fileBytesWritten);
             entry.setCrcValue(crc32.getValue());
             entry.setCompressedCrcValue(compressedCrc32.getValue());

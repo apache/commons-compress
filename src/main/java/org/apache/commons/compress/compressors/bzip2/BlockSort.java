@@ -645,7 +645,7 @@ class BlockSort {
                     HAMMER: while (true) {
                         if (onceRunned) {
                             fmap[j] = a;
-                            if ((j -= h) <= mj) {
+                            if ((j -= h) <= mj) { //NOSONAR
                                 break HAMMER;
                             }
                         } else {
@@ -663,7 +663,7 @@ class BlockSort {
                                 if (block[i1 + 3] == block[i2 + 3]) {
                                     if (block[i1 + 4] == block[i2 + 4]) {
                                         if (block[i1 + 5] == block[i2 + 5]) {
-                                            if (block[(i1 += 6)] == block[(i2 += 6)]) {
+                                            if (block[(i1 += 6)] == block[(i2 += 6)]) { //NOSONAR
                                                 int x = lastShadow;
                                                 X: while (x > 0) {
                                                     x -= 4;
@@ -676,10 +676,10 @@ class BlockSort {
                                                                         if (quadrant[i1 + 2] == quadrant[i2 + 2]) {
                                                                             if (block[i1 + 4] == block[i2 + 4]) {
                                                                                 if (quadrant[i1 + 3] == quadrant[i2 + 3]) {
-                                                                                    if ((i1 += 4) >= lastPlus1) {
+                                                                                    if ((i1 += 4) >= lastPlus1) { //NOSONAR
                                                                                         i1 -= lastPlus1;
                                                                                     }
-                                                                                    if ((i2 += 4) >= lastPlus1) {
+                                                                                    if ((i2 += 4) >= lastPlus1) { //NOSONAR
                                                                                         i2 -= lastPlus1;
                                                                                     }
                                                                                     workDoneShadow++;
@@ -973,7 +973,8 @@ class BlockSort {
             runningOrder[i] = i;
         }
 
-        for (int h = 364; h != 1;) {
+        // h = 364, 121, 40, 13, 4, 1
+        for (int h = 364; h != 1;) { //NOSONAR
             h /= 3;
             for (int i = h; i <= 255; i++) {
                 final int vv = runningOrder[i];

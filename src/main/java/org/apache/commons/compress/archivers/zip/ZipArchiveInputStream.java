@@ -620,7 +620,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         if (currentEntryHasOutstandingBytes()) {
             drainCurrentEntryData();
         } else {
-            skip(Long.MAX_VALUE);
+            // this is guaranteed to exhaust the stream
+            skip(Long.MAX_VALUE); //NOSONAR
 
             final long inB = current.entry.getMethod() == ZipArchiveOutputStream.DEFLATED
                        ? getBytesInflated() : current.bytesRead;
