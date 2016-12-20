@@ -82,9 +82,9 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
     private final InputStream in;
 
     // cached buffers - must only be used locally in the class (COMPRESS-172 - reduce garbage collection)
-    private final byte[] TWO_BYTES_BUF = new byte[2];
-    private final byte[] FOUR_BYTES_BUF = new byte[4];
-    private final byte[] SIX_BYTES_BUF = new byte[6];
+    private final byte[] twoBytesBuf = new byte[2];
+    private final byte[] fourBytesBuf = new byte[4];
+    private final byte[] sixBytesBuf = new byte[6];
 
     private final int blockSize;
 
@@ -234,18 +234,18 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         if (this.entry != null) {
             closeEntry();
         }
-        readFully(TWO_BYTES_BUF, 0, TWO_BYTES_BUF.length);
-        if (CpioUtil.byteArray2long(TWO_BYTES_BUF, false) == MAGIC_OLD_BINARY) {
+        readFully(twoBytesBuf, 0, twoBytesBuf.length);
+        if (CpioUtil.byteArray2long(twoBytesBuf, false) == MAGIC_OLD_BINARY) {
             this.entry = readOldBinaryEntry(false);
-        } else if (CpioUtil.byteArray2long(TWO_BYTES_BUF, true)
+        } else if (CpioUtil.byteArray2long(twoBytesBuf, true)
                    == MAGIC_OLD_BINARY) {
             this.entry = readOldBinaryEntry(true);
         } else {
-            System.arraycopy(TWO_BYTES_BUF, 0, SIX_BYTES_BUF, 0,
-                             TWO_BYTES_BUF.length);
-            readFully(SIX_BYTES_BUF, TWO_BYTES_BUF.length,
-                      FOUR_BYTES_BUF.length);
-            final String magicString = ArchiveUtils.toAsciiString(SIX_BYTES_BUF);
+            System.arraycopy(twoBytesBuf, 0, sixBytesBuf, 0,
+                             twoBytesBuf.length);
+            readFully(sixBytesBuf, twoBytesBuf.length,
+                      fourBytesBuf.length);
+            final String magicString = ArchiveUtils.toAsciiString(sixBytesBuf);
             switch (magicString) {
                 case MAGIC_NEW:
                     this.entry = readNewEntry(false);
@@ -276,7 +276,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
     private void skip(final int bytes) throws IOException{
         // bytes cannot be more than 3 bytes
         if (bytes > 0) {
-            readFully(FOUR_BYTES_BUF, 0, bytes);
+            readFully(fourBytesBuf, 0, bytes);
         }
     }
 

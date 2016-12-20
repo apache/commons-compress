@@ -49,7 +49,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
 
     private static final int SMALL_BUFFER_SIZE = 256;
 
-    private final byte[] SMALL_BUF = new byte[SMALL_BUFFER_SIZE];
+    private final byte[] smallBuf = new byte[SMALL_BUFFER_SIZE];
 
     /** The size the TAR header */
     private final int recordSize;
@@ -357,8 +357,8 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         // read in the name
         final ByteArrayOutputStream longName = new ByteArrayOutputStream();
         int length = 0;
-        while ((length = read(SMALL_BUF)) >= 0) {
-            longName.write(SMALL_BUF, 0, length);
+        while ((length = read(smallBuf)) >= 0) {
+            longName.write(smallBuf, 0, length);
         }
         getNextEntry();
         if (currEntry == null) {

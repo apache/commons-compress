@@ -39,7 +39,7 @@ import java.io.InputStream;
  */
 public abstract class ArchiveInputStream extends InputStream {
 
-    private final byte[] SINGLE = new byte[1];
+    private final byte[] single = new byte[1];
     private static final int BYTE_MASK = 0xFF;
 
     /** holds the number of bytes read in this stream */
@@ -78,8 +78,8 @@ public abstract class ArchiveInputStream extends InputStream {
      */
     @Override
     public int read() throws IOException {
-        final int num = read(SINGLE, 0, 1);
-        return num == -1 ? -1 : SINGLE[0] & BYTE_MASK;
+        final int num = read(single, 0, 1);
+        return num == -1 ? -1 : single[0] & BYTE_MASK;
     }
 
     /**
