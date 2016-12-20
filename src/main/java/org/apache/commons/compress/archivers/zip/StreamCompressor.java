@@ -56,9 +56,9 @@ public abstract class StreamCompressor implements Closeable {
     private long sourcePayloadLength = 0;
     private long totalWrittenToOutputStream = 0;
 
-    private static final int bufferSize = 4096;
-    private final byte[] outputBuffer = new byte[bufferSize];
-    private final byte[] readerBuf = new byte[bufferSize];
+    private static final int BUFFER_SIZE = 4096;
+    private final byte[] outputBuffer = new byte[BUFFER_SIZE];
+    private final byte[] readerBuf = new byte[BUFFER_SIZE];
 
     StreamCompressor(final Deflater deflater) {
         this.def = deflater;

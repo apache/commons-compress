@@ -38,7 +38,7 @@ class TapeInputStream extends FilterInputStream {
     private byte[] blockBuffer = new byte[DumpArchiveConstants.TP_SIZE];
     private int currBlkIdx = -1;
     private int blockSize = DumpArchiveConstants.TP_SIZE;
-    private static final int recordSize = DumpArchiveConstants.TP_SIZE;
+    private static final int RECORD_SIZE = DumpArchiveConstants.TP_SIZE;
     private int readOffset = DumpArchiveConstants.TP_SIZE;
     private boolean isCompressed = false;
     private long bytesRead = 0;
@@ -68,18 +68,18 @@ class TapeInputStream extends FilterInputStream {
         throws IOException {
         this.isCompressed = isCompressed;
 
-        blockSize = recordSize * recsPerBlock;
+        blockSize = RECORD_SIZE * recsPerBlock;
 
         // save first block in case we need it again
         final byte[] oldBuffer = blockBuffer;
 
         // read rest of new block
         blockBuffer = new byte[blockSize];
-        System.arraycopy(oldBuffer, 0, blockBuffer, 0, recordSize);
-        readFully(blockBuffer, recordSize, blockSize - recordSize);
+        System.arraycopy(oldBuffer, 0, blockBuffer, 0, RECORD_SIZE);
+        readFully(blockBuffer, RECORD_SIZE, blockSize - RECORD_SIZE);
 
         this.currBlkIdx = 0;
-        this.readOffset = recordSize;
+        this.readOffset = RECORD_SIZE;
     }
 
     /**
@@ -100,7 +100,7 @@ class TapeInputStream extends FilterInputStream {
     @Override
     public int read() throws IOException {
         throw new IllegalArgumentException(
-            "all reads must be multiple of record size (" + recordSize +
+            "all reads must be multiple of record size (" + RECORD_SIZE +
             " bytes.");
     }
 
@@ -114,9 +114,9 @@ class TapeInputStream extends FilterInputStream {
      */
     @Override
     public int read(final byte[] b, int off, final int len) throws IOException {
-        if ((len % recordSize) != 0) {
+        if ((len % RECORD_SIZE) != 0) {
             throw new IllegalArgumentException(
-                "all reads must be multiple of record size (" + recordSize +
+                "all reads must be multiple of record size (" + RECORD_SIZE +
                 " bytes.");
         }
 
@@ -160,9 +160,9 @@ class TapeInputStream extends FilterInputStream {
      */
     @Override
     public long skip(final long len) throws IOException {
-        if ((len % recordSize) != 0) {
+        if ((len % RECORD_SIZE) != 0) {
             throw new IllegalArgumentException(
-                "all reads must be multiple of record size (" + recordSize +
+                "all reads must be multiple of record size (" + RECORD_SIZE +
                 " bytes.");
         }
 
@@ -223,7 +223,7 @@ class TapeInputStream extends FilterInputStream {
         }
 
         // copy data, increment counters.
-        final byte[] b = new byte[recordSize];
+        final byte[] b = new byte[RECORD_SIZE];
         System.arraycopy(blockBuffer, readOffset, b, 0, b.length);
 
         return b;
@@ -236,7 +236,7 @@ class TapeInputStream extends FilterInputStream {
      * @throws IOException on error
      */
     public byte[] readRecord() throws IOException {
-        final byte[] result = new byte[recordSize];
+        final byte[] result = new byte[RECORD_SIZE];
 
         // the read implementation will loop internally as long as
         // input is available
