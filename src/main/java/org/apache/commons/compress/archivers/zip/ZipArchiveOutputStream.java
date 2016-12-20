@@ -973,32 +973,32 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /*
-     * Various ZIP constants
+     * Various ZIP constants shared between this class, ZipArchiveInputStream and ZipFile
      */
     /**
      * local file header signature
      */
-    static final byte[] LFH_SIG = ZipLong.LFH_SIG.getBytes();
+    static final byte[] LFH_SIG = ZipLong.LFH_SIG.getBytes(); //NOSONAR
     /**
      * data descriptor signature
      */
-    static final byte[] DD_SIG = ZipLong.DD_SIG.getBytes();
+    static final byte[] DD_SIG = ZipLong.DD_SIG.getBytes(); //NOSONAR
     /**
      * central file header signature
      */
-    static final byte[] CFH_SIG = ZipLong.CFH_SIG.getBytes();
+    static final byte[] CFH_SIG = ZipLong.CFH_SIG.getBytes(); //NOSONAR
     /**
      * end of central dir signature
      */
-    static final byte[] EOCD_SIG = ZipLong.getBytes(0X06054B50L);
+    static final byte[] EOCD_SIG = ZipLong.getBytes(0X06054B50L); //NOSONAR
     /**
      * ZIP64 end of central dir signature
      */
-    static final byte[] ZIP64_EOCD_SIG = ZipLong.getBytes(0X06064B50L);
+    static final byte[] ZIP64_EOCD_SIG = ZipLong.getBytes(0X06064B50L); //NOSONAR
     /**
      * ZIP64 end of central dir locator signature
      */
-    static final byte[] ZIP64_EOCD_LOC_SIG = ZipLong.getBytes(0X07064B50L);
+    static final byte[] ZIP64_EOCD_LOC_SIG = ZipLong.getBytes(0X07064B50L); //NOSONAR
 
     /**
      * Writes next block of compressed data to the output stream.

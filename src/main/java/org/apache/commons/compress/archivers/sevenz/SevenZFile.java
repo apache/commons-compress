@@ -83,7 +83,8 @@ public class SevenZFile implements Closeable {
 
     private final ArrayList<InputStream> deferredBlockStreams = new ArrayList<>();
 
-    static final byte[] sevenZSignature = {
+    // shared with SevenZOutputFile and tests, neither mutates it
+    static final byte[] sevenZSignature = { //NOSONAR
         (byte)'7', (byte)'z', (byte)0xBC, (byte)0xAF, (byte)0x27, (byte)0x1C
     };
 
