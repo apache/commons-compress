@@ -77,6 +77,8 @@ public class GzipCompressorInputStream extends CompressorInputStream {
     // True once everything has been decompressed
     private boolean endReached = false;
 
+    private boolean currentStreamInitialized = false;
+
     // used in no-arg read method
     private final byte[] oneByte = new byte[1];
 
@@ -230,6 +232,7 @@ public class GzipCompressorInputStream extends CompressorInputStream {
         inf.reset();
         crc.reset();
 
+        currentStreamInitialized = true;
         return true;
     }
 
@@ -262,6 +265,11 @@ public class GzipCompressorInputStream extends CompressorInputStream {
     @Override
     public int read(final byte[] b, int off, int len) throws IOException {
         if (endReached) {
+            return -1;
+        }
+
+        if (!currentStreamInitialized && !init(false)) {
+            eofReached();
             return -1;
         }
 
@@ -327,12 +335,12 @@ public class GzipCompressorInputStream extends CompressorInputStream {
                                           + "(uncompressed size mismatch)");
                 }
 
-                // See if this is the end of the file.
-                if (!decompressConcatenated || !init(false)) {
-                    inf.end();
-                    inf = null;
-                    endReached = true;
+                if (!decompressConcatenated) {
+                    eofReached();
                     return size == 0 ? -1 : size;
+                } else {
+                    currentStreamInitialized = false;
+                    return size == 0 ? read(b, off, len) : size;
                 }
             }
         }
@@ -364,6 +372,14 @@ public class GzipCompressorInputStream extends CompressorInputStream {
         }
 
         return true;
+    }
+
+    private void eofReached() {
+        if (inf != null) {
+            inf.end();
+            inf = null;
+        }
+        endReached = true;
     }
 
     /**

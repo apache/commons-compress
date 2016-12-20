@@ -81,12 +81,7 @@ public class Compress376Test extends AbstractTestCase {
             try (OutputStream out = new FileOutputStream(new File(dir, entry.getName()))) {
                 IOUtils.copy(in, out);
             }
-            try {
-                in.getNextEntry();
-                Assert.fail("should report garbage");
-            } catch (IOException ex) {
-                Assert.assertEquals("Garbage after a valid .gz stream", ex.getMessage());
-            }
+            Assert.assertNull(in.getNextEntry());
         }
     }
 
