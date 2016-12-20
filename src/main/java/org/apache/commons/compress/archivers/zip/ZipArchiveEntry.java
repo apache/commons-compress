@@ -540,8 +540,8 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
             mergeExtraFields(local, true);
         } catch (final ZipException e) {
             // actually this is not possible as of Commons Compress 1.1
-            throw new RuntimeException("Error parsing extra fields for entry: "
-                                       + getName() + " - " + e.getMessage(), e); //NOSONAR
+            throw new RuntimeException("Error parsing extra fields for entry: " //NOSONAR
+                                       + getName() + " - " + e.getMessage(), e);
         }
     }
 

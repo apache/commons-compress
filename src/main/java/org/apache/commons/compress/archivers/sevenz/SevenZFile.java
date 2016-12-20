@@ -357,8 +357,8 @@ public class SevenZFile implements Closeable {
             if (coder.numInStreams != 1 || coder.numOutStreams != 1) {
                 throw new IOException("Multi input/output stream coders are not yet supported");
             }
-            inputStreamStack = Coders.addDecoder(fileName, inputStreamStack,
-                    folder.getUnpackSizeForCoder(coder), coder, password); //NOSONAR
+            inputStreamStack = Coders.addDecoder(fileName, inputStreamStack, //NOSONAR
+                    folder.getUnpackSizeForCoder(coder), coder, password);
         }
         if (folder.hasCrc) {
             inputStreamStack = new CRC32VerifyingInputStream(inputStreamStack,
