@@ -94,6 +94,10 @@ The <action> type attribute can be add,update,fix,remove.
         ScatterZipOutputStream didn't close the StreamCompressor
         causing a potential resource leak.
       </action>
+      <action issue="COMPRESS-372" type="add" date="2016-12-20">
+        Add a version-independent link to the API docs of the latest
+        release.
+      </action>
     </release>
     <release version="1.12" date="2016-06-21"
              description="Release 1.12 - API compatible to 1.11 but requires Java 6 at runtime.
