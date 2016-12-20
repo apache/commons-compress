@@ -25,7 +25,6 @@ import org.apache.commons.compress.utils.FlushShieldFilterOutputStream;
 import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.LZMAInputStream;
 import org.tukaani.xz.LZMAOutputStream;
-import org.tukaani.xz.UnsupportedOptionsException;
 
 class LZMADecoder extends CoderBase {
     LZMADecoder() {
@@ -78,13 +77,6 @@ class LZMADecoder extends CoderBase {
         opts.setLcLp(lc, lp);
         opts.setDictSize(getDictionarySize(coder));
         return opts;
-    }
-
-    private int getDictSize(final Object opts) {
-        if (opts instanceof LZMA2Options) {
-            return ((LZMA2Options) opts).getDictSize();
-        }
-        return numberOptionOrDefault(opts);
     }
 
     private int getDictionarySize(final Coder coder) throws IllegalArgumentException {
