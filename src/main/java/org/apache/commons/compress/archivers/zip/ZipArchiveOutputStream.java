@@ -292,7 +292,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                 EnumSet.of(StandardOpenOption.CREATE, StandardOpenOption.WRITE,
                            StandardOpenOption.READ,
                            StandardOpenOption.TRUNCATE_EXISTING));
-            _streamCompressor = StreamCompressor.create(_channel, def);
+            // will never get opened properly when an exception is thrown so doesn't need to get closed
+            _streamCompressor = StreamCompressor.create(_channel, def); //NOSONAR
         } catch (final IOException e) {
             IOUtils.closeQuietly(_channel);
             _channel = null;
