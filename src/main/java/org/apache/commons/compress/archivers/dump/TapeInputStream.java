@@ -185,7 +185,7 @@ class TapeInputStream extends FilterInputStream {
                 n = (long) len - bytes;
             } else {
                 // copy what we can from the buffer.
-                n = blockSize - readOffset;
+                n = (long) blockSize - readOffset;
             }
 
             // do not copy data but still increment counters.
