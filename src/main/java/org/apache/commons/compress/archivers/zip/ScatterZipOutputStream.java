@@ -149,7 +149,8 @@ public class ScatterZipOutputStream implements Closeable {
      */
     public static ScatterZipOutputStream fileBased(final File file, final int compressionLevel) throws FileNotFoundException {
         final ScatterGatherBackingStore bs = new FileBasedScatterGatherBackingStore(file);
-        final StreamCompressor sc = StreamCompressor.create(compressionLevel, bs);
+        // lifecycle is bound to the ScatterZipOutputStream returned
+        final StreamCompressor sc = StreamCompressor.create(compressionLevel, bs); //NOSONAR
         return new ScatterZipOutputStream(bs, sc);
     }
 }

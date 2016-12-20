@@ -74,7 +74,8 @@ public class ParallelScatterZipCreator {
     private ScatterZipOutputStream createDeferred(final ScatterGatherBackingStoreSupplier scatterGatherBackingStoreSupplier)
             throws IOException {
         final ScatterGatherBackingStore bs = scatterGatherBackingStoreSupplier.get();
-        final StreamCompressor sc = StreamCompressor.create(Deflater.DEFAULT_COMPRESSION, bs);
+        // lifecycle is bound to the ScatterZipOutputStream returned
+        final StreamCompressor sc = StreamCompressor.create(Deflater.DEFAULT_COMPRESSION, bs); //NOSONAR
         return new ScatterZipOutputStream(bs, sc);
     }
 
