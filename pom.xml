@@ -213,11 +213,6 @@ jar, tar, zip, dump, 7z, arj.
           <artifactId>japicmp-maven-plugin</artifactId>
           <version>${commons.japicmp.version}</version>
           <configuration>
-	    <newVersion>
-	      <file>
-		<path>${project.build.directory}/${project.artifactId}-${project.version}.${project.packaging}</path>
-	      </file>
-	    </newVersion>
             <parameter>
               <onlyModified>true</onlyModified>
               <breakBuildOnBinaryIncompatibleModifications>false</breakBuildOnBinaryIncompatibleModifications>
