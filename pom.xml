@@ -208,6 +208,22 @@ jar, tar, zip, dump, 7z, arj.
             </excludes>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>com.github.siom79.japicmp</groupId>
+          <artifactId>japicmp-maven-plugin</artifactId>
+          <version>${commons.japicmp.version}</version>
+          <configuration>
+	    <newVersion>
+	      <file>
+		<path>${project.build.directory}/${project.artifactId}-${project.version}.${project.packaging}</path>
+	      </file>
+	    </newVersion>
+            <parameter>
+              <onlyModified>true</onlyModified>
+              <breakBuildOnBinaryIncompatibleModifications>false</breakBuildOnBinaryIncompatibleModifications>
+            </parameter>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
@@ -261,12 +277,6 @@ jar, tar, zip, dump, 7z, arj.
 
   <reporting>
     <plugins>
-      <plugin>
-        <!-- generate a code coverage report -->
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>cobertura-maven-plugin</artifactId>
-        <version>2.7</version>
-      </plugin>
       <plugin>
         <!-- generate the PMD reports -->
         <groupId>org.apache.maven.plugins</groupId>
