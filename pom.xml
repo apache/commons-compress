@@ -47,6 +47,7 @@ jar, tar, zip, dump, 7z, arj.
     <commons.rc.version>RC1</commons.rc.version>
     <powermock.version>1.6.4</powermock.version>
     <commons.pmd-plugin.version>3.7</commons.pmd-plugin.version>
+    <commons.japicmp.version>0.9.3</commons.japicmp.version>
   </properties>
 
   <issueManagement>
