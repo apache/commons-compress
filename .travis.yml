@@ -21,4 +21,4 @@ jdk:
   - oraclejdk8
 
 after_success:
-  - mvn clean apache-rat:check cobertura:cobertura coveralls:report
+  - mvn clean apache-rat:check test jacoco:report coveralls:report -Ptravis

@@ -386,6 +386,8 @@ jar, tar, zip, dump, 7z, arj.
         </plugins>
       </build>
     </profile>
+    <!-- can be removed in favor of commons-parent's travis-jacoco
+         profile once parent 42 has been released -->
     <profile>
       <id>travis</id>
       <activation>
@@ -397,19 +399,17 @@ jar, tar, zip, dump, 7z, arj.
       <build>
         <plugins>
           <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>cobertura-maven-plugin</artifactId>
-            <version>${commons.cobertura.version}</version>
-            <configuration>
-              <formats>
-                <format>xml</format>
-              </formats>
-            </configuration>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>${commons.jacoco.version}</version>
           </plugin>
           <plugin>
             <groupId>org.eluder.coveralls</groupId>
             <artifactId>coveralls-maven-plugin</artifactId>
             <version>4.3.0</version>
+            <configuration>
+              <timestampFormat>EpochMillis</timestampFormat>
+            </configuration>
           </plugin>
         </plugins>
       </build>
