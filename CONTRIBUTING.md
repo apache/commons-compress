@@ -87,7 +87,7 @@ Additional Resources
 --------------------
 
 + [Contributing patches](https://commons.apache.org/patches.html)
-+ [Apache Commons Compress JIRA project page](https://issues.apache.org/jira/browse/compress)
++ [Apache Commons Compress JIRA project page](https://issues.apache.org/jira/browse/COMPRESS)
 + [Contributor License Agreement][cla]
 + [General GitHub documentation](https://help.github.com/)
 + [GitHub pull request documentation](https://help.github.com/send-pull-requests/)
