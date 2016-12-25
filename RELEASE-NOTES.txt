@@ -5,6 +5,58 @@ compression and archive formats.  These include: bzip2, gzip, pack200,
 lzma, xz, Snappy, traditional Unix Compress, DEFLATE and ar, cpio,
 jar, tar, zip, dump, 7z, arj.
 
+Release 1.13
+------------
+
+Commons Compress 1.12 is the first version to require Java 7 at
+runtime.
+
+Changes in this version include:
+
+New features:
+o SevenZFile, SevenZOutputFile, ZipFile and
+  ZipArchiveOutputStream can now work on non-file resources if
+  they can be accessed via SeekableByteChannel.
+  Issue: COMPRESS-327.
+o Allow compressor extensions through a standard JRE ServiceLoader.
+  Issue: COMPRESS-368.
+o Allow archive extensions through a standard JRE ServiceLoader.
+  Issue: COMPRESS-369.
+o Add write support for the legacy LZMA format, this requires XZ
+  for Java 1.6.
+  Issue: COMPRESS-373.
+o Add write support for the legacy LZMA stream to 7z, this
+  requires XZ for Java 1.6.
+  Issue: COMPRESS-374.
+o Allow the clients of ParallelScatterZipCreator to provide
+  ZipArchiveEntryRequestSupplier.
+  Issue: COMPRESS-375. Thanks to Plamen Totev.
+o Add a version-independent link to the API docs of the latest
+  release.
+  Issue: COMPRESS-372.
+
+Fixed Bugs:
+o BitInputStream could return bad results when overflowing
+  internally - if two consecutive reads tried to read more than
+  64 bits.
+  Issue: COMPRESS-363.
+o ZipArchiveInputStream.closeEntry does not properly advance to
+  next entry if there are junk bytes at end of data section.
+  Issue: COMPRESS-364. Thanks to Mike Mole.
+o ZipArchiveInputStream now throws an Exception if it encounters
+  a broken ZIP archive rather than signaling end-of-archive.
+  Issue: COMPRESS-367. Thanks to Mike Mole.
+o ScatterZipOutputStream didn't close the StreamCompressor
+  causing a potential resource leak.
+  Issue: COMPRESS-377.
+
+Changes:
+o Update Java requirement from 6 to 7.
+  Issue: COMPRESS-360.
+o Clarified which TarArchiveEntry methods are useless for
+  entries read from an archive.
+  Issue: COMPRESS-366.
+
 Release 1.12
 ------------
 
