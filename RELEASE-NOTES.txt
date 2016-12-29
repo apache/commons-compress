@@ -8,7 +8,7 @@ jar, tar, zip, dump, 7z, arj.
 Release 1.13
 ------------
 
-Commons Compress 1.12 is the first version to require Java 7 at
+Commons Compress 1.13 is the first version to require Java 7 at
 runtime.
 
 Changes in this version include:
