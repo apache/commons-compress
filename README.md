@@ -57,7 +57,7 @@ Documentation
 -------------
 
 More information can be found on the [Apache Commons Compress homepage](https://commons.apache.org/proper/commons-compress).
-The [JavaDoc](https://commons.apache.org/proper/commons-compress/javadocs/api-1.12) can be browsed.
+The [JavaDoc](https://commons.apache.org/proper/commons-compress/javadocs/api-release) can be browsed.
 Questions related to the usage of Apache Commons Compress should be posted to the [user mailing list][ml].
 
 Where can I get the latest release?
@@ -70,7 +70,7 @@ Alternatively you can pull it from the central Maven repositories:
 <dependency>
   <groupId>org.apache.commons</groupId>
   <artifactId>commons-compress</artifactId>
-  <version>1.12</version>
+  <version>1.13</version>
 </dependency>
 ```
 
