@@ -20,7 +20,7 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>41</version>
+    <version>42</version>
   </parent>
 
   <groupId>org.apache.commons</groupId>
@@ -47,10 +47,12 @@ jar, tar, zip, dump, 7z, arj.
     <commons.rc.version>RC1</commons.rc.version>
     <powermock.version>1.6.4</powermock.version>
     <commons.pmd-plugin.version>3.7</commons.pmd-plugin.version>
-    <commons.japicmp.version>0.9.3</commons.japicmp.version>
 
     <!-- only show issues of the current version -->
     <commons.changes.onlyCurrentVersion>true</commons.changes.onlyCurrentVersion>
+
+    <!-- generate report even if there are binary incompatible changes -->
+    <commons.japicmp.breakBuildOnBinaryIncompatibleModifications>false</commons.japicmp.breakBuildOnBinaryIncompatibleModifications>
   </properties>
 
   <issueManagement>
@@ -212,17 +214,6 @@ jar, tar, zip, dump, 7z, arj.
             </excludes>
           </configuration>
         </plugin>
-        <plugin>
-          <groupId>com.github.siom79.japicmp</groupId>
-          <artifactId>japicmp-maven-plugin</artifactId>
-          <version>${commons.japicmp.version}</version>
-          <configuration>
-            <parameter>
-              <onlyModified>true</onlyModified>
-              <breakBuildOnBinaryIncompatibleModifications>false</breakBuildOnBinaryIncompatibleModifications>
-            </parameter>
-          </configuration>
-        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
@@ -381,34 +372,6 @@ jar, tar, zip, dump, 7z, arj.
               <includes>
                 <include>**/tar/*IT.java</include>
               </includes>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <!-- can be removed in favor of commons-parent's travis-jacoco
-         profile once parent 42 has been released -->
-    <profile>
-      <id>travis</id>
-      <activation>
-        <property>
-          <name>env.TRAVIS</name>
-          <value>true</value>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.jacoco</groupId>
-            <artifactId>jacoco-maven-plugin</artifactId>
-            <version>${commons.jacoco.version}</version>
-          </plugin>
-          <plugin>
-            <groupId>org.eluder.coveralls</groupId>
-            <artifactId>coveralls-maven-plugin</artifactId>
-            <version>4.3.0</version>
-            <configuration>
-              <timestampFormat>EpochMillis</timestampFormat>
             </configuration>
           </plugin>
         </plugins>
