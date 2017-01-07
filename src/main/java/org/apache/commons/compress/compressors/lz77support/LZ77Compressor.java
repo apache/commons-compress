@@ -207,6 +207,8 @@ public class LZ77Compressor {
     private int blockStart = 0;
     // position of the current match
     private int matchStart = NO_MATCH;
+    // number of insertString calls for the up to three last bytes of the last match
+    private int missedInserts = 0;
 
     /**
      * Initializes a compressor with parameters and a callback.
@@ -341,8 +343,9 @@ public class LZ77Compressor {
         final int minMatch = params.getMinMatchSize();
 
         while (lookahead >= minMatch) {
+            catchUpMissedInserts();
             int matchLength = 0;
-            int hashHead = insertString();
+            int hashHead = insertString(currentPosition);
             if (hashHead != NO_MATCH && hashHead - currentPosition <= params.getMaxOffset()) {
                 // sets matchStart as a side effect
                 matchLength = longestMatch(hashHead);
@@ -353,14 +356,10 @@ public class LZ77Compressor {
                     flushLiteralBlock();
                     blockStart = NO_MATCH;
                 }
-                lookahead -= matchLength;
-                // inserts strings contained in current match
-                for (int i = 0; i < matchLength - 1; i++) {
-                    currentPosition++;
-                    insertString();
-                }
-                currentPosition++;
                 flushBackReference(matchLength);
+                insertStringsInMatch(matchLength);
+                lookahead -= matchLength;
+                currentPosition += matchLength;
                 blockStart = currentPosition;
             } else {
                 // no match, append to current or start a new literal
@@ -381,23 +380,66 @@ public class LZ77Compressor {
      * <p>Updates <code>insertHash</code> and <code>prev</code> as a
      * side effect.</p>
      */
-    private int insertString() {
-        insertHash = nextHash(insertHash, window[currentPosition -1 + NUMBER_OF_BYTES_IN_HASH]);
+    private int insertString(int pos) {
+        insertHash = nextHash(insertHash, window[pos - 1 + NUMBER_OF_BYTES_IN_HASH]);
         int hashHead = head[insertHash];
         prev[currentPosition & wMask] = hashHead;
-        head[insertHash] = currentPosition;
+        head[insertHash] = pos;
         return hashHead;
     }
 
+    private void insertStringsInMatch(int matchLength) {
+        // inserts strings contained in current match
+        // insertString inserts the byte 2 bytes after position, which may not yet be available -> missedInserts
+        final int stop = Math.min(matchLength - 1, lookahead - NUMBER_OF_BYTES_IN_HASH);
+        // currentPosition has been inserted already
+        for (int i = 1; i <= stop; i++) {
+            insertString(currentPosition + i);
+        }
+        missedInserts = matchLength - stop - 1;
+    }
+
+    private void catchUpMissedInserts() {
+        while (missedInserts > 0) {
+            insertString(currentPosition - missedInserts--);
+        }
+    }
+
     private void flushBackReference(int matchLength) {
-        callback.accept(new BackReference(matchStart, matchLength));
+        callback.accept(new BackReference(currentPosition - matchStart, matchLength));
     }
 
     private void flushLiteralBlock() {
         callback.accept(new LiteralBlock(window, blockStart, currentPosition - blockStart));
     }
 
+    /**
+     * Searches the hash chain for real matches and returns the length
+     * of the longest match (0 if none were found) that isn't too far
+     * away (WRT maxOffset).
+     *
+     * <p>Sets matchStart to the index of the start position of the
+     * longest match as a side effect.</p>
+     */
     private int longestMatch(int matchHead) {
-        return 0;
+        final int minLength = params.getMinMatchSize();
+        int longestMatchLength = minLength - 1;
+        final int maxPossibleLength = Math.min(params.getMaxMatchSize(), lookahead);
+        final int minIndex = Math.max(0, currentPosition - params.getMaxOffset());
+        while (matchHead >= minIndex) {
+            int currentLength = 0;
+            for (int i = 0; i < maxPossibleLength; i++) {
+                if (window[matchHead + i] != window[currentPosition + i]) {
+                    break;
+                }
+                currentLength++;
+            }
+            if (currentLength > longestMatchLength) {
+                longestMatchLength = currentLength;
+                matchStart = matchHead;
+            }
+            matchHead = prev[matchHead & wMask];
+        }
+        return longestMatchLength; // < minLength if no matches have been found, will be ignored in compress()
     }
 }
