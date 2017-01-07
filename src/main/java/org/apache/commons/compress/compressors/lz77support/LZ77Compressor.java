@@ -60,19 +60,19 @@ package org.apache.commons.compress.compressors.lz77support;
  *  buffer of twice of <code>windowSize</code> - real world values are
  *  in the area of 32k.</dd>
  *
- *  <dt><code>minMatchSize</code></dt>
- *  <dd>Minimal size of a match found. A true minimum of 3 is
- *  hard-coded inside of this implemention but bigger sizes can be
+ *  <dt><code>minMatchLength</code></dt>
+ *  <dd>Minimal length of a match found. A true minimum of 3 is
+ *  hard-coded inside of this implemention but bigger lengths can be
  *  configured.</dd>
  *
- *  <dt><code>maxMatchSize</code></dt>
- *  <dd>Maximal size of a match found.</dd>
+ *  <dt><code>maxMatchLength</code></dt>
+ *  <dd>Maximal length of a match found.</dd>
  *
  *  <dt><code>maxOffset</code></dt>
  *  <dd>Maximal offset of a back-reference.</dd>
  *
- *  <dt><code>maxLiteralSize</code></dt>
- *  <dd>Maximal size of a literal block.</dd>
+ *  <dt><code>maxLiteralLength</code></dt>
+ *  <dd>Maximal length of a literal block.</dd>
  * </dl>
  *
  * @see "https://tools.ietf.org/html/rfc1951#section-4"
@@ -308,7 +308,7 @@ public class LZ77Compressor {
         }
         System.arraycopy(data, off, window, currentPosition + lookahead, len);
         lookahead += len;
-        if (!initialized && lookahead >= params.getMinMatchSize()) {
+        if (!initialized && lookahead >= params.getMinMatchLength()) {
             initialize();
         }
         if (initialized) {
@@ -340,7 +340,7 @@ public class LZ77Compressor {
     }
 
     private void compress() {
-        final int minMatch = params.getMinMatchSize();
+        final int minMatch = params.getMinMatchLength();
 
         while (lookahead >= minMatch) {
             catchUpMissedInserts();
@@ -365,7 +365,7 @@ public class LZ77Compressor {
                 // no match, append to current or start a new literal
                 lookahead--;
                 currentPosition++;
-                if (currentPosition - blockStart >= params.getMaxLiteralSize()) {
+                if (currentPosition - blockStart >= params.getMaxLiteralLength()) {
                     flushLiteralBlock();
                     blockStart = currentPosition;
                 }
@@ -422,9 +422,9 @@ public class LZ77Compressor {
      * longest match as a side effect.</p>
      */
     private int longestMatch(int matchHead) {
-        final int minLength = params.getMinMatchSize();
+        final int minLength = params.getMinMatchLength();
         int longestMatchLength = minLength - 1;
-        final int maxPossibleLength = Math.min(params.getMaxMatchSize(), lookahead);
+        final int maxPossibleLength = Math.min(params.getMaxMatchLength(), lookahead);
         final int minIndex = Math.max(0, currentPosition - params.getMaxOffset());
         while (matchHead >= minIndex) {
             int currentLength = 0;

@@ -28,28 +28,28 @@ public class ParametersTest {
     public void defaultConstructor() {
         Parameters p = new Parameters(128);
         assertEquals(128, p.getWindowSize());
-        assertEquals(3, p.getMinMatchSize());
-        assertEquals(128, p.getMaxMatchSize());
+        assertEquals(3, p.getMinMatchLength());
+        assertEquals(128, p.getMaxMatchLength());
         assertEquals(128, p.getMaxOffset());
-        assertEquals(128, p.getMaxLiteralSize());
+        assertEquals(128, p.getMaxLiteralLength());
     }
 
     @Test
-    public void minMatchSizeIsAtLeastThree() {
+    public void minMatchLengthIsAtLeastThree() {
         Parameters p = new Parameters(128, 2, 3, 4, 5);
-        assertEquals(3, p.getMinMatchSize());
+        assertEquals(3, p.getMinMatchLength());
     }
 
     @Test
-    public void maxMatchSizeIsInfiniteWhenSmallerThanMinMatchSize() {
+    public void maxMatchLengthIsInfiniteWhenSmallerThanMinMatchLength() {
         Parameters p = new Parameters(128, 2, 2, 4, 5);
-        assertEquals(Integer.MAX_VALUE, p.getMaxMatchSize());
+        assertEquals(Integer.MAX_VALUE, p.getMaxMatchLength());
     }
 
     @Test
-    public void maxMatchSizeIsMinMatchSizeIfBothAreEqual() {
+    public void maxMatchLengthIsMinMatchLengthIfBothAreEqual() {
         Parameters p = new Parameters(128, 2, 3, 4, 5);
-        assertEquals(3, p.getMaxMatchSize());
+        assertEquals(3, p.getMaxMatchLength());
     }
 
     @Test
@@ -71,35 +71,35 @@ public class ParametersTest {
     }
 
     @Test
-    public void maxLiteralSizeIsWindowSizeIfSetTo0() {
+    public void maxLiteralLengthIsWindowSizeIfSetTo0() {
         Parameters p = new Parameters(128, 2, 3, 4, 0);
-        assertEquals(128, p.getMaxLiteralSize());
+        assertEquals(128, p.getMaxLiteralLength());
     }
 
     @Test
-    public void maxLiteralSizeIsWindowSizeIfSetToANegativeValue() {
+    public void maxLiteralLengthIsWindowSizeIfSetToANegativeValue() {
         Parameters p = new Parameters(128, 2, 3, 0, -1);
-        assertEquals(128, p.getMaxLiteralSize());
+        assertEquals(128, p.getMaxLiteralLength());
     }
 
     @Test
-    public void maxLiteralSizeIsWindowSizeIfSetToAValueTooBigToHoldInSlidingWindow() {
+    public void maxLiteralLengthIsWindowSizeIfSetToAValueTooBigToHoldInSlidingWindow() {
         Parameters p = new Parameters(128, 2, 3, 0, 259);
-        assertEquals(128, p.getMaxLiteralSize());
+        assertEquals(128, p.getMaxLiteralLength());
     }
 
     @Test
     public void allParametersUsuallyTakeTheirSpecifiedValues() {
         Parameters p = new Parameters(256, 4, 5, 6, 7);
         assertEquals(256, p.getWindowSize());
-        assertEquals(4, p.getMinMatchSize());
-        assertEquals(5, p.getMaxMatchSize());
+        assertEquals(4, p.getMinMatchLength());
+        assertEquals(5, p.getMaxMatchLength());
         assertEquals(6, p.getMaxOffset());
-        assertEquals(7, p.getMaxLiteralSize());
+        assertEquals(7, p.getMaxLiteralLength());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void windowSizeMustNotBeSmallerThanMinMatchSize() {
+    public void windowSizeMustNotBeSmallerThanMinMatchLength() {
         new Parameters(128, 200, 300, 400, 500);
     }
 
