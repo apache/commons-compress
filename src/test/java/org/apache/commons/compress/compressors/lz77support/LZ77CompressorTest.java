@@ -147,12 +147,13 @@ public class LZ77CompressorTest {
     @Test
     public void blaExampleSmallerWindowSize() throws IOException {
         List<LZ77Compressor.Block> blocks = compress(new Parameters(8), BLA);
-        assertSize(5, blocks);
+        assertSize(6, blocks);
         assertLiteralBlock("Blah b", blocks.get(0));
         assertEquals(LZ77Compressor.BackReference.class, blocks.get(1).getClass());
-        assertBackReference(5, 8, blocks.get(1));
-        assertBackReference(5, 8, blocks.get(2));
-        assertLiteralBlock("ah!", blocks.get(3));
+        assertBackReference(5, 7, blocks.get(1));
+        assertBackReference(5, 3, blocks.get(2));
+        assertBackReference(5, 7, blocks.get(3));
+        assertLiteralBlock("h!", blocks.get(4));
     }
 
     @Test

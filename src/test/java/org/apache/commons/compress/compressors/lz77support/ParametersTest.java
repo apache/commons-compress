@@ -29,8 +29,8 @@ public class ParametersTest {
         Parameters p = new Parameters(128);
         assertEquals(128, p.getWindowSize());
         assertEquals(3, p.getMinMatchLength());
-        assertEquals(128, p.getMaxMatchLength());
-        assertEquals(128, p.getMaxOffset());
+        assertEquals(127, p.getMaxMatchLength());
+        assertEquals(127, p.getMaxOffset());
         assertEquals(128, p.getMaxLiteralLength());
     }
 
@@ -41,9 +41,9 @@ public class ParametersTest {
     }
 
     @Test
-    public void maxMatchLengthIsInfiniteWhenSmallerThanMinMatchLength() {
+    public void maxMatchLengthIsWinsizeMinus1WhenSmallerThanMinMatchLength() {
         Parameters p = new Parameters(128, 2, 2, 4, 5);
-        assertEquals(Integer.MAX_VALUE, p.getMaxMatchLength());
+        assertEquals(127, p.getMaxMatchLength());
     }
 
     @Test
@@ -53,21 +53,21 @@ public class ParametersTest {
     }
 
     @Test
-    public void maxOffsetIsWindowSizeIfSetTo0() {
+    public void maxOffsetIsWindowSizeMinus1IfSetTo0() {
         Parameters p = new Parameters(128, 2, 3, 0, 5);
-        assertEquals(128, p.getMaxOffset());
+        assertEquals(127, p.getMaxOffset());
     }
 
     @Test
-    public void maxOffsetIsWindowSizeIfSetToANegativeValue() {
+    public void maxOffsetIsWindowSizeMinus1IfSetToANegativeValue() {
         Parameters p = new Parameters(128, 2, 3, -1, 5);
-        assertEquals(128, p.getMaxOffset());
+        assertEquals(127, p.getMaxOffset());
     }
 
     @Test
-    public void maxOffsetIsWindowSizeIfBiggerThanWindowSize() {
+    public void maxOffsetIsWindowSizeMinus1IfBiggerThanWindowSize() {
         Parameters p = new Parameters(128, 2, 3, 129, 5);
-        assertEquals(128, p.getMaxOffset());
+        assertEquals(127, p.getMaxOffset());
     }
 
     @Test
