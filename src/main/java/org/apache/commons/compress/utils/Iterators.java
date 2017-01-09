@@ -39,6 +39,9 @@ public class Iterators {
      * {@code hasNext()} method returns {@code false}.
      * </p>
      *
+     * @param <T> type of the elements contained inside the collection
+     * @param collection target collection
+     * @param iterator source
      * @return {@code true} if the target {@code collection} was modified as a
      *         result of this operation
      */

@@ -80,30 +80,35 @@ public final class Parameters {
     /**
      * Gets the size of the sliding window - this determines the
      * maximum offset a back-reference can take.
+     * @return the size of the sliding window
      */
     public int getWindowSize() {
         return windowSize;
     }
     /**
      * Gets the minimal length of a match found.
+     * @return the minimal length of a match found
      */
     public int getMinMatchLength() {
         return minMatchLength;
     }
     /**
      * Gets the maximal length of a match found.
+     * @return the maximal length of a match found
      */
     public int getMaxMatchLength() {
         return maxMatchLength;
     }
     /**
      * Gets the maximal offset of a match found.
+     * @return the maximal offset of a match found
      */
     public int getMaxOffset() {
         return maxOffset;
     }
     /**
      * Gets the maximal length of a literal block.
+     * @return the maximal length of a literal block
      */
     public int getMaxLiteralLength() {
         return maxLiteralLength;

@@ -38,6 +38,7 @@ public class Sets {
      * 
      * @param elements
      *            the elements to fill the new set
+     * @param <E> type of elements contained in new set
      * @return A new HasSet
      */
     public static <E> HashSet<E> newHashSet(@SuppressWarnings("unchecked") E... elements) {
