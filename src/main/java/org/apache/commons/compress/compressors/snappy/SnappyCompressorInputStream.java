@@ -168,6 +168,7 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
             case 0x00:
 
                 length = readLiteralLength(b);
+                uncompressedBytesRemaining -= length;
 
                 if (expandLiteral(length)) {
                     return;
@@ -186,6 +187,7 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
                  */
 
                 length = 4 + ((b >> 2) & 0x07);
+                uncompressedBytesRemaining -= length;
                 offset = (b & 0xE0) << 3;
                 offset |= readOneByte();
 
@@ -205,6 +207,7 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
                  */
 
                 length = (b >> 2) + 1;
+                uncompressedBytesRemaining -= length;
 
                 offset = readOneByte();
                 offset |= readOneByte() << 8;
@@ -224,6 +227,7 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
                  */
 
                 length = (b >> 2) + 1;
+                uncompressedBytesRemaining -= length;
 
                 offset = readOneByte();
                 offset |= readOneByte() << 8;
@@ -237,7 +241,6 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
             }
 
             readNow -= length;
-            uncompressedBytesRemaining -= length;
         }
     }
 
