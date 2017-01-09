@@ -140,7 +140,7 @@ public class SnappyCompressorInputStream extends CompressorInputStream {
         }
         System.arraycopy(decompressBuf, readIndex, b, off, readable);
         readIndex += readable;
-        if (readIndex > blockSize) {
+        if (readIndex > 2 * blockSize) {
             slideBuffer();
         }
         return readable;
