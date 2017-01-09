@@ -398,7 +398,7 @@ public class LZ77Compressor {
     private int insertString(int pos) {
         insertHash = nextHash(insertHash, window[pos - 1 + NUMBER_OF_BYTES_IN_HASH]);
         int hashHead = head[insertHash];
-        prev[currentPosition & wMask] = hashHead;
+        prev[pos & wMask] = hashHead;
         head[insertHash] = pos;
         return hashHead;
     }
