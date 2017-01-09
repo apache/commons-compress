@@ -18,7 +18,7 @@
  */
 package org.apache.commons.compress.compressors.lz77support;
 
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -58,13 +58,13 @@ public class LZ77CompressorTest {
                    + "\n"
                    + "I do not like them, Sam-I-am.\n"
                    + "I do not like green eggs and ham.").getBytes("ASCII");
-        } catch (UnsupportedEncodingException ex) {
+        } catch (IOException ex) {
             throw new RuntimeException("ASCII not supported");
         }
         ONE_TO_TEN = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     }
 
-    private List<LZ77Compressor.Block> compress(Parameters params, byte[]... chunks) {
+    private List<LZ77Compressor.Block> compress(Parameters params, byte[]... chunks) throws IOException {
         final List<LZ77Compressor.Block> blocks = new ArrayList<>();
         LZ77Compressor c = new LZ77Compressor(params, new LZ77Compressor.Callback() {
                 @Override
@@ -91,14 +91,14 @@ public class LZ77CompressorTest {
     }
 
     @Test
-    public void nonCompressableWithLengthSmallerThanLiteralMax() {
+    public void nonCompressableWithLengthSmallerThanLiteralMax() throws IOException {
         List<LZ77Compressor.Block> blocks = compress(new Parameters(128), ONE_TO_TEN);
         assertSize(2, blocks);
         assertLiteralBlock(ONE_TO_TEN, blocks.get(0));
     }
 
     @Test
-    public void nonCompressableWithLengthGreaterThanLiteralMaxButLessThanTwiceWindowSize() {
+    public void nonCompressableWithLengthGreaterThanLiteralMaxButLessThanTwiceWindowSize() throws IOException {
         List<LZ77Compressor.Block> blocks = compress(new Parameters(8), ONE_TO_TEN);
         assertSize(3, blocks);
         assertLiteralBlock(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }, blocks.get(0));
@@ -106,7 +106,7 @@ public class LZ77CompressorTest {
     }
 
     @Test
-    public void nonCompressableWithLengthThatForcesWindowSlide() {
+    public void nonCompressableWithLengthThatForcesWindowSlide() throws IOException {
         List<LZ77Compressor.Block> blocks = compress(new Parameters(4), ONE_TO_TEN);
         assertSize(4, blocks);
         assertLiteralBlock(new byte[] { 1, 2, 3, 4, }, blocks.get(0));
@@ -115,7 +115,7 @@ public class LZ77CompressorTest {
     }
 
     @Test
-    public void nonCompressableSentAsSingleBytes() {
+    public void nonCompressableSentAsSingleBytes() throws IOException {
         List<LZ77Compressor.Block> blocks = compress(new Parameters(8), stagger(ONE_TO_TEN));
         assertSize(3, blocks);
         assertLiteralBlock(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }, blocks.get(0));
@@ -124,7 +124,7 @@ public class LZ77CompressorTest {
 
     @Test
     public void blaExampleWithFullArrayAvailableForCompression()
-        throws UnsupportedEncodingException {
+        throws IOException {
         List<LZ77Compressor.Block> blocks = compress(new Parameters(128), BLA);
         assertSize(4, blocks);
         assertLiteralBlock("Blah b", blocks.get(0));
@@ -133,7 +133,7 @@ public class LZ77CompressorTest {
     }
 
     @Test
-    public void blaExampleWithShorterMatchLength() throws UnsupportedEncodingException {
+    public void blaExampleWithShorterMatchLength() throws IOException {
         List<LZ77Compressor.Block> blocks = compress(new Parameters(128, 3, 5, 0, 0), BLA);
         assertSize(7, blocks);
         assertLiteralBlock("Blah b", blocks.get(0));
@@ -145,7 +145,7 @@ public class LZ77CompressorTest {
     }
 
     @Test
-    public void blaExampleSmallerWindowSize() throws UnsupportedEncodingException {
+    public void blaExampleSmallerWindowSize() throws IOException {
         List<LZ77Compressor.Block> blocks = compress(new Parameters(8), BLA);
         assertSize(5, blocks);
         assertLiteralBlock("Blah b", blocks.get(0));
@@ -156,7 +156,7 @@ public class LZ77CompressorTest {
     }
 
     @Test
-    public void blaExampleWithSingleByteWrites() throws UnsupportedEncodingException {
+    public void blaExampleWithSingleByteWrites() throws IOException {
         List<LZ77Compressor.Block> blocks = compress(new Parameters(128), stagger(BLA));
         assertEquals(9, blocks.size());
         assertLiteralBlock("Blah b", blocks.get(0));
@@ -170,7 +170,7 @@ public class LZ77CompressorTest {
     }
 
     @Test
-    public void samIAmExampleWithFullArrayAvailableForCompression() throws UnsupportedEncodingException {
+    public void samIAmExampleWithFullArrayAvailableForCompression() throws IOException {
         List<LZ77Compressor.Block> blocks = compress(new Parameters(1024), SAM);
         assertEquals(21, blocks.size());
         assertLiteralBlock("I am Sam\n\n", blocks.get(0));
@@ -201,7 +201,7 @@ public class LZ77CompressorTest {
     }
 
     private static final void assertLiteralBlock(String expectedContent, LZ77Compressor.Block block)
-        throws UnsupportedEncodingException {
+        throws IOException {
         assertLiteralBlock(expectedContent.getBytes("ASCII"), block);
     }
 
