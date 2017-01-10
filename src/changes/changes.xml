@@ -51,6 +51,11 @@ The <action> type attribute can be add,update,fix,remove.
       <action issue="COMPRESS-246" type="add" date="2017-01-10">
         Added write support for Snappy.
       </action>
+      <action issue="COMPRESS-358" type="update" date="2017-01-10">
+        The blocksize for FramedSnappyCompressorInputStream can now be
+        configured as some IWA files seem to be using blocks larger
+        than the default 32k.
+      </action>
     </release>
     <release version="1.13" date="2016-12-29"
              description="Release 1.13 - API compatible to 1.12 but requires Java 7 at runtime.">
