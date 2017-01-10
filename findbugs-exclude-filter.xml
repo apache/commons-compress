@@ -186,4 +186,12 @@
     <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
 
+  <!-- the array is exposed deliberately to improve performance and it
+       is documented that way -->
+  <Match>
+    <Class name="org.apache.commons.compress.compressors.lz77support.LZ77Compressor$LiteralBlock" />
+    <Method name="getData" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+
 </FindBugsFilter>
