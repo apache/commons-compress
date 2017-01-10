@@ -44,7 +44,11 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.14" date="not released, yet"
              description="Release 1.14">
-      <action issue="COMPRESS-246" type="update" date="2017-01-10">
+      <action issue="COMPRESS-378" type="fix" date="2017-01-09">
+        SnappyCompressorInputStream slides the window too early
+        leading to ArrayIndexOutOfBoundsExceptions for some streams.
+      </action>
+      <action issue="COMPRESS-246" type="add" date="2017-01-10">
         Added write support for Snappy.
       </action>
     </release>
