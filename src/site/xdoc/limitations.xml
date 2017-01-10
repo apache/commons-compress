@@ -120,7 +120,8 @@
      </section>
      <section name="SNAPPY">
        <ul>
-         <li>read-only support</li>
+         <li>Commons Compress 1.13 and earlier only support reading
+         the format</li>
        </ul>
      </section>
      <section name="TAR">

@@ -44,6 +44,9 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.14" date="not released, yet"
              description="Release 1.14">
+      <action issue="COMPRESS-246" type="update" date="2017-01-10">
+        Added write support for Snappy.
+      </action>
     </release>
     <release version="1.13" date="2016-12-29"
              description="Release 1.13 - API compatible to 1.12 but requires Java 7 at runtime.">

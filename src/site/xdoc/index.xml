@@ -57,6 +57,11 @@
           of changes see the <a href="changes-report.html">Changes
           Report</a>.</p>
 
+          <subsection name="What's coming in 1.14?">
+            <ul>
+              <li>Added support for writing the Snappy format</li>
+            </ul>
+          </subsection>
           <subsection name="What's new in 1.13?">
             <ul>
               <li>The 7z package as well as
@@ -93,8 +98,8 @@
             by the <code>java.util.jar</code> package of the Java
             class library.  XZ and lzma support is provided by the public
             domain <a href="http://tukaani.org/xz/java.html">XZ for
-            Java</a> library.  As of Commons Compress 1.13 support for
-            the Z and Snappy formats is read-only.</p>
+            Java</a> library.  As of Commons Compress 1.14 support for
+            the Z format is read-only.</p>
 
           <p>The ar, arj, cpio, dump, tar, 7z and zip formats are supported as
             archivers where the <a href="zip.html">zip</a>

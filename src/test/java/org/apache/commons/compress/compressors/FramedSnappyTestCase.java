@@ -26,6 +26,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Random;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.snappy.FramedSnappyCompressorInputStream;
@@ -95,4 +97,60 @@ public final class FramedSnappyTestCase
         }
     }
 
+    @Test
+    public void testRoundtrip() throws Exception {
+        testRoundtrip(getFile("test.txt"));
+        testRoundtrip(getFile("bla.tar"));
+        testRoundtrip(getFile("COMPRESS-256.7z"));
+    }
+
+    @Test
+    public void testRoundtripWithOneBigWrite() throws Exception {
+        Random r = new Random();
+        File input = new File(dir, "bigChunkTest");
+        try (FileOutputStream fs = new FileOutputStream(input)) {
+            for (int i = 0 ; i < 1 << 17; i++) {
+                fs.write(r.nextInt(256));
+            }
+        }
+        long start = System.currentTimeMillis();
+        final File outputSz = new File(dir, input.getName() + ".sz");
+        try (FileInputStream is = new FileInputStream(input);
+             FileOutputStream os = new FileOutputStream(outputSz);
+             CompressorOutputStream sos = new CompressorStreamFactory()
+                 .createCompressorOutputStream("snappy-framed", os)) {
+            byte[] b = IOUtils.toByteArray(is);
+            sos.write(b[0]);
+            sos.write(b, 1, b.length - 1); // must be split into multiple compressed chunks
+        }
+        System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
+            + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
+        try (FileInputStream is = new FileInputStream(input);
+             CompressorInputStream sis = new CompressorStreamFactory()
+                 .createCompressorInputStream("snappy-framed", new FileInputStream(outputSz))) {
+            byte[] expected = IOUtils.toByteArray(is);
+            byte[] actual = IOUtils.toByteArray(sis);
+            assertArrayEquals(expected, actual);
+        }
+    }
+
+    private void testRoundtrip(File input)  throws Exception {
+        long start = System.currentTimeMillis();
+        final File outputSz = new File(dir, input.getName() + ".sz");
+        try (FileInputStream is = new FileInputStream(input);
+             FileOutputStream os = new FileOutputStream(outputSz);
+             CompressorOutputStream sos = new CompressorStreamFactory()
+                 .createCompressorOutputStream("snappy-framed", os)) {
+            IOUtils.copy(is, sos);
+        }
+        System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
+            + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
+        try (FileInputStream is = new FileInputStream(input);
+             CompressorInputStream sis = new CompressorStreamFactory()
+                 .createCompressorInputStream("snappy-framed", new FileInputStream(outputSz))) {
+            byte[] expected = IOUtils.toByteArray(is);
+            byte[] actual = IOUtils.toByteArray(sis);
+            assertArrayEquals(expected, actual);
+        }
+    }
 }
