@@ -18,6 +18,7 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
@@ -267,5 +268,16 @@ public class ZipArchiveEntryTest {
         archiveEntry.getGeneralPurposeBit().useStrongEncryption(true);
         final ZipArchiveEntry copy = new ZipArchiveEntry(archiveEntry);
         assertEquals(archiveEntry, copy);
+    }
+
+    /**
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-379"
+     */
+    @Test
+    public void isUnixSymlinkIsFalseIfMoreThanOneFlagIsSet() throws Exception {
+        try (ZipFile zf = new ZipFile(getFile("COMPRESS-379.jar"))) {
+            ZipArchiveEntry ze = zf.getEntry("META-INF/maven/");
+            assertFalse(ze.isUnixSymlink());
+        }
     }
 }

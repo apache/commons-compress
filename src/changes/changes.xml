@@ -56,6 +56,11 @@ The <action> type attribute can be add,update,fix,remove.
         configured as some IWA files seem to be using blocks larger
         than the default 32k.
       </action>
+      <action issue="COMPRESS-379" type="fix" date="2017-01-15"
+              due-to="Guillaume Boué">
+        ZipArchiveEntry#isUnixSymlink now only returns true if the
+        corresponding link flag is the only file-type flag set.
+      </action>
     </release>
     <release version="1.13" date="2016-12-29"
              description="Release 1.13 - API compatible to 1.12 but requires Java 7 at runtime.">

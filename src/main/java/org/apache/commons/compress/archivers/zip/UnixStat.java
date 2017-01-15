@@ -29,6 +29,11 @@ public interface UnixStat {
      */
     int PERM_MASK = 07777;
     /**
+     * Bits used to indicate the filesystem object type.
+     * @since 1.14
+     */
+    int FILE_TYPE_FLAG = 0170000;
+    /**
      * Indicates symbolic links.
      */
     int LINK_FLAG = 0120000;

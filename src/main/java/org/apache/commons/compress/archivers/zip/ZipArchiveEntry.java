@@ -294,7 +294,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * @return true if the entry represents a unix symlink, false otherwise.
      */
     public boolean isUnixSymlink() {
-        return (getUnixMode() & UnixStat.LINK_FLAG) == UnixStat.LINK_FLAG;
+        return (getUnixMode() & UnixStat.FILE_TYPE_FLAG) == UnixStat.LINK_FLAG;
     }
 
     /**
