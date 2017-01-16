@@ -280,4 +280,14 @@ public class ZipArchiveEntryTest {
             assertFalse(ze.isUnixSymlink());
         }
     }
+
+    @Test
+    public void testIsUnixSymlink() {
+        ZipArchiveEntry ze = new ZipArchiveEntry("foo");
+        ze.setUnixMode(UnixStat.LINK_FLAG);
+        assertTrue(ze.isUnixSymlink());
+        ze.setUnixMode(UnixStat.LINK_FLAG | UnixStat.DIR_FLAG);
+        assertFalse(ze.isUnixSymlink());
+    }
+
 }
