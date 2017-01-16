@@ -99,7 +99,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
 
     /**
      * Constant (value {@value}) used to identify the GZIP compression
-     * algorithm. Not supported as an output stream type.
+     * algorithm.
      * 
      * @since 1.1
      */
@@ -122,7 +122,6 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
 
     /**
      * Constant (value {@value}) used to identify the LZMA compression method.
-     * Not supported as an output stream type.
      * 
      * @since 1.6
      */
@@ -130,7 +129,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
 
     /**
      * Constant (value {@value}) used to identify the "framed" Snappy
-     * compression method. Not supported as an output stream type.
+     * compression method.
      * 
      * @since 1.7
      */
@@ -587,7 +586,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
 
     @Override
     public Set<String> getOutputStreamCompressorNames() {
-        return Sets.newHashSet(GZIP, BZIP2, XZ, LZMA, PACK200, DEFLATE);
+        return Sets.newHashSet(GZIP, BZIP2, XZ, LZMA, PACK200, DEFLATE, SNAPPY_FRAMED);
     }
 
     /**
