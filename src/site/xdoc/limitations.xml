@@ -106,6 +106,14 @@
          MANIFEST</li>
        </ul>
      </section>
+     <section name="LZ4">
+       <ul>
+         <li>In theory LZ4 compressed streams can contain literals and
+         copies of arbitrary length while Commons Compress only
+         supports sizes up to 2<sup>63</sup> - 1 (i.e. &#x2248; 9.2
+         EB).</li>
+       </ul>
+     </section>
      <section name="LZMA">
        <ul>
          <li>the format requires the otherwise optional <a
