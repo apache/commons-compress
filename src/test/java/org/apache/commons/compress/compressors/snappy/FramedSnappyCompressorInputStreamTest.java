@@ -119,10 +119,9 @@ public final class FramedSnappyCompressorInputStreamTest
             assertEquals(3, in.available()); // remainder of first uncompressed block
             assertEquals(3, in.read(new byte[5], 0, 3));
             assertEquals('5', in.read());
-            assertEquals(4, in.available()); // remainder of literal
+            assertEquals(0, in.available()); // end of chunk, must read next one
             assertEquals(4, in.read(new byte[5], 0, 4));
             assertEquals('5', in.read());
-            assertEquals(19, in.available()); // remainder of copy
             in.close();
         }
     }

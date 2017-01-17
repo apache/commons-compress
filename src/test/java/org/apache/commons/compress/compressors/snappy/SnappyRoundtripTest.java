@@ -46,6 +46,7 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
         }
         System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
             + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
+        start = System.currentTimeMillis();
         try (FileInputStream is = new FileInputStream(input);
              SnappyCompressorInputStream sis = new SnappyCompressorInputStream(new FileInputStream(outputSz),
                  params.getWindowSize())) {
@@ -53,6 +54,7 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
             byte[] actual = IOUtils.toByteArray(sis);
             Assert.assertArrayEquals(expected, actual);
         }
+        System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
     }
 
     // should yield decent compression
