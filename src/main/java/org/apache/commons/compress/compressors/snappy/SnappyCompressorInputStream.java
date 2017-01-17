@@ -127,84 +127,84 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
             return;
         }
 
-            int b = readOneByte();
+        int b = readOneByte();
+        if (b == -1) {
+            throw new IOException("Premature end of stream reading block start");
+        }
+        int length = 0;
+        int offset = 0;
+
+        switch (b & TAG_MASK) {
+
+        case 0x00:
+
+            length = readLiteralLength(b);
+            uncompressedBytesRemaining -= length;
+            startLiteral(length);
+            state = State.IN_LITERAL;
+            break;
+
+        case 0x01:
+
+            /*
+             * These elements can encode lengths between [4..11] bytes and
+             * offsets between [0..2047] bytes. (len-4) occupies three bits
+             * and is stored in bits [2..4] of the tag byte. The offset
+             * occupies 11 bits, of which the upper three are stored in the
+             * upper three bits ([5..7]) of the tag byte, and the lower
+             * eight are stored in a byte following the tag byte.
+             */
+
+            length = 4 + ((b >> 2) & 0x07);
+            uncompressedBytesRemaining -= length;
+            offset = (b & 0xE0) << 3;
+            b = readOneByte();
             if (b == -1) {
-                throw new IOException("Premature end of stream reading block start");
+                throw new IOException("Premature end of stream reading copy length");
             }
-            int length = 0;
-            int offset = 0;
+            offset |= b;
 
-            switch (b & TAG_MASK) {
+            startCopy(offset, length);
+            state = State.IN_COPY;
+            break;
 
-            case 0x00:
+        case 0x02:
 
-                length = readLiteralLength(b);
-                uncompressedBytesRemaining -= length;
-                startLiteral(length);
-                state = State.IN_LITERAL;
-                break;
+            /*
+             * These elements can encode lengths between [1..64] and offsets
+             * from [0..65535]. (len-1) occupies six bits and is stored in
+             * the upper six bits ([2..7]) of the tag byte. The offset is
+             * stored as a little-endian 16-bit integer in the two bytes
+             * following the tag byte.
+             */
 
-            case 0x01:
+            length = (b >> 2) + 1;
+            uncompressedBytesRemaining -= length;
 
-                /*
-                 * These elements can encode lengths between [4..11] bytes and
-                 * offsets between [0..2047] bytes. (len-4) occupies three bits
-                 * and is stored in bits [2..4] of the tag byte. The offset
-                 * occupies 11 bits, of which the upper three are stored in the
-                 * upper three bits ([5..7]) of the tag byte, and the lower
-                 * eight are stored in a byte following the tag byte.
-                 */
+            offset = (int) ByteUtils.fromLittleEndian(supplier, 2);
 
-                length = 4 + ((b >> 2) & 0x07);
-                uncompressedBytesRemaining -= length;
-                offset = (b & 0xE0) << 3;
-                b = readOneByte();
-                if (b == -1) {
-                    throw new IOException("Premature end of stream reading copy length");
-                }
-                offset |= b;
+            startCopy(offset, length);
+            state = State.IN_COPY;
+            break;
 
-                startCopy(offset, length);
-                state = State.IN_COPY;
-                break;
+        case 0x03:
 
-            case 0x02:
+            /*
+             * These are like the copies with 2-byte offsets (see previous
+             * subsection), except that the offset is stored as a 32-bit
+             * integer instead of a 16-bit integer (and thus will occupy
+             * four bytes).
+             */
 
-                /*
-                 * These elements can encode lengths between [1..64] and offsets
-                 * from [0..65535]. (len-1) occupies six bits and is stored in
-                 * the upper six bits ([2..7]) of the tag byte. The offset is
-                 * stored as a little-endian 16-bit integer in the two bytes
-                 * following the tag byte.
-                 */
+            length = (b >> 2) + 1;
+            uncompressedBytesRemaining -= length;
 
-                length = (b >> 2) + 1;
-                uncompressedBytesRemaining -= length;
+            offset = (int) ByteUtils.fromLittleEndian(supplier, 4) & 0x7fffffff;
 
-                offset = (int) ByteUtils.fromLittleEndian(supplier, 2);
-
-                startCopy(offset, length);
-                state = State.IN_COPY;
-                break;
-
-            case 0x03:
-
-                /*
-                 * These are like the copies with 2-byte offsets (see previous
-                 * subsection), except that the offset is stored as a 32-bit
-                 * integer instead of a 16-bit integer (and thus will occupy
-                 * four bytes).
-                 */
-
-                length = (b >> 2) + 1;
-                uncompressedBytesRemaining -= length;
-
-                offset = (int) ByteUtils.fromLittleEndian(supplier, 4) & 0x7fffffff;
-
-                startCopy(offset, length);
-                state = State.IN_COPY;
-                break;
-            }
+            startCopy(offset, length);
+            state = State.IN_COPY;
+            break;
+        }
     }
 
     /*
