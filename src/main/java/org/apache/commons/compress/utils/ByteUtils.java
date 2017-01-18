@@ -69,9 +69,7 @@ public final class ByteUtils {
      * @throws IllegalArgumentException if len is bigger than eight
      */
     public static long fromLittleEndian(byte[] bytes, final int off, final int length) {
-        if (length > 8) {
-            throw new IllegalArgumentException("can't read more than eight bytes into a long value");
-        }
+        checkReadLength(length);
         long l = 0;
         for (int i = 0; i < length; i++) {
             l |= (bytes[off + i] & 0xffl) << (8 * i);
@@ -88,11 +86,25 @@ public final class ByteUtils {
      * contain the given number of bytes anymore
      */
     public static long fromLittleEndian(InputStream in, int length) throws IOException {
-        return fromLittleEndian(new InputStreamByteSupplier(in), length);
+        // somewhat duplicates the ByteSupplier version in order to save othe creation of a wrapper object
+        checkReadLength(length);
+        long l = 0;
+        for (int i = 0; i < length; i++) {
+            int b = in.read();
+            if (b == -1) {
+                throw new IOException("premature end of data");
+            }
+            l |= (b << (i * 8));
+        }
+        return l;
     }
 
     /**
      * Reads the given number of bytes from the given supplier as a little endian long.
+     *
+     * <p>Typically used by our InputStreams that need to count the
+     * bytes read as well.</p>
+     *
      * @param supplier the supplier for bytes
      * @param length the number of bytes representing the value
      * @throws IllegalArgumentException if len is bigger than eight
@@ -100,9 +112,7 @@ public final class ByteUtils {
      * given number of bytes anymore
      */
     public static long fromLittleEndian(ByteSupplier supplier, final int length) throws IOException {
-        if (length > 8) {
-            throw new IllegalArgumentException("can't read more than eight bytes into a long value");
-        }
+        checkReadLength(length);
         long l = 0;
         for (int i = 0; i < length; i++) {
             int b = supplier.getAsByte();
@@ -124,7 +134,12 @@ public final class ByteUtils {
      */
     public static void toLittleEndian(OutputStream out, final long value, final int length)
         throws IOException {
-        toLittleEndian(new OutputStreamByteConsumer(out), value, length);
+        // somewhat duplicates the ByteConsumer version in order to save othe creation of a wrapper object
+        long num = value;
+        for (int i = 0; i < length; i++) {
+            out.write((int) (num & 0xff));
+            num >>= 8;
+        }
     }
 
     /**
@@ -171,6 +186,12 @@ public final class ByteUtils {
         @Override
         public void accept(int b) throws IOException {
             os.write(b);
+        }
+    }
+
+    private static final void checkReadLength(int length) {
+        if (length > 8) {
+            throw new IllegalArgumentException("can't read more than eight bytes into a long value");
         }
     }
 }
