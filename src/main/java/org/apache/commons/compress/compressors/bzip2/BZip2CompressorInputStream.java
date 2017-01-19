@@ -266,6 +266,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     }
 
     private void initBlock() throws IOException {
+        BitInputStream bin = this.bin;
         char magic0;
         char magic1;
         char magic2;
@@ -275,12 +276,12 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
 
         while (true) {
             // Get the block magic bytes.
-            magic0 = bsGetUByte();
-            magic1 = bsGetUByte();
-            magic2 = bsGetUByte();
-            magic3 = bsGetUByte();
-            magic4 = bsGetUByte();
-            magic5 = bsGetUByte();
+            magic0 = bsGetUByte(bin);
+            magic1 = bsGetUByte(bin);
+            magic2 = bsGetUByte(bin);
+            magic3 = bsGetUByte(bin);
+            magic4 = bsGetUByte(bin);
+            magic5 = bsGetUByte(bin);
 
             // If isn't end of stream magic, break out of the loop.
             if (magic0 != 0x17 || magic1 != 0x72 || magic2 != 0x45
@@ -306,7 +307,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             this.currentState = EOF;
             throw new IOException("bad block header");
         }
-        this.storedBlockCRC = bsGetInt();
+        this.storedBlockCRC = bsGetInt(bin);
         this.blockRandomised = bsR(bin, 1) == 1;
 
         /**
@@ -344,7 +345,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     }
 
     private boolean complete() throws IOException {
-        this.storedCombinedCRC = bsGetInt();
+        this.storedCombinedCRC = bsGetInt(bin);
         this.currentState = EOF;
         this.data = null;
 
@@ -362,9 +363,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         final BitInputStream inShadow = this.bin;
         if (inShadow != null) {
             try {
-//                if (inShadow != System.in) {
-//                    inShadow.close();
-//                }
+                inShadow.close();
             } finally {
                 this.data = null;
                 this.bin = null;
@@ -390,11 +389,11 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         return bsR(bin, 1) != 0;
     }
 
-    private char bsGetUByte() throws IOException {
+    private static char bsGetUByte(BitInputStream bin) throws IOException {
         return (char) bsR(bin, 8);
     }
 
-    private int bsGetInt() throws IOException {
+    private static int bsGetInt(BitInputStream bin) throws IOException {
         return (int) bsR(bin, 32);
     }
 

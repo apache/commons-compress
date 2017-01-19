@@ -56,7 +56,9 @@ public class BitInputStream implements Closeable {
 
     @Override
     public void close() throws IOException {
-        in.close();
+        if (in != System.in) {
+            in.close();
+        }
     }
 
     /**
