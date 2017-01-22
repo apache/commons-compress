@@ -21,9 +21,12 @@ package org.apache.commons.compress.compressors.lz4;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Random;
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.compressors.lz77support.Parameters;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
@@ -69,4 +72,27 @@ public final class BlockLZ4CompressorRoundtripTest extends AbstractTestCase {
         roundTripTest("COMPRESS-256.7z");
     }
 
+    @Test
+    public void roundtripViaFactory() throws Exception {
+        File input = getFile("bla.tar");
+        long start = System.currentTimeMillis();
+        final File outputSz = new File(dir, input.getName() + ".block.lz4");
+        try (FileInputStream is = new FileInputStream(input);
+             FileOutputStream os = new FileOutputStream(outputSz);
+             OutputStream los = new CompressorStreamFactory()
+                 .createCompressorOutputStream(CompressorStreamFactory.LZ4_BLOCK, os)) {
+            IOUtils.copy(is, los);
+        }
+        System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
+            + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
+        start = System.currentTimeMillis();
+        try (FileInputStream is = new FileInputStream(input);
+             InputStream sis = new CompressorStreamFactory()
+                 .createCompressorInputStream(CompressorStreamFactory.LZ4_BLOCK, new FileInputStream(outputSz))) {
+            byte[] expected = IOUtils.toByteArray(is);
+            byte[] actual = IOUtils.toByteArray(sis);
+            Assert.assertArrayEquals(expected, actual);
+        }
+        System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
+    }
 }

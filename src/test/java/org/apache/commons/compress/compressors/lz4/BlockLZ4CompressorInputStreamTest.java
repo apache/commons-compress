@@ -22,7 +22,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import org.apache.commons.compress.AbstractTestCase;
-import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -39,15 +38,4 @@ public class BlockLZ4CompressorInputStreamTest extends AbstractTestCase {
         }
     }
 
-    @Test
-    public void readBlaLz4ViaFactory() throws Exception {
-        try (InputStream a = new CompressorStreamFactory()
-                 .createCompressorInputStream(CompressorStreamFactory.LZ4_BLOCK,
-                                              new FileInputStream(getFile("bla.tar.block_lz4")));
-            FileInputStream e = new FileInputStream(getFile("bla.tar"))) {
-            byte[] expected = IOUtils.toByteArray(e);
-            byte[] actual = IOUtils.toByteArray(a);
-            Assert.assertArrayEquals(expected, actual);
-        }
-    }
 }
