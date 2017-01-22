@@ -390,8 +390,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
         }
         boolean canBeWritten(int lengthOfBlocksAfterThisPair) {
             return hasBackReference()
-                && lengthOfBlocksAfterThisPair >= MIN_LENGTH_OF_LAST_LITERAL
-                && lengthOfBlocksAfterThisPair + brOffset + brLength >= MIN_OFFSET_OF_LAST_BACK_REFERENCE;
+                && lengthOfBlocksAfterThisPair >= MIN_OFFSET_OF_LAST_BACK_REFERENCE + MIN_BACK_REFERENCE_LENGTH;
         }
         int length() {
             return literalLength() + brLength;
