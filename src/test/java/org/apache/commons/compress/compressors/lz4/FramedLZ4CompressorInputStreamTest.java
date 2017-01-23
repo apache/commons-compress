@@ -62,7 +62,7 @@ public final class FramedLZ4CompressorInputStreamTest
     @Test
     public void readBlaLz4ViaFactory() throws Exception {
         try (InputStream a = new CompressorStreamFactory()
-                 .createCompressorInputStream(CompressorStreamFactory.LZ4_FRAMED,
+                 .createCompressorInputStream(CompressorStreamFactory.getLZ4Framed(),
                                               new FileInputStream(getFile("bla.tar.lz4")));
             FileInputStream e = new FileInputStream(getFile("bla.tar"))) {
             byte[] expected = IOUtils.toByteArray(e);

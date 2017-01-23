@@ -80,7 +80,7 @@ public final class BlockLZ4CompressorRoundtripTest extends AbstractTestCase {
         try (FileInputStream is = new FileInputStream(input);
              FileOutputStream os = new FileOutputStream(outputSz);
              OutputStream los = new CompressorStreamFactory()
-                 .createCompressorOutputStream(CompressorStreamFactory.LZ4_BLOCK, os)) {
+                 .createCompressorOutputStream(CompressorStreamFactory.getLZ4Block(), os)) {
             IOUtils.copy(is, los);
         }
         System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
