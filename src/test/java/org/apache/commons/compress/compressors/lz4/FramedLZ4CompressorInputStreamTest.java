@@ -20,12 +20,14 @@ package org.apache.commons.compress.compressors.lz4;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.IOException;
 
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Test;
 
@@ -47,15 +49,42 @@ public final class FramedLZ4CompressorInputStreamTest
 
     @Test
     public void readBlaLz4() throws IOException {
-        try {
         try (InputStream a = new FramedLZ4CompressorInputStream(new FileInputStream(getFile("bla.tar.lz4")));
             FileInputStream e = new FileInputStream(getFile("bla.tar"))) {
             byte[] expected = IOUtils.toByteArray(e);
             byte[] actual = IOUtils.toByteArray(a);
             assertArrayEquals(expected, actual);
         }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+    }
+
+    @Test
+    public void readBlaLz4ViaFactory() throws Exception {
+        try (InputStream a = new CompressorStreamFactory()
+                 .createCompressorInputStream(CompressorStreamFactory.LZ4_FRAMED,
+                                              new FileInputStream(getFile("bla.tar.lz4")));
+            FileInputStream e = new FileInputStream(getFile("bla.tar"))) {
+            byte[] expected = IOUtils.toByteArray(e);
+            byte[] actual = IOUtils.toByteArray(a);
+            assertArrayEquals(expected, actual);
         }
     }
+
+    @Test
+    public void readBlaLz4ViaFactoryAutoDetection() throws Exception {
+        try (InputStream a = new CompressorStreamFactory()
+                 .createCompressorInputStream(new BufferedInputStream(new FileInputStream(getFile("bla.tar.lz4"))));
+            FileInputStream e = new FileInputStream(getFile("bla.tar"))) {
+            byte[] expected = IOUtils.toByteArray(e);
+            byte[] actual = IOUtils.toByteArray(a);
+            assertArrayEquals(expected, actual);
+        }
+    }
+
+    @Test(expected = IOException.class)
+    public void rejectsNonLZ4Stream() throws IOException {
+        try (InputStream a = new FramedLZ4CompressorInputStream(new FileInputStream(getFile("bla.tar")))) {
+             fail("expected exception");
+        }
+    }
+
 }
