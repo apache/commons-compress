@@ -185,6 +185,23 @@ public final class FramedLZ4CompressorInputStreamTest
     }
 
     @Test
+    public void readsUncompressedBlocksUsingSingleByteRead() throws IOException {
+        byte[] input = new byte[] {
+            4, 0x22, 0x4d, 0x18, // signature
+            0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
+            0x70, // block size 4MB
+            0x00, // checksum, revisit once it gets validated
+            13, 0, 0, (byte) 0x80, // 13 bytes length and uncompressed bit set
+            'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', // content
+            0, 0, 0, 0, // empty block marker
+        };
+        try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input))) {
+            int h = a.read();
+            assertEquals('H', h);
+        }
+    }
+
+    @Test
     public void rejectsBlocksWithoutChecksum() throws IOException {
         byte[] input = new byte[] {
             4, 0x22, 0x4d, 0x18, // signature
