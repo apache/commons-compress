@@ -18,6 +18,8 @@
 
 package org.apache.commons.compress.utils;
 
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -125,6 +127,25 @@ public final class ByteUtils {
     }
 
     /**
+     * Reads the given number of bytes from the given input as little endian long.
+     * @param in the input to read from
+     * @param length the number of bytes representing the value
+     * @throws IllegalArgumentException if len is bigger than eight
+     * @throws IOException if reading fails or the stream doesn't
+     * contain the given number of bytes anymore
+     */
+    public static long fromLittleEndian(DataInput in, int length) throws IOException {
+        // somewhat duplicates the ByteSupplier version in order to save the creation of a wrapper object
+        checkReadLength(length);
+        long l = 0;
+        for (int i = 0; i < length; i++) {
+            long b = in.readUnsignedByte();
+            l |= (b << (i * 8));
+        }
+        return l;
+    }
+
+    /**
      * Writes the given value to the given stream as a little endian
      * array of the given length.
      * @param out the stream to write to
@@ -155,6 +176,24 @@ public final class ByteUtils {
         long num = value;
         for (int i = 0; i < length; i++) {
             consumer.accept((int) (num & 0xff));
+            num >>= 8;
+        }
+    }
+
+    /**
+     * Writes the given value to the given stream as a little endian
+     * array of the given length.
+     * @param out the output to write to
+     * @param value the value to write
+     * @param length the number of bytes to use to represent the value
+     * @throws IOException if writing fails
+     */
+    public static void toLittleEndian(DataOutput out, final long value, final int length)
+        throws IOException {
+        // somewhat duplicates the ByteConsumer version in order to save the creation of a wrapper object
+        long num = value;
+        for (int i = 0; i < length; i++) {
+            out.write((int) (num & 0xff));
             num >>= 8;
         }
     }
