@@ -86,11 +86,11 @@ public final class ByteUtils {
      * contain the given number of bytes anymore
      */
     public static long fromLittleEndian(InputStream in, int length) throws IOException {
-        // somewhat duplicates the ByteSupplier version in order to save othe creation of a wrapper object
+        // somewhat duplicates the ByteSupplier version in order to save the creation of a wrapper object
         checkReadLength(length);
         long l = 0;
         for (int i = 0; i < length; i++) {
-            int b = in.read();
+            long b = in.read();
             if (b == -1) {
                 throw new IOException("premature end of data");
             }
@@ -115,7 +115,7 @@ public final class ByteUtils {
         checkReadLength(length);
         long l = 0;
         for (int i = 0; i < length; i++) {
-            int b = supplier.getAsByte();
+            long b = supplier.getAsByte();
             if (b == -1) {
                 throw new IOException("premature end of data");
             }
@@ -134,7 +134,7 @@ public final class ByteUtils {
      */
     public static void toLittleEndian(OutputStream out, final long value, final int length)
         throws IOException {
-        // somewhat duplicates the ByteConsumer version in order to save othe creation of a wrapper object
+        // somewhat duplicates the ByteConsumer version in order to save the creation of a wrapper object
         long num = value;
         for (int i = 0; i < length; i++) {
             out.write((int) (num & 0xff));
