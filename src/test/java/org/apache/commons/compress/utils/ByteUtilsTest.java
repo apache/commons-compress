@@ -25,6 +25,7 @@ import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -189,4 +190,18 @@ public class ByteUtilsTest {
         assertArrayEquals(new byte[] { 2, 3, 4, (byte) 128 }, bos.toByteArray());
     }
 
+
+    @Test
+    public void toLittleEndianToByteArray() throws IOException {
+        byte[] b = new byte[4];
+        toLittleEndian(b, 2 + 3 * 256 + 4 * 256 * 256, 1, 3);
+        assertArrayEquals(new byte[] { 2, 3, 4 }, Arrays.copyOfRange(b, 1, 4));
+    }
+
+    @Test
+    public void toLittleEndianToByteArrayUnsignedInt32() throws IOException {
+        byte[] b = new byte[4];
+        toLittleEndian(b, 2 + 3 * 256 + 4 * 256 * 256 + 128l * 256 * 256 * 256, 0, 4);
+        assertArrayEquals(new byte[] { 2, 3, 4, (byte) 128 }, b);
+    }
 }

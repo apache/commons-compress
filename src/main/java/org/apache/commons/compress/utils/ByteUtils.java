@@ -146,6 +146,22 @@ public final class ByteUtils {
     }
 
     /**
+     * Inserts the given value into the array as a little endian
+     * sequence of the given length starting at the given offset.
+     * @param array the array to write into
+     * @param value the value to insert
+     * @param offset the offset into the array that receives the first byte
+     * @param length the number of bytes to use to represent the value
+     */
+    public static void toLittleEndian(final byte[] b, final long value, final int off, final int length) {
+        long num = value;
+        for (int i = 0; i < length; i++) {
+            b[off + i] = (byte) (num & 0xff);
+            num >>= 8;
+        }
+    }
+
+    /**
      * Writes the given value to the given stream as a little endian
      * array of the given length.
      * @param out the stream to write to
