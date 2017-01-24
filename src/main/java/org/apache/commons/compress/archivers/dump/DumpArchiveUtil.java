@@ -19,7 +19,9 @@
 package org.apache.commons.compress.archivers.dump;
 
 import java.io.IOException;
+import java.util.Arrays;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
+import org.apache.commons.compress.utils.ByteUtils;
 
 /**
  * Various utilities for dump archives.
@@ -88,17 +90,7 @@ class DumpArchiveUtil {
      * @return the 8-byte entry as a long
      */
     public static final long convert64(final byte[] buffer, final int offset) {
-        long i = 0;
-        i += (((long) buffer[offset + 7]) << 56);
-        i += (((long) buffer[offset + 6] << 48) & 0x00FF000000000000L);
-        i += (((long) buffer[offset + 5] << 40) & 0x0000FF0000000000L);
-        i += (((long) buffer[offset + 4] << 32) & 0x000000FF00000000L);
-        i += (((long) buffer[offset + 3] << 24) & 0x00000000FF000000L);
-        i += (((long) buffer[offset + 2] << 16) & 0x0000000000FF0000L);
-        i += (((long) buffer[offset + 1] << 8) & 0x000000000000FF00L);
-        i += (buffer[offset] & 0x00000000000000FFL);
-
-        return i;
+        return ByteUtils.fromLittleEndian(buffer, offset, 8);
     }
 
     /**
@@ -109,13 +101,7 @@ class DumpArchiveUtil {
      * @return the 4-byte entry as an int
      */
     public static final int convert32(final byte[] buffer, final int offset) {
-        int i = 0;
-        i = buffer[offset + 3] << 24;
-        i += (buffer[offset + 2] << 16) & 0x00FF0000;
-        i += (buffer[offset + 1] << 8) & 0x0000FF00;
-        i += buffer[offset] & 0x000000FF;
-
-        return i;
+        return (int) ByteUtils.fromLittleEndian(buffer, offset, 4);
     }
 
     /**
@@ -126,11 +112,7 @@ class DumpArchiveUtil {
      * @return the 2-byte entry as an int
      */
     public static final int convert16(final byte[] buffer, final int offset) {
-        int i = 0;
-        i += (buffer[offset + 1] << 8) & 0x0000FF00;
-        i += buffer[offset] & 0x000000FF;
-
-        return i;
+        return (int) ByteUtils.fromLittleEndian(buffer, offset, 2);
     }
 
     /**
@@ -138,8 +120,6 @@ class DumpArchiveUtil {
      */
     static String decode(final ZipEncoding encoding, final byte[] b, final int offset, final int len)
         throws IOException {
-        final byte[] copy = new byte[len];
-        System.arraycopy(b, offset, copy, 0, len);
-        return encoding.decode(copy);
+        return encoding.decode(Arrays.copyOfRange(b, offset, offset + len));
     }
 }

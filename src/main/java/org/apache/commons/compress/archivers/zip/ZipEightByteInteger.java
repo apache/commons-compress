@@ -24,7 +24,7 @@ import static org.apache.commons.compress.archivers.zip.ZipConstants.BYTE_MASK;
 
 /**
  * Utility class that represents an eight byte integer with conversion
- * rules for the big endian byte order of ZIP files.
+ * rules for the little endian byte order of ZIP files.
  * @Immutable
  *
  * @since 1.2

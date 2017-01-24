@@ -19,30 +19,17 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.io.Serializable;
 
-import static org.apache.commons.compress.archivers.zip.ZipConstants.BYTE_MASK;
+import org.apache.commons.compress.utils.ByteUtils;
+
 import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
 
 /**
  * Utility class that represents a four byte integer with conversion
- * rules for the big endian byte order of ZIP files.
+ * rules for the little endian byte order of ZIP files.
  * @Immutable
  */
 public final class ZipLong implements Cloneable, Serializable {
     private static final long serialVersionUID = 1L;
-
-    //private static final int BYTE_BIT_SIZE = 8;
-
-    private static final int BYTE_1 = 1;
-    private static final int BYTE_1_MASK = 0xFF00;
-    private static final int BYTE_1_SHIFT = 8;
-
-    private static final int BYTE_2 = 2;
-    private static final int BYTE_2_MASK = 0xFF0000;
-    private static final int BYTE_2_SHIFT = 16;
-
-    private static final int BYTE_3 = 3;
-    private static final long BYTE_3_MASK = 0xFF000000L;
-    private static final int BYTE_3_SHIFT = 24;
 
     private final long value;
 
@@ -148,10 +135,7 @@ public final class ZipLong implements Cloneable, Serializable {
      */
 
     public static void putLong(final long value, final byte[] buf, int offset) {
-        buf[offset++] = (byte) ((value & BYTE_MASK));
-        buf[offset++] = (byte) ((value & BYTE_1_MASK) >> BYTE_1_SHIFT);
-        buf[offset++] = (byte) ((value & BYTE_2_MASK) >> BYTE_2_SHIFT);
-        buf[offset] = (byte) ((value & BYTE_3_MASK) >> BYTE_3_SHIFT);
+        ByteUtils.toLittleEndian(buf, value, offset, 4);
     }
 
     public void putLong(final byte[] buf, final int offset) {
@@ -165,11 +149,7 @@ public final class ZipLong implements Cloneable, Serializable {
      * @return the corresponding Java long value
      */
     public static long getValue(final byte[] bytes, final int offset) {
-        long value = (bytes[offset + BYTE_3] << BYTE_3_SHIFT) & BYTE_3_MASK;
-        value += (bytes[offset + BYTE_2] << BYTE_2_SHIFT) & BYTE_2_MASK;
-        value += (bytes[offset + BYTE_1] << BYTE_1_SHIFT) & BYTE_1_MASK;
-        value += (bytes[offset] & BYTE_MASK);
-        return value;
+        return ByteUtils.fromLittleEndian(bytes, offset, 4);
     }
 
     /**

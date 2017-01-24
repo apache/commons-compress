@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.FlushShieldFilterOutputStream;
 import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.LZMAInputStream;
@@ -55,13 +56,10 @@ class LZMADecoder extends CoderBase {
         final LZMA2Options options = getOptions(opts);
         final byte props = (byte) ((options.getPb() * 5 + options.getLp()) * 9 + options.getLc());
         int dictSize = options.getDictSize();
-        return new byte[] {
-            props,
-            (byte) (dictSize & 0xff),
-            (byte) ((dictSize >> 8) & 0xff),
-            (byte) ((dictSize >> 16) & 0xff),
-            (byte) ((dictSize >> 24) & 0xff),
-        };
+        byte[] o = new byte[5];
+        o[0] = props;
+        ByteUtils.toLittleEndian(o, dictSize, 1, 4);
+        return o;
     }
 
     @Override
@@ -80,11 +78,7 @@ class LZMADecoder extends CoderBase {
     }
 
     private int getDictionarySize(final Coder coder) throws IllegalArgumentException {
-        long dictSize = coder.properties[1];
-        for (int i = 1; i < 4; i++) {
-            dictSize |= (coder.properties[i + 1] & 0xffl) << (8 * i);
-        }
-        return (int) dictSize;
+        return (int) ByteUtils.fromLittleEndian(coder.properties, 1, 4);
     }
 
     private LZMA2Options getOptions(final Object opts) throws IOException {
