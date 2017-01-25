@@ -21,50 +21,46 @@ package org.apache.commons.compress.compressors.lz4;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-public final class BlockLZ4CompressorRoundtripTest extends AbstractTestCase {
+public class FactoryTest extends AbstractTestCase {
 
-    private void roundTripTest(String testFile) throws IOException {
-        File input = getFile(testFile);
+    @Test
+    public void frameRoundtripViaFactory() throws Exception {
+        roundtripViaFactory(CompressorStreamFactory.getLZ4Framed());
+    }
+
+    @Test
+    public void blockRoundtripViaFactory() throws Exception {
+        roundtripViaFactory(CompressorStreamFactory.getLZ4Block());
+    }
+
+    private void roundtripViaFactory(String format) throws Exception {
+        File input = getFile("bla.tar");
         long start = System.currentTimeMillis();
-        final File outputSz = new File(dir, input.getName() + ".block.lz4");
+        final File outputSz = new File(dir, input.getName() + "." + format + ".lz4");
         try (FileInputStream is = new FileInputStream(input);
              FileOutputStream os = new FileOutputStream(outputSz);
-             BlockLZ4CompressorOutputStream los = new BlockLZ4CompressorOutputStream(os)) {
+             OutputStream los = new CompressorStreamFactory().createCompressorOutputStream(format, os)) {
             IOUtils.copy(is, los);
         }
         System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
             + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
         start = System.currentTimeMillis();
         try (FileInputStream is = new FileInputStream(input);
-             BlockLZ4CompressorInputStream sis = new BlockLZ4CompressorInputStream(new FileInputStream(outputSz))) {
+             InputStream sis = new CompressorStreamFactory()
+                 .createCompressorInputStream(format, new FileInputStream(outputSz))) {
             byte[] expected = IOUtils.toByteArray(is);
             byte[] actual = IOUtils.toByteArray(sis);
             Assert.assertArrayEquals(expected, actual);
         }
         System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
     }
-
-    // should yield decent compression
-    @Test
-    public void blaTarRoundtrip() throws IOException {
-        roundTripTest("bla.tar");
-    }
-
-    // yields no compression at all
-    @Test
-    public void gzippedLoremIpsumRoundtrip() throws IOException {
-        roundTripTest("lorem-ipsum.txt.gz");
-    }
-
-    @Test
-    public void biggerFileRoundtrip() throws IOException {
-        roundTripTest("COMPRESS-256.7z");
-    }
-
 }

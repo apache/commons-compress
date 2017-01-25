@@ -21,18 +21,36 @@ package org.apache.commons.compress.compressors.lz4;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Random;
+import java.util.Arrays;
+import java.util.Collection;
+
 import org.apache.commons.compress.AbstractTestCase;
-import org.apache.commons.compress.compressors.CompressorStreamFactory;
-import org.apache.commons.compress.compressors.lz77support.Parameters;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+import org.junit.runner.RunWith;
 
+@RunWith(Parameterized.class)
 public final class FramedLZ4CompressorRoundtripTest extends AbstractTestCase {
+
+    @Parameters(name = "using {0}")
+    public static Collection<Object[]> factory() {
+        return Arrays.asList(new Object[][] {
+            new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64) },
+            new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K256) },
+            new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M1) },
+            new Object[] { FramedLZ4CompressorOutputStream.Parameters.DEFAULT },
+        });
+    }
+
+    private final FramedLZ4CompressorOutputStream.Parameters params;
+
+    public FramedLZ4CompressorRoundtripTest(FramedLZ4CompressorOutputStream.Parameters params) {
+        this.params = params;
+    }
 
     private void roundTripTest(String testFile) throws IOException {
         File input = getFile(testFile);
@@ -40,7 +58,7 @@ public final class FramedLZ4CompressorRoundtripTest extends AbstractTestCase {
         final File outputSz = new File(dir, input.getName() + ".framed.lz4");
         try (FileInputStream is = new FileInputStream(input);
              FileOutputStream os = new FileOutputStream(outputSz);
-             FramedLZ4CompressorOutputStream los = new FramedLZ4CompressorOutputStream(os)) {
+             FramedLZ4CompressorOutputStream los = new FramedLZ4CompressorOutputStream(os, params)) {
             IOUtils.copy(is, los);
         }
         System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
@@ -58,11 +76,7 @@ public final class FramedLZ4CompressorRoundtripTest extends AbstractTestCase {
     // should yield decent compression
     @Test
     public void blaTarRoundtrip() throws IOException {
-        try {
         roundTripTest("bla.tar");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     // yields no compression at all
@@ -76,27 +90,4 @@ public final class FramedLZ4CompressorRoundtripTest extends AbstractTestCase {
         roundTripTest("COMPRESS-256.7z");
     }
 
-    @Test
-    public void roundtripViaFactory() throws Exception {
-        File input = getFile("bla.tar");
-        long start = System.currentTimeMillis();
-        final File outputSz = new File(dir, input.getName() + ".framed.lz4");
-        try (FileInputStream is = new FileInputStream(input);
-             FileOutputStream os = new FileOutputStream(outputSz);
-             OutputStream los = new CompressorStreamFactory()
-                 .createCompressorOutputStream(CompressorStreamFactory.getLZ4Framed(), os)) {
-            IOUtils.copy(is, los);
-        }
-        System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
-            + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
-        start = System.currentTimeMillis();
-        try (FileInputStream is = new FileInputStream(input);
-             InputStream sis = new CompressorStreamFactory()
-                 .createCompressorInputStream(CompressorStreamFactory.LZ4_FRAMED, new FileInputStream(outputSz))) {
-            byte[] expected = IOUtils.toByteArray(is);
-            byte[] actual = IOUtils.toByteArray(sis);
-            Assert.assertArrayEquals(expected, actual);
-        }
-        System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
-    }
 }
