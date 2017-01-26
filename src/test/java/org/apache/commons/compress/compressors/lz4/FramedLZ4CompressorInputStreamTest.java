@@ -258,4 +258,26 @@ public final class FramedLZ4CompressorInputStreamTest
             assertThat(ex.getMessage(), containsString("content checksum"));
         }
     }
+
+    @Test
+    public void rejectsStreamsWithBadContentChecksum() throws IOException {
+        byte[] input = new byte[] {
+            4, 0x22, 0x4d, 0x18, // signature
+            0x64, // flag - Version 01, block independent, no block checksum, no content size, with content checksum
+            0x70, // block size 4MB
+            (byte) 185, // checksum
+            13, 0, 0, (byte) 0x80, // 13 bytes length and uncompressed bit set
+            'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', // content
+            0, 0, 0, 0, // empty block marker
+            1, 2, 3, 4,
+        };
+        try {
+            try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input))) {
+                IOUtils.toByteArray(a);
+                fail("expected exception");
+            }
+        } catch (IOException ex) {
+            assertThat(ex.getMessage(), containsString("content checksum mismatch"));
+        }
+    }
 }

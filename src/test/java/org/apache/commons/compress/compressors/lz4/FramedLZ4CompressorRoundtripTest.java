@@ -39,10 +39,12 @@ public final class FramedLZ4CompressorRoundtripTest extends AbstractTestCase {
     @Parameters(name = "using {0}")
     public static Collection<Object[]> factory() {
         return Arrays.asList(new Object[][] {
-            new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64) },
-            new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K256) },
-            new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M1) },
+            new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64, true) },
+            new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K256, true) },
+            new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M1, true) },
             new Object[] { FramedLZ4CompressorOutputStream.Parameters.DEFAULT },
+            // default without content checksum
+            new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M4, false) },
         });
     }
 
