@@ -58,6 +58,9 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
     // used for frame header checksum and content checksum, if present
     private final XXHash32 contentHash = new XXHash32();
 
+    /**
+     * The block sizes supported by the format.
+     */
     public enum BlockSize {
         /** Block size of 64K */
         K64(64 * 1024, 0),
