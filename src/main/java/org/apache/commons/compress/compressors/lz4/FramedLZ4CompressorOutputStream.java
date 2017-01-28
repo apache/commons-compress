@@ -101,8 +101,8 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
         public static Parameters DEFAULT = new Parameters(BlockSize.M4, true, false);
 
         /**
-         * Sets up custom a custom block size the LZ4 stream but
-         * otherwise use the defaults of enabled content checksum,
+         * Sets up custom a custom block size for the LZ4 stream but
+         * otherwise uses the defaults of enabled content checksum,
          * disabled block checksums and independent blocks.
          * @param blockSize the size of a single block.
          */
