@@ -101,6 +101,15 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
         public static Parameters DEFAULT = new Parameters(BlockSize.M4, true, false);
 
         /**
+         * Sets up custom a custom block size the LZ4 stream but
+         * otherwise use the defaults of enabled content checksum,
+         * disabled block checksums and independent blocks.
+         * @param blockSize the size of a single block.
+         */
+        public Parameters(BlockSize blockSize) {
+            this(blockSize, true, false);
+        }
+        /**
          * Sets up custom parameters for the LZ4 stream.
          * @param blockSize the size of a single block.
          * @param withContentChecksum whether to write a content checksum
@@ -113,6 +122,7 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
             this.withContentChecksum = withContentChecksum;
             this.withBlockChecksum = withBlockChecksum;
         }
+
         @Override
         public String toString() {
             return "LZ4 Parameters with BlockSize " + blockSize + ", withContentChecksum " + withContentChecksum
