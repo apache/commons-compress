@@ -385,8 +385,8 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
 
         <p>Note that <code>BZipCompressorOutputStream</code> keeps
           hold of some big data structures in memory.  While it is
-          true recommended for any stream that you close it as soon as
-          you no longer needed, this is even more important
+          recommended for <em>any</em> stream that you close it as soon as
+          you no longer need it, this is even more important
           for <code>BZipCompressorOutputStream</code>.</p>
 
         <p>Uncompressing a given bzip2 compressed file (you would
