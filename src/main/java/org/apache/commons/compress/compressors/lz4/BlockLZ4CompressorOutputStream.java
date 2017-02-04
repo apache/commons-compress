@@ -228,6 +228,10 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
                     }
                     blockOffset += b.length;
                 }
+                if (block == null) {
+                    // should not be possible
+                    throw new IllegalStateException("failed to find a block containing offset " + offset);
+                }
                 copyOffset = blockOffset + block.length - offsetRemaining;
                 copyLen = Math.min(lengthRemaining, block.length - copyOffset);
             } else {

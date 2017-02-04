@@ -96,7 +96,7 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
          *
          * <p>This matches the defaults of the lz4 command line utility.</p>
          */
-        public static Parameters DEFAULT = new Parameters(BlockSize.M4, true, false);
+        public static final Parameters DEFAULT = new Parameters(BlockSize.M4, true, false);
 
         /**
          * Sets up custom a custom block size for the LZ4 stream but

@@ -203,6 +203,9 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
             startBackReference(offset, length);
             state = State.IN_BACK_REFERENCE;
             break;
+        default:
+            // impossible as TAG_MASK is two bits and all four possible cases have been covered
+            break;
         }
     }
 

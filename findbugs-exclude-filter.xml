@@ -49,6 +49,11 @@
     <Method name="parse" />
     <Bug pattern="SF_SWITCH_FALLTHROUGH" />
   </Match>
+  <Match>
+    <Class name="org.apache.commons.compress.compressors.lz4.BlockLZ4CompressorInputStream" />
+    <Method name="read" />
+    <Bug pattern="SF_SWITCH_FALLTHROUGH" />
+  </Match>
 
   <!-- Reason: fields unused as documented -->
   <Match>
@@ -192,6 +197,11 @@
     <Class name="org.apache.commons.compress.compressors.lz77support.LZ77Compressor$LiteralBlock" />
     <Method name="getData" />
     <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="org.apache.commons.compress.compressors.lz77support.LZ77Compressor$LiteralBlock" />
+    <Method name="&lt;init&gt;" />
+    <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
 
 </FindBugsFilter>
