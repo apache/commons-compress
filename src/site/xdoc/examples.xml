@@ -648,7 +648,7 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
       <subsection name="Snappy">
 
         <p>There are two different "formats" used for <a
-        href="http://code.google.com/p/snappy/">Snappy</a>, one only
+        href="https://github.com/google/snappy/">Snappy</a>, one only
         contains the raw compressed data while the other provides a
         higher level "framing format" - Commons Compress offers two
         different stream classes for reading either format.</p>
