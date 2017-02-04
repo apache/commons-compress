@@ -701,7 +701,7 @@ zIn.close();
           certainly add exception handling and make sure all streams
           get closed properly):</p>
 <source><![CDATA[
-FileInputStream fin = new FileInputStream("archive.tar.sz");
+FileInputStream fin = new FileInputStream("archive.tar.lz4");
 BufferedInputStream in = new BufferedInputStream(fin);
 FileOutputStream out = new FileOutputStream("archive.tar");
 FramedLZ4CompressorInputStream zIn = new FramedLZ4CompressorInputStream(in);
