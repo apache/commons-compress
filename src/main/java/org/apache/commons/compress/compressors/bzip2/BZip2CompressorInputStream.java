@@ -236,7 +236,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             throw new IOException("No InputStream");
         }
 
-        if(!isFirstStream) {
+        if (!isFirstStream) {
             bin.clearBitCache();
         }
 

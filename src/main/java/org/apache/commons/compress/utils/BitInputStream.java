@@ -84,8 +84,9 @@ public class BitInputStream implements Closeable {
         if (count < 0 || count > MAXIMUM_CACHE_SIZE) {
             throw new IllegalArgumentException("count must not be negative or greater than " + MAXIMUM_CACHE_SIZE);
         }
-        if(ensureCache(count))
+        if (ensureCache(count)) {
             return -1;
+        }
 
         if (bitsCachedSize < count) {
             return processBitsGreater57(count);
@@ -124,14 +125,13 @@ public class BitInputStream implements Closeable {
             bitsCached |= bitsToAdd;
             overflow = nextByte & MASKS[overflowBits];
         }
-        bitsCachedSize = count;
         bitsOut = bitsCached & MASKS[count];
         bitsCached = overflow;
         bitsCachedSize = overflowBits;
         return bitsOut;
-	}
+    }
 
-	/**
+    /**
      * Fills the cache up to 56 bits
      * @param count
      * @return return true, when EOF
