@@ -52,11 +52,6 @@
           in <code>Buffered<em>(In|Out)</em>putStream</code>s before
           using the Commons Compress API.</p>
 
-        <p>When (de)compressing smaller files you may even benefit
-        from reading the whole file to uncompress into memory before
-        decompressing it or compressing to a
-        <code>ByteArrayOutputStream</code> so all operations happen in
-        memory.</p>
       </subsection>
 
       <subsection name="Factories">
