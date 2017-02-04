@@ -682,6 +682,34 @@ zIn.close();
 
       </subsection>
 
+      <subsection name="LZ4">
+
+        <p>There are two different "formats" used for <a
+        href="http://lz4.github.io/lz4/">lz4</a>. The format called
+        "block format" only contains the raw compressed data while the
+        other provides a higher level "frame format" - Commons
+        Compress offers two different stream classes for reading or
+        writing either format.</p>
+
+        <p>Uncompressing a given frame LZ4 file (you would
+          certainly add exception handling and make sure all streams
+          get closed properly):</p>
+<source><![CDATA[
+FileInputStream fin = new FileInputStream("archive.tar.sz");
+BufferedInputStream in = new BufferedInputStream(fin);
+FileOutputStream out = new FileOutputStream("archive.tar");
+FramedLZ4CompressorInputStream zIn = new FramedLZ4CompressorInputStream(in);
+final byte[] buffer = new byte[buffersize];
+int n = 0;
+while (-1 != (n = zIn.read(buffer))) {
+    out.write(buffer, 0, n);
+}
+out.close();
+zIn.close();
+]]></source>
+
+      </subsection>
+
     <subsection name="Extending Commons Compress">
     
         <p>
