@@ -20,7 +20,6 @@ package org.apache.commons.compress.compressors.lz4;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PushbackInputStream;
 import java.util.Arrays;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;

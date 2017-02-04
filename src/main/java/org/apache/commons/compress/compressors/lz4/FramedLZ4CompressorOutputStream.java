@@ -21,8 +21,6 @@ package org.apache.commons.compress.compressors.lz4;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.List;
 
 import org.apache.commons.compress.compressors.CompressorOutputStream;
 import org.apache.commons.compress.utils.ByteUtils;
