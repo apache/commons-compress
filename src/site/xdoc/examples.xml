@@ -406,6 +406,23 @@ out.close();
 bzIn.close();
 ]]></source>
 
+        <p>Compressing a given file using bzip2 (you would
+          certainly add exception handling and make sure all streams
+          get closed properly):</p>
+<source><![CDATA[
+FileInputStream in = new FileInputStream("archive.tar");
+FileOutputStream fout = new FileOutputStream("archive.tar.gz");
+BufferedOutputStream out = new BufferedInputStream(out);
+BZip2CompressorOutputStream bzOut = new BZip2CompressorOutputStream(out);
+final byte[] buffer = new byte[buffersize];
+int n = 0;
+while (-1 != (n = in.read(buffer))) {
+    bzOut.write(buffer, 0, n);
+}
+bzOut.close();
+in.close();
+]]></source>
+
       </subsection>
 
       <subsection name="gzip">
@@ -430,6 +447,24 @@ while (-1 != (n = gzIn.read(buffer))) {
 out.close();
 gzIn.close();
 ]]></source>
+
+        <p>Compressing a given file using gzip (you would
+          certainly add exception handling and make sure all streams
+          get closed properly):</p>
+<source><![CDATA[
+FileInputStream in = new FileInputStream("archive.tar");
+FileOutputStream fout = new FileOutputStream("archive.tar.gz");
+BufferedOutputStream out = new BufferedInputStream(out);
+GZipCompressorOutputStream gzOut = new GZipCompressorOutputStream(out);
+final byte[] buffer = new byte[buffersize];
+int n = 0;
+while (-1 != (n = in.read(buffer))) {
+    gzOut.write(buffer, 0, n);
+}
+gzOut.close();
+in.close();
+]]></source>
+
       </subsection>
 
       <subsection name="Pack200">
@@ -457,6 +492,24 @@ while (-1 != (n = pIn.read(buffer))) {
 out.close();
 pIn.close();
 ]]></source>
+
+        <p>Compressing a given jar using pack200 (you would
+          certainly add exception handling and make sure all streams
+          get closed properly):</p>
+<source><![CDATA[
+FileInputStream in = new FileInputStream("archive.jar");
+FileOutputStream fout = new FileOutputStream("archive.pack");
+BufferedOutputStream out = new BufferedInputStream(out);
+Pack200CompressorOutputStream pOut = new Pack200CompressorOutputStream(out);
+final byte[] buffer = new byte[buffersize];
+int n = 0;
+while (-1 != (n = in.read(buffer))) {
+    pOut.write(buffer, 0, n);
+}
+pOut.close();
+in.close();
+]]></source>
+
       </subsection>
 
       <subsection name="XZ">
@@ -489,6 +542,24 @@ while (-1 != (n = xzIn.read(buffer))) {
 out.close();
 xzIn.close();
 ]]></source>
+
+        <p>Compressing a given file using XZ (you would
+          certainly add exception handling and make sure all streams
+          get closed properly):</p>
+<source><![CDATA[
+FileInputStream in = new FileInputStream("archive.tar");
+FileOutputStream fout = new FileOutputStream("archive.tar.xz");
+BufferedOutputStream out = new BufferedInputStream(out);
+XZCompressorOutputStream xzOut = new XZCompressorOutputStream(out);
+final byte[] buffer = new byte[buffersize];
+int n = 0;
+while (-1 != (n = in.read(buffer))) {
+    xzOut.write(buffer, 0, n);
+}
+xzOut.close();
+in.close();
+]]></source>
+
       </subsection>
       
       <subsection name="Z">
@@ -534,6 +605,24 @@ while (-1 != (n = xzIn.read(buffer))) {
 out.close();
 lzmaIn.close();
 ]]></source>
+
+        <p>Compressing a given file using lzma (you would
+          certainly add exception handling and make sure all streams
+          get closed properly):</p>
+<source><![CDATA[
+FileInputStream in = new FileInputStream("archive.tar");
+FileOutputStream fout = new FileOutputStream("archive.tar.lzma");
+BufferedOutputStream out = new BufferedInputStream(out);
+LZMACompressorOutputStream lzOut = new LZMACompressorOutputStream(out);
+final byte[] buffer = new byte[buffersize];
+int n = 0;
+while (-1 != (n = in.read(buffer))) {
+    lzOut.write(buffer, 0, n);
+}
+lzOut.close();
+in.close();
+]]></source>
+
       </subsection>
 
       <subsection name="DEFLATE">
@@ -558,6 +647,24 @@ while (-1 != (n = defIn.read(buffer))) {
 out.close();
 defIn.close();
 ]]></source>
+
+        <p>Compressing a given file using DEFLATE (you would
+          certainly add exception handling and make sure all streams
+          get closed properly):</p>
+<source><![CDATA[
+FileInputStream in = new FileInputStream("archive.tar");
+FileOutputStream fout = new FileOutputStream("some-file");
+BufferedOutputStream out = new BufferedInputStream(out);
+DeflateCompressorOutputStream defOut = new DeflateCompressorOutputStream(out);
+final byte[] buffer = new byte[buffersize];
+int n = 0;
+while (-1 != (n = in.read(buffer))) {
+    defOut.write(buffer, 0, n);
+}
+defOut.close();
+in.close();
+]]></source>
+
       </subsection>
 
       <subsection name="7z">
@@ -686,6 +793,23 @@ out.close();
 zIn.close();
 ]]></source>
 
+        <p>Compressing a given file using framed Snappy (you would
+          certainly add exception handling and make sure all streams
+          get closed properly):</p>
+<source><![CDATA[
+FileInputStream in = new FileInputStream("archive.tar");
+FileOutputStream fout = new FileOutputStream("archive.tar.sz");
+BufferedOutputStream out = new BufferedInputStream(out);
+FramedSnappyCompressorOutputStream snOut = new FramedSnappyCompressorOutputStream(out);
+final byte[] buffer = new byte[buffersize];
+int n = 0;
+while (-1 != (n = in.read(buffer))) {
+    snOut.write(buffer, 0, n);
+}
+snOut.close();
+in.close();
+]]></source>
+
       </subsection>
 
       <subsection name="LZ4">
@@ -712,6 +836,23 @@ while (-1 != (n = zIn.read(buffer))) {
 }
 out.close();
 zIn.close();
+]]></source>
+
+        <p>Compressing a given file using the LZ4 frame format (you would
+          certainly add exception handling and make sure all streams
+          get closed properly):</p>
+<source><![CDATA[
+FileInputStream in = new FileInputStream("archive.tar");
+FileOutputStream fout = new FileOutputStream("archive.tar.lz4");
+BufferedOutputStream out = new BufferedInputStream(out);
+FramedLZ4CompressorOutputStream lzOut = new FramedLZ4CompressorOutputStream(out);
+final byte[] buffer = new byte[buffersize];
+int n = 0;
+while (-1 != (n = in.read(buffer))) {
+    lzOut.write(buffer, 0, n);
+}
+lzOut.close();
+in.close();
 ]]></source>
 
       </subsection>
