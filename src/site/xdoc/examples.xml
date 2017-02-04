@@ -376,6 +376,97 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
 ]]></source>
       </subsection>
 
+      <subsection name="7z">
+
+        <p>Note that Commons Compress currently only supports a subset
+        of compression and encryption algorithms used for 7z archives.
+        For writing only uncompressed entries, LZMA, LZMA2, BZIP2 and
+        Deflate are supported - reading also supports
+        AES-256/SHA-256.</p>
+
+        <p>Multipart archives are not supported at all.</p>
+
+        <p>7z archives can use multiple compression and encryption
+        methods as well as filters combined as a pipeline of methods
+        for its entries.  Prior to Compress 1.8 you could only specify
+        a single method when creating archives - reading archives
+        using more than one method has been possible before.  Starting
+        with Compress 1.8 it is possible to configure the full
+        pipeline using the <code>setContentMethods</code> method of
+        <code>SevenZOutputFile</code>.  Methods are specified in the
+        order they appear inside the pipeline when creating the
+        archive, you can also specify certain parameters for some of
+        the methods - see the Javadocs of
+        <code>SevenZMethodConfiguration</code> for details.</p>
+
+        <p>When reading entries from an archive the
+        <code>getContentMethods</code> method of
+        <code>SevenZArchiveEntry</code> will properly represent the
+        compression/encryption/filter methods but may fail to
+        determine the configuration options used.  As of Compress 1.8
+        only the dictionary size used for LZMA2 can be read.</p>
+
+        <p>Currently solid compression - compressing multiple files
+        as a single block to benefit from patterns repeating accross
+        files - is only supported when reading archives.  This also
+        means compression ratio will likely be worse when using
+        Commons Compress compared to the native 7z executable.</p>
+
+        <p>Reading or writing requires a
+        <code>SeekableByteChannel</code> that will be obtained
+        transparently when reading from or writing to a file. The
+        class
+        <code>org.apache.commons.compress.utils.SeekableInMemoryByteChannel</code>
+        allows you to read from or write to an in-memory archive.</p>
+
+        <p>Adding an entry to a 7z archive:</p>
+<source><![CDATA[
+SevenZOutputFile sevenZOutput = new SevenZOutputFile(file);
+SevenZArchiveEntry entry = sevenZOutput.createArchiveEntry(fileToArchive, name);
+sevenZOutput.putArchiveEntry(entry);
+sevenZOutput.write(contentOfEntry);
+sevenZOutput.closeArchiveEntry();
+]]></source>
+
+        <p>Uncompressing a given 7z archive (you would
+          certainly add exception handling and make sure all streams
+          get closed properly):</p>
+<source><![CDATA[
+SevenZFile sevenZFile = new SevenZFile(new File("archive.7z"));
+SevenZArchiveEntry entry = sevenZFile.getNextEntry();
+byte[] content = new byte[entry.getSize()];
+LOOP UNTIL entry.getSize() HAS BEEN READ {
+    sevenZFile.read(content, offset, content.length - offset);
+}
+]]></source>
+
+          <p>Uncompressing a given in-memory 7z archive:</p>
+          <source><![CDATA[
+byte[] inputData; // 7z archive contents
+SeekableInMemoryByteChannel inMemoryByteChannel = new SeekableInMemoryByteChannel(inputData);
+SevenZFile sevenZFile = new SevenZFile(inMemoryByteChannel);
+SevenZArchiveEntry entry = sevenZFile.getNextEntry();
+sevenZFile.read();  // read current entry's data
+]]></source>
+      </subsection>
+
+      <subsection name="arj">
+
+        <p>Note that Commons Compress doesn't support compressed,
+        encrypted or multi-volume ARJ archives, yet.</p>
+
+        <p>Uncompressing a given arj archive (you would
+          certainly add exception handling and make sure all streams
+          get closed properly):</p>
+<source><![CDATA[
+ArjArchiveEntry entry = arjInput.getNextEntry();
+byte[] content = new byte[entry.getSize()];
+LOOP UNTIL entry.getSize() HAS BEEN READ {
+    arjInput.read(content, offset, content.length - offset);
+}
+]]></source>
+      </subsection>
+
       <subsection name="bzip2">
 
         <p>Note that <code>BZipCompressorOutputStream</code> keeps
@@ -660,97 +751,6 @@ defOut.close();
 in.close();
 ]]></source>
 
-      </subsection>
-
-      <subsection name="7z">
-
-        <p>Note that Commons Compress currently only supports a subset
-        of compression and encryption algorithms used for 7z archives.
-        For writing only uncompressed entries, LZMA, LZMA2, BZIP2 and
-        Deflate are supported - reading also supports
-        AES-256/SHA-256.</p>
-
-        <p>Multipart archives are not supported at all.</p>
-
-        <p>7z archives can use multiple compression and encryption
-        methods as well as filters combined as a pipeline of methods
-        for its entries.  Prior to Compress 1.8 you could only specify
-        a single method when creating archives - reading archives
-        using more than one method has been possible before.  Starting
-        with Compress 1.8 it is possible to configure the full
-        pipeline using the <code>setContentMethods</code> method of
-        <code>SevenZOutputFile</code>.  Methods are specified in the
-        order they appear inside the pipeline when creating the
-        archive, you can also specify certain parameters for some of
-        the methods - see the Javadocs of
-        <code>SevenZMethodConfiguration</code> for details.</p>
-
-        <p>When reading entries from an archive the
-        <code>getContentMethods</code> method of
-        <code>SevenZArchiveEntry</code> will properly represent the
-        compression/encryption/filter methods but may fail to
-        determine the configuration options used.  As of Compress 1.8
-        only the dictionary size used for LZMA2 can be read.</p>
-
-        <p>Currently solid compression - compressing multiple files
-        as a single block to benefit from patterns repeating accross
-        files - is only supported when reading archives.  This also
-        means compression ratio will likely be worse when using
-        Commons Compress compared to the native 7z executable.</p>
-
-        <p>Reading or writing requires a
-        <code>SeekableByteChannel</code> that will be obtained
-        transparently when reading from or writing to a file. The
-        class
-        <code>org.apache.commons.compress.utils.SeekableInMemoryByteChannel</code>
-        allows you to read from or write to an in-memory archive.</p>
-
-        <p>Adding an entry to a 7z archive:</p>
-<source><![CDATA[
-SevenZOutputFile sevenZOutput = new SevenZOutputFile(file);
-SevenZArchiveEntry entry = sevenZOutput.createArchiveEntry(fileToArchive, name);
-sevenZOutput.putArchiveEntry(entry);
-sevenZOutput.write(contentOfEntry);
-sevenZOutput.closeArchiveEntry();
-]]></source>
-
-        <p>Uncompressing a given 7z archive (you would
-          certainly add exception handling and make sure all streams
-          get closed properly):</p>
-<source><![CDATA[
-SevenZFile sevenZFile = new SevenZFile(new File("archive.7z"));
-SevenZArchiveEntry entry = sevenZFile.getNextEntry();
-byte[] content = new byte[entry.getSize()];
-LOOP UNTIL entry.getSize() HAS BEEN READ {
-    sevenZFile.read(content, offset, content.length - offset);
-}
-]]></source>
-
-          <p>Uncompressing a given in-memory 7z archive:</p>
-          <source><![CDATA[
-byte[] inputData; // 7z archive contents
-SeekableInMemoryByteChannel inMemoryByteChannel = new SeekableInMemoryByteChannel(inputData);
-SevenZFile sevenZFile = new SevenZFile(inMemoryByteChannel);
-SevenZArchiveEntry entry = sevenZFile.getNextEntry();
-sevenZFile.read();  // read current entry's data
-]]></source>
-      </subsection>
-
-      <subsection name="arj">
-
-        <p>Note that Commons Compress doesn't support compressed,
-        encrypted or multi-volume ARJ archives, yet.</p>
-
-        <p>Uncompressing a given arj archive (you would
-          certainly add exception handling and make sure all streams
-          get closed properly):</p>
-<source><![CDATA[
-ArjArchiveEntry entry = arjInput.getNextEntry();
-byte[] content = new byte[entry.getSize()];
-LOOP UNTIL entry.getSize() HAS BEEN READ {
-    arjInput.read(content, offset, content.length - offset);
-}
-]]></source>
       </subsection>
 
       <subsection name="Snappy">
