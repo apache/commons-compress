@@ -31,6 +31,7 @@ import java.util.Arrays;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.BitInputStream;
+import org.apache.commons.compress.utils.CloseShieldFilterInputStream;
 
 /**
  * An input stream that decompresses from the BZip2 format to be read as any other stream.
@@ -126,7 +127,8 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      *             if {@code in == null}, the stream content is malformed, or an I/O error occurs.
      */
     public BZip2CompressorInputStream(final InputStream in, final boolean decompressConcatenated) throws IOException {
-        this.bin = new BitInputStream(in, ByteOrder.BIG_ENDIAN);
+        this.bin = new BitInputStream(in == System.in ? new CloseShieldFilterInputStream(in) : in,
+            ByteOrder.BIG_ENDIAN);
         this.decompressConcatenated = decompressConcatenated;
 
         init(true);
