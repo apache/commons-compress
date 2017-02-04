@@ -59,6 +59,7 @@ public class XXHash32 implements Checksum {
 
     /**
      * Creates an XXHash32 instance.
+     * @param seed the seed to use
      */
     public XXHash32(int seed) {
         this.seed = seed;

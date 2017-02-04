@@ -190,7 +190,7 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
 
     /**
      * Used by subclasses to signal the next block contains a back-reference with the given coordinates.
-     * @param the offset of the back-reference
+     * @param offset the offset of the back-reference
      * @param length the length of the back-reference
      */
     protected final void startBackReference(int offset, long length) {
