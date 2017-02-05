@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
@@ -80,6 +81,86 @@ public final class FramedLZ4CompressorInputStreamTest
             byte[] actual = IOUtils.toByteArray(a);
             assertArrayEquals(expected, actual);
         }
+    }
+
+    @Test
+    public void readBlaLz4WithDecompressConcatenated() throws IOException {
+        try (InputStream a = new FramedLZ4CompressorInputStream(new FileInputStream(getFile("bla.tar.lz4")), true);
+            FileInputStream e = new FileInputStream(getFile("bla.tar"))) {
+            byte[] expected = IOUtils.toByteArray(e);
+            byte[] actual = IOUtils.toByteArray(a);
+            assertArrayEquals(expected, actual);
+        }
+    }
+
+    @Test
+    public void readDoubledBlaLz4WithDecompressConcatenatedTrue() throws Exception {
+        readDoubledBlaLz4(new StreamWrapper() {
+                public InputStream wrap(InputStream in) throws Exception {
+                    return new FramedLZ4CompressorInputStream(in, true);
+                }
+            }, true);
+    }
+
+    @Test
+    public void readDoubledBlaLz4WithDecompressConcatenatedFalse() throws Exception {
+        readDoubledBlaLz4(new StreamWrapper() {
+                public InputStream wrap(InputStream in) throws Exception {
+                    return new FramedLZ4CompressorInputStream(in, false);
+                }
+            }, false);
+    }
+
+    @Test
+    public void readDoubledBlaLz4WithoutExplicitDecompressConcatenated() throws Exception {
+        readDoubledBlaLz4(new StreamWrapper() {
+                public InputStream wrap(InputStream in) throws Exception {
+                    return new FramedLZ4CompressorInputStream(in);
+                }
+            }, false);
+    }
+
+    @Test
+    public void readBlaLz4ViaFactoryWithDecompressConcatenated() throws Exception {
+        try (InputStream a = new CompressorStreamFactory()
+                 .createCompressorInputStream(CompressorStreamFactory.getLZ4Framed(),
+                                              new FileInputStream(getFile("bla.tar.lz4")),
+                                              true);
+            FileInputStream e = new FileInputStream(getFile("bla.tar"))) {
+            byte[] expected = IOUtils.toByteArray(e);
+            byte[] actual = IOUtils.toByteArray(a);
+            assertArrayEquals(expected, actual);
+        }
+    }
+
+    @Test
+    public void readDoubledBlaLz4ViaFactoryWithDecompressConcatenatedTrue() throws Exception {
+        readDoubledBlaLz4(new StreamWrapper() {
+                public InputStream wrap(InputStream in) throws Exception {
+                    return new CompressorStreamFactory()
+                        .createCompressorInputStream(CompressorStreamFactory.getLZ4Framed(), in, true);
+                }
+            }, true);
+    }
+
+    @Test
+    public void readDoubledBlaLz4ViaFactoryWithDecompressConcatenatedFalse() throws Exception {
+        readDoubledBlaLz4(new StreamWrapper() {
+                public InputStream wrap(InputStream in) throws Exception {
+                    return new CompressorStreamFactory()
+                        .createCompressorInputStream(CompressorStreamFactory.getLZ4Framed(), in, false);
+                }
+            }, false);
+    }
+
+    @Test
+    public void readDoubledBlaLz4ViaFactoryWithoutExplicitDecompressConcatenated() throws Exception {
+        readDoubledBlaLz4(new StreamWrapper() {
+                public InputStream wrap(InputStream in) throws Exception {
+                    return new CompressorStreamFactory()
+                        .createCompressorInputStream(CompressorStreamFactory.getLZ4Framed(), in);
+                }
+            }, false);
     }
 
     @Test(expected = IOException.class)
@@ -279,5 +360,29 @@ public final class FramedLZ4CompressorInputStreamTest
         } catch (IOException ex) {
             assertThat(ex.getMessage(), containsString("content checksum mismatch"));
         }
+    }
+
+    interface StreamWrapper {
+        InputStream wrap(InputStream in) throws Exception;
+    }
+
+    private void readDoubledBlaLz4(StreamWrapper wrapper, boolean expectDuplicateOutput) throws Exception {
+        byte[] singleInput;
+        try (InputStream i = new FileInputStream(getFile("bla.tar.lz4"))) {
+            singleInput = IOUtils.toByteArray(i);
+        }
+        byte[] input = duplicate(singleInput);
+        try (InputStream a = wrapper.wrap(new ByteArrayInputStream(input));
+            FileInputStream e = new FileInputStream(getFile("bla.tar"))) {
+            byte[] expected = IOUtils.toByteArray(e);
+            byte[] actual = IOUtils.toByteArray(a);
+            assertArrayEquals(expectDuplicateOutput ? duplicate(expected) : expected, actual);
+        }
+    }
+
+    private static byte[] duplicate(byte[] from) {
+        byte[] to = Arrays.copyOf(from, 2 * from.length);
+        System.arraycopy(from, 0, to, from.length, from.length);
+        return to;
     }
 }

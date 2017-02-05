@@ -40,9 +40,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream {
     /*
      * TODO before releasing 1.14:
      *
-     * + xxhash32 checksum validation
      * + skippable frames
-     * + decompressConcatenated
      * + block dependence
      */
 
@@ -71,6 +69,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream {
     };
 
     private final InputStream in;
+    private final boolean decompressConcatenated;
 
     private boolean expectBlockChecksum;
     private boolean expectContentSize;
@@ -84,15 +83,29 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream {
 
     /**
      * Creates a new input stream that decompresses streams compressed
-     * using the LZ4 frame format.
+     * using the LZ4 frame format and stops after decompressing the
+     * first frame.
      * @param in  the InputStream from which to read the compressed data
      * @throws IOException if reading fails
      */
     public FramedLZ4CompressorInputStream(InputStream in) throws IOException {
+        this(in, false);
+    }
+
+    /**
+     * Creates a new input stream that decompresses streams compressed
+     * using the LZ4 frame format.
+     * @param in  the InputStream from which to read the compressed data
+     * @param decompressConcatenated if true, decompress until the end
+     *          of the input; if false, stop after the first LZ4 frame
+     *          and leave the input position to point to the next byte
+     *          after the frame stream
+     * @throws IOException if reading fails
+     */
+    public FramedLZ4CompressorInputStream(InputStream in, boolean decompressConcatenated) throws IOException {
         this.in = in;
-        readSignature();
-        readFrameDescriptor();
-        nextBlock();
+        this.decompressConcatenated = decompressConcatenated;
+        init(true);
     }
 
     /** {@inheritDoc} */
@@ -130,13 +143,25 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream {
         return r;
     }
 
-    private void readSignature() throws IOException {
+    private void init(boolean firstFrame) throws IOException {
+        if (readSignature(firstFrame)) {
+            readFrameDescriptor();
+            nextBlock();
+        }
+    }
+
+    private boolean readSignature(boolean firstFrame) throws IOException {
         final byte[] b = new byte[4];
         final int read = IOUtils.readFully(in, b);
         count(read);
+        if (4 != read && !firstFrame) {
+            endReached = true;
+            return false;
+        }
         if (4 != read || !matches(b, 4)) {
             throw new IOException("Not a LZ4 frame stream");
         }
+        return true;
     }
 
     private void readFrameDescriptor() throws IOException {
@@ -185,8 +210,12 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream {
         boolean uncompressed = (len & UNCOMPRESSED_FLAG_MASK) != 0;
         int realLen = (int) (len & (~UNCOMPRESSED_FLAG_MASK));
         if (realLen == 0) {
-            endReached = true;
             verifyContentChecksum();
+            if (!decompressConcatenated) {
+                endReached = true;
+            } else {
+                init(false);
+            }
             return;
         }
         InputStream capped = new BoundedInputStream(in, realLen);
