@@ -120,6 +120,27 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
     }
 
     /**
+     * Adds some initial data to fill the window with.
+     *
+     * <p>This is used if the stream has been cut into blocks and
+     * back-references of one block may refer to data of the previous
+     * block(s). One such example is the LZ4 frame format using block
+     * dependency.</p>
+     *
+     * @param data the data to fill the window with.
+     * @throws IllegalStateException if the stream has already started to read data
+     */
+    public void prefill(byte[] data) {
+        if (writeIndex != 0) {
+            throw new IllegalStateException("the stream has already been read from, can't prefill anymore");
+        }
+        int len = Math.min(windowSize, data.length);
+        System.arraycopy(data, data.length - len, buf, 0, len);
+        writeIndex += len;
+        readIndex += len;
+    }
+
+    /**
      * Used by subclasses to signal the next block contains the given
      * amount of literal data.
      * @param length the length of the block

@@ -163,6 +163,16 @@ public final class FramedLZ4CompressorInputStreamTest
             }, false);
     }
 
+    @Test
+    public void readBlaDumpLz4() throws IOException {
+        try (InputStream a = new FramedLZ4CompressorInputStream(new FileInputStream(getFile("bla.dump.lz4")));
+            FileInputStream e = new FileInputStream(getFile("bla.dump"))) {
+            byte[] expected = IOUtils.toByteArray(e);
+            byte[] actual = IOUtils.toByteArray(a);
+            assertArrayEquals(expected, actual);
+        }
+    }
+
     @Test(expected = IOException.class)
     public void rejectsNonLZ4Stream() throws IOException {
         try (InputStream a = new FramedLZ4CompressorInputStream(new FileInputStream(getFile("bla.tar")))) {

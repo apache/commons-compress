@@ -37,11 +37,6 @@ import org.apache.commons.compress.utils.IOUtils;
  * @NotThreadSafe
  */
 public class FramedLZ4CompressorInputStream extends CompressorInputStream {
-    /*
-     * TODO before releasing 1.14:
-     *
-     * + block dependence
-     */
 
     // used by FramedLZ4CompressorOutputStream as well
     static final byte[] LZ4_SIGNATURE = new byte[] { //NOSONAR
@@ -75,6 +70,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream {
     private final boolean decompressConcatenated;
 
     private boolean expectBlockChecksum;
+    private boolean expectBlockDependency;
     private boolean expectContentSize;
     private boolean expectContentChecksum;
 
@@ -83,6 +79,9 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream {
 
     // used for frame header checksum and content checksum, if present
     private final XXHash32 contentHash = new XXHash32();
+
+    // only created if the frame doesn't set the block independence flag
+    private byte[] blockDependencyBuffer;
 
     /**
      * Creates a new input stream that decompresses streams compressed
@@ -140,6 +139,9 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream {
                 r = readOnce(b, off, len);
             }
         }
+        if (expectBlockDependency) {
+            appendToBlockDependencyBuffer(b, off, r);
+        }
         if (expectContentChecksum && r != -1) {
             contentHash.update(b, off, r);
         }
@@ -186,8 +188,13 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream {
         if ((flags & VERSION_MASK) != SUPPORTED_VERSION) {
             throw new IOException("Unsupported version " + (flags >> 6));
         }
-        if ((flags & BLOCK_INDEPENDENCE_MASK) == 0) {
-            throw new IOException("Block dependence is not supported");
+        expectBlockDependency = (flags & BLOCK_INDEPENDENCE_MASK) == 0;
+        if (expectBlockDependency) {
+            if (blockDependencyBuffer == null) {
+                blockDependencyBuffer = new byte[BlockLZ4CompressorInputStream.WINDOW_SIZE];
+            }
+        } else {
+            blockDependencyBuffer = null;
         }
         expectBlockChecksum = (flags & BLOCK_CHECKSUM_MASK) != 0;
         expectContentSize = (flags & CONTENT_SIZE_MASK) != 0;
@@ -237,7 +244,11 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream {
             currentBlock = capped;
         } else {
             inUncompressed = false;
-            currentBlock = new BlockLZ4CompressorInputStream(capped);
+            BlockLZ4CompressorInputStream s = new BlockLZ4CompressorInputStream(capped);
+            if (expectBlockDependency) {
+                s.prefill(blockDependencyBuffer);
+            }
+            currentBlock = s;
         }
     }
 
@@ -327,6 +338,19 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream {
             count(read);
         }
         return read;
+    }
+
+    private void appendToBlockDependencyBuffer(final byte[] b, final int off, int len) {
+        len = Math.min(len, blockDependencyBuffer.length);
+        if (len > 0) {
+            int keep = blockDependencyBuffer.length - len;
+            if (keep > 0) {
+                // move last keep bytes towards the start of the buffer
+                System.arraycopy(blockDependencyBuffer, len, blockDependencyBuffer, 0, keep);
+            }
+            // append new data
+            System.arraycopy(b, off, blockDependencyBuffer, keep, len);
+        }
     }
 
     /**
