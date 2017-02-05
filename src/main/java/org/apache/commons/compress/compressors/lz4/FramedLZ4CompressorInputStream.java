@@ -40,7 +40,6 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream {
     /*
      * TODO before releasing 1.14:
      *
-     * + skippable frames
      * + block dependence
      */
 
@@ -48,6 +47,10 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream {
     static final byte[] LZ4_SIGNATURE = new byte[] { //NOSONAR
         4, 0x22, 0x4d, 0x18
     };
+    private static final byte[] SKIPPABLE_FRAME_TRAILER = new byte[] {
+        0x2a, 0x4d, 0x18
+    };
+    private static final byte SKIPPABLE_FRAME_PREFIX_BYTE_MASK = 0x50;
 
     static final int VERSION_MASK = 0xC0;
     static final int SUPPORTED_VERSION = 0x40;
@@ -151,15 +154,25 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream {
     }
 
     private boolean readSignature(boolean firstFrame) throws IOException {
+        String garbageMessage = firstFrame ? "Not a LZ4 frame stream" : "LZ4 frame stream followed by garbage";
         final byte[] b = new byte[4];
-        final int read = IOUtils.readFully(in, b);
+        int read = IOUtils.readFully(in, b);
         count(read);
-        if (4 != read && !firstFrame) {
+        if (0 == read && !firstFrame) {
+            endReached = true;
+            return false;
+        }
+        if (4 != read) {
+            throw new IOException(garbageMessage);
+        }
+
+        read = skipSkippableFrame(b);
+        if (0 == read && !firstFrame) {
             endReached = true;
             return false;
         }
         if (4 != read || !matches(b, 4)) {
-            throw new IOException("Not a LZ4 frame stream");
+            throw new IOException(garbageMessage);
         }
         return true;
     }
@@ -279,6 +292,41 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream {
             count(l.getBytesRead() - before);
             return cnt;
         }
+    }
+
+    private static boolean isSkippableFrameSignature(byte[] b) {
+        if ((b[0] & SKIPPABLE_FRAME_PREFIX_BYTE_MASK) != SKIPPABLE_FRAME_PREFIX_BYTE_MASK) {
+            return false;
+        }
+        for (int i = 1; i < 4; i++) {
+            if (b[i] != SKIPPABLE_FRAME_TRAILER[i - 1]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Skips over the contents of a skippable frame as well as
+     * skippable frames following it.
+     *
+     * <p>It then tries to read four more bytes which are supposed to
+     * hold an LZ4 signature and returns the number of bytes read
+     * while storing the bytes in the given array.</p>
+     */
+    private int skipSkippableFrame(byte[] b) throws IOException {
+        int read = 4;
+        while (read == 4 && isSkippableFrameSignature(b)) {
+            long len = ByteUtils.fromLittleEndian(supplier, 4);
+            long skipped = IOUtils.skip(in, len);
+            count(skipped);
+            if (len != skipped) {
+                throw new IOException("Premature end of stream while skipping frame");
+            }
+            read = IOUtils.readFully(in, b);
+            count(read);
+        }
+        return read;
     }
 
     /**

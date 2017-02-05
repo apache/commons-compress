@@ -362,6 +362,220 @@ public final class FramedLZ4CompressorInputStreamTest
         }
     }
 
+    @Test
+    public void skipsOverSkippableFrames() throws IOException {
+        byte[] input = new byte[] {
+            4, 0x22, 0x4d, 0x18, // signature
+            0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
+            0x70, // block size 4MB
+            115, // checksum
+            13, 0, 0, (byte) 0x80, // 13 bytes length and uncompressed bit set
+            'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', // content
+            0, 0, 0, 0, // empty block marker
+            0x5f, 0x2a, 0x4d, 0x18, // skippable frame signature
+            2, 0, 0, 0, // skippable frame has length 2
+            1, 2, // content of skippable frame
+            4, 0x22, 0x4d, 0x18, // signature
+            0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
+            0x70, // block size 4MB
+            115, // checksum
+            1, 0, 0, (byte) 0x80, // 1 bytes length and uncompressed bit set
+            '!', // content
+            0, 0, 0, 0, // empty block marker
+        };
+        try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input), true)) {
+            byte[] actual = IOUtils.toByteArray(a);
+            assertArrayEquals(new byte[] {
+                    'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '!'
+                }, actual);
+        }
+    }
+
+    @Test
+    public void skipsOverTrailingSkippableFrames() throws IOException {
+        byte[] input = new byte[] {
+            4, 0x22, 0x4d, 0x18, // signature
+            0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
+            0x70, // block size 4MB
+            115, // checksum
+            13, 0, 0, (byte) 0x80, // 13 bytes length and uncompressed bit set
+            'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', // content
+            0, 0, 0, 0, // empty block marker
+            0x51, 0x2a, 0x4d, 0x18, // skippable frame signature
+            2, 0, 0, 0, // skippable frame has length 2
+            1, 2, // content of skippable frame
+        };
+        try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input), true)) {
+            byte[] actual = IOUtils.toByteArray(a);
+            assertArrayEquals(new byte[] {
+                    'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!'
+                }, actual);
+        }
+    }
+
+    @Test
+    public void rejectsSkippableFrameFollowedByJunk() throws IOException {
+        byte[] input = new byte[] {
+            4, 0x22, 0x4d, 0x18, // signature
+            0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
+            0x70, // block size 4MB
+            115, // checksum
+            13, 0, 0, (byte) 0x80, // 13 bytes length and uncompressed bit set
+            'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', // content
+            0, 0, 0, 0, // empty block marker
+            0x50, 0x2a, 0x4d, 0x18, // skippable frame signature
+            2, 0, 0, 0, // skippable frame has length 2
+            1, 2, // content of skippable frame
+            1, 0x22, 0x4d, 0x18, // bad signature
+        };
+        try {
+            try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input), true)) {
+                IOUtils.toByteArray(a);
+                fail("expected exception");
+            }
+        } catch (IOException ex) {
+            assertThat(ex.getMessage(), containsString("garbage"));
+        }
+    }
+
+    @Test
+    public void rejectsSkippableFrameFollowedByTooFewBytes() throws IOException {
+        byte[] input = new byte[] {
+            4, 0x22, 0x4d, 0x18, // signature
+            0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
+            0x70, // block size 4MB
+            115, // checksum
+            13, 0, 0, (byte) 0x80, // 13 bytes length and uncompressed bit set
+            'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', // content
+            0, 0, 0, 0, // empty block marker
+            0x52, 0x2a, 0x4d, 0x18, // skippable frame signature
+            2, 0, 0, 0, // skippable frame has length 2
+            1, 2, // content of skippable frame
+            4, // too short for signature
+        };
+        try {
+            try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input), true)) {
+                IOUtils.toByteArray(a);
+                fail("expected exception");
+            }
+        } catch (IOException ex) {
+            assertThat(ex.getMessage(), containsString("garbage"));
+        }
+    }
+
+    @Test
+    public void rejectsSkippableFrameWithPrematureEnd() throws IOException {
+        byte[] input = new byte[] {
+            4, 0x22, 0x4d, 0x18, // signature
+            0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
+            0x70, // block size 4MB
+            115, // checksum
+            13, 0, 0, (byte) 0x80, // 13 bytes length and uncompressed bit set
+            'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', // content
+            0, 0, 0, 0, // empty block marker
+            0x50, 0x2a, 0x4d, 0x18, // skippable frame signature
+            2, 0, 0, 0, // skippable frame has length 2
+            1, // content of skippable frame (should be two bytes)
+        };
+        try {
+            try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input), true)) {
+                IOUtils.toByteArray(a);
+                fail("expected exception");
+            }
+        } catch (IOException ex) {
+            assertThat(ex.getMessage(), containsString("Premature end of stream while skipping frame"));
+        }
+    }
+
+    @Test
+    public void rejectsSkippableFrameWithPrematureEndInLengthBytes() throws IOException {
+        byte[] input = new byte[] {
+            4, 0x22, 0x4d, 0x18, // signature
+            0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
+            0x70, // block size 4MB
+            115, // checksum
+            13, 0, 0, (byte) 0x80, // 13 bytes length and uncompressed bit set
+            'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', // content
+            0, 0, 0, 0, // empty block marker
+            0x55, 0x2a, 0x4d, 0x18, // skippable frame signature
+            2, 0, 0, // should be four byte length
+        };
+        try {
+            try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input), true)) {
+                IOUtils.toByteArray(a);
+                fail("expected exception");
+            }
+        } catch (IOException ex) {
+            assertThat(ex.getMessage(), containsString("premature end of data"));
+        }
+    }
+
+    @Test
+    public void rejectsSkippableFrameWithBadSignatureTrailer() throws IOException {
+        byte[] input = new byte[] {
+            4, 0x22, 0x4d, 0x18, // signature
+            0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
+            0x70, // block size 4MB
+            115, // checksum
+            13, 0, 0, (byte) 0x80, // 13 bytes length and uncompressed bit set
+            'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', // content
+            0, 0, 0, 0, // empty block marker
+            0x51, 0x2a, 0x4d, 0x17, // broken skippable frame signature
+        };
+        try {
+            try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input), true)) {
+                IOUtils.toByteArray(a);
+                fail("expected exception");
+            }
+        } catch (IOException ex) {
+            assertThat(ex.getMessage(), containsString("garbage"));
+        }
+    }
+
+    @Test
+    public void rejectsSkippableFrameWithBadSignaturePrefix() throws IOException {
+        byte[] input = new byte[] {
+            4, 0x22, 0x4d, 0x18, // signature
+            0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
+            0x70, // block size 4MB
+            115, // checksum
+            13, 0, 0, (byte) 0x80, // 13 bytes length and uncompressed bit set
+            'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', // content
+            0, 0, 0, 0, // empty block marker
+            0x60, 0x2a, 0x4d, 0x18, // broken skippable frame signature
+        };
+        try {
+            try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input), true)) {
+                IOUtils.toByteArray(a);
+                fail("expected exception");
+            }
+        } catch (IOException ex) {
+            assertThat(ex.getMessage(), containsString("garbage"));
+        }
+    }
+
+    @Test
+    public void rejectsTrailingBytesAfterValidFrame() throws IOException {
+        byte[] input = new byte[] {
+            4, 0x22, 0x4d, 0x18, // signature
+            0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
+            0x70, // block size 4MB
+            115, // checksum
+            13, 0, 0, (byte) 0x80, // 13 bytes length and uncompressed bit set
+            'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', // content
+            0, 0, 0, 0, // empty block marker
+            0x56, 0x2a, 0x4d, // too short for any signature
+        };
+        try {
+            try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input), true)) {
+                IOUtils.toByteArray(a);
+                fail("expected exception");
+            }
+        } catch (IOException ex) {
+            assertThat(ex.getMessage(), containsString("garbage"));
+        }
+    }
+
     interface StreamWrapper {
         InputStream wrap(InputStream in) throws Exception;
     }
