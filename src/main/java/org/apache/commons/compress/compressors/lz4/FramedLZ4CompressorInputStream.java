@@ -254,8 +254,8 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream {
             if (expectedHash != ByteUtils.fromLittleEndian(checksum)) {
                 throw new IOException("content checksum mismatch.");
             }
-            contentHash.reset();
         }
+        contentHash.reset();
     }
 
     private int readOneByte() throws IOException {
