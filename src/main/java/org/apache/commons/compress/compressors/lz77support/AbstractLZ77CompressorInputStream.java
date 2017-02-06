@@ -31,7 +31,15 @@ import org.apache.commons.compress.utils.IOUtils;
  *
  * <p>Assumes the stream consists of blocks of literal data and
  * back-references (called copies) in any order. Of course the first
- * block must be a literal block for the scheme to work.</p>
+ * block must be a literal block for the scheme to work - unless the
+ * {@link #prefill prefill} method has been used to provide initial
+ * data that is never returned by {@link #read read} but only used for
+ * back-references.</p>
+ *
+ * <p>Subclasses must override the three-arg {@link #read read} method
+ * as the no-arg version delegates to it and the default
+ * implementation delegates to the no-arg version, leading to infinite
+ * mutual recursion and a {@code StackOverflowError} otherwise.</p>
  *
  * @since 1.14
  */
