@@ -245,7 +245,9 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
 
     private void writeTrailer() throws IOException {
         out.write(END_MARK);
-        ByteUtils.toLittleEndian(out, contentHash.getValue(), 4);
+        if (params.withContentChecksum) {
+            ByteUtils.toLittleEndian(out, contentHash.getValue(), 4);
+        }
     }
 
 }
