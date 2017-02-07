@@ -44,9 +44,14 @@ public final class FramedLZ4CompressorRoundtripTest extends AbstractTestCase {
             new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M1) },
             new Object[] { FramedLZ4CompressorOutputStream.Parameters.DEFAULT },
             // default without content checksum
-            new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M4, false, false) },
+            new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M4,
+                false, false, false) },
             // default with block checksum
-            new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M4, true, true) },
+            new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M4,
+                true, true, false) },
+            // small blocksize (so we get enough blocks) and enabled block dependency, otherwise defaults
+            new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64,
+                true, false, true) },
         });
     }
 

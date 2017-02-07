@@ -145,6 +145,23 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
         }
     }
 
+    /**
+     * Adds some initial data to fill the window with.
+     *
+     * @param data the data to fill the window with.
+     * @param off offset of real data into the array
+     * @param len amount of data
+     * @throws IllegalStateException if the stream has already started to write data
+     * @see LZ77Compressor#prefill
+     */
+    public void prefill(byte[] data, int off, int len) {
+        if (len > 0) {
+            byte[] b = Arrays.copyOfRange(data, off, off + len);
+            compressor.prefill(b);
+            recordLiteral(b);
+        }
+    }
+
     private void addLiteralBlock(LZ77Compressor.LiteralBlock block) throws IOException {
         Pair last = writeBlocksAndReturnUnfinishedPair(block.getLength());
         recordLiteral(last.addLiteral(block));
