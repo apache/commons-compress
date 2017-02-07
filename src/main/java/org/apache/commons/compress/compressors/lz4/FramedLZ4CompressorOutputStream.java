@@ -170,7 +170,9 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
 
     @Override
     public void write(byte[] data, int off, int len) throws IOException {
-        contentHash.update(data, off, len);
+        if (params.withContentChecksum) {
+            contentHash.update(data, off, len);
+        }
         if (currentIndex + len > blockData.length) {
             flushBlock();
             while (len > blockData.length) {
