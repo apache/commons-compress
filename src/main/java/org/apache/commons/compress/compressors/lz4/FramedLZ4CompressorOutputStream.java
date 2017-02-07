@@ -62,13 +62,13 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
      */
     public enum BlockSize {
         /** Block size of 64K */
-        K64(64 * 1024, 0),
+        K64(64 * 1024, 4),
         /** Block size of 256K */
-        K256(256 * 1024, 1),
+        K256(256 * 1024, 5),
         /** Block size of 1M */
-        M1(1024 * 1024, 2),
+        M1(1024 * 1024, 6),
         /** Block size of 4M */
-        M4(1024 * 1024, 4);
+        M4(1024 * 1024, 7);
 
         private final int size, index;
         private BlockSize(int size, int index) {
@@ -209,7 +209,7 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
         }
         out.write(flags);
         contentHash.update(flags);
-        int bd = params.blockSize.getIndex() << 4;
+        int bd = (params.blockSize.getIndex() << 4) & FramedLZ4CompressorInputStream.BLOCK_MAX_SIZE_MASK;
         out.write(bd);
         contentHash.update(bd);
         out.write((int) ((contentHash.getValue() >> 8) & 0xff));
