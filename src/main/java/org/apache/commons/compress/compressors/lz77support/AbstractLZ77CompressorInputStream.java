@@ -41,6 +41,35 @@ import org.apache.commons.compress.utils.IOUtils;
  * implementation delegates to the no-arg version, leading to infinite
  * mutual recursion and a {@code StackOverflowError} otherwise.</p>
  *
+ * <p>The contract for subclasses {@code read} implementation is:</p>
+ * <ul>
+ *
+ *  <li>keep track of the current state of the stream. Is it inside a
+ *  literal block or a back-reference or in-between blocks?</li>
+ *
+ *  <li>Use {@link #readOneByte} to access the underlying stream
+ *  directly.</li>
+ *
+ *  <li>If a new literal block starts, use {@link #startLiteral} to
+ *  tell this class about it and read the literal data using {@link
+ *  #readLiteral} until it returns {@code 0}. {@link
+ *  #hasMoreDataInBlock} will return {@code false} before the next
+ *  call to {@link #readLiteral} would return {@code 0}.</li>
+ *
+ *  <li>If a new back-reference starts, use {@link #startBackReference} to
+ *  tell this class about it and read the literal data using {@link
+ *  #readBackReference} until it returns {@code 0}. {@link
+ *  #hasMoreDataInBlock} will return {@code false} before the next
+ *  call to {@link #readBackReference} would return {@code 0}.</li>
+ *
+ *  <li>If the end of the stream has been reached, return {@code -1}
+ *  as this class' methods will never do so themselves.</li>
+ *
+ * </ul>
+ *
+ * <p>{@link #readOneByte} and {@link #readLiteral} update the counter
+ * for bytes read.</p>
+ *
  * @since 1.14
  */
 public abstract class AbstractLZ77CompressorInputStream extends CompressorInputStream {
