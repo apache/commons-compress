@@ -297,6 +297,36 @@ public class LZ77Compressor {
         callback.accept(THE_EOD);
     }
 
+    /**
+     * Adds some initial data to fill the window with.
+     *
+     * <p>This is used if the stream has been cut into blocks and
+     * back-references of one block may refer to data of the previous
+     * block(s). One such example is the LZ4 frame format using block
+     * dependency.</p>
+     *
+     * @param data the data to fill the window with.
+     * @throws IllegalStateException if the compressor has already started to accept data
+     */
+    public void prefill(byte[] data) {
+        if (currentPosition != 0 || lookahead != 0) {
+            throw new IllegalStateException("the compressor has already started to accept data, can't prefill anymore");
+        }
+        final int len = Math.min(params.getWindowSize(), data.length);
+        System.arraycopy(data, data.length - len, window, 0, len);
+        if (len >= NUMBER_OF_BYTES_IN_HASH) {
+            initialize();
+            final int stop = len - NUMBER_OF_BYTES_IN_HASH + 1;
+            for (int i = 0; i < stop; i++) {
+                insertString(i);
+            }
+            missedInserts = NUMBER_OF_BYTES_IN_HASH - 1;
+        } else {
+            missedInserts = len;
+        }
+        blockStart = currentPosition = len;
+    }
+
     // we use a 15 bit hashcode as calculated in updateHash
     private static final int HASH_SIZE = 1 << 15;
     private static final int HASH_MASK = HASH_SIZE - 1;
@@ -394,7 +424,7 @@ public class LZ77Compressor {
 
     /**
      * Inserts the current three byte sequence into the dictionary and
-     * returns the previous previous head of the hash-chain.
+     * returns the previous head of the hash-chain.
      *
      * <p>Updates <code>insertHash</code> and <code>prev</code> as a
      * side effect.</p>

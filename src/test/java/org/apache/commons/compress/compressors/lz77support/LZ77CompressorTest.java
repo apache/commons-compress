@@ -196,6 +196,116 @@ public class LZ77CompressorTest {
         assertLiteralBlock(".", blocks.get(19));
     }
 
+    @Test
+    public void blaExampleWithPrefill() throws IOException {
+        final List<LZ77Compressor.Block> blocks = new ArrayList<>();
+        LZ77Compressor c = new LZ77Compressor(new Parameters(128), new LZ77Compressor.Callback() {
+                @Override
+                public void accept(LZ77Compressor.Block block) {
+                    //System.err.println(block);
+                    if (block instanceof LZ77Compressor.LiteralBlock) {
+                        // replace with a real copy of data so tests
+                        // can see the results as they've been when
+                        // the callback has been called
+                        LZ77Compressor.LiteralBlock b = (LZ77Compressor.LiteralBlock) block;
+                        int len = b.getLength();
+                        block = new LZ77Compressor.LiteralBlock(
+                            Arrays.copyOfRange(b.getData(), b.getOffset(), b.getOffset() + len),
+                            0, len);
+                    }
+                    blocks.add(block);
+                }
+            });
+        c.prefill(Arrays.copyOfRange(BLA, 0, 6));
+        c.compress(Arrays.copyOfRange(BLA, 6, BLA.length));
+        c.finish();
+        assertSize(3, blocks);
+        assertBackReference(5, 18, blocks.get(0));
+        assertLiteralBlock("!", blocks.get(1));
+    }
+
+    @Test
+    public void blaExampleWithShortPrefill() throws IOException {
+        final List<LZ77Compressor.Block> blocks = new ArrayList<>();
+        LZ77Compressor c = new LZ77Compressor(new Parameters(128), new LZ77Compressor.Callback() {
+                @Override
+                public void accept(LZ77Compressor.Block block) {
+                    //System.err.println(block);
+                    if (block instanceof LZ77Compressor.LiteralBlock) {
+                        // replace with a real copy of data so tests
+                        // can see the results as they've been when
+                        // the callback has been called
+                        LZ77Compressor.LiteralBlock b = (LZ77Compressor.LiteralBlock) block;
+                        int len = b.getLength();
+                        block = new LZ77Compressor.LiteralBlock(
+                            Arrays.copyOfRange(b.getData(), b.getOffset(), b.getOffset() + len),
+                            0, len);
+                    }
+                    blocks.add(block);
+                }
+            });
+        c.prefill(Arrays.copyOfRange(BLA, 0, 2));
+        c.compress(Arrays.copyOfRange(BLA, 2, BLA.length));
+        c.finish();
+        assertSize(4, blocks);
+        assertLiteralBlock("ah b", blocks.get(0));
+        assertBackReference(5, 18, blocks.get(1));
+        assertLiteralBlock("!", blocks.get(2));
+    }
+
+    @Test
+    public void blaExampleWithPrefillBiggerThanWindowSize() throws IOException {
+        final List<LZ77Compressor.Block> blocks = new ArrayList<>();
+        LZ77Compressor c = new LZ77Compressor(new Parameters(4), new LZ77Compressor.Callback() {
+                @Override
+                public void accept(LZ77Compressor.Block block) {
+                    //System.err.println(block);
+                    if (block instanceof LZ77Compressor.LiteralBlock) {
+                        // replace with a real copy of data so tests
+                        // can see the results as they've been when
+                        // the callback has been called
+                        LZ77Compressor.LiteralBlock b = (LZ77Compressor.LiteralBlock) block;
+                        int len = b.getLength();
+                        block = new LZ77Compressor.LiteralBlock(
+                            Arrays.copyOfRange(b.getData(), b.getOffset(), b.getOffset() + len),
+                            0, len);
+                    }
+                    blocks.add(block);
+                }
+            });
+        c.prefill(Arrays.copyOfRange(BLA, 0, 6));
+        c.compress(Arrays.copyOfRange(BLA, 6, BLA.length));
+        c.finish();
+        assertSize(6, blocks);
+        assertLiteralBlock("lah ", blocks.get(0));
+        assertLiteralBlock("blah", blocks.get(1));
+        assertLiteralBlock(" bla", blocks.get(2));
+        assertLiteralBlock("h bl", blocks.get(3));
+        assertLiteralBlock("ah!", blocks.get(4));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void cantPrefillTwice() {
+        LZ77Compressor c = new LZ77Compressor(new Parameters(128), new LZ77Compressor.Callback() {
+                @Override
+                public void accept(LZ77Compressor.Block block) {
+                }
+            });
+        c.prefill(Arrays.copyOfRange(BLA, 0, 2));
+        c.prefill(Arrays.copyOfRange(BLA, 2, 4));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void cantPrefillAfterCompress() throws IOException {
+        LZ77Compressor c = new LZ77Compressor(new Parameters(128), new LZ77Compressor.Callback() {
+                @Override
+                public void accept(LZ77Compressor.Block block) {
+                }
+            });
+        c.compress(Arrays.copyOfRange(BLA, 0, 2));
+        c.prefill(Arrays.copyOfRange(BLA, 2, 4));
+    }
+
     private static final void assertSize(int expectedSize, List<LZ77Compressor.Block> blocks) {
         assertEquals(expectedSize, blocks.size());
         assertEquals(LZ77Compressor.EOD.class, blocks.get(expectedSize - 1).getClass());
