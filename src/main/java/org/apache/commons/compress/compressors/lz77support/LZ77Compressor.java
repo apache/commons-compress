@@ -19,6 +19,7 @@
 package org.apache.commons.compress.compressors.lz77support;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Helper class for compression algorithms that use the ideas of LZ77.
@@ -242,9 +243,7 @@ public class LZ77Compressor {
         window = new byte[wSize * 2];
         wMask = wSize - 1;
         head = new int[HASH_SIZE];
-        for (int i = 0; i < HASH_SIZE; i++) {
-            head[i] = NO_MATCH;
-        }
+        Arrays.fill(head, NO_MATCH);
         prev = new int[wSize];
     }
 
@@ -486,6 +485,10 @@ public class LZ77Compressor {
             if (currentLength > longestMatchLength) {
                 longestMatchLength = currentLength;
                 matchStart = matchHead;
+                if (currentLength == maxPossibleLength) {
+                    // no need to search any further
+                    break;
+                }
             }
             matchHead = prev[matchHead & wMask];
         }
