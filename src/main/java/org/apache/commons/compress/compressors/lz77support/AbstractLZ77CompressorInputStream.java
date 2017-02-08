@@ -224,8 +224,8 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
 
     private void tryToReadLiteral(int bytesToRead) throws IOException {
         // min of "what is still inside the literal", "what does the user want" and "how muc can fit into the buffer"
-        final int reallyTryToRead = (int) Math.min(Math.min(bytesToRead, bytesRemaining),
-                                                   buf.length - writeIndex);
+        final int reallyTryToRead = Math.min((int) Math.min(bytesToRead, bytesRemaining),
+                                             buf.length - writeIndex);
         final int bytesRead = reallyTryToRead > 0
             ? IOUtils.readFully(in, buf, writeIndex, reallyTryToRead)
             : 0 /* happens for bytesRemaining == 0 */;
@@ -285,8 +285,8 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
     private void tryToCopy(int bytesToCopy) {
         // this will fit into the buffer without sliding and not
         // require more than is available inside the back-reference
-        int copy = (int) Math.min(Math.min(bytesToCopy, bytesRemaining),
-                                  buf.length - writeIndex);
+        int copy = Math.min((int) Math.min(bytesToCopy, bytesRemaining),
+                            buf.length - writeIndex);
         if (copy == 0) {
             // NOP
         } else if (backReferenceOffset == 1) { // pretty common special case
