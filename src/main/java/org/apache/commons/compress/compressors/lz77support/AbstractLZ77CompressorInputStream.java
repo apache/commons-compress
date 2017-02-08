@@ -41,7 +41,7 @@ import org.apache.commons.compress.utils.IOUtils;
  * implementation delegates to the no-arg version, leading to infinite
  * mutual recursion and a {@code StackOverflowError} otherwise.</p>
  *
- * <p>The contract for subclasses {@code read} implementation is:</p>
+ * <p>The contract for subclasses' {@code read} implementation is:</p>
  * <ul>
  *
  *  <li>keep track of the current state of the stream. Is it inside a
@@ -77,10 +77,17 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
     /** Size of the window - must be bigger than the biggest offset expected. */
     private final int windowSize;
 
-    /** Buffer to write decompressed bytes to for back-references */
+    /**
+     * Buffer to write decompressed bytes to for back-references, will
+     * be three times windowSize big.
+     *
+     * <p>Three times so we can slide the whole buffer a windowSize to
+     * the left once we've read twice windowSize and still have enough
+     * data inside of it to satisfy back-references.</p>
+     */
     private final byte[] buf;
 
-    /** One behind the index of the last byte in the buffer that was written */
+    /** One behind the index of the last byte in the buffer that was written, i.e. the next position to write to */
     private int writeIndex;
 
     /** Index of the next byte to be read. */
@@ -171,7 +178,9 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
         if (writeIndex != 0) {
             throw new IllegalStateException("the stream has already been read from, can't prefill anymore");
         }
+        // we don't need more data than the big offset could refer to, so cap it
         int len = Math.min(windowSize, data.length);
+        // we need the last data as we are dealing with *back*-references
         System.arraycopy(data, data.length - len, buf, 0, len);
         writeIndex += len;
         readIndex += len;
@@ -214,6 +223,7 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
     }
 
     private void tryToReadLiteral(int bytesToRead) throws IOException {
+        // min of "what is still inside the literal", "what does the user want" and "how muc can fit into the buffer"
         final int reallyTryToRead = (int) Math.min(Math.min(bytesToRead, bytesRemaining),
                                                    buf.length - writeIndex);
         final int bytesRead = reallyTryToRead > 0
@@ -287,6 +297,9 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
             System.arraycopy(buf, writeIndex - backReferenceOffset, buf, writeIndex, copy);
             writeIndex += copy;
         } else {
+            // back-reference overlaps with the bytes created from it
+            // like go back two bytes and then copy six (by copying
+            // the last two bytes three time).
             final int fullRots = copy / backReferenceOffset;
             for (int i = 0; i < fullRots; i++) {
                 System.arraycopy(buf, writeIndex - backReferenceOffset, buf, writeIndex, backReferenceOffset);
