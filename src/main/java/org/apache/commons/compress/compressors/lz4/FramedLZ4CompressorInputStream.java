@@ -143,11 +143,13 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream {
                 r = readOnce(b, off, len);
             }
         }
-        if (expectBlockDependency) {
-            appendToBlockDependencyBuffer(b, off, r);
-        }
-        if (expectContentChecksum && r != -1) {
-            contentHash.update(b, off, r);
+        if (r != -1) {
+            if (expectBlockDependency) {
+                appendToBlockDependencyBuffer(b, off, r);
+            }
+            if (expectContentChecksum) {
+                contentHash.update(b, off, r);
+            }
         }
         return r;
     }
@@ -165,6 +167,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream {
         int read = IOUtils.readFully(in, b);
         count(read);
         if (0 == read && !firstFrame) {
+            // good LZ4 frame and nothing after it
             endReached = true;
             return false;
         }
@@ -174,6 +177,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream {
 
         read = skipSkippableFrame(b);
         if (0 == read && !firstFrame) {
+            // good LZ4 frame with only some skippable frames after it
             endReached = true;
             return false;
         }
