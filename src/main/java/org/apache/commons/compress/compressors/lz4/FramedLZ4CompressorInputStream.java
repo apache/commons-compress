@@ -25,6 +25,7 @@ import java.util.Arrays;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
+import org.apache.commons.compress.utils.ChecksumCalculatingInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 
 /**
@@ -79,6 +80,9 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream {
 
     // used for frame header checksum and content checksum, if present
     private final XXHash32 contentHash = new XXHash32();
+
+    // used for block checksum, if present
+    private final XXHash32 blockHash = new XXHash32();
 
     // only created if the frame doesn't set the block independence flag
     private byte[] blockDependencyBuffer;
@@ -239,6 +243,9 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream {
             return;
         }
         InputStream capped = new BoundedInputStream(in, realLen);
+        if (expectBlockChecksum) {
+            capped = new ChecksumCalculatingInputStream(blockHash, capped);
+        }
         if (uncompressed) {
             inUncompressed = true;
             currentBlock = capped;
@@ -257,29 +264,30 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream {
             currentBlock.close();
             currentBlock = null;
             if (expectBlockChecksum) {
-                int skipped = (int) IOUtils.skip(in, 4);
-                count(skipped);
-                if (4 != skipped) {
-                    throw new IOException("Premature end of stream while reading block checksum");
-                }
+                verifyChecksum(blockHash, "block");
+                blockHash.reset();
             }
         }
     }
 
     private void verifyContentChecksum() throws IOException {
         if (expectContentChecksum) {
-            byte[] checksum = new byte[4];
-            int read = IOUtils.readFully(in, checksum);
-            count(read);
-            if (4 != read) {
-                throw new IOException("Premature end of stream while reading content checksum");
-            }
-            long expectedHash = contentHash.getValue();
-            if (expectedHash != ByteUtils.fromLittleEndian(checksum)) {
-                throw new IOException("content checksum mismatch.");
-            }
+            verifyChecksum(contentHash, "content");
         }
         contentHash.reset();
+    }
+
+    private void verifyChecksum(XXHash32 hash, String kind) throws IOException {
+        byte[] checksum = new byte[4];
+        int read = IOUtils.readFully(in, checksum);
+        count(read);
+        if (4 != read) {
+            throw new IOException("Premature end of stream while reading " + kind + " checksum");
+        }
+        long expectedHash = hash.getValue();
+        if (expectedHash != ByteUtils.fromLittleEndian(checksum)) {
+            throw new IOException(kind + " checksum mismatch.");
+        }
     }
 
     private int readOneByte() throws IOException {
