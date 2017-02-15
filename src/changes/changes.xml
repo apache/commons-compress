@@ -64,6 +64,10 @@ The <action> type attribute can be add,update,fix,remove.
       <action issue="COMPRESS-271" type="add" date="2017-02-07">
         Added support for LZ4 (block and frame format).
       </action>
+      <action type="update" date="2017-02-15" due-to="Thomas Meyer">
+        BZip2CompressorInputstream now uses BitInputStream internally.
+        Pull Request #13.
+      </action>
     </release>
     <release version="1.13" date="2016-12-29"
              description="Release 1.13 - API compatible to 1.12 but requires Java 7 at runtime.">
