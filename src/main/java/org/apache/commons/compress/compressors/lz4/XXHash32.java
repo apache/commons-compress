@@ -20,9 +20,9 @@ package org.apache.commons.compress.compressors.lz4;
 
 import static java.lang.Integer.rotateLeft;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.zip.Checksum;
+
+import static org.apache.commons.compress.utils.ByteUtils.fromLittleEndian;
 
 /**
  * Implementation of the xxhash32 hash algorithm.
@@ -44,7 +44,7 @@ public class XXHash32 implements Checksum {
 
     private final byte[] oneByte = new byte[1];
     private final int[] state = new int[4];
-    private final ByteBuffer buffer = ByteBuffer.allocate(BUF_SIZE).order(ByteOrder.LITTLE_ENDIAN);
+    private final byte[] buffer = new byte[BUF_SIZE];
     private final int seed;
 
     private int totalLen;
@@ -69,7 +69,6 @@ public class XXHash32 implements Checksum {
     @Override
     public void reset() {
         initializeState();
-        buffer.clear();
         totalLen = 0;
         pos = 0;
     }
@@ -90,28 +89,28 @@ public class XXHash32 implements Checksum {
         final int end = off + len;
 
         if (pos + len < BUF_SIZE) {
-            buffer.put(b, off, len);
+            System.arraycopy(b, off, buffer, pos, len);
             pos += len;
             return;
         }
 
         if (pos > 0) {
             final int size = BUF_SIZE - pos;
-            buffer.put(b, off, size);
+            System.arraycopy(b, off, buffer, pos, size);
             process();
             off += size;
         }
 
         final int limit = end - BUF_SIZE;
         while (off <= limit) {
-            buffer.put(b, off, BUF_SIZE);
+            System.arraycopy(b, off, buffer, 0, BUF_SIZE);
             process();
             off += BUF_SIZE;
         }
 
         if (off < end) {
             pos = end - off;
-            buffer.put(b, off, pos);
+            System.arraycopy(b, off, buffer, 0, pos);
         }
     }
 
@@ -129,16 +128,13 @@ public class XXHash32 implements Checksum {
         }
         hash += totalLen;
 
-        buffer.flip();
-
         int idx = 0;
         final int limit = pos - 4;
         for (; idx <= limit; idx += 4) {
-            hash = rotateLeft(hash + buffer.getInt() * PRIME3, 17) * PRIME4;
+            hash = rotateLeft(hash + getInt(idx) * PRIME3, 17) * PRIME4;
         }
         while (idx < pos) {
-            hash = rotateLeft(hash + (buffer.get() & 0xff) * PRIME5, 11) * PRIME1;
-            idx++;
+            hash = rotateLeft(hash + (buffer[idx++] & 0xff) * PRIME5, 11) * PRIME1;
         }
 
         hash ^= hash >>> 15;
@@ -149,6 +145,10 @@ public class XXHash32 implements Checksum {
         return hash & 0xffffffffl;
     }
 
+    private int getInt(int idx) {
+        return (int) (fromLittleEndian(buffer, idx, 4) & 0xffffffffl);
+    }
+
     private void initializeState() {
         state[0] = seed + PRIME1 + PRIME2;
         state[1] = seed + PRIME2;
@@ -157,25 +157,22 @@ public class XXHash32 implements Checksum {
     }
 
     private void process() {
-        buffer.flip();
-
         // local shadows for performance
         int s0 = state[0];
         int s1 = state[1];
         int s2 = state[2];
         int s3 = state[3];
 
-        s0 = rotateLeft(s0 + buffer.getInt() * PRIME2, ROTATE_BITS) * PRIME1;
-        s1 = rotateLeft(s1 + buffer.getInt() * PRIME2, ROTATE_BITS) * PRIME1;
-        s2 = rotateLeft(s2 + buffer.getInt() * PRIME2, ROTATE_BITS) * PRIME1;
-        s3 = rotateLeft(s3 + buffer.getInt() * PRIME2, ROTATE_BITS) * PRIME1;
+        s0 = rotateLeft(s0 + getInt(0) * PRIME2, ROTATE_BITS) * PRIME1;
+        s1 = rotateLeft(s1 + getInt(4) * PRIME2, ROTATE_BITS) * PRIME1;
+        s2 = rotateLeft(s2 + getInt(8) * PRIME2, ROTATE_BITS) * PRIME1;
+        s3 = rotateLeft(s3 + getInt(12) * PRIME2, ROTATE_BITS) * PRIME1;
 
         state[0] = s0;
         state[1] = s1;
         state[2] = s2;
         state[3] = s3;
 
-        buffer.clear();
         pos = 0;
     }
 }
