@@ -97,14 +97,13 @@ public class XXHash32 implements Checksum {
         if (pos > 0) {
             final int size = BUF_SIZE - pos;
             System.arraycopy(b, off, buffer, pos, size);
-            process();
+            process(buffer, 0);
             off += size;
         }
 
         final int limit = end - BUF_SIZE;
         while (off <= limit) {
-            System.arraycopy(b, off, buffer, 0, BUF_SIZE);
-            process();
+            process(b, off);
             off += BUF_SIZE;
         }
 
@@ -131,7 +130,7 @@ public class XXHash32 implements Checksum {
         int idx = 0;
         final int limit = pos - 4;
         for (; idx <= limit; idx += 4) {
-            hash = rotateLeft(hash + getInt(idx) * PRIME3, 17) * PRIME4;
+            hash = rotateLeft(hash + getInt(buffer, idx) * PRIME3, 17) * PRIME4;
         }
         while (idx < pos) {
             hash = rotateLeft(hash + (buffer[idx++] & 0xff) * PRIME5, 11) * PRIME1;
@@ -145,7 +144,7 @@ public class XXHash32 implements Checksum {
         return hash & 0xffffffffl;
     }
 
-    private int getInt(int idx) {
+    private static int getInt(byte[] buffer, int idx) {
         return (int) (fromLittleEndian(buffer, idx, 4) & 0xffffffffl);
     }
 
@@ -156,17 +155,17 @@ public class XXHash32 implements Checksum {
         state[3] = seed - PRIME1;
     }
 
-    private void process() {
+    private void process(byte[] b, int offset) {
         // local shadows for performance
         int s0 = state[0];
         int s1 = state[1];
         int s2 = state[2];
         int s3 = state[3];
 
-        s0 = rotateLeft(s0 + getInt(0) * PRIME2, ROTATE_BITS) * PRIME1;
-        s1 = rotateLeft(s1 + getInt(4) * PRIME2, ROTATE_BITS) * PRIME1;
-        s2 = rotateLeft(s2 + getInt(8) * PRIME2, ROTATE_BITS) * PRIME1;
-        s3 = rotateLeft(s3 + getInt(12) * PRIME2, ROTATE_BITS) * PRIME1;
+        s0 = rotateLeft(s0 + getInt(b, offset) * PRIME2, ROTATE_BITS) * PRIME1;
+        s1 = rotateLeft(s1 + getInt(b, offset + 4) * PRIME2, ROTATE_BITS) * PRIME1;
+        s2 = rotateLeft(s2 + getInt(b, offset + 8) * PRIME2, ROTATE_BITS) * PRIME1;
+        s3 = rotateLeft(s3 + getInt(b, offset + 12) * PRIME2, ROTATE_BITS) * PRIME1;
 
         state[0] = s0;
         state[1] = s1;
