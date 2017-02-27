@@ -128,6 +128,7 @@ class Coders {
             super(Number.class);
         }
 
+        @SuppressWarnings("resource") // caller must close the InputStream
         @Override
         InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
                 final Coder coder, final byte[] password)
