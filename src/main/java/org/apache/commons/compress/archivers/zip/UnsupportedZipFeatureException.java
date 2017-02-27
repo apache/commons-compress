@@ -93,6 +93,8 @@ public class UnsupportedZipFeatureException extends ZipException {
      * @since 1.1
      */
     public static class Feature implements java.io.Serializable {
+
+        private static final long serialVersionUID = 4112582948775420359L;
         /**
          * The entry is encrypted.
          */
