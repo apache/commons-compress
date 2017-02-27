@@ -109,6 +109,7 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
         } catch (final IOException io) {
             // Exception expected
         }
+        finishTest.close();
     }
 
     @Test
