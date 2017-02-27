@@ -32,7 +32,7 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
     @Test
     public void testNotADumpArchive() throws Exception {
         try (FileInputStream is = new FileInputStream(getFile("bla.zip"))) {
-            new DumpArchiveInputStream(is);
+            new DumpArchiveInputStream(is).close();
             fail("expected an exception");
         } catch (final ArchiveException ex) {
             // expected
@@ -43,7 +43,7 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
     @Test
     public void testNotADumpArchiveButBigEnough() throws Exception {
         try (FileInputStream is = new FileInputStream(getFile("zip64support.tar.bz2"))) {
-            new DumpArchiveInputStream(is);
+            new DumpArchiveInputStream(is).close();
             fail("expected an exception");
         } catch (final ArchiveException ex) {
             // expected

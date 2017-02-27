@@ -146,7 +146,7 @@ public class SevenZFileTest extends AbstractTestCase {
     @Test
     public void testEncryptedArchiveRequiresPassword() throws Exception {
         try {
-            new SevenZFile(getFile("bla.encrypted.7z"));
+            new SevenZFile(getFile("bla.encrypted.7z")).close();
             fail("shouldn't decrypt without a password");
         } catch (final PasswordRequiredException ex) {
             final String msg = ex.getMessage();
