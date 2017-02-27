@@ -17,7 +17,6 @@
  */
 package org.apache.commons.compress.utils;
 
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.Checksum;
