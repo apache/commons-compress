@@ -45,6 +45,7 @@ public class SeekableInMemoryByteChannelTest {
         assertEquals(testData.length, readCount);
         assertArrayEquals(testData, readBuffer.array());
         assertEquals(testData.length, c.position());
+        c.close();
     }
 
     @Test
@@ -58,6 +59,7 @@ public class SeekableInMemoryByteChannelTest {
         assertEquals(testData.length, readCount);
         assertArrayEquals(testData, Arrays.copyOf(readBuffer.array(), testData.length));
         assertEquals(testData.length, c.position());
+        c.close();
     }
 
     @Test
@@ -72,6 +74,7 @@ public class SeekableInMemoryByteChannelTest {
         assertEquals(4L, readCount);
         assertEquals("data", new String(readBuffer.array(), Charset.forName(UTF_8)));
         assertEquals(testData.length, c.position());
+        c.close();
     }
 
     @Test
@@ -85,6 +88,7 @@ public class SeekableInMemoryByteChannelTest {
         //then
         assertEquals(0L, readBuffer.position());
         assertEquals(-1, readCount);
+        c.close();
     }
 
     @Test(expected = ClosedChannelException.class)
@@ -107,6 +111,7 @@ public class SeekableInMemoryByteChannelTest {
         assertEquals(testData.length, writeCount);
         assertArrayEquals(testData, Arrays.copyOf(c.array(), (int) c.size()));
         assertEquals(testData.length, c.position());
+        c.close();
     }
 
     @Test
@@ -123,6 +128,7 @@ public class SeekableInMemoryByteChannelTest {
         assertEquals(testData.length, writeCount);
         assertArrayEquals(expectedData.array(), Arrays.copyOf(c.array(), (int) c.size()));
         assertEquals(testData.length + 5, c.position());
+        c.close();
     }
 
 
@@ -144,6 +150,7 @@ public class SeekableInMemoryByteChannelTest {
         //then
         byte[] bytes = Arrays.copyOf(c.array(), (int) c.size());
         assertEquals("Some", new String(bytes, Charset.forName(UTF_8)));
+        c.close();
     }
 
     @Test
@@ -156,6 +163,7 @@ public class SeekableInMemoryByteChannelTest {
         //then
         assertEquals(4L, c.position());
         assertEquals(4L, c.size());
+        c.close();
     }
 
     @Test
@@ -170,6 +178,7 @@ public class SeekableInMemoryByteChannelTest {
         assertEquals(4L, posAtFour);
         assertEquals(c.size(), posAtTheEnd);
         assertEquals(posPastTheEnd, posPastTheEnd);
+        c.close();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -178,6 +187,7 @@ public class SeekableInMemoryByteChannelTest {
         SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel();
         //when
         c.position(Integer.MAX_VALUE + 1L);
+        c.close();
     }
 
     @Test(expected = ClosedChannelException.class)
