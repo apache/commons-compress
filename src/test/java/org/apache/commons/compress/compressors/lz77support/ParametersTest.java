@@ -26,85 +26,110 @@ public class ParametersTest {
 
     @Test
     public void defaultConstructor() {
-        Parameters p = new Parameters(128);
+        Parameters p = newParameters(128);
         assertEquals(128, p.getWindowSize());
-        assertEquals(3, p.getMinMatchLength());
-        assertEquals(127, p.getMaxMatchLength());
+        assertEquals(3, p.getMinBackReferenceLength());
+        assertEquals(127, p.getMaxBackReferenceLength());
         assertEquals(127, p.getMaxOffset());
         assertEquals(128, p.getMaxLiteralLength());
     }
 
     @Test
-    public void minMatchLengthIsAtLeastThree() {
-        Parameters p = new Parameters(128, 2, 3, 4, 5);
-        assertEquals(3, p.getMinMatchLength());
+    public void minBackReferenceLengthIsAtLeastThree() {
+        Parameters p = newParameters(128, 2, 3, 4, 5);
+        assertEquals(3, p.getMinBackReferenceLength());
     }
 
     @Test
-    public void maxMatchLengthIsWinsizeMinus1WhenSmallerThanMinMatchLength() {
-        Parameters p = new Parameters(128, 2, 2, 4, 5);
-        assertEquals(127, p.getMaxMatchLength());
+    public void maxBackReferenceLengthIsMinBackReferenceLengthWhenSmallerThanMinBackReferenceLength() {
+        Parameters p = newParameters(128, 2, 2, 4, 5);
+        assertEquals(3, p.getMaxBackReferenceLength());
     }
 
     @Test
-    public void maxMatchLengthIsMinMatchLengthIfBothAreEqual() {
-        Parameters p = new Parameters(128, 2, 3, 4, 5);
-        assertEquals(3, p.getMaxMatchLength());
+    public void maxBackReferenceLengthIsMinBackReferenceLengthWhenSmallerThanMinBackReferenceLengthReversedInvocationOrder() {
+        Parameters p = Parameters.builder(128)
+            .withMaxBackReferenceLength(2)
+            .withMinBackReferenceLength(2)
+            .withMaxOffset(4)
+            .withMaxLiteralLength(5)
+            .build();
+        assertEquals(3, p.getMaxBackReferenceLength());
+    }
+
+    @Test
+    public void maxBackReferenceLengthIsMinBackReferenceLengthIfBothAreEqual() {
+        Parameters p = newParameters(128, 2, 3, 4, 5);
+        assertEquals(3, p.getMaxBackReferenceLength());
     }
 
     @Test
     public void maxOffsetIsWindowSizeMinus1IfSetTo0() {
-        Parameters p = new Parameters(128, 2, 3, 0, 5);
+        Parameters p = newParameters(128, 2, 3, 0, 5);
         assertEquals(127, p.getMaxOffset());
     }
 
     @Test
     public void maxOffsetIsWindowSizeMinus1IfSetToANegativeValue() {
-        Parameters p = new Parameters(128, 2, 3, -1, 5);
+        Parameters p = newParameters(128, 2, 3, -1, 5);
         assertEquals(127, p.getMaxOffset());
     }
 
     @Test
     public void maxOffsetIsWindowSizeMinus1IfBiggerThanWindowSize() {
-        Parameters p = new Parameters(128, 2, 3, 129, 5);
+        Parameters p = newParameters(128, 2, 3, 129, 5);
         assertEquals(127, p.getMaxOffset());
     }
 
     @Test
     public void maxLiteralLengthIsWindowSizeIfSetTo0() {
-        Parameters p = new Parameters(128, 2, 3, 4, 0);
+        Parameters p = newParameters(128, 2, 3, 4, 0);
         assertEquals(128, p.getMaxLiteralLength());
     }
 
     @Test
     public void maxLiteralLengthIsWindowSizeIfSetToANegativeValue() {
-        Parameters p = new Parameters(128, 2, 3, 0, -1);
+        Parameters p = newParameters(128, 2, 3, 0, -1);
         assertEquals(128, p.getMaxLiteralLength());
     }
 
     @Test
     public void maxLiteralLengthIsWindowSizeIfSetToAValueTooBigToHoldInSlidingWindow() {
-        Parameters p = new Parameters(128, 2, 3, 0, 259);
+        Parameters p = newParameters(128, 2, 3, 0, 259);
         assertEquals(128, p.getMaxLiteralLength());
     }
 
     @Test
     public void allParametersUsuallyTakeTheirSpecifiedValues() {
-        Parameters p = new Parameters(256, 4, 5, 6, 7);
+        Parameters p = newParameters(256, 4, 5, 6, 7);
         assertEquals(256, p.getWindowSize());
-        assertEquals(4, p.getMinMatchLength());
-        assertEquals(5, p.getMaxMatchLength());
+        assertEquals(4, p.getMinBackReferenceLength());
+        assertEquals(5, p.getMaxBackReferenceLength());
         assertEquals(6, p.getMaxOffset());
         assertEquals(7, p.getMaxLiteralLength());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void windowSizeMustNotBeSmallerThanMinMatchLength() {
-        new Parameters(128, 200, 300, 400, 500);
+    public void windowSizeMustNotBeSmallerThanMinBackReferenceLength() {
+        newParameters(128, 200, 300, 400, 500);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void windowSizeMustNotBeAPowerOfTwo() {
-        new Parameters(100, 200, 300, 400, 500);
+        newParameters(100, 200, 300, 400, 500);
+    }
+
+    private static Parameters newParameters(int windowSize) {
+        return Parameters.builder(windowSize).build();
+    }
+
+    private static Parameters newParameters(int windowSize, int minBackReferenceLength, int maxBackReferenceLength,
+        int maxOffset, int maxLiteralLength) {
+        return Parameters.builder(windowSize)
+            .withMinBackReferenceLength(minBackReferenceLength)
+            .withMaxBackReferenceLength(maxBackReferenceLength)
+            .withMaxOffset(maxOffset)
+            .withMaxLiteralLength(maxLiteralLength)
+            .build();
     }
 }

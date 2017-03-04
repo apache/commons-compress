@@ -98,10 +98,22 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
      * @throws IOException if reading fails
      */
     public BlockLZ4CompressorOutputStream(final OutputStream os) throws IOException {
+        this(os, createParameterBuilder().build());
+    }
+
+    /**
+     * Creates a new LZ4 output stream.
+     *
+     * @param os
+     *            An OutputStream to read compressed data from
+     * @param params
+     *            The parameters to use for LZ77 compression.
+     *
+     * @throws IOException if reading fails
+     */
+    public BlockLZ4CompressorOutputStream(final OutputStream os, Parameters params) throws IOException {
         this.os = os;
-        int maxLen = BlockLZ4CompressorInputStream.WINDOW_SIZE - 1;
-        compressor = new LZ77Compressor(new Parameters(BlockLZ4CompressorInputStream.WINDOW_SIZE,
-            MIN_BACK_REFERENCE_LENGTH, maxLen, maxLen, maxLen),
+        compressor = new LZ77Compressor(params,
             new LZ77Compressor.Callback() {
                 public void accept(LZ77Compressor.Block block) throws IOException {
                     //System.err.println(block);
@@ -386,6 +398,18 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
             splitCandidate.prependTo(replacement);
         }
         pairs.add(replacement);
+    }
+
+    /**
+     * Returns a builder correctly configured for the LZ4 algorithm.
+     */
+    public static Parameters.Builder createParameterBuilder() {
+        int maxLen = BlockLZ4CompressorInputStream.WINDOW_SIZE - 1;
+        return Parameters.builder(BlockLZ4CompressorInputStream.WINDOW_SIZE)
+            .withMinBackReferenceLength(MIN_BACK_REFERENCE_LENGTH)
+            .withMaxBackReferenceLength(maxLen)
+            .withMaxOffset(maxLen)
+            .withMaxLiteralLength(maxLen);
     }
 
     final static class Pair {

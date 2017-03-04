@@ -63,13 +63,13 @@ import java.util.Arrays;
  *  buffer of twice of <code>windowSize</code> - real world values are
  *  in the area of 32k.</dd>
  *
- *  <dt><code>minMatchLength</code></dt>
- *  <dd>Minimal length of a match found. A true minimum of 3 is
+ *  <dt><code>minBackReferenceLength</code></dt>
+ *  <dd>Minimal length of a back-reference found. A true minimum of 3 is
  *  hard-coded inside of this implemention but bigger lengths can be
  *  configured.</dd>
  *
- *  <dt><code>maxMatchLength</code></dt>
- *  <dd>Maximal length of a match found.</dd>
+ *  <dt><code>maxBackReferenceLength</code></dt>
+ *  <dd>Maximal length of a back-reference found.</dd>
  *
  *  <dt><code>maxOffset</code></dt>
  *  <dd>Maximal offset of a back-reference.</dd>
@@ -135,7 +135,7 @@ public class LZ77Compressor {
         }
     }
     /**
-     * Represents a back-reference to a match.
+     * Represents a back-reference.
      */
     public static final class BackReference extends Block {
         private final int offset, length;
@@ -144,14 +144,14 @@ public class LZ77Compressor {
             this.length = length;
         }
         /**
-         * Provides the offset of the match.
+         * Provides the offset of the back-reference.
          * @return the offset
          */
         public int getOffset() {
             return offset;
         }
         /**
-         * Provides the length of the match.
+         * Provides the length of the back-reference.
          * @return the length
          */
         public int getLength() {
@@ -357,7 +357,7 @@ public class LZ77Compressor {
         }
         System.arraycopy(data, off, window, currentPosition + lookahead, len);
         lookahead += len;
-        if (!initialized && lookahead >= params.getMinMatchLength()) {
+        if (!initialized && lookahead >= params.getMinBackReferenceLength()) {
             initialize();
         }
         if (initialized) {
@@ -393,7 +393,7 @@ public class LZ77Compressor {
     }
 
     private void compress() throws IOException {
-        final int minMatch = params.getMinMatchLength();
+        final int minMatch = params.getMinBackReferenceLength();
 
         while (lookahead >= minMatch) {
             catchUpMissedInserts();
@@ -475,9 +475,9 @@ public class LZ77Compressor {
      * longest match as a side effect.</p>
      */
     private int longestMatch(int matchHead) {
-        final int minLength = params.getMinMatchLength();
+        final int minLength = params.getMinBackReferenceLength();
         int longestMatchLength = minLength - 1;
-        final int maxPossibleLength = Math.min(params.getMaxMatchLength(), lookahead);
+        final int maxPossibleLength = Math.min(params.getMaxBackReferenceLength(), lookahead);
         final int minIndex = Math.max(0, currentPosition - params.getMaxOffset());
         while (matchHead >= minIndex) {
             int currentLength = 0;

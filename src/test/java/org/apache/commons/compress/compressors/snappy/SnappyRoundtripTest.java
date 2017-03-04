@@ -33,7 +33,8 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
 
     private void roundTripTest(String testFile) throws IOException {
         roundTripTest(getFile(testFile),
-            SnappyCompressorOutputStream.createParams(SnappyCompressorInputStream.DEFAULT_BLOCK_SIZE));
+            SnappyCompressorOutputStream.createParameterBuilder(SnappyCompressorInputStream.DEFAULT_BLOCK_SIZE)
+                .build());
     }
 
     private void roundTripTest(final File input, Parameters params) throws IOException {
@@ -102,7 +103,7 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
             fs.write(0);
             fs.write(0);
         }
-        roundTripTest(f, new Parameters(1 << 17, 4, 64, 1 << 17 - 1, 1 << 17 - 1));
+        roundTripTest(f, newParameters(1 << 17, 4, 64, 1 << 17 - 1, 1 << 17 - 1));
     }
 
     @Test
@@ -128,7 +129,16 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
                 fs.write(r.nextInt(256));
             }
         }
-        roundTripTest(f, new Parameters(1 << 18, 4, 64, 1 << 16 - 1, 1 << 18 - 1));
+        roundTripTest(f, newParameters(1 << 18, 4, 64, 1 << 16 - 1, 1 << 18 - 1));
     }
 
+    private static Parameters newParameters(int windowSize, int minBackReferenceLength, int maxBackReferenceLength,
+        int maxOffset, int maxLiteralLength) {
+        return Parameters.builder(windowSize)
+            .withMinBackReferenceLength(minBackReferenceLength)
+            .withMaxBackReferenceLength(maxBackReferenceLength)
+            .withMaxOffset(maxOffset)
+            .withMaxLiteralLength(maxLiteralLength)
+            .build();
+    }
 }
