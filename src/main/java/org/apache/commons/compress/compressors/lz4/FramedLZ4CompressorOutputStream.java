@@ -112,9 +112,9 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
          * otherwise uses the defaults of enabled content checksum,
          * disabled block checksums and independent blocks.
          * @param blockSize the size of a single block.
-         * @param lz77params lz77 parameters parameters used to
-         * fine-tune compression, in particular to balance compression
-         * ratio vs compression speed.
+         * @param lz77params parameters used to fine-tune compression,
+         * in particular to balance compression ratio vs compression
+         * speed.
          */
         public Parameters(BlockSize blockSize,
             org.apache.commons.compress.compressors.lz77support.Parameters lz77params) {
@@ -149,9 +149,9 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
          * the content of a previous block. Enabling this may improve
          * compression ratio but makes it impossible to decompress the
          * output in parallel.
-         * @param lz77params lz77 parameters parameters used to
-         * fine-tune compression, in particular to balance compression
-         * ratio vs compression speed.
+         * @param lz77params parameters used to fine-tune compression,
+         * in particular to balance compression ratio vs compression
+         * speed.
          */
         public Parameters(BlockSize blockSize, boolean withContentChecksum, boolean withBlockChecksum,
                 boolean withBlockDependency,
