@@ -22,12 +22,37 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.compressors.lz77support.Parameters;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runners.Parameterized;
+import org.junit.runner.RunWith;
 
+@RunWith(Parameterized.class)
 public final class BlockLZ4CompressorRoundtripTest extends AbstractTestCase {
+
+    @org.junit.runners.Parameterized.Parameters(name = "using {0}")
+    public static Collection<Object[]> factory() {
+        return Arrays.asList(new Object[][] {
+                new Object[] { "default", BlockLZ4CompressorOutputStream.createParameterBuilder().build() },
+                new Object[] { "tuned for speed",
+                    BlockLZ4CompressorOutputStream.createParameterBuilder().tunedForSpeed().build() },
+                new Object[] { "tuned for compression ratio",
+                    BlockLZ4CompressorOutputStream.createParameterBuilder().tunedForCompressionRatio().build() }
+            });
+    }
+
+    private final String config;
+    private final Parameters params;
+
+    public BlockLZ4CompressorRoundtripTest(String config, Parameters params) {
+        this.config = config;
+        this.params = params;
+    }
 
     private void roundTripTest(String testFile) throws IOException {
         File input = getFile(testFile);
@@ -35,9 +60,10 @@ public final class BlockLZ4CompressorRoundtripTest extends AbstractTestCase {
         final File outputSz = new File(dir, input.getName() + ".block.lz4");
         try (FileInputStream is = new FileInputStream(input);
              FileOutputStream os = new FileOutputStream(outputSz);
-             BlockLZ4CompressorOutputStream los = new BlockLZ4CompressorOutputStream(os)) {
+             BlockLZ4CompressorOutputStream los = new BlockLZ4CompressorOutputStream(os, params)) {
             IOUtils.copy(is, los);
         }
+        System.err.println("Configuration: " + config);
         System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
             + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
         start = System.currentTimeMillis();
@@ -62,6 +88,7 @@ public final class BlockLZ4CompressorRoundtripTest extends AbstractTestCase {
         roundTripTest("lorem-ipsum.txt.gz");
     }
 
+    // yields no compression at all
     @Test
     public void biggerFileRoundtrip() throws IOException {
         roundTripTest("COMPRESS-256.7z");

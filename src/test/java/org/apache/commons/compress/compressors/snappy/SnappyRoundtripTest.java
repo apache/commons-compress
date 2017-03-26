@@ -61,7 +61,26 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
     // should yield decent compression
     @Test
     public void blaTarRoundtrip() throws IOException {
+        System.err.println("Configuration: default");
         roundTripTest("bla.tar");
+    }
+
+    @Test
+    public void blaTarRoundtripTunedForSpeed() throws IOException {
+        System.err.println("Configuration: tuned for speed");
+        roundTripTest(getFile("bla.tar"),
+            SnappyCompressorOutputStream.createParameterBuilder(SnappyCompressorInputStream.DEFAULT_BLOCK_SIZE)
+                .tunedForSpeed()
+                .build());
+    }
+
+    @Test
+    public void blaTarRoundtripTunedForCompressionRatio() throws IOException {
+        System.err.println("Configuration: tuned for compression ratio");
+        roundTripTest(getFile("bla.tar"),
+            SnappyCompressorOutputStream.createParameterBuilder(SnappyCompressorInputStream.DEFAULT_BLOCK_SIZE)
+                .tunedForCompressionRatio()
+                .build());
     }
 
     // yields no compression at all
@@ -70,6 +89,7 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
         roundTripTest("lorem-ipsum.txt.gz");
     }
 
+    // yields no compression at all
     @Test
     public void biggerFileRoundtrip() throws IOException {
         roundTripTest("COMPRESS-256.7z");
