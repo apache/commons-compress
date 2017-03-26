@@ -52,6 +52,10 @@ public final class FramedLZ4CompressorRoundtripTest extends AbstractTestCase {
             // small blocksize (so we get enough blocks) and enabled block dependency, otherwise defaults
             new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64,
                 true, false, true) },
+            // default, tuned for speed
+            new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M4,
+                true, false, false, BlockLZ4CompressorOutputStream.createParameterBuilder()
+                    .tunedForSpeed().build()) },
         });
     }
 
