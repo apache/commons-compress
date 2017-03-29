@@ -376,7 +376,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      */
     public long getChksum() {
         checkNewFormat();
-        return this.chksum;
+        return this.chksum & 0xFFFFFFFFL;
     }
 
     /**
@@ -679,7 +679,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      */
     public void setChksum(final long chksum) {
         checkNewFormat();
-        this.chksum = chksum;
+        this.chksum = chksum & 0xFFFFFFFFL;
     }
 
     /**

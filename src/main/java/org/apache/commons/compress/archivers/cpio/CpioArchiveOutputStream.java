@@ -434,6 +434,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         if (this.entry.getFormat() == FORMAT_NEW_CRC) {
             for (int pos = 0; pos < len; pos++) {
                 this.crc += b[pos] & 0xFF;
+                this.crc &= 0xFFFFFFFFL;
             }
         }
         count(len);
