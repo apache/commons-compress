@@ -329,6 +329,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         if (this.entry.getFormat() == FORMAT_NEW_CRC) {
             for (int pos = 0; pos < tmpread; pos++) {
                 this.crc += b[pos] & 0xFF;
+                this.crc &= 0xFFFFFFFFL;
             }
         }
         this.entryBytesRead += tmpread;
