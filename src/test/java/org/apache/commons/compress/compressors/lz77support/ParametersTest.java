@@ -115,7 +115,7 @@ public class ParametersTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void windowSizeMustNotBeAPowerOfTwo() {
+    public void windowSizeMustBeAPowerOfTwo() {
         newParameters(100, 200, 300, 400, 500);
     }
 
