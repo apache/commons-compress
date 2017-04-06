@@ -264,9 +264,9 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
                 copyOffset = blockOffset + block.length - offsetRemaining;
                 copyLen = Math.min(lengthRemaining, block.length - copyOffset);
             } else {
-                // offsetRemaining is negative and points into the expanded bytes
+                // offsetRemaining is negative or 0 and points into the expanded bytes
                 block = expanded;
-                copyOffset = writeOffset  + offsetRemaining;
+                copyOffset = -offsetRemaining;
                 copyLen = Math.min(lengthRemaining, writeOffset + offsetRemaining);
             }
             System.arraycopy(block, copyOffset, expanded, writeOffset, copyLen);

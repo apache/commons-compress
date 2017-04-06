@@ -319,6 +319,29 @@ public class BlockLZ4CompressorOutputStreamTest {
         Assert.assertArrayEquals(expected, compressed);
     }
 
+    @Test
+    public void rewritingWithFinalBackreferenceAndOffsetBiggerThan1() throws IOException {
+        // this caused trouble when expandFromList() fell into the "offsetRemaining is negative" self-copy case as the
+        // calculation of copyOffset was wrong
+        byte[] toCompress = prepareExpected(25);
+        for (int i = 0; i < toCompress.length; i += 4) {
+            toCompress[i] = 1;
+        }
+        // LZ77Compressor creates a four byte literal and a back-reference with offset 4 and length 21
+        // we'll need to split the back-reference and chop off the last 12 bytes
+        byte[] compressed = compress(toCompress);
+        byte[] expected = prepareExpected(1 + 4 + 2 + 1 + 12);
+        expected[0] = (byte) ((4<<4) | 5);
+        expected[1] = 1;
+        expected[5] = 4;
+        expected[6] = 0;
+        expected[7] = (byte) (12<<4);
+        for (int i = 11; i < expected.length; i += 4) {
+            expected[i] = 1;
+        }
+        Assert.assertArrayEquals(expected, compressed);
+    }
+
     private byte[] compress(int length) throws IOException {
         return compress(length, 0);
     }
