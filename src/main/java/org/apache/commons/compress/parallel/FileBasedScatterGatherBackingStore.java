@@ -19,10 +19,10 @@ package org.apache.commons.compress.parallel;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 
 /**
  * ScatterGatherBackingStore that is backed by a file.
@@ -31,17 +31,24 @@ import java.io.InputStream;
  */
 public class FileBasedScatterGatherBackingStore implements ScatterGatherBackingStore {
     private final File target;
-    private final FileOutputStream os;
+    private final OutputStream os;
     private boolean closed;
 
     public FileBasedScatterGatherBackingStore(final File target) throws FileNotFoundException {
         this.target = target;
-        os = new FileOutputStream(target);
+        try {
+            os = Files.newOutputStream(target.toPath());
+        } catch (FileNotFoundException ex) {
+            throw ex;
+        } catch (IOException ex) {
+            // must convert exception to stay backwards compatible with Compress 1.10 to 1.13
+            throw new RuntimeException(ex);
+        }
     }
 
     @Override
     public InputStream getInputStream() throws IOException {
-        return new FileInputStream(target);
+        return Files.newInputStream(target.toPath());
     }
 
     @Override

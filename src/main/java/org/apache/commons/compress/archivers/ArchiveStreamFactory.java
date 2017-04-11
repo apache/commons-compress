@@ -59,26 +59,26 @@ import org.apache.commons.compress.utils.Sets;
  * Compressing a ZIP-File:
  * 
  * <pre>
- * final OutputStream out = new FileOutputStream(output); 
+ * final OutputStream out = Files.newOutputStream(output.toPath());
  * ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream(ArchiveStreamFactory.ZIP, out);
- * 
+ *
  * os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
- * IOUtils.copy(new FileInputStream(file1), os);
+ * IOUtils.copy(Files.newInputStream(file1.toPath()), os);
  * os.closeArchiveEntry();
  *
  * os.putArchiveEntry(new ZipArchiveEntry("testdata/test2.xml"));
- * IOUtils.copy(new FileInputStream(file2), os);
+ * IOUtils.copy(Files.newInputStream(file2.toPath()), os);
  * os.closeArchiveEntry();
  * os.close();
  * </pre>
- * 
+ *
  * Decompressing a ZIP-File:
- * 
+ *
  * <pre>
- * final InputStream is = new FileInputStream(input); 
+ * final InputStream is = Files.newInputStream(input.toPath());
  * ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream(ArchiveStreamFactory.ZIP, is);
  * ZipArchiveEntry entry = (ZipArchiveEntry)in.getNextEntry();
- * OutputStream out = new FileOutputStream(new File(dir, entry.getName()));
+ * OutputStream out = Files.newOutputStream(dir.toPath().resolve(entry.getName()));
  * IOUtils.copy(in, out);
  * out.close();
  * in.close();
@@ -95,51 +95,51 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     private static final int SIGNATURE_SIZE = 12;
 
     private static final ArchiveStreamFactory SINGLETON = new ArchiveStreamFactory();
-    
+
     /**
      * Constant (value {@value}) used to identify the AR archive format.
      * @since 1.1
      */
     public static final String AR = "ar";
-    
+
     /**
      * Constant (value {@value}) used to identify the ARJ archive format.
      * Not supported as an output stream type.
      * @since 1.6
      */
     public static final String ARJ = "arj";
-    
+
     /**
      * Constant (value {@value}) used to identify the CPIO archive format.
      * @since 1.1
      */
     public static final String CPIO = "cpio";
-    
+
     /**
      * Constant (value {@value}) used to identify the Unix DUMP archive format.
      * Not supported as an output stream type.
      * @since 1.3
      */
     public static final String DUMP = "dump";
-    
+
     /**
      * Constant (value {@value}) used to identify the JAR archive format.
      * @since 1.1
      */
     public static final String JAR = "jar";
-    
+
     /**
      * Constant used to identify the TAR archive format.
      * @since 1.1
      */
     public static final String TAR = "tar";
-    
+
     /**
      * Constant (value {@value}) used to identify the ZIP archive format.
      * @since 1.1
      */
     public static final String ZIP = "zip";
-    
+
     /**
      * Constant (value {@value}) used to identify the 7z archive format.
      * @since 1.8
@@ -170,7 +170,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             map.put(toKey(name), provider);
         }
     }
-    
+
     private static Iterator<ArchiveStreamProvider> serviceLoaderIterator() {
         return new ServiceLoaderIterator<>(ArchiveStreamProvider.class);
     }
@@ -295,11 +295,11 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
 
     /**
      * Sets the encoding to use for arj, jar, zip, dump, cpio and tar files. Use null for the archiver default.
-     * 
+     *
      * @param entryEncoding the entry encoding, null uses the archiver default.
      * @since 1.5
      * @deprecated 1.10 use {@link #ArchiveStreamFactory(String)} to specify the encoding
-     * @throws IllegalStateException if the constructor {@link #ArchiveStreamFactory(String)} 
+     * @throws IllegalStateException if the constructor {@link #ArchiveStreamFactory(String)}
      * was used to specify the factory encoding.
      */
     @Deprecated
@@ -313,7 +313,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
 
     /**
      * Creates an archive input stream from an archiver name and an input stream.
-     * 
+     *
      * @param archiverName the archive name,
      * i.e. {@value #AR}, {@value #ARJ}, {@value #ZIP}, {@value #TAR}, {@value #JAR}, {@value #CPIO}, {@value #DUMP} or {@value #SEVEN_Z}
      * @param in the input stream
@@ -327,7 +327,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             throws ArchiveException {
         return createArchiveInputStream(archiverName, in, entryEncoding);
     }
-    
+
     @Override
     public ArchiveInputStream createArchiveInputStream(final String archiverName, final InputStream in,
             final String actualEncoding) throws ArchiveException {
@@ -393,9 +393,9 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
 
     /**
      * Creates an archive output stream from an archiver name and an output stream.
-     * 
+     *
      * @param archiverName the archive name,
-     * i.e. {@value #AR}, {@value #ZIP}, {@value #TAR}, {@value #JAR} or {@value #CPIO} 
+     * i.e. {@value #AR}, {@value #ZIP}, {@value #TAR}, {@value #JAR} or {@value #CPIO}
      * @param out the output stream
      * @return the archive output stream
      * @throws ArchiveException if the archiver name is not known
@@ -407,7 +407,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             throws ArchiveException {
         return createArchiveOutputStream(archiverName, out, entryEncoding);
     }
-    
+
     @Override
     public ArchiveOutputStream createArchiveOutputStream(
             final String archiverName, final OutputStream out, final String actualEncoding)
@@ -463,7 +463,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
      * Create an archive input stream from an input stream, autodetecting
      * the archive type from the first few bytes of the stream. The InputStream
      * must support marks, like BufferedInputStream.
-     * 
+     *
      * @param in the input stream
      * @return the archive input stream
      * @throws ArchiveException if the archiver name is not known

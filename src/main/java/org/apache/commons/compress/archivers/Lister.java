@@ -20,8 +20,8 @@ package org.apache.commons.compress.archivers;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
+import java.nio.file.Files;
 
 /**
  * Simple command line application that lists the contents of an archive.
@@ -44,7 +44,7 @@ public final class Lister {
         if (!f.isFile()) {
             System.err.println(f + " doesn't exist or is a directory");
         }
-        try (final InputStream fis = new BufferedInputStream(new FileInputStream(f));
+        try (final InputStream fis = new BufferedInputStream(Files.newInputStream(f.toPath()));
                 final ArchiveInputStream ais = createArchiveInputStream(args, fis)) {
             System.out.println("Created " + ais.toString());
             ArchiveEntry ae;

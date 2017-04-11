@@ -42,7 +42,7 @@ import org.apache.commons.compress.utils.IOUtils;
  * </p>
  * <pre>
  * CPIOArchiveInputStream cpioIn = new CPIOArchiveInputStream(
- *         new FileInputStream(new File(&quot;test.cpio&quot;)));
+ *         Files.newInputStream(Paths.get(&quot;test.cpio&quot;)));
  * CPIOArchiveEntry cpioEntry;
  *
  * while ((cpioEntry = cpioIn.getNextEntry()) != null) {

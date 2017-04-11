@@ -479,9 +479,9 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
           certainly add exception handling and make sure all streams
           get closed properly):</p>
 <source><![CDATA[
-FileInputStream fin = new FileInputStream("archive.tar.bz2");
+InputStream fin = Files.newInputStream(Paths.get("archive.tar.bz2"));
 BufferedInputStream in = new BufferedInputStream(fin);
-FileOutputStream out = new FileOutputStream("archive.tar");
+OutputStream out = Files.newOutputStream(Paths.get("archive.tar"));
 BZip2CompressorInputStream bzIn = new BZip2CompressorInputStream(in);
 final byte[] buffer = new byte[buffersize];
 int n = 0;
@@ -496,8 +496,8 @@ bzIn.close();
           certainly add exception handling and make sure all streams
           get closed properly):</p>
 <source><![CDATA[
-FileInputStream in = new FileInputStream("archive.tar");
-FileOutputStream fout = new FileOutputStream("archive.tar.gz");
+InputStream in = Files.newInputStream(Paths.get("archive.tar"));
+OutputStream fout = Files.newOutputStream(Paths.get("archive.tar.gz"));
 BufferedOutputStream out = new BufferedInputStream(out);
 BZip2CompressorOutputStream bzOut = new BZip2CompressorOutputStream(out);
 final byte[] buffer = new byte[buffersize];
@@ -521,9 +521,9 @@ in.close();
           certainly add exception handling and make sure all streams
           get closed properly):</p>
 <source><![CDATA[
-FileInputStream fin = new FileInputStream("archive.tar.gz");
+InputStream fin = Files.newInputStream(Paths.get("archive.tar.gz"));
 BufferedInputStream in = new BufferedInputStream(fin);
-FileOutputStream out = new FileOutputStream("archive.tar");
+OutputStream out = Files.newOutputStream(Paths.get("archive.tar"));
 GZipCompressorInputStream gzIn = new GZipCompressorInputStream(in);
 final byte[] buffer = new byte[buffersize];
 int n = 0;
@@ -538,8 +538,8 @@ gzIn.close();
           certainly add exception handling and make sure all streams
           get closed properly):</p>
 <source><![CDATA[
-FileInputStream in = new FileInputStream("archive.tar");
-FileOutputStream fout = new FileOutputStream("archive.tar.gz");
+InputStream in = Files.newInputStream(Paths.get("archive.tar"));
+OutputStream fout = Files.newOutputStream(Paths.get("archive.tar.gz"));
 BufferedOutputStream out = new BufferedInputStream(out);
 GZipCompressorOutputStream gzOut = new GZipCompressorOutputStream(out);
 final byte[] buffer = new byte[buffersize];
@@ -566,9 +566,9 @@ in.close();
           certainly add exception handling and make sure all streams
           get closed properly):</p>
 <source><![CDATA[
-FileInputStream fin = new FileInputStream("archive.pack");
+InputStream fin = Files.newInputStream(Paths.get("archive.pack"));
 BufferedInputStream in = new BufferedInputStream(fin);
-FileOutputStream out = new FileOutputStream("archive.jar");
+OutputStream out = Files.newOutputStream(Paths.get("archive.jar"));
 Pack200CompressorInputStream pIn = new Pack200CompressorInputStream(in);
 final byte[] buffer = new byte[buffersize];
 int n = 0;
@@ -583,8 +583,8 @@ pIn.close();
           certainly add exception handling and make sure all streams
           get closed properly):</p>
 <source><![CDATA[
-FileInputStream in = new FileInputStream("archive.jar");
-FileOutputStream fout = new FileOutputStream("archive.pack");
+InputStream in = Files.newInputStream(Paths.get("archive.jar"));
+OutputStream fout = Files.newOutputStream(Paths.get("archive.pack"));
 BufferedOutputStream out = new BufferedInputStream(out);
 Pack200CompressorOutputStream pOut = new Pack200CompressorOutputStream(out);
 final byte[] buffer = new byte[buffersize];
@@ -616,9 +616,9 @@ in.close();
           certainly add exception handling and make sure all streams
           get closed properly):</p>
 <source><![CDATA[
-FileInputStream fin = new FileInputStream("archive.tar.xz");
+InputStream fin = Files.newInputStream(Paths.get("archive.tar.xz"));
 BufferedInputStream in = new BufferedInputStream(fin);
-FileOutputStream out = new FileOutputStream("archive.tar");
+OutputStream out = Files.newOutputStream(Paths.get("archive.tar"));
 XZCompressorInputStream xzIn = new XZCompressorInputStream(in);
 final byte[] buffer = new byte[buffersize];
 int n = 0;
@@ -633,8 +633,8 @@ xzIn.close();
           certainly add exception handling and make sure all streams
           get closed properly):</p>
 <source><![CDATA[
-FileInputStream in = new FileInputStream("archive.tar");
-FileOutputStream fout = new FileOutputStream("archive.tar.xz");
+InputStream in = Files.newInputStream(Paths.get("archive.tar"));
+OutputStream fout = Files.newOutputStream(Paths.get("archive.tar.xz"));
 BufferedOutputStream out = new BufferedInputStream(out);
 XZCompressorOutputStream xzOut = new XZCompressorOutputStream(out);
 final byte[] buffer = new byte[buffersize];
@@ -654,9 +654,9 @@ in.close();
           certainly add exception handling and make sure all streams
           get closed properly):</p>
 <source><![CDATA[
-FileInputStream fin = new FileInputStream("archive.tar.Z");
+InputStream fin = Files.newInputStream(Paths.get("archive.tar.Z"));
 BufferedInputStream in = new BufferedInputStream(fin);
-FileOutputStream out = new FileOutputStream("archive.tar");
+OutputStream out = Files.newOutputStream(Paths.get("archive.tar"));
 ZCompressorInputStream zIn = new ZCompressorInputStream(in);
 final byte[] buffer = new byte[buffersize];
 int n = 0;
@@ -679,9 +679,9 @@ zIn.close();
           certainly add exception handling and make sure all streams
           get closed properly):</p>
 <source><![CDATA[
-FileInputStream fin = new FileInputStream("archive.tar.lzma");
+InputStream fin = Files.newInputStream(Paths.get("archive.tar.lzma"));
 BufferedInputStream in = new BufferedInputStream(fin);
-FileOutputStream out = new FileOutputStream("archive.tar");
+OutputStream out = Files.newOutputStream(Paths.get("archive.tar"));
 LZMACompressorInputStream lzmaIn = new LZMACompressorInputStream(in);
 final byte[] buffer = new byte[buffersize];
 int n = 0;
@@ -696,8 +696,8 @@ lzmaIn.close();
           certainly add exception handling and make sure all streams
           get closed properly):</p>
 <source><![CDATA[
-FileInputStream in = new FileInputStream("archive.tar");
-FileOutputStream fout = new FileOutputStream("archive.tar.lzma");
+InputStream in = Files.newInputStream(Paths.get("archive.tar"));
+OutputStream fout = Files.newOutputStream(Paths.get("archive.tar.lzma"));
 BufferedOutputStream out = new BufferedInputStream(out);
 LZMACompressorOutputStream lzOut = new LZMACompressorOutputStream(out);
 final byte[] buffer = new byte[buffersize];
@@ -721,9 +721,9 @@ in.close();
           certainly add exception handling and make sure all streams
           get closed properly):</p>
 <source><![CDATA[
-FileInputStream fin = new FileInputStream("some-file");
+InputStream fin = Files.newInputStream(Paths.get("some-file"));
 BufferedInputStream in = new BufferedInputStream(fin);
-FileOutputStream out = new FileOutputStream("archive.tar");
+OutputStream out = Files.newOutputStream(Paths.get("archive.tar"));
 DeflateCompressorInputStream defIn = new DeflateCompressorInputStream(in);
 final byte[] buffer = new byte[buffersize];
 int n = 0;
@@ -738,8 +738,8 @@ defIn.close();
           certainly add exception handling and make sure all streams
           get closed properly):</p>
 <source><![CDATA[
-FileInputStream in = new FileInputStream("archive.tar");
-FileOutputStream fout = new FileOutputStream("some-file");
+InputStream in = Files.newInputStream(Paths.get("archive.tar"));
+OutputStream fout = Files.newOutputStream(Paths.get("some-file"));
 BufferedOutputStream out = new BufferedInputStream(out);
 DeflateCompressorOutputStream defOut = new DeflateCompressorOutputStream(out);
 final byte[] buffer = new byte[buffersize];
@@ -775,9 +775,9 @@ in.close();
           certainly add exception handling and make sure all streams
           get closed properly):</p>
 <source><![CDATA[
-FileInputStream fin = new FileInputStream("archive.tar.sz");
+InputStream fin = Files.newInputStream(Paths.get("archive.tar.sz"));
 BufferedInputStream in = new BufferedInputStream(fin);
-FileOutputStream out = new FileOutputStream("archive.tar");
+OutputStream out = Files.newOutputStream(Paths.get("archive.tar"));
 FramedSnappyCompressorInputStream zIn = new FramedSnappyCompressorInputStream(in);
 final byte[] buffer = new byte[buffersize];
 int n = 0;
@@ -792,8 +792,8 @@ zIn.close();
           certainly add exception handling and make sure all streams
           get closed properly):</p>
 <source><![CDATA[
-FileInputStream in = new FileInputStream("archive.tar");
-FileOutputStream fout = new FileOutputStream("archive.tar.sz");
+InputStream in = Files.newInputStream(Paths.get("archive.tar"));
+OutputStream fout = Files.newOutputStream(Paths.get("archive.tar.sz"));
 BufferedOutputStream out = new BufferedInputStream(out);
 FramedSnappyCompressorOutputStream snOut = new FramedSnappyCompressorOutputStream(out);
 final byte[] buffer = new byte[buffersize];
@@ -820,9 +820,9 @@ in.close();
           certainly add exception handling and make sure all streams
           get closed properly):</p>
 <source><![CDATA[
-FileInputStream fin = new FileInputStream("archive.tar.lz4");
+InputStream fin = Files.newInputStream(Paths.get("archive.tar.lz4"));
 BufferedInputStream in = new BufferedInputStream(fin);
-FileOutputStream out = new FileOutputStream("archive.tar");
+OutputStream out = Files.newOutputStream(Paths.get("archive.tar"));
 FramedLZ4CompressorInputStream zIn = new FramedLZ4CompressorInputStream(in);
 final byte[] buffer = new byte[buffersize];
 int n = 0;
@@ -837,8 +837,8 @@ zIn.close();
           certainly add exception handling and make sure all streams
           get closed properly):</p>
 <source><![CDATA[
-FileInputStream in = new FileInputStream("archive.tar");
-FileOutputStream fout = new FileOutputStream("archive.tar.lz4");
+InputStream in = Files.newInputStream(Paths.get("archive.tar"));
+OutputStream fout = Files.newOutputStream(Paths.get("archive.tar.lz4"));
 BufferedOutputStream out = new BufferedInputStream(out);
 FramedLZ4CompressorOutputStream lzOut = new FramedLZ4CompressorOutputStream(out);
 final byte[] buffer = new byte[buffersize];
