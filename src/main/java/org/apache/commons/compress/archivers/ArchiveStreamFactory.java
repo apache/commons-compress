@@ -473,6 +473,16 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
      */
     public ArchiveInputStream createArchiveInputStream(final InputStream in)
             throws ArchiveException {
+        return createArchiveInputStream(detect(in), in);
+    }
+
+    /**
+     * Try to determine the type of Archiver
+     * @param in input stream
+     * @return type of archiver if found
+     * @throws ArchiveException if an archiver cannot be detected in the stream
+     */
+    public static String detect(InputStream in) throws ArchiveException {
         if (in == null) {
             throw new IllegalArgumentException("Stream must not be null.");
         }
@@ -483,62 +493,72 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
 
         final byte[] signature = new byte[SIGNATURE_SIZE];
         in.mark(signature.length);
+        int signatureLength = -1;
         try {
-            int signatureLength = IOUtils.readFully(in, signature);
+            signatureLength = IOUtils.readFully(in, signature);
             in.reset();
-            if (ZipArchiveInputStream.matches(signature, signatureLength)) {
-                return createArchiveInputStream(ZIP, in);
-            } else if (JarArchiveInputStream.matches(signature, signatureLength)) {
-                return createArchiveInputStream(JAR, in);
-            } else if (ArArchiveInputStream.matches(signature, signatureLength)) {
-                return createArchiveInputStream(AR, in);
-            } else if (CpioArchiveInputStream.matches(signature, signatureLength)) {
-                return createArchiveInputStream(CPIO, in);
-            } else if (ArjArchiveInputStream.matches(signature, signatureLength)) {
-                return createArchiveInputStream(ARJ, in);
-            } else if (SevenZFile.matches(signature, signatureLength)) {
-                throw new StreamingNotSupportedException(SEVEN_Z);
-            }
-
-            // Dump needs a bigger buffer to check the signature;
-            final byte[] dumpsig = new byte[DUMP_SIGNATURE_SIZE];
-            in.mark(dumpsig.length);
-            signatureLength = IOUtils.readFully(in, dumpsig);
-            in.reset();
-            if (DumpArchiveInputStream.matches(dumpsig, signatureLength)) {
-                return createArchiveInputStream(DUMP, in);
-            }
-
-            // Tar needs an even bigger buffer to check the signature; read the first block
-            final byte[] tarHeader = new byte[TAR_HEADER_SIZE];
-            in.mark(tarHeader.length);
-            signatureLength = IOUtils.readFully(in, tarHeader);
-            in.reset();
-            if (TarArchiveInputStream.matches(tarHeader, signatureLength)) {
-                return createArchiveInputStream(TAR, in);
-            }
-            // COMPRESS-117 - improve auto-recognition
-            if (signatureLength >= TAR_HEADER_SIZE) {
-                TarArchiveInputStream tais = null;
-                try {
-                    tais = new TarArchiveInputStream(new ByteArrayInputStream(tarHeader));
-                    // COMPRESS-191 - verify the header checksum
-                    if (tais.getNextTarEntry().isCheckSumOK()) {
-                        return createArchiveInputStream(TAR, in);
-                    }
-                } catch (final Exception e) { // NOPMD
-                    // can generate IllegalArgumentException as well
-                    // as IOException
-                    // autodetection, simply not a TAR
-                    // ignored
-                } finally {
-                    IOUtils.closeQuietly(tais);
-                }
-            }
-        } catch (final IOException e) {
-            throw new ArchiveException("Could not use reset and mark operations.", e);
+        } catch (IOException e) {
+            throw new ArchiveException("IOException while reading signature.");
         }
 
+        if (JarArchiveInputStream.matches(signature, signatureLength)) {
+            return JAR;
+        } else if (ZipArchiveInputStream.matches(signature, signatureLength)) {
+            return ZIP;
+        } else if (ArArchiveInputStream.matches(signature, signatureLength)) {
+            return AR;
+        } else if (CpioArchiveInputStream.matches(signature, signatureLength)) {
+            return CPIO;
+        } else if (ArjArchiveInputStream.matches(signature, signatureLength)) {
+            return ARJ;
+        } else if (SevenZFile.matches(signature, signatureLength)) {
+            throw new StreamingNotSupportedException(SEVEN_Z);
+        }
+
+        // Dump needs a bigger buffer to check the signature;
+        final byte[] dumpsig = new byte[DUMP_SIGNATURE_SIZE];
+        in.mark(dumpsig.length);
+        try {
+            signatureLength = IOUtils.readFully(in, dumpsig);
+            in.reset();
+        } catch (IOException e) {
+            throw new ArchiveException("IOException while reading dump signature");
+        }
+        if (DumpArchiveInputStream.matches(dumpsig, signatureLength)) {
+            return DUMP;
+        }
+
+        // Tar needs an even bigger buffer to check the signature; read the first block
+        final byte[] tarHeader = new byte[TAR_HEADER_SIZE];
+        in.mark(tarHeader.length);
+        try {
+            signatureLength = IOUtils.readFully(in, tarHeader);
+            in.reset();
+        } catch (IOException e) {
+            throw new ArchiveException("IOException while reading tar signature");
+        }
+        if (TarArchiveInputStream.matches(tarHeader, signatureLength)) {
+            return TAR;
+        }
+
+        // COMPRESS-117 - improve auto-recognition
+        if (signatureLength >= TAR_HEADER_SIZE) {
+            TarArchiveInputStream tais = null;
+            try {
+                tais = new TarArchiveInputStream(new ByteArrayInputStream(tarHeader));
+                // COMPRESS-191 - verify the header checksum
+                if (tais.getNextTarEntry().isCheckSumOK()) {
+                    return TAR;
+                }
+            } catch (final Exception e) { // NOPMD
+                // can generate IllegalArgumentException as well
+                // as IOException
+                // autodetection, simply not a TAR
+                // ignored
+            } finally {
+                IOUtils.closeQuietly(tais);
+            }
+        }
         throw new ArchiveException("No Archiver found for the stream signature");
     }
 
