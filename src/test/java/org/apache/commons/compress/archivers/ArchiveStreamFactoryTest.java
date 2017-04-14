@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 
+import org.apache.commons.compress.MockEvilInputStream;
 import org.apache.commons.compress.archivers.arj.ArjArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.dump.DumpArchiveInputStream;
@@ -224,6 +225,49 @@ public class ArchiveStreamFactoryTest {
             e.printStackTrace();
         }
         DUMP_DEFAULT = dflt;
+    }
+
+    @Test
+    public void testDetect() throws Exception {
+        for (String extension : new String[]{
+                ArchiveStreamFactory.ARJ,
+                ArchiveStreamFactory.CPIO,
+                ArchiveStreamFactory.DUMP,
+                ArchiveStreamFactory.JAR,
+                ArchiveStreamFactory.TAR,
+ //TODO-- figure out how to differentiate btwn JAR and ZIP
+ //               ArchiveStreamFactory.ZIP
+        }) {
+            assertEquals(extension, detect("bla."+extension));
+        }
+
+        try {
+            ArchiveStreamFactory.detect(new BufferedInputStream(new ByteArrayInputStream(new byte[0])));
+            fail("shouldn't be able to detect empty stream");
+        } catch (ArchiveException e) {
+            assertEquals("No Archiver found for the stream signature", e.getMessage());
+        }
+
+        try {
+            ArchiveStreamFactory.detect(null);
+            fail("shouldn't be able to detect null stream");
+        } catch (IllegalArgumentException e) {
+            assertEquals("Stream must not be null.", e.getMessage());
+        }
+
+        try {
+            ArchiveStreamFactory.detect(new BufferedInputStream(new MockEvilInputStream()));
+            fail("Expected ArchiveException");
+        } catch (ArchiveException e) {
+            assertEquals("IOException while reading signature.", e.getMessage());
+        }
+    }
+
+    private String detect(String resource) throws IOException, ArchiveException {
+        try(InputStream in = new BufferedInputStream(new FileInputStream(
+                getFile(resource)))) {
+            return ArchiveStreamFactory.detect(in);
+        }
     }
 
     static final TestData[] TESTS = {

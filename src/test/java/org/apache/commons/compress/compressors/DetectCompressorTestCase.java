@@ -31,6 +31,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.compress.MockEvilInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate.DeflateCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
@@ -121,6 +122,7 @@ public final class DetectCompressorTestCase {
 
     @Test
     public void testDetect() throws Exception {
+
         assertEquals(CompressorStreamFactory.BZIP2, detect("bla.txt.bz2"));
         assertEquals(CompressorStreamFactory.GZIP, detect("bla.tgz"));
         assertEquals(CompressorStreamFactory.PACK200, detect("bla.pack"));
@@ -131,7 +133,7 @@ public final class DetectCompressorTestCase {
             CompressorStreamFactory.detect(new BufferedInputStream(new ByteArrayInputStream(new byte[0])));
             fail("shouldn't be able to detect empty stream");
         } catch (CompressorException e) {
-            assertTrue(e.getMessage().contains("No Compressor found"));
+            assertEquals("No Compressor found for the stream signature.", e.getMessage());
         }
 
         try {
@@ -142,10 +144,10 @@ public final class DetectCompressorTestCase {
         }
 
         try {
-            CompressorStreamFactory.detect(new BufferedInputStream(new BadInputStream()));
+            CompressorStreamFactory.detect(new BufferedInputStream(new MockEvilInputStream()));
             fail("Expected IOException");
         } catch (CompressorException e) {
-            assertEquals("Failed while reading signature from InputStream.", e.getMessage());
+            assertEquals("IOException while reading signature.", e.getMessage());
         }
 
 
@@ -216,17 +218,4 @@ public final class DetectCompressorTestCase {
                    new BufferedInputStream(new FileInputStream(
                        getFile(resource))));
     }
-
-    private static class BadInputStream extends InputStream {
-        @Override
-        public int read() throws IOException {
-            throw new IOException("Bad");
-        }
-
-        @Override
-        public int read(byte[] bytes, int offset, int length) throws IOException {
-            throw new IOException("Bad");
-        }
-    }
-
 }

@@ -400,7 +400,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
             signatureLength = IOUtils.readFully(in, signature);
             in.reset();
         } catch (IOException e) {
-            throw new CompressorException("Failed while reading signature from InputStream.", e);
+            throw new CompressorException("IOException while reading signature.", e);
         }
 
         if (BZip2CompressorInputStream.matches(signature, signatureLength)) {
