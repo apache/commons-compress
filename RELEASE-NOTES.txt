@@ -5,6 +5,18 @@ compression and archive formats.  These include: bzip2, gzip, pack200,
 lzma, xz, Snappy, traditional Unix Compress, DEFLATE and ar, cpio,
 jar, tar, zip, dump, 7z, arj.
 
+Release 1.14
+------------
+
+Commons Compress 1.13 is the first version to require Java 7 at
+runtime.
+
+Changes in this version include:
+
+New features:
+o detect(InputStream) now available in CompressorStreamFactory
+   Issue: Compress-385.
+
 Release 1.13
 ------------
 

@@ -19,16 +19,18 @@
 package org.apache.commons.compress.compressors;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
-import org.apache.commons.compress.compressors.CompressorException;
-import org.apache.commons.compress.compressors.CompressorInputStream;
-import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate.DeflateCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
@@ -118,6 +120,47 @@ public final class DetectCompressorTestCase {
     }
 
     @Test
+    public void testDetect() throws Exception {
+        assertEquals(CompressorStreamFactory.BZIP2, detect("bla.txt.bz2"));
+        assertEquals(CompressorStreamFactory.GZIP, detect("bla.tgz"));
+        assertEquals(CompressorStreamFactory.PACK200, detect("bla.pack"));
+        assertEquals(CompressorStreamFactory.XZ, detect("bla.tar.xz"));
+        assertEquals(CompressorStreamFactory.DEFLATE, detect("bla.tar.deflatez"));
+
+        try {
+            CompressorStreamFactory.detect(new BufferedInputStream(new ByteArrayInputStream(new byte[0])));
+            fail("shouldn't be able to detect empty stream");
+        } catch (CompressorException e) {
+            assertTrue(e.getMessage().contains("No Compressor found"));
+        }
+
+        try {
+            CompressorStreamFactory.detect(null);
+            fail("shouldn't be able to detect null stream");
+        } catch (IllegalArgumentException e) {
+            assertEquals("Stream must not be null.", e.getMessage());
+        }
+
+        try {
+            CompressorStreamFactory.detect(new BufferedInputStream(new BadInputStream()));
+            fail("Expected IOException");
+        } catch (CompressorException e) {
+            assertEquals("Failed while reading signature from InputStream.", e.getMessage());
+        }
+
+
+    }
+
+    private String detect(String testFileName) throws IOException, CompressorException {
+        String name = null;
+        try (InputStream is = new BufferedInputStream(
+                new FileInputStream(getFile(testFileName)))) {
+            name = CompressorStreamFactory.detect(is);
+        }
+        return name;
+    }
+
+    @Test
     public void testOverride() {
         CompressorStreamFactory fac = new CompressorStreamFactory();
         assertFalse(fac.getDecompressConcatenated());
@@ -172,6 +215,18 @@ public final class DetectCompressorTestCase {
         return factory.createCompressorInputStream(
                    new BufferedInputStream(new FileInputStream(
                        getFile(resource))));
+    }
+
+    private static class BadInputStream extends InputStream {
+        @Override
+        public int read() throws IOException {
+            throw new IOException("Bad");
+        }
+
+        @Override
+        public int read(byte[] bytes, int offset, int length) throws IOException {
+            throw new IOException("Bad");
+        }
     }
 
 }
