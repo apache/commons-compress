@@ -19,22 +19,25 @@
 package org.apache.commons.compress.compressors;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
-import org.apache.commons.compress.compressors.CompressorException;
-import org.apache.commons.compress.compressors.CompressorInputStream;
-import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate.DeflateCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorInputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.junit.Test;
+import org.tukaani.xz.MemoryLimitException;
 
 @SuppressWarnings("deprecation") // deliberately tests setDecompressConcatenated
 public final class DetectCompressorTestCase {
@@ -157,6 +160,19 @@ public final class DetectCompressorTestCase {
             }
             assertEquals(0, in.available());
             assertEquals(-1, in.read());
+        }
+    }
+
+    @Test
+    public void testLZMAMemoryLimit() throws Exception {
+        CompressorStreamFactory compressorStreamFactory = new CompressorStreamFactory();
+        compressorStreamFactory.setLzmaMemoryLimitKb(500);
+        try {
+            InputStream is = compressorStreamFactory.createCompressorInputStream(
+                    new BufferedInputStream(new FileInputStream(getFile("COMPRESS-382"))));
+            fail("Should have thrown memory limit exception");
+        } catch (CompressorException e) {
+            assertTrue(e.getCause() instanceof MemoryLimitException);
         }
     }
 

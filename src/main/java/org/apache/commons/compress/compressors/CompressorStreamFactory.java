@@ -349,6 +349,8 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      */
     private volatile boolean decompressConcatenated = false;
 
+    private volatile int lzmaMemoryLimitKb = -1;
+
     /**
      * Create an instance with the decompress Concatenated option set to false.
      */
@@ -431,7 +433,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
             }
 
             if (LZMAUtils.matches(signature, signatureLength) && LZMAUtils.isLZMACompressionAvailable()) {
-                return new LZMACompressorInputStream(in);
+                return new LZMACompressorInputStream(in, lzmaMemoryLimitKb);
             }
 
             if (FramedLZ4CompressorInputStream.matches(signature, signatureLength)) {
@@ -666,5 +668,14 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         }
         this.decompressConcatenated = decompressConcatenated;
     }
-    
+
+    /**
+     * Set the maximum calculated memory usage for LZMA
+     * in KB.
+     *
+     * @param lzmaMemoryLimitKb
+     */
+    public void setLzmaMemoryLimitKb(int lzmaMemoryLimitKb) {
+        this.lzmaMemoryLimitKb = lzmaMemoryLimitKb;
+    }
 }
