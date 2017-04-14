@@ -44,6 +44,10 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.14" date="not released, yet"
              description="Release 1.14">
+      <action issue="COMPRESS-385" type="add" date="2017-04-14">
+        Add static detect(InputStream in) to CompressorStreamFactory
+        and ArchiveStreamFactory
+      </action>
       <action issue="COMPRESS-378" type="fix" date="2017-01-09">
         SnappyCompressorInputStream slides the window too early
         leading to ArrayIndexOutOfBoundsExceptions for some streams.
