@@ -233,10 +233,10 @@ public class ArchiveStreamFactoryTest {
                 ArchiveStreamFactory.ARJ,
                 ArchiveStreamFactory.CPIO,
                 ArchiveStreamFactory.DUMP,
-                ArchiveStreamFactory.JAR,
+                //TODO-- figure out how to differentiate btwn JAR and ZIP
+ //               ArchiveStreamFactory.JAR,
                 ArchiveStreamFactory.TAR,
- //TODO-- figure out how to differentiate btwn JAR and ZIP
- //               ArchiveStreamFactory.ZIP
+                ArchiveStreamFactory.ZIP
         }) {
             assertEquals(extension, detect("bla."+extension));
         }
