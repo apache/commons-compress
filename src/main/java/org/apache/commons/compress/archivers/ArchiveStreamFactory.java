@@ -501,11 +501,11 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             throw new ArchiveException("IOException while reading signature.");
         }
 
-        if (JarArchiveInputStream.matches(signature, signatureLength)) {
-            return JAR;
-        } else if (ZipArchiveInputStream.matches(signature, signatureLength)) {
+        if (ZipArchiveInputStream.matches(signature, signatureLength)) {
             return ZIP;
-        } else if (ArArchiveInputStream.matches(signature, signatureLength)) {
+        } else if (JarArchiveInputStream.matches(signature, signatureLength)) {
+            return JAR;
+        } if (ArArchiveInputStream.matches(signature, signatureLength)) {
             return AR;
         } else if (CpioArchiveInputStream.matches(signature, signatureLength)) {
             return CPIO;
