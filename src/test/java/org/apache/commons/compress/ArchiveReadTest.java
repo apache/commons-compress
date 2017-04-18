@@ -25,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FilenameFilter;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -48,8 +49,16 @@ import org.junit.runners.Parameterized.Parameters;
 public class ArchiveReadTest extends AbstractTestCase {
 
     private static final ClassLoader CLASSLOADER = ArchiveReadTest.class.getClassLoader();
-    private static final File ARCDIR = new File(CLASSLOADER.getResource("archives").getFile());
+    private static final File ARCDIR;
     private static final ArrayList<String> FILELIST = new ArrayList<>();
+
+    static {
+        try {
+            ARCDIR = new File(CLASSLOADER.getResource("archives").toURI().getPath());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private final File file;
 
