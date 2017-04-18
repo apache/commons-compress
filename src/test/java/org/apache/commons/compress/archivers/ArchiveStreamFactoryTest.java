@@ -230,11 +230,13 @@ public class ArchiveStreamFactoryTest {
     @Test
     public void testDetect() throws Exception {
         for (String extension : new String[]{
+                ArchiveStreamFactory.AR,
                 ArchiveStreamFactory.ARJ,
                 ArchiveStreamFactory.CPIO,
                 ArchiveStreamFactory.DUMP,
-                //TODO-- figure out how to differentiate btwn JAR and ZIP
+                // Compress doesn't know how to detect JARs, see COMPRESS-91
  //               ArchiveStreamFactory.JAR,
+                ArchiveStreamFactory.SEVEN_Z,
                 ArchiveStreamFactory.TAR,
                 ArchiveStreamFactory.ZIP
         }) {

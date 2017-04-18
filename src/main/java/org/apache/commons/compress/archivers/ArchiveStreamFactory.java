@@ -481,6 +481,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
      * @param in input stream
      * @return type of archiver if found
      * @throws ArchiveException if an archiver cannot be detected in the stream
+     * @since 1.14
      */
     public static String detect(InputStream in) throws ArchiveException {
         if (in == null) {
@@ -512,7 +513,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         } else if (ArjArchiveInputStream.matches(signature, signatureLength)) {
             return ARJ;
         } else if (SevenZFile.matches(signature, signatureLength)) {
-            throw new StreamingNotSupportedException(SEVEN_Z);
+            return SEVEN_Z;
         }
 
         // Dump needs a bigger buffer to check the signature;

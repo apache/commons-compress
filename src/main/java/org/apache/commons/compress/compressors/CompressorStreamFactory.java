@@ -500,14 +500,14 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
             }
 
             if (XZ.equalsIgnoreCase(name)) {
-                if (! XZUtils.isXZCompressionAvailable()) {
+                if (!XZUtils.isXZCompressionAvailable()) {
                     throw new CompressorException("XZ compression is not available.");
                 }
                 return new XZCompressorInputStream(in, actualDecompressConcatenated);
             }
 
             if (LZMA.equalsIgnoreCase(name)) {
-                if (! LZMAUtils.isLZMACompressionAvailable()) {
+                if (!LZMAUtils.isLZMACompressionAvailable()) {
                     throw new CompressorException("LZMA compression is not available");
                 }
                 return new LZMACompressorInputStream(in);

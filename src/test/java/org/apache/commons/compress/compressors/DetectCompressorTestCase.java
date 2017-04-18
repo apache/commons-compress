@@ -128,6 +128,10 @@ public final class DetectCompressorTestCase {
         assertEquals(CompressorStreamFactory.PACK200, detect("bla.pack"));
         assertEquals(CompressorStreamFactory.XZ, detect("bla.tar.xz"));
         assertEquals(CompressorStreamFactory.DEFLATE, detect("bla.tar.deflatez"));
+        assertEquals(CompressorStreamFactory.LZ4_FRAMED, detect("bla.tar.lz4"));
+        assertEquals(CompressorStreamFactory.LZMA, detect("bla.tar.lzma"));
+        assertEquals(CompressorStreamFactory.SNAPPY_FRAMED, detect("bla.tar.sz"));
+        assertEquals(CompressorStreamFactory.Z, detect("bla.tar.Z"));
 
         try {
             CompressorStreamFactory.detect(new BufferedInputStream(new ByteArrayInputStream(new byte[0])));
