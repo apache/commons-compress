@@ -76,6 +76,9 @@ The <action> type attribute can be add,update,fix,remove.
         Add static detect(InputStream in) to CompressorStreamFactory
         and ArchiveStreamFactory
       </action>
+      <action issue="COMPRESS-387" type="fix" date="2017-04-18">
+        Make unit tests work on Windows paths with spaces in their names.
+      </action>
     </release>
     <release version="1.13" date="2016-12-29"
              description="Release 1.13 - API compatible to 1.12 but requires Java 7 at runtime.">

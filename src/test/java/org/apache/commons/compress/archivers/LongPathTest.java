@@ -54,7 +54,7 @@ import org.junit.runners.Parameterized.Parameters;
 public class LongPathTest extends AbstractTestCase {
 
     private static final ClassLoader CLASSLOADER = LongPathTest.class.getClassLoader();
-    private static File ARCDIR;
+    private static final File ARCDIR;
     private static final ArrayList<String> FILELIST = new ArrayList<>();
 
     static {
