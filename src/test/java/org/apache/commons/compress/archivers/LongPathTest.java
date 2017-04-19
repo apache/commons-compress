@@ -59,7 +59,7 @@ public class LongPathTest extends AbstractTestCase {
 
     static {
         try {
-            ARCDIR = new File(CLASSLOADER.getResource("longpath").toURI().getPath());
+            ARCDIR = new File(CLASSLOADER.getResource("longpath").toURI());
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }

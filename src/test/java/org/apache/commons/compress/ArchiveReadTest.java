@@ -54,7 +54,7 @@ public class ArchiveReadTest extends AbstractTestCase {
 
     static {
         try {
-            ARCDIR = new File(CLASSLOADER.getResource("archives").toURI().getPath());
+            ARCDIR = new File(CLASSLOADER.getResource("archives").toURI());
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
