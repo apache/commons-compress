@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteOrder;
 
+import org.apache.commons.compress.compressors.CompressorMemoryLimitException;
 import org.apache.commons.compress.compressors.lzw.LZWInputStream;
 
 /**
@@ -37,8 +38,9 @@ public class ZCompressorInputStream extends LZWInputStream {
     private final boolean blockMode;
     private final int maxCodeSize;
     private long totalCodesRead = 0;
-    
-    public ZCompressorInputStream(final InputStream inputStream) throws IOException {
+
+    public ZCompressorInputStream(final InputStream inputStream, int memoryLimitInKb)
+            throws IOException {
         super(inputStream, ByteOrder.LITTLE_ENDIAN);
         final int firstByte = (int) in.readBits(8);
         final int secondByte = (int) in.readBits(8);
@@ -51,8 +53,16 @@ public class ZCompressorInputStream extends LZWInputStream {
         if (blockMode) {
             setClearCode(DEFAULT_CODE_SIZE);
         }
-        initializeTables(maxCodeSize);
+        try {
+            initializeTables(maxCodeSize, memoryLimitInKb);
+        } catch (CompressorMemoryLimitException e) {
+            throw new IOExceptionWrappingMemoryLimitException(e.getMessage());
+        }
         clearEntries();
+    }
+
+    public ZCompressorInputStream(final InputStream inputStream) throws IOException {
+        this(inputStream, -1);
     }
     
     private void clearEntries() {
@@ -163,4 +173,12 @@ public class ZCompressorInputStream extends LZWInputStream {
         return length > 3 && signature[0] == MAGIC_1 && signature[1] == (byte) MAGIC_2;
     }
 
+    /**
+     * Wrapper that subclasses IOException to wrap a MemoryLimitException
+     */
+    public static class IOExceptionWrappingMemoryLimitException extends IOException {
+        public IOExceptionWrappingMemoryLimitException(String message) {
+            super(message);
+        }
+    }
 }

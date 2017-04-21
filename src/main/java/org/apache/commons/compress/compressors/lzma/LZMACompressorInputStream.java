@@ -42,7 +42,7 @@ public class LZMACompressorInputStream extends CompressorInputStream {
      *
      * @param       inputStream where to read the compressed data
      *
-     * @param       memoryLimitKb calculated memory use threshold.  Throws MemoryLimitException
+     * @param       memoryLimitInKb calculated memory use threshold.  Throws MemoryLimitException
      *                            if calculate memory use is above this threshold
      *
      * @throws      IOException if the input is not in the .lzma format,
@@ -53,9 +53,9 @@ public class LZMACompressorInputStream extends CompressorInputStream {
      *
      * @since 1.14
      */
-    public LZMACompressorInputStream(final InputStream inputStream, int memoryLimitKb)
+    public LZMACompressorInputStream(final InputStream inputStream, int memoryLimitInKb)
             throws IOException {
-        in = new LZMAInputStream(inputStream, memoryLimitKb);
+        in = new LZMAInputStream(inputStream, memoryLimitInKb);
     }
 
     /** {@inheritDoc} */
