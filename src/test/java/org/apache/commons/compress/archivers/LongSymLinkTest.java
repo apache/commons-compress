@@ -27,13 +27,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FilenameFilter;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import junit.framework.AssertionFailedError;
-
 import org.apache.commons.compress.AbstractTestCase;
-import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -55,8 +54,16 @@ import org.junit.runners.Parameterized.Parameters;
 public class LongSymLinkTest extends AbstractTestCase {
 
     private static final ClassLoader CLASSLOADER = LongSymLinkTest.class.getClassLoader();
-    private static final File ARCDIR = new File(CLASSLOADER.getResource("longsymlink").getFile());
+    private static final File ARCDIR;
     private static final ArrayList<String> FILELIST = new ArrayList<>();
+
+    static {
+        try {
+            ARCDIR = new File(CLASSLOADER.getResource("longsymlink").toURI());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private final File file;
 

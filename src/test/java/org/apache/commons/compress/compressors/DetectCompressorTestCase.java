@@ -31,13 +31,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.compress.MockEvilInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate.DeflateCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorInputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.junit.Test;
-import org.tukaani.xz.MemoryLimitException;
 
 @SuppressWarnings("deprecation") // deliberately tests setDecompressConcatenated
 public final class DetectCompressorTestCase {
@@ -121,6 +121,52 @@ public final class DetectCompressorTestCase {
     }
 
     @Test
+    public void testDetect() throws Exception {
+
+        assertEquals(CompressorStreamFactory.BZIP2, detect("bla.txt.bz2"));
+        assertEquals(CompressorStreamFactory.GZIP, detect("bla.tgz"));
+        assertEquals(CompressorStreamFactory.PACK200, detect("bla.pack"));
+        assertEquals(CompressorStreamFactory.XZ, detect("bla.tar.xz"));
+        assertEquals(CompressorStreamFactory.DEFLATE, detect("bla.tar.deflatez"));
+        assertEquals(CompressorStreamFactory.LZ4_FRAMED, detect("bla.tar.lz4"));
+        assertEquals(CompressorStreamFactory.LZMA, detect("bla.tar.lzma"));
+        assertEquals(CompressorStreamFactory.SNAPPY_FRAMED, detect("bla.tar.sz"));
+        assertEquals(CompressorStreamFactory.Z, detect("bla.tar.Z"));
+
+        try {
+            CompressorStreamFactory.detect(new BufferedInputStream(new ByteArrayInputStream(new byte[0])));
+            fail("shouldn't be able to detect empty stream");
+        } catch (CompressorException e) {
+            assertEquals("No Compressor found for the stream signature.", e.getMessage());
+        }
+
+        try {
+            CompressorStreamFactory.detect(null);
+            fail("shouldn't be able to detect null stream");
+        } catch (IllegalArgumentException e) {
+            assertEquals("Stream must not be null.", e.getMessage());
+        }
+
+        try {
+            CompressorStreamFactory.detect(new BufferedInputStream(new MockEvilInputStream()));
+            fail("Expected IOException");
+        } catch (CompressorException e) {
+            assertEquals("IOException while reading signature.", e.getMessage());
+        }
+
+
+    }
+
+    private String detect(String testFileName) throws IOException, CompressorException {
+        String name = null;
+        try (InputStream is = new BufferedInputStream(
+                new FileInputStream(getFile(testFileName)))) {
+            name = CompressorStreamFactory.detect(is);
+        }
+        return name;
+    }
+
+    @Test
     public void testOverride() {
         CompressorStreamFactory fac = new CompressorStreamFactory();
         assertFalse(fac.getDecompressConcatenated());
@@ -163,19 +209,6 @@ public final class DetectCompressorTestCase {
         }
     }
 
-    @Test
-    public void testLZMAMemoryLimit() throws Exception {
-        CompressorStreamFactory compressorStreamFactory = new CompressorStreamFactory();
-        compressorStreamFactory.setLzmaMemoryLimitKb(500);
-        try {
-            InputStream is = compressorStreamFactory.createCompressorInputStream(
-                    new BufferedInputStream(new FileInputStream(getFile("COMPRESS-382"))));
-            fail("Should have thrown memory limit exception");
-        } catch (CompressorException e) {
-            assertTrue(e.getCause() instanceof MemoryLimitException);
-        }
-    }
-
     private CompressorInputStream getStreamFor(final String resource)
             throws CompressorException, IOException {
         return factory.createCompressorInputStream(
@@ -189,5 +222,4 @@ public final class DetectCompressorTestCase {
                    new BufferedInputStream(new FileInputStream(
                        getFile(resource))));
     }
-
 }
