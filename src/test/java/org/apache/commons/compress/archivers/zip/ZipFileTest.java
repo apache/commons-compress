@@ -24,13 +24,17 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.utils.IOUtils;
@@ -329,6 +333,132 @@ public class ZipFileTest {
         final byte[] expected = new byte[42];
         Arrays.fill(expected , (byte)'a');
         assertArrayEquals(expected, IOUtils.toByteArray(zf.getInputStream(ze)));
+    }
+
+    @Test
+    public void testConcurrentReadSeekable() throws Exception {
+        // mixed.zip contains both inflated and stored files
+        byte[] data = null;
+        try (FileInputStream fis = new FileInputStream(getFile("mixed.zip"))) {
+            data = IOUtils.toByteArray(fis);
+        }
+        zf = new ZipFile(new SeekableInMemoryByteChannel(data), ZipEncodingHelper.UTF8);
+
+        final Map<String, byte[]> content = new HashMap<String, byte[]>();
+        for (ZipArchiveEntry entry: Collections.list(zf.getEntries())) {
+            content.put(entry.getName(), IOUtils.toByteArray(zf.getInputStream(entry)));
+        }
+
+        final AtomicInteger passedCount = new AtomicInteger();
+        Runnable run = new Runnable() {
+            @Override
+            public void run() {
+                for (ZipArchiveEntry entry: Collections.list(zf.getEntries())) {
+                    assertAllReadMethods(content.get(entry.getName()), zf, entry);
+                }
+                passedCount.incrementAndGet();
+            }
+        };
+        Thread t0 = new Thread(run);
+        Thread t1 = new Thread(run);
+        t0.start();
+        t1.start();
+        t0.join();
+        t1.join();
+        assertEquals(2, passedCount.get());
+    }
+
+    @Test
+    public void testConcurrentReadFile() throws Exception {
+        // mixed.zip contains both inflated and stored files
+        final File archive = getFile("mixed.zip");
+        zf = new ZipFile(archive);
+
+        final Map<String, byte[]> content = new HashMap<String, byte[]>();
+        for (ZipArchiveEntry entry: Collections.list(zf.getEntries())) {
+            content.put(entry.getName(), IOUtils.toByteArray(zf.getInputStream(entry)));
+        }
+
+        final AtomicInteger passedCount = new AtomicInteger();
+        Runnable run = new Runnable() {
+            @Override
+            public void run() {
+                for (ZipArchiveEntry entry: Collections.list(zf.getEntries())) {
+                    assertAllReadMethods(content.get(entry.getName()), zf, entry);
+                }
+                passedCount.incrementAndGet();
+            }
+        };
+        Thread t0 = new Thread(run);
+        Thread t1 = new Thread(run);
+        t0.start();
+        t1.start();
+        t0.join();
+        t1.join();
+        assertEquals(2, passedCount.get());
+    }
+
+    private void assertAllReadMethods(byte[] expected, ZipFile zipFile, ZipArchiveEntry entry) {
+        // simple IOUtil read
+        try (InputStream stream = zf.getInputStream(entry)) {
+            byte[] full = IOUtils.toByteArray(stream);
+            assertArrayEquals(expected, full);
+        }
+        catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        // big buffer at the beginning and then chunks by IOUtils read
+        try (InputStream stream = zf.getInputStream(entry)) {
+            byte[] full;
+            byte[] bytes = new byte[0x40000];
+            int read = stream.read(bytes);
+            if (read < 0) {
+                full = new byte[0];
+            }
+            else {
+                full = readStreamRest(bytes, read, stream);
+            }
+            assertArrayEquals(expected, full);
+        }
+        catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        // small chunk / single byte and big buffer then
+        try (InputStream stream = zf.getInputStream(entry)) {
+            byte[] full;
+            int single = stream.read();
+            if (single < 0) {
+                full = new byte[0];
+            }
+            else {
+                byte[] big = new byte[0x40000];
+                big[0] = (byte)single;
+                int read = stream.read(big, 1, big.length-1);
+                if (read < 0) {
+                    full = new byte[]{ (byte)single };
+                }
+                else {
+                    full = readStreamRest(big, read+1, stream);
+                }
+            }
+            assertArrayEquals(expected, full);
+        }
+        catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    /**
+     * Utility to append the rest of the stream to already read data.
+     */
+    private byte[] readStreamRest(byte[] beginning, int length, InputStream stream) throws IOException {
+        byte[] rest = IOUtils.toByteArray(stream);
+        byte[] full = new byte[length+rest.length];
+        System.arraycopy(beginning, 0, full, 0, length);
+        System.arraycopy(rest, 0, full, length, rest.length);
+        return full;
     }
 
     /*
