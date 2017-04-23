@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -441,7 +442,7 @@ public class ZipFile implements Closeable {
         }
         final OffsetEntry offsetEntry = ((Entry) ze).getOffsetEntry();
         final long start = offsetEntry.dataOffset;
-        return new BoundedInputStream(start, ze.getCompressedSize());
+        return createBoundedInputStream(start, ze.getCompressedSize());
     }
 
 
@@ -484,7 +485,7 @@ public class ZipFile implements Closeable {
         final long start = offsetEntry.dataOffset;
         // doesn't get closed if the method is not supported, but doesn't hold any resources either
         final BoundedInputStream bis =
-            new BoundedInputStream(start, ze.getCompressedSize()); //NOSONAR
+            createBoundedInputStream(start, ze.getCompressedSize()); //NOSONAR
         switch (ZipMethod.getMethodByCode(ze.getMethod())) {
             case STORED:
                 return bis;
@@ -1081,16 +1082,26 @@ public class ZipFile implements Closeable {
     }
 
     /**
+     * Creates new BoundedInputStream, according to implementation of
+     * underlying archive channel.
+     */
+    private BoundedInputStream createBoundedInputStream(long start, long remaining) {
+        return archive instanceof FileChannel ?
+            new BoundedFileChannelInputStream(start, remaining) :
+            new BoundedInputStream(start, remaining);
+    }
+
+    /**
      * InputStream that delegates requests to the underlying
      * SeekableByteChannel, making sure that only bytes from a certain
      * range can be read.
      */
     private class BoundedInputStream extends InputStream {
-        private static final int MAX_BUF_LEN = 8192;
-        private final ByteBuffer buffer;
-        private long remaining;
-        private long loc;
-        private boolean addDummyByte = false;
+        protected static final int MAX_BUF_LEN = 8192;
+        protected final ByteBuffer buffer;
+        protected long remaining;
+        protected long loc;
+        protected boolean addDummyByte = false;
 
         BoundedInputStream(final long start, final long remaining) {
             this.remaining = remaining;
@@ -1111,14 +1122,11 @@ public class ZipFile implements Closeable {
                 }
                 return -1;
             }
-            synchronized (archive) {
-                archive.position(loc++);
-                int read = read(1);
-                if (read < 0) {
-                    return read;
-                }
-                return buffer.get() & 0xff;
+            int read = read(loc++, 1);
+            if (read < 0) {
+                return read;
             }
+            return buffer.get() & 0xff;
         }
 
         @Override
@@ -1141,16 +1149,12 @@ public class ZipFile implements Closeable {
             }
             ByteBuffer buf;
             int ret = -1;
-            synchronized (archive) {
-                archive.position(loc);
-                if (len <= buffer.capacity()) {
-                    buf = buffer;
-                    ret = read(len);
-                } else {
-                    buf = ByteBuffer.allocate(len);
-                    ret = archive.read(buf);
-                    buf.flip();
-                }
+            if (len <= buffer.capacity()) {
+                buf = buffer;
+                ret = read(loc, len);
+            } else {
+                buf = ByteBuffer.allocate(len);
+                ret = read(loc, buf);
             }
             if (ret > 0) {
                 buf.get(b, off, ret);
@@ -1160,9 +1164,23 @@ public class ZipFile implements Closeable {
             return ret;
         }
 
-        private int read(int len) throws IOException {
+        protected int read(long pos, ByteBuffer buf) throws IOException {
+            int read;
+            synchronized (archive) {
+                archive.position(pos);
+                read = archive.read(buf);
+            }
+            buf.flip();
+            return read;
+        }
+
+        protected int read(long pos, int len) throws IOException {
+            int read;
             buffer.rewind().limit(len);
-            int read = archive.read(buffer);
+            synchronized (archive) {
+                archive.position(pos);
+                read = archive.read(buffer);
+            }
             buffer.flip();
             return read;
         }
@@ -1173,6 +1191,36 @@ public class ZipFile implements Closeable {
          */
         void addDummy() {
             addDummyByte = true;
+        }
+    }
+
+    /**
+     * Lock-free implementation of BoundedInputStream. The
+     * implementation uses positioned reads on the underlying archive
+     * file channel and therefore performs significantly faster in
+     * concurrent environment.
+     */
+    private class BoundedFileChannelInputStream extends BoundedInputStream {
+        private final FileChannel archive;
+
+        BoundedFileChannelInputStream(final long start, final long remaining) {
+            super(start, remaining);
+            archive = (FileChannel)ZipFile.this.archive;
+        }
+
+        @Override
+        protected int read(long pos, ByteBuffer buf) throws IOException {
+            int read = archive.read(buf, pos);
+            buf.flip();
+            return read;
+        }
+
+        @Override
+        protected int read(long position, int len) throws IOException {
+            buffer.rewind().limit(len);
+            int read = archive.read(buffer, position);
+            buffer.flip();
+            return read;
         }
     }
 
