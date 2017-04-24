@@ -1097,69 +1097,66 @@ public class ZipFile implements Closeable {
      * range can be read.
      */
     private class BoundedInputStream extends InputStream {
-        protected static final int MAX_BUF_LEN = 8192;
-        protected final ByteBuffer buffer;
-        protected long remaining;
-        protected long loc;
-        protected boolean addDummyByte = false;
+        private ByteBuffer singleByteBuffer;
+        private final long end;
+        private long loc;
+        private boolean addDummy = false;
 
         BoundedInputStream(final long start, final long remaining) {
-            this.remaining = remaining;
-            loc = start;
-            if (remaining < MAX_BUF_LEN && remaining > 0) {
-                buffer = ByteBuffer.allocate((int) remaining);
-            } else {
-                buffer = ByteBuffer.allocate(MAX_BUF_LEN);
+            this.end = start+remaining;
+            if (this.end < start) {
+                // check for potential vulnerability due to overflow
+                throw new IllegalArgumentException("Invalid length of stream at offset="+start+", length="+remaining);
             }
+            loc = start;
         }
 
         @Override
-        public int read() throws IOException {
-            if (remaining-- <= 0) {
-                if (addDummyByte) {
-                    addDummyByte = false;
+        public synchronized int read() throws IOException {
+            if (loc >= end) {
+                if (loc == end && addDummy) {
+                    ++loc;
                     return 0;
                 }
                 return -1;
             }
-            int read = read(loc++, 1);
+            if (singleByteBuffer == null) {
+                singleByteBuffer = ByteBuffer.allocate(1);
+            }
+            else {
+                singleByteBuffer.rewind();
+            }
+            int read = read(loc++, singleByteBuffer);
             if (read < 0) {
                 return read;
             }
-            return buffer.get() & 0xff;
+            return singleByteBuffer.get() & 0xff;
         }
 
         @Override
-        public int read(final byte[] b, final int off, int len) throws IOException {
-            if (remaining <= 0) {
-                if (addDummyByte) {
-                    addDummyByte = false;
-                    b[off] = 0;
-                    return 1;
-                }
-                return -1;
-            }
-
+        public synchronized int read(final byte[] b, final int off, int len) throws IOException {
             if (len <= 0) {
                 return 0;
             }
 
-            if (len > remaining) {
-                len = (int) remaining;
+            if (len > end-loc) {
+                if (loc >= end) {
+                    if (loc == end && addDummy) {
+                        ++loc;
+                        b[off] = 0;
+                        return 1;
+                    }
+                    return -1;
+                }
+                len = (int)(end-loc);
             }
+
             ByteBuffer buf;
-            int ret = -1;
-            if (len <= buffer.capacity()) {
-                buf = buffer;
-                ret = read(loc, len);
-            } else {
-                buf = ByteBuffer.allocate(len);
-                ret = read(loc, buf);
-            }
+            buf = ByteBuffer.wrap(b, off, len);
+            int ret = read(loc, buf);
             if (ret > 0) {
-                buf.get(b, off, ret);
                 loc += ret;
-                remaining -= ret;
+                return ret;
             }
             return ret;
         }
@@ -1174,23 +1171,8 @@ public class ZipFile implements Closeable {
             return read;
         }
 
-        protected int read(long pos, int len) throws IOException {
-            int read;
-            buffer.rewind().limit(len);
-            synchronized (archive) {
-                archive.position(pos);
-                read = archive.read(buffer);
-            }
-            buffer.flip();
-            return read;
-        }
-
-        /**
-         * Inflater needs an extra dummy byte for nowrap - see
-         * Inflater's javadocs.
-         */
         void addDummy() {
-            addDummyByte = true;
+            this.addDummy = true;
         }
     }
 
@@ -1212,14 +1194,6 @@ public class ZipFile implements Closeable {
         protected int read(long pos, ByteBuffer buf) throws IOException {
             int read = archive.read(buf, pos);
             buf.flip();
-            return read;
-        }
-
-        @Override
-        protected int read(long position, int len) throws IOException {
-            buffer.rewind().limit(len);
-            int read = archive.read(buffer, position);
-            buffer.flip();
             return read;
         }
     }
