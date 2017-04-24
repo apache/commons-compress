@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteOrder;
 
-import org.apache.commons.compress.compressors.CompressorMemoryLimitException;
 import org.apache.commons.compress.compressors.lzw.LZWInputStream;
 
 /**
@@ -53,11 +52,7 @@ public class ZCompressorInputStream extends LZWInputStream {
         if (blockMode) {
             setClearCode(DEFAULT_CODE_SIZE);
         }
-        try {
-            initializeTables(maxCodeSize, memoryLimitInKb);
-        } catch (CompressorMemoryLimitException e) {
-            throw new IOExceptionWrappingMemoryLimitException(e.getMessage());
-        }
+        initializeTables(maxCodeSize, memoryLimitInKb);
         clearEntries();
     }
 
@@ -173,12 +168,4 @@ public class ZCompressorInputStream extends LZWInputStream {
         return length > 3 && signature[0] == MAGIC_1 && signature[1] == (byte) MAGIC_2;
     }
 
-    /**
-     * Wrapper that subclasses IOException to wrap a MemoryLimitException
-     */
-    public static class IOExceptionWrappingMemoryLimitException extends IOException {
-        public IOExceptionWrappingMemoryLimitException(String message) {
-            super(message);
-        }
-    }
 }

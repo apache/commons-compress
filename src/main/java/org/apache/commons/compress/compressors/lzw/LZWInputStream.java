@@ -22,8 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteOrder;
 
+import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
-import org.apache.commons.compress.compressors.CompressorMemoryLimitException;
 import org.apache.commons.compress.utils.BitInputStream;
 
 /**
@@ -116,13 +116,13 @@ public abstract class LZWInputStream extends CompressorInputStream {
      * Initializes the arrays based on the maximum code size.
      * @param maxCodeSize maximum code size
      * @param memoryLimitInKb maximum allowed table size in Kb
-     * @throws CompressorMemoryLimitException if maxTableSize is > memoryLimitInKb
+     * @throws MemoryLimitException if maxTableSize is > memoryLimitInKb
      */
     protected void initializeTables(final int maxCodeSize, final int memoryLimitInKb)
-            throws CompressorMemoryLimitException {
+            throws MemoryLimitException {
         final int maxTableSize = 1 << maxCodeSize;
         if (memoryLimitInKb > -1 && maxTableSize > memoryLimitInKb*1024) {
-            throw new CompressorMemoryLimitException("Tried to allocate "+maxTableSize +
+            throw new MemoryLimitException("Tried to allocate "+maxTableSize +
                     " but memoryLimitInKb only allows "+(memoryLimitInKb*1024));
         }
         initializeTables(maxCodeSize);

@@ -57,7 +57,6 @@ import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.compress.utils.ServiceLoaderIterator;
 import org.apache.commons.compress.utils.Sets;
-import org.tukaani.xz.MemoryLimitException;
 
 /**
  * <p>
@@ -498,7 +497,9 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      *            the input stream
      * @return compressor input stream
      * @throws CompressorException
-     *             if the compressor name is not known or not available
+     *             if the compressor name is not known or not available,
+     *             or if there's an IOException or MemoryLimitException thrown
+     *             during initialization
      * @throws IllegalArgumentException
      *             if the name or input stream is null
      */
@@ -528,18 +529,14 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
                 if (!XZUtils.isXZCompressionAvailable()) {
                     throw new CompressorException("XZ compression is not available.");
                 }
-                return new XZCompressorInputStream(in, actualDecompressConcatenated);
+                return new XZCompressorInputStream(in, actualDecompressConcatenated, memoryLimitInKb);
             }
 
             if (LZMA.equalsIgnoreCase(name)) {
                 if (!LZMAUtils.isLZMACompressionAvailable()) {
                     throw new CompressorException("LZMA compression is not available");
                 }
-                try {
-                    return new LZMACompressorInputStream(in, memoryLimitInKb);
-                } catch (MemoryLimitException e) {
-                    throw new CompressorMemoryLimitException("exceeded calculated memory limit", e);
-                }
+                return new LZMACompressorInputStream(in, memoryLimitInKb);
             }
 
             if (PACK200.equalsIgnoreCase(name)) {
@@ -555,11 +552,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
             }
 
             if (Z.equalsIgnoreCase(name)) {
-                try {
-                    return new ZCompressorInputStream(in, memoryLimitInKb);
-                } catch (ZCompressorInputStream.IOExceptionWrappingMemoryLimitException e) {
-                    throw new CompressorMemoryLimitException(e.getMessage());
-                }
+                return new ZCompressorInputStream(in, memoryLimitInKb);
             }
 
             if (DEFLATE.equalsIgnoreCase(name)) {

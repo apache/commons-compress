@@ -16,21 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.commons.compress.compressors;
+package org.apache.commons.compress;
+
+import java.io.IOException;
 
 /**
  * If a stream checks for estimated memory allocation, and the estimate
- * goes above the memory limit, this is thrown.
+ * goes above the memory limit, this is thrown.  This can also be thrown
+ * if a stream tries to allocate a byte array that is larger than
+ * the allowable limit.
  *
  * @since 1.14
  */
-public class CompressorMemoryLimitException extends CompressorException {
+public class MemoryLimitException extends IOException {
 
-    public CompressorMemoryLimitException(String message) {
+    public MemoryLimitException(String message) {
         super(message);
     }
 
-    public CompressorMemoryLimitException(String message, Exception e) {
+    public MemoryLimitException(String message, Exception e) {
         super(message, e);
     }
 }

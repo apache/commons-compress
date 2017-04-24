@@ -20,6 +20,8 @@ package org.apache.commons.compress.compressors.lzma;
 
 import java.io.IOException;
 import java.io.InputStream;
+
+import org.apache.commons.compress.MemoryLimitException;
 import org.tukaani.xz.LZMAInputStream;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
@@ -55,7 +57,12 @@ public class LZMACompressorInputStream extends CompressorInputStream {
      */
     public LZMACompressorInputStream(final InputStream inputStream, int memoryLimitInKb)
             throws IOException {
-        in = new LZMAInputStream(inputStream, memoryLimitInKb);
+        try {
+            in = new LZMAInputStream(inputStream, memoryLimitInKb);
+        } catch (org.tukaani.xz.MemoryLimitException e) {
+            //convert to commons-compress exception
+            throw new MemoryLimitException("exceeded calculated memory limit", e);
+        }
     }
 
     /** {@inheritDoc} */
