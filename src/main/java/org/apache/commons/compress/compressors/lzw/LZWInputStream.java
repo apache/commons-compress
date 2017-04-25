@@ -114,16 +114,24 @@ public abstract class LZWInputStream extends CompressorInputStream {
 
     /**
      * Initializes the arrays based on the maximum code size.
+     * First checks that the estimated memory usage is below memoryLimitInKb
+     *
      * @param maxCodeSize maximum code size
-     * @param memoryLimitInKb maximum allowed table size in Kb
-     * @throws MemoryLimitException if maxTableSize is > memoryLimitInKb
+     * @param memoryLimitInKb maximum allowed estimated memory usage in Kb
+     * @throws MemoryLimitException if estimated memory usage is greater than memoryLimitInKb
      */
     protected void initializeTables(final int maxCodeSize, final int memoryLimitInKb)
             throws MemoryLimitException {
-        final int maxTableSize = 1 << maxCodeSize;
-        if (memoryLimitInKb > -1 && maxTableSize > memoryLimitInKb*1024) {
-            throw new MemoryLimitException("Tried to allocate "+maxTableSize +
-                    " but memoryLimitInKb only allows "+(memoryLimitInKb*1024));
+
+        if (memoryLimitInKb > -1) {
+            final int maxTableSize = 1 << maxCodeSize;
+            //account for potential overflow
+            long memoryUsageInBytes = (long) maxTableSize * 6;//(4 (prefixes) + 1 (characters) +1 (outputStack))
+            long memoryUsageInKb = memoryUsageInBytes >> 10;
+
+            if (memoryUsageInKb > (long)memoryLimitInKb) {
+                throw new MemoryLimitException(memoryUsageInKb, memoryLimitInKb);
+            }
         }
         initializeTables(maxCodeSize);
     }

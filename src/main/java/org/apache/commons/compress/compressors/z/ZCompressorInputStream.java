@@ -38,7 +38,7 @@ public class ZCompressorInputStream extends LZWInputStream {
     private final int maxCodeSize;
     private long totalCodesRead = 0;
 
-    public ZCompressorInputStream(final InputStream inputStream, int memoryLimitInKb)
+    public ZCompressorInputStream(final InputStream inputStream, final int memoryLimitInKb)
             throws IOException {
         super(inputStream, ByteOrder.LITTLE_ENDIAN);
         final int firstByte = (int) in.readBits(8);

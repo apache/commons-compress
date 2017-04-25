@@ -210,7 +210,7 @@ public final class DetectCompressorTestCase {
             return fac.createCompressorInputStream(is);
         } catch (CompressorException e) {
             if (e.getCause() != null && e.getCause() instanceof Exception) {
-                //unwrap cause to reveal MemoryLimiteException
+                //unwrap cause to reveal MemoryLimitException
                 throw (Exception)e.getCause();
             } else {
                 throw e;

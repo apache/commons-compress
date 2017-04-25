@@ -61,7 +61,7 @@ public class LZMACompressorInputStream extends CompressorInputStream {
             in = new LZMAInputStream(inputStream, memoryLimitInKb);
         } catch (org.tukaani.xz.MemoryLimitException e) {
             //convert to commons-compress exception
-            throw new MemoryLimitException("exceeded calculated memory limit", e);
+            throw new MemoryLimitException(e.getMemoryNeeded(), e.getMemoryLimit(), e);
         }
     }
 

@@ -30,11 +30,33 @@ import java.io.IOException;
  */
 public class MemoryLimitException extends IOException {
 
-    public MemoryLimitException(String message) {
-        super(message);
+    //long instead of int to account for overflow for corrupt files
+    private final long memoryNeededInKb;
+    private final int memoryLimitInKb;
+
+    public MemoryLimitException(long memoryNeededInKb, int memoryLimitInKb) {
+        super(buildMessage(memoryNeededInKb, memoryLimitInKb));
+        this.memoryNeededInKb = memoryNeededInKb;
+        this.memoryLimitInKb = memoryLimitInKb;
     }
 
-    public MemoryLimitException(String message, Exception e) {
-        super(message, e);
+    public MemoryLimitException(long memoryNeededInKb, int memoryLimitInKb, Exception e) {
+        super(buildMessage(memoryNeededInKb, memoryLimitInKb), e);
+        this.memoryNeededInKb = memoryNeededInKb;
+        this.memoryLimitInKb = memoryLimitInKb;
+    }
+
+    public long getMemoryNeededInKb() {
+        return memoryNeededInKb;
+    }
+
+    public int getMemoryLimitInKb() {
+        return memoryLimitInKb;
+    }
+
+    private static String buildMessage(long memoryNeededInKb, int memoryLimitInKb) {
+        return "" + memoryNeededInKb + " kb of memory would be needed; limit was "
+                + memoryLimitInKb + " kb. " +
+                "If the file is not corrupt, consider increasing the memory limit.";
     }
 }
