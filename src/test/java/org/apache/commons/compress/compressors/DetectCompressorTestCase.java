@@ -31,7 +31,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.compress.MemoryLimit;
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.MockEvilInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
@@ -39,8 +38,6 @@ import org.apache.commons.compress.compressors.deflate.DeflateCompressorInputStr
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorInputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
-import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.Test;
 
 @SuppressWarnings("deprecation") // deliberately tests setDecompressConcatenated
@@ -72,18 +69,6 @@ public final class DetectCompressorTestCase {
             this.factory = factory;
             this.concat = concat;
         }
-    }
-
-    @Before
-    public void setUp() {
-        //make sure to reset this before each test
-        MemoryLimit.setMemoryLimitInKb(MemoryLimit.NO_LIMIT);
-    }
-
-    @AfterClass
-    public static void tearDown() {
-        //make sure this is really, truly reset after all the tests
-        MemoryLimit.setMemoryLimitInKb(MemoryLimit.NO_LIMIT);
     }
 
     private final TestData[] tests = {
@@ -217,8 +202,8 @@ public final class DetectCompressorTestCase {
     }
 
     private InputStream getStreamFor(final String fileName, final int memoryLimitInKb) throws Exception {
-        MemoryLimit.setMemoryLimitInKb(memoryLimitInKb);
-        CompressorStreamFactory fac = new CompressorStreamFactory(true);
+        CompressorStreamFactory fac = new CompressorStreamFactory(true,
+                memoryLimitInKb);
         InputStream is = new BufferedInputStream(
                 new FileInputStream(getFile(fileName)));
         try {

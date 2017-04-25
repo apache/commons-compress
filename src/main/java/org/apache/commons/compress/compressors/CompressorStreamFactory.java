@@ -349,12 +349,39 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      */
     private volatile boolean decompressConcatenated = false;
 
+    private final int memoryLimitInKb;
     /**
      * Create an instance with the decompress Concatenated option set to false.
      */
     public CompressorStreamFactory() {
         this.decompressUntilEOF = null;
+        this.memoryLimitInKb = -1;
     }
+
+    /**
+     * Create an instance with the provided decompress Concatenated option.
+     *
+     * @param decompressUntilEOF
+     *            if true, decompress until the end of the input; if false, stop
+     *            after the first stream and leave the input position to point
+     *            to the next byte after the stream. This setting applies to the
+     *            gzip, bzip2 and xz formats only.
+     *
+     * @param memoryLimitInKb
+     *            Some streams require allocation of potentially significant
+     *            byte arrays/tables, and they can offer checks to prevent OOMs
+     *            on corrupt files.  Set the maximum allowed memory allocation in KBs.
+     *
+     * @since 1.14
+     */
+    public CompressorStreamFactory(final boolean decompressUntilEOF, final int memoryLimitInKb) {
+        this.decompressUntilEOF = Boolean.valueOf(decompressUntilEOF);
+        // Also copy to existing variable so can continue to use that as the
+        // current value
+        this.decompressConcatenated = decompressUntilEOF;
+        this.memoryLimitInKb = memoryLimitInKb;
+    }
+
 
     /**
      * Create an instance with the provided decompress Concatenated option.
@@ -367,10 +394,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      * @since 1.10
      */
     public CompressorStreamFactory(final boolean decompressUntilEOF) {
-        this.decompressUntilEOF = Boolean.valueOf(decompressUntilEOF);
-        // Also copy to existing variable so can continue to use that as the
-        // current value
-        this.decompressConcatenated = decompressUntilEOF;
+        this(decompressUntilEOF, -1);
     }
 
     /**
@@ -505,14 +529,14 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
                 if (!XZUtils.isXZCompressionAvailable()) {
                     throw new CompressorException("XZ compression is not available.");
                 }
-                return new XZCompressorInputStream(in, actualDecompressConcatenated);
+                return new XZCompressorInputStream(in, actualDecompressConcatenated, memoryLimitInKb);
             }
 
             if (LZMA.equalsIgnoreCase(name)) {
                 if (!LZMAUtils.isLZMACompressionAvailable()) {
                     throw new CompressorException("LZMA compression is not available");
                 }
-                return new LZMACompressorInputStream(in);
+                return new LZMACompressorInputStream(in, memoryLimitInKb);
             }
 
             if (PACK200.equalsIgnoreCase(name)) {
@@ -528,7 +552,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
             }
 
             if (Z.equalsIgnoreCase(name)) {
-                return new ZCompressorInputStream(in);
+                return new ZCompressorInputStream(in, memoryLimitInKb);
             }
 
             if (DEFLATE.equalsIgnoreCase(name)) {
