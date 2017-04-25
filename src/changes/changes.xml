@@ -84,6 +84,21 @@ The <action> type attribute can be add,update,fix,remove.
         Improved performance for concurrent reads from ZipFile when
         reading from a file.
       </action>
+      <action issue="COMPRESS-382" type="add" date="2017-04-25"
+              due-to="Tim Allison">
+        Added a way to limit amount of memory ZCompressorStream may
+        use.
+      </action>
+      <action issue="COMPRESS-386" type="add" date="2017-04-25"
+              due-to="Tim Allison">
+        Added a way to limit amount of memory ZCompressorStream may
+        use.
+      </action>
+      <action issue="COMPRESS-382" type="add" date="2017-04-25"
+              due-to="Tim Allison">
+        Added a way to limit amount of memory LZMACompressorStream and
+        XZCompressorInputStream may use.
+      </action>
     </release>
     <release version="1.13" date="2016-12-29"
              description="Release 1.13 - API compatible to 1.12 but requires Java 7 at runtime.">
