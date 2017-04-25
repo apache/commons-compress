@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteOrder;
 
+import org.apache.commons.compress.MemoryLimit;
 import org.apache.commons.compress.compressors.lzw.LZWInputStream;
 
 /**
@@ -38,8 +39,7 @@ public class ZCompressorInputStream extends LZWInputStream {
     private final int maxCodeSize;
     private long totalCodesRead = 0;
 
-    public ZCompressorInputStream(final InputStream inputStream, int memoryLimitInKb)
-            throws IOException {
+    public ZCompressorInputStream(final InputStream inputStream) throws IOException {
         super(inputStream, ByteOrder.LITTLE_ENDIAN);
         final int firstByte = (int) in.readBits(8);
         final int secondByte = (int) in.readBits(8);
@@ -52,12 +52,8 @@ public class ZCompressorInputStream extends LZWInputStream {
         if (blockMode) {
             setClearCode(DEFAULT_CODE_SIZE);
         }
-        initializeTables(maxCodeSize, memoryLimitInKb);
+        initializeTables(maxCodeSize, MemoryLimit.getMemoryLimitInKb());
         clearEntries();
-    }
-
-    public ZCompressorInputStream(final InputStream inputStream) throws IOException {
-        this(inputStream, -1);
     }
     
     private void clearEntries() {
