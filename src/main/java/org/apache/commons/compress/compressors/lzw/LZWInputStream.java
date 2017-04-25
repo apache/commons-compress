@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteOrder;
 
+import org.apache.commons.compress.MemoryLimit;
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.BitInputStream;
@@ -115,25 +116,18 @@ public abstract class LZWInputStream extends CompressorInputStream {
     /**
      * Initializes the arrays based on the maximum code size.
      * @param maxCodeSize maximum code size
-     * @param memoryLimitInKb maximum allowed table size in Kb
-     * @throws MemoryLimitException if maxTableSize is > memoryLimitInKb
+     *
+     * @throws MemoryLimitException
+     *      if the calculated memory usage, based on the maxTableSize,
+     *      is &gt; {@link MemoryLimit#MEMORY_LIMIT_IN_KB}
      */
-    protected void initializeTables(final int maxCodeSize, final int memoryLimitInKb)
-            throws MemoryLimitException {
+    protected void initializeTables(final int maxCodeSize) throws MemoryLimitException {
         final int maxTableSize = 1 << maxCodeSize;
-        if (memoryLimitInKb > -1 && maxTableSize > memoryLimitInKb*1024) {
-            throw new MemoryLimitException("Tried to allocate "+maxTableSize +
-                    " but memoryLimitInKb only allows "+(memoryLimitInKb*1024));
-        }
-        initializeTables(maxCodeSize);
-    }
 
-    /**
-     * Initializes the arrays based on the maximum code size.
-     * @param maxCodeSize maximum code size
-     */
-    protected void initializeTables(final int maxCodeSize) {
-        final int maxTableSize = 1 << maxCodeSize;
+        //account for potential overflow
+        long memoryUsageInBytes = (long)maxTableSize * 6;//(4 (prefixes) + 1 (characters) +1 (outputStack))
+        MemoryLimit.checkLimitInKb(memoryUsageInBytes >> 10);
+
         prefixes = new int[maxTableSize];
         characters = new byte[maxTableSize];
         outputStack = new byte[maxTableSize];

@@ -62,4 +62,19 @@ public class MemoryLimit {
     public static int getMemoryLimitInKb() {
         return MEMORY_LIMIT_IN_KB;
     }
+
+    public static void checkLimitInKb(long memoryNeeded) throws MemoryLimitException {
+        if (memoryNeeded < 0) {
+            throw new IllegalArgumentException("MemoryLimit must be > -1");
+        }
+
+        if (memoryNeeded >> 10 > Integer.MAX_VALUE) {
+            throw new MemoryLimitException(memoryNeeded,
+                    (MEMORY_LIMIT_IN_KB < 0) ? Integer.MAX_VALUE : MEMORY_LIMIT_IN_KB);
+        }
+
+        if (MEMORY_LIMIT_IN_KB > -1 && memoryNeeded > MEMORY_LIMIT_IN_KB) {
+                throw new MemoryLimitException(memoryNeeded, MEMORY_LIMIT_IN_KB);
+        }
+    }
 }

@@ -26,15 +26,21 @@ import java.io.IOException;
  * if a stream tries to allocate a byte array that is larger than
  * the allowable limit.
  *
+ * <p/>
+ * Set the global memory limit via {@link MemoryLimit#setMemoryLimitInKb(int)}.
+ *
  * @since 1.14
  */
 public class MemoryLimitException extends IOException {
 
-    public MemoryLimitException(String message) {
-        super(message);
-    }
-
-    public MemoryLimitException(String message, Exception e) {
-        super(message, e);
+    /**
+     *
+     * @param memoryNeeded estimated memory needed
+     * @param memoryLimit memory limit applied
+     */
+    public MemoryLimitException(long memoryNeeded, int memoryLimit) {
+        super("" + memoryNeeded + " KiB of memory would be needed; limit was "
+                + memoryLimit + " KiB.  If the file is not corrupt, consider " +
+                "increasing MemoryLimit.MEMORY_LIMIT_IN_KB.");
     }
 }

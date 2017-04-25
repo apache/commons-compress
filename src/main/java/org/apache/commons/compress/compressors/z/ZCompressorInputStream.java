@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteOrder;
 
-import org.apache.commons.compress.MemoryLimit;
 import org.apache.commons.compress.compressors.lzw.LZWInputStream;
 
 /**
@@ -52,7 +51,7 @@ public class ZCompressorInputStream extends LZWInputStream {
         if (blockMode) {
             setClearCode(DEFAULT_CODE_SIZE);
         }
-        initializeTables(maxCodeSize, MemoryLimit.getMemoryLimitInKb());
+        initializeTables(maxCodeSize);
         clearEntries();
     }
     
