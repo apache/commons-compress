@@ -1115,7 +1115,7 @@ public class ZipFile implements Closeable {
         public synchronized int read() throws IOException {
             if (loc >= end) {
                 if (loc == end && addDummy) {
-                    ++loc;
+                    addDummy = false;
                     return 0;
                 }
                 return -1;
@@ -1143,7 +1143,7 @@ public class ZipFile implements Closeable {
             if (len > end-loc) {
                 if (loc >= end) {
                     if (loc == end && addDummy) {
-                        ++loc;
+                        addDummy = false;
                         b[off] = 0;
                         return 1;
                     }
