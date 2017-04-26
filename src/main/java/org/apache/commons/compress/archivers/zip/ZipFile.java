@@ -1126,10 +1126,11 @@ public class ZipFile implements Closeable {
             else {
                 singleByteBuffer.rewind();
             }
-            int read = read(loc++, singleByteBuffer);
+            int read = read(loc, singleByteBuffer);
             if (read < 0) {
                 return read;
             }
+            loc++;
             return singleByteBuffer.get() & 0xff;
         }
 
