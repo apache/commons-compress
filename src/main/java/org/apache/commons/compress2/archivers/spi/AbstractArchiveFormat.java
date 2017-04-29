@@ -23,10 +23,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.channels.WritableByteChannel;
-import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import org.apache.commons.compress2.archivers.ArchiveEntry;
 import org.apache.commons.compress2.archivers.ArchiveFormat;
 import org.apache.commons.compress2.archivers.ArchiveInput;
@@ -98,20 +95,6 @@ public abstract class AbstractArchiveFormat<A extends ArchiveEntry> implements A
     }
     /**
      * {@inheritDoc}
-     * <p>This implementation delegates to {@link #readWithRandomAccessFrom} if random access is supported or {@link
-     * #readFrom(ReadableByteChannel, Charset)} otherwise.</p>
-     */
-    @Override
-    public ArchiveInput<A> readFrom(Path path, Charset charset) throws IOException {
-        SeekableByteChannel channel = FileChannel.open(path, StandardOpenOption.READ);
-        if (supportsRandomAccessInput()) {
-            return readWithRandomAccessFrom(channel, charset);
-        }
-
-        return readFrom(channel, charset);
-    }
-    /**
-     * {@inheritDoc}
      * <p>This implementation always throws an UnsupportedOperationException.</p>
      */
     @Override
@@ -128,15 +111,5 @@ public abstract class AbstractArchiveFormat<A extends ArchiveEntry> implements A
     public ArchiveOutput<A> writeTo(WritableByteChannel channel, Charset charset)
         throws IOException, UnsupportedOperationException {
         throw new UnsupportedOperationException("this format is read-only");
-    }
-    /**
-     * {@inheritDoc}
-     * <p>This implementation always delegates to {@link #writeTo(Channel, Charset)}.</p>
-     */
-    @Override
-    public ArchiveOutput<A> writeTo(Path path, Charset charset) throws IOException, UnsupportedOperationException {
-        return writeTo(FileChannel.open(path, StandardOpenOption.WRITE, StandardOpenOption.CREATE,
-                                        StandardOpenOption.TRUNCATE_EXISTING),
-                       charset);
     }
 }

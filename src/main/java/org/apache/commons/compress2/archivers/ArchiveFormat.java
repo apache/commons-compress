@@ -19,11 +19,13 @@
 package org.apache.commons.compress2.archivers;
 
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.io.IOException;
 
 /**
@@ -93,7 +95,14 @@ public interface ArchiveFormat<A extends ArchiveEntry> {
      * @param charset the charset used for encoding the entry names.
      * @throws IOException
      */
-    ArchiveInput<A> readFrom(Path path, Charset charset) throws IOException;
+    default ArchiveInput<A> readFrom(Path path, Charset charset) throws IOException {
+        SeekableByteChannel channel = FileChannel.open(path, StandardOpenOption.READ);
+        if (supportsRandomAccessInput()) {
+            return readWithRandomAccessFrom(channel, charset);
+        }
+
+        return readFrom(channel, charset);
+    }
     /**
      * Provides random access to an archive assuming the given charset for entry names.
      * @param channel the seekable channel to read from
@@ -121,5 +130,9 @@ public interface ArchiveFormat<A extends ArchiveEntry> {
      * @throws IOException
      * @throws UnsupportedOperationException if this format doesn't support writing
      */
-    ArchiveOutput<A> writeTo(Path path, Charset charset) throws IOException, UnsupportedOperationException;
+    default ArchiveOutput<A> writeTo(Path path, Charset charset) throws IOException, UnsupportedOperationException {
+        return writeTo(FileChannel.open(path, StandardOpenOption.WRITE, StandardOpenOption.CREATE,
+                                        StandardOpenOption.TRUNCATE_EXISTING),
+                       charset);
+    }
 }
