@@ -18,7 +18,6 @@
  */
 package org.apache.commons.compress2.archivers;
 
-import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SeekableByteChannel;
