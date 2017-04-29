@@ -33,6 +33,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import org.apache.commons.compress2.Format;
 
 /**
  * Loads ArchiveFormats defined as "services" from {@code
@@ -122,7 +123,7 @@ public class Archivers implements Iterable<ArchiveFormat<? extends ArchiveEntry>
 
     private void fillMap() throws ServiceConfigurationError {
         Set<ArchiveFormat<? extends ArchiveEntry>> ts =
-            new TreeSet<ArchiveFormat<? extends ArchiveEntry>>(Archivers::sortForAutoDetection);
+            new TreeSet<ArchiveFormat<? extends ArchiveEntry>>(Format.AUTO_DETECTION_ORDER);
         ts.addAll(asList(formatLoader));
         archivers = Collections.unmodifiableMap(ts.stream()
             .collect(Collectors.toMap(ArchiveFormat::getName, Function.identity())));
@@ -143,18 +144,5 @@ public class Archivers implements Iterable<ArchiveFormat<? extends ArchiveEntry>
             l.add(t);
         }
         return l;
-    }
-
-    private static int sortForAutoDetection(ArchiveFormat a1, ArchiveFormat a2) {
-        if (a1.supportsAutoDetection() && a2.supportsAutoDetection()) {
-            return a1.getNumberOfBytesRequiredForAutodetection() - a2.getNumberOfBytesRequiredForAutodetection();
-        }
-        if (!a1.supportsAutoDetection() && !a2.supportsAutoDetection()) {
-            return 0;
-        }
-        if (a1.supportsAutoDetection()) {
-            return -1;
-        }
-        return 1;
     }
 }

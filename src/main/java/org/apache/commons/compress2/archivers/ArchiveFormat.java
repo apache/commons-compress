@@ -27,23 +27,13 @@ import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.io.IOException;
+import org.apache.commons.compress2.Format;
 
 /**
  * Describes a given archive format and works as factory and content-probe at the same time.
  * @Immutable
  */
-public interface ArchiveFormat<A extends ArchiveEntry> {
-    /**
-     * The name by which this format is known.
-     * @return the name by which this format is known
-     */
-    String getName();
-
-    /**
-     * Does the format support writing?
-     * @return whether writing is supported
-     */
-    boolean supportsWriting();
+public interface ArchiveFormat<A extends ArchiveEntry> extends Format {
     /**
      * Does the format support random access reading?
      * @return whether random access reading is supported
@@ -59,26 +49,6 @@ public interface ArchiveFormat<A extends ArchiveEntry> {
      * @return whether writing to arbitrary non-seekable channels is supported
      */
     boolean supportsReadingFromNonSeekableChannels();
-
-    /**
-     * Does the format support content-based detection?
-     * @return whether the format supports content-based detection.
-     */
-    boolean supportsAutoDetection();
-    /**
-     * If this format supports content-based detection, how many bytes does it need to read to know a channel is
-     * readable by this format?
-     * @return the minimal number of bytes needed
-     * @throws UnsupportedOperationException if this format doesn't support content based detection.
-     */
-    int getNumberOfBytesRequiredForAutodetection() throws UnsupportedOperationException;
-    /**
-     * Verifies the given input is readable by this format.
-     * @param probe a buffer holding at least {@link #getNumberOfBytesRequiredForAutodetection} bytes
-     * @return whether the input is readable by this format
-     * @throws UnsupportedOperationException if this format doesn't support content based detection.
-     */
-    boolean matches(ByteBuffer probe) throws UnsupportedOperationException;
 
     /**
      * Reads an archive assuming the given charset for entry names.
