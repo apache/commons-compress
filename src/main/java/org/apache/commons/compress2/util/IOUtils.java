@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.commons.compress2.formats.ar;
+package org.apache.commons.compress2.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -28,10 +28,9 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
 /**
- * THIS CLASS WILL CERTAINLY NOT STAY HERE.
  * @Immutable
  */
-final class IOUtils {
+public final class IOUtils {
 
     /** Private constructor to prevent instantiation of this utility class. */
     private IOUtils(){

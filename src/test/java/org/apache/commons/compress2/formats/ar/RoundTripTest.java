@@ -37,6 +37,7 @@ import org.junit.Test;
 import org.apache.commons.compress2.archivers.ArchiveEntryParameters;
 import org.apache.commons.compress2.archivers.ArchiveInput;
 import org.apache.commons.compress2.archivers.ArchiveOutput;
+import org.apache.commons.compress2.util.IOUtils;
 
 public class RoundTripTest {
 

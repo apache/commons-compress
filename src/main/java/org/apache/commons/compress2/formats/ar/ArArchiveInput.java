@@ -31,6 +31,7 @@ import java.nio.file.attribute.FileTime;
 import org.apache.commons.compress2.archivers.ArchiveEntryParameters;
 import org.apache.commons.compress2.archivers.OwnerInformation;
 import org.apache.commons.compress2.archivers.spi.AbstractArchiveInput;
+import org.apache.commons.compress2.util.IOUtils;
 
 /**
  * Implements the "ar" archive format.

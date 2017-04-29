@@ -22,7 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-
+import org.apache.commons.compress2.util.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
