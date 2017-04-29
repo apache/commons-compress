@@ -20,38 +20,23 @@ package org.apache.commons.compress2.formats.ar;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
-import java.util.Locale;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import org.apache.commons.compress2.archivers.ArchiveEntryParameters;
 import org.apache.commons.compress2.archivers.ArchiveInput;
 import org.apache.commons.compress2.archivers.ArchiveOutput;
+import org.apache.commons.compress2.formats.AbstractFileSystemTest;
 import org.apache.commons.compress2.util.IOUtils;
 
-public class RoundTripTest {
+import static org.apache.commons.compress2.TestSupport.getFile;
 
-    private File dir;
-
-    @Before
-    public void createTempDir() throws Exception {
-        dir = mkdir("dir");
-    }
-
-    @After
-    public void removeTempDir() throws Exception {
-        rmdir(dir);
-    }
+public class RoundTripTest extends AbstractFileSystemTest {
 
     @Test
     public void testRoundtripUsingConstructors() throws Exception {
@@ -171,71 +156,4 @@ public class RoundTripTest {
         in.close();
     }
 
-    public static File mkdir(String name) throws IOException {
-        File f = File.createTempFile(name, "");
-        f.delete();
-        f.mkdir();
-        return f;
-    }
-
-    public static File getFile(String path) throws IOException {
-        URL url = RoundTripTest.class.getClassLoader().getResource(path);
-        if (url == null) {
-            throw new FileNotFoundException("couldn't find " + path);
-        }
-        URI uri = null;
-        try {
-            uri = url.toURI();
-        } catch (java.net.URISyntaxException ex) {
-            throw new IOException(ex);
-        }
-        return new File(uri);
-    }
-
-    public static void rmdir(File f) {
-        String[] s = f.list();
-        if (s != null) {
-            for (String element : s) {
-                final File file = new File(f, element);
-                if (file.isDirectory()){
-                    rmdir(file);
-                }
-                boolean ok = tryHardToDelete(file);
-                if (!ok && file.exists()){
-                    System.out.println("Failed to delete "+element+" in "+f.getPath());
-                }
-            }
-        }
-        tryHardToDelete(f); // safer to delete and check
-        if (f.exists()){
-            throw new Error("Failed to delete "+f.getPath());
-        }
-    }
-
-    private static final boolean ON_WINDOWS =
-        System.getProperty("os.name").toLowerCase(Locale.ENGLISH)
-        .indexOf("windows") > -1;
-
-    /**
-     * Accommodate Windows bug encountered in both Sun and IBM JDKs.
-     * Others possible. If the delete does not work, call System.gc(),
-     * wait a little and try again.
-     *
-     * @return whether deletion was successful
-     * @since Stolen from FileUtils in Ant 1.8.0
-     */
-    public static boolean tryHardToDelete(File f) {
-        if (f != null && f.exists() && !f.delete()) {
-            if (ON_WINDOWS) {
-                System.gc();
-            }
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException ex) {
-                // Ignore Exception
-            }
-            return f.delete();
-        }
-        return true;
-    }
 }

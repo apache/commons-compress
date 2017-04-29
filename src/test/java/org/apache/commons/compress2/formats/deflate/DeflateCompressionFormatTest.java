@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import org.apache.commons.compress2.TestSupport;
 import org.apache.commons.compress2.util.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -30,17 +31,17 @@ public class DeflateCompressionFormatTest {
 
     @Test
     public void shouldDetectFormat() throws IOException {
-        Assert.assertTrue(isAr("test-archives/default.tar.deflatez"));
+        Assert.assertTrue(isDeflate("test-archives/default.tar.deflatez"));
     }
 
     @Test
     public void shouldRejectXMLFile() throws IOException {
-        Assert.assertFalse(isAr("test1.xml"));
+        Assert.assertFalse(isDeflate("test1.xml"));
     }
 
 
-    private boolean isAr(String file) throws IOException {
-        File f = RoundTripTest.getFile(file);
+    private boolean isDeflate(String file) throws IOException {
+        File f = TestSupport.getFile(file);
         FileInputStream c = new FileInputStream(f);
         try {
             byte[] b = new byte[10];

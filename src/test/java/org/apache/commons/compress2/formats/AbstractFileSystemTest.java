@@ -16,39 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.commons.compress2.formats.ar;
+package org.apache.commons.compress2.formats;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import org.apache.commons.compress2.TestSupport;
-import org.apache.commons.compress2.util.IOUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.After;
+import org.junit.Before;
 
-public class ArArchiveFormatTest {
+public abstract class AbstractFileSystemTest {
 
-    @Test
-    public void shouldDetectFormat() throws IOException {
-        Assert.assertTrue(isAr("test-archives/default.ar"));
+    protected File dir;
+
+    @Before
+    public void createTempDir() throws Exception {
+        dir = TestSupport.mkdir("dir");
     }
 
-    @Test
-    public void shouldRejectXMLFile() throws IOException {
-        Assert.assertFalse(isAr("test1.xml"));
+    @After
+    public void removeTempDir() throws Exception {
+        TestSupport.rmdir(dir);
     }
 
-
-    private boolean isAr(String file) throws IOException {
-        File f = TestSupport.getFile(file);
-        FileInputStream c = new FileInputStream(f);
-        try {
-            byte[] b = new byte[10];
-            IOUtils.readFully(c, b);
-            return new ArArchiveFormat().matches(ByteBuffer.wrap(b));
-        } finally {
-            c.close();
-        }
-    }
 }
