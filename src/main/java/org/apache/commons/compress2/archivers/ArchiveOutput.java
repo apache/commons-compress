@@ -35,7 +35,7 @@ public interface ArchiveOutput<A extends ArchiveEntry> extends AutoCloseable {
     A createEntry(ArchiveEntryParameters params);
 
     /**
-     * Whether this channel is able to write the contents of the given entry.
+     * Whether this output is able to write the contents of the given entry.
      *
      * <p>Some archive formats support variants or details that are not supported (yet).</p>
      *
@@ -46,7 +46,7 @@ public interface ArchiveOutput<A extends ArchiveEntry> extends AutoCloseable {
     boolean canWriteEntryData(A archiveEntry);
 
     /**
-     * Initializes the channel for writing a new {@link ArchiveEntry}.
+     * Initializes the output for writing a new {@link ArchiveEntry}.
      *
      * <p>The caller must then write the content to the channel and call {@link #closeEntry()} to complete the
      * process.</p>
@@ -64,7 +64,7 @@ public interface ArchiveOutput<A extends ArchiveEntry> extends AutoCloseable {
     void closeEntry() throws IOException;
 
     /**
-     * Finishes the addition of entries to this stream, without closing it.
+     * Finishes the addition of entries to this output, without closing it.
      *
      * <p>Additional data can be written, if the format supports it.<p>
      * 
@@ -73,7 +73,7 @@ public interface ArchiveOutput<A extends ArchiveEntry> extends AutoCloseable {
     void finish() throws IOException;
 
     /**
-     * Returns the current number of bytes written to this channel.
+     * Returns the current number of bytes written to this output.
      * @return the number of written bytes
      */
     long getBytesWritten();

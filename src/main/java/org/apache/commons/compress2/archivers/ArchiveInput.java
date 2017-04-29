@@ -29,7 +29,7 @@ public interface ArchiveInput<A extends ArchiveEntry> extends AutoCloseable {
 
     /**
      * Obtains the next entry.
-     * @return the next entry or null if the end of the channel has been reached.
+     * @return the next entry or null if the end of the input has been reached.
      */
     A next() throws IOException;
 
@@ -40,7 +40,7 @@ public interface ArchiveInput<A extends ArchiveEntry> extends AutoCloseable {
     ReadableByteChannel getChannel();
 
     /**
-     * Whether this channel is able to read the contents of the current entry.
+     * Whether this input is able to read the contents of the current entry.
      * 
      * <p>Some archive formats support variants or details that are not supported (yet).</p>
      * 
@@ -49,7 +49,7 @@ public interface ArchiveInput<A extends ArchiveEntry> extends AutoCloseable {
     boolean canReadEntryData();
 
     /**
-     * Returns the current number of bytes read from this channel.
+     * Returns the current number of bytes read from this input.
      * @return the number of read bytes
      */
     long getBytesRead();
