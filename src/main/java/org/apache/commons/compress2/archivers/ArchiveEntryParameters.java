@@ -310,7 +310,7 @@ public class ArchiveEntryParameters implements ArchiveEntry {
 
     /**
      * Translates a set of permissons into a Unix stat(2) {@code st_mode} result
-     * @param permissions the permissions
+     * @param permissions the permissions.
      * @param type the file type
      * @return the "mode"
      */
@@ -343,6 +343,8 @@ public class ArchiveEntryParameters implements ArchiveEntry {
 
     /**
      * Translates a Unix stat(2) {@code st_mode} compatible value into a set of permissions.
+     * @param mode the "mode"
+     * @return set of permissions
      */
     public static Set<PosixFilePermission> permissionsFromMode(long mode) {
         Set<PosixFilePermission> permissions = EnumSet.noneOf(PosixFilePermission.class);
