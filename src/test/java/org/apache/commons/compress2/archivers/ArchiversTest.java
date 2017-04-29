@@ -28,8 +28,9 @@ public class ArchiversTest {
 
     @Test
     public void shouldFindArArchiveFormatByName() {
-        ArchiveFormat<? extends ArchiveEntry> arFormat =
-            new Archivers().getArchiveFormatByName(ArArchiveFormat.AR_FORMAT_NAME);
+        ArchiveFormat arFormat =
+            new Archivers().getArchiveFormatByName(ArArchiveFormat.AR_FORMAT_NAME)
+            .orElse(null);
         Assert.assertNotNull(arFormat);
         Assert.assertEquals(ArArchiveFormat.class, arFormat.getClass());
     }
@@ -59,8 +60,8 @@ public class ArchiversTest {
         shouldNotFind(ArArchiveFormat.class, new Archivers().getFormatsWithRandomAccessInput());
     }
 
-    private void shouldFind(Class<?> archiveFormat, Iterable<ArchiveFormat<? extends ArchiveEntry>> i) {
-        for (ArchiveFormat<? extends ArchiveEntry> a : i) {
+    private void shouldFind(Class<?> archiveFormat, Iterable<ArchiveFormat> i) {
+        for (ArchiveFormat a : i) {
             if (archiveFormat.equals(a.getClass())) {
                 return;
             }
@@ -68,8 +69,8 @@ public class ArchiversTest {
         Assert.fail("Expected to find " + archiveFormat);
     }
 
-    private void shouldNotFind(Class<?> archiveFormat, Iterable<ArchiveFormat<? extends ArchiveEntry>> i) {
-        for (ArchiveFormat<? extends ArchiveEntry> a : i) {
+    private void shouldNotFind(Class<?> archiveFormat, Iterable<ArchiveFormat> i) {
+        for (ArchiveFormat a : i) {
             if (archiveFormat.equals(a.getClass())) {
                 Assert.fail("Didn't expect to find " + archiveFormat);
             }
