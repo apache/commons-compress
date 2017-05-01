@@ -142,7 +142,7 @@ import org.apache.commons.compress.utils.ArchiveUtils;
  * @NotThreadSafe
  */
 
-public class TarArchiveEntry implements TarConstants, ArchiveEntry {
+public class TarArchiveEntry implements ArchiveEntry, TarConstants {
     private static final TarArchiveEntry[] EMPTY_TAR_ARCHIVE_ENTRIES = new TarArchiveEntry[0];
 
     /** The entry's name. */

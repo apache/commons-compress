@@ -18,6 +18,7 @@
 package org.apache.commons.compress.archivers.zip;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.EntryStreamOffsets;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -48,7 +49,8 @@ import java.util.zip.ZipException;
  * @NotThreadSafe
  */
 public class ZipArchiveEntry extends java.util.zip.ZipEntry
-    implements ArchiveEntry {
+    implements ArchiveEntry, EntryStreamOffsets
+{
 
     public static final int PLATFORM_UNIX = 3;
     public static final int PLATFORM_FAT  = 0;
@@ -89,6 +91,10 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     private byte[] rawName = null;
     private GeneralPurposeBit gpb = new GeneralPurposeBit();
     private static final ZipExtraField[] noExtraFields = new ZipExtraField[0];
+    private long localHeaderOffset = OFFSET_UNKNOWN;
+    private long dataOffset = OFFSET_UNKNOWN;
+    private boolean isStreamContiguous = false;
+
 
     /**
      * Creates a new zip entry with the specified name.
@@ -678,6 +684,38 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         return null;
     }
 
+    protected long getLocalHeaderOffset() {
+        return this.localHeaderOffset;
+    }
+
+    protected void setLocalHeaderOffset(long localHeaderOffset) {
+        this.localHeaderOffset = localHeaderOffset;
+    }
+
+    @Override
+    public long getDataOffset() {
+        return dataOffset;
+    }
+
+    /**
+     * Sets the data offset.
+     *
+     * @param dataOffset
+     *      new value of data offset.
+     */
+    protected void setDataOffset(long dataOffset) {
+        this.dataOffset = dataOffset;
+    }
+
+    @Override
+    public boolean isStreamContiguous() {
+        return isStreamContiguous;
+    }
+
+    protected void setStreamContiguous(boolean isStreamContiguous) {
+        this.isStreamContiguous = isStreamContiguous;
+    }
+
     /**
      * Get the hashCode of the entry.
      * This uses the name as the hashcode.
@@ -801,6 +839,8 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
                              other.getCentralDirectoryExtra())
             && Arrays.equals(getLocalFileDataExtra(),
                              other.getLocalFileDataExtra())
+            && localHeaderOffset == other.localHeaderOffset
+            && dataOffset == other.dataOffset
             && gpb.equals(other.gpb);
     }
 

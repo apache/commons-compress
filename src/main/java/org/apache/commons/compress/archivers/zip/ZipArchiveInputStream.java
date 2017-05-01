@@ -226,6 +226,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             firstEntry = false;
         }
 
+        long currentHeaderOffset = getBytesRead();
         try {
             if (firstEntry) {
                 // split archives have a special signature before the
@@ -307,6 +308,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
 
         processZip64Extra(size, cSize);
 
+        current.entry.setLocalHeaderOffset(currentHeaderOffset);
+        current.entry.setDataOffset(getBytesRead());
+        current.entry.setStreamContiguous(true);
+
         if (current.entry.getCompressedSize() != ArchiveEntry.SIZE_UNKNOWN) {
             if (current.entry.getMethod() == ZipMethod.UNSHRINKING.getCode()) {
                 current.in = new UnshrinkingInputStream(new BoundedInputStream(in, current.entry.getCompressedSize()));
@@ -319,7 +324,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
                 current.in = new BZip2CompressorInputStream(new BoundedInputStream(in, current.entry.getCompressedSize()));
             }
         }
-        
+
         entriesRead++;
         return current.entry;
     }
