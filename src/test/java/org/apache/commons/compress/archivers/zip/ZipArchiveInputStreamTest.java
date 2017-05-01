@@ -26,13 +26,16 @@ import static org.junit.Assert.fail;
 
 import java.io.BufferedInputStream;
 import java.io.EOFException;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.zip.ZipException;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class ZipArchiveInputStreamTest {
@@ -245,6 +248,27 @@ public class ZipArchiveInputStreamTest {
             assertTrue(expected.getMessage().contains("Unexpected record signature"));
         } finally {
             zip.close();
+        }
+    }
+
+    /**
+     * Test correct population of header and data offsets.
+     */
+    @Test
+    public void testOffsets() throws Exception {
+        // mixed.zip contains both inflated and stored files
+        try (InputStream archiveStream = ZipArchiveInputStream.class.getResourceAsStream("/mixed.zip");
+             ZipArchiveInputStream zipStream =  new ZipArchiveInputStream((archiveStream))
+        ) {
+            ZipArchiveEntry inflatedEntry = zipStream.getNextZipEntry();
+            Assert.assertEquals("inflated.txt", inflatedEntry.getName());
+            Assert.assertEquals(0x0000, inflatedEntry.getLocalHeaderOffset());
+            Assert.assertEquals(0x0046, inflatedEntry.getDataOffset());
+            ZipArchiveEntry storedEntry = zipStream.getNextZipEntry();
+            Assert.assertEquals("stored.txt", storedEntry.getName());
+            Assert.assertEquals(0x5892, storedEntry.getLocalHeaderOffset());
+            Assert.assertEquals(0x58d6, storedEntry.getDataOffset());
+            Assert.assertNull(zipStream.getNextZipEntry());
         }
     }
 

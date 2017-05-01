@@ -21,6 +21,7 @@ package org.apache.commons.compress.archivers.zip;
 import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -35,11 +36,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class ZipFileTest {
@@ -398,6 +401,65 @@ public class ZipFileTest {
         assertEquals(2, passedCount.get());
     }
 
+    /**
+     * Test correct population of header and data offsets.
+     */
+    @Test
+    public void testOffsets() throws Exception {
+        // mixed.zip contains both inflated and stored files
+        final File archive = getFile("mixed.zip");
+        try (ZipFile zf = new ZipFile(archive)) {
+            ZipArchiveEntry inflatedEntry = zf.getEntry("inflated.txt");
+            Assert.assertEquals(0x0000, inflatedEntry.getLocalHeaderOffset());
+            Assert.assertEquals(0x0046, inflatedEntry.getDataOffset());
+            Assert.assertTrue(inflatedEntry.isStreamContiguous());
+            ZipArchiveEntry storedEntry = zf.getEntry("stored.txt");
+            Assert.assertEquals(0x5892, storedEntry.getLocalHeaderOffset());
+            Assert.assertEquals(0x58d6, storedEntry.getDataOffset());
+            Assert.assertTrue(inflatedEntry.isStreamContiguous());
+        }
+    }
+
+    /**
+     * Test correct population of header and data offsets when they are written after stream.
+     */
+    @Test
+    public void testDelayedOffsetsAndSizes() throws Exception {
+        ByteArrayOutputStream zipContent = new ByteArrayOutputStream();
+        try (ZipArchiveOutputStream zipOutput = new ZipArchiveOutputStream(zipContent)) {
+            ZipArchiveEntry inflatedEntry = new ZipArchiveEntry("inflated.txt");
+            inflatedEntry.setMethod(ZipEntry.DEFLATED);
+            zipOutput.putArchiveEntry(inflatedEntry);
+            zipOutput.write("Hello Deflated\n".getBytes());
+            zipOutput.closeArchiveEntry();
+
+            byte[] storedContent = "Hello Stored\n".getBytes();
+            ZipArchiveEntry storedEntry = new ZipArchiveEntry("stored.txt");
+            storedEntry.setMethod(ZipEntry.STORED);
+            storedEntry.setSize(storedContent.length);
+            storedEntry.setCrc(calculateCrc32(storedContent));
+            zipOutput.putArchiveEntry(storedEntry);
+            zipOutput.write("Hello Stored\n".getBytes());
+            zipOutput.closeArchiveEntry();
+
+        }
+
+        try (ZipFile zf = new ZipFile(new SeekableInMemoryByteChannel(zipContent.toByteArray()))) {
+            ZipArchiveEntry inflatedEntry = zf.getEntry("inflated.txt");
+            Assert.assertNotEquals(-1L, inflatedEntry.getLocalHeaderOffset());
+            Assert.assertNotEquals(-1L, inflatedEntry.getDataOffset());
+            Assert.assertTrue(inflatedEntry.isStreamContiguous());
+            Assert.assertNotEquals(-1L, inflatedEntry.getCompressedSize());
+            Assert.assertNotEquals(-1L, inflatedEntry.getSize());
+            ZipArchiveEntry storedEntry = zf.getEntry("stored.txt");
+            Assert.assertNotEquals(-1L, storedEntry.getLocalHeaderOffset());
+            Assert.assertNotEquals(-1L, storedEntry.getDataOffset());
+            Assert.assertTrue(inflatedEntry.isStreamContiguous());
+            Assert.assertNotEquals(-1L, storedEntry.getCompressedSize());
+            Assert.assertNotEquals(-1L, storedEntry.getSize());
+        }
+    }
+
     private void assertAllReadMethods(byte[] expected, ZipFile zipFile, ZipArchiveEntry entry) {
         // simple IOUtil read
         try (InputStream stream = zf.getInputStream(entry)) {
@@ -459,6 +521,12 @@ public class ZipFileTest {
         System.arraycopy(beginning, 0, full, 0, length);
         System.arraycopy(rest, 0, full, length, rest.length);
         return full;
+    }
+
+    private long calculateCrc32(byte[] content) {
+        CRC32 crc = new CRC32();
+        crc.update(content);
+        return crc.getValue();
     }
 
     /*
