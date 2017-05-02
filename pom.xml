@@ -68,6 +68,12 @@ jar, tar, zip, dump, 7z, arj.
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.brotli</groupId>
+      <artifactId>dec</artifactId>
+      <version>0.1.1</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
       <groupId>org.tukaani</groupId>
       <artifactId>xz</artifactId>
       <version>1.6</version>
@@ -84,7 +90,7 @@ jar, tar, zip, dump, 7z, arj.
       <artifactId>powermock-api-mockito</artifactId>
       <version>${powermock.version}</version>
       <scope>test</scope>
-    </dependency>
+    </dependency>    
   </dependencies>
 
   <developers>
@@ -245,6 +251,7 @@ jar, tar, zip, dump, 7z, arj.
         <configuration>
           <instructions>
             <Import-Package>org.tukaani.xz;resolution:=optional</Import-Package>
+            <Import-Package>org.brotli.dec;resolution:=optional</Import-Package>
           </instructions>
         </configuration>
       </plugin>
