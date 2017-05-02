@@ -115,6 +115,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
         this.os = os;
         compressor = new LZ77Compressor(params,
             new LZ77Compressor.Callback() {
+                @Override
                 public void accept(LZ77Compressor.Block block) throws IOException {
                     //System.err.println(block);
                     if (block instanceof LZ77Compressor.LiteralBlock) {
