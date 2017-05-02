@@ -61,6 +61,7 @@
             <ul>
               <li>Added support for writing the Snappy format</li>
               <li>Added support for the LZ4 compression format</li>
+              <li>Added support for Brotli decompression</li>
             </ul>
           </subsection>
           <subsection name="What's new in 1.13?">
