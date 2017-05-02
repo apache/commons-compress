@@ -72,6 +72,7 @@ jar, tar, zip, dump, 7z, arj.
       <artifactId>dec</artifactId>
       <version>0.1.1</version>
       <scope>compile</scope>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.tukaani</groupId>
