@@ -101,7 +101,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      * Constant (value {@value}) used to identify the BROTLI compression
      * algorithm.
      * 
-     * @since 1.1
+     * @since 1.14
      */
     public static final String BROTLI = "br";
     
