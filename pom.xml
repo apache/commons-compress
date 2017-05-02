@@ -71,7 +71,6 @@ jar, tar, zip, dump, 7z, arj.
       <groupId>org.brotli</groupId>
       <artifactId>dec</artifactId>
       <version>0.1.1</version>
-      <scope>compile</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
