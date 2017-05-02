@@ -129,7 +129,7 @@ public abstract class LZWInputStream extends CompressorInputStream {
             long memoryUsageInBytes = (long) maxTableSize * 6;//(4 (prefixes) + 1 (characters) +1 (outputStack))
             long memoryUsageInKb = memoryUsageInBytes >> 10;
 
-            if (memoryUsageInKb > (long)memoryLimitInKb) {
+            if (memoryUsageInKb > memoryLimitInKb) {
                 throw new MemoryLimitException(memoryUsageInKb, memoryLimitInKb);
             }
         }
