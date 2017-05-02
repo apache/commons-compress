@@ -134,5 +134,18 @@ public class BrotliCompressorInputStream extends CompressorInputStream {
     public void reset() throws IOException {
         decIS.reset();
     }
+    
 
+    /**
+     * There is no magic for Brotli
+     * 
+     * @param signature
+     *            the bytes to check
+     * @param length
+     *            the number of bytes to check
+     * @return true
+     */
+    static boolean matches(final byte[] signature, final int length) {
+        return true;
+    }
 }

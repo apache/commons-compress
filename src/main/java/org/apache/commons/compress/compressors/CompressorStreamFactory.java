@@ -31,6 +31,8 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.apache.commons.compress.compressors.brotli.BrotliCompressorInputStream;
+import org.apache.commons.compress.compressors.brotli.BrotliUtils;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.apache.commons.compress.compressors.deflate.DeflateCompressorInputStream;
@@ -93,6 +95,16 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
 
     private static final CompressorStreamFactory SINGLETON = new CompressorStreamFactory();
 
+
+
+    /**
+     * Constant (value {@value}) used to identify the BROTLI compression
+     * algorithm.
+     * 
+     * @since 1.1
+     */
+    public static final String BROTLI = "br";
+    
     /**
      * Constant (value {@value}) used to identify the BZIP2 compression
      * algorithm.
@@ -262,6 +274,10 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     }
     private static ArrayList<CompressorStreamProvider> findCompressorStreamProviders() {
         return Lists.newArrayList(serviceLoaderIterator());
+    }
+
+    public static String getBrotli() {
+        return BROTLI;
     }
     
     public static String getBzip2() {
@@ -524,6 +540,13 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
             if (BZIP2.equalsIgnoreCase(name)) {
                 return new BZip2CompressorInputStream(in, actualDecompressConcatenated);
             }
+            
+            if (BROTLI.equalsIgnoreCase(name)) {
+                if (!BrotliUtils.isBrotliCompressionAvailable()) {
+                    throw new CompressorException("Brotli compression is not available.");
+                }
+                return new BrotliCompressorInputStream(in);
+            }
 
             if (XZ.equalsIgnoreCase(name)) {
                 if (!XZUtils.isXZCompressionAvailable()) {
@@ -677,7 +700,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
 
     @Override
     public Set<String> getInputStreamCompressorNames() {
-        return Sets.newHashSet(GZIP, BZIP2, XZ, LZMA, PACK200, DEFLATE, SNAPPY_RAW, SNAPPY_FRAMED, Z, LZ4_BLOCK,
+        return Sets.newHashSet(GZIP, BROTLI, BZIP2, XZ, LZMA, PACK200, DEFLATE, SNAPPY_RAW, SNAPPY_FRAMED, Z, LZ4_BLOCK,
             LZ4_FRAMED);
     }
 

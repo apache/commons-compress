@@ -90,14 +90,7 @@ jar, tar, zip, dump, 7z, arj.
       <artifactId>powermock-api-mockito</artifactId>
       <version>${powermock.version}</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-      <version>1.10</version>
-      <scope>test</scope>
-    </dependency>
-    
+    </dependency>    
   </dependencies>
 
   <developers>
@@ -258,6 +251,7 @@ jar, tar, zip, dump, 7z, arj.
         <configuration>
           <instructions>
             <Import-Package>org.tukaani.xz;resolution:=optional</Import-Package>
+            <Import-Package>org.brotli.dec;resolution:=optional</Import-Package>
           </instructions>
         </configuration>
       </plugin>

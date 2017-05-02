@@ -17,45 +17,117 @@
 
 package org.apache.commons.compress.compressors.brotli;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class BrotliCompressorInputStreamTest {
 
-    private static final String BROTLI_ENCODED_AS_HEX = "1b130000a4b0b2ea8147028a";
-    private static final String EXPECTED = "XXXXXXXXXXYYYYYYYYYY";
-
     /**
-     * Test bridge works fine
-     * @throws DecoderException 
+     * Test bridge works fine 
      * @throws {@link IOException}
      */
     @Test
-    public void testBrotliDecode() throws IOException, DecoderException {
-        BrotliCompressorInputStream brotliInputStream = null;
-        try {
-            brotliInputStream = new BrotliCompressorInputStream(
-                    new ByteArrayInputStream(Hex.decodeHex(BROTLI_ENCODED_AS_HEX.toCharArray())));
+    public void testBrotliDecode() throws IOException {
+        final File input = AbstractTestCase.getFile("brotli.testdata.compressed");
+        final File expected = AbstractTestCase.getFile("brotli.testdata.uncompressed");
+        try (InputStream inputStream = new FileInputStream(input);
+                InputStream expectedStream = new FileInputStream(expected);
+                BrotliCompressorInputStream brotliInputStream = new BrotliCompressorInputStream(inputStream)) {
+            final byte[] b = new byte[20];
+            IOUtils.readFully(expectedStream, b);
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             int readByte = -1;
             while((readByte = brotliInputStream.read()) != -1) {
                 bos.write(readByte);
             }
-            Assert.assertEquals(EXPECTED, new String(bos.toByteArray()));
+            Assert.assertArrayEquals(b, bos.toByteArray());
+        } 
+    }
+    
+    @Test
+    public void testCachingIsEnabledByDefaultAndXZIsPresent() {
+        assertEquals(BrotliUtils.CachedAvailability.CACHED_AVAILABLE, BrotliUtils.getCachedBrotliAvailability());
+        assertTrue(BrotliUtils.isBrotliCompressionAvailable());
+    }
+
+    @Test
+    public void testCanTurnOffCaching() {
+        try {
+            BrotliUtils.setCacheBrotliAvailablity(false);
+            assertEquals(BrotliUtils.CachedAvailability.DONT_CACHE, BrotliUtils.getCachedBrotliAvailability());
+            assertTrue(BrotliUtils.isBrotliCompressionAvailable());
         } finally {
-            if(brotliInputStream != null) {
-                try {
-                    brotliInputStream.close();
-                } catch (Exception e) {
-                    // NOOP
-                }
-            }
+            BrotliUtils.setCacheBrotliAvailablity(true);
+        }
+    }
+
+    @Test
+    public void testTurningOnCachingReEvaluatesAvailability() {
+        try {
+            BrotliUtils.setCacheBrotliAvailablity(false);
+            assertEquals(BrotliUtils.CachedAvailability.DONT_CACHE, BrotliUtils.getCachedBrotliAvailability());
+            BrotliUtils.setCacheBrotliAvailablity(true);
+            assertEquals(BrotliUtils.CachedAvailability.CACHED_AVAILABLE, BrotliUtils.getCachedBrotliAvailability());
+        } finally {
+            BrotliUtils.setCacheBrotliAvailablity(true);
+        }
+    }
+    
+
+    @Test
+    public void availableShouldReturnZero() throws IOException {
+        final File input = AbstractTestCase.getFile("brotli.testdata.compressed");
+        try (InputStream is = new FileInputStream(input)) {
+            final BrotliCompressorInputStream in =
+                    new BrotliCompressorInputStream(is);
+            Assert.assertTrue(in.available() == 0);
+            in.close();
+        }
+    }
+
+    @Test
+    public void shouldBeAbleToSkipAByte() throws IOException {
+        final File input = AbstractTestCase.getFile("brotli.testdata.compressed");
+        try (InputStream is = new FileInputStream(input)) {
+            final BrotliCompressorInputStream in =
+                    new BrotliCompressorInputStream(is);
+            Assert.assertEquals(1, in.skip(1));
+            in.close();
+        }
+    }
+
+    @Test
+    public void singleByteReadWorksAsExpected() throws IOException {
+        final File input = AbstractTestCase.getFile("brotli.testdata.compressed");
+        try (InputStream is = new FileInputStream(input)) {
+            final BrotliCompressorInputStream in =
+                    new BrotliCompressorInputStream(is);
+            //  starts with filename "XXX"
+            Assert.assertEquals('X', in.read());
+            in.close();
+        }
+    }
+
+    @Test
+    public void singleByteReadReturnsMinusOneAtEof() throws IOException {
+        final File input = AbstractTestCase.getFile("brotli.testdata.compressed");
+        try (InputStream is = new FileInputStream(input)) {
+            final BrotliCompressorInputStream in =
+                    new BrotliCompressorInputStream(is);
+            IOUtils.toByteArray(in);
+            Assert.assertEquals(-1, in.read());
+            in.close();
         }
     }
 }
