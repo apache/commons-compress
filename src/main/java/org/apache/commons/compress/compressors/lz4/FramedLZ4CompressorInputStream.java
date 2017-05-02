@@ -308,13 +308,12 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream {
             int cnt = currentBlock.read(b, off, len);
             count(cnt);
             return cnt;
-        } else {
-            BlockLZ4CompressorInputStream l = (BlockLZ4CompressorInputStream) currentBlock;
-            long before = l.getBytesRead();
-            int cnt = currentBlock.read(b, off, len);
-            count(l.getBytesRead() - before);
-            return cnt;
         }
+        BlockLZ4CompressorInputStream l = (BlockLZ4CompressorInputStream) currentBlock;
+        long before = l.getBytesRead();
+        int cnt = currentBlock.read(b, off, len);
+        count(l.getBytesRead() - before);
+        return cnt;
     }
 
     private static boolean isSkippableFrameSignature(byte[] b) {
