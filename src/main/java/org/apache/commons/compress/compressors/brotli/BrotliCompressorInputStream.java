@@ -31,9 +31,9 @@ import org.apache.commons.compress.compressors.CompressorInputStream;
  */
 public class BrotliCompressorInputStream extends CompressorInputStream {
     
-    private org.brotli.dec.BrotliInputStream decIS;
+    private final org.brotli.dec.BrotliInputStream decIS;
 
-    public BrotliCompressorInputStream(InputStream in) throws IOException {
+    public BrotliCompressorInputStream(final InputStream in) throws IOException {
         this.decIS = new org.brotli.dec.BrotliInputStream(in);
     }
 
@@ -67,7 +67,7 @@ public class BrotliCompressorInputStream extends CompressorInputStream {
 
     /** {@inheritDoc} */
     @Override
-    public int read(byte[] b) throws IOException {
+    public int read(final byte[] b) throws IOException {
         return decIS.read(b);
     }
 
@@ -77,7 +77,7 @@ public class BrotliCompressorInputStream extends CompressorInputStream {
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         return decIS.equals(obj);
     }
 
@@ -88,7 +88,7 @@ public class BrotliCompressorInputStream extends CompressorInputStream {
      * @see java.io.InputStream#skip(long)
      */
     @Override
-    public long skip(long n) throws IOException {
+    public long skip(final long n) throws IOException {
         return decIS.skip(n);
     }
 
@@ -97,7 +97,7 @@ public class BrotliCompressorInputStream extends CompressorInputStream {
      * @see java.io.InputStream#mark(int)
      */
     @Override
-    public void mark(int readlimit) {
+    public void mark(final int readlimit) {
         decIS.mark(readlimit);
     }
 
@@ -120,7 +120,7 @@ public class BrotliCompressorInputStream extends CompressorInputStream {
 
     /** {@inheritDoc} */
     @Override
-    public int read(byte[] buf, int off, int len) throws IOException {
+    public int read(final byte[] buf, final int off, final int len) throws IOException {
         final int ret = decIS.read(buf, off, len);
         count(ret);
         return ret;

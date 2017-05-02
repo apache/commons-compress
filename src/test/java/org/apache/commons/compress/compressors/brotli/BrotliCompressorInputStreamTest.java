@@ -46,7 +46,7 @@ public class BrotliCompressorInputStreamTest {
                 BrotliCompressorInputStream brotliInputStream = new BrotliCompressorInputStream(inputStream)) {
             final byte[] b = new byte[20];
             IOUtils.readFully(expectedStream, b);
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            final ByteArrayOutputStream bos = new ByteArrayOutputStream();
             int readByte = -1;
             while((readByte = brotliInputStream.read()) != -1) {
                 bos.write(readByte);
