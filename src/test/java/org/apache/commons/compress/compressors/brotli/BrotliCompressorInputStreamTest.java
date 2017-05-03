@@ -23,15 +23,18 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.compressors.CompressorInputStream;
+import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class BrotliCompressorInputStreamTest {
+public class BrotliCompressorInputStreamTest extends AbstractTestCase {
 
     /**
      * Test bridge works fine 
@@ -130,4 +133,25 @@ public class BrotliCompressorInputStreamTest {
             in.close();
         }
     }
+
+    @Test
+    public void testBrotliUnarchive() throws Exception {
+        final File input = getFile("bla.tar.br");
+        final File output = new File(dir, "bla.tar");
+        try (InputStream is = new FileInputStream(input)) {
+            final CompressorInputStream in = new CompressorStreamFactory()
+                    .createCompressorInputStream("br", is);
+            FileOutputStream out = null;
+            try {
+                out = new FileOutputStream(output);
+                IOUtils.copy(in, out);
+            } finally {
+                if (out != null) {
+                    out.close();
+                }
+                in.close();
+            }
+        }
+    }
+
 }
