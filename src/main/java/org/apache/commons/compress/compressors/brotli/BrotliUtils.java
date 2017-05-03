@@ -75,8 +75,8 @@ public class BrotliUtils {
         if (!doCache) {
             cachedBrotliAvailability = CachedAvailability.DONT_CACHE;
         } else if (cachedBrotliAvailability == CachedAvailability.DONT_CACHE) {
-            final boolean hasXz = internalIsBrotliCompressionAvailable();
-            cachedBrotliAvailability = hasXz ? CachedAvailability.CACHED_AVAILABLE
+            final boolean hasBrotli = internalIsBrotliCompressionAvailable();
+            cachedBrotliAvailability = hasBrotli ? CachedAvailability.CACHED_AVAILABLE
                 : CachedAvailability.CACHED_UNAVAILABLE;
         }
     }
