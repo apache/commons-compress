@@ -82,7 +82,7 @@ CompressorInputStream input = new CompressorStreamFactory()
     .createCompressorInputStream(originalInput);
 ]]></source>
 
-        <p>Note that there is no way to detect the lzma format so only
+        <p>Note that there is no way to detect the lzma or Brotli formats so only
         the two-arg version of
         <code>createCompressorInputStream</code> can be used.  Prior
         to Compress 1.9 the .Z format hasn't been auto-detected
@@ -476,6 +476,26 @@ byte[] content = new byte[entry.getSize()];
 LOOP UNTIL entry.getSize() HAS BEEN READ {
     arjInput.read(content, offset, content.length - offset);
 }
+]]></source>
+      </subsection>
+
+      <subsection name="Brotli">
+
+        <p>Uncompressing a given Brotli compressed file (you would
+          certainly add exception handling and make sure all streams
+          get closed properly):</p>
+<source><![CDATA[
+InputStream fin = Files.newInputStream(Paths.get("archive.tar.br"));
+BufferedInputStream in = new BufferedInputStream(fin);
+OutputStream out = Files.newOutputStream(Paths.get("archive.tar"));
+BrotliCompressorInputStream brIn = new BrotliCompressorInputStream(in);
+final byte[] buffer = new byte[buffersize];
+int n = 0;
+while (-1 != (n = brIn.read(buffer))) {
+    out.write(buffer, 0, n);
+}
+out.close();
+brIn.close();
 ]]></source>
       </subsection>
 

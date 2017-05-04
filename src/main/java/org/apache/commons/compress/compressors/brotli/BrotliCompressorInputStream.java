@@ -24,7 +24,7 @@ import java.io.InputStream;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 
 /**
- * {@link FilterInputStream} implementation to decode Brotli encoded stream.
+ * {@link CompressorInputStream} implementation to decode Brotli encoded stream.
  * Library relies on <a href="https://github.com/google/brotli">Google brotli</a>
  * 
  * @since 1.14

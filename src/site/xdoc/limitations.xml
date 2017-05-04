@@ -71,6 +71,16 @@
          archives</li>
        </ul>
      </section>
+     <section name="Brotli">
+       <ul>
+         <li>the format requires the otherwise optional <a
+         href="https://github.com/google/brotli">Google Brotli dec</a>
+         library.</li>
+         <li>read-only support</li>
+         <li><code>CompressorStreamFactory</code> is not able to auto-detect
+         streams using Brotli compression.</li>
+       </ul>
+     </section>
      <section name="BZIP2">
        <p>Versions of Compress prior to 1.4.1 are vulnerable to a
        possible denial of service attack, see the <a
