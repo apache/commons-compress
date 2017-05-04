@@ -59,8 +59,9 @@ public class BrotliUtils {
 
     private static boolean internalIsBrotliCompressionAvailable() {
         try {
-            return BrotliCompressorInputStream.matches(null, 0);
-        } catch (final NoClassDefFoundError error) {
+            Class.forName("org.brotli.dec.BrotliInputStream");
+            return true;
+        } catch (NoClassDefFoundError | Exception error) {
             return false;
         }
     }
