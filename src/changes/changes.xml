@@ -106,6 +106,10 @@ The <action> type attribute can be add,update,fix,remove.
       <action issue="COMPRESS-392" type="add" date="2017-05-02" due-to="Philippe Mouawad">
         Add Brotli decoder based on the Google Brotli library.
       </action>
+      <action issue="COMPRESS-390" type="add" date="2017-05-04"
+              due-to="Zbynek Vyskovsky">
+        ZipEntry now exposes its data offset.
+      </action>
     </release>
     <release version="1.13" date="2016-12-29"
              description="Release 1.13 - API compatible to 1.12 but requires Java 7 at runtime.">
