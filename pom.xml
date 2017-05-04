@@ -32,7 +32,7 @@
   <description>
 Apache Commons Compress software defines an API for working with
 compression and archive formats.  These include: bzip2, gzip, pack200,
-lzma, xz, Snappy, traditional Unix Compress, DEFLATE, Brotli and ar, cpio,
+lzma, xz, Snappy, traditional Unix Compress, DEFLATE, LZ4, Brotli and ar, cpio,
 jar, tar, zip, dump, 7z, arj.
   </description>
 
