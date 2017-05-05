@@ -28,6 +28,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -458,6 +459,76 @@ public class ZipFileTest {
             Assert.assertNotEquals(-1L, storedEntry.getCompressedSize());
             Assert.assertNotEquals(-1L, storedEntry.getSize());
         }
+    }
+
+    /**
+     * Test entries alignment.
+     */
+    @Test
+    public void testEntryAlignment() throws Exception {
+        SeekableInMemoryByteChannel zipContent = new SeekableInMemoryByteChannel();
+        try (ZipArchiveOutputStream zipOutput = new ZipArchiveOutputStream(zipContent)) {
+            ZipArchiveEntry inflatedEntry = new ZipArchiveEntry("inflated.txt");
+            inflatedEntry.setMethod(ZipEntry.DEFLATED);
+            inflatedEntry.setAlignment(1024);
+            zipOutput.putArchiveEntry(inflatedEntry);
+            zipOutput.write("Hello Deflated\n".getBytes(Charset.forName("UTF-8")));
+            zipOutput.closeArchiveEntry();
+
+            ZipArchiveEntry storedEntry = new ZipArchiveEntry("stored.txt");
+            storedEntry.setMethod(ZipEntry.STORED);
+            storedEntry.setAlignment(1024);
+            zipOutput.putArchiveEntry(storedEntry);
+            zipOutput.write("Hello Stored\n".getBytes(Charset.forName("UTF-8")));
+            zipOutput.closeArchiveEntry();
+
+        }
+
+        try (ZipFile zf = new ZipFile(new SeekableInMemoryByteChannel(
+                        Arrays.copyOfRange(zipContent.array(), 0, (int)zipContent.size())
+        ))) {
+            ZipArchiveEntry inflatedEntry = zf.getEntry("inflated.txt");
+            assertNotEquals(-1L, inflatedEntry.getCompressedSize());
+            assertNotEquals(-1L, inflatedEntry.getSize());
+            assertEquals(0L, inflatedEntry.getDataOffset()%1024);
+            try (InputStream stream = zf.getInputStream(inflatedEntry)) {
+                Assert.assertEquals("Hello Deflated\n",
+                                new String(IOUtils.toByteArray(stream), Charset.forName("UTF-8")));
+            }
+            ZipArchiveEntry storedEntry = zf.getEntry("stored.txt");
+            assertNotEquals(-1L, storedEntry.getCompressedSize());
+            assertNotEquals(-1L, storedEntry.getSize());
+            assertEquals(0L, inflatedEntry.getDataOffset()%1024);
+            try (InputStream stream = zf.getInputStream(storedEntry)) {
+                Assert.assertEquals("Hello Stored\n",
+                                new String(IOUtils.toByteArray(stream), Charset.forName("UTF-8")));
+            }
+        }
+    }
+
+    /**
+     * Test too big alignment, resulting into exceeding extra field limit.
+     */
+    @Test(expected = IOException.class)
+    public void testEntryAlignmentExceed() throws Exception {
+        SeekableInMemoryByteChannel zipContent = new SeekableInMemoryByteChannel();
+        try (ZipArchiveOutputStream zipOutput = new ZipArchiveOutputStream(zipContent)) {
+            ZipArchiveEntry inflatedEntry = new ZipArchiveEntry("inflated.txt");
+            inflatedEntry.setMethod(ZipEntry.STORED);
+            inflatedEntry.setAlignment(0x20000);
+            zipOutput.putArchiveEntry(inflatedEntry);
+            zipOutput.write("Hello Stored\n".getBytes(Charset.forName("UTF-8")));
+            zipOutput.closeArchiveEntry();
+        }
+    }
+
+    /**
+     * Test non power of 2 alignment.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidAlignment() throws Exception {
+        ZipArchiveEntry entry = new ZipArchiveEntry("dummy");
+        entry.setAlignment(3);
     }
 
     private void assertAllReadMethods(byte[] expected, ZipFile zipFile, ZipArchiveEntry entry) {

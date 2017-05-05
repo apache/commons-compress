@@ -142,6 +142,17 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     @Deprecated
     public static final int EFS_FLAG = GeneralPurposeBit.UFT8_NAMES_FLAG;
 
+    /**
+     * Size of the extra field header (id + length).
+     */
+    public static final int EXTRAFIELD_HEADER_SIZE = 4;
+
+    /**
+     * Extra field id used for padding (there is no special value documented,
+     * therefore USHORT_MAX seems to be good choice).
+     */
+    public static final int EXTRAFIELD_PADDING_ID = 0xffff;
+
     private static final byte[] EMPTY = new byte[0];
 
     /**
@@ -1026,8 +1037,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             addUnicodeExtraFields(ze, encodable, name);
         }
 
-        final byte[] localHeader = createLocalFileHeader(ze, name, encodable, phased);
         final long localHeaderStart = streamCompressor.getTotalBytesWritten();
+        final byte[] localHeader = createLocalFileHeader(ze, name, encodable, phased, localHeaderStart);
         offsets.put(ze, localHeaderStart);
         entry.localDataStart = localHeaderStart + LFH_CRC_OFFSET; // At crc offset
         writeCounted(localHeader);
@@ -1036,10 +1047,16 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
 
     private byte[] createLocalFileHeader(final ZipArchiveEntry ze, final ByteBuffer name, final boolean encodable,
-                                         final boolean phased)  {
+                                         final boolean phased, long archiveOffset) throws IOException {
         final byte[] extra = ze.getLocalFileDataExtra();
         final int nameLen = name.limit() - name.position();
-        final int len= LFH_FILENAME_OFFSET + nameLen + extra.length;
+        int len= LFH_FILENAME_OFFSET + nameLen + extra.length;
+        int padding = 0;
+        int alignment = ze.getAlignment();
+        if (alignment > 1 && ((archiveOffset + len) & (alignment - 1)) != 0) {
+            padding = (int) ((-archiveOffset - len - EXTRAFIELD_HEADER_SIZE) & (alignment - 1));
+            len += EXTRAFIELD_HEADER_SIZE+padding;
+        }
         final byte[] buf = new byte[len];
 
         System.arraycopy(LFH_SIG,  0, buf, LFH_SIG_OFFSET, WORD);
@@ -1091,13 +1108,27 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         // file name length
         putShort(nameLen, buf, LFH_FILENAME_LENGTH_OFFSET);
 
+        int totalExtra = extra.length + (padding > 0 ? padding + EXTRAFIELD_HEADER_SIZE : 0);
+        if (totalExtra > 0xffff) {
+            throw new IOException("Too much data for extra fields and padding"+
+                            ", extra="+extra.length+
+                            ", padding="+padding);
+        }
         // extra field length
-        putShort(extra.length, buf, LFH_EXTRA_LENGTH_OFFSET);
+        putShort(totalExtra, buf, LFH_EXTRA_LENGTH_OFFSET);
 
         // file name
         System.arraycopy( name.array(), name.arrayOffset(), buf, LFH_FILENAME_OFFSET, nameLen);
 
+        // extra fields
         System.arraycopy(extra, 0, buf, LFH_FILENAME_OFFSET + nameLen, extra.length);
+
+        // padding
+        if (padding > 0) {
+            putShort(EXTRAFIELD_PADDING_ID, buf, LFH_FILENAME_OFFSET + nameLen + extra.length);
+            putShort(padding, buf, LFH_FILENAME_OFFSET + nameLen + extra.length + 2);
+        }
+
         return buf;
     }
 
