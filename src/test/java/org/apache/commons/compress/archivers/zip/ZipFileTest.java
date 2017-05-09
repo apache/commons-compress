@@ -509,16 +509,13 @@ public class ZipFileTest {
     /**
      * Test too big alignment, resulting into exceeding extra field limit.
      */
-    @Test(expected = IOException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testEntryAlignmentExceed() throws Exception {
         SeekableInMemoryByteChannel zipContent = new SeekableInMemoryByteChannel();
         try (ZipArchiveOutputStream zipOutput = new ZipArchiveOutputStream(zipContent)) {
             ZipArchiveEntry inflatedEntry = new ZipArchiveEntry("inflated.txt");
             inflatedEntry.setMethod(ZipEntry.STORED);
             inflatedEntry.setAlignment(0x20000);
-            zipOutput.putArchiveEntry(inflatedEntry);
-            zipOutput.write("Hello Stored\n".getBytes(Charset.forName("UTF-8")));
-            zipOutput.closeArchiveEntry();
         }
     }
 

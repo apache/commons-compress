@@ -340,8 +340,9 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      *      requested alignment, 0 for default.
      */
     public void setAlignment(int alignment) {
-        if ((alignment & (alignment - 1)) != 0) {
-            throw new IllegalArgumentException("Invalid value for alignment, must be power of two: " + alignment);
+        if ((alignment & (alignment - 1)) != 0 || alignment > 0xffff) {
+            throw new IllegalArgumentException("Invalid value for alignment, must be power of two and no bigger than "
+                + 0xffff + " but is " + alignment);
         }
         this.alignment = alignment;
     }
