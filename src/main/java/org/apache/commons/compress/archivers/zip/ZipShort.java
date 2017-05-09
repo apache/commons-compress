@@ -27,6 +27,8 @@ import org.apache.commons.compress.utils.ByteUtils;
  * @Immutable
  */
 public final class ZipShort implements Cloneable, Serializable {
+    public static final ZipShort ZERO = new ZipShort(0);
+
     private static final long serialVersionUID = 1L;
 
     private final int value;

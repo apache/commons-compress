@@ -143,15 +143,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     public static final int EFS_FLAG = GeneralPurposeBit.UFT8_NAMES_FLAG;
 
     /**
-     * Size of the extra field header (id + length).
+     * Size of an extra field field header (id + length).
      */
     public static final int EXTRAFIELD_HEADER_SIZE = 4;
-
-    /**
-     * Extra field id used for padding (there is no special value documented,
-     * therefore USHORT_MAX seems to be good choice).
-     */
-    public static final int EXTRAFIELD_PADDING_ID = 0xffff;
 
     private static final byte[] EMPTY = new byte[0];
 
@@ -1048,14 +1042,15 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
     private byte[] createLocalFileHeader(final ZipArchiveEntry ze, final ByteBuffer name, final boolean encodable,
                                          final boolean phased, long archiveOffset) throws IOException {
-        final byte[] extra = ze.getLocalFileDataExtra();
+        byte[] extra = ze.getLocalFileDataExtra();
         final int nameLen = name.limit() - name.position();
         int len= LFH_FILENAME_OFFSET + nameLen + extra.length;
-        int padding = 0;
         int alignment = ze.getAlignment();
         if (alignment > 1 && ((archiveOffset + len) & (alignment - 1)) != 0) {
-            padding = (int) ((-archiveOffset - len - EXTRAFIELD_HEADER_SIZE) & (alignment - 1));
-            len += EXTRAFIELD_HEADER_SIZE+padding;
+            int padding = (int) ((-archiveOffset - len - EXTRAFIELD_HEADER_SIZE) & (alignment - 1));
+            ze.addExtraField(new PaddingExtraField(padding));
+            extra = ze.getLocalFileDataExtra();
+            len += EXTRAFIELD_HEADER_SIZE + padding;
         }
         final byte[] buf = new byte[len];
 
@@ -1108,26 +1103,14 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         // file name length
         putShort(nameLen, buf, LFH_FILENAME_LENGTH_OFFSET);
 
-        int totalExtra = extra.length + (padding > 0 ? padding + EXTRAFIELD_HEADER_SIZE : 0);
-        if (totalExtra > 0xffff) {
-            throw new IOException("Too much data for extra fields and padding"+
-                            ", extra="+extra.length+
-                            ", padding="+padding);
-        }
         // extra field length
-        putShort(totalExtra, buf, LFH_EXTRA_LENGTH_OFFSET);
+        putShort(extra.length, buf, LFH_EXTRA_LENGTH_OFFSET);
 
         // file name
         System.arraycopy( name.array(), name.arrayOffset(), buf, LFH_FILENAME_OFFSET, nameLen);
 
         // extra fields
         System.arraycopy(extra, 0, buf, LFH_FILENAME_OFFSET + nameLen, extra.length);
-
-        // padding
-        if (padding > 0) {
-            putShort(EXTRAFIELD_PADDING_ID, buf, LFH_FILENAME_OFFSET + nameLen + extra.length);
-            putShort(padding, buf, LFH_FILENAME_OFFSET + nameLen + extra.length + 2);
-        }
 
         return buf;
     }
