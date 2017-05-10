@@ -482,6 +482,14 @@ public class ZipFileTest {
             zipOutput.write("Hello Stored\n".getBytes(Charset.forName("UTF-8")));
             zipOutput.closeArchiveEntry();
 
+            ZipArchiveEntry storedEntry2 = new ZipArchiveEntry("stored2.txt");
+            storedEntry2.setMethod(ZipEntry.STORED);
+            storedEntry2.setAlignment(1024);
+            storedEntry2.addExtraField(new PaddingExtraField(123));
+            zipOutput.putArchiveEntry(storedEntry2);
+            zipOutput.write("Hello pre-aligned Stored\n".getBytes(Charset.forName("UTF-8")));
+            zipOutput.closeArchiveEntry();
+
         }
 
         try (ZipFile zf = new ZipFile(new SeekableInMemoryByteChannel(
@@ -498,9 +506,18 @@ public class ZipFileTest {
             ZipArchiveEntry storedEntry = zf.getEntry("stored.txt");
             assertNotEquals(-1L, storedEntry.getCompressedSize());
             assertNotEquals(-1L, storedEntry.getSize());
-            assertEquals(0L, inflatedEntry.getDataOffset()%1024);
+            assertEquals(0L, storedEntry.getDataOffset()%1024);
             try (InputStream stream = zf.getInputStream(storedEntry)) {
                 Assert.assertEquals("Hello Stored\n",
+                                new String(IOUtils.toByteArray(stream), Charset.forName("UTF-8")));
+            }
+
+            ZipArchiveEntry storedEntry2 = zf.getEntry("stored2.txt");
+            assertNotEquals(-1L, storedEntry2.getCompressedSize());
+            assertNotEquals(-1L, storedEntry2.getSize());
+            assertEquals(0L, storedEntry2.getDataOffset()%1024);
+            try (InputStream stream = zf.getInputStream(storedEntry2)) {
+                Assert.assertEquals("Hello pre-aligned Stored\n",
                                 new String(IOUtils.toByteArray(stream), Charset.forName("UTF-8")));
             }
         }
