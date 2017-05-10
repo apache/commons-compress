@@ -263,7 +263,6 @@ class TapeInputStream extends FilterInputStream {
      *
      * @param decompress if false the buffer will not be decompressed.
      *        This is an optimization for longer seeks.
-     * @return false if End-Of-File, else true
      */
     private void readBlock(final boolean decompress) throws IOException {
         if (in == null) {
