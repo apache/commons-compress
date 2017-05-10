@@ -35,7 +35,7 @@ public class PaddingExtraField implements ZipExtraField {
      * Extra field id used for padding (there is no special value documented,
      * therefore USHORT_MAX seems to be good choice).
      */
-    private static final ZipShort ID = new ZipShort(0xffff);
+    public static final ZipShort ID = new ZipShort(0xffff);
 
     private int len = 0;
 

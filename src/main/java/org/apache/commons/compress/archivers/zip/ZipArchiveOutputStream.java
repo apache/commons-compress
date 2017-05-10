@@ -1044,13 +1044,18 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                                          final boolean phased, long archiveOffset) throws IOException {
         byte[] extra = ze.getLocalFileDataExtra();
         final int nameLen = name.limit() - name.position();
-        int len= LFH_FILENAME_OFFSET + nameLen + extra.length;
+        int len = LFH_FILENAME_OFFSET + nameLen + extra.length;
         int alignment = ze.getAlignment();
         if (alignment > 1 && ((archiveOffset + len) & (alignment - 1)) != 0) {
             int padding = (int) ((-archiveOffset - len - EXTRAFIELD_HEADER_SIZE) & (alignment - 1));
+            ZipExtraField pex = (PaddingExtraField) ze.getExtraField(PaddingExtraField.ID);
+            if (pex != null) {
+                padding += pex.getLocalFileDataLength().getValue() + EXTRAFIELD_HEADER_SIZE;
+            }
+            // will overwrite an existing PaddingExtraField
             ze.addExtraField(new PaddingExtraField(padding));
             extra = ze.getLocalFileDataExtra();
-            len += EXTRAFIELD_HEADER_SIZE + padding;
+            len = LFH_FILENAME_OFFSET + nameLen + extra.length;
         }
         final byte[] buf = new byte[len];
 
