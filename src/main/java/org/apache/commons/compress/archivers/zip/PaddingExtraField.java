@@ -27,7 +27,12 @@ import java.util.zip.ZipException;
  * <p>The actual content of the padding is ignored and not retained
  * when reading a padding field.</p>
  *
+ * <p>This enables Commons Compress to create "aligned" archives
+ * similar to Android's zipalign command line tool.</p>
+ *
  * @since 1.14
+ * @see "https://developer.android.com/studio/command-line/zipalign.html"
+ * @see ZipArchiveEntry#setAlignment
  */
 public class PaddingExtraField implements ZipExtraField {
 
