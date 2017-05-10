@@ -499,14 +499,14 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             signatureLength = IOUtils.readFully(in, signature);
             in.reset();
         } catch (IOException e) {
-            throw new ArchiveException("IOException while reading signature.");
+            throw new ArchiveException("IOException while reading signature.", e);
         }
 
         if (ZipArchiveInputStream.matches(signature, signatureLength)) {
             return ZIP;
         } else if (JarArchiveInputStream.matches(signature, signatureLength)) {
             return JAR;
-        } if (ArArchiveInputStream.matches(signature, signatureLength)) {
+        } else if (ArArchiveInputStream.matches(signature, signatureLength)) {
             return AR;
         } else if (CpioArchiveInputStream.matches(signature, signatureLength)) {
             return CPIO;
@@ -523,7 +523,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             signatureLength = IOUtils.readFully(in, dumpsig);
             in.reset();
         } catch (IOException e) {
-            throw new ArchiveException("IOException while reading dump signature");
+            throw new ArchiveException("IOException while reading dump signature", e);
         }
         if (DumpArchiveInputStream.matches(dumpsig, signatureLength)) {
             return DUMP;
@@ -536,7 +536,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             signatureLength = IOUtils.readFully(in, tarHeader);
             in.reset();
         } catch (IOException e) {
-            throw new ArchiveException("IOException while reading tar signature");
+            throw new ArchiveException("IOException while reading tar signature", e);
         }
         if (TarArchiveInputStream.matches(tarHeader, signatureLength)) {
             return TAR;
@@ -551,7 +551,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
                 if (tais.getNextTarEntry().isCheckSumOK()) {
                     return TAR;
                 }
-            } catch (final Exception e) { // NOPMD
+            } catch (final Exception e) { // NOPMD // NOSONAR
                 // can generate IllegalArgumentException as well
                 // as IOException
                 // autodetection, simply not a TAR

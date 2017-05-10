@@ -57,7 +57,7 @@ public class MemoryLimitException extends IOException {
     }
 
     private static String buildMessage(long memoryNeededInKb, int memoryLimitInKb) {
-        return "" + memoryNeededInKb + " kb of memory would be needed; limit was "
+        return memoryNeededInKb + " kb of memory would be needed; limit was "
                 + memoryLimitInKb + " kb. " +
                 "If the file is not corrupt, consider increasing the memory limit.";
     }
