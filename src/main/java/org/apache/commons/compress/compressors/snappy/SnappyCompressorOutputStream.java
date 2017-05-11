@@ -266,6 +266,7 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream {
     /**
      * Returns a builder correctly configured for the Snappy algorithm using the gven block size.
      * @param blockSize the block size.
+     * @return a builder correctly configured for the Snappy algorithm using the gven block size
      */
     public static Parameters.Builder createParameterBuilder(int blockSize) {
         // the max offset and max literal length defined by the format

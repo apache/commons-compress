@@ -401,6 +401,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
 
     /**
      * Returns a builder correctly configured for the LZ4 algorithm.
+     * @return a builder correctly configured for the LZ4 algorithm
      */
     public static Parameters.Builder createParameterBuilder() {
         int maxLen = BlockLZ4CompressorInputStream.WINDOW_SIZE - 1;

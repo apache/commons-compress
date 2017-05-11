@@ -37,80 +37,46 @@ public class BrotliCompressorInputStream extends CompressorInputStream {
         this.decIS = new org.brotli.dec.BrotliInputStream(in);
     }
 
-    /**
-     * @return
-     * @throws IOException
-     * @see java.io.InputStream#available()
-     */
     @Override
     public int available() throws IOException {
         return decIS.available();
     }
 
-    /**
-     * @throws IOException
-     * @see org.brotli.dec.BrotliInputStream#close()
-     */
     @Override
     public void close() throws IOException {
         decIS.close();
     }
 
-    /**
-     * @return
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         return decIS.hashCode();
     }
 
-    /** {@inheritDoc} */
     @Override
     public int read(final byte[] b) throws IOException {
         return decIS.read(b);
     }
 
-    /**
-     * @param obj
-     * @return
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(final Object obj) {
         return decIS.equals(obj);
     }
 
-    /**
-     * @param n
-     * @return
-     * @throws IOException
-     * @see java.io.InputStream#skip(long)
-     */
     @Override
     public long skip(final long n) throws IOException {
         return decIS.skip(n);
     }
 
-    /**
-     * @param readlimit
-     * @see java.io.InputStream#mark(int)
-     */
     @Override
     public void mark(final int readlimit) {
         decIS.mark(readlimit);
     }
 
-    /**
-     * @return
-     * @see java.io.InputStream#markSupported()
-     */
     @Override
     public boolean markSupported() {
         return decIS.markSupported();
     }
 
-    /** {@inheritDoc} */
     @Override
     public int read() throws IOException {
         final int ret = decIS.read();
@@ -118,7 +84,6 @@ public class BrotliCompressorInputStream extends CompressorInputStream {
         return ret;
     }
 
-    /** {@inheritDoc} */
     @Override
     public int read(final byte[] buf, final int off, final int len) throws IOException {
         final int ret = decIS.read(buf, off, len);
@@ -126,19 +91,11 @@ public class BrotliCompressorInputStream extends CompressorInputStream {
         return ret;
     }
 
-    /**
-     * @return
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return decIS.toString();
     }
 
-    /**
-     * @throws IOException
-     * @see java.io.InputStream#reset()
-     */
     @Override
     public void reset() throws IOException {
         decIS.reset();
