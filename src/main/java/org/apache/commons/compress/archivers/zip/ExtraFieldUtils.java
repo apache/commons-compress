@@ -52,7 +52,7 @@ public class ExtraFieldUtils {
         register(X0016_CertificateIdForCentralDirectory.class);
         register(X0017_StrongEncryptionHeader.class);
         register(X0019_EncryptionRecipientCertificateList.class);
-        register(PaddingExtraField.class);
+        register(ResourceAlignmentExtraField.class);
     }
 
     /**

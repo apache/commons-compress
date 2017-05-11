@@ -485,9 +485,16 @@ public class ZipFileTest {
             ZipArchiveEntry storedEntry2 = new ZipArchiveEntry("stored2.txt");
             storedEntry2.setMethod(ZipEntry.STORED);
             storedEntry2.setAlignment(1024);
-            storedEntry2.addExtraField(new PaddingExtraField(123));
+            storedEntry2.addExtraField(new ResourceAlignmentExtraField(1));
             zipOutput.putArchiveEntry(storedEntry2);
-            zipOutput.write("Hello pre-aligned Stored\n".getBytes(Charset.forName("UTF-8")));
+            zipOutput.write("Hello overload-alignment Stored\n".getBytes(Charset.forName("UTF-8")));
+            zipOutput.closeArchiveEntry();
+
+            ZipArchiveEntry storedEntry3 = new ZipArchiveEntry("stored3.txt");
+            storedEntry3.setMethod(ZipEntry.STORED);
+            storedEntry3.addExtraField(new ResourceAlignmentExtraField(1024));
+            zipOutput.putArchiveEntry(storedEntry3);
+            zipOutput.write("Hello copy-alignment Stored\n".getBytes(Charset.forName("UTF-8")));
             zipOutput.closeArchiveEntry();
 
         }
@@ -496,28 +503,57 @@ public class ZipFileTest {
                         Arrays.copyOfRange(zipContent.array(), 0, (int)zipContent.size())
         ))) {
             ZipArchiveEntry inflatedEntry = zf.getEntry("inflated.txt");
+            ResourceAlignmentExtraField inflatedAlignmentEx =
+                            (ResourceAlignmentExtraField)inflatedEntry.getExtraField(ResourceAlignmentExtraField.ID);
             assertNotEquals(-1L, inflatedEntry.getCompressedSize());
             assertNotEquals(-1L, inflatedEntry.getSize());
             assertEquals(0L, inflatedEntry.getDataOffset()%1024);
+            assertNotNull(inflatedAlignmentEx);
+            assertEquals(1024, inflatedAlignmentEx.getAlignment());
+            assertFalse(inflatedAlignmentEx.allowMethodChange());
             try (InputStream stream = zf.getInputStream(inflatedEntry)) {
                 Assert.assertEquals("Hello Deflated\n",
                                 new String(IOUtils.toByteArray(stream), Charset.forName("UTF-8")));
             }
             ZipArchiveEntry storedEntry = zf.getEntry("stored.txt");
+            ResourceAlignmentExtraField storedAlignmentEx =
+                            (ResourceAlignmentExtraField)storedEntry.getExtraField(ResourceAlignmentExtraField.ID);
             assertNotEquals(-1L, storedEntry.getCompressedSize());
             assertNotEquals(-1L, storedEntry.getSize());
             assertEquals(0L, storedEntry.getDataOffset()%1024);
+            assertNotNull(storedAlignmentEx);
+            assertEquals(1024, storedAlignmentEx.getAlignment());
+            assertFalse(storedAlignmentEx.allowMethodChange());
             try (InputStream stream = zf.getInputStream(storedEntry)) {
                 Assert.assertEquals("Hello Stored\n",
                                 new String(IOUtils.toByteArray(stream), Charset.forName("UTF-8")));
             }
 
             ZipArchiveEntry storedEntry2 = zf.getEntry("stored2.txt");
+            ResourceAlignmentExtraField stored2AlignmentEx =
+                            (ResourceAlignmentExtraField)storedEntry2.getExtraField(ResourceAlignmentExtraField.ID);
             assertNotEquals(-1L, storedEntry2.getCompressedSize());
             assertNotEquals(-1L, storedEntry2.getSize());
             assertEquals(0L, storedEntry2.getDataOffset()%1024);
+            assertNotNull(stored2AlignmentEx);
+            assertEquals(1024, stored2AlignmentEx.getAlignment());
+            assertFalse(stored2AlignmentEx.allowMethodChange());
             try (InputStream stream = zf.getInputStream(storedEntry2)) {
-                Assert.assertEquals("Hello pre-aligned Stored\n",
+                Assert.assertEquals("Hello overload-alignment Stored\n",
+                                new String(IOUtils.toByteArray(stream), Charset.forName("UTF-8")));
+            }
+
+            ZipArchiveEntry storedEntry3 = zf.getEntry("stored3.txt");
+            ResourceAlignmentExtraField stored3AlignmentEx =
+                            (ResourceAlignmentExtraField)storedEntry3.getExtraField(ResourceAlignmentExtraField.ID);
+            assertNotEquals(-1L, storedEntry3.getCompressedSize());
+            assertNotEquals(-1L, storedEntry3.getSize());
+            assertEquals(0L, storedEntry3.getDataOffset()%1024);
+            assertNotNull(stored3AlignmentEx);
+            assertEquals(1024, stored3AlignmentEx.getAlignment());
+            assertFalse(stored3AlignmentEx.allowMethodChange());
+            try (InputStream stream = zf.getInputStream(storedEntry3)) {
+                Assert.assertEquals("Hello copy-alignment Stored\n",
                                 new String(IOUtils.toByteArray(stream), Charset.forName("UTF-8")));
             }
         }
