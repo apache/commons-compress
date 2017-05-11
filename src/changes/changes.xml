@@ -114,6 +114,13 @@ The <action> type attribute can be add,update,fix,remove.
         LZMACompressorOutputStream#flush would throw an exception
         rather than be the NOP it promised to be.
       </action>
+      <action issue="COMPRESS-391" type="add" date="2017-05-11"
+              due-to="Zbynek Vyskovsky">
+        Using ZipArchiveEntry's setAlignment it is now possible to
+        ensure the data offset of an entry starts at a file position
+        that at word or page boundaries.
+        A new extra field has been added for this purpose.
+      </action>
     </release>
     <release version="1.13" date="2016-12-29"
              description="Release 1.13 - API compatible to 1.12 but requires Java 7 at runtime.">
