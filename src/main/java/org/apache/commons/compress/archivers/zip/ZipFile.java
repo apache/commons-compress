@@ -1162,7 +1162,7 @@ public class ZipFile implements Closeable {
             return read;
         }
 
-        void addDummy() {
+        synchronized void addDummy() {
             this.addDummy = true;
         }
     }
