@@ -328,6 +328,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      *
      * @return
      *      alignment for this entry.
+     * @since 1.14
      */
     protected int getAlignment() {
         return this.alignment;
@@ -338,6 +339,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      *
      * @param alignment
      *      requested alignment, 0 for default.
+     * @since 1.14
      */
     public void setAlignment(int alignment) {
         if ((alignment & (alignment - 1)) != 0 || alignment > 0xffff) {

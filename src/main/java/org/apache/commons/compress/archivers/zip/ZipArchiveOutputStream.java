@@ -142,11 +142,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     @Deprecated
     public static final int EFS_FLAG = GeneralPurposeBit.UFT8_NAMES_FLAG;
 
-    /**
-     * Size of an extra field field header (id + length).
-     */
-    public static final int EXTRAFIELD_HEADER_SIZE = 4;
-
     private static final byte[] EMPTY = new byte[0];
 
     /**
@@ -1043,9 +1038,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private byte[] createLocalFileHeader(final ZipArchiveEntry ze, final ByteBuffer name, final boolean encodable,
                                          final boolean phased, long archiveOffset) throws IOException {
         ResourceAlignmentExtraField oldAlignmentEx =
-                        (ResourceAlignmentExtraField) ze.getExtraField(ResourceAlignmentExtraField.ID);
-        if (oldAlignmentEx != null)
+            (ResourceAlignmentExtraField) ze.getExtraField(ResourceAlignmentExtraField.ID);
+        if (oldAlignmentEx != null) {
             ze.removeExtraField(ResourceAlignmentExtraField.ID);
+        }
 
         int alignment = ze.getAlignment();
         if (alignment <= 0 && oldAlignmentEx != null) {
@@ -1057,16 +1053,16 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                             name.limit() - name.position() +
                             ze.getLocalFileDataExtra().length;
 
-            int padding = (int) ((-archiveOffset - oldLength - EXTRAFIELD_HEADER_SIZE
+            int padding = (int) ((-archiveOffset - oldLength - ZipExtraField.EXTRAFIELD_HEADER_SIZE
                             - ResourceAlignmentExtraField.BASE_SIZE) &
                             (alignment - 1));
             ze.addExtraField(new ResourceAlignmentExtraField(alignment,
                             oldAlignmentEx != null ? oldAlignmentEx.allowMethodChange() : false, padding));
         }
 
-        byte[] extra = ze.getLocalFileDataExtra();
+        final byte[] extra = ze.getLocalFileDataExtra();
         final int nameLen = name.limit() - name.position();
-        int len = LFH_FILENAME_OFFSET + nameLen + extra.length;
+        final int len = LFH_FILENAME_OFFSET + nameLen + extra.length;
         final byte[] buf = new byte[len];
 
         System.arraycopy(LFH_SIG,  0, buf, LFH_SIG_OFFSET, WORD);

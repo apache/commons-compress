@@ -32,6 +32,12 @@ import java.util.zip.ZipException;
  */
 public interface ZipExtraField {
     /**
+     * Size of an extra field field header (id + length).
+     * @since 1.14
+     */
+    int EXTRAFIELD_HEADER_SIZE = 4;
+
+    /**
      * The Header-ID.
      *
      * @return The HeaderId value

@@ -44,6 +44,8 @@ public class ResourceAlignmentExtraField implements ZipExtraField {
 
     public static final int BASE_SIZE = 2;
 
+    private static final int ALLOW_METHOD_MESSAGE_CHANGE_FLAG = 0x8000;
+
     private short alignment;
 
     private boolean allowMethodChange;
@@ -106,14 +108,15 @@ public class ResourceAlignmentExtraField implements ZipExtraField {
 
     @Override
     public byte[] getLocalFileDataData() {
-        byte[] content = new byte[2+padding];
-        ZipShort.putShort(alignment | (allowMethodChange ? 0x8000 : 0), content, 0);
+        byte[] content = new byte[BASE_SIZE + padding];
+        ZipShort.putShort(alignment | (allowMethodChange ? ALLOW_METHOD_MESSAGE_CHANGE_FLAG : 0),
+                          content, 0);
         return content;
     }
 
     @Override
     public byte[] getCentralDirectoryData() {
-        return ZipShort.getBytes(alignment | (allowMethodChange ? 0x8000 : 0));
+        return ZipShort.getBytes(alignment | (allowMethodChange ? ALLOW_METHOD_MESSAGE_CHANGE_FLAG : 0));
     }
 
     @Override
@@ -124,10 +127,11 @@ public class ResourceAlignmentExtraField implements ZipExtraField {
 
     @Override
     public void parseFromCentralDirectoryData(byte[] buffer, int offset, int length) throws ZipException {
-        if (length < 2)
+        if (length < BASE_SIZE) {
             throw new ZipException("Too short content for ResourceAlignmentExtraField (0xa11e): " + length);
+        }
         int alignmentValue = ZipShort.getValue(buffer, offset);
-        this.alignment = (short) (alignmentValue&0x7fff);
-        this.allowMethodChange = (alignmentValue&0x8000) != 0;
+        this.alignment = (short) (alignmentValue & (ALLOW_METHOD_MESSAGE_CHANGE_FLAG - 1));
+        this.allowMethodChange = (alignmentValue & ALLOW_METHOD_MESSAGE_CHANGE_FLAG) != 0;
     }
 }
