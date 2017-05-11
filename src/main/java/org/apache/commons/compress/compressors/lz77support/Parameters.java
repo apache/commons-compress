@@ -248,7 +248,7 @@ public final class Parameters {
             int niceLen = niceBackReferenceLength != null ? niceBackReferenceLength
                 : Math.max(minBackReferenceLength, maxBackReferenceLength / 2);
             int candidates = maxCandidates != null ? maxCandidates : Math.max(256, windowSize / 128);
-            boolean lazy = lazyMatches != null ? lazyMatches : true;
+            boolean lazy = lazyMatches == null || lazyMatches;
             int threshold = lazy ? (lazyThreshold != null ? lazyThreshold : niceLen) : minBackReferenceLength;
 
             return new Parameters(windowSize, minBackReferenceLength, maxBackReferenceLength,

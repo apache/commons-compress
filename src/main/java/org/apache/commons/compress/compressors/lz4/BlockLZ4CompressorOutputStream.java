@@ -40,7 +40,6 @@ import org.apache.commons.compress.utils.ByteUtils;
 public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
 
     private static final int MIN_BACK_REFERENCE_LENGTH = 4;
-    private static final int MIN_LENGTH_OF_LAST_LITERAL = 5;
     private static final int MIN_OFFSET_OF_LAST_BACK_REFERENCE = 12;
 
     /*

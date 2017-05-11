@@ -64,8 +64,9 @@ public class ResourceAlignmentExtraField implements ZipExtraField {
     }
 
     public ResourceAlignmentExtraField(int alignment, boolean allowMethodChange, int padding) {
-        if (alignment < 0 || alignment > 0x7fff)
+        if (alignment < 0 || alignment > 0x7fff) {
             throw new IllegalArgumentException("Alignment must be between 0 and 0x7fff, was: " + alignment);
+        }
         this.alignment = (short) alignment;
         this.allowMethodChange = allowMethodChange;
         this.padding = padding;

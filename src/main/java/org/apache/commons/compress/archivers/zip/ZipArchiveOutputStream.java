@@ -1057,7 +1057,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                             - ResourceAlignmentExtraField.BASE_SIZE) &
                             (alignment - 1));
             ze.addExtraField(new ResourceAlignmentExtraField(alignment,
-                            oldAlignmentEx != null ? oldAlignmentEx.allowMethodChange() : false, padding));
+                            oldAlignmentEx != null && oldAlignmentEx.allowMethodChange(), padding));
         }
 
         final byte[] extra = ze.getLocalFileDataExtra();

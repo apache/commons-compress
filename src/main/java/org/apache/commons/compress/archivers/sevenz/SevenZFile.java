@@ -803,7 +803,7 @@ public class SevenZFile implements Closeable {
         int nonEmptyFileCounter = 0;
         int emptyFileCounter = 0;
         for (int i = 0; i < files.length; i++) {
-            files[i].setHasStream(isEmptyStream == null ? true : !isEmptyStream.get(i));
+            files[i].setHasStream(isEmptyStream == null || !isEmptyStream.get(i));
             if (files[i].hasStream()) {
                 files[i].setDirectory(false);
                 files[i].setAntiItem(false);
@@ -812,8 +812,8 @@ public class SevenZFile implements Closeable {
                 files[i].setSize(archive.subStreamsInfo.unpackSizes[nonEmptyFileCounter]);
                 ++nonEmptyFileCounter;
             } else {
-                files[i].setDirectory(isEmptyFile == null ? true : !isEmptyFile.get(emptyFileCounter));
-                files[i].setAntiItem(isAnti == null ? false : isAnti.get(emptyFileCounter));
+                files[i].setDirectory(isEmptyFile == null || !isEmptyFile.get(emptyFileCounter));
+                files[i].setAntiItem(isAnti != null && isAnti.get(emptyFileCounter));
                 files[i].setHasCrc(false);
                 files[i].setSize(0);
                 ++emptyFileCounter;

@@ -17,7 +17,6 @@
 
 package org.apache.commons.compress.compressors.brotli;
 
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
