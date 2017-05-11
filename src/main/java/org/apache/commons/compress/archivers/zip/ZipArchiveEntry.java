@@ -85,6 +85,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     private int platform = PLATFORM_FAT;
     private int rawFlag;
     private long externalAttributes = 0;
+    private int alignment = 0;
     private ZipExtraField[] extraFields;
     private UnparseableExtraFieldData unparseableExtra = null;
     private String name = null;
@@ -320,6 +321,30 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      */
     protected void setPlatform(final int platform) {
         this.platform = platform;
+    }
+
+    /**
+     * Gets currently configured alignment.
+     *
+     * @return
+     *      alignment for this entry.
+     */
+    protected int getAlignment() {
+        return this.alignment;
+    }
+
+    /**
+     * Sets alignment for this entry.
+     *
+     * @param alignment
+     *      requested alignment, 0 for default.
+     */
+    public void setAlignment(int alignment) {
+        if ((alignment & (alignment - 1)) != 0 || alignment > 0xffff) {
+            throw new IllegalArgumentException("Invalid value for alignment, must be power of two and no bigger than "
+                + 0xffff + " but is " + alignment);
+        }
+        this.alignment = alignment;
     }
 
     /**
