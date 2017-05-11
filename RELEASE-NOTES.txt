@@ -2,8 +2,67 @@
 
 Apache Commons Compress software defines an API for working with
 compression and archive formats.  These include: bzip2, gzip, pack200,
-lzma, xz, Snappy, traditional Unix Compress, DEFLATE and ar, cpio,
+lzma, xz, Snappy, traditional Unix Compress, DEFLATE, LZ4, Brotli and ar, cpio,
 jar, tar, zip, dump, 7z, arj.
+
+Release 1.14
+------------
+
+New features:
+o Added write support for Snappy.
+  Issue: COMPRESS-246.
+o Added support for LZ4 (block and frame format).
+  Issue: COMPRESS-271.
+o Add static detect(InputStream in) to CompressorStreamFactory
+  and ArchiveStreamFactory
+  Issue: COMPRESS-385.
+o Added a way to limit amount of memory ZCompressorStream may
+  use.
+  Issue: COMPRESS-382. Thanks to Tim Allison.
+o Added a way to limit amount of memory ZCompressorStream may
+  use.
+  Issue: COMPRESS-386. Thanks to Tim Allison.
+o Added a way to limit amount of memory LZMACompressorStream and
+  XZCompressorInputStream may use.
+  Issue: COMPRESS-382. Thanks to Tim Allison.
+o Add Brotli decoder based on the Google Brotli library.
+  Issue: COMPRESS-392. Thanks to Philippe Mouawad.
+o ZipEntry now exposes its data offset.
+  Issue: COMPRESS-390. Thanks to Zbynek Vyskovsky.
+o Using ZipArchiveEntry's setAlignment it is now possible to
+  ensure the data offset of an entry starts at a file position
+  that at word or page boundaries.
+  A new extra field has been added for this purpose.
+  Issue: COMPRESS-391. Thanks to Zbynek Vyskovsky.
+
+Fixed Bugs:
+o SnappyCompressorInputStream slides the window too early
+  leading to ArrayIndexOutOfBoundsExceptions for some streams.
+  Issue: COMPRESS-378.
+o ZipArchiveEntry#isUnixSymlink now only returns true if the
+  corresponding link flag is the only file-type flag set.
+  Issue: COMPRESS-379. Thanks to Guillaume Boué.
+o Fixed an integer overflow in CPIO's CRC calculation.
+  Pull Request #17. Thanks to Daniel Collin.
+o Make unit tests work on Windows paths with spaces in their names.
+  Issue: COMPRESS-387.
+o Internal location pointer in ZipFile could get incremented
+  even if nothing had been read.
+  Issue: COMPRESS-389.
+o LZMACompressorOutputStream#flush would throw an exception
+  rather than be the NOP it promised to be.
+  Issue: COMPRESS-393.
+
+Changes:
+o The blocksize for FramedSnappyCompressorInputStream can now be
+  configured as some IWA files seem to be using blocks larger
+  than the default 32k.
+  Issue: COMPRESS-358.
+o BZip2CompressorInputstream now uses BitInputStream internally.
+  Pull Request #13. Thanks to Thomas Meyer.
+o Improved performance for concurrent reads from ZipFile when
+  reading from a file.
+  Issue: COMPRESS-388. Thanks to Zbynek Vyskovsky.
 
 Release 1.13
 ------------

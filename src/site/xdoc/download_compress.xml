@@ -111,32 +111,32 @@ limitations under the License.
       </p>
     </subsection>
     </section>
-    <section name="Apache Commons Compress 1.13 ">
+    <section name="Apache Commons Compress 1.14 ">
       <subsection name="Binaries">
         <table>
           <tr>
-              <td><a href="[preferred]/commons/compress/binaries/commons-compress-1.13-bin.tar.gz">commons-compress-1.13-bin.tar.gz</a></td>
-              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.13-bin.tar.gz.md5">md5</a></td>
-              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.13-bin.tar.gz.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/compress/binaries/commons-compress-1.14-bin.tar.gz">commons-compress-1.14-bin.tar.gz</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.14-bin.tar.gz.md5">md5</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.14-bin.tar.gz.asc">pgp</a></td>
           </tr>
           <tr>
-              <td><a href="[preferred]/commons/compress/binaries/commons-compress-1.13-bin.zip">commons-compress-1.13-bin.zip</a></td>
-              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.13-bin.zip.md5">md5</a></td>
-              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.13-bin.zip.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/compress/binaries/commons-compress-1.14-bin.zip">commons-compress-1.14-bin.zip</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.14-bin.zip.md5">md5</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.14-bin.zip.asc">pgp</a></td>
           </tr>
         </table>
       </subsection>
       <subsection name="Source">
         <table>
           <tr>
-              <td><a href="[preferred]/commons/compress/source/commons-compress-1.13-src.tar.gz">commons-compress-1.13-src.tar.gz</a></td>
-              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.13-src.tar.gz.md5">md5</a></td>
-              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.13-src.tar.gz.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/compress/source/commons-compress-1.14-src.tar.gz">commons-compress-1.14-src.tar.gz</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.14-src.tar.gz.md5">md5</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.14-src.tar.gz.asc">pgp</a></td>
           </tr>
           <tr>
-              <td><a href="[preferred]/commons/compress/source/commons-compress-1.13-src.zip">commons-compress-1.13-src.zip</a></td>
-              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.13-src.zip.md5">md5</a></td>
-              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.13-src.zip.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/compress/source/commons-compress-1.14-src.zip">commons-compress-1.14-src.zip</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.14-src.zip.md5">md5</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.14-src.zip.asc">pgp</a></td>
           </tr>
         </table>
       </subsection>
