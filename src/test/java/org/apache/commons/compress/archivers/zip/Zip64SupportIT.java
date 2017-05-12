@@ -386,8 +386,8 @@ public class Zip64SupportIT {
                     a.skipBytes(2 * 47 /* CD entry of file with
                                           file name length 1 and no
                                           extra data */
-                                    + 2 * (mode == Zip64Mode.Always ? 4 : 0)
-                                /* empty ZIP64 extra fields if mode is Always */
+                                    + 2 * (mode == Zip64Mode.Always ? 28 : 0)
+                                /* ZIP64 extra fields if mode is Always */
                     );
 
                     // grab third entry, verify offset is
@@ -395,7 +395,7 @@ public class Zip64SupportIT {
                     // information extra field
                     final byte[] header = new byte[12];
                     a.readFully(header);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("CDH start", new byte[] {
                             // sig
                             (byte) 0x50, (byte) 0x4b, 1, 2,
                             // version made by
@@ -409,15 +409,25 @@ public class Zip64SupportIT {
                     }, header);
                     // ignore timestamp, CRC, compressed size
                     a.skipBytes(12);
-                    final byte[] rest = new byte[23];
+                    // Original Size
+                    final byte[] originalSize = new byte[4];
+                    a.readFully(originalSize);
+                    if (mode == Zip64Mode.Always) {
+                        assertArrayEquals("CDH original size", new byte[] {
+                                (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+                            }, originalSize);
+                    } else {
+                        assertArrayEquals("CDH original size", new byte[] {
+                                1, 0, 0, 0
+                            }, originalSize);
+                    }
+                    final byte[] rest = new byte[19];
                     a.readFully(rest);
-                    assertArrayEquals(new byte[] {
-                            // Original Size
-                            1, 0, 0, 0,
+                    assertArrayEquals("CDH rest", new byte[] {
                             // file name length
                             1, 0,
                             // extra field length
-                            12, 0,
+                            (byte) (mode == Zip64Mode.Always? 28 : 12), 0,
                             // comment length
                             0, 0,
                             // disk number
@@ -431,14 +441,29 @@ public class Zip64SupportIT {
                             // file name
                             (byte) '2'
                     }, rest);
-                    final byte[] extra = new byte[4];
-                    a.readFully(extra);
-                    assertArrayEquals(new byte[] {
-                            // Header-ID
-                            1, 0,
-                            // size
-                            8, 0
-                    }, extra);
+                    if (mode == Zip64Mode.Always) {
+                        final byte[] extra = new byte[12];
+                        a.readFully(extra);
+                        assertArrayEquals("CDH extra", new byte[] {
+                                // Header-ID
+                                1, 0,
+                                // size
+                                24, 0,
+                                // Original Size
+                                1, 0, 0, 0, 0, 0, 0, 0,
+                            }, extra);
+                        // skip compressed size
+                        a.skipBytes(8);
+                    } else {
+                        final byte[] extra = new byte[4];
+                        a.readFully(extra);
+                        assertArrayEquals("CDH extra", new byte[] {
+                                // Header-ID
+                                1, 0,
+                                // size
+                                8, 0,
+                            }, extra);
+                    }
 
                     // read offset of LFH
                     final byte[] offset = new byte[8];
@@ -447,7 +472,7 @@ public class Zip64SupportIT {
                     a.seek(ZipEightByteInteger.getLongValue(offset));
                     final byte[] sig = new byte[4];
                     a.readFully(sig);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("LFH signature", new byte[] {
                             (byte) 0x50, (byte) 0x4b, 3, 4,
                     }, sig);
                 }
@@ -594,7 +619,7 @@ public class Zip64SupportIT {
                     // field
                     byte[] header = new byte[12];
                     a.readFully(header);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("CDH start", new byte[] {
                             // sig
                             (byte) 0x50, (byte) 0x4b, 1, 2,
                             // version made by
@@ -608,9 +633,9 @@ public class Zip64SupportIT {
                     }, header);
                     // ignore timestamp
                     a.skipBytes(4);
-                    byte[] rest = new byte[31];
+                    byte[] rest = new byte[26];
                     a.readFully(rest);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("CDH rest", new byte[] {
                             // CRC
                             (byte) 0x50, (byte) 0x6F, (byte) 0x31, (byte) 0x5c,
                             // Compressed Size
@@ -620,7 +645,7 @@ public class Zip64SupportIT {
                             // file name length
                             1, 0,
                             // extra field length
-                            20, 0,
+                            (byte) (mode == Zip64Mode.Always? 28 : 20), 0,
                             // comment length
                             0, 0,
                             // disk number
@@ -628,19 +653,27 @@ public class Zip64SupportIT {
                             // attributes
                             0, 0,
                             0, 0, 0, 0,
-                            // offset
-                            0, 0, 0, 0,
-                            // file name
-                            (byte) '0'
                     }, rest);
+                    byte[] offset = new byte[4];
+                    a.readFully(offset);
+                    if (mode == Zip64Mode.Always) {
+                        assertArrayEquals("offset", new byte[] {
+                                (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+                            }, offset);
+                    } else {
+                        assertArrayEquals("offset", new byte[] {
+                                0, 0, 0, 0,
+                            }, offset);
+                    }
+                    assertEquals('0', a.read());
                     final byte[] extra = new byte[20];
                     a.readFully(extra);
                     // 5e9 == 0x12A05F200
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("CDH extra", new byte[] {
                             // Header-ID
                             1, 0,
                             // size of extra
-                            16, 0,
+                            (byte) (mode == Zip64Mode.Always? 24 : 16), 0,
                             // original size
                             0, (byte) 0xF2, 5, (byte) 0x2A,
                             1, 0, 0, 0,
@@ -648,12 +681,19 @@ public class Zip64SupportIT {
                             0, (byte) 0xF2, 5, (byte) 0x2A,
                             1, 0, 0, 0,
                     }, extra);
+                    if (mode == Zip64Mode.Always) {
+                        offset = new byte[8];
+                        a.readFully(offset);
+                        assertArrayEquals("extra offset", new byte[] {
+                                0, 0, 0, 0, 0, 0, 0, 0,
+                            }, offset);
+                    }
 
                     // and now validate local file header
                     a.seek(0);
                     header = new byte[10];
                     a.readFully(header);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("LFH start", new byte[] {
                             // sig
                             (byte) 0x50, (byte) 0x4b, 3, 4,
                             // version needed to extract
@@ -667,7 +707,7 @@ public class Zip64SupportIT {
                     a.skipBytes(4);
                     rest = new byte[17];
                     a.readFully(rest);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("LFH rest", new byte[] {
                             // CRC
                             (byte) 0x50, (byte) 0x6F, (byte) 0x31, (byte) 0x5c,
                             // Compressed Size
@@ -683,7 +723,7 @@ public class Zip64SupportIT {
                     }, rest);
                     a.readFully(extra);
                     // 5e9 == 0x12A05F200
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("LFH extra", new byte[] {
                             // Header-ID
                             1, 0,
                             // size of extra
@@ -833,7 +873,7 @@ public class Zip64SupportIT {
                     // information extra field
                     byte[] header = new byte[12];
                     a.readFully(header);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("CDH start", new byte[] {
                             // sig
                             (byte) 0x50, (byte) 0x4b, 1, 2,
                             // version made by
@@ -847,9 +887,9 @@ public class Zip64SupportIT {
                     }, header);
                     // ignore timestamp
                     a.skipBytes(4);
-                    byte[] rest = new byte[31];
+                    byte[] rest = new byte[26];
                     a.readFully(rest);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("CDH rest", new byte[] {
                             // CRC
                             (byte) 0x50, (byte) 0x6F, (byte) 0x31, (byte) 0x5c,
                             // Compressed Size
@@ -859,7 +899,7 @@ public class Zip64SupportIT {
                             // file name length
                             1, 0,
                             // extra field length
-                            20, 0,
+                            (byte) (mode == Zip64Mode.Always? 28 : 20), 0,
                             // comment length
                             0, 0,
                             // disk number
@@ -867,43 +907,56 @@ public class Zip64SupportIT {
                             // attributes
                             0, 0,
                             0, 0, 0, 0,
-                            // offset
-                            0, 0, 0, 0,
-                            // file name
-                            (byte) '0'
                     }, rest);
-                    final byte[] extra = new byte[20];
+                    byte[] offset = new byte[4];
+                    a.readFully(offset);
+                    if (mode == Zip64Mode.Always) {
+                        assertArrayEquals("offset", new byte[] {
+                                (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+                            }, offset);
+                    } else {
+                        assertArrayEquals("offset", new byte[] {
+                                0, 0, 0, 0,
+                            }, offset);
+                    }
+                    assertEquals('0', a.read());
+                    byte[] extra = new byte[12];
                     a.readFully(extra);
                     // 5e9 == 0x12A05F200
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("CDH extra", new byte[] {
                             // Header-ID
                             1, 0,
                             // size of extra
-                            16, 0,
+                            (byte) (mode == Zip64Mode.Always? 24 : 16), 0,
                             // original size
                             0, (byte) 0xF2, 5, (byte) 0x2A,
                             1, 0, 0, 0,
-                            // compressed size
-                            (byte) 0x68, (byte) 0x27, (byte) 0x4A, 0,
-                            0, 0, 0, 0,
                     }, extra);
+                    if (mode == Zip64Mode.Always) {
+                        // skip compressed size
+                        a.skipBytes(8);
+                        offset = new byte[8];
+                        a.readFully(offset);
+                        assertArrayEquals("extra offset", new byte[] {
+                                0, 0, 0, 0, 0, 0, 0, 0,
+                            }, offset);
+                    }
 
                     // validate data descriptor
                     a.seek(cfhPos - 24);
                     byte[] dd = new byte[8];
                     a.readFully(dd);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("DD", new byte[] {
                             // sig
                             (byte) 0x50, (byte) 0x4b, 7, 8,
                             // CRC
                             (byte) 0x50, (byte) 0x6F, (byte) 0x31, (byte) 0x5c,
                     }, dd);
-                    dd = new byte[16];
+                    // skip compressed size
+                    a.skipBytes(8);
+                    dd = new byte[8];
                     a.readFully(dd);
-                    assertArrayEquals(new byte[] {
-                            // compressed size
-                            (byte) 0x68, (byte) 0x27, (byte) 0x4A, 0,
-                            0, 0, 0, 0,
+                    assertArrayEquals("DD sizes", new byte[] {
                             // original size
                             0, (byte) 0xF2, 5, (byte) 0x2A,
                             1, 0, 0, 0,
@@ -913,7 +966,7 @@ public class Zip64SupportIT {
                     a.seek(0);
                     header = new byte[10];
                     a.readFully(header);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("LFH start", new byte[] {
                             // sig
                             (byte) 0x50, (byte) 0x4b, 3, 4,
                             // version needed to extract
@@ -927,7 +980,7 @@ public class Zip64SupportIT {
                     a.skipBytes(4);
                     rest = new byte[17];
                     a.readFully(rest);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("LFH rest", new byte[] {
                             // CRC
                             0, 0, 0, 0,
                             // Compressed Size
@@ -941,8 +994,9 @@ public class Zip64SupportIT {
                             // file name
                             (byte) '0'
                     }, rest);
+                    extra = new byte[20];
                     a.readFully(extra);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("LFH extra", new byte[] {
                             // Header-ID
                             1, 0,
                             // size of extra
@@ -1073,7 +1127,7 @@ public class Zip64SupportIT {
                     // information extra field
                     byte[] header = new byte[12];
                     a.readFully(header);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("CDH start", new byte[] {
                             // sig
                             (byte) 0x50, (byte) 0x4b, 1, 2,
                             // version made by
@@ -1087,9 +1141,9 @@ public class Zip64SupportIT {
                     }, header);
                     // ignore timestamp
                     a.skipBytes(4);
-                    byte[] rest = new byte[31];
+                    byte[] rest = new byte[26];
                     a.readFully(rest);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("CDH rest", new byte[] {
                             // CRC
                             (byte) 0x50, (byte) 0x6F, (byte) 0x31, (byte) 0x5c,
                             // Compressed Size
@@ -1099,7 +1153,7 @@ public class Zip64SupportIT {
                             // file name length
                             1, 0,
                             // extra field length
-                            20, 0,
+                            (byte) (mode == Zip64Mode.Always? 28 : 20), 0,
                             // comment length
                             0, 0,
                             // disk number
@@ -1107,32 +1161,46 @@ public class Zip64SupportIT {
                             // attributes
                             0, 0,
                             0, 0, 0, 0,
-                            // offset
-                            0, 0, 0, 0,
-                            // file name
-                            (byte) '0'
                     }, rest);
-                    byte[] extra = new byte[20];
+                    byte[] offset = new byte[4];
+                    a.readFully(offset);
+                    if (mode == Zip64Mode.Always) {
+                        assertArrayEquals("offset", new byte[] {
+                                (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+                            }, offset);
+                    } else {
+                        assertArrayEquals("offset", new byte[] {
+                                0, 0, 0, 0,
+                            }, offset);
+                    }
+                    assertEquals('0', a.read());
+                    byte[] extra = new byte[12];
                     a.readFully(extra);
                     // 5e9 == 0x12A05F200
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("CDH extra", new byte[] {
                             // Header-ID
                             1, 0,
                             // size of extra
-                            16, 0,
+                            (byte) (mode == Zip64Mode.Always? 24 : 16), 0,
                             // original size
                             0, (byte) 0xF2, 5, (byte) 0x2A,
                             1, 0, 0, 0,
-                            // compressed size
-                            (byte) 0x68, (byte) 0x27, (byte) 0x4A, 0,
-                            0, 0, 0, 0,
                     }, extra);
+                    if (mode == Zip64Mode.Always) {
+                        // skip compressed size
+                        a.skipBytes(8);
+                        offset = new byte[8];
+                        a.readFully(offset);
+                        assertArrayEquals("extra offset", new byte[] {
+                                0, 0, 0, 0, 0, 0, 0, 0,
+                            }, offset);
+                    }
 
                     // and now validate local file header
                     a.seek(0);
                     header = new byte[10];
                     a.readFully(header);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("LFH start", new byte[] {
                             // sig
                             (byte) 0x50, (byte) 0x4b, 3, 4,
                             // version needed to extract
@@ -1160,7 +1228,7 @@ public class Zip64SupportIT {
                             // file name
                             (byte) '0'
                     }, rest);
-                    extra = new byte[20];
+                    extra = new byte[12];
                     a.readFully(extra);
                     assertArrayEquals(new byte[] {
                             // Header-ID
@@ -1170,9 +1238,7 @@ public class Zip64SupportIT {
                             // original size
                             0, (byte) 0xF2, 5, (byte) 0x2A,
                             1, 0, 0, 0,
-                            // compressed size
-                            (byte) 0x68, (byte) 0x27, (byte) 0x4A, 0,
-                            0, 0, 0, 0,
+                            // skip compressed size
                     }, extra);
                 }
             }
@@ -1328,7 +1394,7 @@ public class Zip64SupportIT {
                     // at all
                     byte[] header = new byte[12];
                     a.readFully(header);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("CDH start", new byte[] {
                             // sig
                             (byte) 0x50, (byte) 0x4b, 1, 2,
                             // version made by
@@ -1345,7 +1411,7 @@ public class Zip64SupportIT {
                     byte[] rest = new byte[31];
                     a.readFully(rest);
                     // 1e6 == 0xF4240
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("CDH rest", new byte[] {
                             // CRC
                             (byte) 0x9E, (byte) 0xCB, (byte) 0x79, (byte) 0x12,
                             // Compressed Size
@@ -1378,7 +1444,7 @@ public class Zip64SupportIT {
                     a.seek(0);
                     header = new byte[10];
                     a.readFully(header);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("LFH start", new byte[] {
                             // sig
                             (byte) 0x50, (byte) 0x4b, 3, 4,
                             // version needed to extract
@@ -1393,7 +1459,7 @@ public class Zip64SupportIT {
                     rest = new byte[17];
                     a.readFully(rest);
                     // 1e6 == 0xF4240
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("LFH rest", new byte[] {
                             // CRC
                             (byte) 0x9E, (byte) 0xCB, (byte) 0x79, (byte) 0x12,
                             // Compressed Size
@@ -1410,7 +1476,7 @@ public class Zip64SupportIT {
                     if (hasExtra) {
                         final byte[] extra = new byte[20];
                         a.readFully(extra);
-                        assertArrayEquals(new byte[] {
+                        assertArrayEquals("ZIP64 extra field", new byte[] {
                                 // Header-ID
                                 1, 0,
                                 // size of extra
@@ -1501,7 +1567,7 @@ public class Zip64SupportIT {
                     // has an empty ZIP64 extended information extra field
                     byte[] header = new byte[12];
                     a.readFully(header);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("CDH start", new byte[] {
                             // sig
                             (byte) 0x50, (byte) 0x4b, 1, 2,
                             // version made by
@@ -1518,17 +1584,17 @@ public class Zip64SupportIT {
                     byte[] rest = new byte[31];
                     a.readFully(rest);
                     // 1e6 == 0xF4240
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("CDH rest", new byte[] {
                             // CRC
                             (byte) 0x9E, (byte) 0xCB, (byte) 0x79, (byte) 0x12,
                             // Compressed Size
-                            (byte) 0x40, (byte) 0x42, (byte) 0x0F, 0,
+                            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
                             // Original Size
-                            (byte) 0x40, (byte) 0x42, (byte) 0x0F, 0,
+                            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
                             // file name length
                             1, 0,
                             // extra field length
-                            4, 0,
+                            28, 0,
                             // comment length
                             0, 0,
                             // disk number
@@ -1537,18 +1603,25 @@ public class Zip64SupportIT {
                             0, 0,
                             0, 0, 0, 0,
                             // offset
-                            0, 0, 0, 0,
+                            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
                             // file name
                             (byte) '0'
                     }, rest);
 
-                    byte[] extra = new byte[4];
+                    byte[] extra = new byte[28];
                     a.readFully(extra);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("CDH extra", new byte[] {
                             // Header-ID
                             1, 0,
                             // size of extra
-                            0, 0,
+                            24, 0,
+                            // original size
+                            (byte) 0x40, (byte) 0x42, (byte) 0x0F, 0,
+                            0, 0, 0, 0,
+                            // compressed size
+                            (byte) 0x40, (byte) 0x42, (byte) 0x0F, 0,
+                            0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0,
                     }, extra);
 
                     // and now validate local file header: this one
@@ -1557,7 +1630,7 @@ public class Zip64SupportIT {
                     a.seek(0);
                     header = new byte[10];
                     a.readFully(header);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("LFH start", new byte[] {
                             // sig
                             (byte) 0x50, (byte) 0x4b, 3, 4,
                             // version needed to extract
@@ -1572,7 +1645,7 @@ public class Zip64SupportIT {
                     rest = new byte[17];
                     a.readFully(rest);
                     // 1e6 == 0xF4240
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("LFH rest", new byte[] {
                             // CRC
                             (byte) 0x9E, (byte) 0xCB, (byte) 0x79, (byte) 0x12,
                             // Compressed Size
@@ -1589,7 +1662,7 @@ public class Zip64SupportIT {
 
                     extra = new byte[20];
                     a.readFully(extra);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("LFH extra", new byte[] {
                             // Header-ID
                             1, 0,
                             // size of extra
@@ -1832,7 +1905,7 @@ public class Zip64SupportIT {
                     // information extra field
                     byte[] header = new byte[12];
                     a.readFully(header);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("CDH start", new byte[] {
                             // sig
                             (byte) 0x50, (byte) 0x4b, 1, 2,
                             // version made by
@@ -1856,14 +1929,13 @@ public class Zip64SupportIT {
                     a.skipBytes(4);
                     byte[] rest = new byte[23];
                     a.readFully(rest);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("CDH rest", new byte[] {
                             // Original Size
-                            (byte) 0x40, (byte) 0x42,
-                            (byte) 0x0F, 0,
+                            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
                             // file name length
                             1, 0,
                             // extra field length
-                            4, 0,
+                            28, 0,
                             // comment length
                             0, 0,
                             // disk number
@@ -1872,24 +1944,34 @@ public class Zip64SupportIT {
                             0, 0,
                             0, 0, 0, 0,
                             // offset
-                            0, 0, 0, 0,
+                            (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
                             // file name
                             (byte) '0'
                     }, rest);
-                    byte[] extra = new byte[4];
+                    byte[] extra = new byte[12];
                     a.readFully(extra);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("CDH extra", new byte[] {
                             // Header-ID
                             1, 0,
                             // size of extra
-                            0, 0,
+                            24, 0,
+                            // original size
+                            (byte) 0x40, (byte) 0x42, (byte) 0x0F, 0,
+                            0, 0, 0, 0,
                     }, extra);
+                    // skip compressed size
+                    a.skipBytes(8);
+                    byte[] offset = new byte[8];
+                    a.readFully(offset);
+                    assertArrayEquals("extra offset", new byte[] {
+                            0, 0, 0, 0, 0, 0, 0, 0,
+                        }, offset);
 
                     // validate data descriptor
                     a.seek(cfhPos - 24);
                     byte[] dd = new byte[8];
                     a.readFully(dd);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("DD", new byte[] {
                             // sig
                             (byte) 0x50, (byte) 0x4b, 7, 8,
                             // CRC
@@ -1899,7 +1981,7 @@ public class Zip64SupportIT {
                     a.skipBytes(8);
                     dd = new byte[8];
                     a.readFully(dd);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("DD size", new byte[] {
                             // original size
                             (byte) 0x40, (byte) 0x42, (byte) 0x0F, 0,
                             0, 0, 0, 0
@@ -1909,7 +1991,7 @@ public class Zip64SupportIT {
                     a.seek(0);
                     header = new byte[10];
                     a.readFully(header);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("LFH start", new byte[] {
                             // sig
                             (byte) 0x50, (byte) 0x4b, 3, 4,
                             // version needed to extract
@@ -1923,7 +2005,7 @@ public class Zip64SupportIT {
                     a.skipBytes(4);
                     rest = new byte[17];
                     a.readFully(rest);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("LFH rest", new byte[] {
                             // CRC
                             0, 0, 0, 0,
                             // Compressed Size
@@ -1940,7 +2022,7 @@ public class Zip64SupportIT {
 
                     extra = new byte[20];
                     a.readFully(extra);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("LFH extra", new byte[] {
                             // Header-ID
                             1, 0,
                             // size of extra
@@ -2183,7 +2265,7 @@ public class Zip64SupportIT {
                     // information extra field
                     byte[] header = new byte[12];
                     a.readFully(header);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("CDH start", new byte[] {
                             // sig
                             (byte) 0x50, (byte) 0x4b, 1, 2,
                             // version made by
@@ -2199,20 +2281,20 @@ public class Zip64SupportIT {
                     a.skipBytes(4);
                     byte[] crc = new byte[4];
                     a.readFully(crc);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("CDH CRC", new byte[] {
                             (byte) 0x9E, (byte) 0xCB, (byte) 0x79, (byte) 0x12,
                     }, crc);
                     // skip compressed size
                     a.skipBytes(4);
                     byte[] rest = new byte[23];
                     a.readFully(rest);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("CDH rest", new byte[] {
                             // Original Size
-                            (byte) 0x40, (byte) 0x42, (byte) 0x0F, 0,
+                            (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
                             // file name length
                             1, 0,
                             // extra field length
-                            4, 0,
+                            28, 0,
                             // comment length
                             0, 0,
                             // disk number
@@ -2221,24 +2303,34 @@ public class Zip64SupportIT {
                             0, 0,
                             0, 0, 0, 0,
                             // offset
-                            0, 0, 0, 0,
+                            (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
                             // file name
                             (byte) '0'
                     }, rest);
-                    byte[] extra = new byte[4];
+                    byte[] extra = new byte[12];
                     a.readFully(extra);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("CDH extra", new byte[] {
                             // Header-ID
                             1, 0,
                             // size of extra
-                            0, 0,
+                            24, 0,
+                            // original size
+                            (byte) 0x40, (byte) 0x42, (byte) 0x0F, 0,
+                            0, 0, 0, 0,
                     }, extra);
+                    // skip compressed size
+                    a.skipBytes(8);
+                    byte[] offset = new byte[8];
+                    a.readFully(offset);
+                    assertArrayEquals("extra offset", new byte[] {
+                            0, 0, 0, 0, 0, 0, 0, 0,
+                        }, offset);
 
                     // and now validate local file header
                     a.seek(0);
                     header = new byte[10];
                     a.readFully(header);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("LFH start", new byte[] {
                             // sig
                             (byte) 0x50, (byte) 0x4b, 3, 4,
                             // version needed to extract
@@ -2252,14 +2344,14 @@ public class Zip64SupportIT {
                     a.skipBytes(4);
                     crc = new byte[4];
                     a.readFully(crc);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("LFH CRC", new byte[] {
                             (byte) 0x9E, (byte) 0xCB,
                             (byte) 0x79, (byte) 0x12,
                     }, crc);
                     rest = new byte[13];
                     a.readFully(rest);
 
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("LFH rest", new byte[] {
                             // Compressed Size
                             (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
                             // Original Size
@@ -2274,7 +2366,7 @@ public class Zip64SupportIT {
 
                     extra = new byte[12];
                     a.readFully(extra);
-                    assertArrayEquals(new byte[] {
+                    assertArrayEquals("LFH extra", new byte[] {
                             // Header-ID
                             1, 0,
                             // size of extra
