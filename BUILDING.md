@@ -1,4 +1,4 @@
-= Building Apache Commons Compress
+# Building Apache Commons Compress
 
 In order to build Commons Compress a JDK implementation 1.7 or higher
 and Apache Maven 3.x are required.
@@ -24,7 +24,7 @@ space. In addition the tests will run for a long time (more then ten
 minutes, maybe even longer depending on your hardware) and heavily
 load the CPU at times.
 
-== Building the Site
+## Building the Site
 
 The site build produces license release audit (aka RAT) reports as
 well as PMD and findbugs reports. Clirr didn't work for us anymore so
