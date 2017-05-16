@@ -41,6 +41,7 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.utils.IOUtils;
 
 import static org.apache.commons.compress.archivers.zip.ZipConstants.DATA_DESCRIPTOR_MIN_VERSION;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.DEFLATE_MIN_VERSION;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.INITIAL_VERSION;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
@@ -695,7 +696,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                 // do some cleanup:
                 // * rewrite version needed to extract
                 channel.position(entry.localDataStart  - 5 * SHORT);
-                writeOut(ZipShort.getBytes(INITIAL_VERSION));
+                writeOut(ZipShort.getBytes(versionNeededToExtractMethod(entry.entry.getMethod())));
 
                 // * remove ZIP64 extra so it doesn't get written
                 //   to the central directory
@@ -1071,7 +1072,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         final int zipMethod = ze.getMethod();
 
         if (phased &&  !isZip64Required(entry.entry, zip64Mode)){
-            putShort(INITIAL_VERSION, buf, LFH_VERSION_NEEDED_OFFSET);
+            putShort(versionNeededToExtractMethod(zipMethod), buf, LFH_VERSION_NEEDED_OFFSET);
         } else {
             putShort(versionNeededToExtract(zipMethod, hasZip64Extra(ze)), buf, LFH_VERSION_NEEDED_OFFSET);
         }
@@ -1483,15 +1484,18 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         }
         // requires version 2 as we are going to store length info
         // in the data descriptor
-        return (isDeflatedToOutputStream(zipMethod)) ?
-                DATA_DESCRIPTOR_MIN_VERSION :
-                INITIAL_VERSION;
+        return isDeflatedToOutputStream(zipMethod)
+            ? DATA_DESCRIPTOR_MIN_VERSION
+            : versionNeededToExtractMethod(zipMethod);
     }
 
     private boolean isDeflatedToOutputStream(final int zipMethod) {
         return zipMethod == DEFLATED && channel == null;
     }
 
+    private int versionNeededToExtractMethod(int zipMethod) {
+        return zipMethod == DEFLATED ? DEFLATE_MIN_VERSION : INITIAL_VERSION;
+    }
 
     /**
      * Creates a new zip entry taking some information from the given

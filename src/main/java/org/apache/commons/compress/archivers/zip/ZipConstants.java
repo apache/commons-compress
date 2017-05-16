@@ -40,6 +40,12 @@ final class ZipConstants {
     /** Initial ZIP specification version */
     static final int INITIAL_VERSION = 10;
 
+    /**
+     * ZIP specification version that introduced DEFLATE compression method.
+     * @since 1.15
+     */
+    static final int DEFLATE_MIN_VERSION = 20;
+
     /** ZIP specification version that introduced data descriptor method */
     static final int DATA_DESCRIPTOR_MIN_VERSION = 20;
 
