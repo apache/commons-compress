@@ -640,10 +640,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Ensures the current entry's size and CRC information is set to
-     * the values just written, verifies it isn't too big in the
-     * Zip64Mode.Never case and returns whether the entry would
-     * require a Zip64 extra field.
+     * Verifies the sizes aren't too big in the Zip64Mode.Never case
+     * and returns whether the entry would require a Zip64 extra
+     * field.
      */
     private boolean checkIfNeedsZip64(final Zip64Mode effectiveMode)
             throws ZipException {
@@ -1563,7 +1562,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
     /**
      * If the mode is AsNeeded and the entry is a compressed entry of
-     * unknown size that gets written to a non-seekable stream the
+     * unknown size that gets written to a non-seekable stream then
      * change the default to Never.
      *
      * @since 1.3
