@@ -758,18 +758,19 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
             final Zip64ExtendedInformationExtraField z64 = getZip64Extra(entry.entry);
 
-            // just a placeholder, real data will be in data
-            // descriptor or inserted later via SeekableByteChannel
-            ZipEightByteInteger size = ZipEightByteInteger.ZERO;
-            ZipEightByteInteger compressedSize = ZipEightByteInteger.ZERO;
-            if (phased){
+            ZipEightByteInteger size, compressedSize;
+            if (phased) {
+                // sizes are already known
                 size = new ZipEightByteInteger(entry.entry.getSize());
                 compressedSize = new ZipEightByteInteger(entry.entry.getCompressedSize());
             } else if (entry.entry.getMethod() == STORED
                     && entry.entry.getSize() != ArchiveEntry.SIZE_UNKNOWN) {
                 // actually, we already know the sizes
-                size = new ZipEightByteInteger(entry.entry.getSize());
-                compressedSize = size;
+                compressedSize = size = new ZipEightByteInteger(entry.entry.getSize());
+            } else {
+                // just a placeholder, real data will be in data
+                // descriptor or inserted later via SeekableByteChannel
+                compressedSize = size = ZipEightByteInteger.ZERO;
             }
             z64.setSize(size);
             z64.setCompressedSize(compressedSize);
