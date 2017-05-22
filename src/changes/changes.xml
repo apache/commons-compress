@@ -44,6 +44,15 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.15" date="not released, yet"
              description="Release 1.15">
+      <action issue="COMPRESS-394" type="fix" date="2017-05-22">
+        Make sure "version needed to extract" in local file header and
+        central directory of a ZIP archive agree with each other.
+        Also ensure the version is set to 2.0 if DEFLATE is used.
+      </action>
+      <action issue="COMPRESS-395" type="fix" date="2017-05-22">
+        Don't use a data descriptor in ZIP archives when copying a raw
+        entry that already knows its size and CRC information.
+      </action>
     </release>
     <release version="1.14" date="2017-05-14"
              description="Release 1.14">
