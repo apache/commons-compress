@@ -241,6 +241,7 @@ jar, tar, zip, dump, 7z, arj.
             <manifestEntries>
               <Main-Class>org.apache.commons.compress.archivers.Lister</Main-Class>
               <Extension-Name>org.apache.commons.compress</Extension-Name>
+              <Automatic-Module-Name>org.apache.commons.compress</Automatic-Module-Name>
             </manifestEntries>
           </archive>
         </configuration>
