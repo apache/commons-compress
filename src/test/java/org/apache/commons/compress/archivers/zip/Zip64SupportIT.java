@@ -2101,7 +2101,7 @@ public class Zip64SupportIT {
                             // version made by
                             20, 0,
                             // version needed to extract
-                            10, 0,
+                            20, 0,
                             // GPB (EFS + *no* Data Descriptor)
                             0, 8,
                             // method
@@ -2147,7 +2147,7 @@ public class Zip64SupportIT {
                             // sig
                             (byte) 0x50, (byte) 0x4b, 3, 4,
                             // version needed to extract
-                            10, 0,
+                            20, 0,
                             // GPB (EFS bit, no DD)
                             0, 8,
                             // method
