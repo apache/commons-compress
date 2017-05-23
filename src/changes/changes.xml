@@ -53,6 +53,10 @@ The <action> type attribute can be add,update,fix,remove.
         Don't use a data descriptor in ZIP archives when copying a raw
         entry that already knows its size and CRC information.
       </action>
+      <action issue="COMPRESS-396" type="fix" date="2017-05-23">
+        The MANIFEST of 1.14 lacks an OSGi Import-Package for XZ for
+        Java.
+      </action>
     </release>
     <release version="1.14" date="2017-05-14"
              description="Release 1.14">
