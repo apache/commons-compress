@@ -53,6 +53,11 @@ The <action> type attribute can be add,update,fix,remove.
         Don't use a data descriptor in ZIP archives when copying a raw
         entry that already knows its size and CRC information.
       </action>
+      <action issue="COMPRESS-397" type="add" date="2017-05-22">
+        Added magic MANIFEST entry Automatic-Module-Name so the module
+        name will be org.apache.commons.compress when the jar is used
+        as an automatic module in Java9.
+      </action>
       <action issue="COMPRESS-396" type="fix" date="2017-05-23">
         The MANIFEST of 1.14 lacks an OSGi Import-Package for XZ for
         Java.
