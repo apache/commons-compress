@@ -235,6 +235,7 @@ jar, tar, zip, dump, 7z, arj.
               <exclude>src/test/resources/**</exclude>
               <exclude>.pmd</exclude>
               <exclude>.projectile</exclude>
+               <exclude>**/packageinfo</exclude>
             </excludes>
           </configuration>
         </plugin>
