@@ -52,6 +52,10 @@ jar, tar, zip, dump, 7z, arj.
     <!-- only show issues of the current version -->
     <commons.changes.onlyCurrentVersion>true</commons.changes.onlyCurrentVersion>
 
+    <!-- OSGI Bundle Baseline checking -->
+    <!-- Set  to use a non-default base to verify version numbers against; for example: -->
+   <!--   <comparisonVersion>1.13</comparisonVersion> -->
+
     <!-- generate report even if there are binary incompatible changes -->
     <commons.japicmp.breakBuildOnBinaryIncompatibleModifications>false</commons.japicmp.breakBuildOnBinaryIncompatibleModifications>
   </properties>
@@ -178,13 +182,21 @@ jar, tar, zip, dump, 7z, arj.
   </scm>
 
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/java</directory>
+        <includes>
+          <include>**/packageinfo</include>
+        </includes>
+      </resource>
+    </resources>
     <pluginManagement>
       <plugins>
         <!-- Override Javadoc config in parent pom to add JCIP tags -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <configuration> 
+          <configuration>
             <quiet>true</quiet>
             <source>${maven.compiler.source}</source>
             <encoding>${commons.encoding}</encoding>
@@ -211,7 +223,7 @@ jar, tar, zip, dump, 7z, arj.
                 <head>This class is thread-safe</head>
               </tag>
             </tags>
-          </configuration> 
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.rat</groupId>
@@ -225,6 +237,11 @@ jar, tar, zip, dump, 7z, arj.
               <exclude>.projectile</exclude>
             </excludes>
           </configuration>
+        </plugin>
+        <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>3.3.0</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -256,10 +273,29 @@ jar, tar, zip, dump, 7z, arj.
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
         <configuration>
+          <niceManifest>true</niceManifest>
           <instructions>
+            <_removeheaders>Include-Resource,Private-Package</_removeheaders>
+            <Export-Package>org.apache.commons.*;-noimport:=true</Export-Package>
             <Import-Package>org.tukaani.xz;resolution:=optional,org.brotli.dec;resolution:=optional</Import-Package>
           </instructions>
         </configuration>
+        <executions>
+          <execution>
+            <id>baseline</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>baseline</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>baseline-report</id>
+            <phase>site</phase>
+            <goals>
+              <goal>baseline-report</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -297,7 +333,7 @@ jar, tar, zip, dump, 7z, arj.
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration> 
+        <configuration>
           <quiet>true</quiet>
           <source>${maven.compiler.source}</source>
           <encoding>${commons.encoding}</encoding>
@@ -324,7 +360,7 @@ jar, tar, zip, dump, 7z, arj.
               <head>This class is thread-safe</head>
             </tag>
           </tags>
-        </configuration> 
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
