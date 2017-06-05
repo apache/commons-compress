@@ -85,6 +85,12 @@ jar, tar, zip, dump, 7z, arj.
       <optional>true</optional>
     </dependency>
     <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.annotation</artifactId>
+      <version>6.0.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.powermock</groupId>
       <artifactId>powermock-module-junit4</artifactId>
       <version>${powermock.version}</version>
@@ -182,14 +188,6 @@ jar, tar, zip, dump, 7z, arj.
   </scm>
 
   <build>
-    <resources>
-      <resource>
-        <directory>src/main/java</directory>
-        <includes>
-          <include>**/packageinfo</include>
-        </includes>
-      </resource>
-    </resources>
     <pluginManagement>
       <plugins>
         <!-- Override Javadoc config in parent pom to add JCIP tags -->
@@ -200,7 +198,7 @@ jar, tar, zip, dump, 7z, arj.
             <quiet>true</quiet>
             <source>${maven.compiler.source}</source>
             <encoding>${commons.encoding}</encoding>
-            <docEncoding>${commons.docEncoding}</docEncoding>
+            <docencoding>${commons.docEncoding}</docencoding>
             <linksource>true</linksource>
             <links>
               <link>${commons.javadoc.java.link}</link>
@@ -338,7 +336,7 @@ jar, tar, zip, dump, 7z, arj.
           <quiet>true</quiet>
           <source>${maven.compiler.source}</source>
           <encoding>${commons.encoding}</encoding>
-          <docEncoding>${commons.docEncoding}</docEncoding>
+          <docencoding>${commons.docEncoding}</docencoding>
           <linksource>true</linksource>
           <links>
             <link>${commons.javadoc.java.link}</link>
