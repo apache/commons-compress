@@ -62,6 +62,10 @@ The <action> type attribute can be add,update,fix,remove.
         The MANIFEST of 1.14 lacks an OSGi Import-Package for XZ for
         Java.
       </action>
+      <action issue="COMPRESS-406" type="fix" date="2017-06-12"
+              due-to="Simon Spero ">
+        BUILDING.md now passes the RAT check.
+      </action>
     </release>
     <release version="1.14" date="2017-05-14"
              description="Release 1.14">
