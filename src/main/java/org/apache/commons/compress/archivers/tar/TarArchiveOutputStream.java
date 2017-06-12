@@ -301,6 +301,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             && !ASCII.canEncode(linkName)) {
             paxHeaders.put("linkpath", linkName);
         }
+        paxHeaders.putAll(entry.getExtraPaxHeaders());
 
         if (paxHeaders.size() > 0) {
             writePaxHeaders(entry, entryName, paxHeaders);
