@@ -21,5 +21,8 @@ jdk:
   - oraclejdk7
   - oraclejdk8
 
+script:
+  - mvn verify -B
+
 after_success:
   - mvn clean apache-rat:check test jacoco:report coveralls:report -Ptravis-jacoco
