@@ -146,7 +146,7 @@ public class TarArchiveEntryTest implements TarConstants {
         tos.write('W');
         tos.closeArchiveEntry();
         tos.close();
-        assertNotEquals("should have extra headers before clear",0,entry.getExtraPaxHeaders().size());
+        assertNotEquals("should have extra headers before clear",0,entry.getExtraPaxHeaders().size());  
         entry.clearExtraPaxHeaders();
         assertEquals("extra headers should be empty after clear",0,entry.getExtraPaxHeaders().size());
         TarArchiveInputStream tis = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()));
