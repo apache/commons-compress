@@ -259,7 +259,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @throws IOException on error
      */
     public TarArchiveEntry getNextTarEntry() throws IOException {
-        if (hasHitEOF) {
+        if (isAtEOF()) {
             return null;
         }
 
@@ -395,8 +395,8 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      */
     private byte[] getRecord() throws IOException {
         byte[] headerBuf = readRecord();
-        hasHitEOF = isEOFRecord(headerBuf);
-        if (hasHitEOF && headerBuf != null) {
+        setAtEOF(isEOFRecord(headerBuf));
+        if (isAtEOF() && headerBuf != null) {
             tryToConsumeSecondEOFRecord();
             consumeRemainderOfLastBlock();
             headerBuf = null;
@@ -595,7 +595,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     public int read(final byte[] buf, final int offset, int numToRead) throws IOException {
     	int totalRead = 0;
 
-        if (hasHitEOF || isDirectory() || entryOffset >= entrySize) {
+        if (isAtEOF() || isDirectory() || entryOffset >= entrySize) {
             return -1;
         }
 
@@ -611,7 +611,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             if (numToRead > 0) {
                 throw new IOException("Truncated TAR archive");
             }
-            hasHitEOF = true;
+            setAtEOF(true);
         } else {
             count(totalRead);
             entryOffset += totalRead;
