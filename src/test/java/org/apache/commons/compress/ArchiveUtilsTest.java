@@ -18,10 +18,11 @@
 
 package org.apache.commons.compress;
 
-import static org.junit.Assert.*;
-
+import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class ArchiveUtilsTest extends AbstractTestCase {
 
@@ -93,6 +94,53 @@ public class ArchiveUtilsTest extends AbstractTestCase {
         final String input = "\b12345678901234567890123456789012345678901234567890123456789";
         final String expected = "?12345678901234567890123456789012345678901234567890123456789";
         assertEquals(expected, ArchiveUtils.sanitize(input));
+    }
+
+    @Test
+    public void testIsEqualWithNullWithPositive() {
+
+        byte[] byteArray = new byte[8];
+        byteArray[1] = (byte) (-77);
+
+        assertFalse(ArchiveUtils.isEqualWithNull(byteArray, 0, (byte)0, byteArray, (byte)0, (byte)80));
+
+    }
+
+    @Test
+    public void testToAsciiBytes() {
+
+        byte[] byteArray = ArchiveUtils.toAsciiBytes("SOCKET");
+
+        assertArrayEquals(new byte[] {(byte)83, (byte)79, (byte)67, (byte)75, (byte)69, (byte)84}, byteArray);
+
+        assertFalse(ArchiveUtils.isEqualWithNull(byteArray, 0, 46, byteArray, 63, 0));
+
+    }
+
+    @Test
+    public void testToStringWithNonNull() {
+
+        SevenZArchiveEntry sevenZArchiveEntry = new SevenZArchiveEntry();
+        String string = ArchiveUtils.toString(sevenZArchiveEntry);
+
+        assertEquals("-       0 null", string);
+
+    }
+
+    @Test
+    public void testIsEqual() {
+
+        assertTrue(ArchiveUtils.isEqual((byte[]) null, 0, 0, (byte[]) null, 0, 0));
+
+    }
+
+    @Test(expected = StringIndexOutOfBoundsException.class)
+    public void testToAsciiStringThrowsStringIndexOutOfBoundsException() {
+
+        byte[] byteArray = new byte[3];
+
+        ArchiveUtils.toAsciiString(byteArray, 940, 2730);
+
     }
 
     private void asciiToByteAndBackOK(final String inputString) {
