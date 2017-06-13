@@ -19,6 +19,7 @@
 package org.apache.commons.compress.archivers.tar;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -145,7 +146,9 @@ public class TarArchiveEntryTest implements TarConstants {
         tos.write('W');
         tos.closeArchiveEntry();
         tos.close();
-
+        assertNotEquals("should have extra headers before clear",0,entry.getExtraPaxHeaders().size());
+        entry.clearExtraPaxHeaders();
+        assertEquals("extra headers should be empty after clear",0,entry.getExtraPaxHeaders().size());
         TarArchiveInputStream tis = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()));
         entry = tis.getNextTarEntry();
         assertNotNull("couldn't get entry",entry);
