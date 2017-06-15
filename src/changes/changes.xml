@@ -63,8 +63,14 @@ The <action> type attribute can be add,update,fix,remove.
         Java.
       </action>
       <action issue="COMPRESS-406" type="fix" date="2017-06-12"
-              due-to="Simon Spero ">
+              due-to="Simon Spero">
         BUILDING.md now passes the RAT check.
+      </action>
+      <action issue="COMPRESS-405" type="add" date="2017-06-15"
+              due-to="Simon Spero ">
+        Added a new utility class FixedLengthBlockOutputStream that
+        can be used to ensure writing always happens in blocks of a
+        given size.
       </action>
     </release>
     <release version="1.14" date="2017-05-14"
