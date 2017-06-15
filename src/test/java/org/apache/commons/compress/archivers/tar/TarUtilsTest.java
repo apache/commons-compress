@@ -23,6 +23,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.nio.ByteBuffer;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.CharsetNames;
@@ -142,6 +143,38 @@ public class TarUtilsTest {
         parseValue = TarUtils.parseOctalOrBinary(buffer,0, buffer.length);
         assertEquals(value,parseValue);
     }
+    private void checkRoundTripOctalOrBinaryViaBuffer(final long value, final int len) {
+        ByteBuffer buffer = ByteBuffer.allocate(len);
+        long parseValue;
+        TarUtils.formatLongOctalOrBinaryBytes(value, buffer,len);
+        buffer.flip();
+        parseValue = TarUtils.parseOctalOrBinary(buffer, len);
+        assertEquals(value,parseValue);
+    }
+    @Test
+    public void testRoundTripOctalOrBinaryViaBuffer12() {
+        testRoundTripOctalOrBinaryViaBuffer(12);
+    }
+    @Test
+    public void testRoundTripOctOrBin8() {
+        testRoundTripOctalOrBinaryViaBuffer(8);
+    }
+
+    @Test
+    public void testRoundTripOctOrBinViaBuffer2() {
+        checkRoundTripOctalOrBinaryViaBuffer(0, 2);
+        checkRoundTripOctalOrBinaryViaBuffer(1, 2);
+        checkRoundTripOctalOrBinaryViaBuffer(127, 2); // will need binary format
+        checkRoundTripOctalOrBinaryViaBuffer(-1, 2); // will need binary format
+    }
+
+    private void testRoundTripOctalOrBinaryViaBuffer(int len) {
+        checkRoundTripOctalOrBinaryViaBuffer(0, len);
+        checkRoundTripOctalOrBinaryViaBuffer(1, len);
+        checkRoundTripOctalOrBinaryViaBuffer(TarConstants.MAXSIZE, len); // will need binary format
+        checkRoundTripOctalOrBinaryViaBuffer(-1, len); // will need binary format
+        checkRoundTripOctalOrBinaryViaBuffer(0xff00000000000001l, len);
+    }
 
     @Test
     public void testRoundTripOctalOrBinary8() {
@@ -173,6 +206,16 @@ public class TarUtilsTest {
         checkRoundTripOctalOrBinary(0xff00000000000001l, length);
     }
 
+    @Test public void testFormatChecksumBuffer() {
+        int len = 12;
+        ByteBuffer buffer = ByteBuffer.allocate(len);
+        TarUtils.formatCheckSumOctalBytes(123, buffer,0, len);
+
+        assertEquals(' ', buffer.get(len-1));
+        assertEquals(0  ,  buffer.get(len-2));
+        assertEquals('3',  buffer.get(len-3)); // end of number
+
+    }
     // Check correct trailing bytes are generated
     @Test
     public void testTrailers() {
