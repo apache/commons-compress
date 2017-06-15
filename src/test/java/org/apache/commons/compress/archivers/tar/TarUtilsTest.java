@@ -149,9 +149,19 @@ public class TarUtilsTest {
     }
 
     @Test
+    public void testRoundTripOctalOrBinary2() {
+        checkRoundTripOctalOrBinary(0, 2);
+        checkRoundTripOctalOrBinary(1, 2);
+        checkRoundTripOctalOrBinary(-1, 2); // will need binary format
+        checkRoundTripOctalOrBinary(127, 2); // will need binary format
+        //checkRoundTripOctalOrBinary(0xff00000000000001l, 2);
+    }
+
+    @Test
     public void testRoundTripOctalOrBinary12() {
         testRoundTripOctalOrBinary(12);
         checkRoundTripOctalOrBinary(Long.MAX_VALUE, 12);
+        checkRoundTripOctalOrBinary(-1, 12);
         checkRoundTripOctalOrBinary(Long.MIN_VALUE + 1, 12);
     }
 
