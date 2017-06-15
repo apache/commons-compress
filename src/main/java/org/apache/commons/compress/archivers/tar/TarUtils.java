@@ -22,16 +22,11 @@ import static org.apache.commons.compress.archivers.tar.TarConstants.CHKSUMLEN;
 import static org.apache.commons.compress.archivers.tar.TarConstants.CHKSUM_OFFSET;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetEncoder;
-import java.nio.charset.CoderResult;
-import java.nio.charset.CodingErrorAction;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
-import org.apache.commons.compress.internal.charset.HasCharset;
 
 /**
  * This class provides static utility methods to work with byte streams.
@@ -47,74 +42,73 @@ public class TarUtils {
         ZipEncodingHelper.getZipEncoding(null);
 
     /**
-     * Encapsulates the algorithms used up to Commons Compress 1.3 as ZipEncoding.
+     * Encapsulates the algorithms used up to Commons Compress 1.3 as
+     * ZipEncoding.
      */
     static final ZipEncoding FALLBACK_ENCODING = new ZipEncoding() {
-        @Override
-        public boolean canEncode(final String name) {
-            return true;
-        }
+            @Override
+            public boolean canEncode(final String name) { return true; }
 
-        @Override
-        public ByteBuffer encode(final String name) {
-            final int length = name.length();
-            final byte[] buf = new byte[length];
+            @Override
+            public ByteBuffer encode(final String name) {
+                final int length = name.length();
+                final byte[] buf = new byte[length];
 
-            // copy until end of input or output is reached.
-            for (int i = 0; i < length; ++i) {
-                buf[i] = (byte) name.charAt(i);
-            }
-            return ByteBuffer.wrap(buf);
-        }
-
-        @Override
-        public String decode(final byte[] buffer) {
-            final int length = buffer.length;
-            final StringBuilder result = new StringBuilder(length);
-
-            for (final byte b : buffer) {
-                if (b == 0) { // Trailing null
-                    break;
+                // copy until end of input or output is reached.
+                for (int i = 0; i < length; ++i) {
+                    buf[i] = (byte) name.charAt(i);
                 }
-                result.append((char) (b & 0xFF)); // Allow for sign-extension
+                return ByteBuffer.wrap(buf);
             }
 
-            return result.toString();
-        }
-    };
+            @Override
+            public String decode(final byte[] buffer) {
+                final int length = buffer.length;
+                final StringBuilder result = new StringBuilder(length);
 
-    /**
-     * Private constructor to prevent instantiation of this utility class.
-     */
-    private TarUtils() {
+                for (final byte b : buffer) {
+                    if (b == 0) { // Trailing null
+                        break;
+                    }
+                    result.append((char) (b & 0xFF)); // Allow for sign-extension
+                }
+
+                return result.toString();
+            }
+        };
+
+    /** Private constructor to prevent instantiation of this utility class. */
+    private TarUtils(){
     }
 
     /**
      * Parse an octal string from a buffer.
      *
-     * <p>Leading spaces are ignored. The buffer must contain a trailing space or NUL, and may
-     * contain an additional trailing space or NUL.</p>
+     * <p>Leading spaces are ignored.
+     * The buffer must contain a trailing space or NUL,
+     * and may contain an additional trailing space or NUL.</p>
      *
-     * <p>The input buffer is allowed to contain all NULs, in which case the method returns 0L (this
-     * allows for missing fields).</p>
+     * <p>The input buffer is allowed to contain all NULs,
+     * in which case the method returns 0L
+     * (this allows for missing fields).</p>
      *
-     * <p>To work-around some tar implementations that insert a leading NUL this method returns 0 if
-     * it detects a leading NUL since Commons Compress 1.4.</p>
+     * <p>To work-around some tar implementations that insert a
+     * leading NUL this method returns 0 if it detects a leading NUL
+     * since Commons Compress 1.4.</p>
      *
      * @param buffer The buffer from which to parse.
      * @param offset The offset into the buffer from which to parse.
      * @param length The maximum number of bytes to parse - must be at least 2 bytes.
      * @return The long value of the octal string.
-     * @throws IllegalArgumentException if the trailing space/NUL is missing or if a invalid byte is
-     * detected.
+     * @throws IllegalArgumentException if the trailing space/NUL is missing or if a invalid byte is detected.
      */
     public static long parseOctal(final byte[] buffer, final int offset, final int length) {
-        long result = 0;
-        int end = offset + length;
-        int start = offset;
+        long    result = 0;
+        int     end = offset + length;
+        int     start = offset;
 
-        if (length < 2) {
-            throw new IllegalArgumentException("Length " + length + " must be at least 2");
+        if (length < 2){
+            throw new IllegalArgumentException("Length "+length+" must be at least 2");
         }
 
         if (buffer[start] == 0) {
@@ -122,8 +116,8 @@ public class TarUtils {
         }
 
         // Skip leading spaces
-        while (start < end) {
-            if (buffer[start] == ' ') {
+        while (start < end){
+            if (buffer[start] == ' '){
                 start++;
             } else {
                 break;
@@ -140,12 +134,12 @@ public class TarUtils {
             trailer = buffer[end - 1];
         }
 
-        for (; start < end; start++) {
+        for ( ;start < end; start++) {
             final byte currentByte = buffer[start];
             // CheckStyle:MagicNumber OFF
-            if (currentByte < '0' || currentByte > '7') {
+            if (currentByte < '0' || currentByte > '7'){
                 throw new IllegalArgumentException(
-                    exceptionMessage(buffer, offset, length, start, currentByte));
+                        exceptionMessage(buffer, offset, length, start, currentByte));
             }
             result = (result << 3) + (currentByte - '0'); // convert from ASCII
             // CheckStyle:MagicNumber ON
@@ -220,26 +214,19 @@ public class TarUtils {
      * @param offset The offset into the buffer from which to parse.
      * @param length The maximum number of bytes to parse.
      * @return The long value of the octal or binary string.
-     * @throws IllegalArgumentException if the trailing space/NUL is missing or an invalid byte is
-     * detected in an octal number, or if a binary number would exceed the size of a signed long
+     * @throws IllegalArgumentException if the trailing space/NUL is
+     * missing or an invalid byte is detected in an octal number, or
+     * if a binary number would exceed the size of a signed long
      * 64-bit integer.
      * @since 1.4
      */
     public static long parseOctalOrBinary(final byte[] buffer, final int offset,
         final int length) {
+
         if (shouldDecodeAsBase256(buffer[offset])) {
             return parseBase256(buffer, offset, length);
         } else {
             return parseOctal(buffer, offset, length);
-        }
-    }
-
-    static long parseOctalOrBinary(ByteBuffer buffer,
-        final int length) {
-        if (shouldDecodeAsBase256(buffer.get(buffer.position()))) {
-            return parseBase256(buffer, length);
-        } else {
-            return parseOctal(buffer, length);
         }
     }
 
@@ -266,37 +253,60 @@ public class TarUtils {
             result = -1L;
             b |= (byte) 0x80;
         }
-        result |= unsigned(b);
+        result |= b & 0xff;
         for (int i = 1; i < length; i++) {
             b = buffer[offset + i];
             result <<= 8;
-            result |= unsigned(buffer[offset + i]);
+            result |= buffer[offset + i] & 0xff;
         }
         return result;
     }
 
-    private static long parseBase256(ByteBuffer buffer, int length) {
-        long result = 0L;
-        byte b = buffer.get();
-        if ((b & 0x40) == 0) {
-            b = (byte) (b & ~0x80);
-        } else {
-            result = -1L;
-            b |= (byte) 0x80;
+    private static long parseBinaryLong(final byte[] buffer, final int offset,
+                                        final int length,
+                                        final boolean negative) {
+        if (length >= 9) {
+            throw new IllegalArgumentException("At offset " + offset + ", "
+                                               + length + " byte binary number"
+                                               + " exceeds maximum signed long"
+                                               + " value");
         }
-        result |= unsigned(b);
+        long val = 0;
         for (int i = 1; i < length; i++) {
-            result <<= 8;
-            result |= unsigned(buffer.get());
+            val = (val << 8) + (buffer[offset + i] & 0xff);
         }
-        return result;
-
+        if (negative) {
+            // 2's complement
+            val--;
+            val ^= (long) Math.pow(2.0, (length - 1) * 8.0) - 1;
+        }
+        return negative ? -val : val;
     }
 
+    private static long parseBinaryBigInteger(final byte[] buffer,
+                                              final int offset,
+                                              final int length,
+                                              final boolean negative) {
+        final byte[] remainder = new byte[length - 1];
+        System.arraycopy(buffer, offset + 1, remainder, 0, length - 1);
+        BigInteger val = new BigInteger(remainder);
+        if (negative) {
+            // 2's complement
+            val = val.add(BigInteger.valueOf(-1)).not();
+        }
+        if (val.bitLength() > 63) {
+            throw new IllegalArgumentException("At offset " + offset + ", "
+                                               + length + " byte binary number"
+                                               + " exceeds maximum signed long"
+                                               + " value");
+        }
+        return negative ? -val.longValue() : val.longValue();
+    }
 
     /**
-     * Parse a boolean byte from a buffer. Leading spaces and NUL are ignored. The buffer may
-     * contain trailing spaces or NULs.
+     * Parse a boolean byte from a buffer.
+     * Leading spaces and NUL are ignored.
+     * The buffer may contain trailing spaces or NULs.
      *
      * @param buffer The buffer from which to parse.
      * @param offset The offset into the buffer from which to parse.
@@ -309,7 +319,7 @@ public class TarUtils {
 
     // Helper method to generate the exception message
     private static String exceptionMessage(final byte[] buffer, final int offset,
-        final int length, final int current, final byte currentByte) {
+            final int length, final int current, final byte currentByte) {
         // default charset is good enough for an exception message,
         //
         // the alternative was to modify parseOctal and
@@ -319,16 +329,15 @@ public class TarUtils {
         // can throw an IOException which parseOctal* doesn't declare
         String string = new String(buffer, offset, length);
 
-        string = string.replaceAll("\0", "{NUL}"); // Replace NULs to allow string to be printed
-        final String s =
-            "Invalid byte " + currentByte + " at offset " + (current - offset) + " in '" + string
-                + "' len=" + length;
+        string=string.replaceAll("\0", "{NUL}"); // Replace NULs to allow string to be printed
+        final String s = "Invalid byte "+currentByte+" at offset "+(current-offset)+" in '"+string+"' len="+length;
         return s;
     }
 
     /**
-     * Parse an entry name from a buffer. Parsing stops when a NUL is found or the buffer length is
-     * reached.
+     * Parse an entry name from a buffer.
+     * Parsing stops when a NUL is found
+     * or the buffer length is reached.
      *
      * @param buffer The buffer from which to parse.
      * @param offset The offset into the buffer from which to parse.
@@ -349,16 +358,17 @@ public class TarUtils {
     }
 
     /**
-     * Parse an entry name from a buffer. Parsing stops when a NUL is found or the buffer length is
-     * reached.
+     * Parse an entry name from a buffer.
+     * Parsing stops when a NUL is found
+     * or the buffer length is reached.
      *
      * @param buffer The buffer from which to parse.
      * @param offset The offset into the buffer from which to parse.
      * @param length The maximum number of bytes to parse.
      * @param encoding name of the encoding to use for file names
+     * @since 1.4
      * @return The entry name.
      * @throws IOException on error
-     * @since 1.4
      */
     public static String parseName(final byte[] buffer, final int offset,
         final int length,
@@ -380,9 +390,13 @@ public class TarUtils {
     }
 
     /**
-     * Copy a name into a buffer. Copies characters from the name into the buffer starting at the
-     * specified offset. If the buffer is longer than the name, the buffer is filled with trailing
-     * NULs. If the name is longer than the buffer, the output is truncated.
+     * Copy a name into a buffer.
+     * Copies characters from the name into the buffer
+     * starting at the specified offset.
+     * If the buffer is longer than the name, the buffer
+     * is filled with trailing NULs.
+     * If the name is longer than the buffer,
+     * the output is truncated.
      *
      * @param name The header name from which to copy the characters.
      * @param buf The buffer where the name is to be stored.
@@ -406,22 +420,26 @@ public class TarUtils {
     }
 
     /**
-     * Copy a name into a buffer. Copies characters from the name into the buffer starting at the
-     * specified offset. If the buffer is longer than the name, the buffer is filled with trailing
-     * NULs. If the name is longer than the buffer, the output is truncated.
+     * Copy a name into a buffer.
+     * Copies characters from the name into the buffer
+     * starting at the specified offset.
+     * If the buffer is longer than the name, the buffer
+     * is filled with trailing NULs.
+     * If the name is longer than the buffer,
+     * the output is truncated.
      *
      * @param name The header name from which to copy the characters.
      * @param buf The buffer where the name is to be stored.
      * @param offset The starting offset into the buffer
      * @param length The maximum number of header bytes to copy.
      * @param encoding name of the encoding to use for file names
+     * @since 1.4
      * @return The updated offset, i.e. offset + length
      * @throws IOException on error
-     * @since 1.4
      */
     public static int formatNameBytes(final String name, final byte[] buf, final int offset,
-        final int length,
-        final ZipEncoding encoding)
+                                      final int length,
+                                      final ZipEncoding encoding)
         throws IOException {
         int len = name.length();
         ByteBuffer b = encoding.encode(name);
@@ -439,115 +457,19 @@ public class TarUtils {
         return offset + length;
     }
 
-    /**
-     * Append name to the supplied buffer, using the system default character set. <ul> <li>If the
-     * length is less than len bytes, the remaining space will be null padded. <li>If the length is
-     * exactly len bytes, no padding will be added. <li>If the encoded name exceeds len bytes, then
-     * append as many complete characters as will fit. Any remaining space will be null padded
-     * </ul>
-     *
-     * @param name Name to append
-     * @param buffer ByteBuffer to append.  Buffer must have at least len bytes remaining.
-     * @param len Space to be filled by encoded name
-     */
+    static void formatNameBytes(String name, ByteBuffer buffer, int len, ZipEncoding encoding)
+        throws IOException {
+        byte[] tmp = new byte[len];
+
+        formatNameBytes(name, tmp, 0, len, encoding);
+        buffer.put(tmp);
+    }
 
     static void formatNameBytes(String name, ByteBuffer buffer, int len)
         throws IOException {
-        formatNameBytes(name, buffer, len, null);
-    }
-    /**
-     * Append name to the supplied buffer, using the supplied encoder.
-     * <ul>
-     *     <li>If the length is less than len bytes, the remaining space will be null padded.
-     *     <li>If the length is  exactly len bytes, no padding will be added.
-     *     <li>If the encoded name exceeds len bytes, then append as many complete characters
-     *         as will fit. Any remaining space will be null padded
-     * </ul>
-     *
-     * @param name Name to append
-     * @param buffer ByteBuffer to append.  Buffer must have at least len bytes remaining.
-     * @param len Space to be filled by encoded name
-     * @param encoder Characterset encoder to use.  The encoder will be reset before use.
-     */
-
-    static void formatNameBytes(String name, ByteBuffer buffer, CharsetEncoder encoder, int len) {
-        int savedLimit = buffer.limit();
-        buffer.limit(buffer.position() + len);
-        formatNameBytes(name,buffer,encoder);
-        buffer.limit(savedLimit);
-
-    }
-
-
-    /**
-     * Append name to the supplied buffer.
-     * <ul>
-     *     <li>If the length is less than len bytes, the  remaining space will be null padded.
-     *     <li>If the length is exactly len bytes, no padding will  be added.
-     *     <li>If the encoded name exceeds len bytes, then append as many complete characters
-     *         as will fit. Any remaining space will be null padded
-     *     </ul>
-     *  If the supplied ZipEncoding implements HasCharset, an NIO CharsetEncoder will be created
-     *  and used directly instead of  delegating to the ZipEncoding.
-     *
-     * @param name Name to append
-     * @param buffer ByteBuffer to append.  Buffer must have at least len bytes remaining.
-     * @param len Space to be filled by encoded name
-     * @param encoding Zip Encoding to use for encoding, or null to use system default.
-     */
-    static void formatNameBytes(String name, ByteBuffer buffer, int len, ZipEncoding encoding)
-        throws IOException {
-        int savedLimit = buffer.limit();
-        buffer.limit(buffer.position() + len);
-
-        try {
-            if (encoding == null || encoding instanceof HasCharset) {
-                Charset charset;
-                if (encoding != null) {
-                    charset = ((HasCharset) encoding).getCharset();
-                } else {
-                    charset = Charset.defaultCharset();
-                }
-                formatNameBytes(name, buffer, charset);
-            } else {
-                byte tmp[] = new byte[len];
-                formatNameBytes(name, tmp, 0, len);
-                buffer.put(tmp);
-            }
-        } finally {
-            buffer.limit(savedLimit);
-        }
-    }
-
-    static void formatNameBytes(String name, ByteBuffer buffer, Charset charset) {
-        CharsetEncoder encoder = newEncoder(charset);
-        formatNameBytes(name, buffer, encoder);
-    }
-
-    private static CharsetEncoder newEncoder(Charset charset) {
-        return charset.newEncoder()
-            .onMalformedInput(CodingErrorAction.REPLACE)
-            .onUnmappableCharacter(CodingErrorAction.REPLACE);
-    }
-
-
-    static void formatNameBytes(String name, ByteBuffer buffer, CharsetEncoder encoder) {
-        CharBuffer src = CharBuffer.wrap(name);
-        boolean endOfInput = true;
-        CoderResult coderResult = encoder.encode(src, buffer, endOfInput);
-
-        if (coderResult.isOverflow() || coderResult.isUnderflow()) {
-            padBuffer(buffer);
-        } else {
-            throw new IllegalStateException(
-                String.format("Unexpected coder result: %s", coderResult));
-        }
-    }
-
-    private static void padBuffer(ByteBuffer buffer) {
-        while (buffer.hasRemaining()) {
-            buffer.put((byte) 0);
-        }
+        byte[] tmp = new byte[len];
+        formatNameBytes(name, tmp, 0, len);
+        buffer.put(tmp);
     }
 
     /**
@@ -560,7 +482,7 @@ public class TarUtils {
      * @throws IllegalArgumentException if the value will not fit in the buffer
      */
     public static void formatUnsignedOctalString(final long value, final byte[] buffer,
-        final int offset, final int length) {
+            final int offset, final int length) {
         int remaining = length;
         remaining--;
         if (value == 0) {
@@ -573,10 +495,9 @@ public class TarUtils {
                 val = val >>> 3;
                 // CheckStyle:MagicNumber ON
             }
-            if (val != 0) {
+            if (val != 0){
                 throw new IllegalArgumentException
-                    (value + "=" + Long.toOctalString(value)
-                        + " will not fit in octal number buffer of length " + length);
+                (value+"="+Long.toOctalString(value)+ " will not fit in octal number buffer of length "+length);
             }
         }
 
@@ -585,26 +506,19 @@ public class TarUtils {
         }
     }
 
+    // TODO: Implement properly
     private static void formatUnsignedOctalString(long value, ByteBuffer buffer, int length) {
-        int start = buffer.position();
-        int end = start + length;
-        for (int i = end - 1; i >= start; i--) {
-            buffer.put(i, (byte) ((value & 7) + '0'));
-            value >>>= 3;
-        }
-        if (value != 0) {
-            throw new IllegalArgumentException(value + "=" + Long.toOctalString(value)
-                + " will not fit in octal number buffer of length " + length);
-        }
-        buffer.position(end);
+        byte tmp[] = new byte[length];
+        formatUnsignedOctalString(value, tmp, 0, length);
+        buffer.put(tmp);
     }
-
 
     /**
      * Write an octal integer into a buffer.
      *
-     * Uses {@link #formatUnsignedOctalString} to format the value as an octal string with leading
-     * zeros. The converted number is followed by space and NUL
+     * Uses {@link #formatUnsignedOctalString} to format
+     * the value as an octal string with leading zeros.
+     * The converted number is followed by space and NUL
      *
      * @param value The value to write
      * @param buf The buffer to receive the output
@@ -613,14 +527,13 @@ public class TarUtils {
      * @return The updated offset, i.e offset+length
      * @throws IllegalArgumentException if the value (and trailer) will not fit in the buffer
      */
-    public static int formatOctalBytes(final long value, final byte[] buf, final int offset,
-        final int length) {
+    public static int formatOctalBytes(final long value, final byte[] buf, final int offset, final int length) {
 
-        int idx = length - 2; // For space and trailing null
+        int idx=length-2; // For space and trailing null
         formatUnsignedOctalString(value, buf, offset, idx);
 
         buf[offset + idx++] = (byte) ' '; // Trailing space
-        buf[offset + idx] = 0; // Trailing null
+        buf[offset + idx]   = 0; // Trailing null
 
         return offset + length;
     }
@@ -628,8 +541,9 @@ public class TarUtils {
     /**
      * Write an octal long integer into a buffer.
      *
-     * Uses {@link #formatUnsignedOctalString} to format the value as an octal string with leading
-     * zeros. The converted number is followed by a space.
+     * Uses {@link #formatUnsignedOctalString} to format
+     * the value as an octal string with leading zeros.
+     * The converted number is followed by a space.
      *
      * @param value The value to write as octal
      * @param buf The destinationbuffer.
@@ -638,10 +552,9 @@ public class TarUtils {
      * @return The updated offset
      * @throws IllegalArgumentException if the value (and trailer) will not fit in the buffer
      */
-    public static int formatLongOctalBytes(final long value, final byte[] buf, final int offset,
-        final int length) {
+    public static int formatLongOctalBytes(final long value, final byte[] buf, final int offset, final int length) {
 
-        final int idx = length - 1; // For space
+        final int idx=length-1; // For space
 
         formatUnsignedOctalString(value, buf, offset, idx);
         buf[offset + idx] = (byte) ' '; // Trailing space
@@ -661,18 +574,20 @@ public class TarUtils {
 
 
     /**
-     * Write an long integer into a buffer as an octal string if this will fit, or as a binary
-     * number otherwise.
+     * Write an long integer into a buffer as an octal string if this
+     * will fit, or as a binary number otherwise.
      *
-     * Uses {@link #formatUnsignedOctalString} to format the value as an octal string with leading
-     * zeros. The converted number is followed by a space.
+     * Uses {@link #formatUnsignedOctalString} to format
+     * the value as an octal string with leading zeros.
+     * The converted number is followed by a space.
      *
      * @param value The value to write into the buffer.
      * @param buf The destination buffer.
      * @param offset The starting offset into the buffer.
      * @param length The length of the buffer.
      * @return The updated offset.
-     * @throws IllegalArgumentException if the value (and trailer) will not fit in the buffer.
+     * @throws IllegalArgumentException if the value (and trailer)
+     * will not fit in the buffer.
      * @since 1.4
      */
     public static int formatLongOctalOrBinaryBytes(
@@ -736,35 +651,35 @@ public class TarUtils {
         long maxAsUnsignedOctalChars = (1L << (bits)) - 1;
         final boolean negative = value < 0;
         if (!negative && value <= maxAsUnsignedOctalChars) { // OK to store as octal chars
-            formatLongOctalBytes(value, buffer, length);
+             formatLongOctalBytes(value, buffer, length);
         } else {
             formatBase256(value, buffer, length);
         }
     }
 
-    static void formatBase256(long value, ByteBuffer buffer, int length) {
-        int bits = length * 8 - 1;
+     static void formatBase256(long value, ByteBuffer buffer, int length) {
+        int bits1 = length * 8 - 1;
         int pos = buffer.position();
         if (length < 9) {
-            long l = 1L << (bits - 1);
+            long l = 1L << (bits1 - 1);
             long min = -l;
             long max = l - 1;
             if (value < min || value > max) {
                 throw new IllegalArgumentException(String
                     .format("Can't fit %,d (%016x) in %d bits (min %,d, max %,d)", value,
                         value,
-                        bits, min, max));
+                        bits1, min, max));
             }
             for (int i = length - 1; i > 0; i--) {
-                buffer.put(pos + i, (byte) (value & 0xff));
+                buffer.put(pos + i,(byte) (value & 0xff));
                 value >>>= 8;
             }
-            buffer.put(pos, (byte) ((value & 0xff) | 0x80));
-            buffer.position(pos + length);
+            buffer.put(pos,(byte)((value & 0xff) | 0x80));
+            buffer.position(pos+length);
         } else {
             byte pad;
             if (value < 0) {
-                buffer.put((byte) 0xff);
+                buffer.put((byte)0xff);
                 pad = (byte) 0xff;
             } else {
                 buffer.put((byte) 0x80);
@@ -785,8 +700,9 @@ public class TarUtils {
     /**
      * Writes an octal value into a buffer.
      *
-     * Uses {@link #formatUnsignedOctalString} to format the value as an octal string with leading
-     * zeros. The converted number is followed by NUL and then space.
+     * Uses {@link #formatUnsignedOctalString} to format
+     * the value as an octal string with leading zeros.
+     * The converted number is followed by NUL and then space.
      *
      * @param value The value to convert
      * @param buf The destination buffer
@@ -795,18 +711,16 @@ public class TarUtils {
      * @return The updated value of offset, i.e. offset+length
      * @throws IllegalArgumentException if the value (and trailer) will not fit in the buffer
      */
-    public static int formatCheckSumOctalBytes(final long value, final byte[] buf, final int offset,
-        final int length) {
+    public static int formatCheckSumOctalBytes(final long value, final byte[] buf, final int offset, final int length) {
 
-        int idx = length - 2; // for NUL and space
+        int idx=length-2; // for NUL and space
         formatUnsignedOctalString(value, buf, offset, idx);
 
-        buf[offset + idx++] = 0; // Trailing null
-        buf[offset + idx] = (byte) ' '; // Trailing space
+        buf[offset + idx++]   = 0; // Trailing null
+        buf[offset + idx]     = (byte) ' '; // Trailing space
 
         return offset + length;
     }
-
 
     static void formatCheckSumOctalBytes(final long value, ByteBuffer buffer, final int offset,
         final int length) {
@@ -843,7 +757,7 @@ public class TarUtils {
         buffer.limit(buffer.capacity());
         long sum = 0L;
         while (buffer.hasRemaining()) {
-            sum += unsigned(buffer.get());
+            sum += buffer.get() & 0xff;
         }
         buffer.limit(savedLimit);
         buffer.position(savedPosition);
@@ -852,16 +766,23 @@ public class TarUtils {
 
     /**
      * Wikipedia <a href="http://en.wikipedia.org/wiki/Tar_(file_format)#File_header">says</a>:
-     * <blockquote> The checksum is calculated by taking the sum of the unsigned byte values of the
-     * header block with the eight checksum bytes taken to be ascii spaces (decimal value 32). It is
-     * stored as a six digit octal number with leading zeroes followed by a NUL and then a space.
-     * Various implementations do not adhere to this format. For better compatibility, ignore
-     * leading and trailing whitespace, and get the first six digits. In addition, some historic tar
-     * implementations treated bytes as signed. Implementations typically calculate the checksum
-     * both ways, and treat it as good if either the signed or unsigned sum matches the included
-     * checksum. </blockquote> <p> The return value of this method should be treated as a
-     * best-effort heuristic rather than an absolute and final truth. The checksum verification
-     * logic may well evolve over time as more special cases are encountered.
+     * <blockquote>
+     * The checksum is calculated by taking the sum of the unsigned byte values
+     * of the header block with the eight checksum bytes taken to be ascii
+     * spaces (decimal value 32). It is stored as a six digit octal number with
+     * leading zeroes followed by a NUL and then a space. Various
+     * implementations do not adhere to this format. For better compatibility,
+     * ignore leading and trailing whitespace, and get the first six digits. In
+     * addition, some historic tar implementations treated bytes as signed.
+     * Implementations typically calculate the checksum both ways, and treat it
+     * as good if either the signed or unsigned sum matches the included
+     * checksum.
+     * </blockquote>
+     * <p>
+     * The return value of this method should be treated as a best-effort
+     * heuristic rather than an absolute and final truth. The checksum
+     * verification logic may well evolve over time as more special cases
+     * are encountered.
      *
      * @param header tar header
      * @return whether the checksum is reasonably good
@@ -875,42 +796,12 @@ public class TarUtils {
 
         for (int i = 0; i < header.length; i++) {
             byte b = header[i];
-            if (CHKSUM_OFFSET <= i && i < CHKSUM_OFFSET + CHKSUMLEN) {
+            if (CHKSUM_OFFSET  <= i && i < CHKSUM_OFFSET + CHKSUMLEN) {
                 b = ' ';
             }
-            unsignedSum += unsigned(b);
+            unsignedSum += 0xff & b;
             signedSum += b;
         }
-        return storedSum == unsignedSum || storedSum == signedSum;
-    }
-
-    private static int unsigned(byte b) {
-        return b & 0xff;
-    }
-
-    static boolean verifyCheckSum(ByteBuffer buffer) {
-        int pos = buffer.position();
-        buffer.position(CHKSUM_OFFSET);
-        final long storedSum = parseOctal(buffer, CHKSUMLEN);
-        long unsignedSum = 0;
-        long signedSum = 0;
-        buffer.position(0);
-        for (int i = 0; i < CHKSUM_OFFSET; i++) {
-            byte b = buffer.get();
-            unsignedSum += unsigned(b);
-            signedSum += b;
-        }
-        for (int i = 0; i < CHKSUMLEN; i++) {
-            unsignedSum += 0x20;
-            signedSum += 0x20;
-        }
-        buffer.position(CHKSUM_OFFSET + CHKSUMLEN);
-        while (buffer.hasRemaining()) {
-            byte b = buffer.get();
-            unsignedSum += unsigned(b);
-            signedSum += b;
-        }
-        buffer.position(pos);
         return storedSum == unsignedSum || storedSum == signedSum;
     }
 
