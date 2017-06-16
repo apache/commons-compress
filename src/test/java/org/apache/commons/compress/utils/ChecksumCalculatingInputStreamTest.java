@@ -28,7 +28,6 @@ import static org.junit.Assert.*;
 /**
  * Unit tests for class {@link ChecksumCalculatingInputStream org.apache.commons.compress.utils.ChecksumCalculatingInputStream}.
  *
- * @author Michael Hausegger, hausegger.michael@googlemail.com
  * @date 13.06.2017
  * @see ChecksumCalculatingInputStream
  **/
