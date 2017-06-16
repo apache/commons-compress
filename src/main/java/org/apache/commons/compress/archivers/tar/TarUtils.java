@@ -24,8 +24,14 @@ import static org.apache.commons.compress.archivers.tar.TarConstants.CHKSUM_OFFS
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.CoderResult;
+import java.nio.charset.CodingErrorAction;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
+import org.apache.commons.compress.internal.charset.HasCharset;
 
 /**
  * This class provides static utility methods to work with byte streams.
@@ -433,19 +439,115 @@ public class TarUtils {
         return offset + length;
     }
 
-    static void formatNameBytes(String name, ByteBuffer buffer, int len, ZipEncoding encoding)
-        throws IOException {
-        byte[] tmp = new byte[len];
-
-        formatNameBytes(name, tmp, 0, len, encoding);
-        buffer.put(tmp);
-    }
+    /**
+     * Append name to the supplied buffer, using the system default character set. <ul> <li>If the
+     * length is less than len bytes, the remaining space will be null padded. <li>If the length is
+     * exactly len bytes, no padding will be added. <li>If the encoded name exceeds len bytes, then
+     * append as many complete characters as will fit. Any remaining space will be null padded
+     * </ul>
+     *
+     * @param name Name to append
+     * @param buffer ByteBuffer to append.  Buffer must have at least len bytes remaining.
+     * @param len Space to be filled by encoded name
+     */
 
     static void formatNameBytes(String name, ByteBuffer buffer, int len)
         throws IOException {
-        byte[] tmp = new byte[len];
-        formatNameBytes(name, tmp, 0, len);
-        buffer.put(tmp);
+        formatNameBytes(name, buffer, len, null);
+    }
+    /**
+     * Append name to the supplied buffer, using the supplied encoder.
+     * <ul>
+     *     <li>If the length is less than len bytes, the remaining space will be null padded.
+     *     <li>If the length is  exactly len bytes, no padding will be added.
+     *     <li>If the encoded name exceeds len bytes, then append as many complete characters
+     *         as will fit. Any remaining space will be null padded
+     * </ul>
+     *
+     * @param name Name to append
+     * @param buffer ByteBuffer to append.  Buffer must have at least len bytes remaining.
+     * @param len Space to be filled by encoded name
+     * @param encoder Characterset encoder to use.  The encoder will be reset before use.
+     */
+
+    static void formatNameBytes(String name, ByteBuffer buffer, CharsetEncoder encoder, int len) {
+        int savedLimit = buffer.limit();
+        buffer.limit(buffer.position() + len);
+        formatNameBytes(name,buffer,encoder);
+        buffer.limit(savedLimit);
+
+    }
+
+
+    /**
+     * Append name to the supplied buffer.
+     * <ul>
+     *     <li>If the length is less than len bytes, the  remaining space will be null padded.
+     *     <li>If the length is exactly len bytes, no padding will  be added.
+     *     <li>If the encoded name exceeds len bytes, then append as many complete characters
+     *         as will fit. Any remaining space will be null padded
+     *     </ul>
+     *  If the supplied ZipEncoding implements HasCharset, an NIO CharsetEncoder will be created
+     *  and used directly instead of  delegating to the ZipEncoding.
+     *
+     * @param name Name to append
+     * @param buffer ByteBuffer to append.  Buffer must have at least len bytes remaining.
+     * @param len Space to be filled by encoded name
+     * @param encoding Zip Encoding to use for encoding, or null to use system default.
+     */
+    static void formatNameBytes(String name, ByteBuffer buffer, int len, ZipEncoding encoding)
+        throws IOException {
+        int savedLimit = buffer.limit();
+        buffer.limit(buffer.position() + len);
+
+        try {
+            if (encoding == null || encoding instanceof HasCharset) {
+                Charset charset;
+                if (encoding != null) {
+                    charset = ((HasCharset) encoding).getCharset();
+                } else {
+                    charset = Charset.defaultCharset();
+                }
+                formatNameBytes(name, buffer, charset);
+            } else {
+                byte tmp[] = new byte[len];
+                formatNameBytes(name, tmp, 0, len);
+                buffer.put(tmp);
+            }
+        } finally {
+            buffer.limit(savedLimit);
+        }
+    }
+
+    static void formatNameBytes(String name, ByteBuffer buffer, Charset charset) {
+        CharsetEncoder encoder = newEncoder(charset);
+        formatNameBytes(name, buffer, encoder);
+    }
+
+    private static CharsetEncoder newEncoder(Charset charset) {
+        return charset.newEncoder()
+            .onMalformedInput(CodingErrorAction.REPLACE)
+            .onUnmappableCharacter(CodingErrorAction.REPLACE);
+    }
+
+
+    static void formatNameBytes(String name, ByteBuffer buffer, CharsetEncoder encoder) {
+        CharBuffer src = CharBuffer.wrap(name);
+        boolean endOfInput = true;
+        CoderResult coderResult = encoder.encode(src, buffer, endOfInput);
+
+        if (coderResult.isOverflow() || coderResult.isUnderflow()) {
+            padBuffer(buffer);
+        } else {
+            throw new IllegalStateException(
+                String.format("Unexpected coder result: %s", coderResult));
+        }
+    }
+
+    private static void padBuffer(ByteBuffer buffer) {
+        while (buffer.hasRemaining()) {
+            buffer.put((byte) 0);
+        }
     }
 
     /**
@@ -496,7 +598,6 @@ public class TarUtils {
         }
         buffer.position(end);
     }
-
 
 
     /**
@@ -794,19 +895,19 @@ public class TarUtils {
         long unsignedSum = 0;
         long signedSum = 0;
         buffer.position(0);
-        for(int i=0;i<CHKSUM_OFFSET;i++) {
+        for (int i = 0; i < CHKSUM_OFFSET; i++) {
             byte b = buffer.get();
-            unsignedSum+= unsigned(b);
+            unsignedSum += unsigned(b);
             signedSum += b;
         }
-        for(int i=0;i<CHKSUMLEN;i++) {
+        for (int i = 0; i < CHKSUMLEN; i++) {
             unsignedSum += 0x20;
             signedSum += 0x20;
         }
-        buffer.position(CHKSUM_OFFSET+CHKSUMLEN);
-        while(buffer.hasRemaining()) {
+        buffer.position(CHKSUM_OFFSET + CHKSUMLEN);
+        while (buffer.hasRemaining()) {
             byte b = buffer.get();
-            unsignedSum+= unsigned(b);
+            unsignedSum += unsigned(b);
             signedSum += b;
         }
         buffer.position(pos);
