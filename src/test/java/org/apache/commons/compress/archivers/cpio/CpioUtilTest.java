@@ -18,10 +18,10 @@
  */
 package org.apache.commons.compress.archivers.cpio;
 
+import org.junit.Test;
+
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
 
 public class CpioUtilTest {
 
@@ -52,5 +52,32 @@ public class CpioUtilTest {
                      CpioUtil.byteArray2long(new byte[] { 0x71, (byte) 0xc7 },
                                              true));
     }
+
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testLong2byteArrayWithZeroThrowsUnsupportedOperationException() {
+
+        CpioUtil.long2byteArray(0L, 0, false);
+
+    }
+
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testLong2byteArrayWithPositiveThrowsUnsupportedOperationException() {
+
+        CpioUtil.long2byteArray(0L, 1021, false);
+
+    }
+
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testByteArray2longThrowsUnsupportedOperationException() {
+
+        byte[] byteArray = new byte[1];
+
+        CpioUtil.byteArray2long(byteArray, true);
+
+    }
+
 
 }
