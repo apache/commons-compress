@@ -29,7 +29,6 @@ import static org.junit.Assert.assertEquals;
 /**
  * Unit tests for class {@link ChecksumVerifyingInputStream org.apache.commons.compress.utils.ChecksumVerifyingInputStream}.
  *
- * @author Michael Hausegger, hausegger.michael@googlemail.com
  * @date 13.06.2017
  * @see ChecksumVerifyingInputStream
  **/
