@@ -47,8 +47,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @since 1.15
  */
-public class FixedLengthBlockOutputStream extends OutputStream implements WritableByteChannel,
-    AutoCloseable {
+public class FixedLengthBlockOutputStream extends OutputStream implements WritableByteChannel {
 
     private final WritableByteChannel out;
     private final int blockSize;
