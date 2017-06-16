@@ -27,7 +27,6 @@ import static org.junit.Assert.assertFalse;
 /**
  * Unit tests for class {@link ServiceLoaderIterator org.apache.commons.compress.utils.ServiceLoaderIterator}.
  *
- * @author Michael Hausegger, hausegger.michael@googlemail.com
  * @date 13.06.2017
  * @see ServiceLoaderIterator
  **/
