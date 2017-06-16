@@ -22,6 +22,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.zip.Adler32;
+import java.util.zip.CRC32;
 
 import static org.junit.Assert.*;
 
@@ -105,6 +106,31 @@ public class ChecksumCalculatingInputStreamTest {
 
     }
 
+
+    @Test(expected = NullPointerException.class)
+    public void testClassInstantiationWithParameterBeingNullThrowsNullPointerExceptionOne() {
+
+        ChecksumCalculatingInputStream checksumCalculatingInputStream = new ChecksumCalculatingInputStream(null,null);
+
+
+    }
+
+
+    @Test(expected = NullPointerException.class)
+    public void testClassInstantiationWithParameterBeingNullThrowsNullPointerExceptionTwo() {
+
+        ChecksumCalculatingInputStream checksumCalculatingInputStream = new ChecksumCalculatingInputStream(null,new ByteArrayInputStream(new byte[1]));
+
+
+    }
+
+
+    @Test(expected = NullPointerException.class)
+    public void testClassInstantiationWithParameterBeingNullThrowsNullPointerExceptionThree() {
+
+        ChecksumCalculatingInputStream checksumCalculatingInputStream = new ChecksumCalculatingInputStream(new CRC32(),null);
+
+    }
 
 
 }
