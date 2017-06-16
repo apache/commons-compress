@@ -89,17 +89,6 @@ public class ChecksumCalculatingInputStreamTest {
     }
 
 
-    @Test(expected = NullPointerException.class) //I assume this behaviour to be a bug or at least a defect.
-    public void testGetValueThrowsNullPointerException() {
-
-        ChecksumCalculatingInputStream checksumCalculatingInputStream = new ChecksumCalculatingInputStream(null,null);
-
-        checksumCalculatingInputStream.getValue();
-
-
-    }
-
-
     @Test
     public void testReadTakingByteArray() throws IOException {
 
