@@ -169,6 +169,10 @@ jar, tar, zip, dump, 7z, arj.
     <contributor>
       <name>BELUGA BEHR</name>
     </contributor>
+    <contributor>
+      <name>Michael Hausegger</name>
+      <email>hausegger.michael@googlemail.com</email>
+    </contributor>
   </contributors>
 
   <scm>
