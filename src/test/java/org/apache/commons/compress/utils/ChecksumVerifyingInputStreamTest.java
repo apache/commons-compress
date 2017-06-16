@@ -39,10 +39,10 @@ public class ChecksumVerifyingInputStreamTest {
     @Test(expected = IOException.class)
     public void testReadTakingByteArrayThrowsIOException() throws IOException {
 
-        Adler32 adler32_ = new Adler32();
+        Adler32 adler32 = new Adler32();
         byte[] byteArray = new byte[3];
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);
-        ChecksumVerifyingInputStream checksumVerifyingInputStream = new ChecksumVerifyingInputStream(adler32_, byteArrayInputStream, (-1859L), (byte) (-68));
+        ChecksumVerifyingInputStream checksumVerifyingInputStream = new ChecksumVerifyingInputStream(adler32, byteArrayInputStream, (-1859L), (byte) (-68));
 
         checksumVerifyingInputStream.read(byteArray);
 
