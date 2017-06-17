@@ -519,6 +519,10 @@ public class TarUtils {
         final BigInteger val = BigInteger.valueOf(value);
         final byte[] b = val.toByteArray();
         final int len = b.length;
+        if (len > length - 1) {
+            throw new IllegalArgumentException("Value " + value +
+                " is too large for " + length + " byte field.");
+        }
         final int off = offset + length - len;
         System.arraycopy(b, 0, buf, off, len);
         final byte fill = (byte) (negative ? 0xff : 0);
