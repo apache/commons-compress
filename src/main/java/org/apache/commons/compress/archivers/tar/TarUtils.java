@@ -503,8 +503,8 @@ public class TarUtils {
         }
         if (negative) {
             val ^= max - 1;
-            val |= 0xff << bits;
             val++;
+            val |= 0xffl << bits;
         }
         for (int i = offset + length - 1; i >= offset; i--) {
             buf[i] = (byte) val;
