@@ -160,7 +160,8 @@ public class TarUtilsTest {
         checkRoundTripOctalOrBinary(1, length);
         checkRoundTripOctalOrBinary(TarConstants.MAXSIZE, length); // will need binary format
         checkRoundTripOctalOrBinary(-1, length); // will need binary format
-        checkRoundTripOctalOrBinary(0xff00000000000001l, length);
+        checkRoundTripOctalOrBinary(0xffffffffffffffl, length);
+        checkRoundTripOctalOrBinary(-0xffffffffffffffl, length);
     }
 
     // Check correct trailing bytes are generated
