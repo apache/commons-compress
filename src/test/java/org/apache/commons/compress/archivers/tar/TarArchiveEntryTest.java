@@ -31,6 +31,7 @@ import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.Locale;
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.junit.Test;
 
 public class TarArchiveEntryTest implements TarConstants {
@@ -162,25 +163,35 @@ public class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
-    public void testWriteEntryHeader() throws IOException {
+    public void testWriteEntryHeaderToBufferDefault() throws IOException {
         ByteBuffer buffer = ByteBuffer.allocate(512);
-        TarArchiveEntry entry = new TarArchiveEntry("/shortname.txt");
-        entry.setSize(07777);
-        entry.setModTime(new Date());
-        entry.setUserName("ses");
-        entry.setGroupName("wheel");
-        entry.setUserId(101);
-        entry.setGroupId(0);
-        entry.setDevMajor(04);
-        entry.setDevMinor(01);
-        entry.setMode(0755);
-        entry.writeEntryHeader(buffer, null,true);
+        TarArchiveEntry entry = createTestEntry(buffer);
+        entry.writeEntryHeader(buffer);
         assertEquals(0,buffer.remaining());
         buffer.flip();
         byte tmp[] = new byte[512];
         buffer.get(tmp);
         assertEquals(0,buffer.remaining());
         TarArchiveEntry entryDecoded = new TarArchiveEntry(tmp);
+        validateEntry(entry, entryDecoded);
+
+    }
+    @Test
+    public void testWriteEntryHeaderToBufferNotDefault() throws IOException {
+        ByteBuffer buffer = ByteBuffer.allocate(512);
+        TarArchiveEntry entry = createTestEntry(buffer);
+        entry.writeEntryHeader(buffer, ZipEncodingHelper.getZipEncoding("US-ASCII"),true);
+        assertEquals(0,buffer.remaining());
+        buffer.flip();
+        byte tmp[] = new byte[512];
+        buffer.get(tmp);
+        assertEquals(0,buffer.remaining());
+        TarArchiveEntry entryDecoded = new TarArchiveEntry(tmp);
+        validateEntry(entry, entryDecoded);
+
+    }
+
+    private void validateEntry(TarArchiveEntry entry, TarArchiveEntry entryDecoded) {
         assertEquals(entry.getName(),entryDecoded.getName());
         assertEquals(entry.getSize(),entryDecoded.getSize());
         assertEquals(entry.getModTime(),entryDecoded.getModTime());
@@ -191,6 +202,19 @@ public class TarArchiveEntryTest implements TarConstants {
         assertEquals(entry.getDevMajor(),entryDecoded.getDevMajor());
         assertEquals(entry.getDevMinor(),entryDecoded.getDevMinor());
         assertEquals(entry.getMode(),entryDecoded.getMode());
+    }
 
+    private TarArchiveEntry createTestEntry(ByteBuffer buffer) throws IOException {
+        TarArchiveEntry entry = new TarArchiveEntry("/shortname.txt");
+        entry.setSize(07777);
+        entry.setModTime(new Date());
+        entry.setUserName("ses");
+        entry.setGroupName("wheel");
+        entry.setUserId(101);
+        entry.setGroupId(0);
+        entry.setDevMajor(04);
+        entry.setDevMinor(01);
+        entry.setMode(0755);
+        return entry;
     }
 }

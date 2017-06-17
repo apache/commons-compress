@@ -1058,54 +1058,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
                                                      length);
     }
 
-    public void writeEntryHeader(ByteBuffer buffer, ZipEncoding encoding, boolean starMode)
-        throws IOException {
-
-        TarUtils.formatNameBytes(name, buffer, NAMELEN, encoding);
-        writeEntryHeaderField(mode, buffer, MODELEN, starMode);
-        writeEntryHeaderField(userId, buffer, UIDLEN, starMode);
-        writeEntryHeaderField(groupId, buffer, GIDLEN, starMode);
-        writeEntryHeaderField(size, buffer, SIZELEN, starMode);
-        writeEntryHeaderField(modTime, buffer, MODTIMELEN, starMode);
-
-        final int csOffset = TarConstants.CHKSUM_OFFSET;
-
-        for (int c = 0; c < CHKSUMLEN; ++c) {
-            buffer.put((byte) ' ');
-        }
-
-        buffer.put(linkFlag);
-        TarUtils.formatNameBytes(linkName, buffer, NAMELEN, encoding);
-        TarUtils.formatNameBytes(magic, buffer, MAGICLEN);
-        TarUtils.formatNameBytes(version, buffer, VERSIONLEN);
-        TarUtils.formatNameBytes(userName, buffer, UNAMELEN,
-            encoding);
-        TarUtils.formatNameBytes(groupName, buffer, GNAMELEN, encoding);
-        writeEntryHeaderField(devMajor, buffer, DEVLEN, starMode);
-        writeEntryHeaderField(devMinor, buffer, DEVLEN, starMode);
-
-        while (buffer.hasRemaining()) {
-            buffer.put((byte) 0);
-        }
-
-        final long chk = TarUtils.computeCheckSum(buffer);
-
-        TarUtils.formatCheckSumOctalBytes(chk, buffer, csOffset, CHKSUMLEN);
-
-    }
-
-    private void writeEntryHeaderField(long value, ByteBuffer buffer, int length,
-        boolean starMode) {
-        if (!starMode && (value < 0 || value >= 1l << 3 * (length - 1))) {
-            // value doesn't fit into field when written as octal
-            // number, will be written to PAX header or causes an
-            // error
-            TarUtils.formatLongOctalBytes(0, buffer, length);
-        } else {
-            TarUtils.formatLongOctalOrBinaryBytes(value, buffer, length);
-        }
-    }
-
     /**
      * Parse an entry's header information from a header buffer.
      *
@@ -1141,7 +1093,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
     }
 
     private void parseTarHeader(final byte[] header, final ZipEncoding encoding,
-                                final boolean oldStyle)
+        final boolean oldStyle)
         throws IOException {
         int offset = 0;
 
@@ -1181,42 +1133,42 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
 
         final int type = evaluateType(header);
         switch (type) {
-        case FORMAT_OLDGNU: {
-            offset += ATIMELEN_GNU;
-            offset += CTIMELEN_GNU;
-            offset += OFFSETLEN_GNU;
-            offset += LONGNAMESLEN_GNU;
-            offset += PAD2LEN_GNU;
-            offset += SPARSELEN_GNU;
-            isExtended = TarUtils.parseBoolean(header, offset);
-            offset += ISEXTENDEDLEN_GNU;
-            realSize = TarUtils.parseOctal(header, offset, REALSIZELEN_GNU);
-            offset += REALSIZELEN_GNU;
-            break;
-        }
-        case FORMAT_XSTAR: {
-            final String xstarPrefix = oldStyle
-                ? TarUtils.parseName(header, offset, PREFIXLEN_XSTAR)
-                : TarUtils.parseName(header, offset, PREFIXLEN_XSTAR, encoding);
-            if (xstarPrefix.length() > 0) {
-                name = xstarPrefix + "/" + name;
+            case FORMAT_OLDGNU: {
+                offset += ATIMELEN_GNU;
+                offset += CTIMELEN_GNU;
+                offset += OFFSETLEN_GNU;
+                offset += LONGNAMESLEN_GNU;
+                offset += PAD2LEN_GNU;
+                offset += SPARSELEN_GNU;
+                isExtended = TarUtils.parseBoolean(header, offset);
+                offset += ISEXTENDEDLEN_GNU;
+                realSize = TarUtils.parseOctal(header, offset, REALSIZELEN_GNU);
+                offset += REALSIZELEN_GNU;
+                break;
             }
-            break;
-        }
-        case FORMAT_POSIX:
-        default: {
-            final String prefix = oldStyle
-                ? TarUtils.parseName(header, offset, PREFIXLEN)
-                : TarUtils.parseName(header, offset, PREFIXLEN, encoding);
-            // SunOS tar -E does not add / to directory names, so fix
-            // up to be consistent
-            if (isDirectory() && !name.endsWith("/")){
-                name = name + "/";
+            case FORMAT_XSTAR: {
+                final String xstarPrefix = oldStyle
+                    ? TarUtils.parseName(header, offset, PREFIXLEN_XSTAR)
+                    : TarUtils.parseName(header, offset, PREFIXLEN_XSTAR, encoding);
+                if (xstarPrefix.length() > 0) {
+                    name = xstarPrefix + "/" + name;
+                }
+                break;
             }
-            if (prefix.length() > 0){
-                name = prefix + "/" + name;
+            case FORMAT_POSIX:
+            default: {
+                final String prefix = oldStyle
+                    ? TarUtils.parseName(header, offset, PREFIXLEN)
+                    : TarUtils.parseName(header, offset, PREFIXLEN, encoding);
+                // SunOS tar -E does not add / to directory names, so fix
+                // up to be consistent
+                if (isDirectory() && !name.endsWith("/")){
+                    name = name + "/";
+                }
+                if (prefix.length() > 0){
+                    name = prefix + "/" + name;
+                }
             }
-        }
         }
     }
 
@@ -1225,7 +1177,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * turns path separators into forward slahes.
      */
     private static String normalizeFileName(String fileName,
-                                            final boolean preserveLeadingSlashes) {
+        final boolean preserveLeadingSlashes) {
         final String osname = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
 
         if (osname != null) {
@@ -1240,7 +1192,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
 
                     if (ch2 == ':'
                         && (ch1 >= 'a' && ch1 <= 'z'
-                            || ch1 >= 'A' && ch1 <= 'Z')) {
+                        || ch1 >= 'A' && ch1 <= 'Z')) {
                         fileName = fileName.substring(2);
                     }
                 }
@@ -1275,12 +1227,60 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
         }
         if (ArchiveUtils.matchAsciiBuffer(MAGIC_POSIX, header, MAGIC_OFFSET, MAGICLEN)) {
             if (ArchiveUtils.matchAsciiBuffer(MAGIC_XSTAR, header, XSTAR_MAGIC_OFFSET,
-                                              XSTAR_MAGIC_LEN)) {
+                XSTAR_MAGIC_LEN)) {
                 return FORMAT_XSTAR;
             }
             return FORMAT_POSIX;
         }
         return 0;
+    }
+    public void writeEntryHeader(final ByteBuffer buffer) throws IOException{
+            writeEntryHeader(buffer, TarUtils.DEFAULT_ENCODING, false);
+    }
+
+    public void writeEntryHeader(ByteBuffer buffer, ZipEncoding encoding, boolean starMode)
+        throws IOException {
+
+        TarUtils.formatNameBytes(name, buffer, NAMELEN, encoding);
+        writeEntryHeaderField(mode, buffer, MODELEN, starMode);
+        writeEntryHeaderField(userId, buffer, UIDLEN, starMode);
+        writeEntryHeaderField(groupId, buffer, GIDLEN, starMode);
+        writeEntryHeaderField(size, buffer, SIZELEN, starMode);
+        writeEntryHeaderField(modTime, buffer, MODTIMELEN, starMode);
+        buffer.position(buffer.position()+CHKSUMLEN);
+
+        
+        buffer.put(linkFlag);
+        TarUtils.formatNameBytes(linkName, buffer, NAMELEN, encoding);
+        TarUtils.formatNameBytes(magic, buffer, MAGICLEN);
+        TarUtils.formatNameBytes(version, buffer, VERSIONLEN);
+        TarUtils.formatNameBytes(userName, buffer, UNAMELEN,
+            encoding);
+        TarUtils.formatNameBytes(groupName, buffer, GNAMELEN, encoding);
+        writeEntryHeaderField(devMajor, buffer, DEVLEN, starMode);
+        writeEntryHeaderField(devMinor, buffer, DEVLEN, starMode);
+
+        while (buffer.hasRemaining()) {
+            buffer.put((byte) 0);
+        }
+
+        final long chk = TarUtils.computeCheckSum(buffer);
+
+        TarUtils.formatCheckSumOctalBytes(chk, buffer, TarConstants.CHKSUM_OFFSET, CHKSUMLEN);
+
+    }
+
+    private void writeEntryHeaderField(long value, ByteBuffer buffer, int length,
+        boolean starMode) {
+        boolean willFitAsOctal = value < 0 || value >= 1l << 3 * (length - 1);
+        if (starMode || willFitAsOctal) {
+            TarUtils.formatLongOctalOrBinaryBytes(value, buffer, length);
+        } else {
+            // value doesn't fit into field when written as octal
+            // number, will be written to PAX header or causes an
+            // error
+            TarUtils.formatLongOctalBytes(0, buffer, length);
+        }
     }
 
     void fillGNUSparse0xData(final Map<String, String> headers) {
