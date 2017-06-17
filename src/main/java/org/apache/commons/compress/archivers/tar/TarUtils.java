@@ -496,8 +496,8 @@ public class TarUtils {
                                          final boolean negative) {
         final int bits = (length - 1) * 8;
         final long max = 1l << bits;
-        long val = Math.abs(value);
-        if (val >= max) {
+        long val = Math.abs(value); // Long.MIN_VALUE stays Long.MIN_VALUE
+        if (val < 0 || val >= max) {
             throw new IllegalArgumentException("Value " + value +
                 " is too large for " + length + " byte field.");
         }
