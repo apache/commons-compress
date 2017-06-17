@@ -72,6 +72,11 @@ The <action> type attribute can be add,update,fix,remove.
         can be used to ensure writing always happens in blocks of a
         given size.
       </action>
+      <action issue="COMPRESS-412" type="fix" date="2017-06-17"
+              due-to="Michael Hausegger">
+        Made sure ChecksumCalculatingInputStream receives valid
+        checksum and input stream instances via the cnstructor.
+      </action>
     </release>
     <release version="1.14" date="2017-05-14"
              description="Release 1.14">
