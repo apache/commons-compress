@@ -18,16 +18,20 @@
 
 package org.apache.commons.compress.archivers.tar;
 
-import static org.junit.Assert.*;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Date;
 import java.util.Locale;
-
 import org.apache.commons.compress.AbstractTestCase;
+import org.junit.Test;
 
 public class TarArchiveEntryTest implements TarConstants {
 
@@ -155,5 +159,38 @@ public class TarArchiveEntryTest implements TarConstants {
         final byte[] buf = new byte[512];
         t.writeEntryHeader(buf);
         return new String(buf, MAGIC_OFFSET, MAGICLEN + VERSIONLEN);
+    }
+
+    @Test
+    public void testWriteEntryHeader() throws IOException {
+        ByteBuffer buffer = ByteBuffer.allocate(512);
+        TarArchiveEntry entry = new TarArchiveEntry("/shortname.txt");
+        entry.setSize(07777);
+        entry.setModTime(new Date());
+        entry.setUserName("ses");
+        entry.setGroupName("wheel");
+        entry.setUserId(101);
+        entry.setGroupId(0);
+        entry.setDevMajor(04);
+        entry.setDevMinor(01);
+        entry.setMode(0755);
+        entry.writeEntryHeader(buffer, null,true);
+        assertEquals(0,buffer.remaining());
+        buffer.flip();
+        byte tmp[] = new byte[512];
+        buffer.get(tmp);
+        assertEquals(0,buffer.remaining());
+        TarArchiveEntry entryDecoded = new TarArchiveEntry(tmp);
+        assertEquals(entry.getName(),entryDecoded.getName());
+        assertEquals(entry.getSize(),entryDecoded.getSize());
+        assertEquals(entry.getModTime(),entryDecoded.getModTime());
+        assertEquals(entry.getUserName(),entryDecoded.getUserName());
+        assertEquals(entry.getGroupName(),entryDecoded.getGroupName());
+        assertEquals(entry.getLongUserId(),entryDecoded.getLongUserId());
+        assertEquals(entry.getLongGroupId(),entryDecoded.getLongGroupId());
+        assertEquals(entry.getDevMajor(),entryDecoded.getDevMajor());
+        assertEquals(entry.getDevMinor(),entryDecoded.getDevMinor());
+        assertEquals(entry.getMode(),entryDecoded.getMode());
+
     }
 }
