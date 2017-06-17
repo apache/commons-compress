@@ -20,6 +20,7 @@ package org.apache.commons.compress.compressors.xz;
 
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
@@ -39,12 +40,15 @@ public class XZCompressorOutputStreamTest {
     public void testWrite() throws IOException {
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(4590);
-        XZCompressorOutputStream xZCompressorOutputStream = new XZCompressorOutputStream(byteArrayOutputStream);
-        xZCompressorOutputStream.write(4590);
+        try (XZCompressorOutputStream xZCompressorOutputStream = new XZCompressorOutputStream(byteArrayOutputStream)) {
+            xZCompressorOutputStream.write(4590);
+        }
 
-        assertEquals(24, byteArrayOutputStream.size());
-        assertEquals("\uFFFD7zXZ\u0000\u0000\u0004\uFFFD\u05B4F\u0002\u0000!\u0001\u0016\u0000\u0000\u0000t/\uFFFD", byteArrayOutputStream.toString());
-
+        try (XZCompressorInputStream xZCompressorInputStream =
+            new XZCompressorInputStream(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()))) {
+            assertEquals(4590 % 256, xZCompressorInputStream.read());
+            assertEquals(-1, xZCompressorInputStream.read());
+        }
     }
 
 
