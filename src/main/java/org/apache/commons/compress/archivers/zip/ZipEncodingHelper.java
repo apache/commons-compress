@@ -136,4 +136,14 @@ public abstract class ZipEncodingHelper {
         }
         return false;
     }
+
+    static ByteBuffer growBufferBy(ByteBuffer buffer, int increment) {
+        buffer.limit(buffer.position());
+        buffer.rewind();
+
+        final ByteBuffer on = ByteBuffer.allocate(buffer.capacity() + increment);
+
+        on.put(buffer);
+        return on;
+    }
 }
