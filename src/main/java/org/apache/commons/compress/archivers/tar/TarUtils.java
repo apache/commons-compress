@@ -47,10 +47,12 @@ public class TarUtils {
     static final ZipEncoding DEFAULT_ENCODING =
         ZipEncodingHelper.getZipEncoding(null);
 
+    static final ZipEncoding FALLBACK_ENCODING = ZipEncodingHelper.getZipEncoding("ISO-LATIN-1");
+
     /**
      * Encapsulates the algorithms used up to Commons Compress 1.3 as ZipEncoding.
      */
-    static final ZipEncoding FALLBACK_ENCODING = new ZipEncoding() {
+    static final ZipEncoding OLD_FALLBACK_ENCODING = new ZipEncoding() {
         @Override
         public boolean canEncode(final String name) {
             return true;
