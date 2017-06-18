@@ -20,6 +20,7 @@ package org.apache.commons.compress.archivers.tar;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.Locale;
@@ -28,6 +29,7 @@ import java.util.Map;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.utils.ArchiveUtils;
+import org.apache.commons.compress.utils.CharsetNames;
 
 /**
  * This class represents an entry in a Tar archive. It consists
@@ -1234,6 +1236,47 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
         }
         return 0;
     }
+
+
+    private int evaluateType(ByteBuffer buffer) {
+        if (matchAsciiBuffer(MAGIC_GNU, buffer, MAGIC_OFFSET, MAGICLEN)) {
+            return FORMAT_OLDGNU;
+        }
+        if (matchAsciiBuffer(MAGIC_POSIX, buffer, MAGIC_OFFSET, MAGICLEN)) {
+            if (matchAsciiBuffer(MAGIC_XSTAR, buffer, XSTAR_MAGIC_OFFSET, XSTAR_MAGIC_LEN)) {
+                return FORMAT_XSTAR;
+            }
+            return FORMAT_POSIX;
+        }
+        return 0;
+    }
+
+    private boolean matchAsciiBuffer(String expected, ByteBuffer buffer, int offset, int length) {
+        int savedPosition = buffer.position();
+        int savedLimit = buffer.limit();
+        buffer.position(offset).limit(offset + length);
+        try {
+
+            byte[] bytes = expected.getBytes(CharsetNames.US_ASCII);
+            if (bytes.length != length) {
+                return false;
+            }
+            for (int i = 0; i < length; i++) {
+                if (bytes[i] != buffer.get()) {
+                    return false;
+                }
+            }
+            return true;
+
+        } catch (final UnsupportedEncodingException e) {
+            // Should not happen
+            throw new RuntimeException(e); //NOSONAR
+        } finally {
+            buffer.limit(savedLimit).position(savedPosition);
+            ;
+        }
+    }
+
     public void writeEntryHeader(final ByteBuffer buffer) throws IOException{
             writeEntryHeader(buffer, TarUtils.DEFAULT_ENCODING, false);
     }
@@ -1266,7 +1309,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
 
         final long chk = TarUtils.computeCheckSum(buffer);
 
-        TarUtils.formatCheckSumOctalBytes(chk, buffer, TarConstants.CHKSUM_OFFSET, CHKSUMLEN);
+        TarUtils.formatCheckSumOctalBytes(chk, buffer, CHKSUM_OFFSET, CHKSUMLEN);
 
     }
 
@@ -1279,7 +1322,95 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
             // value doesn't fit into field when written as octal
             // number, will be written to PAX header or causes an
             // error
-            TarUtils.formatLongOctalBytes(0, buffer, length);
+            TarUtils.formatLongOctalBytes(value, buffer, length);
+        }
+    }
+
+    /**
+     * Parse an entry's header information from a header buffer.
+     *
+     * @param buffer The tar entry header buffer to get information from.
+     * @throws IllegalArgumentException if any of the numeric fields have an invalid format
+     */
+    public void parseTarHeader(ByteBuffer buffer) {
+        int savedPos = buffer.position();
+        int savedLimit = buffer.limit();
+        try {
+            parseTarHeader(buffer, TarUtils.DEFAULT_ENCODING);
+        } catch (final IOException ex) {
+            try {
+                buffer.position(savedPos).limit(savedLimit);
+                parseTarHeader(buffer, TarUtils.DEFAULT_ENCODING, true);
+            } catch (final IOException ex2) {
+                // not really possible
+                throw new RuntimeException(ex2); //NOSONAR
+            }
+        }
+    }
+
+    public void parseTarHeader(ByteBuffer buffer, final ZipEncoding encoding) throws IOException {
+        parseTarHeader(buffer, encoding, false);
+    }
+
+    private void parseTarHeader(ByteBuffer buffer, final ZipEncoding encoding,
+        final boolean oldStyle) throws IOException {
+
+        name = oldStyle ? TarUtils.parseName(buffer, NAMELEN)
+            : TarUtils.parseName(buffer, NAMELEN, encoding);
+        mode = (int) TarUtils.parseOctalOrBinary(buffer, MODELEN);
+        userId = (int) TarUtils.parseOctalOrBinary(buffer, UIDLEN);
+        groupId = (int) TarUtils.parseOctalOrBinary(buffer, GIDLEN);
+        size = TarUtils.parseOctalOrBinary(buffer, SIZELEN);
+        modTime = TarUtils.parseOctalOrBinary(buffer, MODTIMELEN);
+        checkSumOK = TarUtils.verifyCheckSum(buffer);
+        buffer.position(CHKSUM_OFFSET + CHKSUMLEN);
+        linkFlag = buffer.get();
+        linkName = oldStyle ? TarUtils.parseName(buffer, NAMELEN)
+            : TarUtils.parseName(buffer, NAMELEN, encoding);
+        magic = TarUtils.parseName(buffer, MAGICLEN);
+        version = TarUtils.parseName(buffer, VERSIONLEN);
+        userName = oldStyle ? TarUtils.parseName(buffer, UNAMELEN)
+            : TarUtils.parseName(buffer, UNAMELEN, encoding);
+        groupName = oldStyle ? TarUtils.parseName(buffer, GNAMELEN)
+            : TarUtils.parseName(buffer, GNAMELEN, encoding);
+        devMajor = (int) TarUtils.parseOctalOrBinary(buffer, DEVLEN);
+        devMinor = (int) TarUtils.parseOctalOrBinary(buffer, DEVLEN);
+
+        final int type = evaluateType(buffer);
+        switch (type) {
+            case FORMAT_OLDGNU: {
+                buffer.position(buffer.position() + ATIMELEN_GNU);
+                buffer.position(buffer.position() + CTIMELEN_GNU);
+                buffer.position(buffer.position() + OFFSETLEN_GNU);
+                buffer.position(buffer.position() + LONGNAMESLEN_GNU);
+                buffer.position(buffer.position() + PAD2LEN_GNU);
+                buffer.position(buffer.position() + SPARSELEN_GNU);
+                isExtended = TarUtils.parseBoolean(buffer);
+                buffer.position(buffer.position() + ISEXTENDEDLEN_GNU);
+                realSize = TarUtils.parseOctal(buffer, REALSIZELEN_GNU);
+                break;
+            }
+            case FORMAT_XSTAR: {
+                final String xstarPrefix = oldStyle ? TarUtils.parseName(buffer, PREFIXLEN_XSTAR)
+                    : TarUtils.parseName(buffer, PREFIXLEN_XSTAR, encoding);
+                if (xstarPrefix.length() > 0) {
+                    name = xstarPrefix + "/" + name;
+                }
+                break;
+            }
+            case FORMAT_POSIX:
+            default: {
+                final String prefix = oldStyle ? TarUtils.parseName(buffer, PREFIXLEN)
+                    : TarUtils.parseName(buffer, PREFIXLEN, encoding);
+                // SunOS tar -E does not add / to directory names, so fix
+                // up to be consistent
+                if (isDirectory() && !name.endsWith("/")) {
+                    name = name + "/";
+                }
+                if (prefix.length() > 0) {
+                    name = prefix + "/" + name;
+                }
+            }
         }
     }
 

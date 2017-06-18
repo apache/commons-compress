@@ -174,6 +174,10 @@ public class TarArchiveEntryTest implements TarConstants {
         assertEquals(0,buffer.remaining());
         TarArchiveEntry entryDecoded = new TarArchiveEntry(tmp);
         validateEntry(entry, entryDecoded);
+        buffer.position(0);
+        entryDecoded = new TarArchiveEntry("a");
+        entryDecoded.parseTarHeader(buffer);
+        validateEntry(entry,entryDecoded);
 
     }
     @Test
