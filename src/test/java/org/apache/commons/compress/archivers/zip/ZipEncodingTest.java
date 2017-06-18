@@ -180,8 +180,9 @@ public class ZipEncodingTest {
         assertFalse(enc.canEncode(UNENC_STRING));
         assertEquals("%U2016".getBytes(CharsetNames.US_ASCII), enc.encode(UNENC_STRING));
         assertFalse(enc.canEncode(BAD_STRING));
-        assertEquals(BAD_STRING_ENC.getBytes(CharsetNames.US_ASCII),
-                     enc.encode(BAD_STRING));
+        byte[] expected = BAD_STRING_ENC.getBytes(CharsetNames.US_ASCII);
+        ByteBuffer actual = enc.encode(BAD_STRING);
+        assertEquals(expected, actual);
     }
 
 }
