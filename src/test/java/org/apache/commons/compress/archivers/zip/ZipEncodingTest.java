@@ -27,7 +27,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import org.apache.commons.compress.utils.CharsetNames;
 import org.hamcrest.core.IsInstanceOf;
 import org.junit.Assert;
 import org.junit.Test;
@@ -75,6 +74,13 @@ public class ZipEncodingTest {
     @Test
     public void testSimpleCp850Encoding() throws IOException {
         doSimpleEncodingsTest(850);
+    }
+
+
+    @Test
+    public void testEbcidic() throws IOException {
+
+        doSimpleEncodingTest("IBM1047", null);
     }
 
 
@@ -178,11 +184,10 @@ public class ZipEncodingTest {
         assertEquals(testBytes, encoded);
 
         assertFalse(enc.canEncode(UNENC_STRING));
-        assertEquals("%U2016".getBytes(CharsetNames.US_ASCII), enc.encode(UNENC_STRING));
+        assertEquals("%U2016".getBytes(name), enc.encode(UNENC_STRING));
         assertFalse(enc.canEncode(BAD_STRING));
-        byte[] expected = BAD_STRING_ENC.getBytes(CharsetNames.US_ASCII);
-        ByteBuffer actual = enc.encode(BAD_STRING);
-        assertEquals(expected, actual);
+        assertEquals(BAD_STRING_ENC.getBytes(name), enc.encode(BAD_STRING));
+        assertEquals(BAD_STRING_ENC.getBytes(name), enc.encode(BAD_STRING));
     }
 
 }
