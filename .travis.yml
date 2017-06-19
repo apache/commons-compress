@@ -24,6 +24,7 @@ jdk:
 cache:
   directories:
     - $HOME/.m2
-
+script:
+   - mvn clean apache-rat:check test jacoco:report
 after_success:
-  - mvn clean apache-rat:check test jacoco:report coveralls:report -Ptravis-jacoco
+  - mvn coveralls:report -Ptravis-jacoco
