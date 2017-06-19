@@ -15,8 +15,6 @@
 
 language: java
 sudo: false
-dist: trusty
-group: edge
 
 install: true
 
@@ -32,4 +30,3 @@ cache:
     - $HOME/.m2
 script:
    - MAVEN_OPTS="-Xmx1024m -Xms1024m -verbosegc" mvn apache-rat:check test jacoco:report coveralls:report -Ptravis-jacoco
-after_success:
