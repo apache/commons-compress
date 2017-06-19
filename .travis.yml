@@ -21,7 +21,7 @@ addons:
     packages:
       - openjdk-7-jdk
 env:
-  - MAVEN_OPTS=-Xmx512m
+  - MAVEN_OPTS=-Xmx1024m -verbosegc
 jdk:
   - openjdk7
   - oraclejdk8
