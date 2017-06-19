@@ -28,29 +28,6 @@ import org.apache.commons.compress.utils.Charsets;
  */
 public abstract class ZipEncodingHelper {
 
-    /**
-     * Grow a byte buffer, so it has a minimal capacity or at least
-     * the double capacity of the original buffer
-     *
-     * @param b The original buffer.
-     * @param newCapacity The minimal requested new capacity.
-     * @return A byte buffer <code>r</code> with
-     *         <code>r.capacity() = max(b.capacity()*2,newCapacity)</code> and
-     *         all the data contained in <code>b</code> copied to the beginning
-     *         of <code>r</code>.
-     *
-     */
-    static ByteBuffer growBuffer(final ByteBuffer b, final int newCapacity) {
-        b.limit(b.position());
-        b.rewind();
-
-        final int c2 = b.capacity() * 2;
-        final ByteBuffer on = ByteBuffer.allocate(c2 < newCapacity ? newCapacity : c2);
-
-        on.put(b);
-        return on;
-    }
-
 
     /**
      * The hexadecimal digits <code>0,...,9,A,...,F</code> encoded as
@@ -61,24 +38,6 @@ public abstract class ZipEncodingHelper {
         0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x41,
         0x42, 0x43, 0x44, 0x45, 0x46
     };
-
-    /**
-     * Append <code>%Uxxxx</code> to the given byte buffer.
-     * The caller must assure, that <code>bb.remaining()&gt;=6</code>.
-     *
-     * @param bb The byte buffer to write to.
-     * @param c The character to write.
-     */
-    static void appendSurrogate(final ByteBuffer bb, final char c) {
-
-        bb.put((byte) '%');
-        bb.put((byte) 'U');
-
-        bb.put(HEX_DIGITS[(c >> 12)&0x0f]);
-        bb.put(HEX_DIGITS[(c >> 8)&0x0f]);
-        bb.put(HEX_DIGITS[(c >> 4)&0x0f]);
-        bb.put(HEX_DIGITS[c & 0x0f]);
-    }
 
 
     /**
