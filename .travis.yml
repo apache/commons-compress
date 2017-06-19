@@ -14,7 +14,7 @@
 # limitations under the License.
 
 language: java
-sudo: false
+#sudo: false
 dist: trusty
 
 jdk:
