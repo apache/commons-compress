@@ -14,9 +14,10 @@
 # limitations under the License.
 
 language: java
-#sudo: false
+sudo: false
 dist: trusty
-
+env:
+  - MAVEN_OPTS=-Xmx512m
 jdk:
   - openjdk7
   - oraclejdk7
