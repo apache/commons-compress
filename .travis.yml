@@ -16,6 +16,11 @@
 language: java
 sudo: false
 dist: trusty
+addons:
+  apt:
+    packages:
+      - oracle-java7-installer
+      - openjdk-7-jdk
 env:
   - MAVEN_OPTS=-Xmx512m
 jdk:
