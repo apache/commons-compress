@@ -18,10 +18,11 @@ sudo: false
 dist: trusty
 group: edge
 before_install:
-- export MAVEN_OPTS="-Xmx1024m -verbosegc $MAVEN_OPTS"
+- export MAVEN_OPTS="-Xmx1024m -verbosegc"
 
-env:
-  - MAVEN_OPTS=-verbosegc
+before_script:
+- export MAVEN_OPTS="-Xmx1024m -verbosegc"
+
 jdk:
   - openjdk7
   - oraclejdk8
