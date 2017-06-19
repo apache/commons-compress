@@ -15,9 +15,9 @@
 
 language: java
 sudo: false
-  apt:
-    packages:
-      - openjdk-7-jdk
+apt:
+ packages:
+ - openjdk-7-jdk
 dist: trusty
 group: edge
 
