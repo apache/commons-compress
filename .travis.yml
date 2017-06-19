@@ -13,17 +13,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-language: java
 sudo: false
-apt:
- packages:
- - openjdk-7-jdk
+ addons:
+ apt:
+    packages:
+      - openjdk-7-jdk
+language: java
+
 dist: trusty
 group: edge
 
 install: true
 
-addons:
 
 jdk:
   - openjdk7
