@@ -15,16 +15,16 @@
 
 language: java
 sudo: false
+  apt:
+    packages:
+      - openjdk-7-jdk
 dist: trusty
 group: edge
 
 install: true
 
 addons:
-  apt:
-    packages:
-      - openjdk-7-jdk
-      
+
 jdk:
   - openjdk7
   - oraclejdk8
