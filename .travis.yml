@@ -14,21 +14,13 @@
 # limitations under the License.
 
 sudo: false
-addons:
- apt:
-    packages:
-      - openjdk-7-jdk
-
 language: java
 
-dist: trusty
-group: edge
 
 install: true
-
-
 jdk:
   - openjdk7
+  - oraclejdk7
   - oraclejdk8
 
 cache:
