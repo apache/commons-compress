@@ -16,7 +16,6 @@
 language: java
 sudo: false
 dist: trusty
-group: edge
 
 jdk:
   - openjdk7
