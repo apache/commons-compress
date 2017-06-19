@@ -234,6 +234,13 @@ jar, tar, zip, dump, 7z, arj.
             </excludes>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.eluder.coveralls</groupId>
+          <artifactId>coveralls-maven-plugin</artifactId>
+          <configuration>
+            <failOnServiceError>false</failOnServiceError>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>

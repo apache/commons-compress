@@ -27,6 +27,5 @@ cache:
   directories:
     - $HOME/.m2
 script:
-   - mvn  apache-rat:check test jacoco:report -Ptravis-jacoco
+   - mvn apache-rat:check test jacoco:report coveralls:report -Ptravis-jacoco
 after_success:
-  - mvn coveralls:report -Ptravis-jacoco
