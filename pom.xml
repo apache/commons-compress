@@ -196,7 +196,7 @@ jar, tar, zip, dump, 7z, arj.
             <quiet>true</quiet>
             <source>${maven.compiler.source}</source>
             <encoding>${commons.encoding}</encoding>
-            <docEncoding>${commons.docEncoding}</docEncoding>
+            <docencoding>${commons.docEncoding}</docencoding>
             <linksource>true</linksource>
             <links>
               <link>${commons.javadoc.java.link}</link>
@@ -309,7 +309,7 @@ jar, tar, zip, dump, 7z, arj.
           <quiet>true</quiet>
           <source>${maven.compiler.source}</source>
           <encoding>${commons.encoding}</encoding>
-          <docEncoding>${commons.docEncoding}</docEncoding>
+          <docencoding>${commons.docEncoding}</docencoding>
           <linksource>true</linksource>
           <links>
             <link>${commons.javadoc.java.link}</link>
