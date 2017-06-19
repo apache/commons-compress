@@ -14,10 +14,11 @@
 # limitations under the License.
 
 sudo: false
- addons:
+addons:
  apt:
     packages:
       - openjdk-7-jdk
+
 language: java
 
 dist: trusty
