@@ -231,6 +231,7 @@ jar, tar, zip, dump, 7z, arj.
               <exclude>src/test/resources/**</exclude>
               <exclude>.pmd</exclude>
               <exclude>.projectile</exclude>
+              <exclude>.mvn/**</exclude>
             </excludes>
           </configuration>
         </plugin>
