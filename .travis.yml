@@ -16,12 +16,8 @@
 language: java
 sudo: false
 dist: trusty
-addons:
-  apt:
-    packages:
-      - openjdk-7-jdk
 env:
-  - MAVEN_OPTS=-Xmx1024m -verbosegc
+  - MAVEN_OPTS=-verbosegc
 jdk:
   - openjdk7
   - oraclejdk8
