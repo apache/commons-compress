@@ -42,15 +42,10 @@ class NioZipEncoding implements ZipEncoding,HasCharset {
     private static final String REPLACEMENT_STRING = "?";
 
     /**
-     * Construct an NIO based zip encoding, which wraps the given
-     * charset.
-     *
-     * @param charset The NIO charset to wrap.
+     * Construct an NioZipEncoding using the given charset.
+     * @param charset  The character set to use.
+     * @param useReplacement should invalid characters be replaced, or reported.
      */
-    NioZipEncoding(final Charset charset) {
-        this(charset, false);
-    }
-
     NioZipEncoding(final Charset charset, boolean useReplacement) {
         this.charset = charset;
         this.useReplacement = useReplacement;
@@ -148,9 +143,8 @@ class NioZipEncoding implements ZipEncoding,HasCharset {
         }
         CoderResult coderResult = enc.encode(cb, out, true);
 
-        if (!coderResult.isUnderflow()) {
-            throw new RuntimeException("unexpected coder result: " + coderResult);
-        }
+        assert coderResult.isUnderflow() : "unexpected coder result: " + coderResult;
+        
 
         out.limit(out.position());
         out.rewind();
@@ -163,9 +157,7 @@ class NioZipEncoding implements ZipEncoding,HasCharset {
             if (result.isOverflow()) {
                 int increment = estimateIncrementalEncodingSize(enc, cb.remaining());
                 out = ZipEncodingHelper.growBufferBy(out, increment);
-            } else {
-                break;
-            }
+            } 
         }
         return out;
     }
