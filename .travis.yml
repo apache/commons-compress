@@ -29,4 +29,4 @@ cache:
   directories:
     - $HOME/.m2
 script:
-   - MAVEN_OPTS="-Xmx1024m -Xms1024m -verbosegc" mvn apache-rat:check test jacoco:report coveralls:report -Ptravis-jacoco
+   - MAVEN_OPTS="-Xmx1024m -Xms1024m -verbosegc" ./mvnw apache-rat:check test jacoco:report coveralls:report -Ptravis-jacoco
