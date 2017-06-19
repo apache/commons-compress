@@ -20,9 +20,11 @@ group: edge
 
 install: true
 
-before_script:
-- export MAVEN_OPTS="-Xmx1024m -verbosegc"
-
+addons:
+  apt:
+    packages:
+      - openjdk-7-jdk
+      
 jdk:
   - openjdk7
   - oraclejdk8
