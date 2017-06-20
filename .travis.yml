@@ -17,7 +17,6 @@ sudo: false
 language: java
 
 
-install: true
 jdk:
   - openjdk7
   - oraclejdk7
@@ -26,5 +25,12 @@ jdk:
 cache:
   directories:
     - $HOME/.m2
+
+# don't run mvn install before building
+install: true
+
+# do all the building and testing in a single phase, instead of compiling everything three times
+# and running all tests twice.
+
 script:
-   - MAVEN_OPTS="-Xmx1024m -Xms1024m -verbosegc" ./mvnw apache-rat:check test jacoco:report coveralls:report -Ptravis-jacoco
+   - ./mvnw clean apache-rat:check test jacoco:report coveralls:report -Ptravis-jacoco
