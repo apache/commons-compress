@@ -13,8 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-language: java
 sudo: false
+language: java
+
 
 jdk:
   - openjdk7
@@ -25,5 +26,11 @@ cache:
   directories:
     - $HOME/.m2
 
-after_success:
-  - mvn clean apache-rat:check test jacoco:report coveralls:report -Ptravis-jacoco
+# don't run mvn install before building
+install: true
+
+# do all the building and testing in a single phase, instead of compiling everything three times
+# and running all tests twice.
+
+script:
+   - ./mvnw clean apache-rat:check test jacoco:report coveralls:report -Ptravis-jacoco
