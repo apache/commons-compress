@@ -47,28 +47,4 @@ public class BinaryTreeTest {
         assertEquals(6, tree.read(stream));
         assertEquals(7, tree.read(stream));
     }
-    @Test
-    public void testExceptions()  {
-         BinaryTree binaryFinary = new BinaryTree(4);
-         binaryFinary.addLeaf(0,0,0,1);
-        try {
-            binaryFinary.addLeaf(0,0,0,1);
-            fail("should have thrown illegalArgumentException");
-        } catch (IllegalArgumentException e) {
-        }
-
-        InputStream is = new ByteArrayInputStream(new byte[]{});
-        try {
-            BinaryTree.decode(is,0);
-            fail("should have thrown IOException");
-        } catch (IOException e) {
-
-        }
-        binaryFinary = new BinaryTree(4);
-        try {
-            binaryFinary.read(new BitStream(new ByteArrayInputStream(new byte[] {0})));
-            fail("expected read fail");
-        } catch (IOException e) {
-        }
-    }
 }
