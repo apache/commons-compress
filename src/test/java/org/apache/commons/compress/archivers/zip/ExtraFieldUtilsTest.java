@@ -93,18 +93,6 @@ public class ExtraFieldUtilsTest implements UnixStat {
                          e.getMessage());
         }
     }
-    @Test
-    public void testParseCentral() throws Exception {
-        final ZipExtraField[] ze = ExtraFieldUtils.parse(data,false);
-        assertEquals("number of fields", 2, ze.length);
-        assertTrue("type field 1", ze[0] instanceof AsiExtraField);
-        assertEquals("mode field 1", 040755,
-                     ((AsiExtraField) ze[0]).getMode());
-        assertTrue("type field 2", ze[1] instanceof UnrecognizedExtraField);
-        assertEquals("data length field 2", 1,
-                     ze[1].getCentralDirectoryLength().getValue());
-
-    }
 
     @Test
     public void testParseWithRead() throws Exception {
