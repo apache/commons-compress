@@ -624,6 +624,11 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         } catch(IllegalArgumentException e) {
             // expected;
         }
+            System.setProperty("org.apache.commons.compress.archives.tar.allowInvalidRecordSizes","true");
+        try (TarArchiveOutputStream tos = new TarArchiveOutputStream(new ByteArrayOutputStream(),
+            511, 511, null)) {
+        }
+        System.getProperties().remove("org.apache.commons.compress.archives.tar.allowInvalidRecordSizes");
         try (TarArchiveOutputStream tos = new TarArchiveOutputStream(new ByteArrayOutputStream(),
             512, 512)) {
             assertEquals("recordSize",512,tos.getRecordSize());

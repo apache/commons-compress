@@ -63,6 +63,10 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     public static final int BIGNUMBER_POSIX = 2;
     private static final int RECORD_SIZE = 512;
 
+    // property to set to allow invalid record sizes to be used.
+    private static final String ALLOW_INVALID_RECORD_SIZES =
+        "org.apache.commons.compress.archives.tar.allowInvalidRecordSizes";
+
     private long currSize;
     private String currName;
     private long currBytes;
@@ -95,6 +99,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     private static int BLOCK_SIZE_UNSPECIFIED = -511;
 
+    private int recordSize=RECORD_SIZE;
     /**
      * Constructor for TarInputStream.
      * @param os the output stream to use
@@ -150,11 +155,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     @Deprecated
     public TarArchiveOutputStream(final OutputStream os, final int blockSize,
         final int recordSize, final String encoding) {
-        this(os, blockSize, encoding);
-        if (recordSize != RECORD_SIZE) {
-            throw new IllegalArgumentException(
-                "Tar record size must always be 512 bytes. Attempt to set size of " + recordSize);
-        }
+        this(os, blockSize, encoding,recordSize);
 
     }
 
@@ -168,24 +169,37 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      */
     public TarArchiveOutputStream(final OutputStream os, final int blockSize,
         final String encoding) {
+         this(os,blockSize,encoding,RECORD_SIZE);
+    }
+
+    private TarArchiveOutputStream(final OutputStream os, final int blockSize,
+        final String encoding, int recordSize) {
         int realBlockSize;
+
+        if (recordSize != RECORD_SIZE && !Boolean
+            .valueOf(System.getProperty(ALLOW_INVALID_RECORD_SIZES, "false"))) {
+            throw new IllegalArgumentException(
+                "Tar record size must always be 512 bytes. Attempt to set size of " + recordSize);
+        }
+        this.recordSize = recordSize;
+
         if (BLOCK_SIZE_UNSPECIFIED == blockSize) {
-            realBlockSize = RECORD_SIZE;
+            realBlockSize = recordSize;
         } else {
             realBlockSize = blockSize;
         }
 
-        if(realBlockSize <=0 || realBlockSize % RECORD_SIZE != 0) {
-            throw new IllegalArgumentException("Block size must be a multiple of 512 bytes. Attempt to use set size of " + blockSize);
+        if(realBlockSize <=0 || realBlockSize % recordSize != 0) {
+            throw new IllegalArgumentException("Block size must be a multiple of recordSize . Attempt to set size of " + blockSize);
         }
         out = new CountingOutputStream(os);
         this.encoding = encoding;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
 
         this.assemLen = 0;
-        this.assemBuf = new byte[RECORD_SIZE];
-        this.recordBuf = new byte[RECORD_SIZE];
-        this.recordsPerBlock = realBlockSize / RECORD_SIZE;
+        this.assemBuf = new byte[recordSize];
+        this.recordBuf = new byte[recordSize];
+        this.recordsPerBlock = realBlockSize / recordSize;
     }
 
     /**
@@ -280,7 +294,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      */
     @Deprecated
     public int getRecordSize() {
-        return RECORD_SIZE;
+        return recordSize;
     }
 
     /**
@@ -566,11 +580,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * @throws IOException on error
      */
     private void writeRecord(final byte[] record) throws IOException {
-        if (record.length != RECORD_SIZE) {
+        if (record.length != recordSize) {
             throw new IOException("record to write has length '"
                 + record.length
                 + "' which is not the record size of '"
-                + RECORD_SIZE + "'");
+                + recordSize + "'");
         }
 
         out.write(record);
@@ -588,14 +602,14 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      */
     private void writeRecord(final byte[] buf, final int offset) throws IOException {
 
-        if (offset + RECORD_SIZE > buf.length) {
+        if (offset + recordSize > buf.length) {
             throw new IOException("record has length '" + buf.length
                 + "' with offset '" + offset
                 + "' which is less than the record size of '"
-                + RECORD_SIZE + "'");
+                + recordSize + "'");
         }
 
-        out.write(buf, offset, RECORD_SIZE);
+        out.write(buf, offset, recordSize);
         recordsWritten++;
     }
 
