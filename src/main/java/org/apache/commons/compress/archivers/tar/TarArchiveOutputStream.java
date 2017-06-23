@@ -33,6 +33,8 @@ import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.CountingOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The TarOutputStream writes a UNIX tar archive as an OutputStream.
@@ -41,6 +43,9 @@ import org.apache.commons.compress.utils.CountingOutputStream;
  * @NotThreadSafe
  */
 public class TarArchiveOutputStream extends ArchiveOutputStream {
+
+    private static Logger logger = LoggerFactory.getLogger(TarArchiveOutputStream.class);
+
     /** Fail if a long file name is required in the archive. */
     public static final int LONGFILE_ERROR = 0;
 
@@ -61,18 +66,18 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     /** POSIX/PAX extensions are used to store big numbers in the archive. */
     public static final int BIGNUMBER_POSIX = 2;
+    private static final int RECORD_SIZE = 512;
 
-    private long      currSize;
-    private String    currName;
-    private long      currBytes;
-    private final byte[]    recordBuf;
-    private int       assemLen;
-    private final byte[]    assemBuf;
-    private int       longFileMode = LONGFILE_ERROR;
-    private int       bigNumberMode = BIGNUMBER_ERROR;
+    private long currSize;
+    private String currName;
+    private long currBytes;
+    private final byte[] recordBuf;
+    private int assemLen;
+    private final byte[] assemBuf;
+    private int longFileMode = LONGFILE_ERROR;
+    private int bigNumberMode = BIGNUMBER_ERROR;
     private int recordsWritten;
     private final int recordsPerBlock;
-    private final int recordSize;
 
     private boolean closed = false;
 
@@ -93,12 +98,15 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     private static final ZipEncoding ASCII =
         ZipEncodingHelper.getZipEncoding("ASCII");
 
+    private static int BLOCK_SIZE_UNSPECIFIED = -511;
+
+    private int recordSize = RECORD_SIZE;
     /**
      * Constructor for TarInputStream.
      * @param os the output stream to use
      */
     public TarArchiveOutputStream(final OutputStream os) {
-        this(os, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE);
+        this(os, BLOCK_SIZE_UNSPECIFIED);
     }
 
     /**
@@ -108,50 +116,86 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * @since 1.4
      */
     public TarArchiveOutputStream(final OutputStream os, final String encoding) {
-        this(os, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, encoding);
+        this(os, BLOCK_SIZE_UNSPECIFIED, encoding);
     }
 
     /**
      * Constructor for TarInputStream.
      * @param os the output stream to use
-     * @param blockSize the block size to use
+     * @param blockSize the block size to use. Must be a multiple of 512 bytes.
      */
     public TarArchiveOutputStream(final OutputStream os, final int blockSize) {
-        this(os, blockSize, TarConstants.DEFAULT_RCDSIZE);
+        this(os, blockSize, null);
     }
+
 
     /**
      * Constructor for TarInputStream.
      * @param os the output stream to use
      * @param blockSize the block size to use
-     * @param encoding name of the encoding to use for file names
-     * @since 1.4
+     * @param recordSize the record size to use. Must be 512 bytes.
+     * @deprecated recordSize must always be 512 bytes. An IllegalArgumentException will be thrown
+     * if any other value is used
      */
+    @Deprecated
     public TarArchiveOutputStream(final OutputStream os, final int blockSize,
-                                  final String encoding) {
-        this(os, blockSize, TarConstants.DEFAULT_RCDSIZE, encoding);
-    }
-
-    /**
-     * Constructor for TarInputStream.
-     * @param os the output stream to use
-     * @param blockSize the block size to use
-     * @param recordSize the record size to use
-     */
-    public TarArchiveOutputStream(final OutputStream os, final int blockSize, final int recordSize) {
+        final int recordSize) {
         this(os, blockSize, recordSize, null);
     }
 
     /**
      * Constructor for TarInputStream.
      * @param os the output stream to use
-     * @param blockSize the block size to use
-     * @param recordSize the record size to use
+     * @param blockSize the block size to use . Must be a multiple of 512 bytes.
+     * @param recordSize the record size to use. Must be 512 bytes.
+     * @param encoding name of the encoding to use for file names
+     * @since 1.4
+     * @deprecated recordSize must always be 512 bytes. An IllegalArgumentException will be thrown
+     * if any other value is used.
+     */
+    @Deprecated
+    public TarArchiveOutputStream(final OutputStream os, final int blockSize,
+        final int recordSize, final String encoding) {
+        this(os, blockSize, encoding,recordSize);
+    }
+
+    /**
+     * Constructor for TarInputStream.
+     *
+     * @param os the output stream to use
+     * @param blockSize the block size to use. Must be a multiple of 512 bytes.
      * @param encoding name of the encoding to use for file names
      * @since 1.4
      */
     public TarArchiveOutputStream(final OutputStream os, final int blockSize,
-                                  final int recordSize, final String encoding) {
+        final String encoding) {
+        this(os, blockSize, encoding, RECORD_SIZE);
+    }
+
+    private TarArchiveOutputStream(final OutputStream os, final int blockSize,
+        final String encoding, int recordSize) {
+        if (recordSize != RECORD_SIZE) {
+            logger.warn("{}", String.format(
+                "An invalid record size of %,d bytes has been requested. Tar records  should always be "
+                    + "512 bytes in length. The invalid size will be used - however the tar file may not be "
+                    + " usable unless the invalid record size is known and the extracting tool or library supports "
+                    + "setting invalid record sizes.",
+                recordSize));
+            this.recordSize = recordSize;
+        }
+
+        int realBlockSize;
+        if (BLOCK_SIZE_UNSPECIFIED == blockSize) {
+            realBlockSize = recordSize;
+        } else {
+            realBlockSize = blockSize;
+        }
+
+        if (realBlockSize <= 0 || realBlockSize % recordSize != 0) {
+            throw new IllegalArgumentException(
+                "Block size must be a multiple of record size. Attempt to  set size of "
+                    + blockSize);
+        }
         out = new CountingOutputStream(os);
         this.encoding = encoding;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
@@ -159,8 +203,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         this.assemLen = 0;
         this.assemBuf = new byte[recordSize];
         this.recordBuf = new byte[recordSize];
-        this.recordSize = recordSize;
-        this.recordsPerBlock = blockSize / recordSize;
+        this.recordsPerBlock = realBlockSize / recordSize;
     }
 
     /**
@@ -208,11 +251,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     /**
      * Ends the TAR archive without closing the underlying OutputStream.
-     * 
+     *
      * An archive consists of a series of file entries terminated by an
-     * end-of-archive entry, which consists of two 512 blocks of zero bytes. 
+     * end-of-archive entry, which consists of two 512 blocks of zero bytes.
      * POSIX.1 requires two EOF records, like some other implementations.
-     * 
+     *
      * @throws IOException on error
      */
     @Override
@@ -251,9 +294,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * Get the record size being used by this stream's TarBuffer.
      *
      * @return The TarBuffer record size.
+     * @deprecated
      */
+    @Deprecated
     public int getRecordSize() {
-        return this.recordSize;
+        return recordSize;
     }
 
     /**
@@ -278,12 +323,12 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         final Map<String, String> paxHeaders = new HashMap<>();
         final String entryName = entry.getName();
         final boolean paxHeaderContainsPath = handleLongName(entry, entryName, paxHeaders, "path",
-                                                       TarConstants.LF_GNUTYPE_LONGNAME, "file name");
+            TarConstants.LF_GNUTYPE_LONGNAME, "file name");
 
         final String linkName = entry.getLinkName();
         final boolean paxHeaderContainsLinkPath = linkName != null && linkName.length() > 0
             && handleLongName(entry, linkName, paxHeaders, "linkpath",
-                              TarConstants.LF_GNUTYPE_LONGLINK, "link name");
+            TarConstants.LF_GNUTYPE_LONGLINK, "link name");
 
         if (bigNumberMode == BIGNUMBER_POSIX) {
             addPaxHeadersForBigNumbers(paxHeaders, entry);
@@ -307,7 +352,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         }
 
         entry.writeEntryHeader(recordBuf, zipEncoding,
-                               bigNumberMode == BIGNUMBER_STAR);
+            bigNumberMode == BIGNUMBER_STAR);
         writeRecord(recordBuf);
 
         currBytes = 0;
@@ -336,7 +381,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         if (finished) {
             throw new IOException("Stream has already been finished");
         }
-        if (!haveUnclosedEntry){
+        if (!haveUnclosedEntry) {
             throw new IOException("No current entry to close");
         }
         if (assemLen > 0) {
@@ -352,9 +397,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
         if (currBytes < currSize) {
             throw new IOException("entry '" + currName + "' closed at '"
-                                  + currBytes
-                                  + "' before the '" + currSize
-                                  + "' bytes specified in the header were written");
+                + currBytes
+                + "' before the '" + currSize
+                + "' bytes specified in the header were written");
         }
         haveUnclosedEntry = false;
     }
@@ -380,9 +425,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         }
         if (currBytes + numToWrite > currSize) {
             throw new IOException("request to write '" + numToWrite
-                                  + "' bytes exceeds size in header of '"
-                                  + currSize + "' bytes for entry '"
-                                  + currName + "'");
+                + "' bytes exceeds size in header of '"
+                + currSize + "' bytes for entry '"
+                + currName + "'");
 
             //
             // We have to deal with assembly!!!
@@ -398,9 +443,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 final int aLen = recordBuf.length - assemLen;
 
                 System.arraycopy(assemBuf, 0, recordBuf, 0,
-                                 assemLen);
+                    assemLen);
                 System.arraycopy(wBuf, wOffset, recordBuf,
-                                 assemLen, aLen);
+                    assemLen, aLen);
                 writeRecord(recordBuf);
 
                 currBytes += recordBuf.length;
@@ -409,7 +454,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 assemLen = 0;
             } else {
                 System.arraycopy(wBuf, wOffset, assemBuf, assemLen,
-                                 numToWrite);
+                    numToWrite);
 
                 wOffset += numToWrite;
                 assemLen += numToWrite;
@@ -425,7 +470,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         while (numToWrite > 0) {
             if (numToWrite < recordBuf.length) {
                 System.arraycopy(wBuf, wOffset, assemBuf, assemLen,
-                                 numToWrite);
+                    numToWrite);
 
                 assemLen += numToWrite;
 
@@ -447,14 +492,14 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * @since 1.4
      */
     void writePaxHeaders(final TarArchiveEntry entry,
-                         final String entryName,
-                         final Map<String, String> headers) throws IOException {
+        final String entryName,
+        final Map<String, String> headers) throws IOException {
         String name = "./PaxHeaders.X/" + stripTo7Bits(entryName);
         if (name.length() >= TarConstants.NAMELEN) {
             name = name.substring(0, TarConstants.NAMELEN - 1);
         }
         final TarArchiveEntry pex = new TarArchiveEntry(name,
-                                                  TarConstants.LF_PAX_EXTENDED_HEADER_LC);
+            TarConstants.LF_PAX_EXTENDED_HEADER_LC);
         transferModTime(entry, pex);
 
         final StringWriter w = new StringWriter();
@@ -500,8 +545,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * @return true if the character could lead to problems when used
-     * inside a TarArchiveEntry name for a PAX header.
+     * @return true if the character could lead to problems when used inside a TarArchiveEntry name
+     * for a PAX header.
      */
     private boolean shouldBeReplaced(final char c) {
         return c == 0 // would be read as Trailing null
@@ -510,8 +555,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Write an EOF (end of archive) record to the tar archive.
-     * An EOF record consists of a record of all zeros.
+     * Write an EOF (end of archive) record to the tar archive. An EOF record consists of a record
+     * of all zeros.
      */
     private void writeEOFRecord() throws IOException {
         Arrays.fill(recordBuf, (byte) 0);
@@ -525,13 +570,13 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     @Override
     public ArchiveEntry createArchiveEntry(final File inputFile, final String entryName)
-            throws IOException {
-        if(finished) {
+        throws IOException {
+        if (finished) {
             throw new IOException("Stream has already been finished");
         }
         return new TarArchiveEntry(inputFile, entryName);
     }
-    
+
     /**
      * Write an archive record to the archive.
      *
@@ -541,15 +586,15 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     private void writeRecord(final byte[] record) throws IOException {
         if (record.length != recordSize) {
             throw new IOException("record to write has length '"
-                                  + record.length
-                                  + "' which is not the record size of '"
-                                  + recordSize + "'");
+                + record.length
+                + "' which is not the record size of '"
+                + recordSize + "'");
         }
 
         out.write(record);
         recordsWritten++;
     }
-    
+
     /**
      * Write an archive record to the archive, where the record may be
      * inside of a larger array buffer. The buffer must be "offset plus
@@ -560,12 +605,12 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * @throws IOException on error
      */
     private void writeRecord(final byte[] buf, final int offset) throws IOException {
- 
+
         if (offset + recordSize > buf.length) {
             throw new IOException("record has length '" + buf.length
-                                  + "' with offset '" + offset
-                                  + "' which is less than the record size of '"
-                                  + recordSize + "'");
+                + "' with offset '" + offset
+                + "' which is less than the record size of '"
+                + recordSize + "'");
         }
 
         out.write(buf, offset, recordSize);
@@ -582,28 +627,28 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     private void addPaxHeadersForBigNumbers(final Map<String, String> paxHeaders,
-                                            final TarArchiveEntry entry) {
+        final TarArchiveEntry entry) {
         addPaxHeaderForBigNumber(paxHeaders, "size", entry.getSize(),
-                                 TarConstants.MAXSIZE);
+            TarConstants.MAXSIZE);
         addPaxHeaderForBigNumber(paxHeaders, "gid", entry.getLongGroupId(),
-                                 TarConstants.MAXID);
+            TarConstants.MAXID);
         addPaxHeaderForBigNumber(paxHeaders, "mtime",
-                                 entry.getModTime().getTime() / 1000,
-                                 TarConstants.MAXSIZE);
+            entry.getModTime().getTime() / 1000,
+            TarConstants.MAXSIZE);
         addPaxHeaderForBigNumber(paxHeaders, "uid", entry.getLongUserId(),
-                                 TarConstants.MAXID);
+            TarConstants.MAXID);
         // star extensions by J\u00f6rg Schilling
         addPaxHeaderForBigNumber(paxHeaders, "SCHILY.devmajor",
-                                 entry.getDevMajor(), TarConstants.MAXID);
+            entry.getDevMajor(), TarConstants.MAXID);
         addPaxHeaderForBigNumber(paxHeaders, "SCHILY.devminor",
-                                 entry.getDevMinor(), TarConstants.MAXID);
+            entry.getDevMinor(), TarConstants.MAXID);
         // there is no PAX header for file mode
         failForBigNumber("mode", entry.getMode(), TarConstants.MAXID);
     }
 
     private void addPaxHeaderForBigNumber(final Map<String, String> paxHeaders,
-                                          final String header, final long value,
-                                          final long maxValue) {
+        final String header, final long value,
+        final long maxValue) {
         if (value < 0 || value > maxValue) {
             paxHeaders.put(header, String.valueOf(value));
         }
@@ -613,29 +658,32 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         failForBigNumber("entry size", entry.getSize(), TarConstants.MAXSIZE);
         failForBigNumberWithPosixMessage("group id", entry.getLongGroupId(), TarConstants.MAXID);
         failForBigNumber("last modification time",
-                         entry.getModTime().getTime() / 1000,
-                         TarConstants.MAXSIZE);
+            entry.getModTime().getTime() / 1000,
+            TarConstants.MAXSIZE);
         failForBigNumber("user id", entry.getLongUserId(), TarConstants.MAXID);
         failForBigNumber("mode", entry.getMode(), TarConstants.MAXID);
         failForBigNumber("major device number", entry.getDevMajor(),
-                         TarConstants.MAXID);
+            TarConstants.MAXID);
         failForBigNumber("minor device number", entry.getDevMinor(),
-                         TarConstants.MAXID);
+            TarConstants.MAXID);
     }
 
     private void failForBigNumber(final String field, final long value, final long maxValue) {
         failForBigNumber(field, value, maxValue, "");
     }
 
-    private void failForBigNumberWithPosixMessage(final String field, final long value, final long maxValue) {
-        failForBigNumber(field, value, maxValue, " Use STAR or POSIX extensions to overcome this limit");
+    private void failForBigNumberWithPosixMessage(final String field, final long value,
+        final long maxValue) {
+        failForBigNumber(field, value, maxValue,
+            " Use STAR or POSIX extensions to overcome this limit");
     }
 
-    private void failForBigNumber(final String field, final long value, final long maxValue, final String additionalMsg) {
+    private void failForBigNumber(final String field, final long value, final long maxValue,
+        final String additionalMsg) {
         if (value < 0 || value > maxValue) {
             throw new RuntimeException(field + " '" + value //NOSONAR
-                    + "' is too big ( > "
-                    + maxValue + " )." + additionalMsg);
+                + "' is too big ( > "
+                + maxValue + " )." + additionalMsg);
         }
     }
 
@@ -661,9 +709,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * @param fieldName the name of the field
      * @return whether a pax header has been written.
      */
-    private boolean handleLongName(final TarArchiveEntry entry , final String name,
-                                   final Map<String, String> paxHeaders,
-                                   final String paxHeaderName, final byte linkType, final String fieldName)
+    private boolean handleLongName(final TarArchiveEntry entry, final String name,
+        final Map<String, String> paxHeaders,
+        final String paxHeaderName, final byte linkType, final String fieldName)
         throws IOException {
         final ByteBuffer encodedName = zipEncoding.encode(name);
         final int len = encodedName.limit() - encodedName.position();
@@ -675,7 +723,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             } else if (longFileMode == LONGFILE_GNU) {
                 // create a TarEntry for the LongLink, the contents
                 // of which are the link's name
-                final TarArchiveEntry longLinkEntry = new TarArchiveEntry(TarConstants.GNU_LONGLINK, linkType);
+                final TarArchiveEntry longLinkEntry = new TarArchiveEntry(TarConstants.GNU_LONGLINK,
+                    linkType);
 
                 longLinkEntry.setSize(len + 1l); // +1 for NUL
                 transferModTime(entry, longLinkEntry);
@@ -685,8 +734,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 closeArchiveEntry();
             } else if (longFileMode != LONGFILE_TRUNCATE) {
                 throw new RuntimeException(fieldName + " '" + name //NOSONAR
-                                           + "' is too long ( > "
-                                           + TarConstants.NAMELEN + " bytes)");
+                    + "' is too long ( > "
+                    + TarConstants.NAMELEN + " bytes)");
             }
         }
         return false;
