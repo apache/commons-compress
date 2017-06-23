@@ -33,6 +33,8 @@ import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.CountingOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The TarOutputStream writes a UNIX tar archive as an OutputStream.
@@ -41,6 +43,9 @@ import org.apache.commons.compress.utils.CountingOutputStream;
  * @NotThreadSafe
  */
 public class TarArchiveOutputStream extends ArchiveOutputStream {
+
+    private static Logger logger = LoggerFactory.getLogger(TarArchiveOutputStream.class);
+
     /** Fail if a long file name is required in the archive. */
     public static final int LONGFILE_ERROR = 0;
 
@@ -95,6 +100,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     private static int BLOCK_SIZE_UNSPECIFIED = -511;
 
+    private int recordSize = RECORD_SIZE;
     /**
      * Constructor for TarInputStream.
      * @param os the output stream to use
@@ -150,12 +156,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     @Deprecated
     public TarArchiveOutputStream(final OutputStream os, final int blockSize,
         final int recordSize, final String encoding) {
-        this(os, blockSize, encoding);
-        if (recordSize != RECORD_SIZE) {
-            throw new IllegalArgumentException(
-                "Tar record size must always be 512 bytes. Attempt to set size of " + recordSize);
-        }
-
+        this(os, blockSize, encoding,recordSize);
     }
 
     /**
@@ -168,24 +169,41 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      */
     public TarArchiveOutputStream(final OutputStream os, final int blockSize,
         final String encoding) {
+        this(os, blockSize, encoding, RECORD_SIZE);
+    }
+
+    private TarArchiveOutputStream(final OutputStream os, final int blockSize,
+        final String encoding, int recordSize) {
+        if (recordSize != RECORD_SIZE) {
+            logger.warn("{}", String.format(
+                "An invalid record size of %,d bytes has been requested. Tar records  should always be "
+                    + "512 bytes in length. The invalid size will be used - however the tar file may not be "
+                    + " usable unless the invalid record size is known and the extracting tool or library supports "
+                    + "setting invalid record sizes.",
+                recordSize));
+            this.recordSize = recordSize;
+        }
+
         int realBlockSize;
         if (BLOCK_SIZE_UNSPECIFIED == blockSize) {
-            realBlockSize = RECORD_SIZE;
+            realBlockSize = recordSize;
         } else {
             realBlockSize = blockSize;
         }
 
-        if(realBlockSize <=0 || realBlockSize % RECORD_SIZE != 0) {
-            throw new IllegalArgumentException("Block size must be a multiple of 512 bytes. Attempt to use set size of " + blockSize);
+        if (realBlockSize <= 0 || realBlockSize % recordSize != 0) {
+            throw new IllegalArgumentException(
+                "Block size must be a multiple of record size. Attempt to  set size of "
+                    + blockSize);
         }
         out = new CountingOutputStream(os);
         this.encoding = encoding;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
 
         this.assemLen = 0;
-        this.assemBuf = new byte[RECORD_SIZE];
-        this.recordBuf = new byte[RECORD_SIZE];
-        this.recordsPerBlock = realBlockSize / RECORD_SIZE;
+        this.assemBuf = new byte[recordSize];
+        this.recordBuf = new byte[recordSize];
+        this.recordsPerBlock = realBlockSize / recordSize;
     }
 
     /**
@@ -280,7 +298,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      */
     @Deprecated
     public int getRecordSize() {
-        return RECORD_SIZE;
+        return recordSize;
     }
 
     /**
@@ -566,11 +584,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * @throws IOException on error
      */
     private void writeRecord(final byte[] record) throws IOException {
-        if (record.length != RECORD_SIZE) {
+        if (record.length != recordSize) {
             throw new IOException("record to write has length '"
                 + record.length
                 + "' which is not the record size of '"
-                + RECORD_SIZE + "'");
+                + recordSize + "'");
         }
 
         out.write(record);
@@ -588,14 +606,14 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      */
     private void writeRecord(final byte[] buf, final int offset) throws IOException {
 
-        if (offset + RECORD_SIZE > buf.length) {
+        if (offset + recordSize > buf.length) {
             throw new IOException("record has length '" + buf.length
                 + "' with offset '" + offset
                 + "' which is less than the record size of '"
-                + RECORD_SIZE + "'");
+                + recordSize + "'");
         }
 
-        out.write(buf, offset, RECORD_SIZE);
+        out.write(buf, offset, recordSize);
         recordsWritten++;
     }
 

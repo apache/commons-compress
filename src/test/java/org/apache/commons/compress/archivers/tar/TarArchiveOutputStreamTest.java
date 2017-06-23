@@ -608,31 +608,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         tin.close();
     }
 
-    @SuppressWarnings("deprecation")
-    @Test public void testRecordSize() throws IOException {
-        try {
-            TarArchiveOutputStream tos =
-                new TarArchiveOutputStream(new ByteArrayOutputStream(),512,511);
-            fail("should have rejected recordSize of 511");
-        } catch(IllegalArgumentException e) {
-            // expected;
-        }
-        try {
-            TarArchiveOutputStream tos =
-                new TarArchiveOutputStream(new ByteArrayOutputStream(),512,511,null);
-            fail("should have rejected recordSize of 511");
-        } catch(IllegalArgumentException e) {
-            // expected;
-        }
-        try (TarArchiveOutputStream tos = new TarArchiveOutputStream(new ByteArrayOutputStream(),
-            512, 512)) {
-            assertEquals("recordSize",512,tos.getRecordSize());
-        }
-        try (TarArchiveOutputStream tos = new TarArchiveOutputStream(new ByteArrayOutputStream(),
-            512, 512, null)) {
-            assertEquals("recordSize",512,tos.getRecordSize());
-        }
-    }
+
     @Test
     public void testBlockSizes() throws Exception {
         String fileName = "/test1.xml";
