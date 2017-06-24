@@ -760,7 +760,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
             final Zip64ExtendedInformationExtraField z64 = getZip64Extra(entry.entry);
 
-            ZipEightByteInteger size, compressedSize;
+            ZipEightByteInteger size;
+            ZipEightByteInteger compressedSize;
             if (phased) {
                 // sizes are already known
                 size = new ZipEightByteInteger(entry.entry.getSize());

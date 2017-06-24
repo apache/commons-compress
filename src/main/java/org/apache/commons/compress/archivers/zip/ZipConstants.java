@@ -23,8 +23,6 @@ package org.apache.commons.compress.archivers.zip;
  * @since 1.3
  */
 final class ZipConstants {
-    private ZipConstants() { }
-
     /** Masks last eight bits */
     static final int BYTE_MASK = 0xFF;
 
@@ -63,5 +61,7 @@ final class ZipConstants {
      * extensions are used.
      */
     static final long ZIP64_MAGIC = 0xFFFFFFFFL;
+
+    private ZipConstants() { }
 
 }
