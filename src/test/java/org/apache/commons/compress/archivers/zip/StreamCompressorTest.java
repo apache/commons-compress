@@ -17,14 +17,18 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.junit.Test;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 public class StreamCompressorTest {
 
@@ -54,5 +58,14 @@ public class StreamCompressorTest {
         final byte[] expected = new byte[]{115,116,4,1,39,48,0,0};
         // Note that this test really asserts stuff about the java Deflater, which might be a little bit brittle
         assertArrayEquals(expected, actuals);
+    }
+
+    @Test
+    public void testCreateDataOutputCompressor() throws IOException {
+        DataOutput dataOutputStream = new DataOutputStream(new ByteArrayOutputStream());
+        try (StreamCompressor streamCompressor = StreamCompressor
+            .create(dataOutputStream, new Deflater(9))) {
+            assertNotNull(streamCompressor);
+        }
     }
 }
