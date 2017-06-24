@@ -132,8 +132,10 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      */
     @Override
     public ZipShort getLocalFileDataLength() {
-        final int uidSize = trimLeadingZeroesForceMinLength(uid.toByteArray()).length;
-        final int gidSize = trimLeadingZeroesForceMinLength(gid.toByteArray()).length;
+        byte[] b = trimLeadingZeroesForceMinLength(uid.toByteArray());
+        final int uidSize = b == null ? 0 : b.length;
+        b = trimLeadingZeroesForceMinLength(gid.toByteArray());
+        final int gidSize = b == null ? 0 : b.length;
 
         // The 3 comes from:  version=1 + uidsize=1 + gidsize=1
         return new ZipShort(3 + uidSize + gidSize);
@@ -165,26 +167,36 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
         // (e.g., so that the sign-bit is set to zero).  We need to remove that
         // before sending the number over the wire.
         uidBytes = trimLeadingZeroesForceMinLength(uidBytes);
+        int uidBytesLen = uidBytes != null ? uidBytes.length : 0;
         gidBytes = trimLeadingZeroesForceMinLength(gidBytes);
+        int gidBytesLen = gidBytes != null ? gidBytes.length : 0;
 
         // Couldn't bring myself to just call getLocalFileDataLength() when we've
         // already got the arrays right here.  Yeah, yeah, I know, premature
         // optimization is the root of all...
         //
         // The 3 comes from:  version=1 + uidsize=1 + gidsize=1
-        final byte[] data = new byte[3 + uidBytes.length + gidBytes.length];
+        final byte[] data = new byte[3 + uidBytesLen + gidBytesLen];
 
         // reverse() switches byte array from big-endian to little-endian.
-        reverse(uidBytes);
-        reverse(gidBytes);
+        if (uidBytes != null) {
+            reverse(uidBytes);
+        }
+        if (gidBytes != null) {
+            reverse(gidBytes);
+        }
 
         int pos = 0;
         data[pos++] = unsignedIntToSignedByte(version);
-        data[pos++] = unsignedIntToSignedByte(uidBytes.length);
-        System.arraycopy(uidBytes, 0, data, pos, uidBytes.length);
-        pos += uidBytes.length;
-        data[pos++] = unsignedIntToSignedByte(gidBytes.length);
-        System.arraycopy(gidBytes, 0, data, pos, gidBytes.length);
+        data[pos++] = unsignedIntToSignedByte(uidBytesLen);
+        if (uidBytes != null) {
+            System.arraycopy(uidBytes, 0, data, pos, uidBytesLen);
+        }
+        pos += uidBytesLen;
+        data[pos++] = unsignedIntToSignedByte(gidBytesLen);
+        if (gidBytes != null) {
+            System.arraycopy(gidBytes, 0, data, pos, gidBytesLen);
+        }
         return data;
     }
 
