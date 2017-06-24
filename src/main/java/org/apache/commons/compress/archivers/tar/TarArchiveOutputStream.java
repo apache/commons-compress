@@ -113,7 +113,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     private static final ZipEncoding ASCII =
         ZipEncodingHelper.getZipEncoding("ASCII");
 
-    private static int BLOCK_SIZE_UNSPECIFIED = -511;
+    private static final int BLOCK_SIZE_UNSPECIFIED = -511;
 
     /**
      * Constructor for TarInputStream.
@@ -200,7 +200,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             realBlockSize = blockSize;
         }
 
-        if(realBlockSize <=0 || realBlockSize % RECORD_SIZE != 0) {
+        if (realBlockSize <=0 || realBlockSize % RECORD_SIZE != 0) {
             throw new IllegalArgumentException("Block size must be a multiple of 512 bytes. Attempt to use set size of " + blockSize);
         }
         out = new CountingOutputStream(os);
