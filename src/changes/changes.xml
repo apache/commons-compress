@@ -43,7 +43,13 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
     <release version="1.15" date="not released, yet"
-             description="Release 1.15">
+             description="Release 1.15
+----------------------------------------
+
+TarArchiveOutputStream now ensures record size is 512 and block size is
+a multiple of 512 as any other value would create invalid tar
+archives. This may break compatibility for code that deliberately
+wanted to create such files.">
       <action issue="COMPRESS-394" type="fix" date="2017-05-22">
         Make sure "version needed to extract" in local file header and
         central directory of a ZIP archive agree with each other.
@@ -76,6 +82,13 @@ The <action> type attribute can be add,update,fix,remove.
               due-to="Michael Hausegger">
         Made sure ChecksumCalculatingInputStream receives valid
         checksum and input stream instances via the cnstructor.
+      </action>
+      <action issue="COMPRESS-407" type="fix" date="2017-06-24"
+              due-to="Simon Spero ">
+        TarArchiveOutputStream now verifies the block and record sizes
+        specified at construction time are compatible with the tar
+        specification. In particular 512 is the only recird size
+        accepted and the block size must be a multiple of 512.
       </action>
     </release>
     <release version="1.14" date="2017-05-14"
