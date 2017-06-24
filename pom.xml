@@ -170,6 +170,10 @@ jar, tar, zip, dump, 7z, arj.
       <name>BELUGA BEHR</name>
     </contributor>
     <contributor>
+	<name>Simon Spero</name>
+	<email>sesuncedu@gmail.com</email>
+    </contributor>
+    <contributor>
       <name>Michael Hausegger</name>
       <email>hausegger.michael@googlemail.com</email>
     </contributor>
@@ -192,7 +196,7 @@ jar, tar, zip, dump, 7z, arj.
             <quiet>true</quiet>
             <source>${maven.compiler.source}</source>
             <encoding>${commons.encoding}</encoding>
-            <docEncoding>${commons.docEncoding}</docEncoding>
+            <docencoding>${commons.docEncoding}</docencoding>
             <linksource>true</linksource>
             <links>
               <link>${commons.javadoc.java.link}</link>
@@ -227,7 +231,15 @@ jar, tar, zip, dump, 7z, arj.
               <exclude>src/test/resources/**</exclude>
               <exclude>.pmd</exclude>
               <exclude>.projectile</exclude>
+              <exclude>.mvn/**</exclude>
             </excludes>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.eluder.coveralls</groupId>
+          <artifactId>coveralls-maven-plugin</artifactId>
+          <configuration>
+            <failOnServiceError>false</failOnServiceError>
           </configuration>
         </plugin>
       </plugins>
@@ -305,7 +317,7 @@ jar, tar, zip, dump, 7z, arj.
           <quiet>true</quiet>
           <source>${maven.compiler.source}</source>
           <encoding>${commons.encoding}</encoding>
-          <docEncoding>${commons.docEncoding}</docEncoding>
+          <docencoding>${commons.docEncoding}</docencoding>
           <linksource>true</linksource>
           <links>
             <link>${commons.javadoc.java.link}</link>

@@ -13,17 +13,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-language: java
 sudo: false
+# Use Trusty as dist
+dist: trusty
+language: java
+
 
 jdk:
   - openjdk7
-  - oraclejdk7
-  - oraclejdk8
+  - openjdk8
 
 cache:
   directories:
     - $HOME/.m2
+    - .mvn
+# don't run mvn install before building
+install: true
 
-after_success:
-  - mvn clean apache-rat:check test jacoco:report coveralls:report -Ptravis-jacoco
+# do all the building and testing in a single phase, instead of compiling everything three times
+# and running all tests twice.
+
+script:
+   - ./mvnw clean apache-rat:check test jacoco:report coveralls:report -Ptravis-jacoco
