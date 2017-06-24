@@ -23,7 +23,6 @@ import java.io.IOException;
 
 public class CLI {
 
-    private static final byte[] BUF = new byte[8192];
 
     private static enum Mode {
         LIST("Analysing") {
@@ -65,6 +64,7 @@ public class CLI {
             }
         },
         EXTRACT("Extracting") {
+            private  final byte[] BUF = new byte[8192];
             @Override
             public void takeAction(final SevenZFile archive, final SevenZArchiveEntry entry) 
                 throws IOException {
