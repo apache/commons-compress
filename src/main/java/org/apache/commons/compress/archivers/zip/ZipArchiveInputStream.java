@@ -292,7 +292,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         off += SHORT;
 
         final int extraLen = ZipShort.getValue(lfhBuf, off);
-        off += SHORT;
+        off += SHORT; // NOSONAR - assignment as documentation
 
         final byte[] fileName = new byte[fileNameLen];
         readFully(fileName);

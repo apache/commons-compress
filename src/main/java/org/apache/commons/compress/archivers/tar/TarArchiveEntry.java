@@ -1288,7 +1288,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
             isExtended = TarUtils.parseBoolean(header, offset);
             offset += ISEXTENDEDLEN_GNU;
             realSize = TarUtils.parseOctal(header, offset, REALSIZELEN_GNU);
-            offset += REALSIZELEN_GNU;
+            offset += REALSIZELEN_GNU; // NOSONAR - assignment as documentation
             break;
         }
         case FORMAT_XSTAR: {

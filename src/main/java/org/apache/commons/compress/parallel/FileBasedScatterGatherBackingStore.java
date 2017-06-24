@@ -42,7 +42,7 @@ public class FileBasedScatterGatherBackingStore implements ScatterGatherBackingS
             throw ex;
         } catch (IOException ex) {
             // must convert exception to stay backwards compatible with Compress 1.10 to 1.13
-            throw new RuntimeException(ex);
+            throw new RuntimeException(ex); // NOSONAR
         }
     }
 
