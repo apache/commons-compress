@@ -409,7 +409,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
         final DumpArchiveEntry rhs = (DumpArchiveEntry) o;
 
-        if ((header == null) || (rhs.header == null)) {
+        if (rhs.header == null) {
             return false;
         }
 
