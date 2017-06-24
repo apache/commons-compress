@@ -187,7 +187,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
         if (bit2_createTimePresent && createTime != null) {
             data[0] |= CREATE_TIME_BIT;
             System.arraycopy(createTime.getBytes(), 0, data, pos, 4);
-            pos += 4;
+            pos += 4; // NOSONAR - assignment as documentation
         }
         return data;
     }
@@ -237,7 +237,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
         }
         if (bit2_createTimePresent && offset + 4 <= len) {
             createTime = new ZipLong(data, offset);
-            offset += 4;
+            offset += 4; // NOSONAR - assignment as documentation
         }
     }
 

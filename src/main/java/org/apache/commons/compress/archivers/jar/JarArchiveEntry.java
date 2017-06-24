@@ -74,7 +74,7 @@ public class JarArchiveEntry extends ZipArchiveEntry {
      */
     @Deprecated
     public Certificate[] getCertificates() {
-        if (certificates != null) { // never true currently
+        if (certificates != null) { // never true currently // NOSONAR
             final Certificate[] certs = new Certificate[certificates.length];
             System.arraycopy(certificates, 0, certs, 0, certs.length);
             return certs;
