@@ -38,7 +38,8 @@ public class SevenZOutputFileTest extends AbstractTestCase {
 
     static {
         final String version = org.tukaani.xz.XZ.class.getPackage().getImplementationVersion();
-        XZ_BCJ_IS_BUGGY=version.equals("1.4");
+
+        XZ_BCJ_IS_BUGGY= version != null && version.equals("1.4");
         if (XZ_BCJ_IS_BUGGY) {
             System.out.println("XZ version is " + version + " - skipping BCJ tests");
         }
