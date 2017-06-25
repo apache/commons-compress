@@ -260,11 +260,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     /**
      * Ends the TAR archive without closing the underlying OutputStream.
-     * 
+     *
      * An archive consists of a series of file entries terminated by an
       end-of-archive entry, which* consists of two 512 blocks of zero bytes.
       POSIX.1 requires two EOF records, like some other* implementations.
-     * 
+     *
      * @throws IOException on error
      */
     @Override
