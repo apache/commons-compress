@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Date;
@@ -35,31 +36,46 @@ import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.CountingOutputStream;
 
 /**
- * The TarOutputStream writes a UNIX tar archive as an OutputStream.
- * Methods are provided to put entries, and then write their contents
- * by writing to this stream using write().
+ * The TarOutputStream writes a UNIX tar archive as an OutputStream. Methods are provided to put
+ * entries, and then write their contents by writing to this stream using write().
+ *
  * @NotThreadSafe
  */
 public class TarArchiveOutputStream extends ArchiveOutputStream {
-    /** Fail if a long file name is required in the archive. */
+
+    /**
+     * Fail if a long file name is required in the archive.
+     */
     public static final int LONGFILE_ERROR = 0;
 
-    /** Long paths will be truncated in the archive. */
+    /**
+     * Long paths will be truncated in the archive.
+     */
     public static final int LONGFILE_TRUNCATE = 1;
 
-    /** GNU tar extensions are used to store long file names in the archive. */
+    /**
+     * GNU tar extensions are used to store long file names in the archive.
+     */
     public static final int LONGFILE_GNU = 2;
 
-    /** POSIX/PAX extensions are used to store long file names in the archive. */
+    /**
+     * POSIX/PAX extensions are used to store long file names in the archive.
+     */
     public static final int LONGFILE_POSIX = 3;
 
-    /** Fail if a big number (e.g. size &gt; 8GiB) is required in the archive. */
+    /**
+     * Fail if a big number (e.g. size &gt; 8GiB) is required in the archive.
+     */
     public static final int BIGNUMBER_ERROR = 0;
 
-    /** star/GNU tar/BSD tar extensions are used to store big number in the archive. */
+    /**
+     * star/GNU tar/BSD tar extensions are used to store big number in the archive.
+     */
     public static final int BIGNUMBER_STAR = 1;
 
-    /** POSIX/PAX extensions are used to store big numbers in the archive. */
+    /**
+     * POSIX/PAX extensions are used to store big numbers in the archive.
+     */
     public static final int BIGNUMBER_POSIX = 2;
     private static final int RECORD_SIZE = 512;
 
@@ -76,10 +92,14 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     private boolean closed = false;
 
-    /** Indicates if putArchiveEntry has been called without closeArchiveEntry */
+    /**
+     * Indicates if putArchiveEntry has been called without closeArchiveEntry
+     */
     private boolean haveUnclosedEntry = false;
 
-    /** indicates if this archive is finished */
+    /**
+     * indicates if this archive is finished
+     */
     private boolean finished = false;
 
     private final OutputStream out;
@@ -97,6 +117,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     /**
      * Constructor for TarInputStream.
+     *
      * @param os the output stream to use
      */
     public TarArchiveOutputStream(final OutputStream os) {
@@ -105,6 +126,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     /**
      * Constructor for TarInputStream.
+     *
      * @param os the output stream to use
      * @param encoding name of the encoding to use for file names
      * @since 1.4
@@ -115,6 +137,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     /**
      * Constructor for TarInputStream.
+     *
      * @param os the output stream to use
      * @param blockSize the block size to use. Must be a multiple of 512 bytes.
      */
@@ -125,6 +148,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     /**
      * Constructor for TarInputStream.
+     *
      * @param os the output stream to use
      * @param blockSize the block size to use
      * @param recordSize the record size to use. Must be 512 bytes.
@@ -139,6 +163,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     /**
      * Constructor for TarInputStream.
+     *
      * @param os the output stream to use
      * @param blockSize the block size to use . Must be a multiple of 512 bytes.
      * @param recordSize the record size to use. Must be 512 bytes.
@@ -189,10 +214,10 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Set the long file mode.
-     * This can be LONGFILE_ERROR(0), LONGFILE_TRUNCATE(1) or LONGFILE_GNU(2).
-     * This specifies the treatment of long file names (names &gt;= TarConstants.NAMELEN).
-     * Default is LONGFILE_ERROR.
+     * Set the long file mode. This can be LONGFILE_ERROR(0), LONGFILE_TRUNCATE(1) or
+     * LONGFILE_GNU(2). This specifies the treatment of long file names (names &gt;=
+     * TarConstants.NAMELEN). Default is LONGFILE_ERROR.
+     *
      * @param longFileMode the mode to use
      */
     public void setLongFileMode(final int longFileMode) {
@@ -200,10 +225,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Set the big number mode.
-     * This can be BIGNUMBER_ERROR(0), BIGNUMBER_POSIX(1) or BIGNUMBER_STAR(2).
-     * This specifies the treatment of big files (sizes &gt; TarConstants.MAXSIZE) and other numeric values to big to fit into a traditional tar header.
+     * Set the big number mode. This can be BIGNUMBER_ERROR(0), BIGNUMBER_POSIX(1) or
+     * BIGNUMBER_STAR(2). This specifies the treatment of big files (sizes &gt;
+     * TarConstants.MAXSIZE) and other numeric values to big to fit into a traditional tar header.
      * Default is BIGNUMBER_ERROR.
+     *
      * @param bigNumberMode the mode to use
      * @since 1.4
      */
@@ -213,8 +239,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     /**
      * Whether to add a PAX extension header for non-ASCII file names.
-     * @since 1.4
+     *
      * @param b whether to add a PAX extension header for non-ASCII file names.
+     * @since 1.4
      */
     public void setAddPaxHeadersForNonAsciiNames(final boolean b) {
         addPaxHeadersForNonAsciiNames = b;
@@ -258,6 +285,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     /**
      * Closes the underlying OutputStream.
+     *
      * @throws IOException on error
      */
     @Override
@@ -284,13 +312,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Put an entry on the output stream. This writes the entry's
-     * header record and positions the output stream for writing
-     * the contents of the entry. Once this method is called, the
-     * stream is ready for calls to write() to write the entry's
-     * contents. Once the contents are written, closeArchiveEntry()
-     * <B>MUST</B> be called to ensure that all buffered data
-     * is completely written to the output stream.
+     * Put an entry on the output stream. This writes the entry's header record and positions the
+     * output stream for writing the contents of the entry. Once this method is called, the stream
+     * is ready for calls to write() to write the entry's contents. Once the contents are written,
+     * closeArchiveEntry() <B>MUST</B> be called to ensure that all buffered data is completely
+     * written to the output stream.
      *
      * @param archiveEntry The TarEntry to be written to the archive.
      * @throws IOException on error
@@ -302,7 +328,17 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             throw new IOException("Stream has already been finished");
         }
         final TarArchiveEntry entry = (TarArchiveEntry) archiveEntry;
-        final Map<String, String> paxHeaders = new HashMap<>();
+        if (entry.isGlobalPaxHeader()) {
+            final byte[] data = encodeExtendedPaxHeadersContents(entry.getExtraPaxHeaders());
+            entry.setSize(data.length);
+            entry.writeEntryHeader(recordBuf, zipEncoding, bigNumberMode == BIGNUMBER_STAR);
+            writeRecord(recordBuf);
+            currSize= entry.getSize();
+            currBytes = 0;
+            this.haveUnclosedEntry = true;
+            write(data);
+            closeArchiveEntry();
+        } else {final Map<String, String> paxHeaders = new HashMap<>();
         final String entryName = entry.getName();
         final boolean paxHeaderContainsPath = handleLongName(entry, entryName, paxHeaders, "path",
             TarConstants.LF_GNUTYPE_LONGNAME, "file name");
@@ -312,50 +348,50 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             && handleLongName(entry, linkName, paxHeaders, "linkpath",
             TarConstants.LF_GNUTYPE_LONGLINK, "link name");
 
-        if (bigNumberMode == BIGNUMBER_POSIX) {
-            addPaxHeadersForBigNumbers(paxHeaders, entry);
-        } else if (bigNumberMode != BIGNUMBER_STAR) {
-            failForBigNumbers(entry);
-        }
+            if (bigNumberMode == BIGNUMBER_POSIX) {
+                addPaxHeadersForBigNumbers(paxHeaders, entry);
+            } else if (bigNumberMode != BIGNUMBER_STAR) {
+                failForBigNumbers(entry);
+            }
 
-        if (addPaxHeadersForNonAsciiNames && !paxHeaderContainsPath
-            && !ASCII.canEncode(entryName)) {
-            paxHeaders.put("path", entryName);
-        }
+            if (addPaxHeadersForNonAsciiNames && !paxHeaderContainsPath
+                && !ASCII.canEncode(entryName)) {
+                paxHeaders.put("path", entryName);
+            }
 
-        if (addPaxHeadersForNonAsciiNames && !paxHeaderContainsLinkPath
-            && (entry.isLink() || entry.isSymbolicLink())
-            && !ASCII.canEncode(linkName)) {
-            paxHeaders.put("linkpath", linkName);
-        }
+            if (addPaxHeadersForNonAsciiNames && !paxHeaderContainsLinkPath
+                && (entry.isLink() || entry.isSymbolicLink())
+                && !ASCII.canEncode(linkName)) {
+                paxHeaders.put("linkpath", linkName);
+            }
+            paxHeaders.putAll(entry.getExtraPaxHeaders());
 
-        if (paxHeaders.size() > 0) {
-            writePaxHeaders(entry, entryName, paxHeaders);
-        }
+            if (paxHeaders.size() > 0) {
+                writePaxHeaders(entry, entryName, paxHeaders);
+            }
 
         entry.writeEntryHeader(recordBuf, zipEncoding,
             bigNumberMode == BIGNUMBER_STAR);
         writeRecord(recordBuf);
 
-        currBytes = 0;
+            currBytes = 0;
 
-        if (entry.isDirectory()) {
-            currSize = 0;
-        } else {
-            currSize = entry.getSize();
+            if (entry.isDirectory()) {
+                currSize = 0;
+            } else {
+                currSize = entry.getSize();
+            }
+            currName = entryName;
+            haveUnclosedEntry = true;
         }
-        currName = entryName;
-        haveUnclosedEntry = true;
     }
 
     /**
-     * Close an entry. This method MUST be called for all file
-     * entries that contain data. The reason is that we must
-     * buffer data written to the stream in order to satisfy
-     * the buffer's record based writes. Thus, there may be
-     * data fragments still being assembled that must be written
-     * to the output stream before this entry is closed and the
-     * next entry written.
+     * Close an entry. This method MUST be called for all file entries that contain data. The reason
+     * is that we must buffer data written to the stream in order to satisfy the buffer's record
+     * based writes. Thus, there may be data fragments still being assembled that must be written to
+     * the output stream before this entry is closed and the next entry written.
+     *
      * @throws IOException on error
      */
     @Override
@@ -387,12 +423,10 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Writes bytes to the current tar archive entry. This method
-     * is aware of the current entry and will throw an exception if
-     * you attempt to write bytes past the length specified for the
-     * current entry. The method is also (painfully) aware of the
-     * record buffering required by TarBuffer, and manages buffers
-     * that are not a multiple of recordsize in length, including
+     * Writes bytes to the current tar archive entry. This method is aware of the current entry and
+     * will throw an exception if you attempt to write bytes past the length specified for the
+     * current entry. The method is also (painfully) aware of the record buffering required by
+     * TarBuffer, and manages buffers that are not a multiple of recordsize in length, including
      * assembling records from small buffers.
      *
      * @param wBuf The buffer to write to the archive.
@@ -471,6 +505,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     /**
      * Writes a PAX extended header with the given map as contents.
+     *
      * @since 1.4
      */
     void writePaxHeaders(final TarArchiveEntry entry,
@@ -484,6 +519,15 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             TarConstants.LF_PAX_EXTENDED_HEADER_LC);
         transferModTime(entry, pex);
 
+        final byte[] data = encodeExtendedPaxHeadersContents(headers);
+        pex.setSize(data.length);
+        putArchiveEntry(pex);
+        write(data);
+        closeArchiveEntry();
+    }
+
+    private byte[] encodeExtendedPaxHeadersContents(Map<String, String> headers)
+        throws UnsupportedEncodingException {
         final StringWriter w = new StringWriter();
         for (final Map.Entry<String, String> h : headers.entrySet()) {
             final String key = h.getKey();
@@ -505,11 +549,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             }
             w.write(line);
         }
-        final byte[] data = w.toString().getBytes(CharsetNames.UTF_8);
-        pex.setSize(data.length);
-        putArchiveEntry(pex);
-        write(data);
-        closeArchiveEntry();
+        return w.toString().getBytes(CharsetNames.UTF_8);
     }
 
     private String stripTo7Bits(final String name) {
@@ -578,9 +618,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Write an archive record to the archive, where the record may be
-     * inside of a larger array buffer. The buffer must be "offset plus
-     * record size" long.
+     * Write an archive record to the archive, where the record may be inside of a larger array
+     * buffer. The buffer must be "offset plus record size" long.
      *
      * @param buf The buffer containing the record data to write.
      * @param offset The offset of the record data within buf.
@@ -672,16 +711,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Handles long file or link names according to the longFileMode setting.
      *
-     * <p>I.e. if the given name is too long to be written to a plain
-     * tar header then
-     * <ul>
-     *   <li>it creates a pax header who's name is given by the
-     *   paxHeaderName parameter if longFileMode is POSIX</li>
-     *   <li>it creates a GNU longlink entry who's type is given by
-     *   the linkType parameter if longFileMode is GNU</li>
-     *   <li>it throws an exception if longFileMode is ERROR</li>
-     *   <li>it truncates the name if longFileMode is TRUNCATE</li>
-     * </ul></p>
+     * <p>I.e. if the given name is too long to be written to a plain tar header then <ul> <li>it
+     * creates a pax header who's name is given by the paxHeaderName parameter if longFileMode is
+     * POSIX</li> <li>it creates a GNU longlink entry who's type is given by the linkType parameter
+     * if longFileMode is GNU</li> <li>it throws an exception if longFileMode is ERROR</li> <li>it
+     * truncates the name if longFileMode is TRUNCATE</li> </ul></p>
      *
      * @param entry entry the name belongs to
      * @param name the name to write
