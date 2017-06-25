@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.compressors.snappy;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -56,6 +58,25 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
             Assert.assertArrayEquals(expected, actual);
         }
         System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
+    }
+    private void roundTripTest(final byte[] input, Parameters params) throws IOException {
+        long start = System.currentTimeMillis();
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        try (
+             SnappyCompressorOutputStream sos = new SnappyCompressorOutputStream(os, input.length, params)) {
+            sos.write(input);
+        }
+        System.err.println("byte array" + " written, uncompressed bytes: " + input.length
+            + ", compressed bytes: " + os.size() + " after " + (System.currentTimeMillis() - start) + "ms");
+        start = System.currentTimeMillis();
+        try (
+             SnappyCompressorInputStream sis = new SnappyCompressorInputStream(new ByteArrayInputStream(os.toByteArray()),
+                 params.getWindowSize())) {
+            byte[] expected = input;
+            byte[] actual = IOUtils.toByteArray(sis);
+            Assert.assertArrayEquals(expected, actual);
+        }
+        System.err.println("byte array" + " read after " + (System.currentTimeMillis() - start) + "ms");
     }
 
     // should yield decent compression
@@ -108,7 +129,7 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
         // of random noise that doesn't contain any 0000 at all, then
         // add 0000.
         File f = new File(dir, "reallyBigOffsetTest");
-        try (FileOutputStream fs = new FileOutputStream(f)) {
+        ByteArrayOutputStream fs = new ByteArrayOutputStream((1<<16) + 1024);
             fs.write(0);
             fs.write(0);
             fs.write(0);
@@ -122,8 +143,8 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
             fs.write(0);
             fs.write(0);
             fs.write(0);
-        }
-        roundTripTest(f, newParameters(1 << 17, 4, 64, 1 << 17 - 1, 1 << 17 - 1));
+
+        roundTripTest(fs.toByteArray(), newParameters(1 << 17, 4, 64, 1 << 17 - 1, 1 << 17 - 1));
     }
 
     @Test
