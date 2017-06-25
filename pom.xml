@@ -374,6 +374,7 @@ jar, tar, zip, dump, 7z, arj.
               <includes>
                 <include>**/zip/*IT.java</include>
               </includes>
+              <parallel>classes</parallel>
             </configuration>
           </plugin>
         </plugins>
@@ -389,6 +390,7 @@ jar, tar, zip, dump, 7z, arj.
               <includes>
                 <include>**/tar/*IT.java</include>
               </includes>
+              <parallel>classes</parallel>
             </configuration>
           </plugin>
         </plugins>
