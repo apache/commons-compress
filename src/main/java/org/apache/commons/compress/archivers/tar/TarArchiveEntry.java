@@ -20,10 +20,11 @@ package org.apache.commons.compress.archivers.tar;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.utils.ArchiveUtils;
@@ -133,7 +134,7 @@ import org.apache.commons.compress.utils.ArchiveUtils;
  *  char prefix[131];		// offset 345
  *  char atime[12];             // offset 476
  *  char ctime[12];             // offset 488
- *  char mfill[8];              // offset 500 
+ *  char mfill[8];              // offset 500
  *  char xmagic[4];             // offset 508  "tar"
  * };
  * </pre>
@@ -207,6 +208,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
     /** The entry's file reference */
     private final File file;
 
+    /** Extra, user supplied pax headers     */
+    private final Map<String,String> extraPaxHeaders = new HashMap<>();
+
     /** Maximum length of a user's name in the tar file */
     public static final int MAX_NAMELEN = 31;
 
@@ -218,6 +222,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
 
     /** Convert millis to seconds */
     public static final int MILLIS_PER_SECOND = 1000;
+
 
     /**
      * Construct an empty entry and prepares the header values.
@@ -941,6 +946,147 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
     public boolean isSparse() {
         return isGNUSparse() || isStarSparse();
     }
+
+    /**
+     * get extra PAX Headers
+     * @return read-only map containing any extra PAX Headers
+     * @since 1.15
+     */
+    public Map<String, String> getExtraPaxHeaders() {
+        return Collections.unmodifiableMap(extraPaxHeaders);
+    }
+
+    /**
+     * clear all extra PAX headers.
+     * @since 1.15
+     */
+    public void clearExtraPaxHeaders() {
+        extraPaxHeaders.clear();
+    }
+
+    /**
+     * add a PAX header to this entry. If the header corresponds to an existing field in the entry,
+     * that field will be set; otherwise the header will be added to the extraPaxHeaders Map
+     * @param name  The full name of the header to set.
+     * @param value value of header.
+     * @since 1.15
+     */
+    public void addPaxHeader(String name,String value) {
+         processPaxHeader(name,value);
+    }
+
+    /**
+     * get named extra PAX header
+     * @param name The full name of an extended PAX header to retrieve
+     * @return The value of the header, if any.
+     * @since 1.15
+     */
+    public String getExtraPaxHeader(String name) {
+        return extraPaxHeaders.get(name);
+    }
+
+    /**
+     * Update the entry using a map of pax headers.
+     * @param headers
+     * @since 1.15
+     */
+    void updateEntryFromPaxHeaders(Map<String, String> headers) {
+        for (final Map.Entry<String, String> ent : headers.entrySet()) {
+            final String key = ent.getKey();
+            final String val = ent.getValue();
+            processPaxHeader(key, val, headers);
+        }
+    }
+
+    /**
+     * process one pax header, using the entries extraPaxHeaders map as source for extra headers
+     * used when handling entries for sparse files.
+     * @param key
+     * @param val
+     * @since 1.15
+     */
+    private void processPaxHeader(String key, String val) {
+        processPaxHeader(key,val,extraPaxHeaders);
+    }
+
+    /**
+     * Process one pax header, using the supplied map as source for extra headers to be used when handling
+     * entries for sparse files
+     *
+     * @param key  the header name.
+     * @param val  the header value.
+     * @param headers  map of headers used for dealing with sparse file.
+     * @since 1.15
+     */
+    private void processPaxHeader(String key, String val, Map<String, String> headers) {
+    /*
+     * The following headers are defined for Pax.
+     * atime, ctime, charset: cannot use these without changing TarArchiveEntry fields
+     * mtime
+     * comment
+     * gid, gname
+     * linkpath
+     * size
+     * uid,uname
+     * SCHILY.devminor, SCHILY.devmajor: don't have setters/getters for those
+     *
+     * GNU sparse files use additional members, we use
+     * GNU.sparse.size to detect the 0.0 and 0.1 versions and
+     * GNU.sparse.realsize for 1.0.
+     *
+     * star files use additional members of which we use
+     * SCHILY.filetype in order to detect star sparse files.
+     *
+     * If called from addExtraPaxHeader, these additional headers must be already present .
+     */
+        switch (key) {
+            case "path":
+                setName(val);
+                break;
+            case "linkpath":
+                setLinkName(val);
+                break;
+            case "gid":
+                setGroupId(Long.parseLong(val));
+                break;
+            case "gname":
+                setGroupName(val);
+                break;
+            case "uid":
+                setUserId(Long.parseLong(val));
+                break;
+            case "uname":
+                setUserName(val);
+                break;
+            case "size":
+                setSize(Long.parseLong(val));
+                break;
+            case "mtime":
+                setModTime((long) (Double.parseDouble(val) * 1000));
+                break;
+            case "SCHILY.devminor":
+                setDevMinor(Integer.parseInt(val));
+                break;
+            case "SCHILY.devmajor":
+                setDevMajor(Integer.parseInt(val));
+                break;
+            case "GNU.sparse.size":
+                fillGNUSparse0xData(headers);
+                break;
+            case "GNU.sparse.realsize":
+                fillGNUSparse1xData(headers);
+                break;
+            case "SCHILY.filetype":
+                if ("sparse".equals(val)) {
+                    fillStarSparseData(headers);
+                }
+                break;
+            default:
+                extraPaxHeaders.put(key,val);
+        }
+    }
+
+
 
     /**
      * If this entry represents a file, and the file is a directory, return

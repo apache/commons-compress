@@ -23,6 +23,7 @@ import static org.apache.commons.compress.AbstractTestCase.mkdir;
 import static org.apache.commons.compress.AbstractTestCase.rmdir;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -310,6 +311,29 @@ public class TarArchiveInputStreamTest {
             final TarArchiveEntry entry = is.getNextTarEntry();
             assertEquals("package/package.json", entry.getName());
             assertNull(is.getNextTarEntry());
+        }
+    }
+    @Test
+    public void testGetAndSetOfPaxEntry() throws Exception {
+        try (TarArchiveInputStream is = getTestStream("/COMPRESS-356.tar")) {
+            final TarArchiveEntry entry = is.getNextTarEntry();
+            assertEquals("package/package.json", entry.getName());
+            assertEquals(is.getCurrentEntry(),entry);
+            TarArchiveEntry weaselEntry = new TarArchiveEntry(entry.getName());
+            weaselEntry.setSize(entry.getSize());
+            is.setCurrentEntry(weaselEntry);
+            assertEquals(entry,is.getCurrentEntry());
+            assertFalse(entry == is.getCurrentEntry());
+            assertTrue(weaselEntry == is.getCurrentEntry());
+            try {
+               is.setCurrentEntry(null);
+               is.read();
+               fail("should abort because current entry is nulled");
+            }  catch(IllegalStateException e) {
+                // expected
+            }
+            is.setCurrentEntry(entry);
+            is.read();
         }
     }
 
