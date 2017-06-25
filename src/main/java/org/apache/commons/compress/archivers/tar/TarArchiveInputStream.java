@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -260,7 +259,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @throws IOException on error
      */
     public TarArchiveEntry getNextTarEntry() throws IOException {
-        if (hasHitEOF) {
+        if (isAtEOF()) {
             return null;
         }
 
@@ -396,8 +395,8 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      */
     private byte[] getRecord() throws IOException {
         byte[] headerBuf = readRecord();
-        hasHitEOF = isEOFRecord(headerBuf);
-        if (hasHitEOF && headerBuf != null) {
+        setAtEOF(isEOFRecord(headerBuf));
+        if (isAtEOF() && headerBuf != null) {
             tryToConsumeSecondEOFRecord();
             consumeRemainderOfLastBlock();
             headerBuf = null;
@@ -504,55 +503,8 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     }
 
     private void applyPaxHeadersToCurrentEntry(final Map<String, String> headers) {
-        /*
-         * The following headers are defined for Pax.
-         * atime, ctime, charset: cannot use these without changing TarArchiveEntry fields
-         * mtime
-         * comment
-         * gid, gname
-         * linkpath
-         * size
-         * uid,uname
-         * SCHILY.devminor, SCHILY.devmajor: don't have setters/getters for those
-         *
-         * GNU sparse files use additional members, we use
-         * GNU.sparse.size to detect the 0.0 and 0.1 versions and
-         * GNU.sparse.realsize for 1.0.
-         *
-         * star files use additional members of which we use
-         * SCHILY.filetype in order to detect star sparse files.
-         */
-        for (final Entry<String, String> ent : headers.entrySet()){
-            final String key = ent.getKey();
-            final String val = ent.getValue();
-            if ("path".equals(key)){
-                currEntry.setName(val);
-            } else if ("linkpath".equals(key)){
-                currEntry.setLinkName(val);
-            } else if ("gid".equals(key)){
-                currEntry.setGroupId(Long.parseLong(val));
-            } else if ("gname".equals(key)){
-                currEntry.setGroupName(val);
-            } else if ("uid".equals(key)){
-                currEntry.setUserId(Long.parseLong(val));
-            } else if ("uname".equals(key)){
-                currEntry.setUserName(val);
-            } else if ("size".equals(key)){
-                currEntry.setSize(Long.parseLong(val));
-            } else if ("mtime".equals(key)){
-                currEntry.setModTime((long) (Double.parseDouble(val) * 1000));
-            } else if ("SCHILY.devminor".equals(key)){
-                currEntry.setDevMinor(Integer.parseInt(val));
-            } else if ("SCHILY.devmajor".equals(key)){
-                currEntry.setDevMajor(Integer.parseInt(val));
-            } else if ("GNU.sparse.size".equals(key)) {
-                currEntry.fillGNUSparse0xData(headers);
-            } else if ("GNU.sparse.realsize".equals(key)) {
-                currEntry.fillGNUSparse1xData(headers);
-            } else if ("SCHILY.filetype".equals(key) && "sparse".equals(val)) {
-                currEntry.fillStarSparseData(headers);
-            }
-        }
+        currEntry.updateEntryFromPaxHeaders(headers);
+
     }
 
     /**
@@ -643,7 +595,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     public int read(final byte[] buf, final int offset, int numToRead) throws IOException {
     	int totalRead = 0;
 
-        if (hasHitEOF || isDirectory() || entryOffset >= entrySize) {
+        if (isAtEOF() || isDirectory() || entryOffset >= entrySize) {
             return -1;
         }
 
@@ -659,7 +611,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             if (numToRead > 0) {
                 throw new IOException("Truncated TAR archive");
             }
-            hasHitEOF = true;
+            setAtEOF(true);
         } else {
             count(totalRead);
             entryOffset += totalRead;
