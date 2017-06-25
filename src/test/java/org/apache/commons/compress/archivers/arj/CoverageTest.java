@@ -19,5 +19,10 @@ public class CoverageTest {
         assertNotNull(new LocalFileHeader.Flags());
         assertNotNull(new MainHeader.Flags());
     }
+    @Test
+    public void testCallLFHToString() {
+        LocalFileHeader lfh = new LocalFileHeader();
+        assertNotNull(lfh.toString());
+    }
 
 }
