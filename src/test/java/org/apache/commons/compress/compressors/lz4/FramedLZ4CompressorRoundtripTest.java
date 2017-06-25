@@ -18,20 +18,20 @@
  */
 package org.apache.commons.compress.compressors.lz4;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.junit.runner.RunWith;
 
 @RunWith(Parameterized.class)
 public final class FramedLZ4CompressorRoundtripTest extends AbstractTestCase {
@@ -69,20 +69,24 @@ public final class FramedLZ4CompressorRoundtripTest extends AbstractTestCase {
         File input = getFile(testFile);
         long start = System.currentTimeMillis();
         final File outputSz = new File(dir, input.getName() + ".framed.lz4");
-        try (FileInputStream is = new FileInputStream(input);
-             FileOutputStream os = new FileOutputStream(outputSz);
-             FramedLZ4CompressorOutputStream los = new FramedLZ4CompressorOutputStream(os, params)) {
-            IOUtils.copy(is, los);
+        byte[] expected;
+        try (FileInputStream is = new FileInputStream(input)) {
+            expected = IOUtils.toByteArray(is);
+        }
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (FramedLZ4CompressorOutputStream los = new FramedLZ4CompressorOutputStream(bos,
+            params)) {
+            IOUtils.copy(new ByteArrayInputStream(expected), los);
         }
         System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
             + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
         start = System.currentTimeMillis();
-        try (FileInputStream is = new FileInputStream(input);
-             FramedLZ4CompressorInputStream sis = new FramedLZ4CompressorInputStream(new FileInputStream(outputSz))) {
-            byte[] expected = IOUtils.toByteArray(is);
+        try (FramedLZ4CompressorInputStream sis = new FramedLZ4CompressorInputStream(
+            new ByteArrayInputStream(bos.toByteArray()))) {
             byte[] actual = IOUtils.toByteArray(sis);
             Assert.assertArrayEquals(expected, actual);
         }
+
         System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
     }
 
