@@ -262,8 +262,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * Ends the TAR archive without closing the underlying OutputStream.
      *
      * An archive consists of a series of file entries terminated by an
-      end-of-archive entry, which* consists of two 512 blocks of zero bytes.
-      POSIX.1 requires two EOF records, like some other* implementations.
+     * end-of-archive entry, which consists of two 512 blocks of zero bytes.
+     * POSIX.1 requires two EOF records, like some other implementations.
      *
      * @throws IOException on error
      */
@@ -341,12 +341,12 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         } else {final Map<String, String> paxHeaders = new HashMap<>();
         final String entryName = entry.getName();
         final boolean paxHeaderContainsPath = handleLongName(entry, entryName, paxHeaders, "path",
-                                                       TarConstants.LF_GNUTYPE_LONGNAME, "file name");
+            TarConstants.LF_GNUTYPE_LONGNAME, "file name");
 
         final String linkName = entry.getLinkName();
         final boolean paxHeaderContainsLinkPath = linkName != null && linkName.length() > 0
             && handleLongName(entry, linkName, paxHeaders, "linkpath",
-                              TarConstants.LF_GNUTYPE_LONGLINK, "link name");
+            TarConstants.LF_GNUTYPE_LONGLINK, "link name");
 
             if (bigNumberMode == BIGNUMBER_POSIX) {
                 addPaxHeadersForBigNumbers(paxHeaders, entry);
@@ -371,7 +371,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             }
 
         entry.writeEntryHeader(recordBuf, zipEncoding,
-                               bigNumberMode == BIGNUMBER_STAR);
+            bigNumberMode == BIGNUMBER_STAR);
         writeRecord(recordBuf);
 
             currBytes = 0;
