@@ -31,8 +31,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.Locale;
 import org.apache.commons.compress.AbstractTestCase;
 import org.junit.Test;
@@ -135,7 +133,7 @@ public class TarArchiveEntryTest implements TarConstants {
         
         TarArchiveEntry entry = new TarArchiveEntry("./weasels");
         entry.addPaxHeader("APACHE.mustelida","true");
-        entry.addXattr("user.org.apache.weasels","maximum weasels");
+        entry.addPaxHeader("SCHILY.xattr.user.org.apache.weasels","maximum weasels");
         entry.addPaxHeader("size","1");
         assertEquals("extra header count",2,entry.getExtraPaxHeaders().size());
         assertEquals("APACHE.mustelida","true",
@@ -159,7 +157,7 @@ public class TarArchiveEntryTest implements TarConstants {
         assertEquals("APACHE.mustelida","true",
             entry.getExtraPaxHeader("APACHE.mustelida"));
         assertEquals("user.org.apache.weasels","maximum weasels",
-            entry.getXattr("user.org.apache.weasels"));
+            entry.getExtraPaxHeader("SCHILY.xattr.user.org.apache.weasels"));
 
         assertEquals('W',tis.read());
         assertTrue("should be at end of entry",tis.read() <0);

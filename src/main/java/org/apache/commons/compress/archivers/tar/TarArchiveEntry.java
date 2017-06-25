@@ -223,8 +223,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
     /** Convert millis to seconds */
     public static final int MILLIS_PER_SECOND = 1000;
 
-    /** The prefix to use to mark record extended attributes */
-    private static final String XATTR_PREFIX = "SCHILY.xattr.";
 
     /**
      * Construct an empty entry and prepares the header values.
@@ -985,30 +983,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      */
     public String getExtraPaxHeader(String name) {
         return extraPaxHeaders.get(name);
-    }
-
-    /**
-     * add a Posix eXtended attribute to the entry. This will be stored as a PAX header, using the
-     * SCHILY.xattr. prefix. No further encoding is performed on the name or value.
-     * @param name The name of the extended attribute to set - for example security.selinux or
-     * user.maven.groupId
-     * @param value
-     * @since 1.15
-     */
-    public void addXattr(String name, String value) {
-         extraPaxHeaders.put(XATTR_PREFIX + name, value);
-    }
-
-    /**
-     * get named extended Attribute
-     * @param name The name of the extended attribute to set - for example security.selinux or
-     * user.maven.groupId
-     * @return the value of the attribute, if any.
-     * @since 1.15
-     */
-    public String getXattr(String name) {
-        return extraPaxHeaders.get(XATTR_PREFIX + name);
-
     }
 
     /**

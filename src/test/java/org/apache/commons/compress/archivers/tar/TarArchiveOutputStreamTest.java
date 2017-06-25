@@ -638,7 +638,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         byte lfPaxGlobalExtendedHeader = TarConstants.LF_PAX_GLOBAL_EXTENDED_HEADER;
         TarArchiveEntry globalHeader = new TarArchiveEntry("/tmp/GlobalHead." + pid + "." + globCount,
             lfPaxGlobalExtendedHeader);
-        globalHeader.addXattr("user.org.apache.weasels","global-weasels");
+        globalHeader.addPaxHeader("SCHILLY.xattr.user.org.apache.weasels","global-weasels");
         tos.putArchiveEntry(globalHeader);
         TarArchiveEntry entry = new TarArchiveEntry("message");
         String x = "If at first you don't succeed, give up";
@@ -649,7 +649,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         entry = new TarArchiveEntry("counter-message");
         String y = "Nothing succeeds like excess";
         entry.setSize(y.length());
-        entry.addXattr("user.org.apache.weasels.species","unknown");
+        entry.addPaxHeader("SCHILLY.xattr.user.org.apache.weasels.species","unknown");
         tos.putArchiveEntry(entry);
         tos.write(y.getBytes());
         tos.closeArchiveEntry();
@@ -658,7 +658,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         TarArchiveEntry entryIn = in.getNextTarEntry();
         assertNotNull(entryIn);
         assertEquals("message",entryIn.getName());
-        assertEquals("global-weasels",entryIn.getXattr("user.org.apache.weasels"));
+        assertEquals("global-weasels",entryIn.getExtraPaxHeader("SCHILLY.xattr.user.org.apache.weasels"));
         Reader reader = new InputStreamReader(in);
         for(int i=0;i<x.length();i++) {
             assertEquals(x.charAt(i),reader.read());
@@ -666,8 +666,8 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         assertEquals(-1,reader.read());
         entryIn = in.getNextTarEntry();
         assertEquals("counter-message",entryIn.getName());
-        assertEquals("global-weasels",entryIn.getXattr("user.org.apache.weasels"));
-        assertEquals("unknown",entryIn.getXattr("user.org.apache.weasels.species"));
+        assertEquals("global-weasels",entryIn.getExtraPaxHeader("SCHILLY.xattr.user.org.apache.weasels"));
+        assertEquals("unknown",entryIn.getExtraPaxHeader("SCHILLY.xattr.user.org.apache.weasels.species"));
         assertNull(in.getNextTarEntry());
     }
 
