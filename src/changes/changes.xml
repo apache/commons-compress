@@ -90,6 +90,11 @@ wanted to create such files.">
         specification. In particular 512 is the only recird size
         accepted and the block size must be a multiple of 512.
       </action>
+      <action issue="COMPRESS-400" type="add" date="2017-06-26"
+              due-to="Simon Spero ">
+        It is now possible to specify/read custom PAX headers when
+        writing/reading tar archives.
+      </action>
     </release>
     <release version="1.14" date="2017-05-14"
              description="Release 1.14">
