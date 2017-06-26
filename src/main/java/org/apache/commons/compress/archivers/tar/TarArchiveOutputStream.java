@@ -338,15 +338,16 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             this.haveUnclosedEntry = true;
             write(data);
             closeArchiveEntry();
-        } else {final Map<String, String> paxHeaders = new HashMap<>();
-        final String entryName = entry.getName();
-        final boolean paxHeaderContainsPath = handleLongName(entry, entryName, paxHeaders, "path",
-            TarConstants.LF_GNUTYPE_LONGNAME, "file name");
+        } else {
+            final Map<String, String> paxHeaders = new HashMap<>();
+            final String entryName = entry.getName();
+            final boolean paxHeaderContainsPath = handleLongName(entry, entryName, paxHeaders, "path",
+                TarConstants.LF_GNUTYPE_LONGNAME, "file name");
 
-        final String linkName = entry.getLinkName();
-        final boolean paxHeaderContainsLinkPath = linkName != null && linkName.length() > 0
-            && handleLongName(entry, linkName, paxHeaders, "linkpath",
-            TarConstants.LF_GNUTYPE_LONGLINK, "link name");
+            final String linkName = entry.getLinkName();
+            final boolean paxHeaderContainsLinkPath = linkName != null && linkName.length() > 0
+                && handleLongName(entry, linkName, paxHeaders, "linkpath",
+                TarConstants.LF_GNUTYPE_LONGLINK, "link name");
 
             if (bigNumberMode == BIGNUMBER_POSIX) {
                 addPaxHeadersForBigNumbers(paxHeaders, entry);
@@ -370,9 +371,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 writePaxHeaders(entry, entryName, paxHeaders);
             }
 
-        entry.writeEntryHeader(recordBuf, zipEncoding,
-            bigNumberMode == BIGNUMBER_STAR);
-        writeRecord(recordBuf);
+            entry.writeEntryHeader(recordBuf, zipEncoding, bigNumberMode == BIGNUMBER_STAR);
+            writeRecord(recordBuf);
 
             currBytes = 0;
 
