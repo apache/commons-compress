@@ -95,6 +95,10 @@ wanted to create such files.">
         It is now possible to specify/read custom PAX headers when
         writing/reading tar archives.
       </action>
+      <action issue="COMPRESS-415" type="fix" date="2017-06-27">
+        Fixed classnames of CpioArchiveEntry and
+        CpioArchiveInputStream in variuous javadocs.
+      </action>
     </release>
     <release version="1.14" date="2017-05-14"
              description="Release 1.14">

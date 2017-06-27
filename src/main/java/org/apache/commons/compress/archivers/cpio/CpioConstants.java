@@ -39,16 +39,16 @@ public interface CpioConstants {
 
     // These FORMAT_ constants are internal to the code
 
-    /** write/read a CPIOArchiveEntry in the new format */
+    /** write/read a CpioArchiveEntry in the new format */
     short FORMAT_NEW = 1;
 
-    /** write/read a CPIOArchiveEntry in the new format with crc */
+    /** write/read a CpioArchiveEntry in the new format with crc */
     short FORMAT_NEW_CRC = 2;
 
-    /** write/read a CPIOArchiveEntry in the old ascii format */
+    /** write/read a CpioArchiveEntry in the old ascii format */
     short FORMAT_OLD_ASCII = 4;
 
-    /** write/read a CPIOArchiveEntry in the old binary format */
+    /** write/read a CpioArchiveEntry in the old binary format */
     short FORMAT_OLD_BINARY = 8;
 
     /** Mask for both new formats */

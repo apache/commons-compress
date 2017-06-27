@@ -188,7 +188,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     private long uid = 0;
 
     /**
-     * Creates a CPIOArchiveEntry with a specified format.
+     * Creates a CpioArchiveEntry with a specified format.
      * 
      * @param format
      *            The cpio format for this entry.
@@ -226,7 +226,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Creates a CPIOArchiveEntry with a specified name. The format of
+     * Creates a CpioArchiveEntry with a specified name. The format of
      * this entry will be the new format.
      * 
      * @param name
@@ -237,7 +237,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Creates a CPIOArchiveEntry with a specified name.
+     * Creates a CpioArchiveEntry with a specified name.
      * 
      * @param format
      *            The cpio format for this entry.
@@ -260,7 +260,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Creates a CPIOArchiveEntry with a specified name. The format of
+     * Creates a CpioArchiveEntry with a specified name. The format of
      * this entry will be the new format.
      * 
      * @param name
@@ -274,7 +274,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Creates a CPIOArchiveEntry with a specified name.
+     * Creates a CpioArchiveEntry with a specified name.
      * 
      * @param format
      *            The cpio format for this entry.
@@ -300,7 +300,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Creates a CPIOArchiveEntry with a specified name for a
+     * Creates a CpioArchiveEntry with a specified name for a
      * specified file. The format of this entry will be the new
      * format.
      * 
@@ -314,7 +314,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Creates a CPIOArchiveEntry with a specified name for a
+     * Creates a CpioArchiveEntry with a specified name for a
      * specified file.
      * 
      * @param format
@@ -384,7 +384,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * 
      * @return Returns the device id.
      * @throws UnsupportedOperationException
-     *             if this method is called for a CPIOArchiveEntry with a new
+     *             if this method is called for a CpioArchiveEntry with a new
      *             format.
      */
     public long getDevice() {
@@ -397,7 +397,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * 
      * @return Returns the major device id.
      * @throws UnsupportedOperationException
-     *             if this method is called for a CPIOArchiveEntry with an old
+     *             if this method is called for a CpioArchiveEntry with an old
      *             format.
      */
     public long getDeviceMaj() {
@@ -540,7 +540,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * 
      * @return Returns the remote device id.
      * @throws UnsupportedOperationException
-     *             if this method is called for a CPIOArchiveEntry with a new
+     *             if this method is called for a CpioArchiveEntry with a new
      *             format.
      */
     public long getRemoteDevice() {
@@ -553,7 +553,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * 
      * @return Returns the remote major device id.
      * @throws UnsupportedOperationException
-     *             if this method is called for a CPIOArchiveEntry with an old
+     *             if this method is called for a CpioArchiveEntry with an old
      *             format.
      */
     public long getRemoteDeviceMaj() {
@@ -566,7 +566,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * 
      * @return Returns the remote minor device id.
      * @throws UnsupportedOperationException
-     *             if this method is called for a CPIOArchiveEntry with an old
+     *             if this method is called for a CpioArchiveEntry with an old
      *             format.
      */
     public long getRemoteDeviceMin() {
@@ -688,7 +688,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @param device
      *            The device id to set.
      * @throws UnsupportedOperationException
-     *             if this method is called for a CPIOArchiveEntry with a new
+     *             if this method is called for a CpioArchiveEntry with a new
      *             format.
      */
     public void setDevice(final long device) {
@@ -806,7 +806,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @param device
      *            The remote device id to set.
      * @throws UnsupportedOperationException
-     *             if this method is called for a CPIOArchiveEntry with a new
+     *             if this method is called for a CpioArchiveEntry with a new
      *             format.
      */
     public void setRemoteDevice(final long device) {
@@ -820,7 +820,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @param rmaj
      *            The remote major device id to set.
      * @throws UnsupportedOperationException
-     *             if this method is called for a CPIOArchiveEntry with an old
+     *             if this method is called for a CpioArchiveEntry with an old
      *             format.
      */
     public void setRemoteDeviceMaj(final long rmaj) {
@@ -834,7 +834,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @param rmin
      *            The remote minor device id to set.
      * @throws UnsupportedOperationException
-     *             if this method is called for a CPIOArchiveEntry with an old
+     *             if this method is called for a CpioArchiveEntry with an old
      *             format.
      */
     public void setRemoteDeviceMin(final long rmin) {

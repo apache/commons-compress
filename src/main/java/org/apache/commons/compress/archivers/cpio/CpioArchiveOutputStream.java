@@ -32,7 +32,7 @@ import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.CharsetNames;
 
 /**
- * CPIOArchiveOutputStream is a stream for writing CPIO streams. All formats of
+ * CpioArchiveOutputStream is a stream for writing CPIO streams. All formats of
  * CPIO are supported (old ASCII, old binary, new portable format and the new
  * portable format with CRC).
  *

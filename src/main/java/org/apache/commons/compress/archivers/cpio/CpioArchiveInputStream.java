@@ -31,7 +31,7 @@ import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
 
 /**
- * CPIOArchiveInputStream is a stream for reading cpio streams. All formats of
+ * CpioArchiveInputStream is a stream for reading cpio streams. All formats of
  * cpio are supported (old ascii, old binary, new portable format and the new
  * portable format with crc).
  *
@@ -41,9 +41,9 @@ import org.apache.commons.compress.utils.IOUtils;
  * specified by the entry.
  * </p>
  * <pre>
- * CPIOArchiveInputStream cpioIn = new CPIOArchiveInputStream(
+ * CpioArchiveInputStream cpioIn = new CpioArchiveInputStream(
  *         Files.newInputStream(Paths.get(&quot;test.cpio&quot;)));
- * CPIOArchiveEntry cpioEntry;
+ * CpioArchiveEntry cpioEntry;
  *
  * while ((cpioEntry = cpioIn.getNextEntry()) != null) {
  *     System.out.println(cpioEntry.getName());
@@ -224,7 +224,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
      * Reads the next CPIO file entry and positions stream at the beginning of
      * the entry data.
      * 
-     * @return the CPIOArchiveEntry just read
+     * @return the CpioArchiveEntry just read
      * @throws IOException
      *             if an I/O error has occurred or if a CPIO file error has
      *             occurred
