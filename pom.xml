@@ -242,6 +242,11 @@ jar, tar, zip, dump, 7z, arj.
             <failOnServiceError>false</failOnServiceError>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>maven-bundle-plugin</artifactId>
+          <version>3.3.0</version>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
@@ -406,6 +411,18 @@ jar, tar, zip, dump, 7z, arj.
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>java9</id>
+      <activation>
+        <jdk>9</jdk>
+      </activation>
+      <properties>
+        <maven.compiler.release>9</maven.compiler.release>
+        <commons.jacoco.version>0.7.9</commons.jacoco.version>
+        <animal.sniffer.skip>true</animal.sniffer.skip>
+      </properties>
+    </profile>
+
   </profiles>
 
 </project>
