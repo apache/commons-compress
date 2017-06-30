@@ -35,4 +35,4 @@ install: true
 # and running all tests twice.
 
 script:
-   - ./mvnw clean apache-rat:check test jacoco:report coveralls:report
+   - ./mvnw clean apache-rat:check test jacoco:report coveralls:report -Ptravis-jacoco
