@@ -136,62 +136,86 @@ class Coders {
             final Inflater inflater = new Inflater(true);
             final InflaterInputStream inflaterInputStream = new InflaterInputStream(new DummyByteAddingInputStream(in),
                     inflater);
-            return new InputStream() {
-                @Override
-                public int read() throws IOException {
-                    return inflaterInputStream.read();
-                }
-
-                @Override
-                public int read(final byte[] b, final int off, final int len) throws IOException {
-                    return inflaterInputStream.read(b, off, len);
-                }
-
-                @Override
-                public int read(final byte[] b) throws IOException {
-                    return inflaterInputStream.read(b);
-                }
-
-                @Override
-                public void close() throws IOException {
-                    try {
-                        inflaterInputStream.close();
-                    } finally {
-                        inflater.end();
-                    }
-                }
-            };
+            return new DeflateDecoderInputStream(inflaterInputStream, inflater);
         }
         @Override
         OutputStream encode(final OutputStream out, final Object options) {
             final int level = numberOptionOrDefault(options, 9);
             final Deflater deflater = new Deflater(level, true);
             final DeflaterOutputStream deflaterOutputStream = new DeflaterOutputStream(out, deflater);
-            return new OutputStream() {
-                @Override
-                public void write(final int b) throws IOException {
-                    deflaterOutputStream.write(b);
-                }
+            return new DeflateDecoderOutputStream(deflaterOutputStream, deflater);
+        }
 
-                @Override
-                public void write(final byte[] b) throws IOException {
-                    deflaterOutputStream.write(b);
-                }
+         static class DeflateDecoderInputStream extends InputStream {
 
-                @Override
-                public void write(final byte[] b, final int off, final int len) throws IOException {
-                    deflaterOutputStream.write(b, off, len);
-                }
+              InflaterInputStream inflaterInputStream;
+              Inflater inflater;
 
-                @Override
-                public void close() throws IOException {
-                    try {
-                        deflaterOutputStream.close();
-                    } finally {
-                        deflater.end();
-                    }
+            public DeflateDecoderInputStream(InflaterInputStream inflaterInputStream,
+                Inflater inflater) {
+                this.inflaterInputStream = inflaterInputStream;
+                this.inflater = inflater;
+            }
+
+            @Override
+            public int read() throws IOException {
+                return inflaterInputStream.read();
+            }
+
+            @Override
+            public int read(final byte[] b, final int off, final int len) throws IOException {
+                return inflaterInputStream.read(b, off, len);
+            }
+
+            @Override
+            public int read(final byte[] b) throws IOException {
+                return inflaterInputStream.read(b);
+            }
+
+            @Override
+            public void close() throws IOException {
+                try {
+                    inflaterInputStream.close();
+                } finally {
+                    inflater.end();
                 }
-            };
+            }
+        }
+
+         static class DeflateDecoderOutputStream extends OutputStream {
+
+              DeflaterOutputStream deflaterOutputStream;
+              Deflater deflater;
+
+            public DeflateDecoderOutputStream(DeflaterOutputStream deflaterOutputStream,
+                Deflater deflater) {
+                this.deflaterOutputStream = deflaterOutputStream;
+                this.deflater = deflater;
+            }
+
+            @Override
+            public void write(final int b) throws IOException {
+                deflaterOutputStream.write(b);
+            }
+
+            @Override
+            public void write(final byte[] b) throws IOException {
+                deflaterOutputStream.write(b);
+            }
+
+            @Override
+            public void write(final byte[] b, final int off, final int len) throws IOException {
+                deflaterOutputStream.write(b, off, len);
+            }
+
+            @Override
+            public void close() throws IOException {
+                try {
+                    deflaterOutputStream.close();
+                } finally {
+                    deflater.end();
+                }
+            }
         }
     }
 
