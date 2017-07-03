@@ -17,9 +17,9 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import java.io.Serializable;
-
 import org.apache.commons.compress.utils.ByteUtils;
+
+import java.io.Serializable;
 
 import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
 
@@ -82,6 +82,14 @@ public final class ZipLong implements Cloneable, Serializable {
     }
 
     /**
+     * create instance from a java int.
+      * @param value
+     */
+    public ZipLong(int value) {
+        this.value = value;
+    }
+
+    /**
      * Create instance from bytes.
      * @param bytes the bytes to store as a ZipLong
      */
@@ -113,6 +121,12 @@ public final class ZipLong implements Cloneable, Serializable {
     public long getValue() {
         return value;
     }
+
+    /**
+     * Get value as a (signed) java int
+     * @return
+     */
+    public int getIntValue() { return (int)value;}
 
     /**
      * Get value as four bytes in big endian byte order.
