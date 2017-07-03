@@ -18,9 +18,9 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * JUnit testcases for org.apache.commons.compress.archivers.zip.ZipLong.
@@ -90,8 +90,15 @@ public class ZipLongTest {
      */
     @Test
     public void testSign() {
-        final ZipLong zl = new ZipLong(new byte[] {(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF});
+         ZipLong zl = new ZipLong(new byte[] {(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF});
         assertEquals(0x00000000FFFFFFFFl, zl.getValue());
+        assertEquals(-1,zl.getIntValue());
+
+        zl = new ZipLong(0xFFFF_FFFFL);
+        assertEquals(0x00000000FFFFFFFFl, zl.getValue());
+        zl = new ZipLong(0xFFFF_FFFF);
+        assertEquals(0xFFFF_FFFF_FFFF_FFFFL, zl.getValue());
+
     }
 
     @Test
