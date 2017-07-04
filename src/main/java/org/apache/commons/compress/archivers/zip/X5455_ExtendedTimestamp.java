@@ -385,10 +385,6 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
         return zipLongToDate(accessTime);
     }
 
-    private static Date zipLongToDate(ZipLong unixTime) {
-        return unixTime != null ? new Date(unixTime.getIntValue() * 1000L) : null;
-    }
-
     /**
      * <p>
      * Returns the create time as a a java.util.Date
@@ -525,13 +521,6 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
         return unixTimeToZipLong(d.getTime() / 1000);
     }
 
-    private static ZipLong unixTimeToZipLong(long l) {
-        if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("X5455 timestamps must fit in a signed 32 bit integer: " + l);
-        }
-        return new ZipLong(l);
-    }
-
     /**
      * Returns a String representation of this class useful for
      * debugging purposes.
@@ -594,6 +583,17 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
             hc ^= Integer.rotateLeft(createTime.hashCode(), 22);
         }
         return hc;
+    }
+
+    private static Date zipLongToDate(ZipLong unixTime) {
+        return unixTime != null ? new Date(unixTime.getIntValue() * 1000L) : null;
+    }
+
+    private static ZipLong unixTimeToZipLong(long l) {
+        if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("X5455 timestamps must fit in a signed 32 bit integer: " + l);
+        }
+        return new ZipLong(l);
     }
 
 }

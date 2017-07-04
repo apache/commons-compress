@@ -151,10 +151,11 @@ public class X5455_ExtendedTimestampTest {
                                     } else {
                                         assertEquals(year + "-01-01/00:00:02 +0000", zipTime);
                                     }
-                                }if(year <2038) {
-                                assertEquals(year + "-01-01/00:00:01 +0000", modTime);
-                                assertEquals(year + "-01-01/00:00:03 +0000", accTime);
-                            }
+                                }
+                                if (year < 2038) {
+                                    assertEquals(year + "-01-01/00:00:01 +0000", modTime);
+                                    assertEquals(year + "-01-01/00:00:03 +0000", accTime);
+                                }
                                 break;
                         }
                     }
