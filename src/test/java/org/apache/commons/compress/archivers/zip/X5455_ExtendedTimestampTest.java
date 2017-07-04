@@ -105,6 +105,12 @@ public class X5455_ExtendedTimestampTest {
         uses the extended time stamp field itself and should be the
         same as "mod time".
         http://hg.openjdk.java.net/jdk8u/jdk8u/jdk/rev/90df6756406f
+
+        Starting with Java9 the parser for extended time stamps has
+        been fixed to use signed integers which was detected during
+        the triage of COMPRESS-416. Signed integers is the correct
+        format and Compress 1.15 has started to use signed integers as
+        well.
          */
 
         final File archive = getFile("COMPRESS-210_unix_time_zip_test.zip");
@@ -119,11 +125,37 @@ public class X5455_ExtendedTimestampTest {
             while (en.hasMoreElements()) {
 
                 final ZipArchiveEntry zae = en.nextElement();
+                if (zae.isDirectory()) {
+                    continue;
+                }
                 final String name = zae.getName();
+                final int x = name.lastIndexOf('/');
+                final String yearString = name.substring(x + 1);
+                int year;
+                try {
+                    year = Integer.parseInt(yearString);
+                } catch (final NumberFormatException nfe) {
+                    // setTime.sh, skip
+                    continue;
+                }
+
                 final X5455_ExtendedTimestamp xf = (X5455_ExtendedTimestamp) zae.getExtraField(X5455);
                 final Date rawZ = zae.getLastModifiedDate();
                 final Date m = xf.getModifyJavaTime();
-                final boolean zipTimeUsesExtendedTimestamp = rawZ.equals(m);
+
+                /*
+                  We must distinguish three cases:
+                  - Java has read the extended time field itself and agrees with us (Java9 or Java8 and years prior to
+                    2028)
+                  - Java has read the extended time field but found a year >= 2038 (Java8)
+                  - Java hasn't read the extended time field at all (Java7- or early Java8)
+                */
+
+                final boolean zipTimeUsesExtendedTimestampCorrectly = rawZ.equals(m);
+                final boolean zipTimeUsesExtendedTimestampButUnsigned = year > 2037 && rawZ.getSeconds() == 1;
+                final boolean zipTimeUsesExtendedTimestamp = zipTimeUsesExtendedTimestampCorrectly
+                    || zipTimeUsesExtendedTimestampButUnsigned;
+
                 final Date z = zipTimeUsesExtendedTimestamp ? rawZ : adjustFromGMTToExpectedOffset(rawZ);
                 final Date a = xf.getAccessJavaTime();
 
@@ -131,34 +163,29 @@ public class X5455_ExtendedTimestampTest {
                 final String modTime = DATE_FORMAT.format(m);
                 final String accTime = DATE_FORMAT.format(a);
 
-                if (!zae.isDirectory()) {
-                    final int x = name.lastIndexOf('/');
-                    final String yearString = name.substring(x + 1);
-                    int year;
-                    try {
-                        year = Integer.parseInt(yearString);
-                    } catch (final NumberFormatException nfe) {
-                        year = -1;
+                switch (year) {
+                case 2109:
+                    // All three timestamps have overflowed by 2109.
+                    if (!zipTimeUsesExtendedTimestamp) {
+                        assertEquals("1981-01-01/00:00:02 +0000", zipTime);
                     }
-                    if (year >= 0) {
-                        switch (year) {
-                            default:
-                                if (!zipTimeUsesExtendedTimestamp) {
-                                    // X5455 time is good from epoch (1970) to 2037.
-                                    // Zip time is good from 1980 to 2107.
-                                    if (year < 1980) {
-                                        assertEquals("1980-01-01/08:00:00 +0000", zipTime);
-                                    } else {
-                                        assertEquals(year + "-01-01/00:00:02 +0000", zipTime);
-                                    }
-                                }
-                                if (year < 2038) {
-                                    assertEquals(year + "-01-01/00:00:01 +0000", modTime);
-                                    assertEquals(year + "-01-01/00:00:03 +0000", accTime);
-                                }
-                                break;
+                    break;
+                default:
+                    if (!zipTimeUsesExtendedTimestamp) {
+                        // X5455 time is good from epoch (1970) to 2037.
+                        // Zip time is good from 1980 to 2107.
+                        if (year < 1980) {
+                            assertEquals("1980-01-01/08:00:00 +0000", zipTime);
+                        } else {
+                            assertEquals(year + "-01-01/00:00:02 +0000", zipTime);
                         }
                     }
+
+                    if (year < 2038) {
+                        assertEquals(year + "-01-01/00:00:01 +0000", modTime);
+                        assertEquals(year + "-01-01/00:00:03 +0000", accTime);
+                    }
+                    break;
                 }
             }
         } finally {
