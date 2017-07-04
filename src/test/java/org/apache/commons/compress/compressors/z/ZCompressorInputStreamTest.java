@@ -39,6 +39,14 @@ public class ZCompressorInputStreamTest {
 
     @Test(expected = IOException.class)
     public void testFailsToCreateZCompressorInputStreamAndThrowsIOException() throws IOException {
+        boolean java9 = false;
+        try {
+            Class.forName("java.lang.module.ModuleDescriptor");
+            java9 = true;
+        } catch (Exception ex) {
+            // not Java9
+        }
+        org.junit.Assume.assumeFalse("can't use PowerMock with Java9", java9);
 
         Enumeration<SequenceInputStream> enumeration = (Enumeration<SequenceInputStream>) mock(Enumeration.class);
         SequenceInputStream sequenceInputStream = new SequenceInputStream(enumeration);
