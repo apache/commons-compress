@@ -22,7 +22,7 @@ language: java
 jdk:
   - openjdk7
   - openjdk8
-  - oraclejdk7
+#  - oraclejdk7   Oracle JDK 7 can't run coveralls plugin.
   - oraclejdk8
   - oraclejdk9
 
