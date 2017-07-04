@@ -102,6 +102,12 @@ wanted to create such files.">
         Fixed classnames of CpioArchiveEntry and
         CpioArchiveInputStream in variuous javadocs.
       </action>
+      <action issue="COMPRESS-416" type="fix" date="2017-07-04"
+              due-to="Simon Spero ">
+        The code of the extended timestamp zip extra field incorrectly
+        assumed the time was stored as unsigned 32bit int and thus
+        created incorrect results for years after 2037.
+      </action>
     </release>
     <release version="1.14" date="2017-05-14"
              description="Release 1.14">
