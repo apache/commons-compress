@@ -146,7 +146,7 @@ public class X5455_ExtendedTimestampTest {
                 /*
                   We must distinguish three cases:
                   - Java has read the extended time field itself and agrees with us (Java9 or Java8 and years prior to
-                    2028)
+                    2038)
                   - Java has read the extended time field but found a year >= 2038 (Java8)
                   - Java hasn't read the extended time field at all (Java7- or early Java8)
                 */
