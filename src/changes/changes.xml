@@ -108,6 +108,11 @@ wanted to create such files.">
         assumed the time was stored as unsigned 32bit int and thus
         created incorrect results for years after 2037.
       </action>
+      <action issue="COMPRESS-410" type="fix" date="2017-07-05"
+              due-to="Simon Spero ">
+        Removed ZipEncoding code that became obsolete when we started
+        to require Java5 as baseline long ago.
+      </action>
     </release>
     <release version="1.14" date="2017-05-14"
              description="Release 1.14">
