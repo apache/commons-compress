@@ -19,13 +19,15 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
-
-import org.apache.commons.compress.utils.CharsetNames;
-
-import static org.junit.Assert.*;
-
+import java.nio.charset.Charset;
+import org.hamcrest.core.IsInstanceOf;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -33,6 +35,7 @@ import org.junit.Test;
  * Test zip encodings.
  */
 public class ZipEncodingTest {
+
     private static final String UNENC_STRING = "\u2016";
 
     // stress test for internal grow method.
@@ -43,15 +46,51 @@ public class ZipEncodingTest {
         "%U2016%U2015%U2016%U2015%U2016%U2015%U2016%U2015%U2016%U2015%U2016";
 
     @Test
-    public void testSimpleCp437Encoding() throws IOException {
-
-        doSimpleEncodingTest("Cp437", null);
+    public void testNothingToMakeCoverallsHappier() {
+        Object o = new ZipEncodingHelper() {
+        };
+        assertNotNull(o);
+    }
+    @Test
+    public void testGetNonexistentEncodng() throws IOException {
+        ZipEncoding ze = ZipEncodingHelper.getZipEncoding("I-am-a-banana");
+        assertNotNull(ze);
+        if (ze instanceof HasCharset) {
+            HasCharset hasCharset = (HasCharset) ze;
+            Assert.assertEquals(Charset.defaultCharset(),hasCharset.getCharset());
+        }
     }
 
     @Test
+    public void testIsUTF8() throws IOException {
+       assertTrue(ZipEncodingHelper.isUTF8("UTF-8"));
+       assertTrue(ZipEncodingHelper.isUTF8("UTF8"));
+       Assert.assertEquals(Charset.defaultCharset().name().equals("UTF-8"),ZipEncodingHelper.isUTF8(null));
+    }
+    @Test
+    public void testSimpleCp437Encoding() throws IOException {
+        doSimpleEncodingsTest(437);
+    }
+    @Test
     public void testSimpleCp850Encoding() throws IOException {
+        doSimpleEncodingsTest(850);
+    }
 
-        doSimpleEncodingTest("Cp850", null);
+
+    @Test
+    public void testEbcidic() throws IOException {
+
+        doSimpleEncodingTest("IBM1047", null);
+    }
+
+
+    private void doSimpleEncodingsTest(int n) throws IOException {
+
+        doSimpleEncodingTest("Cp" + n, null);
+        doSimpleEncodingTest("cp" + n, null);
+        doSimpleEncodingTest("CP" + n, null);
+        doSimpleEncodingTest("IBM" + n, null);
+        doSimpleEncodingTest("ibm" + n, null);
     }
 
     @Test
@@ -127,7 +166,7 @@ public class ZipEncodingTest {
         throws IOException {
 
         final ZipEncoding enc = ZipEncodingHelper.getZipEncoding(name);
-
+        assertThat(enc, IsInstanceOf.instanceOf(NioZipEncoding.class));
         if (testBytes == null) {
 
             testBytes = new byte[256];
@@ -145,10 +184,10 @@ public class ZipEncodingTest {
         assertEquals(testBytes, encoded);
 
         assertFalse(enc.canEncode(UNENC_STRING));
-        assertEquals("%U2016".getBytes(CharsetNames.US_ASCII), enc.encode(UNENC_STRING));
+        assertEquals("%U2016".getBytes(name), enc.encode(UNENC_STRING));
         assertFalse(enc.canEncode(BAD_STRING));
-        assertEquals(BAD_STRING_ENC.getBytes(CharsetNames.US_ASCII),
-                     enc.encode(BAD_STRING));
+        assertEquals(BAD_STRING_ENC.getBytes(name), enc.encode(BAD_STRING));
+        assertEquals(BAD_STRING_ENC.getBytes(name), enc.encode(BAD_STRING));
     }
 
 }
