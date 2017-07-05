@@ -67,33 +67,6 @@ class NioZipEncoding implements ZipEncoding, HasCharset {
         return enc.canEncode(name);
     }
 
-    private CharsetEncoder newEncoder() {
-        if (useReplacement) {
-            return charset.newEncoder()
-                .onMalformedInput(CodingErrorAction.REPLACE)
-                .onUnmappableCharacter(CodingErrorAction.REPLACE)
-                .replaceWith(REPLACEMENT_BYTES);
-        } else {
-            return charset.newEncoder()
-                .onMalformedInput(CodingErrorAction.REPORT)
-                .onUnmappableCharacter(CodingErrorAction.REPORT);
-        }
-    }
-
-    private CharsetDecoder newDecoder() {
-        if (!useReplacement) {
-            return this.charset.newDecoder()
-                .onMalformedInput(CodingErrorAction.REPORT)
-                .onUnmappableCharacter(CodingErrorAction.REPORT);
-        } else {
-            return  charset.newDecoder()
-                .onMalformedInput(CodingErrorAction.REPLACE)
-                .onUnmappableCharacter(CodingErrorAction.REPLACE)
-                .replaceWith(REPLACEMENT_STRING);
-        }
-    }
-
-
     /**
      * @see ZipEncoding#encode(java.lang.String)
      */
@@ -150,6 +123,16 @@ class NioZipEncoding implements ZipEncoding, HasCharset {
         return out;
     }
 
+    /**
+     * @see
+     * ZipEncoding#decode(byte[])
+     */
+    @Override
+    public String decode(final byte[] data) throws IOException {
+        return newDecoder()
+            .decode(ByteBuffer.wrap(data)).toString();
+    }
+
     private static ByteBuffer encodeFully(CharsetEncoder enc, CharBuffer cb, ByteBuffer out) {
         while (cb.hasRemaining()) {
             CoderResult result = enc.encode(cb, out, false);
@@ -176,6 +159,32 @@ class NioZipEncoding implements ZipEncoding, HasCharset {
         cb.put(HEX_CHARS[c & 0x0f]);
         cb.flip();
         return cb;
+    }
+
+    private CharsetEncoder newEncoder() {
+        if (useReplacement) {
+            return charset.newEncoder()
+                .onMalformedInput(CodingErrorAction.REPLACE)
+                .onUnmappableCharacter(CodingErrorAction.REPLACE)
+                .replaceWith(REPLACEMENT_BYTES);
+        } else {
+            return charset.newEncoder()
+                .onMalformedInput(CodingErrorAction.REPORT)
+                .onUnmappableCharacter(CodingErrorAction.REPORT);
+        }
+    }
+
+    private CharsetDecoder newDecoder() {
+        if (!useReplacement) {
+            return this.charset.newDecoder()
+                .onMalformedInput(CodingErrorAction.REPORT)
+                .onUnmappableCharacter(CodingErrorAction.REPORT);
+        } else {
+            return  charset.newDecoder()
+                .onMalformedInput(CodingErrorAction.REPLACE)
+                .onUnmappableCharacter(CodingErrorAction.REPLACE)
+                .replaceWith(REPLACEMENT_STRING);
+        }
     }
 
     /**
@@ -205,16 +214,6 @@ class NioZipEncoding implements ZipEncoding, HasCharset {
      */
     private static int estimateIncrementalEncodingSize(CharsetEncoder enc, int charCount) {
         return (int) Math.ceil(charCount * enc.averageBytesPerChar());
-    }
-
-    /**
-     * @see
-     * ZipEncoding#decode(byte[])
-     */
-    @Override
-    public String decode(final byte[] data) throws IOException {
-        return newDecoder()
-            .decode(ByteBuffer.wrap(data)).toString();
     }
 
 }
