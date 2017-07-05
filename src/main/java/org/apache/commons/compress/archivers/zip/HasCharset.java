@@ -28,6 +28,7 @@ import java.nio.charset.Charset;
  * This avoids introducing a
  * potentially breaking change, or making {@link NioZipEncoding} a public class.
  * </p>
+ * @since 1.15
  */
 public interface HasCharset {
 

@@ -46,9 +46,9 @@ public abstract class ZipEncodingHelper {
     static final String UTF8 = "UTF8";
 
     /**
-     * name of the encoding UTF-8
+     * the encoding UTF-8
      */
-    static final ZipEncoding UTF8_ZIP_ENCODING = getZipEncoding("UTF-8");
+    static final ZipEncoding UTF8_ZIP_ENCODING = getZipEncoding(UTF8);
 
     /**
      * Instantiates a zip encoding. An NIO based character set encoder/decoder will be returned.
@@ -67,12 +67,11 @@ public abstract class ZipEncodingHelper {
         if (name != null) {
             try {
                 cs = Charset.forName(name);
-            } catch (UnsupportedCharsetException e) {
+            } catch (UnsupportedCharsetException e) { // NOSONAR we use the default encoding instead
             }
         }
-        boolean useReplacement = cs.name().equals("UTF-8");
+        boolean useReplacement = isUTF8(cs.name());
         return new NioZipEncoding(cs, useReplacement);
-
     }
 
     /**

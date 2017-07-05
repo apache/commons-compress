@@ -34,12 +34,13 @@ import java.nio.charset.CodingErrorAction;
  * <p>The methods of this class are reentrant.</p>
  * @Immutable
  */
-class NioZipEncoding implements ZipEncoding,HasCharset {
+class NioZipEncoding implements ZipEncoding, HasCharset {
 
     private final Charset charset;
-    private  boolean useReplacement= false;
-    private static final byte[] REPLACEMENT_BYTES = new byte[]{'?'};
-    private static final String REPLACEMENT_STRING = "?";
+    private final boolean useReplacement;
+    private static final char REPLACEMENT = '?';
+    private static final byte[] REPLACEMENT_BYTES = { (byte) REPLACEMENT };
+    private static final String REPLACEMENT_STRING = String.valueOf(REPLACEMENT);
 
     /**
      * Construct an NioZipEncoding using the given charset.
@@ -49,7 +50,6 @@ class NioZipEncoding implements ZipEncoding,HasCharset {
     NioZipEncoding(final Charset charset, boolean useReplacement) {
         this.charset = charset;
         this.useReplacement = useReplacement;
-
     }
 
     @Override
@@ -102,7 +102,7 @@ class NioZipEncoding implements ZipEncoding,HasCharset {
         final CharsetEncoder enc = newEncoder();
 
         final CharBuffer cb = CharBuffer.wrap(name);
-        CharBuffer tmp=null;
+        CharBuffer tmp = null;
         ByteBuffer out = ByteBuffer.allocate(estimateInitialBufferSize(enc, cb.remaining()));
 
         while (cb.remaining() > 0) {
@@ -127,13 +127,13 @@ class NioZipEncoding implements ZipEncoding,HasCharset {
                         }
                     }
                     int totalExtraSpace = estimateIncrementalEncodingSize(enc, charCount);
-                    out = ZipEncodingHelper.growBufferBy(out, totalExtraSpace- out.remaining());
+                    out = ZipEncodingHelper.growBufferBy(out, totalExtraSpace - out.remaining());
                 }
-                if(tmp == null) {
+                if (tmp == null) {
                     tmp = CharBuffer.allocate(6);
                 }
                 for (int i = 0; i < res.length(); ++i) {
-                    out = encodeFully(enc, encodeSurrogate(tmp,cb.get()), out);
+                    out = encodeFully(enc, encodeSurrogate(tmp, cb.get()), out);
                 }
 
             } else if (res.isOverflow()) {
@@ -143,8 +143,7 @@ class NioZipEncoding implements ZipEncoding,HasCharset {
         }
         CoderResult coderResult = enc.encode(cb, out, true);
 
-        assert coderResult.isUnderflow() : "unexpected coder result: " + coderResult;
-        
+        // may have caused underflow, but that's been ignored traditionally
 
         out.limit(out.position());
         out.rewind();
@@ -157,16 +156,16 @@ class NioZipEncoding implements ZipEncoding,HasCharset {
             if (result.isOverflow()) {
                 int increment = estimateIncrementalEncodingSize(enc, cb.remaining());
                 out = ZipEncodingHelper.growBufferBy(out, increment);
-            } 
+            }
         }
         return out;
     }
 
-    static char[] HEX_CHARS = new char[]{
+    private static final char[] HEX_CHARS = new char[] {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
     };
 
-    private CharBuffer encodeSurrogate( CharBuffer cb,char c) {
+    private static CharBuffer encodeSurrogate(CharBuffer cb, char c) {
         cb.position(0).limit(6);
         cb.put('%');
         cb.put('U');
@@ -191,7 +190,7 @@ class NioZipEncoding implements ZipEncoding,HasCharset {
      * @param charChount number of characters in string
      * @return estimated size in bytes.
      */
-    private int estimateInitialBufferSize(CharsetEncoder enc, int charChount) {
+    private static int estimateInitialBufferSize(CharsetEncoder enc, int charChount) {
         float first = enc.maxBytesPerChar();
         float rest = (charChount - 1) * enc.averageBytesPerChar();
         return (int) Math.ceil(first + rest);
