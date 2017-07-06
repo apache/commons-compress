@@ -30,17 +30,6 @@ public abstract class ZipEncodingHelper {
 
 
     /**
-     * The hexadecimal digits <code>0,...,9,A,...,F</code> encoded as
-     * ASCII bytes.
-     */
-    private static final byte[] HEX_DIGITS =
-        new byte [] {
-        0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x41,
-        0x42, 0x43, 0x44, 0x45, 0x46
-    };
-
-
-    /**
      * name of the encoding UTF-8
      */
     static final String UTF8 = "UTF8";
