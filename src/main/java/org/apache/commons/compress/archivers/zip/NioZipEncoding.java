@@ -134,14 +134,15 @@ class NioZipEncoding implements ZipEncoding, HasCharset {
     }
 
     private static ByteBuffer encodeFully(CharsetEncoder enc, CharBuffer cb, ByteBuffer out) {
+        ByteBuffer o = out;
         while (cb.hasRemaining()) {
-            CoderResult result = enc.encode(cb, out, false);
+            CoderResult result = enc.encode(cb, o, false);
             if (result.isOverflow()) {
                 int increment = estimateIncrementalEncodingSize(enc, cb.remaining());
-                out = ZipEncodingHelper.growBufferBy(out, increment);
+                o = ZipEncodingHelper.growBufferBy(o, increment);
             }
         }
-        return out;
+        return o;
     }
 
     private static final char[] HEX_CHARS = new char[] {
