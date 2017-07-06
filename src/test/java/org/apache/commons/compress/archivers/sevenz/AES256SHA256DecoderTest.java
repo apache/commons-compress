@@ -38,32 +38,6 @@ public class AES256SHA256DecoderTest {
 
 
     @Test
-    public void testDecodeWithEmptyString() throws IOException {
-
-        AES256SHA256Decoder aES256SHA256Decoder = new AES256SHA256Decoder();
-        BufferedInputStream bufferedInputStream = new BufferedInputStream(null, 1801);
-        Coder coder = new Coder();
-        byte[] byteArray = new byte[2];
-        coder.properties = byteArray;
-        InputStream inputStream = aES256SHA256Decoder.decode("", bufferedInputStream, 1801, coder, byteArray);
-
-        assertArrayEquals(new byte[] {(byte)0, (byte)0}, byteArray);
-        assertNotNull(inputStream);
-
-        ObjectInputStream objectInputStream = null;
-
-        try {
-            objectInputStream = new ObjectInputStream(inputStream);
-            fail("Expecting exception: IOException");
-        } catch(Throwable e) {
-            assertEquals("Decryption error (do you have the JCE Unlimited Strength Jurisdiction Policy Files installed?)",e.getMessage());
-            assertEquals("org.apache.commons.compress.archivers.sevenz.AES256SHA256Decoder$1", e.getStackTrace()[0].getClassName());
-        }
-
-    }
-
-
-    @Test
     public void testDecodeWithNonEmptyString() throws IOException {
 
         AES256SHA256Decoder aES256SHA256Decoder = new AES256SHA256Decoder();
