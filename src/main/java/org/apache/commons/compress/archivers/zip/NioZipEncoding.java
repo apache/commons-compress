@@ -114,8 +114,8 @@ class NioZipEncoding implements ZipEncoding, HasCharset {
                 out = ZipEncodingHelper.growBufferBy(out, increment);
             }
         }
-        CoderResult coderResult = enc.encode(cb, out, true);
-
+        // tell the encoder we are done
+        enc.encode(cb, out, true);
         // may have caused underflow, but that's been ignored traditionally
 
         out.limit(out.position());
