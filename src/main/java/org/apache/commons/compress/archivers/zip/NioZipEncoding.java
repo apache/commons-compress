@@ -41,6 +41,10 @@ class NioZipEncoding implements ZipEncoding, HasCharset {
     private static final char REPLACEMENT = '?';
     private static final byte[] REPLACEMENT_BYTES = { (byte) REPLACEMENT };
     private static final String REPLACEMENT_STRING = String.valueOf(REPLACEMENT);
+    private static final char[] HEX_CHARS = new char[] {
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+    };
+
 
     /**
      * Construct an NioZipEncoding using the given charset.
@@ -86,18 +90,14 @@ class NioZipEncoding implements ZipEncoding, HasCharset {
                 // write the unmappable characters in utf-16
                 // pseudo-URL encoding style to ByteBuffer.
 
-                int spaceForSurrogate = estimateIncrementalEncodingSize(enc, (6 * res.length()));
+                int spaceForSurrogate = estimateIncrementalEncodingSize(enc, 6 * res.length());
                 if (spaceForSurrogate > out.remaining()) {
                     // if the destination buffer isn't over sized, assume that the presence of one
                     // unmappable character makes it likely that there will be more. Find all the
                     // un-encoded characters and allocate space based on those estimates.
                     int charCount = 0;
                     for (int i = cb.position() ; i < cb.limit(); i++) {
-                        if (!enc.canEncode(cb.get(i))) {
-                            charCount+= 6;
-                        } else {
-                            charCount++;
-                        }
+                        charCount += !enc.canEncode(cb.get(i)) ? 6 : 1;
                     }
                     int totalExtraSpace = estimateIncrementalEncodingSize(enc, charCount);
                     out = ZipEncodingHelper.growBufferBy(out, totalExtraSpace - out.remaining());
@@ -144,10 +144,6 @@ class NioZipEncoding implements ZipEncoding, HasCharset {
         }
         return o;
     }
-
-    private static final char[] HEX_CHARS = new char[] {
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
-    };
 
     private static CharBuffer encodeSurrogate(CharBuffer cb, char c) {
         cb.position(0).limit(6);
