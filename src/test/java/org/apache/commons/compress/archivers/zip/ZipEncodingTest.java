@@ -56,8 +56,8 @@ public class ZipEncodingTest {
     public void testGetNonexistentEncodng() throws IOException {
         ZipEncoding ze = ZipEncodingHelper.getZipEncoding("I-am-a-banana");
         assertNotNull(ze);
-        if (ze instanceof HasCharset) {
-            HasCharset hasCharset = (HasCharset) ze;
+        if (ze instanceof CharsetAccessor) {
+            CharsetAccessor hasCharset = (CharsetAccessor) ze;
             Assert.assertEquals(Charset.defaultCharset(), hasCharset.getCharset());
         }
     }

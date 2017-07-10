@@ -30,7 +30,7 @@ import java.nio.charset.Charset;
  * </p>
  * @since 1.15
  */
-public interface HasCharset {
+public interface CharsetAccessor {
 
     /**
      * Provides access to the character set associated with an object.

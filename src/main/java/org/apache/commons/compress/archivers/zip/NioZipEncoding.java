@@ -34,7 +34,7 @@ import java.nio.charset.CodingErrorAction;
  * <p>The methods of this class are reentrant.</p>
  * @Immutable
  */
-class NioZipEncoding implements ZipEncoding, HasCharset {
+class NioZipEncoding implements ZipEncoding, CharsetAccessor {
 
     private final Charset charset;
     private final boolean useReplacement;
