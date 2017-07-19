@@ -1271,10 +1271,14 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
         groupName = oldStyle ? TarUtils.parseName(header, offset, GNAMELEN)
             : TarUtils.parseName(header, offset, GNAMELEN, encoding);
         offset += GNAMELEN;
+        if (linkFlag == LF_CHR || linkFlag == LF_BLK) {
         devMajor = (int) TarUtils.parseOctalOrBinary(header, offset, DEVLEN);
         offset += DEVLEN;
         devMinor = (int) TarUtils.parseOctalOrBinary(header, offset, DEVLEN);
         offset += DEVLEN;
+        } else {
+            offset += 2 * DEVLEN;
+        }
 
         final int type = evaluateType(header);
         switch (type) {
