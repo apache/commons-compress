@@ -113,6 +113,11 @@ wanted to create such files.">
         Removed ZipEncoding code that became obsolete when we started
         to require Java5 as baseline long ago.
       </action>
+      <action issue="COMPRESS-417" type="fix" date="2017-07-19">
+        The tar package will no longer try to parse the major and
+        minor device numbers unless the entry represents a character
+        or block special file.
+      </action>
     </release>
     <release version="1.14" date="2017-05-14"
              description="Release 1.14">
