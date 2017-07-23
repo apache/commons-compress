@@ -30,14 +30,16 @@
       stores various attributes including information about the
       original owner and permissions.</p>
 
-      <p>There are several different tar formats and the TAR package
-      of Compress 1.4 mostly only provides the common functionality
-      of the existing variants.</p>
-
-      <p>The original format (often called "ustar") didn't support
-      file names longer than 100 characters or bigger than 8 GiB and
-      the tar package will by default fail if you try to write an
-      entry that goes beyond those limits.</p>
+      <p>There are several different dialects of the TAR format, maybe
+      even different TAR formats. The tar package contains special
+      cases in order to read many of the existing dialects and will by
+      default try to create archives in the original format (often
+      called "ustar"). This original format didn't support file names
+      longer than 100 characters or bigger than 8 GiB and the tar
+      package will by default fail if you try to write an entry that
+      goes beyond those limits. "ustar" is the common denominator of
+      all the existing tar dialects and is understood by most of the
+      existing tools.</p>
 
       <p>The tar package does not support the full POSIX tar standard
       nor more modern GNU extension of said standard.</p>
