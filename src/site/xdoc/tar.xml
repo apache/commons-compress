@@ -151,6 +151,76 @@
 
       </subsection>
 
+      <subsection name="PAX Extended Header">
+        <p>The tar package has supported reading PAX extended headers
+        since 1.3 for local headers and 1.11 for global headers. The
+        following entries of PAX headers are applied when reading:</p>
+
+        <dl>
+          <dt>path</dt>
+          <dd>set the entry's name</dd>
+
+          <dt>linkpath</dt>
+          <dd>set the entry's link name</dd>
+
+          <dt>gid</dt>
+          <dd>set the entry's group id</dd>
+
+          <dt>gname</dt>
+          <dd>set the entry's group name</dd>
+
+          <dt>uid</dt>
+          <dd>set the entry's user id</dd>
+
+          <dt>uname</dt>
+          <dd>set the entry's user name</dd>
+
+          <dt>size</dt>
+          <dd>set the entry's size</dd>
+
+          <dt>mtime</dt>
+          <dd>set the entry's modification time</dd>
+
+          <dt>SCHILY.devminor</dt>
+          <dd>set the entry's minor device number</dd>
+
+          <dt>SCHILY.devmajor</dt>
+          <dd>set the entry's major device number</dd>
+        </dl>
+
+        <p>in addition some fields used by GNU tar and star used to
+        signal sparse entries are supported and are used for the
+        <code>is*GNUSparse</code> and <code>isStarSparse</code>
+        methods.</p>
+
+        <p>Some PAX extra headers may be set when writing archives,
+        for example for non-ASCII names or big numeric values. This
+        depends on various setting of the output stream - see the
+        previous sections.</p>
+
+        <p>Since 1.15 you can directly access all PAX extension
+        headers that have been found when reading an entry or specify
+        extra headers to be written to a (local) PAX extended header
+        entry.</p>
+
+        <p>Some hints if you try to set extended headers:</p>
+
+        <ul>
+          <li>pax header keywords should be ascii.  star/gnutar
+          (SCHILY.xattr.* ) do not check for this.  libarchive/bsdtar
+          (LIBARCHIVE.xattr.*) uses URL-Encoding.</li>
+          <li>pax header values should be encoded as UTF-8 characters
+          (including trailing <code>\0</code>).  star/gnutar
+          (SCHILY.xattr.*) do not check for this.  libarchive/bsdtar
+          (LIBARCHIVE.xattr.*) encode values using Base64.</li>
+          <li>libarchive/bsdtar will read SCHILY.xattr headers, but
+          will not generate them.</li>
+          <li>gnutar will complain about LIBARCHIVE.xattr (and any
+          other unknown) headers and will neither encode nor decode
+          them.</li>
+        </ul>
+      </subsection>
+
     </section>
   </body>
 </document>
