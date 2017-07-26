@@ -74,8 +74,11 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     /**
      * The {@link java.util.zip.ZipEntry#setSize} method in the base
      * class throws an IllegalArgumentException if the size is bigger
-     * than 2GB for Java versions < 7.  Need to keep our own size
-     * information for Zip64 support.
+     * than 2GB for Java versions &lt; 7 and even in Java 7+ if the
+     * implementation in java.util.zip doesn't support Zip64 itself
+     * (it is an optional feature).
+     *
+     * <p>We need to keep our own size information for Zip64 support.</p>
      */
     private long size = SIZE_UNKNOWN;
 
