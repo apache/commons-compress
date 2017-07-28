@@ -425,6 +425,8 @@ jar, tar, zip, dump, 7z, arj.
         <maven.compiler.release>9</maven.compiler.release>
         <commons.jacoco.version>0.7.9</commons.jacoco.version>
         <animal.sniffer.skip>true</animal.sniffer.skip>
+        <!-- coverall version 4.3.0 does not work with java 9, see https://github.com/trautonen/coveralls-maven-plugin/issues/112 -->
+        <coveralls.skip>true</coveralls.skip>
       </properties>
     </profile>
 
