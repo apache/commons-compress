@@ -367,11 +367,11 @@ public class TarUtilsTest {
         };
         assertEquals(expected, TarUtils.parseOctalOrBinary(buffer, 0, buffer.length));
     }
-    
+
     @Test
     public void testRoundTripOctalOrBinary8_ValueTooBigForBinary() {
         try {
-        	checkRoundTripOctalOrBinary(Long.MAX_VALUE, 8);
+            checkRoundTripOctalOrBinary(Long.MAX_VALUE, 8);
             fail("Should throw exception - value is too long to fit buffer of this len");
         } catch (IllegalArgumentException e) {
             assertEquals("Value 9223372036854775807 is too large for 8 byte field.", e.getMessage());
