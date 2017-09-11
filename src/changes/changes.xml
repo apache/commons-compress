@@ -105,13 +105,13 @@ wanted to create such files.">
       <action issue="COMPRESS-416" type="fix" date="2017-07-04"
               due-to="Simon Spero ">
         The code of the extended timestamp zip extra field incorrectly
-        assumed the time was stored as unsigned 32bit int and thus
+        assumed the time was stored as unsigned 32-bit int and thus
         created incorrect results for years after 2037.
       </action>
       <action issue="COMPRESS-410" type="fix" date="2017-07-05"
               due-to="Simon Spero ">
         Removed ZipEncoding code that became obsolete when we started
-        to require Java5 as baseline long ago.
+        to require Java 5 as baseline long ago.
       </action>
       <action issue="COMPRESS-417" type="fix" date="2017-07-19">
         The tar package will no longer try to parse the major and
