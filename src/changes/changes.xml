@@ -84,13 +84,13 @@ wanted to create such files.">
       <action issue="COMPRESS-412" type="fix" date="2017-06-17"
               due-to="Michael Hausegger">
         Made sure ChecksumCalculatingInputStream receives valid
-        checksum and input stream instances via the cnstructor.
+        checksum and input stream instances via the constructor.
       </action>
       <action issue="COMPRESS-407" type="fix" date="2017-06-24"
               due-to="Simon Spero ">
         TarArchiveOutputStream now verifies the block and record sizes
         specified at construction time are compatible with the tar
-        specification. In particular 512 is the only recird size
+        specification. In particular 512 is the only record size
         accepted and the block size must be a multiple of 512.
       </action>
       <action issue="COMPRESS-400" type="add" date="2017-06-26"
@@ -99,8 +99,8 @@ wanted to create such files.">
         writing/reading tar archives.
       </action>
       <action issue="COMPRESS-415" type="fix" date="2017-06-27">
-        Fixed classnames of CpioArchiveEntry and
-        CpioArchiveInputStream in various javadocs.
+        Fixed class names of CpioArchiveEntry and
+        CpioArchiveInputStream in various Javadocs.
       </action>
       <action issue="COMPRESS-416" type="fix" date="2017-07-04"
               due-to="Simon Spero ">
