@@ -100,7 +100,7 @@ wanted to create such files.">
       </action>
       <action issue="COMPRESS-415" type="fix" date="2017-06-27">
         Fixed classnames of CpioArchiveEntry and
-        CpioArchiveInputStream in variuous javadocs.
+        CpioArchiveInputStream in various javadocs.
       </action>
       <action issue="COMPRESS-416" type="fix" date="2017-07-04"
               due-to="Simon Spero ">
