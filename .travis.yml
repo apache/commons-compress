@@ -14,10 +14,7 @@
 # limitations under the License.
 
 sudo: false
-# Use Trusty as dist
-dist: trusty
 language: java
-
 
 jdk:
   - openjdk7
