@@ -46,6 +46,9 @@ public class TarUtilsTest {
         assertEquals(off, 30);
         sb2 = TarUtils.parseName(buff, 1, buff.length-1);
         assertEquals(sb1, sb2);
+        buff = new byte[]{0, 1, 0};
+        sb2 = TarUtils.parseName(buff, 0, 3);
+        assertEquals("", sb2);
     }
 
     @Test
