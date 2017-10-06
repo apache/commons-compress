@@ -118,6 +118,11 @@ wanted to create such files.">
         minor device numbers unless the entry represents a character
         or block special file.
       </action>
+      <action issue="COMPRESS-421" type="fix" date="2017-10-06"
+              due-to="Roel Spilker">
+        When reading tar headers with name fields containing embedded
+        NULs, the name will now be terminated at the first NUL byte.
+      </action>
     </release>
     <release version="1.14" date="2017-05-14"
              description="Release 1.14">
