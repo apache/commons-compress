@@ -659,6 +659,10 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         } catch (IllegalArgumentException e) {
             //expected
         }
+        // test with "content" that is an exact multiple of record length
+        contents = new byte[2048];
+        java.util.Arrays.fill(contents, (byte) 42);
+        testPadding(TarConstants.DEFAULT_BLKSIZE, fileName, contents);
     }
 
     private void testPadding(int blockSize, String fileName, byte[] contents) throws IOException {

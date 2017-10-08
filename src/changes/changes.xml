@@ -123,6 +123,10 @@ wanted to create such files.">
         When reading tar headers with name fields containing embedded
         NULs, the name will now be terminated at the first NUL byte.
       </action>
+      <action issue="COMPRESS-409" type="fix" date="2017-10-08">
+        Simplified TarArchiveOutputStream by replacing the internal
+        buffering with new class FixedLengthBlockOutputStream.
+      </action>
     </release>
     <release version="1.14" date="2017-05-14"
              description="Release 1.14">
