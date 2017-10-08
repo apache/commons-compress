@@ -652,13 +652,13 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
             fail("should have thrown an illegal argument exception");
         } catch (IllegalArgumentException e) {
             //expected
-       }
+        }
         try {
             testPadding(0, fileName, contents);    // don't specify a block size -> use minimum length
             fail("should have thrown an illegal argument exception");
         } catch (IllegalArgumentException e) {
             //expected
-       }
+        }
     }
 
     private void testPadding(int blockSize, String fileName, byte[] contents) throws IOException {
@@ -666,7 +666,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         f.deleteOnExit();
         final FileOutputStream fos = new FileOutputStream(f);
         final TarArchiveOutputStream tos;
-        if(blockSize != -2) {
+        if (blockSize != -2) {
             tos = new TarArchiveOutputStream(fos, blockSize);
         } else {
             blockSize = 512;
@@ -679,11 +679,11 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         tos.write(contents);
         tos.closeArchiveEntry();
         tos.close();
-        int fileRecordsSize = (int)Math.ceil((double) contents.length / 512)*512;
+        int fileRecordsSize = (int) Math.ceil((double) contents.length / 512) * 512;
         final int headerSize = 512;
         final int endOfArchiveSize = 1024;
         int unpaddedSize = headerSize + fileRecordsSize + endOfArchiveSize;
-        int paddedSize = (int)Math.ceil((double)unpaddedSize/blockSize)*blockSize;
+        int paddedSize = (int) Math.ceil((double)unpaddedSize/blockSize)*blockSize;
         assertEquals(paddedSize, f.length());
     }
 
