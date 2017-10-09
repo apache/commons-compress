@@ -5,6 +5,67 @@ compression and archive formats.  These include: bzip2, gzip, pack200,
 lzma, xz, Snappy, traditional Unix Compress, DEFLATE, LZ4, Brotli and ar, cpio,
 jar, tar, zip, dump, 7z, arj.
 
+Release 1.15
+------------
+
+New features:
+o Added magic MANIFEST entry Automatic-Module-Name so the module
+  name will be org.apache.commons.compress when the jar is used
+  as an automatic module in Java9.
+  Issue: COMPRESS-397.
+o Added a new utility class FixedLengthBlockOutputStream that
+  can be used to ensure writing always happens in blocks of a
+  given size.
+  Issue: COMPRESS-405. Thanks to Simon Spero.
+o It is now possible to specify/read custom PAX headers when
+  writing/reading tar archives.
+  Issue: COMPRESS-400. Thanks to Simon Spero.
+
+Fixed Bugs:
+o Make sure "version needed to extract" in local file header and
+  central directory of a ZIP archive agree with each other.
+  Also ensure the version is set to 2.0 if DEFLATE is used.
+  Issue: COMPRESS-394.
+o Don't use a data descriptor in ZIP archives when copying a raw
+  entry that already knows its size and CRC information.
+  Issue: COMPRESS-395.
+o Travis build redundantly repeats compilation and tests redundantly
+  GitHub Pull Request #43. Thanks to Simon Spero.
+  Issue: COMPRESS-413
+o The MANIFEST of 1.14 lacks an OSGi Import-Package for XZ for
+  Java.
+  Issue: COMPRESS-396.
+o BUILDING.md now passes the RAT check.
+  Issue: COMPRESS-406. Thanks to Simon Spero.
+o Made sure ChecksumCalculatingInputStream receives valid
+  checksum and input stream instances via the constructor.
+  Issue: COMPRESS-412. Thanks to Michael Hausegger.
+o TarArchiveOutputStream now verifies the block and record sizes
+  specified at construction time are compatible with the tar
+  specification. In particular 512 is the only record size
+  accepted and the block size must be a multiple of 512.
+  Issue: COMPRESS-407. Thanks to Simon Spero.
+o Fixed class names of CpioArchiveEntry and
+  CpioArchiveInputStream in various Javadocs.
+  Issue: COMPRESS-415.
+o The code of the extended timestamp zip extra field incorrectly
+  assumed the time was stored as unsigned 32-bit int and thus
+  created incorrect results for years after 2037.
+  Issue: COMPRESS-416. Thanks to Simon Spero.
+o Removed ZipEncoding code that became obsolete when we started
+  to require Java 5 as baseline long ago.
+  Issue: COMPRESS-410. Thanks to Simon Spero.
+o The tar package will no longer try to parse the major and
+  minor device numbers unless the entry represents a character
+  or block special file.
+  Issue: COMPRESS-417.
+o When reading tar headers with name fields containing embedded
+  NULs, the name will now be terminated at the first NUL byte.
+  Issue: COMPRESS-421. Thanks to Roel Spilker.
+o Simplified TarArchiveOutputStream by replacing the internal
+  buffering with new class FixedLengthBlockOutputStream.
+  Issue: COMPRESS-409.
+
 Release 1.14
 ------------
 
