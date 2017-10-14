@@ -74,6 +74,12 @@ jar, tar, zip, dump, 7z, arj.
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>com.github.luben</groupId>
+      <artifactId>zstd-jni</artifactId>
+      <version>1.3.1-1</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
       <groupId>org.brotli</groupId>
       <artifactId>dec</artifactId>
       <version>0.1.2</version>
