@@ -44,6 +44,11 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.16" date="not released, yet"
              description="Release 1.16">
+      <action issue="COMPRESS-423" type="add" date="2017-10-17"
+              due-to="Andre F de Miranda">
+        Add read-only support for ZStandard compression based on the
+        Zstd-jni project.
+      </action>
     </release>
     <release version="1.15" date="2017-10-17"
              description="Release 1.15
