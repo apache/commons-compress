@@ -196,7 +196,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      * Constant (value {@value}) used to identify the ZStandard compression
      * algorithm. Not supported as an output stream type.
      *
-     * @since 1.15
+     * @since 1.16
      */
     public static final String ZSTANDARD = "zst";
 
@@ -571,7 +571,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
 
             if (ZSTANDARD.equalsIgnoreCase(name)) {
                 if (!ZstdUtils.isZstdCompressionAvailable()) {
-                    throw new CompressorException("XZ compression is not available.");
+                    throw new CompressorException("ZStandard compression is not available.");
                 }
                 return new ZstdCompressorInputStream(in);
             }

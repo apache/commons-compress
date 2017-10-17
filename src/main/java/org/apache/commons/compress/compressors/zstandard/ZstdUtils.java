@@ -21,7 +21,7 @@ package org.apache.commons.compress.compressors.zstandard;
 /**
  * Utility code for the Zstandard compression format.
  * @ThreadSafe
- * @since 1.14
+ * @since 1.16
  */
 public class ZstdUtils {
 

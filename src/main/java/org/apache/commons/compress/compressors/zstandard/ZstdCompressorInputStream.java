@@ -28,7 +28,7 @@ import org.apache.commons.compress.compressors.CompressorInputStream;
  * {@link CompressorInputStream} implementation to decode Zstandard encoded stream.
  * Library relies on <a href="https://github.com/luben/zstd-jni/">Zstandard JNI</a>
  *
- * @since 1.15
+ * @since 1.16
  */
 public class ZstdCompressorInputStream extends CompressorInputStream {
 
