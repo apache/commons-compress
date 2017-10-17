@@ -194,14 +194,14 @@
          different versions of Java.</li>
        </ul>
      </section>
-     <section name="ZStandard">
+     <section name="Zstandard">
        <ul>
          <li>the format requires the otherwise optional <a
-         href="https://github.com/luben/zstd-jni">ZStandard JNI</a>
+         href="https://github.com/luben/zstd-jni">Zstandard JNI</a>
          library.</li>
          <li>read-only support</li>
          <li><code>CompressorStreamFactory</code> is not able to auto-detect
-         streams using ZStandard compression.</li>
+         streams using Zstandard compression.</li>
        </ul>
      </section>
    </body>

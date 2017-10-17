@@ -28,7 +28,7 @@
                 The Apache Commons Compress library defines an API for
                 working with ar, cpio, Unix dump, tar, zip, gzip, XZ,
                 Pack200, bzip2, 7z, arj, lzma, snappy, DEFLATE, lz4,
-                Brotli, ZStandard and Z files.
+                Brotli, Zstandard and Z files.
             </p>
             <p>
                 The code in this component has many origins:
@@ -68,7 +68,7 @@
 
           <subsection name="What's coming in 1.16?">
             <ul>
-              <li>Read-only support for ZStandard compression.</li>
+              <li>Read-only support for Zstandard compression.</li>
             </ul>
           </subsection>
 
@@ -84,7 +84,7 @@
             usually correspond to single files or directories.</p>
 
           <p>Currently the bzip2, Pack200, XZ, gzip, lzma, brotli,
-            ZStandard and Z formats are
+            Zstandard and Z formats are
             supported as compressors where gzip support is mostly provided by
             the <code>java.util.zip</code> package and Pack200 support
             by the <code>java.util.jar</code> package of the Java
@@ -92,9 +92,9 @@
             domain <a href="http://tukaani.org/xz/java.html">XZ for
             Java</a> library.  Brotli support is provided by the MIT
             licensed <a href="https://github.com/google/brotli">Google
-            Brotli decoder</a>. ZStandard support is provided by the BSD
+            Brotli decoder</a>. Zstandard support is provided by the BSD
             licensed <a href="https://github.com/luben/zstd-jni">Zstd-jni</a>.
-            As of Commons Compress 1.16 support for the Z, ZStandard
+            As of Commons Compress 1.16 support for the Z, Zstandard
             and Brotli formats is read-only.</p>
 
           <p>The ar, arj, cpio, dump, tar, 7z and zip formats are supported as

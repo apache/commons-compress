@@ -46,7 +46,7 @@ The <action> type attribute can be add,update,fix,remove.
              description="Release 1.16">
       <action issue="COMPRESS-423" type="add" date="2017-10-17"
               due-to="Andre F de Miranda">
-        Add read-only support for ZStandard compression based on the
+        Add read-only support for Zstandard compression based on the
         Zstd-jni project.
       </action>
     </release>

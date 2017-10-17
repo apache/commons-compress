@@ -82,7 +82,7 @@ CompressorInputStream input = new CompressorStreamFactory()
     .createCompressorInputStream(originalInput);
 ]]></source>
 
-        <p>Note that there is no way to detect the lzma, ZStandard or Brotli formats so only
+        <p>Note that there is no way to detect the lzma, Zstandard or Brotli formats so only
         the two-arg version of
         <code>createCompressorInputStream</code> can be used.  Prior
         to Compress 1.9 the .Z format hasn't been auto-detected
@@ -884,9 +884,9 @@ in.close();
 
       </subsection>
 
-      <subsection name="ZStandard">
+      <subsection name="Zstandard">
 
-        <p>Uncompressing a given ZStandard compressed file (you would
+        <p>Uncompressing a given Zstandard compressed file (you would
           certainly add exception handling and make sure all streams
           get closed properly):</p>
 <source><![CDATA[
