@@ -289,7 +289,7 @@ ZStandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
         <artifactId>maven-bundle-plugin</artifactId>
         <configuration>
           <instructions>
-            <Import-Package>org.tukaani.xz;resolution:=optional,org.brotli.dec;resolution:=optional</Import-Package>
+            <Import-Package>org.tukaani.xz;resolution:=optional,org.brotli.dec;resolution:=optional,com.github.luben.zstd;resolution=optional</Import-Package>
           </instructions>
         </configuration>
       </plugin>
