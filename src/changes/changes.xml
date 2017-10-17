@@ -42,7 +42,10 @@ The <action> type attribute can be add,update,fix,remove.
     <title>commons-compress</title>
   </properties>
   <body>
-    <release version="1.15" date="not released, yet"
+    <release version="1.16" date="not released, yet"
+             description="Release 1.16">
+    </release>
+    <release version="1.15" date="2017-10-17"
              description="Release 1.15
 ----------------------------------------
 
