@@ -38,6 +38,7 @@ import org.apache.commons.compress.compressors.deflate.DeflateCompressorInputStr
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorInputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
+import org.apache.commons.compress.compressors.zstandard.ZstdCompressorInputStream;
 import org.junit.Test;
 
 @SuppressWarnings("deprecation") // deliberately tests setDecompressConcatenated
@@ -113,6 +114,10 @@ public final class DetectCompressorTestCase {
         assertNotNull(zlib);
         assertTrue(zlib instanceof DeflateCompressorInputStream);
 
+        final CompressorInputStream zstd = getStreamFor("bla.tar.zst");
+        assertNotNull(zstd);
+        assertTrue(zstd instanceof ZstdCompressorInputStream);
+
         try {
             factory.createCompressorInputStream(new ByteArrayInputStream(new byte[0]));
             fail("No exception thrown for an empty input stream");
@@ -133,6 +138,7 @@ public final class DetectCompressorTestCase {
         assertEquals(CompressorStreamFactory.LZMA, detect("bla.tar.lzma"));
         assertEquals(CompressorStreamFactory.SNAPPY_FRAMED, detect("bla.tar.sz"));
         assertEquals(CompressorStreamFactory.Z, detect("bla.tar.Z"));
+        assertEquals(CompressorStreamFactory.ZSTANDARD, detect("bla.tar.zst"));
 
         //make sure we don't oom on detect
         assertEquals(CompressorStreamFactory.Z, detect("COMPRESS-386"));

@@ -49,6 +49,9 @@ The <action> type attribute can be add,update,fix,remove.
         Add read-only support for Zstandard compression based on the
         Zstd-jni project.
       </action>
+      <action issue="COMPRESS-425" type="add" date="2017-10-22">
+        Added auto-detection for Zstandard compressed streams.
+      </action>
     </release>
     <release version="1.15" date="2017-10-17"
              description="Release 1.15

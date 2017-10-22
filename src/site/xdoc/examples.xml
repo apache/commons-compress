@@ -82,7 +82,7 @@ CompressorInputStream input = new CompressorStreamFactory()
     .createCompressorInputStream(originalInput);
 ]]></source>
 
-        <p>Note that there is no way to detect the lzma, Zstandard or Brotli formats so only
+        <p>Note that there is no way to detect the lzma or Brotli formats so only
         the two-arg version of
         <code>createCompressorInputStream</code> can be used.  Prior
         to Compress 1.9 the .Z format hasn't been auto-detected
