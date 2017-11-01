@@ -38,8 +38,9 @@ import org.junit.Test;
 public class ZstdCompressorInputStreamTest extends AbstractTestCase {
 
     /**
-     * Test bridge works fine
-     * @throws {@link IOException}
+     * Test bridge works fine.
+     * 
+     * @throws IOException 
      */
     @Test
     public void testZstdDecode() throws IOException {
