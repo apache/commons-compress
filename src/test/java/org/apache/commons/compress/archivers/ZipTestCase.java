@@ -22,10 +22,10 @@ import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream; 	
-import java.io.FileOutputStream; 	
-import java.io.IOException; 	
-import java.io.InputStream; 	
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -37,9 +37,9 @@ import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.zip.Zip64Mode;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntryPredicate;
-import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream; 	
-import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream; 	
-import org.apache.commons.compress.archivers.zip.ZipFile; 	
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.archivers.zip.ZipMethod;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
@@ -170,7 +170,7 @@ public final class ZipTestCase extends AbstractTestCase {
     }
 
     /**
-     * Test case for 
+     * Test case for
      * <a href="https://issues.apache.org/jira/browse/COMPRESS-208"
      * >COMPRESS-208</a>.
      */
@@ -197,7 +197,7 @@ public final class ZipTestCase extends AbstractTestCase {
         assertTrue(bla.canReadEntryData(bla.getEntry("test1.xml")));
         bla.close();
         */
-        
+
         final ZipFile moby = new ZipFile(getFile("moby.zip"));
         final ZipArchiveEntry entry = moby.getEntry("README");
         assertEquals("method", ZipMethod.TOKENIZATION.getCode(), entry.getMethod());
@@ -206,7 +206,7 @@ public final class ZipTestCase extends AbstractTestCase {
     }
 
     /**
-     * Test case for being able to skip an entry in an 
+     * Test case for being able to skip an entry in an
      * {@link ZipArchiveInputStream} even if the compression method of that
      * entry is unsupported.
      *
@@ -234,9 +234,9 @@ public final class ZipTestCase extends AbstractTestCase {
      * Checks if all entries from a nested archive can be read.
      * The archive: OSX_ArchiveWithNestedArchive.zip contains:
      * NestedArchiv.zip and test.xml3.
-     * 
+     *
      * The nested archive:  NestedArchive.zip contains test1.xml and test2.xml
-     * 
+     *
      * @throws Exception
      */
     @Test

@@ -13,7 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  */
 
 package org.apache.commons.compress.archivers.tar;
@@ -53,7 +53,7 @@ public class TarUtilsTest {
 
     @Test
     public void testParseOctal() throws Exception{
-        long value; 
+        long value;
         byte [] buffer;
         final long MAX_OCTAL  = 077777777777L; // Allowed 11 digits
         final long MAX_OCTAL_OVERFLOW  = 0777777777777L; // in fact 12 for some implementations

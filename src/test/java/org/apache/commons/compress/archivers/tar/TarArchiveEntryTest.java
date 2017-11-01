@@ -132,7 +132,7 @@ public class TarArchiveEntryTest implements TarConstants {
     @Test public void testExtraPaxHeaders() throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
-        
+
         TarArchiveEntry entry = new TarArchiveEntry("./weasels");
         entry.addPaxHeader("APACHE.mustelida","true");
         entry.addPaxHeader("SCHILY.xattr.user.org.apache.weasels","maximum weasels");
@@ -148,7 +148,7 @@ public class TarArchiveEntryTest implements TarConstants {
         tos.write('W');
         tos.closeArchiveEntry();
         tos.close();
-        assertNotEquals("should have extra headers before clear",0,entry.getExtraPaxHeaders().size());  
+        assertNotEquals("should have extra headers before clear",0,entry.getExtraPaxHeaders().size());
         entry.clearExtraPaxHeaders();
         assertEquals("extra headers should be empty after clear",0,entry.getExtraPaxHeaders().size());
         TarArchiveInputStream tis = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()));

@@ -101,7 +101,7 @@ public class ArchiveStreamFactoryTest {
     }
 
     /**
-     * Test case for 
+     * Test case for
      * <a href="https://issues.apache.org/jira/browse/COMPRESS-267"
      * >COMPRESS-267</a>.
      */
@@ -118,7 +118,7 @@ public class ArchiveStreamFactoryTest {
     }
 
     /**
-     * Test case for 
+     * Test case for
      * <a href="https://issues.apache.org/jira/browse/COMPRESS-208"
      * >COMPRESS-208</a>.
      */
@@ -132,7 +132,7 @@ public class ArchiveStreamFactoryTest {
             }
         }
     }
-    
+
     @Test
     public void testEncodingCtor() {
         ArchiveStreamFactory fac = new ArchiveStreamFactory();
@@ -169,7 +169,7 @@ public class ArchiveStreamFactoryTest {
         final String fieldName;
         final String type;
         final boolean hasOutputStream;
-        
+
         TestData(final String testFile, final String type, final boolean hasOut, final String expectedEncoding, final ArchiveStreamFactory fac, final String fieldName) {
             this.testFile = testFile;
             this.expectedEncoding = expectedEncoding;
@@ -178,7 +178,7 @@ public class ArchiveStreamFactoryTest {
             this.type = type;
             this.hasOutputStream = hasOut;
         }
-        
+
         @Override
         public String toString() {
             return "TestData [testFile=" + testFile + ", expectedEncoding=" + expectedEncoding + ", fac=" + fac
@@ -388,7 +388,7 @@ public class ArchiveStreamFactoryTest {
                 } catch (final NoSuchFieldException e) {
                     System.out.println("Cannot find " + name + " in class " + instance.getClass().getSimpleName());
                     return UNKNOWN;
-                }                
+                }
         }
         final boolean isAccessible = fld.isAccessible();
         try {

@@ -76,7 +76,7 @@ public class ExplodeSupportTest {
         assertEquals("method", ZipMethod.IMPLODING.getCode(), entry.getMethod());
 
         final InputStream bio = new BoundedInputStream(zin, entry.getSize());
-        
+
         final ByteArrayOutputStream bout = new ByteArrayOutputStream();
         final CheckedOutputStream out = new CheckedOutputStream(bout, new CRC32());
         IOUtils.copy(bio, out);

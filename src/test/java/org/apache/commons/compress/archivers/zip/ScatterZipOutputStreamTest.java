@@ -42,7 +42,7 @@ public class ScatterZipOutputStreamTest {
         tryHardToDelete(scatterFile);
         tryHardToDelete(target);
     }
-    
+
     @Test
     public void putArchiveEntry() throws Exception {
         scatterFile = File.createTempFile("scattertest", ".notzip");

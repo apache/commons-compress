@@ -74,7 +74,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * Adds an ArchiveEntry with the same name two times.
      * Only the latest addition should be found in the ChangeSet,
      * the first add should be replaced.
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -109,7 +109,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * Adds an ArchiveEntry with the same name two times.
      * Only the first addition should be found in the ChangeSet,
      * the second add should never be added since replace = false
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -145,7 +145,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * the deletion of bla/*, which actually means bla/test4.xml should be
      * removed from the archive. The file something/bla (without ending, named
      * like the folder) should not be deleted.
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -187,7 +187,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     /**
      * Tries to delete the folder "la" from an archive file. This should result in
      * the deletion of la/*, which should not match any files/folders.
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -229,7 +229,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     /**
      * Tries to delete the folder "test.txt" from an archive file.
      * This should not match any files/folders.
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -271,7 +271,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     /**
      * Tries to delete the file "bla/test5.xml" from an archive. This should
      * result in the deletion of "bla/test5.xml".
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -314,7 +314,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     /**
      * Tries to delete the file "bla" from an archive. This should
      * result in the deletion of nothing.
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -358,7 +358,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * Tries to delete and then add a file with the same name.
      * Should delete test/test3.xml and adds test.txt with the name
      * test/test3.xml
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -425,12 +425,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                 in.close();
             }
             rmdir(check);
-        } 
+        }
     }
 
     /**
      * Checks for the correct ChangeSetResults
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -494,7 +494,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * Tries to delete a directory with a file and adds a new directory with a
      * new file and with the same name. Should delete dir1/* and add
      * dir1/test.txt at the end
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -541,7 +541,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
     /**
      * Adds a file to a zip archive. Deletes an other file.
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -588,7 +588,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
     /**
      * Adds a file to a zip archive. Deletes an other file.
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -634,7 +634,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     /**
      * add blub/test.txt + delete blub Should add blub/test.txt and delete it
      * afterwards. In this example, the archive should stay untouched.
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -683,7 +683,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     /**
      * delete bla + add bla/test.txt + delete bla Deletes dir1/* first, then
      * suppresses the add of bla.txt because there is a delete operation later.
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -733,7 +733,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
     /**
      * Simple Delete from a zip file.
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -774,7 +774,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
     /**
      * Simple delete from a tar file
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -812,7 +812,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
     /**
      * Simple delete from a jar file
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -902,7 +902,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
     /**
      * Delete from a jar file and add another file
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -948,7 +948,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
     /**
      * Simple delete from an ar file
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -987,7 +987,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
     /**
      * Deletes a file from an AR-archive and adds another
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -1033,10 +1033,10 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
     /**
      * TODO: Move operations are not supported currently
-     * 
+     *
      * mv dir1/test.text dir2/test.txt + delete dir1 Moves the file to dir2 and
      * deletes everything in dir1
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -1045,12 +1045,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
     /**
      * TODO: Move operations are not supported currently
-     * 
+     *
      * add dir1/bla.txt + mv dir1/test.text dir2/test.txt + delete dir1
-     * 
+     *
      * Add dir1/bla.txt should be surpressed. All other dir1 files will be
      * deleted, except dir1/test.text will be moved
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -1059,7 +1059,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
     /**
      * Check can add a file to an empty archive.
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -1094,7 +1094,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                 out.close();
             }
             if (ais != null) {
-                ais.close(); // will close is 
+                ais.close(); // will close is
             } else if (is != null){
                 is.close();
             }
@@ -1105,7 +1105,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
     /**
      * Check can delete and add a file to an archive with a single file
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -1143,7 +1143,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                 out.close();
             }
             if (ais != null) {
-                ais.close(); // will close is 
+                ais.close(); // will close is
             } else if (is != null){
                 is.close();
             }
@@ -1154,7 +1154,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
     /**
      * Check can add and delete a file to an archive with a single file
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -1176,7 +1176,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             out = factory.createArchiveOutputStream(archivename,
                     new FileOutputStream(result));
             final File file = getFile("test.txt");
-            final ArchiveEntry entry = out.createArchiveEntry(file,"bla/test.txt"); 
+            final ArchiveEntry entry = out.createArchiveEntry(file,"bla/test.txt");
             changes.add(entry, new FileInputStream(file));
             archiveList.add("bla/test.txt");
 
@@ -1192,7 +1192,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                 out.close();
             }
             if (ais != null) {
-                ais.close(); // will close is 
+                ais.close(); // will close is
             } else if (is != null){
                 is.close();
             }
@@ -1204,7 +1204,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     /**
      * Adds a file with the same filename as an existing file from the stream.
      * Should lead to a replacement.
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -1249,7 +1249,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     /**
      * Adds a file with the same filename as an existing file from the stream.
      * Should lead to a replacement.
-     * 
+     *
      * @throws Exception
      */
     @Test

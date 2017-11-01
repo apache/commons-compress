@@ -207,7 +207,7 @@ public class ZipFileTest {
     }
 
     /**
-     * Test case for 
+     * Test case for
      * <a href="https://issues.apache.org/jira/browse/COMPRESS-208"
      * >COMPRESS-208</a>.
      */
@@ -314,7 +314,7 @@ public class ZipFileTest {
     }
 
     /**
-     * Test case for 
+     * Test case for
      * <a href="https://issues.apache.org/jira/browse/COMPRESS-264"
      * >COMPRESS-264</a>.
      */

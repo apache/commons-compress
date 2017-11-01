@@ -133,22 +133,22 @@ public class ZipArchiveInputStreamTest {
     @Test
     public void testUnshrinkEntry() throws Exception {
         final ZipArchiveInputStream in = new ZipArchiveInputStream(new FileInputStream(getFile("SHRUNK.ZIP")));
-        
+
         ZipArchiveEntry entry = in.getNextZipEntry();
         assertEquals("method", ZipMethod.UNSHRINKING.getCode(), entry.getMethod());
         assertTrue(in.canReadEntryData(entry));
-        
+
         FileInputStream original = new FileInputStream(getFile("test1.xml"));
         try {
             assertArrayEquals(IOUtils.toByteArray(original), IOUtils.toByteArray(in));
         } finally {
             original.close();
         }
-        
+
         entry = in.getNextZipEntry();
         assertEquals("method", ZipMethod.UNSHRINKING.getCode(), entry.getMethod());
         assertTrue(in.canReadEntryData(entry));
-        
+
         original = new FileInputStream(getFile("test2.xml"));
         try {
             assertArrayEquals(IOUtils.toByteArray(original), IOUtils.toByteArray(in));
@@ -159,7 +159,7 @@ public class ZipArchiveInputStreamTest {
 
 
     /**
-     * Test case for 
+     * Test case for
      * <a href="https://issues.apache.org/jira/browse/COMPRESS-264"
      * >COMPRESS-264</a>.
      */

@@ -65,7 +65,7 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
     @Test
     public void testDetection() throws Exception {
 
-        final ArchiveInputStream ar = getStreamFor("bla.ar"); 
+        final ArchiveInputStream ar = getStreamFor("bla.ar");
         assertNotNull(ar);
         assertTrue(ar instanceof ArArchiveInputStream);
 
@@ -84,7 +84,7 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
         final ArchiveInputStream cpio = getStreamFor("bla.cpio");
         assertNotNull(cpio);
         assertTrue(cpio instanceof CpioArchiveInputStream);
-        
+
         final ArchiveInputStream arj = getStreamFor("bla.arj");
         assertNotNull(arj);
         assertTrue(arj instanceof ArjArchiveInputStream);

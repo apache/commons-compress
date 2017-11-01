@@ -30,7 +30,7 @@ public class AsiExtraFieldTest implements UnixStat {
 
     /**
      * Test file mode magic.
-     */    
+     */
     @Test
     public void testModes() {
         final AsiExtraField a = new AsiExtraField();

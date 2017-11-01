@@ -56,7 +56,7 @@ public final class DetectCompressorTestCase {
         factorySetTrue = new CompressorStreamFactory();
         factorySetTrue.setDecompressConcatenated(true);
         factorySetFalse = new CompressorStreamFactory();
-        factorySetFalse.setDecompressConcatenated(false);        
+        factorySetFalse.setDecompressConcatenated(false);
     }
 
     static class TestData {
@@ -91,17 +91,17 @@ public final class DetectCompressorTestCase {
         new TestData("multiple.xz", new char[]{'a'}, factorySetFalse, false),
         new TestData("multiple.xz", new char[]{'a'}, factory, false),
     };
-    
+
     @Test
     public void testDetection() throws Exception {
-        final CompressorInputStream bzip2 = getStreamFor("bla.txt.bz2"); 
+        final CompressorInputStream bzip2 = getStreamFor("bla.txt.bz2");
         assertNotNull(bzip2);
         assertTrue(bzip2 instanceof BZip2CompressorInputStream);
 
         final CompressorInputStream gzip = getStreamFor("bla.tgz");
         assertNotNull(gzip);
         assertTrue(gzip instanceof GzipCompressorInputStream);
-        
+
         final CompressorInputStream pack200 = getStreamFor("bla.pack");
         assertNotNull(pack200);
         assertTrue(pack200 instanceof Pack200CompressorInputStream);
@@ -262,7 +262,7 @@ public final class DetectCompressorTestCase {
             final CompressorInputStream in = getStreamFor(test.fileName, fac);
             assertNotNull("Test entry "+i,in);
             for (final char entry : test.entryNames) {
-                assertEquals("Test entry" + i, entry, in.read());                
+                assertEquals("Test entry" + i, entry, in.read());
             }
             assertEquals(0, in.available());
             assertEquals(-1, in.read());

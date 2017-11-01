@@ -37,7 +37,7 @@ import org.junit.Test;
 public class BrotliCompressorInputStreamTest extends AbstractTestCase {
 
     /**
-     * Test bridge works fine 
+     * Test bridge works fine
      * @throws {@link IOException}
      */
     @Test
@@ -55,9 +55,9 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
                 bos.write(readByte);
             }
             Assert.assertArrayEquals(b, bos.toByteArray());
-        } 
+        }
     }
-    
+
     @Test
     public void testCachingIsEnabledByDefaultAndBrotliIsPresent() {
         assertEquals(BrotliUtils.CachedAvailability.CACHED_AVAILABLE, BrotliUtils.getCachedBrotliAvailability());
@@ -86,7 +86,7 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
             BrotliUtils.setCacheBrotliAvailablity(true);
         }
     }
-    
+
 
     @Test
     public void availableShouldReturnZero() throws IOException {

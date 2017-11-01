@@ -46,15 +46,15 @@ public class CircularBufferTest {
     @Test
     public void testCopy() throws Exception {
         final CircularBuffer buffer = new CircularBuffer(16);
-        
+
         buffer.put(1);
         buffer.put(2);
         buffer.get();
         buffer.get();
-        
+
         // copy uninitialized data
         buffer.copy(6, 8);
-        
+
         for (int i = 2; i < 6; i++) {
             assertEquals("buffer[" + i + "]", 0, buffer.get());
         }
@@ -62,17 +62,17 @@ public class CircularBufferTest {
         assertEquals("buffer[" + 7 + "]", 2, buffer.get());
         assertEquals("buffer[" + 8 + "]", 0, buffer.get());
         assertEquals("buffer[" + 9 + "]", 0, buffer.get());
-        
+
         for (int i = 10; i < 14; i++) {
             buffer.put(i);
             buffer.get();
         }
-        
+
         assertFalse("available", buffer.available());
-        
+
         // copy data and wrap
         buffer.copy(2, 8);
-        
+
         for (int i = 14; i < 18; i++) {
             assertEquals("buffer[" + i + "]", i % 2 == 0 ? 12 : 13, buffer.get());
         }

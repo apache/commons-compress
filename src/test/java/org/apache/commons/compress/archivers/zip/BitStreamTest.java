@@ -57,7 +57,7 @@ public class BitStreamTest {
         assertEquals("bit 13", 0, stream.nextBit());
         assertEquals("bit 14", 0, stream.nextBit());
         assertEquals("bit 15", 0, stream.nextBit());
-        
+
         assertEquals("next bit", -1, stream.nextBit());
         stream.close();
     }
@@ -86,7 +86,7 @@ public class BitStreamTest {
         assertEquals("bit 1", 1, stream.nextBit());
         assertEquals("bit 2", 0, stream.nextBit());
         assertEquals("bit 3", 1, stream.nextBit());
-        
+
         assertEquals("next byte", 0x5E, stream.nextByte());
         assertEquals("next byte", -1, stream.nextByte()); // not enough bits left to read a byte
         stream.close();

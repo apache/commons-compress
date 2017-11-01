@@ -35,7 +35,7 @@ public final class DeflateTestCase extends AbstractTestCase {
 
     /**
      * Tests the creation of a DEFLATE archive with zlib header
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -52,7 +52,7 @@ public final class DeflateTestCase extends AbstractTestCase {
 
     /**
      * Tests the creation of a "raw" DEFLATE archive (without zlib header)
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -70,7 +70,7 @@ public final class DeflateTestCase extends AbstractTestCase {
 
     /**
      * Tests the extraction of a DEFLATE archive with zlib header
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -95,7 +95,7 @@ public final class DeflateTestCase extends AbstractTestCase {
 
     /**
      * Tests the extraction of a "raw" DEFLATE archive (without zlib header)
-     * 
+     *
      * @throws Exception
      */
     @Test

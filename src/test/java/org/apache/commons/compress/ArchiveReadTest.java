@@ -13,7 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  */
 
 package org.apache.commons.compress;
@@ -39,9 +39,9 @@ import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Test that can read various archive file examples.
- * 
+ *
  * This is a very simple implementation.
- * 
+ *
  * Files must be in resources/archives, and there must be a file.txt containing
  * the list of files in the archives.
  */
@@ -90,7 +90,7 @@ public class ArchiveReadTest extends AbstractTestCase {
             public boolean accept(final File dir, final String name) {
                 return !name.endsWith(".txt");
             }
-        })) 
+        }))
         {
             params.add(new Object[] { f });
         }

@@ -36,7 +36,7 @@ public class SevenZTestCase extends AbstractTestCase {
     public void testSevenZArchiveCreationUsingCopy() throws Exception {
         testSevenZArchiveCreation(SevenZMethod.COPY);
     }
-    
+
     @Test
     public void testSevenZArchiveCreationUsingLZMA() throws Exception {
         testSevenZArchiveCreation(SevenZMethod.LZMA);
@@ -46,17 +46,17 @@ public class SevenZTestCase extends AbstractTestCase {
     public void testSevenZArchiveCreationUsingLZMA2() throws Exception {
         testSevenZArchiveCreation(SevenZMethod.LZMA2);
     }
-    
+
     @Test
     public void testSevenZArchiveCreationUsingBZIP2() throws Exception {
         testSevenZArchiveCreation(SevenZMethod.BZIP2);
     }
-    
+
     @Test
     public void testSevenZArchiveCreationUsingDeflate() throws Exception {
         testSevenZArchiveCreation(SevenZMethod.DEFLATE);
     }
-    
+
     private void testSevenZArchiveCreation(final SevenZMethod method) throws Exception {
         final File output = new File(dir, "bla.7z");
         final File file1 = getFile("test1.xml");
@@ -66,12 +66,12 @@ public class SevenZTestCase extends AbstractTestCase {
         outArchive.setContentCompression(method);
         try {
             SevenZArchiveEntry entry;
-            
+
             entry = outArchive.createArchiveEntry(file1, file1.getName());
             outArchive.putArchiveEntry(entry);
             copy(file1, outArchive);
             outArchive.closeArchiveEntry();
-            
+
             entry = outArchive.createArchiveEntry(file2, file2.getName());
             outArchive.putArchiveEntry(entry);
             copy(file2, outArchive);
@@ -95,7 +95,7 @@ public class SevenZTestCase extends AbstractTestCase {
         }
     }
 
-    private void copy(final File src, final SevenZOutputFile dst) throws IOException { 
+    private void copy(final File src, final SevenZOutputFile dst) throws IOException {
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(src);

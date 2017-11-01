@@ -439,7 +439,7 @@ public class X5455_ExtendedTimestampTest {
             }
         }
         out.close();
-        
+
         final ZipFile zf = new ZipFile(output);
         final ZipArchiveEntry ze = zf.getEntry("foo");
         final X5455_ExtendedTimestamp ext =

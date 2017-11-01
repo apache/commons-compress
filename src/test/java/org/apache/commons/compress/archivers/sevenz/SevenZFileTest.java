@@ -280,7 +280,7 @@ public class SevenZFileTest extends AbstractTestCase {
             assertEquals(5, entries);
         }
     }
-    
+
     private void test7zUnarchive(final File f, final SevenZMethod m, final byte[] password) throws Exception {
         try (SevenZFile sevenZFile = new SevenZFile(f, password)) {
             SevenZArchiveEntry entry = sevenZFile.getNextEntry();

@@ -46,7 +46,7 @@ public class ParallelScatterZipCreatorTest {
 
     private File result;
     private File tmp;
-    
+
     @After
     public void cleanup() {
         tryHardToDelete(result);
