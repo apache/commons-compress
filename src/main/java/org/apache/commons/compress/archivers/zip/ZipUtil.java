@@ -239,6 +239,7 @@ public abstract class ZipUtil {
                                                            originalNameBytes);
         if (newName != null && !originalName.equals(newName)) {
             ze.setName(newName);
+            ze.setHasUnicodeName(true);
         }
 
         if (commentBytes != null && commentBytes.length > 0) {
@@ -248,6 +249,7 @@ public abstract class ZipUtil {
                 getUnicodeStringIfOriginalMatches(cmt, commentBytes);
             if (newComment != null) {
                 ze.setComment(newComment);
+                ze.setHasUnicodeComment(true);
             }
         }
     }

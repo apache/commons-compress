@@ -98,7 +98,8 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     private long localHeaderOffset = OFFSET_UNKNOWN;
     private long dataOffset = OFFSET_UNKNOWN;
     private boolean isStreamContiguous = false;
-
+    private boolean hasUnicodeName = false;
+    private boolean hasUnicodeComment = false;
 
     /**
      * Creates a new zip entry with the specified name.
@@ -926,5 +927,21 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      */
     public void setRawFlag(final int rawFlag) {
         this.rawFlag = rawFlag;
+    }
+
+    public boolean hasUnicodeName() {
+        return hasUnicodeName;
+    }
+
+    public void setHasUnicodeName(boolean hasUnicodeName) {
+        this.hasUnicodeName = hasUnicodeName;
+    }
+
+    public boolean hasUnicodeComment() {
+        return hasUnicodeComment;
+    }
+
+    public void setHasUnicodeComment(boolean hasUnicodeComment) {
+        this.hasUnicodeComment = hasUnicodeComment;
     }
 }
