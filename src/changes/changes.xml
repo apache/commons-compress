@@ -52,6 +52,10 @@ The <action> type attribute can be add,update,fix,remove.
       <action issue="COMPRESS-425" type="add" date="2017-10-22">
         Added auto-detection for Zstandard compressed streams.
       </action>
+      <action issue="COMPRESS-430" type="fix" date="2017-11-25"
+              due-to="Bruno P. Kinoshita">
+        Synchronized iteration over a synchronizedList in ParallelScatterZipCreator.
+      </action>
     </release>
     <release version="1.15" date="2017-10-17"
              description="Release 1.15
