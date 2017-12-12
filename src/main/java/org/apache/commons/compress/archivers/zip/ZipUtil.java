@@ -239,7 +239,7 @@ public abstract class ZipUtil {
                                                            originalNameBytes);
         if (newName != null && !originalName.equals(newName)) {
             ze.setName(newName);
-            ze.setHasUnicodeName(true);
+            ze.setNameSource(ZipArchiveEntry.NameSource.UNICODE_EXTRA_FIELD);
         }
 
         if (commentBytes != null && commentBytes.length > 0) {
@@ -249,7 +249,7 @@ public abstract class ZipUtil {
                 getUnicodeStringIfOriginalMatches(cmt, commentBytes);
             if (newComment != null) {
                 ze.setComment(newComment);
-                ze.setHasUnicodeComment(true);
+                ze.setCommentSource(ZipArchiveEntry.CommentSource.UNICODE_EXTRA_FIELD);
             }
         }
     }
