@@ -59,6 +59,17 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     private static final int SHORT_SHIFT = 16;
     private static final byte[] EMPTY = new byte[0];
 
+    public enum NameSource {
+        NAME,
+        NAME_WITH_EFS_FLAG,
+        UNICODE_EXTRA_FIELD
+    }
+
+    public enum CommentSource {
+        COMMENT,
+        UNICODE_EXTRA_FIELD
+    }
+
     /**
      * The {@link java.util.zip.ZipEntry} base class only supports
      * the compression methods STORED and DEFLATED. We override the
@@ -98,8 +109,9 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     private long localHeaderOffset = OFFSET_UNKNOWN;
     private long dataOffset = OFFSET_UNKNOWN;
     private boolean isStreamContiguous = false;
-    private boolean hasUnicodeName = false;
-    private boolean hasUnicodeComment = false;
+    private NameSource nameSource = NameSource.NAME;
+    private CommentSource commentSource = CommentSource.COMMENT;
+
 
     /**
      * Creates a new zip entry with the specified name.
@@ -929,19 +941,40 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         this.rawFlag = rawFlag;
     }
 
-    public boolean hasUnicodeName() {
-        return hasUnicodeName;
+    /**
+     * The source of the name field value.
+     * @return source of the name field value
+     * @since 1.16
+     */
+    public NameSource getNameSource() {
+        return nameSource;
     }
 
-    public void setHasUnicodeName(boolean hasUnicodeName) {
-        this.hasUnicodeName = hasUnicodeName;
+    /**
+     * Sets the source of the name field value.
+     * @param nameSource source of the name field value
+     * @since 1.16
+     */
+    public void setNameSource(NameSource nameSource) {
+        this.nameSource = nameSource;
     }
 
-    public boolean hasUnicodeComment() {
-        return hasUnicodeComment;
+    /**
+     * The source of the comment field value.
+     * @return source of the comment field value
+     * @since 1.16
+     */
+    public CommentSource getCommentSource() {
+        return commentSource;
     }
 
-    public void setHasUnicodeComment(boolean hasUnicodeComment) {
-        this.hasUnicodeComment = hasUnicodeComment;
+    /**
+     * Sets the source of the comment field value.
+     * @param commentSource source of the comment field value
+     * @since 1.16
+     */
+    public void setCommentSource(CommentSource commentSource) {
+        this.commentSource = commentSource;
     }
+
 }
