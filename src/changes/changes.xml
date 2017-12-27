@@ -56,6 +56,10 @@ The <action> type attribute can be add,update,fix,remove.
               due-to="Bruno P. Kinoshita">
         Synchronized iteration over a synchronizedList in ParallelScatterZipCreator.
       </action>
+      <action issue="COMPRESS-432" type="fix" date="2017-12-22">
+        ZipFile could get stuck in an infinite loop when parsing ZIP
+        archives with certain strong encryption headers.
+      </action>
       <action issue="COMPRESS-435" type="update" date="2017-12-27"
               due-to="BELUGA BEHR">
         Replaces instanceof checks with a type marker in LZ77 support code.
