@@ -307,7 +307,7 @@ public class LZ77CompressorTest {
 
     private static final void assertSize(int expectedSize, List<LZ77Compressor.Block> blocks) {
         assertEquals(expectedSize, blocks.size());
-        assertEquals(LZ77Compressor.EOD.class, blocks.get(expectedSize - 1).getClass());
+        assertEquals(LZ77Compressor.Block.BlockType.EOD, blocks.get(expectedSize - 1).getType());
     }
 
     private static final void assertLiteralBlock(String expectedContent, LZ77Compressor.Block block)
