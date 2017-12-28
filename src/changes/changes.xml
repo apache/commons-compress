@@ -64,6 +64,9 @@ The <action> type attribute can be add,update,fix,remove.
               due-to="BELUGA BEHR">
         Replaces instanceof checks with a type marker in LZ77 support code.
       </action>
+      <action issue="COMPRESS-426" type="add" date="2017-12-28">
+        Added write-support for Zstandard compression.
+      </action>
     </release>
     <release version="1.15" date="2017-10-17"
              description="Release 1.15

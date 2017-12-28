@@ -68,7 +68,7 @@
 
           <subsection name="What's coming in 1.16?">
             <ul>
-              <li>Read-only support for Zstandard compression.</li>
+              <li>Support for Zstandard compression.</li>
             </ul>
           </subsection>
 
@@ -94,8 +94,8 @@
             licensed <a href="https://github.com/google/brotli">Google
             Brotli decoder</a>. Zstandard support is provided by the BSD
             licensed <a href="https://github.com/luben/zstd-jni">Zstd-jni</a>.
-            As of Commons Compress 1.16 support for the Z, Zstandard
-            and Brotli formats is read-only.</p>
+            As of Commons Compress 1.16 support for the Z and Brotli
+            formats is read-only.</p>
 
           <p>The ar, arj, cpio, dump, tar, 7z and zip formats are supported as
             archivers where the <a href="zip.html">zip</a>

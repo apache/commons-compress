@@ -199,7 +199,6 @@
          <li>the format requires the otherwise optional <a
          href="https://github.com/luben/zstd-jni">Zstandard JNI</a>
          library.</li>
-         <li>read-only support</li>
        </ul>
      </section>
    </body>

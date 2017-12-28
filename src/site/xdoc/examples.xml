@@ -902,6 +902,24 @@ while (-1 != (n = zsIn.read(buffer))) {
 out.close();
 zsIn.close();
 ]]></source>
+
+        <p>Compressing a given file using the Zstandard format (you
+        would certainly add exception handling and make sure all
+        streams get closed properly):</p>
+<source><![CDATA[
+InputStream in = Files.newInputStream(Paths.get("archive.tar"));
+OutputStream fout = Files.newOutputStream(Paths.get("archive.tar.zstd"));
+BufferedOutputStream out = new BufferedInputStream(fout);
+ZstdCompressorOutputStream zOut = new ZstdCompressorOutputStream(out);
+final byte[] buffer = new byte[buffersize];
+int n = 0;
+while (-1 != (n = in.read(buffer))) {
+    zOut.write(buffer, 0, n);
+}
+zOut.close();
+in.close();
+]]></source>
+
       </subsection>
 
     <subsection name="Extending Commons Compress">
