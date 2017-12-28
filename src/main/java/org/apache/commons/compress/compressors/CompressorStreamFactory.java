@@ -525,7 +525,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      *            of the compressor, i.e. {@value #GZIP}, {@value #BZIP2},
      *            {@value #XZ}, {@value #LZMA}, {@value #PACK200},
      *            {@value #SNAPPY_RAW}, {@value #SNAPPY_FRAMED}, {@value #Z},
-     *            {@value #LZ4_BLOCK}, {@value #LZ4_FRAMED}
+     *            {@value #LZ4_BLOCK}, {@value #LZ4_FRAMED}, {@value #ZSTANDARD}
      *            or {@value #DEFLATE}
      * @param in
      *            the input stream
