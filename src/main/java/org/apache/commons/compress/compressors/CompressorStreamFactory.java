@@ -198,7 +198,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      *
      * @since 1.16
      */
-    public static final String ZSTANDARD = "zst";
+    public static final String ZSTANDARD = "zstd";
 
     /**
      * Constructs a new sorted map from input stream provider names to provider

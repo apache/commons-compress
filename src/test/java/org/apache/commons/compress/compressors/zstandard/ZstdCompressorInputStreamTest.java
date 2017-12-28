@@ -141,7 +141,7 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
         final File output = new File(dir, "bla.tar");
         try (InputStream is = new FileInputStream(input)) {
             final CompressorInputStream in = new CompressorStreamFactory()
-                    .createCompressorInputStream("zst", is);
+                    .createCompressorInputStream("zstd", is);
             FileOutputStream out = null;
             try {
                 out = new FileOutputStream(output);
