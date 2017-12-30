@@ -690,9 +690,6 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
             }
 
             if (ZSTANDARD.equalsIgnoreCase(name)) {
-                if (!ZstdUtils.isZstdCompressionAvailable()) {
-                    throw new CompressorException("Zstandard compression is not available.");
-                }
                 return new ZstdCompressorOutputStream(out);
             }
         } catch (final IOException e) {
