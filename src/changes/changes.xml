@@ -72,6 +72,10 @@ The <action> type attribute can be add,update,fix,remove.
         throw the expected IOException rather than obscure
         RuntimeExceptions.
       </action>
+      <action type="update" date="2017-12-30">
+        Updated XZ for Java dependency to 1.7 in order to pick up bug
+        fix to LZMA2InputStream's available method.
+      </action>
     </release>
     <release version="1.15" date="2017-10-17"
              description="Release 1.15
