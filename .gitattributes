@@ -5,6 +5,7 @@
 *.txt                                   text
 *.xml                                   text
 *.yml                                   text
+*.zst                                   binary
 .gitattributes                          text
 # These must be identical to the copies in SHRUNK.ZIP
 src/test/resources/test1.xml            eol=lf
