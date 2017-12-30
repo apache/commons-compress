@@ -67,6 +67,11 @@ The <action> type attribute can be add,update,fix,remove.
       <action issue="COMPRESS-426" type="add" date="2017-12-28">
         Added write-support for Zstandard compression.
       </action>
+      <action issue="COMPRESS-424" type="fix" date="2017-12-30">
+        Added improved checks to detect corrupted bzip2 streams and
+        throw the expected IOException rather than obscure
+        RuntimeExceptions.
+      </action>
     </release>
     <release version="1.15" date="2017-10-17"
              description="Release 1.15
