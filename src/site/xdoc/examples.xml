@@ -161,6 +161,31 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
           longer than 16 characters using the BSD dialect, writing
           the SVR4/GNU dialect is not supported.</p>
 
+        <table>
+          <thead>
+            <tr>
+              <th>Version of Apache Commons Compress</th>
+              <th>Support for Traditional AR Format</th>
+              <th>Support for GNU/SRV4 Dialect</th>
+              <th>Support for BSD Dialect</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1.0 to 1.2</td>
+              <td>read/write</td>
+              <td>read</td>
+              <td>-</td>
+            </tr>
+            <tr>
+              <td>1.3 and later</td>
+              <td>read/write</td>
+              <td>read</td>
+              <td>read/write</td>
+            </tr>
+          </tbody>
+        </table>
+
         <p>It is not possible to detect the end of an AR archive in a
         reliable way so <code>ArArchiveInputStream</code> will read
         until it reaches the end of the stream or fails to parse the
