@@ -15,7 +15,7 @@
  *  limitations under the License.
  *
  */
-package org.apache.commons.compress.compressors.zip;
+package org.apache.commons.compress.compressors.deflate64;
 
 import org.apache.commons.compress.utils.BitInputStream;
 
@@ -25,7 +25,7 @@ import java.io.InputStream;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
-import static org.apache.commons.compress.compressors.zip.HuffmanState.*;
+import static org.apache.commons.compress.compressors.deflate64.HuffmanState.*;
 import static org.apache.commons.compress.utils.IOUtils.closeQuietly;
 
 public class HuffmanDecoder implements Closeable {

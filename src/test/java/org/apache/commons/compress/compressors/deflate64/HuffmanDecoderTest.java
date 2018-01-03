@@ -15,7 +15,7 @@
  *  limitations under the License.
  *
  */
-package org.apache.commons.compress.compressors.zip;
+package org.apache.commons.compress.compressors.deflate64;
 
 import org.junit.Test;
 

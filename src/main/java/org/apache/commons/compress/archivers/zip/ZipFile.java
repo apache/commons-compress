@@ -42,7 +42,7 @@ import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipException;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-import org.apache.commons.compress.compressors.zip.Deflate64InputStream;
+import org.apache.commons.compress.compressors.deflate64.Deflate64InputStream;
 import org.apache.commons.compress.utils.IOUtils;
 
 import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
