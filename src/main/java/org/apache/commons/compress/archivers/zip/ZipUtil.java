@@ -295,6 +295,7 @@ public abstract class ZipUtil {
         }
         return null;
     }
+
     static void copy(final byte[] from, final byte[] to, final int offset) {
         if (from != null) {
             System.arraycopy(from, 0, to, offset, from.length);
@@ -330,6 +331,7 @@ public abstract class ZipUtil {
             || entry.getMethod() == ZipMethod.UNSHRINKING.getCode()
             || entry.getMethod() == ZipMethod.IMPLODING.getCode()
             || entry.getMethod() == ZipEntry.DEFLATED
+            || entry.getMethod() == ZipMethod.ENHANCED_DEFLATED.getCode()
             || entry.getMethod() == ZipMethod.BZIP2.getCode();
     }
 
