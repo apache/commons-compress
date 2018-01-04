@@ -42,7 +42,7 @@ import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipException;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-import org.apache.commons.compress.compressors.deflate64.Deflate64InputStream;
+import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 
 import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
@@ -504,7 +504,7 @@ public class ZipFile implements Closeable {
             case BZIP2:
                 return new BZip2CompressorInputStream(bis);
             case ENHANCED_DEFLATED:
-                return new Deflate64InputStream(bis, ze.getSize());
+                return new Deflate64CompressorInputStream(bis, ze.getSize());
             case AES_ENCRYPTED:
             case EXPANDING_LEVEL_1:
             case EXPANDING_LEVEL_2:

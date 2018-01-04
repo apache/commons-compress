@@ -28,7 +28,7 @@ import java.util.Arrays;
 import static org.apache.commons.compress.compressors.deflate64.HuffmanState.*;
 import static org.apache.commons.compress.utils.IOUtils.closeQuietly;
 
-public class HuffmanDecoder implements Closeable {
+class HuffmanDecoder implements Closeable {
     /**
      * --------------------------------------------------------------------
      * idx  xtra  base     idx  xtra  base     idx  xtra  base
