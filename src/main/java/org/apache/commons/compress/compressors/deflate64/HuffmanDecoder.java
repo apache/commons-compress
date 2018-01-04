@@ -168,6 +168,9 @@ class HuffmanDecoder implements Closeable {
         return -1;
     }
 
+    int available() throws IOException {
+        return state == null ? 0 : state.available();
+    }
 
     private static abstract class DecoderState {
         abstract HuffmanState state();
@@ -175,6 +178,8 @@ class HuffmanDecoder implements Closeable {
         abstract int read(byte[] b, int off, int len) throws IOException;
 
         abstract boolean hasData();
+
+        abstract int available() throws IOException ;
     }
 
     private class UncompressedState extends DecoderState {
@@ -205,6 +210,11 @@ class HuffmanDecoder implements Closeable {
         boolean hasData() {
             return read < blockLength;
         }
+
+        @Override
+        int available() throws IOException {
+            return (int) Math.min(blockLength - read, reader.bitsAvailable() / Byte.SIZE);
+        }
     }
 
     private class InitialState extends DecoderState {
@@ -221,6 +231,11 @@ class HuffmanDecoder implements Closeable {
         @Override
         boolean hasData() {
             return false;
+        }
+
+        @Override
+        int available() {
+            return 0;
         }
     }
 
@@ -300,6 +315,11 @@ class HuffmanDecoder implements Closeable {
         @Override
         boolean hasData() {
             return !endOfBlock;
+        }
+
+        @Override
+        int available() {
+            return runBuffer.length - runBufferPos;
         }
     }
 

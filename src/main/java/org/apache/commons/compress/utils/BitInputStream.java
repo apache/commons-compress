@@ -100,6 +100,16 @@ public class BitInputStream implements Closeable {
         return bitsOut;
     }
 
+    /**
+     * Returns an estimate of the number of bits that can be read from
+     * this input stream without blocking by the next invocation of a
+     * method for this input stream.
+     * @since 1.16
+     */
+    public long bitsAvailable() throws IOException {
+        return bitsCachedSize + 8l * in.available();
+    }
+
     private long processBitsGreater57(final int count) throws IOException {
         final long bitsOut;
         int overflowBits = 0;

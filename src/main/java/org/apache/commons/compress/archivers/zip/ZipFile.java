@@ -504,7 +504,7 @@ public class ZipFile implements Closeable {
             case BZIP2:
                 return new BZip2CompressorInputStream(bis);
             case ENHANCED_DEFLATED:
-                return new Deflate64CompressorInputStream(bis, ze.getSize());
+                return new Deflate64CompressorInputStream(bis);
             case AES_ENCRYPTED:
             case EXPANDING_LEVEL_1:
             case EXPANDING_LEVEL_2:

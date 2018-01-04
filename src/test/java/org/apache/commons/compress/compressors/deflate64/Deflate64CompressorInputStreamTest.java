@@ -40,8 +40,7 @@ public class Deflate64CompressorInputStreamTest {
    @Test
    public void readWhenClosed() throws Exception
    {
-      long size = Integer.MAX_VALUE - 1;
-      Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(nullDecoder, size);
+      Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(nullDecoder);
       assertEquals(-1, input.read());
       assertEquals(-1, input.read(new byte[1]));
       assertEquals(-1, input.read(new byte[1], 0, 1));
@@ -50,47 +49,24 @@ public class Deflate64CompressorInputStreamTest {
    @Test
    public void properSizeWhenClosed() throws Exception
    {
-      long size = Integer.MAX_VALUE - 1;
-      Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(nullDecoder, size);
+      Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(nullDecoder);
       assertEquals(0, input.available());
    }
 
    @Test
-   public void properSizeWhenInRange() throws Exception
+   public void delegatesAvailable() throws Exception
    {
-      long size = Integer.MAX_VALUE - 1;
-      Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder, size);
-      assertEquals(size, input.available());
-   }
+      Mockito.when(decoder.available()).thenReturn(1024);
 
-   @Test
-   public void properSizeWhenOutOfRange() throws Exception
-   {
-      long size = Integer.MAX_VALUE + 1L;
-      Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder, size);
-      assertEquals(Integer.MAX_VALUE, input.available());
-   }
-
-   @Test
-   public void properSizeAfterReading() throws Exception
-   {
-      byte[] buf = new byte[4096];
-      int offset = 1000;
-      int length = 3096;
-
-      Mockito.when(decoder.decode(buf, offset, length)).thenReturn(2048);
-
-      long size = Integer.MAX_VALUE + 2047L;
-      Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder, size);
-      assertEquals(2048, input.read(buf, offset, length));
-      assertEquals(Integer.MAX_VALUE - 1, input.available());
+      Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder);
+      assertEquals(1024, input.available());
    }
 
    @Test
    public void closeCallsDecoder() throws Exception
    {
 
-      Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder, 10);
+      Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder);
       input.close();
 
       Mockito.verify(decoder, times(1)).close();
@@ -100,7 +76,7 @@ public class Deflate64CompressorInputStreamTest {
    public void closeIsDelegatedJustOnce() throws Exception
    {
 
-      Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder, 10);
+      Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder);
 
       input.close();
       input.close();
@@ -116,11 +92,25 @@ public class Deflate64CompressorInputStreamTest {
          'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'
       };
 
-      try (Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(new ByteArrayInputStream(data), 11);
+      try (Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(new ByteArrayInputStream(data));
            BufferedReader br = new BufferedReader(new InputStreamReader(input)))
       {
          assertEquals("Hello World", br.readLine());
          assertEquals(null, br.readLine());
+      }
+   }
+
+   @Test
+   public void uncompressedBlockAvailable() throws Exception
+   {
+      byte[] data = {
+         1, 11, 0, -12, -1,
+         'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'
+      };
+
+      try (Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(new ByteArrayInputStream(data))) {
+          assertEquals('H', input.read());
+          assertEquals(10, input.available());
       }
    }
 

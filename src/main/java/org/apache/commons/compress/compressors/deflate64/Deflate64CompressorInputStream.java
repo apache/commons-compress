@@ -30,21 +30,17 @@ import static org.apache.commons.compress.utils.IOUtils.closeQuietly;
  */
 public class Deflate64CompressorInputStream extends CompressorInputStream {
     private HuffmanDecoder decoder;
-    private long uncompressedSize;
-    private long totalRead = 0;
 
     /**
      * Constructs a Deflate64CompressorInputStream.
      *
      * @param in the stream to read from
-     * @param uncompressedSize the uncompressed size of the data to be read from in
      */
-    public Deflate64CompressorInputStream(InputStream in, long uncompressedSize) {
-        this(new HuffmanDecoder(in), uncompressedSize);
+    public Deflate64CompressorInputStream(InputStream in) {
+        this(new HuffmanDecoder(in));
     }
 
-    Deflate64CompressorInputStream(HuffmanDecoder decoder, long uncompressedSize) {
-        this.uncompressedSize = uncompressedSize;
+    Deflate64CompressorInputStream(HuffmanDecoder decoder) {
         this.decoder = decoder;
     }
 
@@ -74,8 +70,6 @@ public class Deflate64CompressorInputStream extends CompressorInputStream {
             count(read);
             if (read == -1) {
                 close();
-            } else {
-                totalRead += read;
             }
         }
         return read;
@@ -83,14 +77,7 @@ public class Deflate64CompressorInputStream extends CompressorInputStream {
 
     @Override
     public int available() throws IOException {
-        long available = 0;
-        if (decoder != null) {
-            available = uncompressedSize - totalRead;
-            if (Long.compare(available, Integer.MAX_VALUE) > 0) {
-                available = Integer.MAX_VALUE;
-            }
-        }
-        return (int) available;
+        return decoder != null ? decoder.available() : 0;
     }
 
     @Override
