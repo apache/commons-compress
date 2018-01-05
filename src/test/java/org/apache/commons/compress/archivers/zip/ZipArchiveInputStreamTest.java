@@ -206,6 +206,22 @@ public class ZipArchiveInputStreamTest {
     }
 
     /**
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-380"
+     */
+    @Test
+    public void readDeflate64CompressedStream() throws Exception {
+        final File input = getFile("COMPRESS-380-input");
+        final File archive = getFile("COMPRESS-380.zip");
+        try (FileInputStream in = new FileInputStream(input);
+             ZipArchiveInputStream zin = new ZipArchiveInputStream(new FileInputStream(archive))) {
+            byte[] orig = IOUtils.toByteArray(in);
+            ZipArchiveEntry e = zin.getNextZipEntry();
+            byte[] fromZip = IOUtils.toByteArray(zin);
+            assertArrayEquals(orig, fromZip);
+        }
+    }
+
+    /**
      * Test case for
      * <a href="https://issues.apache.org/jira/browse/COMPRESS-364"
      * >COMPRESS-364</a>.

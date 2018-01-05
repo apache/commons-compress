@@ -34,6 +34,7 @@ import java.util.zip.ZipException;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
 
@@ -313,15 +314,18 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         current.entry.setStreamContiguous(true);
 
         if (current.entry.getCompressedSize() != ArchiveEntry.SIZE_UNKNOWN) {
+            InputStream bis = new BoundedInputStream(in, current.entry.getCompressedSize());
             if (current.entry.getMethod() == ZipMethod.UNSHRINKING.getCode()) {
-                current.in = new UnshrinkingInputStream(new BoundedInputStream(in, current.entry.getCompressedSize()));
+                current.in = new UnshrinkingInputStream(bis);
             } else if (current.entry.getMethod() == ZipMethod.IMPLODING.getCode()) {
                 current.in = new ExplodingInputStream(
                         current.entry.getGeneralPurposeBit().getSlidingDictionarySize(),
                         current.entry.getGeneralPurposeBit().getNumberOfShannonFanoTrees(),
-                        new BoundedInputStream(in, current.entry.getCompressedSize()));
+                        bis);
             } else if (current.entry.getMethod() == ZipMethod.BZIP2.getCode()) {
-                current.in = new BZip2CompressorInputStream(new BoundedInputStream(in, current.entry.getCompressedSize()));
+                current.in = new BZip2CompressorInputStream(bis);
+            } else if (current.entry.getMethod() == ZipMethod.ENHANCED_DEFLATED.getCode()) {
+                current.in = new Deflate64CompressorInputStream(bis);
             }
         }
 
@@ -424,6 +428,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
             read = readDeflated(buffer, offset, length);
         } else if (current.entry.getMethod() == ZipMethod.UNSHRINKING.getCode()
                 || current.entry.getMethod() == ZipMethod.IMPLODING.getCode()
+                || current.entry.getMethod() == ZipMethod.ENHANCED_DEFLATED.getCode()
                 || current.entry.getMethod() == ZipMethod.BZIP2.getCode()) {
             read = current.in.read(buffer, offset, length);
         } else {
