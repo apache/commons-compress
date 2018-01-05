@@ -324,7 +324,7 @@ public abstract class ZipUtil {
      * Whether this library supports the compression method used by
      * the given entry.
      *
-     * @return true if the compression method is STORED or DEFLATED
+     * @return true if the compression method is supported
      */
     private static boolean supportsMethodOf(final ZipArchiveEntry entry) {
         return entry.getMethod() == ZipEntry.STORED
