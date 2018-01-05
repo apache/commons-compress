@@ -314,6 +314,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         current.entry.setStreamContiguous(true);
 
         if (current.entry.getCompressedSize() != ArchiveEntry.SIZE_UNKNOWN) {
+            // FIXME this currently leaks bis if the method is not one of the supported ones
             InputStream bis = new BoundedInputStream(in, current.entry.getCompressedSize());
             if (current.entry.getMethod() == ZipMethod.UNSHRINKING.getCode()) {
                 current.in = new UnshrinkingInputStream(bis);
