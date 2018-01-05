@@ -17,6 +17,7 @@
  */
 package org.apache.commons.compress.compressors.deflate64;
 
+import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -25,6 +26,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import static org.junit.Assert.assertEquals;
@@ -93,6 +95,23 @@ public class Deflate64CompressorInputStreamTest {
       };
 
       try (Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(new ByteArrayInputStream(data));
+           BufferedReader br = new BufferedReader(new InputStreamReader(input)))
+      {
+         assertEquals("Hello World", br.readLine());
+         assertEquals(null, br.readLine());
+      }
+   }
+
+   @Test
+   public void uncompressedBlockViaFactory() throws Exception
+   {
+      byte[] data = {
+         1, 11, 0, -12, -1,
+         'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'
+      };
+
+      try (InputStream input = new CompressorStreamFactory()
+           .createCompressorInputStream(CompressorStreamFactory.DEFLATE64, new ByteArrayInputStream(data));
            BufferedReader br = new BufferedReader(new InputStreamReader(input)))
       {
          assertEquals("Hello World", br.readLine());
