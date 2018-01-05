@@ -76,6 +76,11 @@ The <action> type attribute can be add,update,fix,remove.
         Updated XZ for Java dependency to 1.8 in order to pick up bug
         fix to LZMA2InputStream's available method.
       </action>
+      <action type="update" date="2018-01-05" issue="COMPRESS-429"
+              due-to="Damiano Albani">
+        ZipArchiveEntry now exposes how the name or comment have been
+        determined when the entry was read.
+      </action>
     </release>
     <release version="1.15" date="2017-10-17"
              description="Release 1.15
