@@ -169,7 +169,7 @@ class HuffmanDecoder implements Closeable {
     }
 
     int available() throws IOException {
-        return state == null ? 0 : state.available();
+        return state.available();
     }
 
     private static abstract class DecoderState {
