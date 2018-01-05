@@ -488,7 +488,7 @@ class HuffmanDecoder implements Closeable {
     private static long readBits(BitInputStream reader, int numBits) throws IOException {
         long r = reader.readBits(numBits);
         if (r == -1) {
-            throw new EOFException();
+            throw new EOFException("Truncated Deflate64 Stream");
         }
         return r;
     }

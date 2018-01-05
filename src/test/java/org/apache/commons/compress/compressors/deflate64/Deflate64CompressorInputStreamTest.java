@@ -133,4 +133,35 @@ public class Deflate64CompressorInputStreamTest {
       }
    }
 
+   @Test
+   public void streamIgnoresExtraBytesAfterDeflatedInput() throws Exception
+   {
+      byte[] data = {
+         1, 11, 0, -12, -1,
+         'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd', 'X'
+      };
+
+      try (Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(new ByteArrayInputStream(data));
+           BufferedReader br = new BufferedReader(new InputStreamReader(input)))
+      {
+         assertEquals("Hello World", br.readLine());
+         assertEquals(null, br.readLine());
+      }
+   }
+
+   @Test(expected = java.io.EOFException.class)
+   public void throwsEOFExceptionOnTruncatedStreams() throws Exception
+   {
+      byte[] data = {
+         1, 11, 0, -12, -1,
+         'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l',
+      };
+
+      try (Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(new ByteArrayInputStream(data));
+           BufferedReader br = new BufferedReader(new InputStreamReader(input)))
+      {
+         assertEquals("Hello World", br.readLine());
+      }
+   }
+
 }

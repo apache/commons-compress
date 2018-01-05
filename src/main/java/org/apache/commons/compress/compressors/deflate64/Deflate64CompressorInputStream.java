@@ -44,6 +44,9 @@ public class Deflate64CompressorInputStream extends CompressorInputStream {
         this.decoder = decoder;
     }
 
+    /**
+     * @throws java.io.EOFException if the underlying stream is exhausted before the end of defalted data was reached.
+     */
     @Override
     public int read() throws IOException {
         byte[] b = new byte[1];
@@ -62,6 +65,9 @@ public class Deflate64CompressorInputStream extends CompressorInputStream {
         }
     }
 
+    /**
+     * @throws java.io.EOFException if the underlying stream is exhausted before the end of defalted data was reached.
+     */
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
         int read = -1;
