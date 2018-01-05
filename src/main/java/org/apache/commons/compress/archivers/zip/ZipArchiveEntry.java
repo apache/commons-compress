@@ -59,14 +59,47 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     private static final int SHORT_SHIFT = 16;
     private static final byte[] EMPTY = new byte[0];
 
+    /**
+     * Indicates how the name of this entry has been determined.
+     * @since 1.16
+     */
     public enum NameSource {
+        /**
+         * The name has been read from the archive using the encoding
+         * of the archive specified when creating the {@link
+         * ZipArchiveInputStream} or {@link ZipFile} (defaults to the
+         * platform's default encoding).
+         */
         NAME,
+        /**
+         * The name has been read from the archive and the archive
+         * specified the EFS flag which indicates the name has been
+         * encoded as UTF-8.
+         */
         NAME_WITH_EFS_FLAG,
+        /**
+         * The name has been read from an {@link UnicodePathExtraField
+         * Unicode Extra Field}.
+         */
         UNICODE_EXTRA_FIELD
     }
 
+    /**
+     * Indicates how the comment of this entry has been determined.
+     * @since 1.16
+     */
     public enum CommentSource {
+        /**
+         * The comment has been read from the archive using the encoding
+         * of the archive specified when creating the {@link
+         * ZipArchiveInputStream} or {@link ZipFile} (defaults to the
+         * platform's default encoding).
+         */
         COMMENT,
+        /**
+         * The comment has been read from an {@link UnicodeCommentExtraField
+         * Unicode Extra Field}.
+         */
         UNICODE_EXTRA_FIELD
     }
 
