@@ -27,7 +27,6 @@ import java.nio.ByteOrder;
 import java.util.Arrays;
 
 import static org.apache.commons.compress.compressors.deflate64.HuffmanState.*;
-import static org.apache.commons.compress.utils.IOUtils.closeQuietly;
 
 class HuffmanDecoder implements Closeable {
     /**
@@ -119,7 +118,7 @@ class HuffmanDecoder implements Closeable {
 
     @Override
     public void close() {
-        closeQuietly(reader);
+        state = new InitialState();
         reader = null;
     }
 

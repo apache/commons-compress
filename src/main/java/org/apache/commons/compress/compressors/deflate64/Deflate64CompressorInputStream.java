@@ -29,6 +29,7 @@ import static org.apache.commons.compress.utils.IOUtils.closeQuietly;
  * @since 1.16
  */
 public class Deflate64CompressorInputStream extends CompressorInputStream {
+    private InputStream originalStream;
     private HuffmanDecoder decoder;
 
     /**
@@ -38,6 +39,7 @@ public class Deflate64CompressorInputStream extends CompressorInputStream {
      */
     public Deflate64CompressorInputStream(InputStream in) {
         this(new HuffmanDecoder(in));
+        originalStream = in;
     }
 
     Deflate64CompressorInputStream(HuffmanDecoder decoder) {
@@ -75,7 +77,7 @@ public class Deflate64CompressorInputStream extends CompressorInputStream {
             read = decoder.decode(b, off, len);
             count(read);
             if (read == -1) {
-                close();
+                closeDecoder();
             }
         }
         return read;
@@ -88,6 +90,14 @@ public class Deflate64CompressorInputStream extends CompressorInputStream {
 
     @Override
     public void close() throws IOException {
+        closeDecoder();
+        if (originalStream != null) {
+            originalStream.close();
+            originalStream = null;
+        }
+    }
+
+    private void closeDecoder() throws IOException {
         closeQuietly(decoder);
         decoder = null;
     }
