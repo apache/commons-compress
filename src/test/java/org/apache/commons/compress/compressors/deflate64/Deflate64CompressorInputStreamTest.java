@@ -34,134 +34,122 @@ import static org.mockito.Mockito.times;
 
 @RunWith(MockitoJUnitRunner.class)
 public class Deflate64CompressorInputStreamTest {
-   private final HuffmanDecoder nullDecoder = null;
+    private final HuffmanDecoder nullDecoder = null;
 
-   @Mock
-   private HuffmanDecoder decoder;
+    @Mock
+    private HuffmanDecoder decoder;
 
-   @Test
-   public void readWhenClosed() throws Exception
-   {
-      Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(nullDecoder);
-      assertEquals(-1, input.read());
-      assertEquals(-1, input.read(new byte[1]));
-      assertEquals(-1, input.read(new byte[1], 0, 1));
-   }
+    @Test
+    public void readWhenClosed() throws Exception {
+        Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(nullDecoder);
+        assertEquals(-1, input.read());
+        assertEquals(-1, input.read(new byte[1]));
+        assertEquals(-1, input.read(new byte[1], 0, 1));
+    }
 
-   @Test
-   public void properSizeWhenClosed() throws Exception
-   {
-      Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(nullDecoder);
-      assertEquals(0, input.available());
-   }
+    @Test
+    public void properSizeWhenClosed() throws Exception {
+        Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(nullDecoder);
+        assertEquals(0, input.available());
+    }
 
-   @Test
-   public void delegatesAvailable() throws Exception
-   {
-      Mockito.when(decoder.available()).thenReturn(1024);
+    @Test
+    public void delegatesAvailable() throws Exception {
+        Mockito.when(decoder.available()).thenReturn(1024);
 
-      Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder);
-      assertEquals(1024, input.available());
-   }
+        Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder);
+        assertEquals(1024, input.available());
+    }
 
-   @Test
-   public void closeCallsDecoder() throws Exception
-   {
+    @Test
+    public void closeCallsDecoder() throws Exception {
 
-      Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder);
-      input.close();
+        Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder);
+        input.close();
 
-      Mockito.verify(decoder, times(1)).close();
-   }
+        Mockito.verify(decoder, times(1)).close();
+    }
 
-   @Test
-   public void closeIsDelegatedJustOnce() throws Exception
-   {
+    @Test
+    public void closeIsDelegatedJustOnce() throws Exception {
 
-      Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder);
+        Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder);
 
-      input.close();
-      input.close();
+        input.close();
+        input.close();
 
-      Mockito.verify(decoder, times(1)).close();
-   }
+        Mockito.verify(decoder, times(1)).close();
+    }
 
-   @Test
-   public void uncompressedBlock() throws Exception
-   {
-      byte[] data = {
-         1, 11, 0, -12, -1,
-         'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'
-      };
+    @Test
+    public void uncompressedBlock() throws Exception {
+        byte[] data = {
+            1, 11, 0, -12, -1,
+            'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'
+        };
 
-      try (Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(new ByteArrayInputStream(data));
-           BufferedReader br = new BufferedReader(new InputStreamReader(input)))
-      {
-         assertEquals("Hello World", br.readLine());
-         assertEquals(null, br.readLine());
-      }
-   }
+        try (Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(new ByteArrayInputStream(data));
+             BufferedReader br = new BufferedReader(new InputStreamReader(input))) {
+            assertEquals("Hello World", br.readLine());
+            assertEquals(null, br.readLine());
+        }
+    }
 
-   @Test
-   public void uncompressedBlockViaFactory() throws Exception
-   {
-      byte[] data = {
-         1, 11, 0, -12, -1,
-         'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'
-      };
+    @Test
+    public void uncompressedBlockViaFactory() throws Exception {
+        byte[] data = {
+            1, 11, 0, -12, -1,
+            'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'
+        };
 
-      try (InputStream input = new CompressorStreamFactory()
-           .createCompressorInputStream(CompressorStreamFactory.DEFLATE64, new ByteArrayInputStream(data));
-           BufferedReader br = new BufferedReader(new InputStreamReader(input)))
-      {
-         assertEquals("Hello World", br.readLine());
-         assertEquals(null, br.readLine());
-      }
-   }
+        try (InputStream input = new CompressorStreamFactory()
+             .createCompressorInputStream(CompressorStreamFactory.DEFLATE64, new ByteArrayInputStream(data));
+             BufferedReader br = new BufferedReader(new InputStreamReader(input))) {
+            assertEquals("Hello World", br.readLine());
+            assertEquals(null, br.readLine());
+        }
+    }
 
-   @Test
-   public void uncompressedBlockAvailable() throws Exception
-   {
-      byte[] data = {
-         1, 11, 0, -12, -1,
-         'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'
-      };
+    @Test
+    public void uncompressedBlockAvailable() throws Exception {
+        byte[] data = {
+            1, 11, 0, -12, -1,
+            'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'
+        };
 
-      try (Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(new ByteArrayInputStream(data))) {
-          assertEquals('H', input.read());
-          assertEquals(10, input.available());
-      }
-   }
+        try (Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(new ByteArrayInputStream(data))) {
+            assertEquals('H', input.read());
+            assertEquals(10, input.available());
+        }
+    }
 
-   @Test
-   public void streamIgnoresExtraBytesAfterDeflatedInput() throws Exception
-   {
-      byte[] data = {
-         1, 11, 0, -12, -1,
-         'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd', 'X'
-      };
+    @Test
+    public void streamIgnoresExtraBytesAfterDeflatedInput() throws Exception
+    {
+        byte[] data = {
+            1, 11, 0, -12, -1,
+            'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd', 'X'
+        };
 
-      try (Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(new ByteArrayInputStream(data));
-           BufferedReader br = new BufferedReader(new InputStreamReader(input)))
-      {
-         assertEquals("Hello World", br.readLine());
-         assertEquals(null, br.readLine());
-      }
-   }
+        try (Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(new ByteArrayInputStream(data));
+             BufferedReader br = new BufferedReader(new InputStreamReader(input))) {
+            assertEquals("Hello World", br.readLine());
+            assertEquals(null, br.readLine());
+        }
+    }
 
-   @Test(expected = java.io.EOFException.class)
-   public void throwsEOFExceptionOnTruncatedStreams() throws Exception
-   {
-      byte[] data = {
-         1, 11, 0, -12, -1,
-         'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l',
-      };
+    @Test(expected = java.io.EOFException.class)
+    public void throwsEOFExceptionOnTruncatedStreams() throws Exception
+    {
+        byte[] data = {
+            1, 11, 0, -12, -1,
+            'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l',
+        };
 
-      try (Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(new ByteArrayInputStream(data));
-           BufferedReader br = new BufferedReader(new InputStreamReader(input)))
-      {
-         assertEquals("Hello World", br.readLine());
-      }
-   }
+        try (Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(new ByteArrayInputStream(data));
+             BufferedReader br = new BufferedReader(new InputStreamReader(input))) {
+            assertEquals("Hello World", br.readLine());
+        }
+    }
 
 }
