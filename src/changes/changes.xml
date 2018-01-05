@@ -72,6 +72,11 @@ The <action> type attribute can be add,update,fix,remove.
         throw the expected IOException rather than obscure
         RuntimeExceptions.
       </action>
+      <action issue="COMPRESS-380" type="add" date="2018-01-03"
+              due-to="">
+        Added read-only DEFLATE64 support to ZIP archives and as
+        stand-alone CompressorInputStream.
+      </action>
     </release>
     <release version="1.15" date="2017-10-17"
              description="Release 1.15
