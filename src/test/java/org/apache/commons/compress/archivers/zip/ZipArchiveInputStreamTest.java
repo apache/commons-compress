@@ -272,11 +272,44 @@ public class ZipArchiveInputStreamTest {
         }
     }
 
+    @Test
+    public void nameSourceDefaultsToName() throws Exception {
+        nameSource("bla.zip", "test1.xml", ZipArchiveEntry.NameSource.NAME);
+    }
+
+    @Test
+    public void nameSourceIsSetToUnicodeExtraField() throws Exception {
+        nameSource("utf8-winzip-test.zip", "\u20AC_for_Dollar.txt",
+                   ZipArchiveEntry.NameSource.UNICODE_EXTRA_FIELD);
+    }
+
+    @Test
+    public void nameSourceIsSetToEFS() throws Exception {
+        nameSource("utf8-7zip-test.zip", "\u20AC_for_Dollar.txt", 3,
+                   ZipArchiveEntry.NameSource.NAME_WITH_EFS_FLAG);
+    }
+
     private static byte[] readEntry(ZipArchiveInputStream zip, ZipArchiveEntry zae) throws IOException {
         final int len = (int)zae.getSize();
         final byte[] buff = new byte[len];
         zip.read(buff, 0, len);
 
         return buff;
+    }
+
+    private static void nameSource(String archive, String entry, ZipArchiveEntry.NameSource expected) throws Exception {
+        nameSource(archive, entry, 1, expected);
+    }
+
+    private static void nameSource(String archive, String entry, int entryNo, ZipArchiveEntry.NameSource expected)
+        throws Exception {
+        try (ZipArchiveInputStream zis = new ZipArchiveInputStream(new FileInputStream(getFile(archive)))) {
+            ZipArchiveEntry ze;
+            do {
+                ze = zis.getNextZipEntry();
+            } while (--entryNo > 0);
+            assertEquals(entry, ze.getName());
+            assertEquals(expected, ze.getNameSource());
+        }
     }
 }

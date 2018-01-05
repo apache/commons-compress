@@ -581,6 +581,23 @@ public class ZipFileTest {
         entry.setAlignment(3);
     }
 
+    @Test
+    public void nameSourceDefaultsToName() throws Exception {
+        nameSource("bla.zip", "test1.xml", ZipArchiveEntry.NameSource.NAME);
+    }
+
+    @Test
+    public void nameSourceIsSetToUnicodeExtraField() throws Exception {
+        nameSource("utf8-winzip-test.zip", "\u20AC_for_Dollar.txt",
+                   ZipArchiveEntry.NameSource.UNICODE_EXTRA_FIELD);
+    }
+
+    @Test
+    public void nameSourceIsSetToEFS() throws Exception {
+        nameSource("utf8-7zip-test.zip", "\u20AC_for_Dollar.txt",
+                   ZipArchiveEntry.NameSource.NAME_WITH_EFS_FLAG);
+    }
+
     private void assertAllReadMethods(byte[] expected, ZipFile zipFile, ZipArchiveEntry entry) {
         // simple IOUtil read
         try (InputStream stream = zf.getInputStream(entry)) {
@@ -672,5 +689,13 @@ public class ZipFileTest {
         assertEquals("src/main/java/org/apache/commons/compress/archivers/zip/"
                      + expectedName + ".java",
                      ze.getName());
+    }
+
+    private static void nameSource(String archive, String entry, ZipArchiveEntry.NameSource expected) throws Exception {
+        try (ZipFile zf = new ZipFile(getFile(archive))) {
+            ZipArchiveEntry ze = zf.getEntry(entry);
+            assertEquals(entry, ze.getName());
+            assertEquals(expected, ze.getNameSource());
+        }
     }
 }
