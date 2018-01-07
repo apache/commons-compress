@@ -237,8 +237,10 @@ public abstract class ZipUtil {
         final String originalName = ze.getName();
         final String newName = getUnicodeStringIfOriginalMatches(name,
                                                            originalNameBytes);
-        if (newName != null && !originalName.equals(newName)) {
-            ze.setName(newName);
+        if (newName != null) {
+            if (!originalName.equals(newName)) {
+                ze.setName(newName);
+            }
             ze.setNameSource(ZipArchiveEntry.NameSource.UNICODE_EXTRA_FIELD);
         }
 
