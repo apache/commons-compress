@@ -59,6 +59,17 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     private static final int SHORT_SHIFT = 16;
     private static final byte[] EMPTY = new byte[0];
 
+    public enum NameSource {
+        NAME,
+        NAME_WITH_EFS_FLAG,
+        UNICODE_EXTRA_FIELD
+    }
+
+    public enum CommentSource {
+        COMMENT,
+        UNICODE_EXTRA_FIELD
+    }
+
     /**
      * Indicates how the name of this entry has been determined.
      * @since 1.16
