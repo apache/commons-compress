@@ -445,6 +445,7 @@ class HuffmanDecoder implements Closeable {
         private final byte[] memory;
         private final int mask;
         private int wHead;
+        private boolean wrappedAround;
 
         private DecodingMemory() {
             this(16);
@@ -452,7 +453,6 @@ class HuffmanDecoder implements Closeable {
 
         private DecodingMemory(int bits) {
             memory = new byte[1 << bits];
-            Arrays.fill(memory, (byte) -1);
             mask = memory.length - 1;
         }
 
@@ -467,7 +467,7 @@ class HuffmanDecoder implements Closeable {
                 throw new IllegalStateException("Illegal distance parameter: " + distance);
             }
             int start = (wHead - distance) & mask;
-            if (memory[start] == -1) {
+            if (!wrappedAround && start >= wHead) {
                 throw new IllegalStateException("Attempt to read beyond memory: dist=" + distance);
             }
             for (int i = 0, pos = start; i < length; i++, pos = incCounter(pos)) {
@@ -476,7 +476,11 @@ class HuffmanDecoder implements Closeable {
         }
 
         private int incCounter(int counter) {
-            return (counter + 1) & mask;
+            final int newCounter = (counter + 1) & mask;
+            if (!wrappedAround && newCounter < counter) {
+                wrappedAround = true;
+            }
+            return newCounter;
         }
     }
 
