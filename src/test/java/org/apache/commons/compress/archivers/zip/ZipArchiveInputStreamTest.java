@@ -210,8 +210,8 @@ public class ZipArchiveInputStreamTest {
      */
     @Test
     public void readDeflate64CompressedStream() throws Exception {
-        final File input = getFile("COMPRESS-380-input");
-        final File archive = getFile("COMPRESS-380.zip");
+        final File input = getFile("COMPRESS-380/COMPRESS-380-input");
+        final File archive = getFile("COMPRESS-380/COMPRESS-380.zip");
         try (FileInputStream in = new FileInputStream(input);
              ZipArchiveInputStream zin = new ZipArchiveInputStream(new FileInputStream(archive))) {
             byte[] orig = IOUtils.toByteArray(in);
@@ -224,7 +224,7 @@ public class ZipArchiveInputStreamTest {
     @Test
     public void readDeflate64CompressedStreamWithDataDescriptor() throws Exception {
         // this is a copy of bla.jar with META-INF/MANIFEST.MF's method manually changed to ENHANCED_DEFLATED
-        final File archive = getFile("COMPRESS-380-dd.zip");
+        final File archive = getFile("COMPRESS-380/COMPRESS-380-dd.zip");
         try (ZipArchiveInputStream zin = new ZipArchiveInputStream(new FileInputStream(archive))) {
             ZipArchiveEntry e = zin.getNextZipEntry();
             assertEquals(-1, e.getSize());

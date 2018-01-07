@@ -586,8 +586,8 @@ public class ZipFileTest {
      */
     @Test
     public void readDeflate64CompressedStream() throws Exception {
-        final File input = getFile("COMPRESS-380-input");
-        final File archive = getFile("COMPRESS-380.zip");
+        final File input = getFile("COMPRESS-380/COMPRESS-380-input");
+        final File archive = getFile("COMPRESS-380/COMPRESS-380.zip");
         try (FileInputStream in = new FileInputStream(input);
              ZipFile zf = new ZipFile(archive)) {
             byte[] orig = IOUtils.toByteArray(in);
