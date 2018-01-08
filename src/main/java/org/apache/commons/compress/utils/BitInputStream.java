@@ -110,6 +110,17 @@ public class BitInputStream implements Closeable {
         return bitsCachedSize + 8l * in.available();
     }
 
+    /**
+     * Drops bits until the next bits will be read from a byte boundary.
+     * @since 1.16
+     */
+    public void alignWithByteBoundary() throws IOException {
+        int toSkip = bitsCachedSize % 8;
+        if (toSkip > 0) {
+            readBits(toSkip);
+        }
+    }
+
     private long processBitsGreater57(final int count) throws IOException {
         final long bitsOut;
         int overflowBits = 0;

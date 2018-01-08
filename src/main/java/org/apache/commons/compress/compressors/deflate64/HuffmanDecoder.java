@@ -134,7 +134,7 @@ class HuffmanDecoder implements Closeable {
                     int mode = (int) readBits(2);
                     switch (mode) {
                         case 0:
-                            readBits(Byte.SIZE - 3);
+                            reader.alignWithByteBoundary();
                             long bLen = readBits(16);
                             long bNLen = readBits(16);
                             if (((bLen ^ 0xFFFF) & 0xFFFF) != bNLen) {
