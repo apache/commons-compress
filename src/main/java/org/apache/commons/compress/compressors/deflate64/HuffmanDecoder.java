@@ -197,7 +197,7 @@ class HuffmanDecoder implements Closeable {
 
         @Override
         int read(byte[] b, int off, int len) throws IOException {
-            // as len is an int the min must fit into an int as well
+            // as len is an int and (blockLength - read) is >= 0 the min must fit into an int as well
             int max = (int) Math.min(blockLength - read, len);
             for (int i = 0; i < max; i++) {
                 byte next = (byte) (readBits(Byte.SIZE) & 0xFF);
