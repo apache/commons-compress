@@ -141,7 +141,7 @@ class HuffmanDecoder implements Closeable {
                                 //noinspection DuplicateStringLiteralInspection
                                 throw new IllegalStateException("Illegal LEN / NLEN values");
                             }
-                            state = new UncompressedState((int) bLen);
+                            state = new UncompressedState(bLen);
                             break;
                         case 1:
                             state = new HuffmanCodes(FIXED_CODES, FIXED_LITERALS, FIXED_DISTANCE);
@@ -183,10 +183,10 @@ class HuffmanDecoder implements Closeable {
     }
 
     private class UncompressedState extends DecoderState {
-        private final int blockLength;
-        private int read;
+        private final long blockLength;
+        private long read;
 
-        private UncompressedState(int blockLength) {
+        private UncompressedState(long blockLength) {
             this.blockLength = blockLength;
         }
 
@@ -197,7 +197,8 @@ class HuffmanDecoder implements Closeable {
 
         @Override
         int read(byte[] b, int off, int len) throws IOException {
-            int max = Math.min(blockLength - read, len);
+            // as len is an int the min must fit into an int as well
+            int max = (int) Math.min(blockLength - read, len);
             for (int i = 0; i < max; i++) {
                 byte next = (byte) (readBits(Byte.SIZE) & 0xFF);
                 b[off + i] = memory.add(next);
