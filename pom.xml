@@ -361,7 +361,7 @@ Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>3.0.4</version>
+        <version>3.0.5</version>
         <configuration>
           <threshold>Normal</threshold>
           <effort>Default</effort>
