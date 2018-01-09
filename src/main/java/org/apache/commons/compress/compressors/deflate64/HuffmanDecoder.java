@@ -104,15 +104,13 @@ class HuffmanDecoder implements Closeable {
     private boolean finalBlock = false;
     private DecoderState state;
     private BitInputStream reader;
+    private final InputStream in;
 
     private final DecodingMemory memory = new DecodingMemory();
 
     HuffmanDecoder(InputStream in) {
-        this(new BitInputStream(in, ByteOrder.LITTLE_ENDIAN));
-    }
-
-    private HuffmanDecoder(BitInputStream reader) {
-        this.reader = reader;
+        this.reader = new BitInputStream(in, ByteOrder.LITTLE_ENDIAN);
+        this.in = in;
         state = new InitialState();
     }
 
@@ -200,9 +198,19 @@ class HuffmanDecoder implements Closeable {
             // as len is an int and (blockLength - read) is >= 0 the min must fit into an int as well
             int max = (int) Math.min(blockLength - read, len);
             for (int i = 0; i < max; i++) {
-                byte next = (byte) (readBits(Byte.SIZE) & 0xFF);
-                b[off + i] = memory.add(next);
-                read++;
+                if (reader.bitsCached() > 0) {
+                    byte next = (byte) (readBits(Byte.SIZE) & 0xFF);
+                    b[off + i] = memory.add(next);
+                    read++;
+                } else {
+                    int readNow = in.read(b, off + i, max - i);
+                    if (readNow == -1) {
+                        throw new EOFException("Truncated Deflate64 Stream");
+                    }
+                    memory.add(b, off + i, readNow);
+                    read += readNow;
+                    i += readNow;
+                }
             }
             return max;
         }
@@ -461,6 +469,12 @@ class HuffmanDecoder implements Closeable {
             memory[wHead] = b;
             wHead = incCounter(wHead);
             return b;
+        }
+
+        void add(byte[] b, int off, int len) {
+            for (int i = off; i < off + len; i++) {
+                add(b[i]);
+            }
         }
 
         void recordToBuffer(int distance, int length, byte[] buff) {
