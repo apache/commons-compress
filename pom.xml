@@ -23,7 +23,6 @@
     <version>43</version>
   </parent>
 
-  <groupId>org.apache.commons</groupId>
   <artifactId>commons-compress</artifactId>
   <version>1.16-SNAPSHOT</version>
   <name>Apache Commons Compress</name>
