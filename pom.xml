@@ -46,7 +46,7 @@ Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <!-- configuration bits for cutting a release candidate -->
     <commons.release.version>${project.version}</commons.release.version>
     <commons.rc.version>RC1</commons.rc.version>
-    <powermock.version>1.7.0</powermock.version>
+    <powermock.version>1.7.3</powermock.version>
     <commons.pmd-plugin.version>3.7</commons.pmd-plugin.version>
 
     <!-- only show issues of the current version -->
