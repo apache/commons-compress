@@ -80,6 +80,10 @@ The <action> type attribute can be add,update,fix,remove.
               due-to="Damiano Albani">
         ZipArchiveEntry now exposes how the name or comment have been
         determined when the entry was read.
+      <action issue="COMPRESS-380" type="add" date="2018-01-09"
+              due-to="">
+        Added read-only DEFLATE64 support to ZIP archives and as
+        stand-alone CompressorInputStream.
       </action>
     </release>
     <release version="1.15" date="2017-10-17"

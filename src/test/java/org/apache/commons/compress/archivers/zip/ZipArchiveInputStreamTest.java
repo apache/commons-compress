@@ -206,6 +206,41 @@ public class ZipArchiveInputStreamTest {
     }
 
     /**
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-380"
+     */
+    @Test
+    public void readDeflate64CompressedStream() throws Exception {
+        final File input = getFile("COMPRESS-380/COMPRESS-380-input");
+        final File archive = getFile("COMPRESS-380/COMPRESS-380.zip");
+        try (FileInputStream in = new FileInputStream(input);
+             ZipArchiveInputStream zin = new ZipArchiveInputStream(new FileInputStream(archive))) {
+            byte[] orig = IOUtils.toByteArray(in);
+            ZipArchiveEntry e = zin.getNextZipEntry();
+            byte[] fromZip = IOUtils.toByteArray(zin);
+            assertArrayEquals(orig, fromZip);
+        }
+    }
+
+    @Test
+    public void readDeflate64CompressedStreamWithDataDescriptor() throws Exception {
+        // this is a copy of bla.jar with META-INF/MANIFEST.MF's method manually changed to ENHANCED_DEFLATED
+        final File archive = getFile("COMPRESS-380/COMPRESS-380-dd.zip");
+        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(new FileInputStream(archive))) {
+            ZipArchiveEntry e = zin.getNextZipEntry();
+            assertEquals(-1, e.getSize());
+            assertEquals(ZipMethod.ENHANCED_DEFLATED.getCode(), e.getMethod());
+            byte[] fromZip = IOUtils.toByteArray(zin);
+            byte[] expected = new byte[] {
+                'M', 'a', 'n', 'i', 'f', 'e', 's', 't', '-', 'V', 'e', 'r', 's', 'i', 'o', 'n', ':', ' ', '1', '.', '0',
+                '\r', '\n', '\r', '\n'
+            };
+            assertArrayEquals(expected, fromZip);
+            zin.getNextZipEntry();
+            assertEquals(25, e.getSize());
+        }
+    }
+
+    /**
      * Test case for
      * <a href="https://issues.apache.org/jira/browse/COMPRESS-364"
      * >COMPRESS-364</a>.

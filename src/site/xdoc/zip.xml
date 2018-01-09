@@ -297,7 +297,8 @@
         just fine.   As of version 1.7, Commons Compress can also
         decompress entries compressed with the legacy SHRINK and
         IMPLODE algorithms of PKZIP 1.x.  Version 1.11 of Commons
-        Compress adds read-only support for BZIP2.</p>
+        Compress adds read-only support for BZIP2.  Version 1.16 adds
+        read-only support for DEFLATE64 - also known as "enhanced DEFLATE".</p>
 
         <p>The ZIP specification allows for various other compression
         algorithms and also supports several different ways of
@@ -311,6 +312,39 @@
         encrypted entries or entries using an unsupported encryption
         mechanism.  Using this method it is possible to at least
         detect and skip the entries that can not be extracted.</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Version of Apache Commons Compress</th>
+              <th>Supported Compression Methods</th>
+              <th>Supported Encryption Methods</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1.0 to 1.6</td>
+              <td>STORED, DEFLATE</td>
+              <td>-</td>
+            </tr>
+            <tr>
+              <td>1.7 to 1.10</td>
+              <td>STORED, DEFLATE, SHRINK, IMPLODE</td>
+              <td>-</td>
+            </tr>
+            <tr>
+              <td>1.11 to 1.15</td>
+              <td>STORED, DEFLATE, SHRINK, IMPLODE, BZIP2</td>
+              <td>-</td>
+            </tr>
+            <tr>
+              <td>1.16 and later</td>
+              <td>STORED, DEFLATE, SHRINK, IMPLODE, BZIP2, DEFLATE64
+              (enhanced deflate)</td>
+              <td>-</td>
+            </tr>
+          </tbody>
+        </table>
 
       </subsection>
 

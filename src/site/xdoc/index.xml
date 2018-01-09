@@ -28,7 +28,7 @@
                 The Apache Commons Compress library defines an API for
                 working with ar, cpio, Unix dump, tar, zip, gzip, XZ,
                 Pack200, bzip2, 7z, arj, lzma, snappy, DEFLATE, lz4,
-                Brotli, Zstandard and Z files.
+                Brotli, Zstandard, DEFLATE64 and Z files.
             </p>
             <p>
                 The code in this component has many origins:
@@ -69,6 +69,9 @@
           <subsection name="What's coming in 1.16?">
             <ul>
               <li>Support for Zstandard compression.</li>
+              <li>Read-only support for DEFLATE64 compression as
+              stand-alone CompressorInputStream and as method used in
+              ZIP archives.</li>
             </ul>
           </subsection>
 
@@ -94,7 +97,7 @@
             licensed <a href="https://github.com/google/brotli">Google
             Brotli decoder</a>. Zstandard support is provided by the BSD
             licensed <a href="https://github.com/luben/zstd-jni">Zstd-jni</a>.
-            As of Commons Compress 1.16 support for the Z and Brotli
+            As of Commons Compress 1.16 support for the DEFLATE64, Z and Brotli
             formats is read-only.</p>
 
           <p>The ar, arj, cpio, dump, tar, 7z and zip formats are supported as
