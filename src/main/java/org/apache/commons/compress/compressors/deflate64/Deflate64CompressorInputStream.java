@@ -97,7 +97,7 @@ public class Deflate64CompressorInputStream extends CompressorInputStream {
         }
     }
 
-    private void closeDecoder() throws IOException {
+    private void closeDecoder() {
         closeQuietly(decoder);
         decoder = null;
     }
