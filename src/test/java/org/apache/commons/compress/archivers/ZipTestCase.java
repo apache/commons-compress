@@ -124,8 +124,8 @@ public final class ZipTestCase extends AbstractTestCase {
         IOUtils.readFully(new FileInputStream(file1), file1Contents);
         IOUtils.readFully(new FileInputStream(file2), file2Contents);
 
-        SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel();
-        try (ZipArchiveOutputStream os = new ZipArchiveOutputStream(c)) {
+        SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel();
+        try (ZipArchiveOutputStream os = new ZipArchiveOutputStream(channel)) {
             os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
             os.write(file1Contents);
             os.closeArchiveEntry();
@@ -139,7 +139,7 @@ public final class ZipTestCase extends AbstractTestCase {
         final List<byte[]> results = new ArrayList<>();
 
         try (ArchiveInputStream in = new ArchiveStreamFactory()
-             .createArchiveInputStream("zip", new ByteArrayInputStream(c.array()))) {
+             .createArchiveInputStream("zip", new ByteArrayInputStream(channel.array()))) {
 
             ZipArchiveEntry entry;
             while((entry = (ZipArchiveEntry)in.getNextEntry()) != null) {
@@ -160,13 +160,13 @@ public final class ZipTestCase extends AbstractTestCase {
     @Test
     public void testZipUnarchive() throws Exception {
         final File input = getFile("bla.zip");
-        final InputStream is = new FileInputStream(input);
-        final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("zip", is);
-        final ZipArchiveEntry entry = (ZipArchiveEntry)in.getNextEntry();
-        final OutputStream out = new FileOutputStream(new File(dir, entry.getName()));
-        IOUtils.copy(in, out);
-        out.close();
-        in.close();
+        try (final InputStream is = new FileInputStream(input);
+                final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("zip", is)) {
+            final ZipArchiveEntry entry = (ZipArchiveEntry) in.getNextEntry();
+            try (final OutputStream out = new FileOutputStream(new File(dir, entry.getName()))) {
+                IOUtils.copy(in, out);
+            }
+        }
     }
 
     /**
@@ -369,28 +369,28 @@ public final class ZipTestCase extends AbstractTestCase {
         final File reference = createReferenceFile(tmp[0], Zip64Mode.Never, "expected.");
 
         final File a1 = File.createTempFile("src1.", ".zip", tmp[0]);
-        final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(a1);
-        zos.setUseZip64(Zip64Mode.Never);
-        createFirstEntry(zos).close();
+        try (final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(a1)) {
+            zos.setUseZip64(Zip64Mode.Never);
+            createFirstEntry(zos).close();
+        }
 
         final File a2 = File.createTempFile("src2.", ".zip", tmp[0]);
-        final ZipArchiveOutputStream zos1 = new ZipArchiveOutputStream(a2);
-        zos1.setUseZip64(Zip64Mode.Never);
-        createSecondEntry(zos1).close();
+        try (final ZipArchiveOutputStream zos1 = new ZipArchiveOutputStream(a2)) {
+            zos1.setUseZip64(Zip64Mode.Never);
+            createSecondEntry(zos1).close();
+        }
 
-        final ZipFile zf1 = new ZipFile(a1);
-        final ZipFile zf2 = new ZipFile(a2);
-        final File fileResult = File.createTempFile("file-actual.", ".zip", tmp[0]);
-        final ZipArchiveOutputStream zos2 = new ZipArchiveOutputStream(fileResult);
-        zf1.copyRawEntries(zos2, allFilesPredicate);
-        zf2.copyRawEntries(zos2, allFilesPredicate);
-        zos2.close();
-        // copyRawEntries does not add superfluous zip64 header like regular zip output stream
-        // does when using Zip64Mode.AsNeeded so all the source material has to be Zip64Mode.Never,
-        // if exact binary equality is to be achieved
-        assertSameFileContents(reference, fileResult);
-        zf1.close();
-        zf2.close();
+        try (final ZipFile zf1 = new ZipFile(a1); final ZipFile zf2 = new ZipFile(a2)) {
+            final File fileResult = File.createTempFile("file-actual.", ".zip", tmp[0]);
+            try (final ZipArchiveOutputStream zos2 = new ZipArchiveOutputStream(fileResult)) {
+                zf1.copyRawEntries(zos2, allFilesPredicate);
+                zf2.copyRawEntries(zos2, allFilesPredicate);
+            }
+            // copyRawEntries does not add superfluous zip64 header like regular zip output stream
+            // does when using Zip64Mode.AsNeeded so all the source material has to be Zip64Mode.Never,
+            // if exact binary equality is to be achieved
+            assertSameFileContents(reference, fileResult);
+        }
     }
 
     @Test
@@ -399,24 +399,25 @@ public final class ZipTestCase extends AbstractTestCase {
 
         final File[] tmp = createTempDirAndFile();
         final File reference = File.createTempFile("z64reference.", ".zip", tmp[0]);
-        final ZipArchiveOutputStream zos1 = new ZipArchiveOutputStream(reference);
-        zos1.setUseZip64(Zip64Mode.Always);
-        createFirstEntry(zos1);
-        zos1.close();
+        try (final ZipArchiveOutputStream zos1 = new ZipArchiveOutputStream(reference)) {
+            zos1.setUseZip64(Zip64Mode.Always);
+            createFirstEntry(zos1);
+        }
 
         final File a1 = File.createTempFile("zip64src.", ".zip", tmp[0]);
-        final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(a1);
-        zos.setUseZip64(Zip64Mode.Always);
-        createFirstEntry(zos).close();
+        try (final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(a1)) {
+            zos.setUseZip64(Zip64Mode.Always);
+            createFirstEntry(zos).close();
+        }
 
-        final ZipFile zf1 = new ZipFile(a1);
         final File fileResult = File.createTempFile("file-actual.", ".zip", tmp[0]);
-        final ZipArchiveOutputStream zos2 = new ZipArchiveOutputStream(fileResult);
-        zos2.setUseZip64(Zip64Mode.Always);
-        zf1.copyRawEntries(zos2, allFilesPredicate);
-        zos2.close();
-        assertSameFileContents(reference, fileResult);
-        zf1.close();
+        try (final ZipFile zf1 = new ZipFile(a1)) {
+            try (final ZipArchiveOutputStream zos2 = new ZipArchiveOutputStream(fileResult)) {
+                zos2.setUseZip64(Zip64Mode.Always);
+                zf1.copyRawEntries(zos2, allFilesPredicate);
+            }
+            assertSameFileContents(reference, fileResult);
+        }
     }
 
     @Test
@@ -425,27 +426,28 @@ public final class ZipTestCase extends AbstractTestCase {
         final File[] tmp = createTempDirAndFile();
 
         final File a1 = File.createTempFile("unixModeBits.", ".zip", tmp[0]);
-        final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(a1);
+        try (final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(a1)) {
 
-        final ZipArchiveEntry archiveEntry = new ZipArchiveEntry("fred");
-        archiveEntry.setUnixMode(0664);
-        archiveEntry.setMethod(ZipEntry.DEFLATED);
-        zos.addRawArchiveEntry(archiveEntry, new ByteArrayInputStream("fud".getBytes()));
-        zos.close();
+            final ZipArchiveEntry archiveEntry = new ZipArchiveEntry("fred");
+            archiveEntry.setUnixMode(0664);
+            archiveEntry.setMethod(ZipEntry.DEFLATED);
+            zos.addRawArchiveEntry(archiveEntry, new ByteArrayInputStream("fud".getBytes()));
+        }
 
-        final ZipFile zf1 = new ZipFile(a1);
-        final ZipArchiveEntry fred = zf1.getEntry("fred");
-        assertEquals(0664, fred.getUnixMode());
-        zf1.close();
+        try (final ZipFile zf1 = new ZipFile(a1)) {
+            final ZipArchiveEntry fred = zf1.getEntry("fred");
+            assertEquals(0664, fred.getUnixMode());
+        }
     }
 
-    private File createReferenceFile(final File directory, final Zip64Mode zipMode, final String prefix) throws IOException {
+    private File createReferenceFile(final File directory, final Zip64Mode zipMode, final String prefix)
+            throws IOException {
         final File reference = File.createTempFile(prefix, ".zip", directory);
-        final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(reference);
-        zos.setUseZip64(zipMode);
-        createFirstEntry(zos);
-        createSecondEntry(zos);
-        zos.close();
+        try (final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(reference)) {
+            zos.setUseZip64(zipMode);
+            createFirstEntry(zos);
+            createSecondEntry(zos);
+        }
         return reference;
     }
 
@@ -462,39 +464,37 @@ public final class ZipTestCase extends AbstractTestCase {
 
     private void assertSameFileContents(final File expectedFile, final File actualFile) throws IOException {
         final int size = (int) Math.max(expectedFile.length(), actualFile.length());
-        final ZipFile expected = new ZipFile(expectedFile);
-        final ZipFile actual = new ZipFile(actualFile);
-        final byte[] expectedBuf = new byte[size];
-        final byte[] actualBuf = new byte[size];
+        try (final ZipFile expected = new ZipFile(expectedFile); final ZipFile actual = new ZipFile(actualFile)) {
+            final byte[] expectedBuf = new byte[size];
+            final byte[] actualBuf = new byte[size];
 
-        final Enumeration<ZipArchiveEntry> actualInOrder = actual.getEntriesInPhysicalOrder();
-        final Enumeration<ZipArchiveEntry> expectedInOrder = expected.getEntriesInPhysicalOrder();
+            final Enumeration<ZipArchiveEntry> actualInOrder = actual.getEntriesInPhysicalOrder();
+            final Enumeration<ZipArchiveEntry> expectedInOrder = expected.getEntriesInPhysicalOrder();
 
-        while (actualInOrder.hasMoreElements()){
-            final ZipArchiveEntry actualElement = actualInOrder.nextElement();
-            final ZipArchiveEntry expectedElement = expectedInOrder.nextElement();
-            assertEquals( expectedElement.getName(), actualElement.getName());
-            // Don't compare timestamps since they may vary;
-            // there's no support for stubbed out clock (TimeSource) in ZipArchiveOutputStream
-            assertEquals( expectedElement.getMethod(), actualElement.getMethod());
-            assertEquals( expectedElement.getGeneralPurposeBit(), actualElement.getGeneralPurposeBit());
-            assertEquals( expectedElement.getCrc(), actualElement.getCrc());
-            assertEquals( expectedElement.getCompressedSize(), actualElement.getCompressedSize());
-            assertEquals( expectedElement.getSize(), actualElement.getSize());
-            assertEquals( expectedElement.getExternalAttributes(), actualElement.getExternalAttributes());
-            assertEquals( expectedElement.getInternalAttributes(), actualElement.getInternalAttributes());
+            while (actualInOrder.hasMoreElements()) {
+                final ZipArchiveEntry actualElement = actualInOrder.nextElement();
+                final ZipArchiveEntry expectedElement = expectedInOrder.nextElement();
+                assertEquals(expectedElement.getName(), actualElement.getName());
+                // Don't compare timestamps since they may vary;
+                // there's no support for stubbed out clock (TimeSource) in ZipArchiveOutputStream
+                assertEquals(expectedElement.getMethod(), actualElement.getMethod());
+                assertEquals(expectedElement.getGeneralPurposeBit(), actualElement.getGeneralPurposeBit());
+                assertEquals(expectedElement.getCrc(), actualElement.getCrc());
+                assertEquals(expectedElement.getCompressedSize(), actualElement.getCompressedSize());
+                assertEquals(expectedElement.getSize(), actualElement.getSize());
+                assertEquals(expectedElement.getExternalAttributes(), actualElement.getExternalAttributes());
+                assertEquals(expectedElement.getInternalAttributes(), actualElement.getInternalAttributes());
 
-            final InputStream actualIs = actual.getInputStream(actualElement);
-            final InputStream expectedIs = expected.getInputStream(expectedElement);
-            IOUtils.readFully(expectedIs, expectedBuf);
-            IOUtils.readFully(actualIs, actualBuf);
-            expectedIs.close();
-            actualIs.close();
-            Assert.assertArrayEquals(expectedBuf, actualBuf); // Buffers are larger than payload. dont care
+                final InputStream actualIs = actual.getInputStream(actualElement);
+                final InputStream expectedIs = expected.getInputStream(expectedElement);
+                IOUtils.readFully(expectedIs, expectedBuf);
+                IOUtils.readFully(actualIs, actualBuf);
+                expectedIs.close();
+                actualIs.close();
+                Assert.assertArrayEquals(expectedBuf, actualBuf); // Buffers are larger than payload. dont care
+            }
+
         }
-
-        expected.close();
-        actual.close();
     }
 
 
