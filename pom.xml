@@ -203,6 +203,7 @@ Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
+          <version>${commons.javadoc.version}</version>
           <configuration> 
             <quiet>true</quiet>
             <source>${maven.compiler.source}</source>
