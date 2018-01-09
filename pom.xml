@@ -47,7 +47,7 @@ Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <commons.release.version>${project.version}</commons.release.version>
     <commons.rc.version>RC1</commons.rc.version>
     <powermock.version>1.7.3</powermock.version>
-    <commons.pmd-plugin.version>3.7</commons.pmd-plugin.version>
+    <commons.pmd-plugin.version>3.8</commons.pmd-plugin.version>
 
     <!-- only show issues of the current version -->
     <commons.changes.onlyCurrentVersion>true</commons.changes.onlyCurrentVersion>
