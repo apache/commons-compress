@@ -102,7 +102,7 @@ public class BitInputStream implements Closeable {
 
     /**
      * Returns the number of bits that can be read from this input
-     * stream without readong from the underlying input stream at all.
+     * stream without reading from the underlying input stream at all.
      * @since 1.16
      */
     public int bitsCached() {
