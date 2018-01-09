@@ -29,7 +29,9 @@ import java.util.Arrays;
 import static org.apache.commons.compress.compressors.deflate64.HuffmanState.*;
 
 class HuffmanDecoder implements Closeable {
+    
     /**
+     * <pre>
      * --------------------------------------------------------------------
      * idx  xtra  base     idx  xtra  base     idx  xtra  base
      * --------------------------------------------------------------------
@@ -44,6 +46,7 @@ class HuffmanDecoder implements Closeable {
      * 265   1     11,12   275   3   51-58     285   16  3
      * 266   1     13,14   276   3   59-66
      * --------------------------------------------------------------------
+     * </pre>
      * value = (base of run length) << 5 | (number of extra bits to read)
      */
     private static final short[] RUN_LENGTH_TABLE = {
@@ -52,6 +55,7 @@ class HuffmanDecoder implements Closeable {
     };
 
     /**
+     * <pre>
      * --------------------------------------------------------------------
      * idx  xtra  dist     idx  xtra  dist       idx  xtra  dist
      * --------------------------------------------------------------------
@@ -68,6 +72,7 @@ class HuffmanDecoder implements Closeable {
      * 30   14   32769-49152
      * 31   14   49153-65536
      * --------------------------------------------------------------------
+     * </pre>
      * value = (base of distance) << 4 | (number of extra bits to read)
      */
     private static final int[] DISTANCE_TABLE = {
