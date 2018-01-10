@@ -80,6 +80,7 @@ The <action> type attribute can be add,update,fix,remove.
               due-to="Damiano Albani">
         ZipArchiveEntry now exposes how the name or comment have been
         determined when the entry was read.
+      </action>
       <action issue="COMPRESS-380" type="add" date="2018-01-09"
               due-to="Christian Marquez Grabia">
         Added read-only DEFLATE64 support to ZIP archives and as
