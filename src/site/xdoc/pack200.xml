@@ -30,14 +30,14 @@
       archives compressed with Pack200 will in general be different
       from the original archive when decompressed again.  More
       information can be found in the Javadocs of the <a
-      href="http://download.oracle.com/javase/1.5.0/docs/api/java/util/jar/Pack200.html">Pack200
+      href="https://docs.oracle.com/javase/7/docs/api/java/util/jar/Pack200.Packer.html">Pack200.Packer
       class</a>.</p>
 
       <p>While the <code>pack200</code> command line utility of the
       JDK creates GZip compressed archives (<code>.pack.gz</code>) by
       default, the streams provided by the Pack200 package only
       perform the actual Pack200 operation.  Wrap them in an
-      additional <code>GZip(In|Out)putStream</code> in order to deal
+      additional <code>GZipCompressor(In|Out)putStream</code> in order to deal
       with deflated streams.</p>
 
       <subsection name="Pack200Strategy">
@@ -74,7 +74,7 @@
         to "normalize" JAR archives prior to packing them that ensures
         signatures applied to the "normalized" JAR will still be valid
         aftre a pack/unpack cycle - see <a
-        href="http://download.oracle.com/javase/1.5.0/docs/api/java/util/jar/Pack200.Packer.html">Pack200.Packer</a>'s
+        href="http://download.oracle.com/javase/7/docs/api/java/util/jar/Pack200.Packer.html">Pack200.Packer</a>'s
         javadocs.</p>
 
         <p>The <code>Pack200Utils</code> class in the
