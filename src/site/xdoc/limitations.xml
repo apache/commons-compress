@@ -149,7 +149,7 @@
          supported</li>
          <li>In Compress 1.6 <code>TarArchiveInputStream</code> could
          fail to read the full contents of an entry unless the stream
-         was wrapped in a bufferng stream.</li>
+         was wrapped in a buffering stream.</li>
        </ul>
      </section>
      <section name="XZ">
