@@ -141,6 +141,9 @@ wanted to create such files.">
         specified at construction time are compatible with the tar
         specification. In particular 512 is the only record size
         accepted and the block size must be a multiple of 512.
+        At the same time the default block size in
+        TarArchiveOutputStream has been changed from 10240 to 512
+        bytes.
       </action>
       <action issue="COMPRESS-400" type="add" date="2017-06-26"
               due-to="Simon Spero ">
