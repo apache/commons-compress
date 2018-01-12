@@ -128,7 +128,7 @@ class HuffmanDecoder implements Closeable {
     public int decode(byte[] b) throws IOException {
         return decode(b, 0, b.length);
     }
-    
+
     public int decode(byte[] b, int off, int len) throws IOException {
         while (!finalBlock || state.hasData()) {
             switch (state.state()) {
@@ -303,7 +303,7 @@ class HuffmanDecoder implements Closeable {
                     dist += readBits(distXtra);
 
                     if (runBuffer.length < run) {
-                    	runBuffer = new byte[run];
+                        runBuffer = new byte[run];
                     }
                     runBufferLength = run;
                     runBufferPos = 0;
