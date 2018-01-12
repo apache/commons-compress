@@ -86,9 +86,13 @@ The <action> type attribute can be add,update,fix,remove.
         Added read-only DEFLATE64 support to ZIP archives and as
         stand-alone CompressorInputStream.
       </action>
-      <action issue="COMPRESS-438" type="add" date="2018-01-10">
+      <action issue="COMPRESS-438" type="update" date="2018-01-10">
         ZipFile.getInputStream will now always buffer the stream
         internally in order to improve read performance.
+      </action>
+      <action issue="COMPRESS-440" type="update" date="2018-01-12"
+              due-to="Dawid Weiss">
+        Speed improvement for DEFLATE64 decompression.
       </action>
     </release>
     <release version="1.15" date="2017-10-17"
