@@ -95,6 +95,13 @@
          streams using DEFLATE compression.</li>
        </ul>
      </section>
+     <section name="DEFLATE64">
+       <ul>
+         <li><code>CompressorStreamFactory</code> is not able to auto-detect
+         streams using DEFLATE64 compression.</li>
+         <li>read-only support</li>
+       </ul>
+     </section>
      <section name="DUMP">
        <ul>
          <li>read-only support</li>
