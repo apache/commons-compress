@@ -419,7 +419,7 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
         of compression and encryption algorithms used for 7z archives.
         For writing only uncompressed entries, LZMA, LZMA2, BZIP2 and
         Deflate are supported - reading also supports
-        AES-256/SHA-256.</p>
+        AES-256/SHA-256 and DEFLATE64.</p>
 
         <p>Multipart archives are not supported at all.</p>
 

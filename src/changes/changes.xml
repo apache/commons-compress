@@ -94,6 +94,9 @@ The <action> type attribute can be add,update,fix,remove.
               due-to="Dawid Weiss">
         Speed improvement for DEFLATE64 decompression.
       </action>
+      <action issue="COMPRESS-437" type="add" date="2018-01-13">
+        Added read-only DEFLATE64 support to 7z archives.
+      </action>
     </release>
     <release version="1.15" date="2017-10-17"
              description="Release 1.15

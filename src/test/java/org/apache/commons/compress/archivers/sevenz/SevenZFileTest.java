@@ -132,6 +132,11 @@ public class SevenZFileTest extends AbstractTestCase {
     }
 
     @Test
+    public void test7zDeflate64Unarchive() throws Exception {
+        test7zUnarchive(getFile("bla.deflate64.7z"), SevenZMethod.DEFLATE64);
+    }
+
+    @Test
     public void test7zDecryptUnarchive() throws Exception {
         if (isStrongCryptoAvailable()) {
             test7zUnarchive(getFile("bla.encrypted.7z"), SevenZMethod.LZMA, // stack LZMA + AES
