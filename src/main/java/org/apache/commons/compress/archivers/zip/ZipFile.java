@@ -477,7 +477,7 @@ public class ZipFile implements Closeable {
         if (!(ze instanceof Entry)) {
             return null;
         }
-        // cast valididty is checked just above
+        // cast validity is checked just above
         ZipUtil.checkRequestedFeatures(ze);
         final long start = ze.getDataOffset();
 
