@@ -786,7 +786,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
         private int code;
 
-        private TYPE(final int code) {
+        TYPE(final int code) {
             this.code = code;
         }
 
@@ -819,7 +819,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
         private int code;
 
-        private PERMISSION(final int code) {
+        PERMISSION(final int code) {
             this.code = code;
         }
 

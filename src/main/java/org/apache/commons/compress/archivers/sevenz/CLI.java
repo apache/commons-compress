@@ -103,7 +103,7 @@ public class CLI {
         };
 
         private final String message;
-        private Mode(final String message) {
+        Mode(final String message) {
             this.message = message;
         }
         public String getMessage() {
