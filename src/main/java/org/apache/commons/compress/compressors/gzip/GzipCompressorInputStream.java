@@ -345,20 +345,7 @@ public class GzipCompressorInputStream extends CompressorInputStream {
      * @since 1.1
      */
     public static boolean matches(final byte[] signature, final int length) {
-
-        if (length < 2) {
-            return false;
-        }
-
-        if (signature[0] != 31) {
-            return false;
-        }
-
-        if (signature[1] != -117) {
-            return false;
-        }
-
-        return true;
+        return length >= 2 && signature[0] == 31 && signature[1] == -117;
     }
 
     /**
