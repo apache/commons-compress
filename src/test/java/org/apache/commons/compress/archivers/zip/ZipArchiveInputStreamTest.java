@@ -21,10 +21,12 @@ package org.apache.commons.compress.archivers.zip;
 import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -322,6 +324,20 @@ public class ZipArchiveInputStreamTest {
     public void nameSourceIsSetToEFS() throws Exception {
         nameSource("utf8-7zip-test.zip", "\u20AC_for_Dollar.txt", 3,
                    ZipArchiveEntry.NameSource.NAME_WITH_EFS_FLAG);
+    }
+
+    @Test
+    public void properlyMarksEntriesAsUnreadableIfUncompressedSizeIsUnknown() throws Exception {
+        // we never read any data
+        try (ZipArchiveInputStream zis = new ZipArchiveInputStream(new ByteArrayInputStream(new byte[0]))) {
+            ZipArchiveEntry e = new ZipArchiveEntry("test");
+            e.setMethod(ZipMethod.DEFLATED.getCode());
+            assertTrue(zis.canReadEntryData(e));
+            e.setMethod(ZipMethod.ENHANCED_DEFLATED.getCode());
+            assertTrue(zis.canReadEntryData(e));
+            e.setMethod(ZipMethod.BZIP2.getCode());
+            assertFalse(zis.canReadEntryData(e));
+        }
     }
 
     private static byte[] readEntry(ZipArchiveInputStream zip, ZipArchiveEntry zae) throws IOException {
