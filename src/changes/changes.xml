@@ -101,6 +101,10 @@ The <action> type attribute can be add,update,fix,remove.
         Added a few extra sanity checks for the rarer compression
         methods used in ZIP archives.
       </action>
+      <action issue="COMPRESS-441" type="update" date="2018-01-14">
+        Simplified the special handling for the dummy byte required by
+        zlib when using java.util.zip.Inflater.
+      </action>
     </release>
     <release version="1.15" date="2017-10-17"
              description="Release 1.15
