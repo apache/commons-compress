@@ -954,23 +954,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      * @since 1.1
      */
     public static boolean matches(final byte[] signature, final int length) {
-
-        if (length < 3) {
-            return false;
-        }
-
-        if (signature[0] != 'B') {
-            return false;
-        }
-
-        if (signature[1] != 'Z') {
-            return false;
-        }
-
-        if (signature[2] != 'h') {
-            return false;
-        }
-
-        return true;
+        return length >= 3 && signature[0] == 'B' &&
+                signature[1] == 'Z' && signature[2] == 'h';
     }
 }
