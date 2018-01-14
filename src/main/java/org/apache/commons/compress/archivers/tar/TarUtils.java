@@ -245,8 +245,7 @@ public class TarUtils {
         String string = new String(buffer, offset, length);
 
         string=string.replaceAll("\0", "{NUL}"); // Replace NULs to allow string to be printed
-        final String s = "Invalid byte "+currentByte+" at offset "+(current-offset)+" in '"+string+"' len="+length;
-        return s;
+        return "Invalid byte "+currentByte+" at offset "+(current-offset)+" in '"+string+"' len="+length;
     }
 
     /**

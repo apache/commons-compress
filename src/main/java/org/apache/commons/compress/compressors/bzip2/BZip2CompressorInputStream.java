@@ -178,8 +178,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             count(1);
         }
 
-        final int c = (destOffs == offs) ? -1 : (destOffs - offs);
-        return c;
+        return (destOffs == offs) ? -1 : (destOffs - offs);
     }
 
     private void makeMaps() {
