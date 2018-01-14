@@ -317,7 +317,7 @@ public class GzipCompressorInputStream extends CompressorInputStream {
                 // Uncompressed size modulo 2^32 (ISIZE in the spec)
                 final long isize = ByteUtils.fromLittleEndian(inData, 4);
 
-                if (isize != (inf.getBytesWritten() & 0xffffffffl)) {
+                if (isize != (inf.getBytesWritten() & 0xffffffffL)) {
                     throw new IOException("Gzip-compressed data is corrupt"
                                           + "(uncompressed size mismatch)");
                 }
