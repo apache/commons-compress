@@ -24,7 +24,7 @@ import java.io.IOException;
 public class CLI {
 
 
-    private static enum Mode {
+    private enum Mode {
         LIST("Analysing") {
             @Override
             public void takeAction(final SevenZFile archive, final SevenZArchiveEntry entry) {
