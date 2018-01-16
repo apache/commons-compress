@@ -418,8 +418,12 @@ public class DumpArchiveEntry implements ArchiveEntry {
         }
 
         // summary is always null right now, but this may change some day
-        return (summary != null || rhs.summary == null) // NOSONAR
-                && (summary == null || summary.equals(rhs.summary));
+        if ((summary == null && rhs.summary != null) // NOSONAR
+                || (summary != null && !summary.equals(rhs.summary))) { // NOSONAR
+            return false;
+        }
+
+        return true;
     }
 
     @Override
