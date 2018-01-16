@@ -180,6 +180,8 @@ public class ArArchiveEntry implements ArchiveEntry {
         final ArArchiveEntry other = (ArArchiveEntry) obj;
         if (name == null) {
             return other.name == null;
-        } else return name.equals(other.name);
+        } else {
+            return name.equals(other.name);
+        }
     }
 }
