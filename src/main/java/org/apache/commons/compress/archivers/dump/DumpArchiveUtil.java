@@ -55,7 +55,7 @@ class DumpArchiveUtil {
      *
      * @param buffer
      */
-    public static final boolean verify(final byte[] buffer) {
+    public static boolean verify(final byte[] buffer) {
         // verify magic. for now only accept NFS_MAGIC.
         final int magic = convert32(buffer, 24);
 
@@ -74,7 +74,7 @@ class DumpArchiveUtil {
      *
      * @param buffer
      */
-    public static final int getIno(final byte[] buffer) {
+    public static int getIno(final byte[] buffer) {
         return convert32(buffer, 20);
     }
 
@@ -85,7 +85,7 @@ class DumpArchiveUtil {
      * @param offset
      * @return the 8-byte entry as a long
      */
-    public static final long convert64(final byte[] buffer, final int offset) {
+    public static long convert64(final byte[] buffer, final int offset) {
         return ByteUtils.fromLittleEndian(buffer, offset, 8);
     }
 
@@ -96,7 +96,7 @@ class DumpArchiveUtil {
      * @param offset
      * @return the 4-byte entry as an int
      */
-    public static final int convert32(final byte[] buffer, final int offset) {
+    public static int convert32(final byte[] buffer, final int offset) {
         return (int) ByteUtils.fromLittleEndian(buffer, offset, 4);
     }
 
@@ -107,7 +107,7 @@ class DumpArchiveUtil {
      * @param offset
      * @return the 2-byte entry as an int
      */
-    public static final int convert16(final byte[] buffer, final int offset) {
+    public static int convert16(final byte[] buffer, final int offset) {
         return (int) ByteUtils.fromLittleEndian(buffer, offset, 2);
     }
 
