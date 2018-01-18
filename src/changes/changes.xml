@@ -105,6 +105,10 @@ The <action> type attribute can be add,update,fix,remove.
         Simplified the special handling for the dummy byte required by
         zlib when using java.util.zip.Inflater.
       </action>
+      <action type="update" date="2018-01-18" due-to="Shahab Kondri">
+        Various code cleanups.
+        Github Pull Request #61.
+      </action>
     </release>
     <release version="1.15" date="2017-10-17"
              description="Release 1.15
