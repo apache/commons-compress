@@ -337,7 +337,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         return tmpread;
     }
 
-    private final int readFully(final byte[] b, final int off, final int len)
+    private int readFully(final byte[] b, final int off, final int len)
             throws IOException {
         final int count = IOUtils.readFully(in, b, off, len);
         count(count);
