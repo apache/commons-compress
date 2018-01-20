@@ -33,7 +33,7 @@ public class FlushShieldFilterOutputStream extends FilterOutputStream {
     }
 
     @Override
-    public void flush() throws IOException {
+    public void flush() {
         // NO IMPLEMENTATION.
     }
 

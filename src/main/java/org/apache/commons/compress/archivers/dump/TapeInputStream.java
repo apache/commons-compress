@@ -98,7 +98,7 @@ class TapeInputStream extends FilterInputStream {
      * @see java.io.InputStream#read()
      */
     @Override
-    public int read() throws IOException {
+    public int read() {
         throw new IllegalArgumentException(
             "all reads must be multiple of record size (" + RECORD_SIZE +
             " bytes.");

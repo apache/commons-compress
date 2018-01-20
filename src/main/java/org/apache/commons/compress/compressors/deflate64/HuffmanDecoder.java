@@ -238,7 +238,7 @@ class HuffmanDecoder implements Closeable {
         }
 
         @Override
-        int read(byte[] b, int off, int len) throws IOException {
+        int read(byte[] b, int off, int len) {
             throw new IllegalStateException("Cannot read in this state");
         }
 

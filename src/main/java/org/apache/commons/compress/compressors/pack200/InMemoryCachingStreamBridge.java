@@ -35,7 +35,7 @@ class InMemoryCachingStreamBridge extends StreamBridge {
     }
 
     @Override
-    InputStream getInputView() throws IOException {
+    InputStream getInputView() {
         return new ByteArrayInputStream(((ByteArrayOutputStream) out)
                                         .toByteArray());
     }

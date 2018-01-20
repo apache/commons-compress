@@ -49,9 +49,8 @@ public class TarArchiveSparseEntry implements TarConstants {
      * to null.
      *
      * @param headerBuf The header bytes from a tar archive entry.
-     * @throws IOException on unknown format
      */
-    public TarArchiveSparseEntry(final byte[] headerBuf) throws IOException {
+    public TarArchiveSparseEntry(final byte[] headerBuf) {
         int offset = 0;
         offset += SPARSELEN_GNU_SPARSE;
         isExtended = TarUtils.parseBoolean(headerBuf, offset);

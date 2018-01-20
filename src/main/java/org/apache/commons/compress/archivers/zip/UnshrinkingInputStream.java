@@ -38,9 +38,8 @@ class UnshrinkingInputStream extends LZWInputStream {
      * IOException is not actually thrown!
      *
      * @param inputStream
-     * @throws IOException IOException is not actually thrown!
      */
-    public UnshrinkingInputStream(final InputStream inputStream) throws IOException {
+    public UnshrinkingInputStream(final InputStream inputStream) {
         super(inputStream, ByteOrder.LITTLE_ENDIAN);
         setClearCode(DEFAULT_CODE_SIZE);
         initializeTables(MAX_CODE_SIZE);
@@ -52,7 +51,7 @@ class UnshrinkingInputStream extends LZWInputStream {
     }
 
     @Override
-    protected int addEntry(final int previousCode, final byte character) throws IOException {
+    protected int addEntry(final int previousCode, final byte character) {
         int tableSize = getTableSize();
         while ((tableSize < MAX_TABLE_SIZE) && isUsed[tableSize]) {
             tableSize++;

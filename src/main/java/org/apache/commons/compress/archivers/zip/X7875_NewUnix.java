@@ -217,12 +217,11 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      * @param data   an array of bytes
      * @param offset the start offset
      * @param length the number of bytes in the array from offset
-     * @throws java.util.zip.ZipException on error
      */
     @Override
     public void parseFromLocalFileData(
             final byte[] data, int offset, final int length
-    ) throws ZipException {
+    ) {
         reset();
         this.version = signedByteToUnsignedInt(data[offset++]);
         final int uidSize = signedByteToUnsignedInt(data[offset++]);
@@ -244,7 +243,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     @Override
     public void parseFromCentralDirectoryData(
             final byte[] buffer, final int offset, final int length
-    ) throws ZipException {
+    ) {
     }
 
     /**

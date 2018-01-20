@@ -315,10 +315,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * access.</p>
      *
      * @param channel the channel to zip to
-     * @throws IOException on error
      * @since 1.13
      */
-    public ZipArchiveOutputStream(SeekableByteChannel channel) throws IOException {
+    public ZipArchiveOutputStream(SeekableByteChannel channel) {
         this.channel = channel;
         def = new Deflater(level, true);
         streamCompressor = StreamCompressor.create(channel, def);

@@ -215,12 +215,11 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * @param data   an array of bytes
      * @param offset the start offset
      * @param length the number of bytes in the array from offset
-     * @throws java.util.zip.ZipException on error
      */
     @Override
     public void parseFromLocalFileData(
             final byte[] data, int offset, final int length
-    ) throws ZipException {
+    ) {
         reset();
         final int len = offset + length;
         setFlags(data[offset++]);

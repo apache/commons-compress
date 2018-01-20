@@ -107,10 +107,8 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
      *            An OutputStream to read compressed data from
      * @param params
      *            The parameters to use for LZ77 compression.
-     *
-     * @throws IOException if reading fails
      */
-    public BlockLZ4CompressorOutputStream(final OutputStream os, Parameters params) throws IOException {
+    public BlockLZ4CompressorOutputStream(final OutputStream os, Parameters params) {
         this.os = os;
         compressor = new LZ77Compressor(params,
             new LZ77Compressor.Callback() {

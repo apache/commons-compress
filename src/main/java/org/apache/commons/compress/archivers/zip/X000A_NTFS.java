@@ -150,12 +150,11 @@ public class X000A_NTFS implements ZipExtraField {
      * @param data   an array of bytes
      * @param offset the start offset
      * @param length the number of bytes in the array from offset
-     * @throws java.util.zip.ZipException on error
      */
     @Override
     public void parseFromLocalFileData(
             final byte[] data, int offset, final int length
-    ) throws ZipException {
+    ) {
         final int len = offset + length;
 
         // skip reserved
