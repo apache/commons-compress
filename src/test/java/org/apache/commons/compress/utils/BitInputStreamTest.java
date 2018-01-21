@@ -171,6 +171,41 @@ public class BitInputStreamTest {
         }
     }
 
+    @Test
+    public void alignWithByteBoundaryWhenAtBoundary() throws Exception {
+        try (final BitInputStream bis = new BitInputStream(getStream(), ByteOrder.LITTLE_ENDIAN)) {
+            assertEquals(0xF8, bis.readBits(8));
+            bis.alignWithByteBoundary();
+            assertEquals(0, bis.readBits(4));
+        }
+    }
+
+    @Test
+    public void alignWithByteBoundaryWhenNotAtBoundary() throws Exception {
+        try (final BitInputStream bis = new BitInputStream(getStream(), ByteOrder.LITTLE_ENDIAN)) {
+            assertEquals(0x08, bis.readBits(4));
+            assertEquals(4, bis.bitsCached());
+            bis.alignWithByteBoundary();
+            assertEquals(0, bis.bitsCached());
+            assertEquals(0, bis.readBits(4));
+        }
+    }
+
+    @Test
+    public void availableWithoutCache() throws Exception {
+        try (final BitInputStream bis = new BitInputStream(getStream(), ByteOrder.LITTLE_ENDIAN)) {
+            assertEquals(32, bis.bitsAvailable());
+        }
+    }
+
+    @Test
+    public void availableWithCache() throws Exception {
+        try (final BitInputStream bis = new BitInputStream(getStream(), ByteOrder.LITTLE_ENDIAN)) {
+            assertEquals(0x08, bis.readBits(4));
+            assertEquals(28, bis.bitsAvailable());
+        }
+    }
+
     private ByteArrayInputStream getStream() {
         return new ByteArrayInputStream(new byte[] {
                 (byte) 0xF8,  // 11111000
