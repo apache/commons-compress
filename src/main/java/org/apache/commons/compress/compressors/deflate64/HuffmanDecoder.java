@@ -132,24 +132,24 @@ class HuffmanDecoder implements Closeable {
     public int decode(byte[] b, int off, int len) throws IOException {
         while (!finalBlock || state.hasData()) {
             if (state.state() == HuffmanState.INITIAL) {
-                    finalBlock = readBits(1) == 1;
-                    int mode = (int) readBits(2);
-                    switch (mode) {
-                        case 0:
-                            switchToUncompressedState();
-                            break;
-                        case 1:
-                            state = new HuffmanCodes(FIXED_CODES, FIXED_LITERALS, FIXED_DISTANCE);
-                            break;
-                        case 2:
-                            int[][] tables = readDynamicTables();
-                            state = new HuffmanCodes(DYNAMIC_CODES, tables[0], tables[1]);
-                            break;
-                        default:
-                            throw new IllegalStateException("Unsupported compression: " + mode);
-                    }
+                finalBlock = readBits(1) == 1;
+                int mode = (int) readBits(2);
+                switch (mode) {
+                case 0:
+                    switchToUncompressedState();
+                    break;
+                case 1:
+                    state = new HuffmanCodes(FIXED_CODES, FIXED_LITERALS, FIXED_DISTANCE);
+                    break;
+                case 2:
+                    int[][] tables = readDynamicTables();
+                    state = new HuffmanCodes(DYNAMIC_CODES, tables[0], tables[1]);
+                    break;
+                default:
+                    throw new IllegalStateException("Unsupported compression: " + mode);
+                }
             } else {
-                    return state.read(b, off, len);
+                return state.read(b, off, len);
             }
         }
         return -1;
