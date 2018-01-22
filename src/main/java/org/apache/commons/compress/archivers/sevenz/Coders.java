@@ -91,7 +91,7 @@ class Coders {
     static class CopyDecoder extends CoderBase {
         @Override
         InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
-                final Coder coder, final byte[] password) throws IOException {
+                final Coder coder, final byte[] password) {
             return in;
         }
         @Override
@@ -135,8 +135,7 @@ class Coders {
         @SuppressWarnings("resource") // caller must close the InputStream
         @Override
         InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
-                final Coder coder, final byte[] password)
-            throws IOException {
+                final Coder coder, final byte[] password) {
             final Inflater inflater = new Inflater(true);
             // Inflater with nowrap=true has this odd contract for a zero padding
             // byte following the data stream; this used to be zlib's requirement
@@ -236,8 +235,7 @@ class Coders {
         @SuppressWarnings("resource") // caller must close the InputStream
         @Override
         InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
-                final Coder coder, final byte[] password)
-            throws IOException {
+                final Coder coder, final byte[] password) {
             return new Deflate64CompressorInputStream(in);
         }
     }

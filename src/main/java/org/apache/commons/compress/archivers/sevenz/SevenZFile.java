@@ -650,7 +650,7 @@ public class SevenZFile implements Closeable {
         return bits;
     }
 
-    private BitSet readBits(final ByteBuffer header, final int size) throws IOException {
+    private BitSet readBits(final ByteBuffer header, final int size) {
         final BitSet bits = new BitSet(size);
         int mask = 0;
         int cache = 0;
@@ -1000,7 +1000,7 @@ public class SevenZFile implements Closeable {
         return getCurrentStream().read(b, off, len);
     }
 
-    private static long readUint64(final ByteBuffer in) throws IOException {
+    private static long readUint64(final ByteBuffer in) {
         // long rather than int as it might get shifted beyond the range of an int
         final long firstByte = getUnsignedByte(in);
         int mask = 0x80;
@@ -1043,7 +1043,7 @@ public class SevenZFile implements Closeable {
         return true;
     }
 
-    private static long skipBytesFully(final ByteBuffer input, long bytesToSkip) throws IOException {
+    private static long skipBytesFully(final ByteBuffer input, long bytesToSkip) {
         if (bytesToSkip < 1) {
             return 0;
         }

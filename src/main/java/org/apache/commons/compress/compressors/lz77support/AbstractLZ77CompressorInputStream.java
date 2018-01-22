@@ -125,10 +125,8 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      *            An InputStream to read compressed data from
      * @param windowSize
      *            Size of the window kept for back-references, must be bigger than the biggest offset expected.
-     *
-     * @throws IOException if reading fails
      */
-    public AbstractLZ77CompressorInputStream(final InputStream is, int windowSize) throws IOException {
+    public AbstractLZ77CompressorInputStream(final InputStream is, int windowSize) {
         this.in = is;
         this.windowSize = windowSize;
         buf = new byte[3 * windowSize];

@@ -59,7 +59,7 @@ public class LZMACompressorOutputStream extends CompressorOutputStream {
      * Doesn't do anything as {@link LZMAOutputStream} doesn't support flushing.
      */
     @Override
-    public void flush() throws IOException {
+    public void flush() {
     }
 
     /**

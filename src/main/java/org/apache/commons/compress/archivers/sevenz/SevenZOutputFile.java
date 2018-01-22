@@ -142,11 +142,9 @@ public class SevenZOutputFile implements Closeable {
      * @param inputFile file to create an entry from
      * @param entryName the name to use
      * @return the ArchiveEntry set up with details from the file
-     *
-     * @throws IOException on error
      */
     public SevenZArchiveEntry createArchiveEntry(final File inputFile,
-            final String entryName) throws IOException {
+            final String entryName) {
         final SevenZArchiveEntry entry = new SevenZArchiveEntry();
         entry.setDirectory(inputFile.isDirectory());
         entry.setName(entryName);
@@ -161,9 +159,8 @@ public class SevenZOutputFile implements Closeable {
      * {@link #closeArchiveEntry()} to complete the process.
      *
      * @param archiveEntry describes the entry
-     * @throws IOException on error
      */
-    public void putArchiveEntry(final ArchiveEntry archiveEntry) throws IOException {
+    public void putArchiveEntry(final ArchiveEntry archiveEntry) {
         final SevenZArchiveEntry entry = (SevenZArchiveEntry) archiveEntry;
         files.add(entry);
     }
@@ -796,12 +793,12 @@ public class SevenZOutputFile implements Closeable {
         }
 
         @Override
-        public void flush() throws IOException {
+        public void flush() {
             // no reason to flush the channel
         }
 
         @Override
-        public void close() throws IOException {
+        public void close() {
             // the file will be closed by the containing class's close method
         }
     }

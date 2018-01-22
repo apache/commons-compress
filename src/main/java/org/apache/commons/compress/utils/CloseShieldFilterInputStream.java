@@ -34,7 +34,7 @@ public class CloseShieldFilterInputStream extends FilterInputStream {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         // NO IMPLEMENTATION.
     }
 

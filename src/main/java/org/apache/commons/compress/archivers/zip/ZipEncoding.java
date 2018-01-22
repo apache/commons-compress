@@ -71,9 +71,8 @@ public interface ZipEncoding {
      *         beginning of the encoded result, the byte buffer has a
      *         backing array and the limit of the byte buffer points
      *         to the end of the encoded result.
-     * @throws IOException on error
      */
-    ByteBuffer encode(String name) throws IOException;
+    ByteBuffer encode(String name);
 
     /**
      * @param data The byte values to decode.
