@@ -194,7 +194,7 @@ public class TarArchiveEntryTest implements TarConstants {
     @Test
     public void preservesDriveSpecOnWindowsAndNetwareIfAskedTo() {
         assumeTrue("C:\\".equals(ROOT));
-        TarArchiveEntry t = new TarArchiveEntry(ROOT + "bar.txt", true);
+        TarArchiveEntry t = new TarArchiveEntry(ROOT + "foo.txt", true);
         assertEquals("C:/foo.txt", t.getName());
         t = new TarArchiveEntry(ROOT + "/foo.txt", LF_GNUTYPE_LONGNAME, true);
         assertEquals("C:/foo.txt", t.getName());
