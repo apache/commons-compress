@@ -196,7 +196,7 @@ public class TarArchiveEntryTest implements TarConstants {
         assumeTrue("C:\\".equals(ROOT));
         TarArchiveEntry t = new TarArchiveEntry(ROOT + "foo.txt", true);
         assertEquals("C:/foo.txt", t.getName());
-        t = new TarArchiveEntry(ROOT + "/foo.txt", LF_GNUTYPE_LONGNAME, true);
+        t = new TarArchiveEntry(ROOT + "foo.txt", LF_GNUTYPE_LONGNAME, true);
         assertEquals("C:/foo.txt", t.getName());
     }
 
