@@ -150,7 +150,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
     private String name = "";
 
     /** Whether to enforce leading slashes on the name */
-    private boolean preserveAbsolutePath;
+    private final boolean preserveAbsolutePath;
 
     /** The entry's permission mode. */
     private int mode;
@@ -227,7 +227,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
     /**
      * Construct an empty entry and prepares the header values.
      */
-    private TarArchiveEntry() {
+    private TarArchiveEntry(boolean preserveAbsolutePath) {
         String user = System.getProperty("user.name", "");
 
         if (user.length() > MAX_NAMELEN) {
@@ -236,6 +236,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
 
         this.userName = user;
         this.file = null;
+        this.preserveAbsolutePath = preserveAbsolutePath;
     }
 
     /**
@@ -268,9 +269,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * @since 1.1
      */
     public TarArchiveEntry(String name, final boolean preserveAbsolutePath) {
-        this();
-
-        this.preserveAbsolutePath = preserveAbsolutePath;
+        this(preserveAbsolutePath);
 
         name = normalizeFileName(name, preserveAbsolutePath);
         final boolean isDir = name.endsWith("/");
@@ -373,6 +372,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
 
         this.modTime = file.lastModified() / MILLIS_PER_SECOND;
         this.userName = "";
+        preserveAbsolutePath = false;
     }
 
     /**
@@ -383,7 +383,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * @throws IllegalArgumentException if any of the numeric fields have an invalid format
      */
     public TarArchiveEntry(final byte[] headerBuf) {
-        this();
+        this(false);
         parseTarHeader(headerBuf);
     }
 
@@ -399,7 +399,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      */
     public TarArchiveEntry(final byte[] headerBuf, final ZipEncoding encoding)
         throws IOException {
-        this();
+        this(false);
         parseTarHeader(headerBuf, encoding);
     }
 
