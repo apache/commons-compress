@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -188,6 +189,15 @@ public class TarArchiveEntryTest implements TarConstants {
                                                 true);
         assertGnuMagic(t);
         assertEquals("/foo", t.getName());
+    }
+
+    @Test
+    public void preservesDriveSpecOnWindowsAndNetwareIfAskedTo() {
+        assumeTrue("C:\\".equals(ROOT));
+        TarArchiveEntry t = new TarArchiveEntry(ROOT + "bar.txt", true);
+        assertEquals("C:/foo.txt", t.getName());
+        t = new TarArchiveEntry(ROOT + "/foo.txt", LF_GNUTYPE_LONGNAME, true);
+        assertEquals("C:/foo.txt", t.getName());
     }
 
     private void assertGnuMagic(final TarArchiveEntry t) {

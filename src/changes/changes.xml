@@ -109,6 +109,11 @@ The <action> type attribute can be add,update,fix,remove.
         Various code cleanups.
         Github Pull Request #61.
       </action>
+      <action type="update" date="2018-01-29">
+        TarArchiveEntry's preserveLeadingSlashes constructor argument
+        has been renamed and can now also be used to preserve the
+        drive letter on Windows.
+      </action>
     </release>
     <release version="1.15" date="2017-10-17"
              description="Release 1.15

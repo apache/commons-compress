@@ -150,7 +150,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
     private String name = "";
 
     /** Whether to enforce leading slashes on the name */
-    private boolean preserveLeadingSlashes;
+    private boolean preserveAbsolutePath;
 
     /** The entry's permission mode. */
     private int mode;
@@ -258,21 +258,21 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      *
      * <p>The entry's name will be the value of the {@code name}
      * argument with all file separators replaced by forward slashes.
-     * Leading slashes are stripped if {@code preserveLeadingSlashes}
-     * is {@code false}.</p>
+     * Leading slashes and Windows drive letters are stripped if
+     * {@code preserveAbsolutePath} is {@code false}.</p>
      *
      * @param name the entry name
-     * @param preserveLeadingSlashes whether to allow leading slashes
-     * in the name.
+     * @param preserveAbsolutePath whether to allow leading slashes
+     * in the name or drive letters.
      *
      * @since 1.1
      */
-    public TarArchiveEntry(String name, final boolean preserveLeadingSlashes) {
+    public TarArchiveEntry(String name, final boolean preserveAbsolutePath) {
         this();
 
-        this.preserveLeadingSlashes = preserveLeadingSlashes;
+        this.preserveAbsolutePath = preserveAbsolutePath;
 
-        name = normalizeFileName(name, preserveLeadingSlashes);
+        name = normalizeFileName(name, preserveAbsolutePath);
         final boolean isDir = name.endsWith("/");
 
         this.name = name;
@@ -287,7 +287,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      *
      * <p>The entry's name will be the value of the {@code name}
      * argument with all file separators replaced by forward slashes
-     * and leading slashes stripped.</p>
+     * and leading slashes as well as Windows drive letters
+     * stripped.</p>
      *
      * @param name the entry name
      * @param linkFlag the entry link flag.
@@ -300,19 +301,19 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * Construct an entry with a name and a link flag.
      *
      * <p>The entry's name will be the value of the {@code name}
-     * argument with all file separators replaced by forward
-     * slashes. Leading slashes are stripped if {@code
-     * preserveLeadingSlashes} is {@code false}.</p>
+     * argument with all file separators replaced by forward slashes.
+     * Leading slashes and Windows drive letters are stripped if
+     * {@code preserveAbsolutePath} is {@code false}.</p>
      *
      * @param name the entry name
      * @param linkFlag the entry link flag.
-     * @param preserveLeadingSlashes whether to allow leading slashes
-     * in the name.
+     * @param preserveAbsolutePath whether to allow leading slashes
+     * in the name or drive letters.
      *
      * @since 1.5
      */
-    public TarArchiveEntry(final String name, final byte linkFlag, final boolean preserveLeadingSlashes) {
-        this(name, preserveLeadingSlashes);
+    public TarArchiveEntry(final String name, final byte linkFlag, final boolean preserveAbsolutePath) {
+        this(name, preserveAbsolutePath);
         this.linkFlag = linkFlag;
         if (linkFlag == LF_GNUTYPE_LONGNAME) {
             magic = MAGIC_GNU;
@@ -342,8 +343,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      *
      * <p>The entry's name will be the value of the {@code fileName}
      * argument with all file separators replaced by forward slashes
-     * and leading slashes stripped. The name will end in a slash if the
-     * {@code file} represents a directory.</p>
+     * and leading slashes as well as Windows drive letters stripped.
+     * The name will end in a slash if the {@code file} represents a
+     * directory.</p>
      *
      * @param file The file that the entry represents.
      * @param fileName the name to be used for the entry.
@@ -465,7 +467,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * @param name This entry's new name.
      */
     public void setName(final String name) {
-        this.name = normalizeFileName(name, this.preserveLeadingSlashes);
+        this.name = normalizeFileName(name, this.preserveAbsolutePath);
     }
 
     /**
@@ -1350,7 +1352,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * turns path separators into forward slahes.
      */
     private static String normalizeFileName(String fileName,
-                                            final boolean preserveLeadingSlashes) {
+                                            final boolean preserveAbsolutePath) {
+        if (!preserveAbsolutePath) {
         final String osname = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
 
         if (osname != null) {
@@ -1376,13 +1379,14 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
                 }
             }
         }
+        }
 
         fileName = fileName.replace(File.separatorChar, '/');
 
         // No absolute pathnames
         // Windows (and Posix?) paths can start with "\\NetworkDrive\",
         // so we loop on starting /'s.
-        while (!preserveLeadingSlashes && fileName.startsWith("/")) {
+        while (!preserveAbsolutePath && fileName.startsWith("/")) {
             fileName = fileName.substring(1);
         }
         return fileName;
