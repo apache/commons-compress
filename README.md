@@ -50,8 +50,8 @@ Apache Commons Compress
 
 Apache Commons Compress software defines an API for working with
 compression and archive formats.  These include: bzip2, gzip, pack200,
-lzma, xz, Snappy, traditional Unix Compress, DEFLATE, LZ4, Brotli and ar, cpio,
-jar, tar, zip, dump, 7z, arj.
+lzma, xz, Snappy, traditional Unix Compress, DEFLATE, DEFLATE64, LZ4,
+Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
 
 Documentation
 -------------
@@ -70,7 +70,7 @@ Alternatively you can pull it from the central Maven repositories:
 <dependency>
   <groupId>org.apache.commons</groupId>
   <artifactId>commons-compress</artifactId>
-  <version>1.15</version>
+  <version>1.16</version>
 </dependency>
 ```
 

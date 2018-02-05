@@ -36,6 +36,7 @@
       <item name="Security Reports"    href="/security-reports.html"/>
       <item name="Wiki"        href="http://wiki.apache.org/commons/Compress"/>
       <item name="Javadoc (Latest release)" href="javadocs/api-release/index.html"/>
+      <item name="Javadoc 1.16" href="javadocs/api-1.16/index.html"/>
       <item name="Javadoc 1.15" href="javadocs/api-1.15/index.html"/>
       <item name="Javadoc 1.14" href="javadocs/api-1.14/index.html"/>
       <item name="Javadoc 1.13" href="javadocs/api-1.13/index.html"/>
