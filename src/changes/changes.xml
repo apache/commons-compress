@@ -44,6 +44,10 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.17" date="not released, yet"
              description="Release 1.17">
+      <action issue="COMPRESS-442" type="fix" date="2018-02-06">
+        Fixed the OSGi manifest entry for imports that has been broken
+        in 1.16.
+      </action>
     </release>
     <release version="1.16" date="2018-02-05"
              description="Release 1.16">
