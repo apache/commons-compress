@@ -58,6 +58,12 @@
           of changes see the <a href="changes-report.html">Changes
           Report</a>.</p>
 
+          <subsection name="What's new in 1.16.1?">
+            <ul>
+              <li>Fixed the OSGi manifest that was broken in Compress 1.16.</li>
+            </ul>
+          </subsection>
+
           <subsection name="What's new in 1.16?">
             <ul>
               <li>Support for Zstandard compression.</li>

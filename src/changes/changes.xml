@@ -42,8 +42,8 @@ The <action> type attribute can be add,update,fix,remove.
     <title>commons-compress</title>
   </properties>
   <body>
-    <release version="1.17" date="not released, yet"
-             description="Release 1.17">
+    <release version="1.16.1" date="not released, yet"
+             description="Release 1.16.1">
       <action issue="COMPRESS-442" type="fix" date="2018-02-06">
         Fixed the OSGi manifest entry for imports that has been broken
         in 1.16.
