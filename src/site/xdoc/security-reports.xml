@@ -25,7 +25,7 @@
       <section name="General Information">
         <p>For information about reporting or asking questions about
         security problems, please see the <a
-        href="http://commons.apache.org/security.html">security page
+        href="https://commons.apache.org/security.html">security page
         of the Commons project</a>.</p>
       </section>
 
@@ -56,7 +56,7 @@
 
         <subsection name="Fixed in Apache Commons Compress 1.4.1">
           <p><b>Low: Denial of Service</b> <a
-          href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-2098">CVE-2012-2098</a></p>
+          href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-2098">CVE-2012-2098</a></p>
 
           <p>The bzip2 compressing streams in Apache Commons Compress
           internally use sorting algorithms with unacceptable
@@ -68,18 +68,18 @@
           service.</p>
 
           <p>This was fixed in revisions
-          <a href="http://svn.apache.org/viewvc?view=revision&amp;revision=1332540">1332540</a>,
-          <a href="http://svn.apache.org/viewvc?view=revision&amp;revision=1332552">1332552</a>,
-          <a href="http://svn.apache.org/viewvc?view=revision&amp;revision=1333522">1333522</a>,
-          <a href="http://svn.apache.org/viewvc?view=revision&amp;revision=1337444">1337444</a>,
-          <a href="http://svn.apache.org/viewvc?view=revision&amp;revision=1340715">1340715</a>,
-          <a href="http://svn.apache.org/viewvc?view=revision&amp;revision=1340723">1340723</a>,
-          <a href="http://svn.apache.org/viewvc?view=revision&amp;revision=1340757">1340757</a>,
-          <a href="http://svn.apache.org/viewvc?view=revision&amp;revision=1340786">1340786</a>,
-          <a href="http://svn.apache.org/viewvc?view=revision&amp;revision=1340787">1340787</a>,
-          <a href="http://svn.apache.org/viewvc?view=revision&amp;revision=1340790">1340790</a>,
-          <a href="http://svn.apache.org/viewvc?view=revision&amp;revision=1340795">1340795</a> and
-          <a href="http://svn.apache.org/viewvc?view=revision&amp;revision=1340799">1340799</a>.</p>
+          <a href="https://svn.apache.org/viewvc?view=revision&amp;revision=1332540">1332540</a>,
+          <a href="https://svn.apache.org/viewvc?view=revision&amp;revision=1332552">1332552</a>,
+          <a href="https://svn.apache.org/viewvc?view=revision&amp;revision=1333522">1333522</a>,
+          <a href="https://svn.apache.org/viewvc?view=revision&amp;revision=1337444">1337444</a>,
+          <a href="https://svn.apache.org/viewvc?view=revision&amp;revision=1340715">1340715</a>,
+          <a href="https://svn.apache.org/viewvc?view=revision&amp;revision=1340723">1340723</a>,
+          <a href="https://svn.apache.org/viewvc?view=revision&amp;revision=1340757">1340757</a>,
+          <a href="https://svn.apache.org/viewvc?view=revision&amp;revision=1340786">1340786</a>,
+          <a href="https://svn.apache.org/viewvc?view=revision&amp;revision=1340787">1340787</a>,
+          <a href="https://svn.apache.org/viewvc?view=revision&amp;revision=1340790">1340790</a>,
+          <a href="https://svn.apache.org/viewvc?view=revision&amp;revision=1340795">1340795</a> and
+          <a href="https://svn.apache.org/viewvc?view=revision&amp;revision=1340799">1340799</a>.</p>
 
           <p>This was first reported to the Security Team on 12 April
           2012 and made public on 23 May 2012.</p>

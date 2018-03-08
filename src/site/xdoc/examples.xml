@@ -658,7 +658,7 @@ in.close();
       <subsection name="XZ">
 
         <p>The implementation of this package is provided by the
-          public domain <a href="http://tukaani.org/xz/java.html">XZ
+          public domain <a href="https://tukaani.org/xz/java.html">XZ
           for Java</a> library.</p>
 
         <p>When you try to open an XZ stream for reading using
@@ -729,7 +729,7 @@ zIn.close();
       <subsection name="lzma">
 
         <p>The implementation of this package is provided by the
-          public domain <a href="http://tukaani.org/xz/java.html">XZ
+          public domain <a href="https://tukaani.org/xz/java.html">XZ
           for Java</a> library.</p>
 
         <p>Uncompressing a given lzma compressed file (you would

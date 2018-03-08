@@ -34,7 +34,7 @@
       <item name="Issue Tracking" href="/issue-tracking.html"/>
       <item name="Download"    href="/download_compress.cgi"/>
       <item name="Security Reports"    href="/security-reports.html"/>
-      <item name="Wiki"        href="http://wiki.apache.org/commons/Compress"/>
+      <item name="Wiki"        href="https://wiki.apache.org/commons/Compress"/>
       <item name="Javadoc (Latest release)" href="javadocs/api-release/index.html"/>
       <item name="Javadoc 1.16.1" href="javadocs/api-1.16.1/index.html"/>
       <item name="Javadoc 1.16" href="javadocs/api-1.16/index.html"/>

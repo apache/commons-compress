@@ -26,7 +26,7 @@
   <artifactId>commons-compress</artifactId>
   <version>1.17-SNAPSHOT</version>
   <name>Apache Commons Compress</name>
-  <url>http://commons.apache.org/proper/commons-compress/</url>
+  <url>https://commons.apache.org/proper/commons-compress/</url>
   <!-- The description is not indented to make it look better in the release notes -->
   <description>
 Apache Commons Compress software defines an API for working with
@@ -57,7 +57,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
 
   <issueManagement>
     <system>jira</system>
-    <url>http://issues.apache.org/jira/browse/COMPRESS</url>
+    <url>https://issues.apache.org/jira/browse/COMPRESS</url>
   </issueManagement>
 
   <dependencies>
@@ -185,7 +185,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
   </contributors>
 
   <scm>
-    <connection>scm:git:http://git-wip-us.apache.org/repos/asf/commons-compress.git</connection>
+    <connection>scm:git:https://git-wip-us.apache.org/repos/asf/commons-compress.git</connection>
     <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/commons-compress.git</developerConnection>
     <url>https://git-wip-us.apache.org/repos/asf?p=commons-compress.git</url>
   </scm>

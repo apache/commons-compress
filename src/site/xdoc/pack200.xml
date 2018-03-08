@@ -74,7 +74,7 @@
         to "normalize" JAR archives prior to packing them that ensures
         signatures applied to the "normalized" JAR will still be valid
         aftre a pack/unpack cycle - see <a
-        href="http://download.oracle.com/javase/7/docs/api/java/util/jar/Pack200.Packer.html">Pack200.Packer</a>'s
+        href="https://download.oracle.com/javase/7/docs/api/java/util/jar/Pack200.Packer.html">Pack200.Packer</a>'s
         javadocs.</p>
 
         <p>The <code>Pack200Utils</code> class in the

@@ -28,7 +28,7 @@
      <section name="7Z">
        <ul>
          <li>the format requires the otherwise optional <a
-         href="http://tukaani.org/xz/java.html">XZ for Java</a>
+         href="https://tukaani.org/xz/java.html">XZ for Java</a>
          library.</li>
          <li>only <code>File</code>s are supported as input/output,
          not streams. Starting with Compress 1.13
@@ -48,7 +48,7 @@
          <li>Support for some BCJ filters and the DELTA filter has
          been added with Compress 1.8.  Because of a known bug in
          version 1.4 of the <a
-         href="http://tukaani.org/xz/java.html">XZ for Java</a>
+         href="https://tukaani.org/xz/java.html">XZ for Java</a>
          library, archives using BCJ filters will cause an
          <code>AssertionError</code> when read.  If you need support
          for BCJ filters you must use XZ for Java 1.5 or later.</li>
@@ -134,7 +134,7 @@
      <section name="LZMA">
        <ul>
          <li>the format requires the otherwise optional <a
-         href="http://tukaani.org/xz/java.html">XZ for Java</a>
+         href="https://tukaani.org/xz/java.html">XZ for Java</a>
          library.</li>
          <li>Commons Compress 1.12 and earlier only support reading
          the format</li>
@@ -162,7 +162,7 @@
      <section name="XZ">
        <ul>
          <li>the format requires the otherwise optional <a
-         href="http://tukaani.org/xz/java.html">XZ for Java</a>
+         href="https://tukaani.org/xz/java.html">XZ for Java</a>
          library.</li>
        </ul>
      </section>
