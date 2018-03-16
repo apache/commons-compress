@@ -54,6 +54,28 @@
         the descriptions here are incomplete, please report them
         privately to the Apache Security Team. Thank you.</p>
 
+        <subsection name="Fixed in Apache Commons Compress 1.16">
+          <p><b>Low: Denial of Service</b> <a
+          href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-1324">CVE-2018-1324</a></p>
+
+          <p>A specially crafted ZIP archive can be used to cause an
+          infinite loop inside of Compress' extra field parser used by
+          the <code>ZipFile</code> and
+          <code>ZipArchiveInputStream</code> classes.  This can be
+          used to mount a denial of service attack against services
+          that use Compress' zip package.</p>
+
+          <p>This was fixed in revision <a
+          href="https://git-wip-us.apache.org/repos/asf?p=commons-compress.git;a=blobdiff;f=src/main/java/org/apache/commons/compress/archivers/zip/X0017_StrongEncryptionHeader.java;h=acc3b22346b49845e85b5ef27a5814b69e834139;hp=0feb9c98cc622cde1defa3bbd268ef82b4ae5c18;hb=2a2f1dc48e22a34ddb72321a4db211da91aa933b;hpb=dcb0486fb4cb2b6592c04d6ec2edbd3f690df5f2">2a2f1dc4</a>.</p>
+
+          <p>This was first reported to the project's JIRA on <a
+          href="https://issues.apache.org/jira/browse/COMPRESS-432">19
+          December 2017</a>.</p>
+
+          <p>Affects: 1.11 - 1.15</p>
+
+        </subsection>
+
         <subsection name="Fixed in Apache Commons Compress 1.4.1">
           <p><b>Low: Denial of Service</b> <a
           href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-2098">CVE-2012-2098</a></p>
