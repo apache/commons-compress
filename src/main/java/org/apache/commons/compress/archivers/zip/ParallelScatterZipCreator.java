@@ -241,11 +241,11 @@ public class ParallelScatterZipCreator {
 
         // Make sure we catch any exceptions from parallel phase
         try {
-        for (final Future<?> future : futures) {
-            future.get();
-        }
+            for (final Future<?> future : futures) {
+                future.get();
+            }
         } finally {
-        es.shutdown();
+            es.shutdown();
         }
 
         es.awaitTermination(1000 * 60L, TimeUnit.SECONDS);  // == Infinity. We really *must* wait for this to complete
