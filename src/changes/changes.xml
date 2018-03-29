@@ -48,6 +48,9 @@ The <action> type attribute can be add,update,fix,remove.
         Removed the objenesis dependency from the pom as it is not
         needed at all.
       </action>
+      <action issue="COMPRESS-446" type="fix" date="2018-03-29">
+        Fixed resource leak in ParallelScatterZipCreator#writeTo.
+      </action>
     </release>
     <release version="1.16.1" date="2018-02-10"
              description="Release 1.16.1">
