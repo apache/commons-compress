@@ -581,7 +581,7 @@ in.close();
 InputStream fin = Files.newInputStream(Paths.get("archive.tar.gz"));
 BufferedInputStream in = new BufferedInputStream(fin);
 OutputStream out = Files.newOutputStream(Paths.get("archive.tar"));
-GZipCompressorInputStream gzIn = new GZipCompressorInputStream(in);
+GzipCompressorInputStream gzIn = new GzipCompressorInputStream(in);
 final byte[] buffer = new byte[buffersize];
 int n = 0;
 while (-1 != (n = gzIn.read(buffer))) {
@@ -597,8 +597,8 @@ gzIn.close();
 <source><![CDATA[
 InputStream in = Files.newInputStream(Paths.get("archive.tar"));
 OutputStream fout = Files.newOutputStream(Paths.get("archive.tar.gz"));
-BufferedOutputStream out = new BufferedInputStream(fout);
-GZipCompressorOutputStream gzOut = new GZipCompressorOutputStream(out);
+BufferedOutputStream out = new BufferedOutputStream(fout);
+GzipCompressorOutputStream gzOut = new GzipCompressorOutputStream(out);
 final byte[] buffer = new byte[buffersize];
 int n = 0;
 while (-1 != (n = in.read(buffer))) {
