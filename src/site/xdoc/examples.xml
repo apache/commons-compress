@@ -555,7 +555,7 @@ bzIn.close();
 <source><![CDATA[
 InputStream in = Files.newInputStream(Paths.get("archive.tar"));
 OutputStream fout = Files.newOutputStream(Paths.get("archive.tar.gz"));
-BufferedOutputStream out = new BufferedInputStream(fout);
+BufferedOutputStream out = new BufferedOutputStream(fout);
 BZip2CompressorOutputStream bzOut = new BZip2CompressorOutputStream(out);
 final byte[] buffer = new byte[buffersize];
 int n = 0;
@@ -581,7 +581,7 @@ in.close();
 InputStream fin = Files.newInputStream(Paths.get("archive.tar.gz"));
 BufferedInputStream in = new BufferedInputStream(fin);
 OutputStream out = Files.newOutputStream(Paths.get("archive.tar"));
-GZipCompressorInputStream gzIn = new GZipCompressorInputStream(in);
+GzipCompressorInputStream gzIn = new GzipCompressorInputStream(in);
 final byte[] buffer = new byte[buffersize];
 int n = 0;
 while (-1 != (n = gzIn.read(buffer))) {
@@ -597,8 +597,8 @@ gzIn.close();
 <source><![CDATA[
 InputStream in = Files.newInputStream(Paths.get("archive.tar"));
 OutputStream fout = Files.newOutputStream(Paths.get("archive.tar.gz"));
-BufferedOutputStream out = new BufferedInputStream(fout);
-GZipCompressorOutputStream gzOut = new GZipCompressorOutputStream(out);
+BufferedOutputStream out = new BufferedOutputStream(fout);
+GzipCompressorOutputStream gzOut = new GzipCompressorOutputStream(out);
 final byte[] buffer = new byte[buffersize];
 int n = 0;
 while (-1 != (n = in.read(buffer))) {
@@ -755,7 +755,7 @@ lzmaIn.close();
 <source><![CDATA[
 InputStream in = Files.newInputStream(Paths.get("archive.tar"));
 OutputStream fout = Files.newOutputStream(Paths.get("archive.tar.lzma"));
-BufferedOutputStream out = new BufferedInputStream(fout);
+BufferedOutputStream out = new BufferedOutputStream(fout);
 LZMACompressorOutputStream lzOut = new LZMACompressorOutputStream(out);
 final byte[] buffer = new byte[buffersize];
 int n = 0;
@@ -797,7 +797,7 @@ defIn.close();
 <source><![CDATA[
 InputStream in = Files.newInputStream(Paths.get("archive.tar"));
 OutputStream fout = Files.newOutputStream(Paths.get("some-file"));
-BufferedOutputStream out = new BufferedInputStream(fout);
+BufferedOutputStream out = new BufferedOutputStream(fout);
 DeflateCompressorOutputStream defOut = new DeflateCompressorOutputStream(out);
 final byte[] buffer = new byte[buffersize];
 int n = 0;
@@ -872,7 +872,7 @@ zIn.close();
 <source><![CDATA[
 InputStream in = Files.newInputStream(Paths.get("archive.tar"));
 OutputStream fout = Files.newOutputStream(Paths.get("archive.tar.sz"));
-BufferedOutputStream out = new BufferedInputStream(fout);
+BufferedOutputStream out = new BufferedOutputStream(fout);
 FramedSnappyCompressorOutputStream snOut = new FramedSnappyCompressorOutputStream(out);
 final byte[] buffer = new byte[buffersize];
 int n = 0;
@@ -917,7 +917,7 @@ zIn.close();
 <source><![CDATA[
 InputStream in = Files.newInputStream(Paths.get("archive.tar"));
 OutputStream fout = Files.newOutputStream(Paths.get("archive.tar.lz4"));
-BufferedOutputStream out = new BufferedInputStream(fout);
+BufferedOutputStream out = new BufferedOutputStream(fout);
 FramedLZ4CompressorOutputStream lzOut = new FramedLZ4CompressorOutputStream(out);
 final byte[] buffer = new byte[buffersize];
 int n = 0;
@@ -955,7 +955,7 @@ zsIn.close();
 <source><![CDATA[
 InputStream in = Files.newInputStream(Paths.get("archive.tar"));
 OutputStream fout = Files.newOutputStream(Paths.get("archive.tar.zstd"));
-BufferedOutputStream out = new BufferedInputStream(fout);
+BufferedOutputStream out = new BufferedOutputStream(fout);
 ZstdCompressorOutputStream zOut = new ZstdCompressorOutputStream(out);
 final byte[] buffer = new byte[buffersize];
 int n = 0;

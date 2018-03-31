@@ -37,7 +37,7 @@
       JDK creates GZip compressed archives (<code>.pack.gz</code>) by
       default, the streams provided by the Pack200 package only
       perform the actual Pack200 operation.  Wrap them in an
-      additional <code>GZipCompressor(In|Out)putStream</code> in order to deal
+      additional <code>GzipCompressor(In|Out)putStream</code> in order to deal
       with deflated streams.</p>
 
       <subsection name="Pack200Strategy">
