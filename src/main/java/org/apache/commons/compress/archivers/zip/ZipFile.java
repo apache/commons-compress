@@ -44,7 +44,9 @@ import java.util.zip.ZipException;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInputStream;
+import org.apache.commons.compress.utils.CountingInputStream;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.compress.utils.InputStreamStatistics;
 
 import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
@@ -486,7 +488,7 @@ public class ZipFile implements Closeable {
             new BufferedInputStream(createBoundedInputStream(start, ze.getCompressedSize())); //NOSONAR
         switch (ZipMethod.getMethodByCode(ze.getMethod())) {
             case STORED:
-                return is;
+                return new StoredStatisticsStream(is);
             case UNSHRINKING:
                 return new UnshrinkingInputStream(is);
             case IMPLODING:
@@ -1254,6 +1256,22 @@ public class ZipFile implements Closeable {
                         == otherEntry.getDataOffset();
             }
             return false;
+        }
+    }
+
+    private static class StoredStatisticsStream extends CountingInputStream implements InputStreamStatistics {
+        StoredStatisticsStream(InputStream in) {
+            super(in);
+        }
+
+        @Override
+        public long getCompressedCount() {
+            return super.getBytesRead();
+        }
+
+        @Override
+        public long getUncompressedCount() {
+            return getCompressedCount();
         }
     }
 }
