@@ -604,16 +604,25 @@ public final class ZipTestCase extends AbstractTestCase {
     }
 
     @Test
-    public void testInputStreamStatistics() throws IOException, ArchiveException {
-        final File input = getFile("zipbomb.xlsx");
+    public void inputStreamStatisticsOfZipBombExcel() throws IOException, ArchiveException {
+        Map<String, List<Long>> expected = new HashMap<String, List<Long>>() {{
+            put("[Content_Types].xml", Arrays.asList(8390036L, 8600L));
+            put("xl/worksheets/sheet1.xml", Arrays.asList(1348L, 508L));
+        }};
+        testInputStreamStatistics("zipbomb.xlsx", expected);
+    }
 
-        final Map<String,List<List<Long>>> map = new HashMap<>();
+    private void testInputStreamStatistics(String fileName, Map<String, List<Long>> expectedStatistics)
+        throws IOException, ArchiveException {
+        final File input = getFile(fileName);
+
+        final Map<String,List<List<Long>>> actualStatistics = new HashMap<>();
 
         // stream access
         try (final FileInputStream fis = new FileInputStream(input);
             final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("zip", fis)) {
             for (ArchiveEntry entry; (entry = in.getNextEntry()) != null; ) {
-                readStream(in, entry, map);
+                readStream(in, entry, actualStatistics);
             }
         }
 
@@ -623,23 +632,26 @@ public final class ZipTestCase extends AbstractTestCase {
             while (entries.hasMoreElements()) {
                 final ZipArchiveEntry zae = entries.nextElement();
                 try (InputStream in = zf.getInputStream(zae)) {
-                    readStream(in, zae, map);
+                    readStream(in, zae, actualStatistics);
                 }
             }
         }
 
-        assertEquals(Arrays.asList(8390036L, 8600L), map.get("[Content_Types].xml").get(0));
-        assertEquals(Arrays.asList(1348L, 508L), map.get("xl/worksheets/sheet1.xml").get(0));
+        for (Map.Entry<String, List<Long>> me : expectedStatistics.entrySet()) {
+            assertEquals("Mismatch of stats with expected value for: " + me.getKey(),
+                me.getValue(), actualStatistics.get(me.getKey()).get(0));
+        }
 
         // compare statistics of stream / file access
-        for (Map.Entry<String,List<List<Long>>> me : map.entrySet()) {
-            assertEquals("Mismatch of stats for: "+me.getKey(), me.getValue().get(0), me.getValue().get(1));
+        for (Map.Entry<String,List<List<Long>>> me : actualStatistics.entrySet()) {
+            assertEquals("Mismatch of stats for: " + me.getKey(),
+                         me.getValue().get(0), me.getValue().get(1));
         }
     }
 
     private void readStream(final InputStream in, final ArchiveEntry entry, final Map<String,List<List<Long>>> map) throws IOException {
         final byte[] buf = new byte[4096];
-        final InputStreamStatistics stats = (InputStreamStatistics)in;
+        final InputStreamStatistics stats = (InputStreamStatistics) in;
         while (in.read(buf) != -1);
 
         final String name = entry.getName();
