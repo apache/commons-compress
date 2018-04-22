@@ -27,9 +27,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
@@ -42,6 +40,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.archivers.zip.ZipMethod;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.junit.Assert;
 import org.junit.Test;
@@ -597,5 +596,57 @@ public final class ZipTestCase extends AbstractTestCase {
             tryHardToDelete(tmp[1]);
             rmdir(tmp[0]);
         }
+    }
+
+    @Test
+    public void testInputStreamStatistics() throws IOException, ArchiveException {
+        final File input = getFile("zipbomb.xlsx");
+
+        final Map<String,List<List<Long>>> map = new HashMap<>();
+
+        // stream access
+        try (final FileInputStream fis = new FileInputStream(input);
+            final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("zip", fis)) {
+            for (ArchiveEntry entry; (entry = in.getNextEntry()) != null; ) {
+                readStream(in, entry, map);
+            }
+        }
+
+        // file access
+        try (final ZipFile zf = new ZipFile(input)) {
+            final Enumeration<ZipArchiveEntry> entries = zf.getEntries();
+            while (entries.hasMoreElements()) {
+                final ZipArchiveEntry zae = entries.nextElement();
+                try (InputStream in = zf.getInputStream(zae)) {
+                    readStream(in, zae, map);
+                }
+            }
+        }
+
+        assertEquals(Arrays.asList(8390036L, 8600L), map.get("[Content_Types].xml").get(0));
+        assertEquals(Arrays.asList(1348L, 508L), map.get("xl/worksheets/sheet1.xml").get(0));
+
+        // compare statistics of stream / file access
+        for (Map.Entry<String,List<List<Long>>> me : map.entrySet()) {
+            assertEquals("Mismatch of stats for: "+me.getKey(), me.getValue().get(0), me.getValue().get(1));
+        }
+    }
+
+    private void readStream(final InputStream in, final ArchiveEntry entry, final Map<String,List<List<Long>>> map) throws IOException {
+        final byte[] buf = new byte[4096];
+        final InputStreamStatistics stats = (InputStreamStatistics)in;
+        while (in.read(buf) != -1);
+
+        final String name = entry.getName();
+        final List<List<Long>> l;
+        if (map.containsKey(name)) {
+            l = map.get(name);
+        } else {
+            map.put(name, l = new ArrayList<>());
+        }
+
+        final long t = stats.getUncompressedCount();
+        final long b = stats.getCompressedCount();
+        l.add(Arrays.asList(t, b));
     }
 }

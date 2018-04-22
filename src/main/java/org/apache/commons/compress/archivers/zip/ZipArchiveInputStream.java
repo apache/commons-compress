@@ -37,6 +37,7 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.compress.utils.InputStreamStatistics;
 
 import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
@@ -75,7 +76,7 @@ import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC
  * @see ZipFile
  * @NotThreadSafe
  */
-public class ZipArchiveInputStream extends ArchiveInputStream {
+public class ZipArchiveInputStream extends ArchiveInputStream implements InputStreamStatistics {
 
     /** The zip encoding to use for filenames and the file comment. */
     private final ZipEncoding zipEncoding;
@@ -113,6 +114,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
 
     /** Whether the stream will try to read STORED entries that use a data descriptor. */
     private boolean allowStoredEntriesWithDataDescriptor = false;
+
+    /** Count decompressed bytes for current entry */
+    private long uncompressedCount = 0;
 
     private static final int LFH_LEN = 30;
     /*
@@ -218,6 +222,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
     }
 
     public ZipArchiveEntry getNextZipEntry() throws IOException {
+        uncompressedCount = 0;
+
         boolean firstEntry = true;
         if (closed || hitCentralDirectory) {
             return null;
@@ -460,9 +466,21 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
 
         if (read >= 0) {
             current.crc.update(buffer, offset, read);
+            uncompressedCount += read;
         }
 
         return read;
+    }
+
+    @Override
+    public long getCompressedCount() {
+        final long infBytes = inf.getBytesRead();
+        return (infBytes > 0) ? infBytes : current.bytesReadFromStream;
+    }
+
+    @Override
+    public long getUncompressedCount() {
+        return uncompressedCount;
     }
 
     /**
