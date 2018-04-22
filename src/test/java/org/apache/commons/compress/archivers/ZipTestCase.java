@@ -613,7 +613,6 @@ public final class ZipTestCase extends AbstractTestCase {
     }
 
     @Test
-    @org.junit.Ignore("ZipFile and ZipArchiveInputStream agree but are different from unzip -l -v")
     public void inputStreamStatisticsForImplodedEntry() throws IOException, ArchiveException {
         Map<String, List<Long>> expected = new HashMap<String, List<Long>>() {{
             put("LICENSE.TXT", Arrays.asList(11560L, 4131L));
