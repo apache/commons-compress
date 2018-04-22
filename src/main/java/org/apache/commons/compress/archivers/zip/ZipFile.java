@@ -469,7 +469,8 @@ public class ZipFile implements Closeable {
      * Returns an InputStream for reading the contents of the given entry.
      *
      * @param ze the entry to get the stream for.
-     * @return a stream to read the entry from.
+     * @return a stream to read the entry from. The returned stream
+     * implements {@link InputStreamStatistics}.
      * @throws IOException if unable to create an input stream from the zipentry
      */
     public InputStream getInputStream(final ZipArchiveEntry ze)
