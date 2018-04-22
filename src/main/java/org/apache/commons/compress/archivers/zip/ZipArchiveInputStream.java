@@ -472,12 +472,31 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
         return read;
     }
 
+    /**
+     * @since 1.17
+     */
     @Override
     public long getCompressedCount() {
-        final long infBytes = inf.getBytesRead();
-        return (infBytes > 0) ? infBytes : current.bytesReadFromStream;
+        if (current.entry.getMethod() == ZipArchiveOutputStream.STORED) {
+            return current.bytesReadFromStream;
+        } else if (current.entry.getMethod() == ZipArchiveOutputStream.DEFLATED) {
+            return getBytesInflated();
+        } else if (current.entry.getMethod() == ZipMethod.UNSHRINKING.getCode()) {
+            return ((UnshrinkingInputStream) current.in).getCompressedCount();
+        } else if (current.entry.getMethod() == ZipMethod.IMPLODING.getCode()) {
+            return ((ExplodingInputStream) current.in).getCompressedCount();
+        } else if (current.entry.getMethod() == ZipMethod.ENHANCED_DEFLATED.getCode()) {
+            return ((Deflate64CompressorInputStream) current.in).getCompressedCount();
+        } else if (current.entry.getMethod() == ZipMethod.BZIP2.getCode()) {
+            return ((BZip2CompressorInputStream) current.in).getCompressedCount();
+        } else {
+            return -1;
+        }
     }
 
+    /**
+     * @since 1.17
+     */
     @Override
     public long getUncompressedCount() {
         return uncompressedCount;
@@ -1096,7 +1115,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
         private long bytesRead;
 
         /**
-         * Number of bytes of entry content read so from the stream.
+         * Number of bytes of entry content read from the stream.
          *
          * <p>This may be more than the actual entry's length as some
          * stuff gets buffered up and needs to be pushed back when the
