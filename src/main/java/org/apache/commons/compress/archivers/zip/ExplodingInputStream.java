@@ -136,6 +136,14 @@ class ExplodingInputStream extends InputStream implements InputStreamStatistics 
     }
 
     /**
+     * @since 1.17
+     */
+    @Override
+    public void close() throws IOException {
+        in.close();
+    }
+
+    /**
      * Fill the sliding dictionary with more data.
      * @throws IOException
      */
