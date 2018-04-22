@@ -631,7 +631,6 @@ public final class ZipTestCase extends AbstractTestCase {
     }
 
     @Test
-    @org.junit.Ignore("result from ZipArchiveInputStream is wrong")
     public void inputStreamStatisticsForStoredEntry() throws IOException, ArchiveException {
         Map<String, List<Long>> expected = new HashMap<String, List<Long>>() {{
             put("test.txt", Arrays.asList(5L, 5L));
