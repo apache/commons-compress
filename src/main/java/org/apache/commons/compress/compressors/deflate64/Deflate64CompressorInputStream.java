@@ -100,11 +100,17 @@ public class Deflate64CompressorInputStream extends CompressorInputStream implem
         }
     }
 
+    /**
+     * @since 1.17
+     */
     @Override
     public long getCompressedCount() {
         return decoder.getBytesRead();
     }
 
+    /**
+     * @since 1.17
+     */
     @Override
     public long getUncompressedCount() {
         return getBytesRead();

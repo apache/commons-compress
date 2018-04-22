@@ -40,7 +40,7 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
  * @NotThreadSafe
  */
 public class BZip2CompressorInputStream extends CompressorInputStream
-implements BZip2Constants, InputStreamStatistics {
+    implements BZip2Constants, InputStreamStatistics {
 
     /**
      * Index of the last char in the block, so the block size == last + 1.
@@ -182,11 +182,17 @@ implements BZip2Constants, InputStreamStatistics {
         return (destOffs == offs) ? -1 : (destOffs - offs);
     }
 
+    /**
+     * @since 1.17
+     */
     @Override
     public long getCompressedCount() {
         return bin.getBytesRead();
     }
 
+    /**
+     * @since 1.17
+     */
     @Override
     public long getUncompressedCount() {
         return getBytesRead();

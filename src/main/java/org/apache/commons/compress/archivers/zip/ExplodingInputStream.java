@@ -119,11 +119,17 @@ class ExplodingInputStream extends InputStream implements InputStreamStatistics 
         return ret;
     }
 
+    /**
+     * @since 1.17
+     */
     @Override
     public long getCompressedCount() {
         return bits.getBytesRead();
     }
 
+    /**
+     * @since 1.17
+     */
     @Override
     public long getUncompressedCount() {
         return uncompressedCount;

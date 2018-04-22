@@ -125,6 +125,17 @@ public class BitInputStream implements Closeable {
         }
     }
 
+    /**
+     * Returns the number of bytes read from the underlying stream.
+     *
+     * <p>This includes the bytes read to fill the current cache and
+     * not read as bits so far.</p>
+     * @since 1.17
+     */
+    public long getBytesRead() {
+        return in.getBytesRead();
+    }
+
     private long processBitsGreater57(final int count) throws IOException {
         final long bitsOut;
         int overflowBits = 0;
@@ -188,8 +199,4 @@ public class BitInputStream implements Closeable {
         return false;
     }
 
-
-    public long getBytesRead() {
-        return in.getBytesRead();
-    }
 }

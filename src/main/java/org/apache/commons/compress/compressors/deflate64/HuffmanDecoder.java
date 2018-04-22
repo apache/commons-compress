@@ -155,7 +155,10 @@ class HuffmanDecoder implements Closeable {
         return -1;
     }
 
-    public long getBytesRead() {
+    /**
+     * @since 1.17
+     */
+    long getBytesRead() {
         return reader.getBytesRead();
     }
 

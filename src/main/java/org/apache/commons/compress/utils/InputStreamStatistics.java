@@ -22,6 +22,8 @@ package org.apache.commons.compress.utils;
  * This interface provides statistics on the current decompression stream.
  * The stream consumer can use that statistics to handle abnormal
  * compression ratios, i.e. to prevent zip bombs.
+ *
+ * @since 1.17
  */
 public interface InputStreamStatistics {
     /**

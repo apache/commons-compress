@@ -26,6 +26,8 @@ import java.util.zip.Inflater;
 
 /**
  * Helper class to provide statistics
+ *
+ * @since 1.17
  */
 /* package */ class InflaterInputStream extends java.util.zip.InflaterInputStream
     implements InputStreamStatistics {

@@ -88,10 +88,18 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
         return bytesRead;
     }
 
+    /**
+     * @since 1.17
+     */
+    @Override
     public long getCompressedCount() {
         return in.getBytesRead();
     }
 
+    /**
+     * @since 1.17
+     */
+    @Override
     public long getUncompressedCount() {
         return getBytesRead();
     }
