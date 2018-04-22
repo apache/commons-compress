@@ -612,6 +612,49 @@ public final class ZipTestCase extends AbstractTestCase {
         testInputStreamStatistics("zipbomb.xlsx", expected);
     }
 
+    @Test
+    @org.junit.Ignore("ZipFile and ZipArchiveInputStream agree but are different from unzip -l -v")
+    public void inputStreamStatisticsForImplodedEntry() throws IOException, ArchiveException {
+        Map<String, List<Long>> expected = new HashMap<String, List<Long>>() {{
+            put("LICENSE.TXT", Arrays.asList(11560L, 4131L));
+        }};
+        testInputStreamStatistics("imploding-8Kdict-3trees.zip", expected);
+    }
+
+    @Test
+    public void inputStreamStatisticsForShrunkEntry() throws IOException, ArchiveException {
+        Map<String, List<Long>> expected = new HashMap<String, List<Long>>() {{
+            put("TEST1.XML", Arrays.asList(76L, 66L));
+            put("TEST2.XML", Arrays.asList(81L, 76L));
+        }};
+        testInputStreamStatistics("SHRUNK.ZIP", expected);
+    }
+
+    @Test
+    @org.junit.Ignore("result from ZipArchiveInputStream is wrong")
+    public void inputStreamStatisticsForStoredEntry() throws IOException, ArchiveException {
+        Map<String, List<Long>> expected = new HashMap<String, List<Long>>() {{
+            put("test.txt", Arrays.asList(5L, 5L));
+        }};
+        testInputStreamStatistics("COMPRESS-264.zip", expected);
+    }
+
+    @Test
+    public void inputStreamStatisticsForBzip2Entry() throws IOException, ArchiveException {
+        Map<String, List<Long>> expected = new HashMap<String, List<Long>>() {{
+            put("lots-of-as", Arrays.asList(42L, 39L));
+        }};
+        testInputStreamStatistics("bzip2-zip.zip", expected);
+    }
+
+    @Test
+    public void inputStreamStatisticsForDeflate64Entry() throws IOException, ArchiveException {
+        Map<String, List<Long>> expected = new HashMap<String, List<Long>>() {{
+            put("input2", Arrays.asList(3072L, 2111L));
+        }};
+        testInputStreamStatistics("COMPRESS-380/COMPRESS-380.zip", expected);
+    }
+
     private void testInputStreamStatistics(String fileName, Map<String, List<Long>> expectedStatistics)
         throws IOException, ArchiveException {
         final File input = getFile(fileName);
@@ -637,15 +680,15 @@ public final class ZipTestCase extends AbstractTestCase {
             }
         }
 
-        for (Map.Entry<String, List<Long>> me : expectedStatistics.entrySet()) {
-            assertEquals("Mismatch of stats with expected value for: " + me.getKey(),
-                me.getValue(), actualStatistics.get(me.getKey()).get(0));
-        }
-
         // compare statistics of stream / file access
         for (Map.Entry<String,List<List<Long>>> me : actualStatistics.entrySet()) {
             assertEquals("Mismatch of stats for: " + me.getKey(),
                          me.getValue().get(0), me.getValue().get(1));
+        }
+
+        for (Map.Entry<String, List<Long>> me : expectedStatistics.entrySet()) {
+            assertEquals("Mismatch of stats with expected value for: " + me.getKey(),
+                me.getValue(), actualStatistics.get(me.getKey()).get(0));
         }
     }
 
