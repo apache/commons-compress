@@ -60,6 +60,14 @@ The <action> type attribute can be add,update,fix,remove.
         archives are now turned into ZipException, they used to
         manifest as ArrayIndexOutOfBoundsException before.
       </action>
+      <action issue="COMPRESS-445" type="update" date="2018-04-22"
+              due-to="Andreas Beeker">
+        The streams returned by ZipFile and some other decompressing
+        streams now provide information about the number of compressed
+        and uncompressed bytes read so far. This may be used to detect
+        a ZipBomb if the compression ratio exceeds a certain
+        threshold, for example.
+      </action>
     </release>
     <release version="1.16.1" date="2018-02-10"
              description="Release 1.16.1">
