@@ -23,6 +23,8 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.zip.ZipException;
+
 /**
  * JUnit testcases for org.apache.commons.compress.archivers.zip.ExtraFieldUtils.
  *
@@ -93,6 +95,33 @@ public class ExtraFieldUtilsTest implements UnixStat {
                          e.getMessage());
         }
     }
+
+    @Test
+    public void parseTurnsArrayIndexOutOfBoundsIntoZipException() throws Exception {
+        AsiExtraField f = new AsiExtraField();
+        f.setLinkedFile("foo");
+        byte[] l = f.getLocalFileDataData();
+        // manipulate size of path name to read 4 rather than 3
+        l[9] = 4;
+        // and fake CRC so we actually reach the AIOBE
+        l[0] = (byte) 0x52;
+        l[1] = (byte) 0x26;
+        l[2] = (byte) 0x18;
+        l[3] = (byte) 0x19;
+        byte[] d = new byte[4 + l.length];
+        System.arraycopy(f.getHeaderId().getBytes(), 0, d, 0, 2);
+        System.arraycopy(f.getLocalFileDataLength().getBytes(), 0, d, 2, 2);
+        System.arraycopy(l, 0, d, 4, l.length);
+        try {
+            ExtraFieldUtils.parse(d);
+            fail("data should be invalid");
+        } catch (final ZipException e) {
+            assertEquals("message",
+                         "Failed to parse corrupt ZIP extra field of type 756e",
+                         e.getMessage());
+        }
+    }
+
     @Test
     public void testParseCentral() throws Exception {
         final ZipExtraField[] ze = ExtraFieldUtils.parse(data,false);

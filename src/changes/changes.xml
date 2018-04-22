@@ -55,6 +55,11 @@ The <action> type attribute can be add,update,fix,remove.
         Fixed some code examples.
         Github Pull Request #63.
       </action>
+      <action issue="COMPRESS-447" type="fix" date="2018-04-22">
+        Certain errors when parsing ZIP extra fields in corrupt
+        archives are now turned into ZipException, they used to
+        manifest as ArrayIndexOutOfBoundsException before.
+      </action>
     </release>
     <release version="1.16.1" date="2018-02-10"
              description="Release 1.16.1">
