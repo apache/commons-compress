@@ -160,7 +160,7 @@ public class Archiver {
         if (!prefersSeekableByteChannel(format)) {
             create(format, Channels.newOutputStream(target), directory, filter);
         } else if (ArchiveStreamFactory.ZIP.equalsIgnoreCase(format)) {
-            create(format, new ZipArchiveOutputStream(target), directory, filter);
+            create(new ZipArchiveOutputStream(target), directory, filter);
         } else if (ArchiveStreamFactory.SEVEN_Z.equalsIgnoreCase(format)) {
             create(new SevenZOutputFile(target), directory, filter);
         } else {
