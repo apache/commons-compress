@@ -258,9 +258,10 @@ public class Archiver {
             return;
         }
         for (File f : children) {
-            consumer.accept(f, creator.create(f, prefix + f.getName()));
+            String entryName = prefix + f.getName() + (f.isDirectory() ? "/" : "");
+            consumer.accept(f, creator.create(f, entryName));
             if (f.isDirectory()) {
-                create(prefix + f.getName() + "/", f, filter, creator, consumer);
+                create(entryName, f, filter, creator, consumer);
             }
         }
     }
