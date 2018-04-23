@@ -158,9 +158,7 @@ public class Archiver {
     public void create(String format, SeekableByteChannel target, File directory, FileFilter filter)
         throws IOException, ArchiveException {
         if (!prefersSeekableByteChannel(format)) {
-            try (OutputStream o = Channels.newOutputStream(target)) {
-                create(format, o, directory, filter);
-            }
+            create(format, Channels.newOutputStream(target), directory, filter);
         } else if (ArchiveStreamFactory.ZIP.equalsIgnoreCase(format)) {
             create(format, new ZipArchiveOutputStream(target), directory, filter);
         } else if (ArchiveStreamFactory.SEVEN_Z.equalsIgnoreCase(format)) {
