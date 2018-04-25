@@ -68,6 +68,10 @@ The <action> type attribute can be add,update,fix,remove.
         a ZipBomb if the compression ratio exceeds a certain
         threshold, for example.
       </action>
+      <action issue="COMPRESS-443" type="add" date="2018-04-25">
+        Added a unit test that is supposed to fail if we break the
+        OSGi manifest entries again.
+      </action>
     </release>
     <release version="1.16.1" date="2018-02-10"
              description="Release 1.16.1">
