@@ -55,8 +55,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <commons.japicmp.breakBuildOnBinaryIncompatibleModifications>false</commons.japicmp.breakBuildOnBinaryIncompatibleModifications>
 
     <pax.exam.version>4.11.0</pax.exam.version>
-    <karaf.version>3.0.3</karaf.version>
-    <slf4j.version>1.6.6</slf4j.version>
+    <slf4j.version>1.7.21</slf4j.version>
   </properties>
 
   <issueManagement>
@@ -105,7 +104,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <!-- integration test verifiying OSGi bundle works -->
     <dependency>
       <groupId>org.ops4j.pax.exam</groupId>
-      <artifactId>pax-exam-container-karaf</artifactId>
+      <artifactId>pax-exam-container-native</artifactId>
       <version>${pax.exam.version}</version>
       <scope>test</scope>
     </dependency>
@@ -117,28 +116,26 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.exam</groupId>
-      <artifactId>pax-exam</artifactId>
+      <artifactId>pax-exam-cm</artifactId>
       <version>${pax.exam.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.ops4j.pax.url</groupId>
-      <artifactId>pax-url-aether</artifactId>
-      <version>1.6.0</version>
+      <groupId>org.ops4j.pax.exam</groupId>
+      <artifactId>pax-exam-link-mvn</artifactId>
+      <version>${pax.exam.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.apache.felix.framework</artifactId>
+      <version>5.6.10</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>
       <version>1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.karaf.features</groupId>
-      <artifactId>standard</artifactId>
-      <version>${karaf.version}</version>
-      <classifier>features</classifier>
-      <type>xml</type>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -151,7 +148,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>org.osgi.core</artifactId>
-      <version>4.3.1</version>
+      <version>6.0.0</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
@@ -340,6 +337,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
         <configuration>
+          <manifestLocation>${project.build.outputDirectory}/META-INF</manifestLocation>
           <instructions>
             <Import-Package>org.tukaani.xz;resolution:=optional,org.brotli.dec;resolution:=optional,com.github.luben.zstd;resolution:=optional</Import-Package>
           </instructions>
