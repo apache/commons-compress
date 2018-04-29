@@ -67,6 +67,10 @@ public class DirectoryBasedSupplier
                     public File next() {
                         throw new NoSuchElementException();
                     }
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
                 }
             : Arrays.asList(fs).iterator();
         }
@@ -103,5 +107,6 @@ public class DirectoryBasedSupplier
                     }
                 });
         }
+
     }
 }
