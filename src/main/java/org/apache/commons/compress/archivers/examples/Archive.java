@@ -54,6 +54,10 @@ public class Archive {
          */
         ChainBuilder map(Transformer<File> transformer);
         /**
+         * Adds a generic step to the chain.
+         */
+        ChainBuilder withStep(ChainStep<File> step);
+        /**
          * Actually consumes all the files supplied.
          */
         void to(Sink<File> sink) throws IOException, ArchiveException;
@@ -81,13 +85,15 @@ public class Archive {
             this.source = source;
         }
 
+        @Override
         public ChainBuilder filter(Filter<File> filter) {
-            chainDef.add(filter);
-            return this;
+            return withStep(filter);
         }
+        @Override
         public ChainBuilder filter(FileFilter filter) {
             return filter(new FileFilterAdapter(filter));
         }
+        @Override
         public ChainBuilder skipUnreadable() {
             return filter(new FileFilter() {
                 @Override
@@ -96,6 +102,7 @@ public class Archive {
                 }
             });
         }
+        @Override
         public ChainBuilder skipNonFiles() {
             return filter(new FileFilter() {
                 @Override
@@ -104,10 +111,16 @@ public class Archive {
                 }
             });
         }
+        @Override
         public ChainBuilder map(Transformer<File> transformer) {
-            chainDef.add(transformer);
+            return withStep(transformer);
+        }
+        @Override
+        public ChainBuilder withStep(ChainStep<File> step) {
+            chainDef.add(step);
             return this;
         }
+        @Override
         public void to(Sink<File> sink) throws IOException, ArchiveException {
             chainDef.add(sink);
             chainDef.freeze();
