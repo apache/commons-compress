@@ -51,7 +51,7 @@ public class DirectoryBasedSupplier
         return new DirectoryIterator("", dir);
     }
 
-    private class DirectoryIterator implements ThrowingIterator<ChainPayload<File>> {
+    private static class DirectoryIterator implements ThrowingIterator<ChainPayload<File>> {
         private final Iterator<File> files;
         private final String namePrefix;
         private DirectoryIterator nestedIterator;
