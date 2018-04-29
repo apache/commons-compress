@@ -31,15 +31,14 @@ import java.util.NoSuchElementException;
  * Recursively returns all files and directories contained inside of a base directory.
  * @since 1.17
  */
-public class DirectoryBasedSupplier
-    implements Supplier<ThrowingIterator<ChainPayload<File>>> {
+public class DirectoryBasedSource implements Source<File> {
 
     private final File dir;
 
     /**
      * @param dir the directory to provide entries from.
      */
-    public DirectoryBasedSupplier(File dir) {
+    public DirectoryBasedSource(File dir) {
         if (!dir.isDirectory()) {
             throw new IllegalArgumentException("dir is not a readable directory");
         }
@@ -49,6 +48,10 @@ public class DirectoryBasedSupplier
     @Override
     public ThrowingIterator<ChainPayload<File>> get() throws IOException {
         return new DirectoryIterator("", dir);
+    }
+
+    @Override
+    public void close() {
     }
 
     private static class DirectoryIterator implements ThrowingIterator<ChainPayload<File>> {
