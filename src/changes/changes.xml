@@ -62,7 +62,7 @@ The <action> type attribute can be add,update,fix,remove.
       </action>
       <action issue="COMPRESS-445" type="update" date="2018-04-22"
               due-to="Andreas Beeker">
-        The streams returned by ZipFile and some other decompressing
+        The streams returned by ZipFile and most other decompressing
         streams now provide information about the number of compressed
         and uncompressed bytes read so far. This may be used to detect
         a ZipBomb if the compression ratio exceeds a certain
