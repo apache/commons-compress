@@ -52,7 +52,7 @@ public class Archive {
         /**
          * Adds a transformer to the chain.
          */
-        ChainBuilder map(Transformer transformer);
+        ChainBuilder map(Transformer<File> transformer);
         /**
          * Actually consumes all the files supplied.
          */
