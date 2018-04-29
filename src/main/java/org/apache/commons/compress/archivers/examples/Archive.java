@@ -50,6 +50,10 @@ public class Archive {
          */
         ChainBuilder skipNonFiles();
         /**
+         * Adds a transformer to the chain.
+         */
+        ChainBuilder map(Transformer transformer);
+        /**
          * Actually consumes all the files supplied.
          */
         void to(Sink<File> sink) throws IOException, ArchiveException;
@@ -99,6 +103,10 @@ public class Archive {
                     return f.isFile();
                 }
             });
+        }
+        public ChainBuilder map(Transformer transformer) {
+            chainDef.add(transformer);
+            return this;
         }
         public void to(Sink<File> sink) throws IOException, ArchiveException {
             chainDef.add(sink);
