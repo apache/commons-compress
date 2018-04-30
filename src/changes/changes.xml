@@ -67,6 +67,8 @@ The <action> type attribute can be add,update,fix,remove.
         and uncompressed bytes read so far. This may be used to detect
         a ZipBomb if the compression ratio exceeds a certain
         threshold, for example.
+        For SevenZFile a new method returns the statistics for the
+        current entry.
       </action>
       <action issue="COMPRESS-443" type="add" date="2018-04-25">
         Added a unit test that is supposed to fail if we break the
