@@ -329,7 +329,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
         <configuration>
           <archive>
             <manifestEntries>
-              <Main-Class>org.apache.commons.compress.archivers.Lister</Main-Class>
+              <Main-Class>org.apache.commons.compress.archivers.examples.ListerCli</Main-Class>
               <Extension-Name>org.apache.commons.compress</Extension-Name>
               <Automatic-Module-Name>${commons.module.name}</Automatic-Module-Name>
             </manifestEntries>
