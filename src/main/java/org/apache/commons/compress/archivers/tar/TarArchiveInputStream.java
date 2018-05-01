@@ -80,6 +80,9 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     // the global PAX header
     private Map<String, String> globalPaxHeaders = new HashMap<>();
 
+    /** Whether the last attempt to read an ArchiveEntry failed */
+    private boolean headerErrorOccurred = false;
+
     /**
      * Constructor for TarInputStream.
      * @param is the input stream to use
@@ -257,6 +260,10 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      *
      * @return The next TarEntry in the archive, or null.
      * @throws IOException on error
+     * @throws InvalidTarHeaderException if the next block cannot be
+     * parsed as a tar header. In this case it may be possible to skip
+     * some corrupted blocks and process the next valid tar header by
+     * calling this method again.
      */
     public TarArchiveEntry getNextTarEntry() throws IOException {
         if (isAtEOF()) {
@@ -269,9 +276,27 @@ public class TarArchiveInputStream extends ArchiveInputStream {
 
             /* skip to the end of the last record */
             skipRecordPadding();
+
+            /* Set currEntry to null, to make sure we don't skip again
+               if reading the next header fails */
+            currEntry = null;
+            entrySize = 0;
         }
 
-        final byte[] headerBuf = getRecord();
+        byte[] headerBuf = getRecord();
+
+        if (headerErrorOccurred) {
+            do {
+                try {
+                    if (TarUtils.verifyCheckSum(headerBuf)) {
+                        break;
+                    }
+                } catch (IllegalArgumentException e) { //NOSONAR
+                    // next record is not a valid tar header either
+                }
+                entryOffset += recordSize;
+            } while ((headerBuf = getRecord()) != null);
+        }
 
         if (headerBuf == null) {
             /* hit EOF */
