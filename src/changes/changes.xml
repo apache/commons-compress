@@ -74,7 +74,7 @@ The <action> type attribute can be add,update,fix,remove.
         Added a unit test that is supposed to fail if we break the
         OSGi manifest entries again.
       </action>
-      <action issue="COMPRESS-443" type="add" date="2018-05-02">
+      <action issue="COMPRESS-449" type="add" date="2018-05-02">
         Add a new SkipShieldingInputStream class that can be used wit
         streams that throw an IOException whne skip is invoked.
       </action>
