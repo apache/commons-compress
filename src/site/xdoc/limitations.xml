@@ -25,6 +25,21 @@
      Commons Compress&#x2122; grouped by the archiving/compression
      format they apply to.</p>
 
+     <section name="General">
+       <ul>
+         <li>Several implementations of decompressors and unarchivers will
+         invoke <a
+         href="https://docs.oracle.com/javase/10/docs/api/java/io/InputStream.html#skip(long)"><code>skip</code></a>
+         on the underlying <code>InputStream</code> which may throw an
+         <code>IOException</code> in some stream implementations. One
+         known case where this happens is when using
+         <code>System.in</code> as input. If you encounter an
+         exception with a message like "Illegal seek" we recommend you
+         wrap your stream in a <code>SkipShieldingInputStream</code>
+         from our utils package before passing it to Compress.</li>
+       </ul>
+     </section>
+
      <section name="7Z">
        <ul>
          <li>the format requires the otherwise optional <a
