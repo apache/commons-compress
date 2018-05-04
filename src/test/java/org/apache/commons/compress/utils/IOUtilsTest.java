@@ -18,6 +18,7 @@
 package org.apache.commons.compress.utils;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.FilterInputStream;
 import java.io.InputStream;
@@ -99,6 +100,11 @@ public class IOUtilsTest {
             source[i] = i;
         }
         readFully(source, b);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void copyThrowsOnZeroBufferSize() throws IOException {
+        IOUtils.copy(new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream(), 0);
     }
 
     private static void readFully(final byte[] source, ByteBuffer b) throws IOException {

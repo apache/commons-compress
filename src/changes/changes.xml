@@ -78,6 +78,9 @@ The <action> type attribute can be add,update,fix,remove.
         Add a new SkipShieldingInputStream class that can be used wit
         streams that throw an IOException whne skip is invoked.
       </action>
+      <action issue="COMPRESS-451" type="fix" date="2018-05-04">
+        IOUtils.copy now verifies the buffer size is bigger than 0.
+      </action>
     </release>
     <release version="1.16.1" date="2018-02-10"
              description="Release 1.16.1">
