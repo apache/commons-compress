@@ -513,6 +513,9 @@ public class ScatterSample {
 
       <subsection name="Brotli">
 
+        <p>The implementation of this package is provided by the
+          <a href="https://github.com/google/brotli">Google Brotli dec</a> library.</p>
+
         <p>Uncompressing a given Brotli compressed file (you would
           certainly add exception handling and make sure all streams
           get closed properly):</p>
@@ -938,6 +941,9 @@ zIn.close();
       </subsection>
 
       <subsection name="Zstandard">
+
+        <p>The implementation of this package is provided by the
+          <a href="https://github.com/luben/zstd-jni">Zstandard JNI</a> library.</p>
 
         <p>Uncompressing a given Zstandard compressed file (you would
           certainly add exception handling and make sure all streams
