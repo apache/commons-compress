@@ -214,6 +214,14 @@
          <code>ZipEntry#getTime</code> under the covers which may
          return different times for the same archive when using
          different versions of Java.</li>
+         <li>In versions of Compress prior to 1.16 a specially crafted
+         ZIP archive can be used to cause an infinite loop inside of
+         Compress' extra field parser used by the <code>ZipFile</code>
+         and <code>ZipArchiveInputStream</code> classes.  This can be
+         used to mount a denial of service attack against services
+         that use Compress' zip package. See the <a
+         href="security.html">Security Reports</a> page for
+         details.</li>
        </ul>
      </section>
      <section name="Zstandard">
