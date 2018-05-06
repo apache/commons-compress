@@ -105,7 +105,8 @@ CompressorInputStream input = new CompressorStreamFactory()
       </subsection>
 
       <subsection name="Concatenated Streams">
-        <p>For the bzip2, gzip and xz formats a single compressed file
+        <p>For the bzip2, gzip and xz formats as well as the framed
+        lz4 format a single compressed file
         may actually consist of several streams that will be
         concatenated by the command line utilities when decompressing
         them.  Starting with Commons Compress 1.4 the
