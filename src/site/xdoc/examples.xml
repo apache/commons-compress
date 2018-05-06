@@ -23,7 +23,7 @@
     <author email="dev@commons.apache.org">Commons Documentation Team</author>
   </properties>
   <body>
-    <section name="Examples">
+    <section name="General Notes">
 
       <subsection name="Archivers and Compressors">
         <p>Commons Compress calls all formats that compress a single
@@ -43,7 +43,7 @@
         archives.</p>
       </subsection>
 
-      <subsection name="Common Notes">
+      <subsection name="Buffering">
         <p>The stream classes all wrap around streams provided by the
           calling code and they work on them directly without any
           additional buffering.  On the other hand most of them will
@@ -90,6 +90,21 @@ CompressorInputStream input = new CompressorStreamFactory()
 
       </subsection>
 
+      <subsection name="Restricting Memory Usage">
+        <p>Starting with Compress 1.14
+        <code>CompressorStreamFactory</code> has an optional
+        constructor argument that can be used to set an upper limit of
+        memory that may be used while decompressing or compressing a
+        stream. As of 1.14 this setting only affects decompressing Z,
+        XZ and LZMA compressed streams.</p>
+        <p>For the Snappy and LZ4 formats the amount of memory used
+        during compression is directly proportional to the window
+        size.</p>
+      </subsection>
+
+    </section>
+    <section name="Archivers">
+
       <subsection name="Unsupported Features">
         <p>Many of the supported formats have developed different
         dialects and extensions and some formats allow for features
@@ -102,30 +117,6 @@ CompressorInputStream input = new CompressorStreamFactory()
         returns false you should not try to read the entry but skip
         over it.</p>
 
-      </subsection>
-
-      <subsection name="Concatenated Streams">
-        <p>For the bzip2, gzip and xz formats as well as the framed
-        lz4 format a single compressed file
-        may actually consist of several streams that will be
-        concatenated by the command line utilities when decompressing
-        them.  Starting with Commons Compress 1.4 the
-        <code>*CompressorInputStream</code>s for these formats support
-        concatenating streams as well, but they won't do so by
-        default.  You must use the two-arg constructor and explicitly
-        enable the support.</p>
-      </subsection>
-
-      <subsection name="Restricting Memory Usage">
-        <p>Starting with Compress 1.14
-        <code>CompressorStreamFactory</code> has an optional
-        constructor argument that can be used to set an upper limit of
-        memory that may be used while decompressing or compressing a
-        stream. As of 1.14 this setting only affects decompressing Z,
-        XZ and LZMA compressed streams.</p>
-        <p>For the Snappy and LZ4 formats the amount of memory used
-        during compression is directly proportional to the window
-        size.</p>
       </subsection>
 
       <subsection name="ar">
@@ -503,6 +494,21 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
     arjInput.read(content, offset, content.length - offset);
 }
 ]]></source>
+      </subsection>
+
+    </section>
+    <section name="Compressors">
+
+      <subsection name="Concatenated Streams">
+        <p>For the bzip2, gzip and xz formats as well as the framed
+        lz4 format a single compressed file
+        may actually consist of several streams that will be
+        concatenated by the command line utilities when decompressing
+        them.  Starting with Commons Compress 1.4 the
+        <code>*CompressorInputStream</code>s for these formats support
+        concatenating streams as well, but they won't do so by
+        default.  You must use the two-arg constructor and explicitly
+        enable the support.</p>
       </subsection>
 
       <subsection name="Brotli">
@@ -968,15 +974,15 @@ in.close();
 ]]></source>
 
       </subsection>
+    </section>
 
-    <subsection name="Extending Commons Compress">
+    <section name="Extending Commons Compress">
     
         <p>
           Starting in release 1.13, it is now possible to add Compressor- and ArchiverStream implementations using the 
           Java's <a href="https://docs.oracle.com/javase/7/docs/api/java/util/ServiceLoader.html">ServiceLoader</a> 
           mechanism.
         </p>
-    </subsection>
     
     <subsection name="Extending Commons Compress Compressors">
     
