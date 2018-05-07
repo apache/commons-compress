@@ -944,7 +944,7 @@ in.close();
 ]]></source>
 
       </subsection>
-      
+
       <subsection name="Z">
 
         <p>Uncompressing a given Z compressed file (you would
@@ -1009,15 +1009,15 @@ in.close();
     </section>
 
     <section name="Extending Commons Compress">
-    
+
         <p>
           Starting in release 1.13, it is now possible to add Compressor- and ArchiverStream implementations using the 
           Java's <a href="https://docs.oracle.com/javase/7/docs/api/java/util/ServiceLoader.html">ServiceLoader</a> 
           mechanism.
         </p>
-    
+
     <subsection name="Extending Commons Compress Compressors">
-    
+
         <p>
           To provide your own compressor, you must make available on the classpath a file called 
           <code>META-INF/services/org.apache.commons.compress.compressors.CompressorStreamProvider</code>.
@@ -1034,7 +1034,7 @@ in.close();
           <a href="apidocs/org/apache/commons/compress/compressors/CompressorStreamProvider.html">org.apache.commons.compress.compressors.CompressorStreamProvider</a>.
         </p>
     </subsection>
-    
+
     <subsection name="Extending Commons Compress Archivers">
 
         <p>
@@ -1053,7 +1053,7 @@ in.close();
           <a href="apidocs/org/apache/commons/compress/archivers/ArchiveStreamProvider.html">org.apache.commons.compress.archivers.ArchiveStreamProvider</a>.
         </p>
     </subsection>
-    
+
     </section>
   </body>
 </document>
