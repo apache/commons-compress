@@ -20,7 +20,6 @@ package org.apache.commons.compress.archivers;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -41,13 +40,6 @@ import org.apache.commons.compress.utils.IOUtils;
  * @since 1.17
  */
 public class Archiver {
-
-    private static final FileFilter ACCEPT_ALL = new FileFilter() {
-        @Override
-        public boolean accept(File f) {
-            return true;
-        }
-    };
 
     private interface ArchiveEntryCreator {
         ArchiveEntry create(File f, String entryName) throws IOException;
@@ -74,33 +66,15 @@ public class Archiver {
      * @throws ArchiveException if the archive cannot be created for other reasons
      */
     public void create(String format, File target, File directory) throws IOException, ArchiveException {
-        create(format, target, directory, ACCEPT_ALL);
-    }
-
-    /**
-     * Creates an archive {@code target} using the format {@code
-     * format} by recursively including all files and directories in
-     * {@code directory} that are accepted by {@code filter}.
-     *
-     * @param format the archive format. This uses the same format as
-     * accepted by {@link ArchiveStreamFactory}.
-     * @param target the file to write the new archive to.
-     * @param directory the directory that contains the files to archive.
-     * @param filter selects the files and directories to include inside the archive.
-     * @throws IOException if an I/O error occurs
-     * @throws ArchiveException if the archive cannot be created for other reasons
-     */
-    public void create(String format, File target, File directory, FileFilter filter)
-        throws IOException, ArchiveException {
         if (prefersSeekableByteChannel(format)) {
             try (SeekableByteChannel c = FileChannel.open(target.toPath(), StandardOpenOption.WRITE,
                 StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-                create(format, c, directory, filter);
+                create(format, c, directory);
             }
             return;
         }
         try (OutputStream o = Files.newOutputStream(target.toPath())) {
-            create(format, o, directory, filter);
+            create(format, o, directory);
         }
     }
 
@@ -117,25 +91,7 @@ public class Archiver {
      * @throws ArchiveException if the archive cannot be created for other reasons
      */
     public void create(String format, OutputStream target, File directory) throws IOException, ArchiveException {
-        create(format, target, directory, ACCEPT_ALL);
-    }
-
-    /**
-     * Creates an archive {@code target} using the format {@code
-     * format} by recursively including all files and directories in
-     * {@code directory} that are accepted by {@code filter}.
-     *
-     * @param format the archive format. This uses the same format as
-     * accepted by {@link ArchiveStreamFactory}.
-     * @param target the stream to write the new archive to.
-     * @param directory the directory that contains the files to archive.
-     * @param filter selects the files and directories to include inside the archive.
-     * @throws IOException if an I/O error occurs
-     * @throws ArchiveException if the archive cannot be created for other reasons
-     */
-    public void create(String format, OutputStream target, File directory, FileFilter filter)
-        throws IOException, ArchiveException {
-        create(new ArchiveStreamFactory().createArchiveOutputStream(format, target), directory, filter);
+        create(new ArchiveStreamFactory().createArchiveOutputStream(format, target), directory);
     }
 
     /**
@@ -152,30 +108,12 @@ public class Archiver {
      */
     public void create(String format, SeekableByteChannel target, File directory)
         throws IOException, ArchiveException {
-        create(format, target, directory, ACCEPT_ALL);
-    }
-
-    /**
-     * Creates an archive {@code target} using the format {@code
-     * format} by recursively including all files and directories in
-     * {@code directory} that are accepted by {@code filter}.
-     *
-     * @param format the archive format. This uses the same format as
-     * accepted by {@link ArchiveStreamFactory}.
-     * @param target the channel to write the new archive to.
-     * @param directory the directory that contains the files to archive.
-     * @param filter selects the files and directories to include inside the archive.
-     * @throws IOException if an I/O error occurs
-     * @throws ArchiveException if the archive cannot be created for other reasons
-     */
-    public void create(String format, SeekableByteChannel target, File directory, FileFilter filter)
-        throws IOException, ArchiveException {
         if (!prefersSeekableByteChannel(format)) {
-            create(format, Channels.newOutputStream(target), directory, filter);
+            create(format, Channels.newOutputStream(target), directory);
         } else if (ArchiveStreamFactory.ZIP.equalsIgnoreCase(format)) {
-            create(new ZipArchiveOutputStream(target), directory, filter);
+            create(new ZipArchiveOutputStream(target), directory);
         } else if (ArchiveStreamFactory.SEVEN_Z.equalsIgnoreCase(format)) {
-            create(new SevenZOutputFile(target), directory, filter);
+            create(new SevenZOutputFile(target), directory);
         } else {
             throw new ArchiveException("don't know how to handle format " + format);
         }
@@ -190,24 +128,9 @@ public class Archiver {
      * @throws IOException if an I/O error occurs
      * @throws ArchiveException if the archive cannot be created for other reasons
      */
-    public void create(ArchiveOutputStream target, File directory) throws IOException, ArchiveException {
-        create(target, directory, ACCEPT_ALL);
-    }
-
-    /**
-     * Creates an archive {@code target} by recursively including all
-     * files and directories in {@code directory} that are accepted by
-     * {@code filter}.
-     *
-     * @param target the stream to write the new archive to.
-     * @param directory the directory that contains the files to archive.
-     * @param filter selects the files and directories to include inside the archive.
-     * @throws IOException if an I/O error occurs
-     * @throws ArchiveException if the archive cannot be created for other reasons
-     */
-    public void create(final ArchiveOutputStream target, File directory, FileFilter filter)
+    public void create(final ArchiveOutputStream target, File directory)
         throws IOException, ArchiveException {
-        create(directory, filter, new ArchiveEntryCreator() {
+        create(directory, new ArchiveEntryCreator() {
             public ArchiveEntry create(File f, String entryName) throws IOException {
                 return target.createArchiveEntry(f, entryName);
             }
@@ -237,21 +160,7 @@ public class Archiver {
      * @throws IOException if an I/O error occurs
      */
     public void create(final SevenZOutputFile target, File directory) throws IOException {
-        create(target, directory, ACCEPT_ALL);
-    }
-
-    /**
-     * Creates an archive {@code target} by recursively including all
-     * files and directories in {@code directory} that are accepted by
-     * {@code filter}.
-     *
-     * @param target the file to write the new archive to.
-     * @param directory the directory that contains the files to archive.
-     * @param filter selects the files and directories to include inside the archive.
-     * @throws IOException if an I/O error occurs
-     */
-    public void create(final SevenZOutputFile target, File directory, FileFilter filter) throws IOException {
-        create(directory, filter, new ArchiveEntryCreator() {
+        create(directory, new ArchiveEntryCreator() {
             public ArchiveEntry create(File f, String entryName) throws IOException {
                 return target.createArchiveEntry(f, entryName);
             }
@@ -282,15 +191,15 @@ public class Archiver {
         return ArchiveStreamFactory.ZIP.equalsIgnoreCase(format) || ArchiveStreamFactory.SEVEN_Z.equalsIgnoreCase(format);
     }
 
-    private void create(File directory, FileFilter filter, ArchiveEntryCreator creator, ArchiveEntryConsumer consumer,
+    private void create(File directory, ArchiveEntryCreator creator, ArchiveEntryConsumer consumer,
         Finisher finisher) throws IOException {
-        create("", directory, filter, creator, consumer);
+        create("", directory, creator, consumer);
         finisher.finish();
     }
 
-    private void create(String prefix, File directory, FileFilter filter, ArchiveEntryCreator creator, ArchiveEntryConsumer consumer)
+    private void create(String prefix, File directory, ArchiveEntryCreator creator, ArchiveEntryConsumer consumer)
         throws IOException {
-        File[] children = directory.listFiles(filter);
+        File[] children = directory.listFiles();
         if (children == null) {
             return;
         }
@@ -298,7 +207,7 @@ public class Archiver {
             String entryName = prefix + f.getName() + (f.isDirectory() ? "/" : "");
             consumer.accept(f, creator.create(f, entryName));
             if (f.isDirectory()) {
-                create(entryName, f, filter, creator, consumer);
+                create(entryName, f, creator, consumer);
             }
         }
     }

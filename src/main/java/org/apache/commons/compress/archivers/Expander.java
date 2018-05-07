@@ -42,23 +42,6 @@ import org.apache.commons.compress.utils.IOUtils;
  * @since 1.17
  */
 public class Expander {
-    /**
-     * Used to filter the entries to be extracted.
-     */
-    public interface ArchiveEntryFilter {
-        /**
-         * @return true if the entry shall be expanded
-         * @param entry the entry to test
-         */
-        boolean accept(ArchiveEntry entry);
-    }
-
-    private static final ArchiveEntryFilter ACCEPT_ALL = new ArchiveEntryFilter() {
-        @Override
-        public boolean accept(ArchiveEntry e) {
-            return true;
-        }
-    };
 
     private interface ArchiveEntrySupplier {
         ArchiveEntry getNextReadableEntry() throws IOException;
@@ -79,7 +62,11 @@ public class Expander {
      * @throws ArchiveException if the archive cannot be read for other reasons
      */
     public void expand(File archive, File targetDirectory) throws IOException, ArchiveException {
-        expand(archive, targetDirectory, ACCEPT_ALL);
+        String format = null;
+        try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()))) {
+            format = new ArchiveStreamFactory().detect(i);
+        }
+        expand(format, archive, targetDirectory);
     }
 
     /**
@@ -93,52 +80,14 @@ public class Expander {
      * @throws ArchiveException if the archive cannot be read for other reasons
      */
     public void expand(String format, File archive, File targetDirectory) throws IOException, ArchiveException {
-        expand(format, archive, targetDirectory, ACCEPT_ALL);
-    }
-
-    /**
-     * Expands {@code archive} into {@code targetDirectory}, using
-     * only the entries accepted by the {@code filter}.
-     *
-     * <p>Tries to auto-detect the archive's format.</p>
-     *
-     * @param archive the file to expand
-     * @param targetDirectory the directory to write to
-     * @param filter selects the entries to expand
-     * @throws IOException if an I/O error occurs
-     * @throws ArchiveException if the archive cannot be read for other reasons
-     */
-    public void expand(File archive, File targetDirectory, ArchiveEntryFilter filter)
-        throws IOException, ArchiveException {
-        String format = null;
-        try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()))) {
-            format = new ArchiveStreamFactory().detect(i);
-        }
-        expand(format, archive, targetDirectory, filter);
-    }
-
-    /**
-     * Expands {@code archive} into {@code targetDirectory}, using
-     * only the entries accepted by the {@code filter}.
-     *
-     * @param archive the file to expand
-     * @param targetDirectory the directory to write to
-     * @param format the archive format. This uses the same format as
-     * accepted by {@link ArchiveStreamFactory}.
-     * @param filter selects the entries to expand
-     * @throws IOException if an I/O error occurs
-     * @throws ArchiveException if the archive cannot be read for other reasons
-     */
-    public void expand(String format, File archive, File targetDirectory, ArchiveEntryFilter filter)
-        throws IOException, ArchiveException {
         if (prefersSeekableByteChannel(format)) {
             try (SeekableByteChannel c = FileChannel.open(archive.toPath(), StandardOpenOption.READ)) {
-                expand(format, c, targetDirectory, filter);
+                expand(format, c, targetDirectory);
             }
             return;
         }
         try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()))) {
-            expand(format, i, targetDirectory, filter);
+            expand(format, i, targetDirectory);
         }
     }
 
@@ -153,7 +102,7 @@ public class Expander {
      * @throws ArchiveException if the archive cannot be read for other reasons
      */
     public void expand(InputStream archive, File targetDirectory) throws IOException, ArchiveException {
-        expand(archive, targetDirectory, ACCEPT_ALL);
+        expand(new ArchiveStreamFactory().createArchiveInputStream(archive), targetDirectory);
     }
 
     /**
@@ -168,41 +117,7 @@ public class Expander {
      */
     public void expand(String format, InputStream archive, File targetDirectory)
         throws IOException, ArchiveException {
-        expand(format, archive, targetDirectory, ACCEPT_ALL);
-    }
-
-    /**
-     * Expands {@code archive} into {@code targetDirectory}, using
-     * only the entries accepted by the {@code filter}.
-     *
-     * <p>Tries to auto-detect the archive's format.</p>
-     *
-     * @param archive the file to expand
-     * @param targetDirectory the directory to write to
-     * @param filter selects the entries to expand
-     * @throws IOException if an I/O error occurs
-     * @throws ArchiveException if the archive cannot be read for other reasons
-     */
-    public void expand(InputStream archive, File targetDirectory, ArchiveEntryFilter filter)
-        throws IOException, ArchiveException {
-        expand(new ArchiveStreamFactory().createArchiveInputStream(archive), targetDirectory, filter);
-    }
-
-    /**
-     * Expands {@code archive} into {@code targetDirectory}, using
-     * only the entries accepted by the {@code filter}.
-     *
-     * @param archive the file to expand
-     * @param targetDirectory the directory to write to
-     * @param format the archive format. This uses the same format as
-     * accepted by {@link ArchiveStreamFactory}.
-     * @param filter selects the entries to expand
-     * @throws IOException if an I/O error occurs
-     * @throws ArchiveException if the archive cannot be read for other reasons
-     */
-    public void expand(String format, InputStream archive, File targetDirectory, ArchiveEntryFilter filter)
-        throws IOException, ArchiveException {
-        expand(new ArchiveStreamFactory().createArchiveInputStream(format, archive), targetDirectory, filter);
+        expand(new ArchiveStreamFactory().createArchiveInputStream(format, archive), targetDirectory);
     }
 
     /**
@@ -217,29 +132,12 @@ public class Expander {
      */
     public void expand(String format, SeekableByteChannel archive, File targetDirectory)
         throws IOException, ArchiveException {
-        expand(format, archive, targetDirectory, ACCEPT_ALL);
-    }
-
-    /**
-     * Expands {@code archive} into {@code targetDirectory}, using
-     * only the entries accepted by the {@code filter}.
-     *
-     * @param archive the file to expand
-     * @param targetDirectory the directory to write to
-     * @param format the archive format. This uses the same format as
-     * accepted by {@link ArchiveStreamFactory}.
-     * @param filter selects the entries to expand
-     * @throws IOException if an I/O error occurs
-     * @throws ArchiveException if the archive cannot be read for other reasons
-     */
-    public void expand(String format, SeekableByteChannel archive, File targetDirectory, ArchiveEntryFilter filter)
-        throws IOException, ArchiveException {
         if (!prefersSeekableByteChannel(format)) {
-            expand(format, Channels.newInputStream(archive), targetDirectory, filter);
+            expand(format, Channels.newInputStream(archive), targetDirectory);
         } else if (ArchiveStreamFactory.ZIP.equalsIgnoreCase(format)) {
-            expand(new ZipFile(archive), targetDirectory, filter);
+            expand(new ZipFile(archive), targetDirectory);
         } else if (ArchiveStreamFactory.SEVEN_Z.equalsIgnoreCase(format)) {
-            expand(new SevenZFile(archive), targetDirectory, filter);
+            expand(new SevenZFile(archive), targetDirectory);
         } else {
             throw new ArchiveException("don't know how to handle format " + format);
         }
@@ -253,22 +151,7 @@ public class Expander {
      * @throws IOException if an I/O error occurs
      * @throws ArchiveException if the archive cannot be read for other reasons
      */
-    public void expand(ArchiveInputStream archive, File targetDirectory)
-        throws IOException, ArchiveException {
-        expand(archive, targetDirectory, ACCEPT_ALL);
-    }
-
-    /**
-     * Expands {@code archive} into {@code targetDirectory}, using
-     * only the entries accepted by the {@code filter}.
-     *
-     * @param archive the file to expand
-     * @param targetDirectory the directory to write to
-     * @param filter selects the entries to expand
-     * @throws IOException if an I/O error occurs
-     * @throws ArchiveException if the archive cannot be read for other reasons
-     */
-    public void expand(final ArchiveInputStream archive, File targetDirectory, ArchiveEntryFilter filter)
+    public void expand(final ArchiveInputStream archive, File targetDirectory)
         throws IOException, ArchiveException {
         expand(new ArchiveEntrySupplier() {
             @Override
@@ -284,7 +167,7 @@ public class Expander {
             public void writeEntryDataTo(ArchiveEntry entry, OutputStream out) throws IOException {
                 IOUtils.copy(archive, out);
             }
-        }, targetDirectory, filter);
+        }, targetDirectory);
     }
 
     /**
@@ -295,22 +178,7 @@ public class Expander {
      * @throws IOException if an I/O error occurs
      * @throws ArchiveException if the archive cannot be read for other reasons
      */
-    public void expand(ZipFile archive, File targetDirectory)
-        throws IOException, ArchiveException {
-        expand(archive, targetDirectory, ACCEPT_ALL);
-    }
-
-    /**
-     * Expands {@code archive} into {@code targetDirectory}, using
-     * only the entries accepted by the {@code filter}.
-     *
-     * @param archive the file to expand
-     * @param targetDirectory the directory to write to
-     * @param filter selects the entries to expand
-     * @throws IOException if an I/O error occurs
-     * @throws ArchiveException if the archive cannot be read for other reasons
-     */
-    public void expand(final ZipFile archive, File targetDirectory, ArchiveEntryFilter filter)
+    public void expand(final ZipFile archive, File targetDirectory)
         throws IOException, ArchiveException {
         final Enumeration<ZipArchiveEntry> entries = archive.getEntries();
         expand(new ArchiveEntrySupplier() {
@@ -329,7 +197,7 @@ public class Expander {
                     IOUtils.copy(in, out);
                 }
             }
-        }, targetDirectory, filter);
+        }, targetDirectory);
     }
 
     /**
@@ -340,22 +208,7 @@ public class Expander {
      * @throws IOException if an I/O error occurs
      * @throws ArchiveException if the archive cannot be read for other reasons
      */
-    public void expand(SevenZFile archive, File targetDirectory)
-        throws IOException, ArchiveException {
-        expand(archive, targetDirectory, ACCEPT_ALL);
-    }
-
-    /**
-     * Expands {@code archive} into {@code targetDirectory}, using
-     * only the entries accepted by the {@code filter}.
-     *
-     * @param archive the file to expand
-     * @param targetDirectory the directory to write to
-     * @param filter selects the entries to expand
-     * @throws IOException if an I/O error occurs
-     * @throws ArchiveException if the archive cannot be read for other reasons
-     */
-    public void expand(final SevenZFile archive, File targetDirectory, ArchiveEntryFilter filter)
+    public void expand(final SevenZFile archive, File targetDirectory)
         throws IOException, ArchiveException {
         expand(new ArchiveEntrySupplier() {
             @Override
@@ -373,21 +226,18 @@ public class Expander {
                     count += n;
                 }
             }
-        }, targetDirectory, filter);
+        }, targetDirectory);
     }
 
     private boolean prefersSeekableByteChannel(String format) {
         return ArchiveStreamFactory.ZIP.equalsIgnoreCase(format) || ArchiveStreamFactory.SEVEN_Z.equalsIgnoreCase(format);
     }
 
-    private void expand(ArchiveEntrySupplier supplier, EntryWriter writer, File targetDirectory, ArchiveEntryFilter filter)
+    private void expand(ArchiveEntrySupplier supplier, EntryWriter writer, File targetDirectory)
         throws IOException {
         String targetDirPath = targetDirectory.getCanonicalPath();
         ArchiveEntry nextEntry = supplier.getNextReadableEntry();
         while (nextEntry != null) {
-            if (!filter.accept(nextEntry)) {
-                continue;
-            }
             File f = new File(targetDirectory, nextEntry.getName());
             if (!f.getCanonicalPath().startsWith(targetDirPath)) {
                 throw new IOException("expanding " + nextEntry.getName()
