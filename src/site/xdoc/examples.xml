@@ -191,7 +191,33 @@ SevenZFile sevenZFile = new SevenZFile(inMemoryByteChannel);
 SevenZArchiveEntry entry = sevenZFile.getNextEntry();
 sevenZFile.read();  // read current entry's data
 ]]></source>
-      </subsection>
+
+          <h4><a name="Encrypted 7z Archives"></a>Encrypted 7z Archives</h4>
+
+          <p>Currently Compress supports reading but not writing of
+          encrypted archives. When reading an encrypted archive a
+          password has to be provided to one of
+          <code>SevenZFile</code>'s constructors. If you try to read
+          an encrypted archive without specifying a password a
+          <code>PasswordRequiredException</code> (a subclass of
+          <code>IOException</code>) will be thrown.</p>
+
+          <p>When specifying the password as a <code>byte[]</code> one
+          common mistake is to use the wrong encoding when creating
+          the <code>byte[]</code> from a <code>String</code>. The
+          <code>SevenZFile</code> class expects the bytes to
+          correspond to the UTF16-LE encoding of the password. An
+          example of reading an encrypted archive is</p>
+
+<source><![CDATA[
+SevenZFile sevenZFile = new SevenZFile(new File("archive.7z"), "secret".getBytes(StandardCharsets.UTF_16LE));
+SevenZArchiveEntry entry = sevenZFile.getNextEntry();
+byte[] content = new byte[entry.getSize()];
+LOOP UNTIL entry.getSize() HAS BEEN READ {
+    sevenZFile.read(content, offset, content.length - offset);
+}
+]]></source>
+        </subsection>
 
       <subsection name="ar">
 
