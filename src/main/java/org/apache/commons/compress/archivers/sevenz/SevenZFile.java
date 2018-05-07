@@ -147,9 +147,7 @@ public class SevenZFile implements Closeable {
      * allows you to read from an in-memory archive.</p>
      *
      * @param channel the channel to read
-     * @param password optional password if the archive is encrypted -
-     * the byte array is supposed to be the UTF16-LE encoded
-     * representation of the password.
+     * @param password optional password if the archive is encrypted
      * @throws IOException if reading the archive fails
      * @since 1.17
      */
@@ -167,9 +165,7 @@ public class SevenZFile implements Closeable {
      *
      * @param channel the channel to read
      * @param filename name of the archive - only used for error reporting
-     * @param password optional password if the archive is encrypted -
-     * the byte array is supposed to be the UTF16-LE encoded
-     * representation of the password.
+     * @param password optional password if the archive is encrypted
      * @throws IOException if reading the archive fails
      * @since 1.17
      */
