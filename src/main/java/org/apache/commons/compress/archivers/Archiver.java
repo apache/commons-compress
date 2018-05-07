@@ -29,6 +29,7 @@ import java.io.OutputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
+import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
 import org.apache.commons.compress.archivers.sevenz.SevenZOutputFile;
@@ -98,7 +99,7 @@ public class Archiver {
             }
             return;
         }
-        try (OutputStream o = new FileOutputStream(target)) {
+        try (OutputStream o = Files.newOutputStream(target.toPath())) {
             create(format, o, directory, filter);
         }
     }
@@ -214,7 +215,7 @@ public class Archiver {
             public void accept(File source, ArchiveEntry e) throws IOException {
                 target.putArchiveEntry(e);
                 if (!e.isDirectory()) {
-                    try (InputStream in = new BufferedInputStream(new FileInputStream(source))) {
+                    try (InputStream in = new BufferedInputStream(Files.newInputStream(source.toPath()))) {
                         IOUtils.copy(in, target);
                     }
                 }
@@ -261,7 +262,7 @@ public class Archiver {
                     final byte[] buffer = new byte[8024];
                     int n = 0;
                     long count = 0;
-                    try (InputStream in = new BufferedInputStream(new FileInputStream(source))) {
+                    try (InputStream in = new BufferedInputStream(Files.newInputStream(source.toPath()))) {
                         while (-1 != (n = in.read(buffer))) {
                             target.write(buffer, 0, n);
                             count += n;

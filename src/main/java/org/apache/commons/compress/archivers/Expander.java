@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
+import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.Enumeration;
 
@@ -110,7 +111,7 @@ public class Expander {
     public void expand(File archive, File targetDirectory, ArchiveEntryFilter filter)
         throws IOException, ArchiveException {
         String format = null;
-        try (InputStream i = new BufferedInputStream(new FileInputStream(archive))) {
+        try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()))) {
             format = new ArchiveStreamFactory().detect(i);
         }
         expand(format, archive, targetDirectory, filter);
@@ -136,7 +137,7 @@ public class Expander {
             }
             return;
         }
-        try (InputStream i = new BufferedInputStream(new FileInputStream(archive))) {
+        try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()))) {
             expand(format, i, targetDirectory, filter);
         }
     }
@@ -396,7 +397,7 @@ public class Expander {
                 f.mkdirs();
             } else {
                 f.getParentFile().mkdirs();
-                try (OutputStream o = new FileOutputStream(f)) {
+                try (OutputStream o = Files.newOutputStream(f.toPath())) {
                     writer.writeEntryDataTo(nextEntry, o);
                 }
             }
