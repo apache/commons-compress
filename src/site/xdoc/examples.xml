@@ -119,6 +119,160 @@ CompressorInputStream input = new CompressorStreamFactory()
 
       </subsection>
 
+      <subsection name="Entry Names">
+        <p>All archive formats provide meta data about the individual
+        archive entries via instances of <code>ArchiveEntry</code> (or
+        rather subclasses of it). When reading from an archive the
+        information provided the <code>getName</code> method is the
+        raw name as stored inside of the archive. There is no
+        guarantee the name represents a relative file name or even a
+        valid file name on your target operating system at all. You
+        should double check the outcome when you try to create file
+        names from entry names.</p>
+      </subsection>
+
+      <subsection name="Common Extraction Logic">
+        <p>Apart from 7z all formats provide a subclass of
+        <code>ArchiveInputStream</code> that can be used to create an
+        archive. For 7z <code>SevenZFile</code> provides a similar API
+        that does not represent a stream as our implementation
+        requires random access to the input and cannot be used for
+        general streams. The ZIP implementation can benefit a lot from
+        random access as well, see the <a
+        href="zip.html#ZipArchiveInputStream%20vs$20ZipFile">zip
+        page</a> for details.</p>
+
+        <p>Assuming you want to extract an archive to a target
+        directory you'd call <code>getNextEntry</code>, verify the
+        entry can be read, construct a sane file name from the entry's
+        name, create a <codee>File</codee> and write all contents to
+        it - here <code>IOUtils.copy</code> may come handy. You do so
+        for every entry until <code>getNextEntry</code> returns
+        <code>null</code>.</p>
+
+        <p>A skeleton might look like:</p>
+
+        <source><![CDATA[
+File targetDir = ...
+try (ArchiveInputStream i = ... create the stream for your format, use buffering...) {
+    ArchiveEntry entry = null;
+    while ((entry = i.getNextEntry()) != null) {
+        if (!i.canReadEntryData(entry)) {
+            // log something?
+            continue;
+        }
+        String name = fileName(targetDir, entry);
+        File f = new File(name);
+        if (entry.isDirectory()) {
+            f.mkdirs();
+        } else {
+            f.getParentFile().mkdirs();
+            try (OutputStream o = Files.newOutputStream(f.toPath())) {
+                IOUtils.copy(i, o);
+            }
+        }
+    }
+}
+]]></source>
+
+        <p>where the hypothetical <code>fileName</code> method is
+        written by you and provides the absolute name for the file
+        that is going to be written on disk. Here you should perform
+        checks that ensure the resulting file name actually is a valid
+        file name on your operating system or belongs to a file inside
+        of <code>targetDir</code> when using the entry's name as
+        input.</p>
+
+        <p>If you want to combine an archive format with a compression
+        format - like when reading a "tar.gz" file - you wrap the
+        <code>ArchiveInputStream</code> around
+        <code>CompressorInputStream</code> for example:</p>
+
+        <source><![CDATA[
+try (InputStream fi = new Files.newInputStream(Paths.get("my.tar.gz"));
+     InputStream bi = new BufferedInputStream(fi);
+     InputStream gzi = new GzipCompressorInputStream(bi);
+     ArchiveInputStream o = new TarArchiveInputStream(gzi)) {
+}
+]]></source>
+
+      </subsection>
+
+      <subsection name="Common Archival Logic">
+        <p>Apart from 7z all formats that support writing provide a
+        subclass of <code>ArchiveOutputStream</code> that can be used
+        to create an archive. For 7z <code>SevenZOutputFile</code>
+        provides a similar API that does not represent a stream as our
+        implementation requires random access to the output and cannot
+        be used for general streams. The
+        <code>ZipArchiveOutputStream</code> class will benefit from
+        random access as well but can be used for non-seekable streams
+        - but not all features will be available and the archive size
+        might be slightly bigger, see <a
+        href="zip.html#ZipArchiveOutputStream">the zip page</a> for
+        details.</p>
+
+        <p>Assuming you want to add a collection of files to an
+        archive, you can first use <code>createArchiveEntry</code> for
+        each file. In general this will set a few flags (usually the
+        last modified time, the size and the information whether this
+        is a file or directory) based on the <code>File</code>
+        instance. Alternatively you can create the
+        <code>ArchiveEntry</code> subclass corresponding to your
+        format directly. Often you may want to set additional flags
+        like file permissions or owner information before adding the
+        entry to the archive.</p>
+
+        <p>Next you use <code>putArchiveEntry</code> in order to add
+        the entry and then start using <code>write</code> to add the
+        content of the entry - here <code>IOUtils.copy</code> may
+        come handy. Finally you invoke
+        <code>closeArchiveEntry</code> once you've written all content
+        and before you add the next entry.</p>
+
+        <p>Once all entries have been added you'd invoke
+        <code>finish</code> and finally <code>close</code> the
+        stream.</p>
+
+        <p>A skeleton might look like:</p>
+
+        <source><![CDATA[
+Collection<File> filesToArchive = ...
+try (ArchiveOutputStream o = ... create the stream for your format ...) {
+    for (File f : filesToArchive) {
+        // maybe skip directories for formats like AR that don't store directories
+        ArchiveEntry entry = o.createArchiveEntry(f, entryName(f));
+        // potentially add more flags to entry
+        o.putArchiveEntry(entry);
+        if (f.isFile()) {
+            try (InputStream i = Files.newInputStream(f.toPath())) {
+                IOUtils.copy(i, o);
+            }
+        }
+        o.closeArchiveEntry();
+    }
+    out.finish();
+}
+]]></source>
+
+        <p>where the hypothetical <code>entryName</code> method is
+        written by you and provides the name for the entry as it is
+        going to be written to the archive.</p>
+
+        <p>If you want to combine an archive format with a compression
+        format - like when creating a "tar.gz" file - you wrap the
+        <code>ArchiveOutputStream</code> around a
+        <code>CompressorOutputStream</code> for example:</p>
+
+        <source><![CDATA[
+try (OutputStream fo = Files.newOutputStream(Paths.get("my.tar.gz"));
+     OutputStream gzo = new GzipCompressorOutputStream(fo);
+     ArchiveOutputStream o = new TarArchiveOutputStream(gzo)) {
+}
+]]></source>
+
+      </subsection>
+
       <subsection name="7z">
 
         <p>Note that Commons Compress currently only supports a subset
