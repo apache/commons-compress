@@ -23,26 +23,27 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.Inflater;
+import java.util.zip.InflaterInputStream;
 
 /**
  * Helper class to provide statistics
  *
  * @since 1.17
  */
-/* package */ class InflaterInputStream extends java.util.zip.InflaterInputStream
+/* package */ class InflaterInputStreamWithStatistics extends InflaterInputStream
     implements InputStreamStatistics {
     private long compressedCount = 0;
     private long uncompressedCount = 0;
 
-    public InflaterInputStream(InputStream in) {
+    public InflaterInputStreamWithStatistics(InputStream in) {
         super(in);
     }
 
-    public InflaterInputStream(InputStream in, Inflater inf) {
+    public InflaterInputStreamWithStatistics(InputStream in, Inflater inf) {
         super(in, inf);
     }
 
-    public InflaterInputStream(InputStream in, Inflater inf, int size) {
+    public InflaterInputStreamWithStatistics(InputStream in, Inflater inf, int size) {
         super(in, inf, size);
     }
 
