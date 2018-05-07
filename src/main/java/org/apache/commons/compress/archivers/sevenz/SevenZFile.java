@@ -169,8 +169,7 @@ public class SevenZFile implements Closeable {
         try {
             archive = readHeaders(password);
             if (password != null) {
-                this.password = new byte[password.length];
-                System.arraycopy(password, 0, this.password, 0, password.length);
+                this.password = Arrays.copyOf(password, password.length);
             } else {
                 this.password = null;
             }
