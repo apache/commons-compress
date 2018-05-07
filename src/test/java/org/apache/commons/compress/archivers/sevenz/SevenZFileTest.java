@@ -307,21 +307,21 @@ public class SevenZFileTest extends AbstractTestCase {
     }
 
     private void test7zUnarchive(SevenZFile sevenZFile, final SevenZMethod m) throws Exception {
-            SevenZArchiveEntry entry = sevenZFile.getNextEntry();
-            assertEquals("test1.xml", entry.getName());
-            assertEquals(m, entry.getContentMethods().iterator().next().getMethod());
-            entry = sevenZFile.getNextEntry();
-            assertEquals("test2.xml", entry.getName());
-            assertEquals(m, entry.getContentMethods().iterator().next().getMethod());
-            final byte[] contents = new byte[(int) entry.getSize()];
-            int off = 0;
-            while ((off < contents.length)) {
-                final int bytesRead = sevenZFile.read(contents, off, contents.length - off);
-                assert (bytesRead >= 0);
-                off += bytesRead;
-            }
-            assertEquals(TEST2_CONTENT, new String(contents, "UTF-8"));
-            assertNull(sevenZFile.getNextEntry());
+        SevenZArchiveEntry entry = sevenZFile.getNextEntry();
+        assertEquals("test1.xml", entry.getName());
+        assertEquals(m, entry.getContentMethods().iterator().next().getMethod());
+        entry = sevenZFile.getNextEntry();
+        assertEquals("test2.xml", entry.getName());
+        assertEquals(m, entry.getContentMethods().iterator().next().getMethod());
+        final byte[] contents = new byte[(int) entry.getSize()];
+        int off = 0;
+        while ((off < contents.length)) {
+            final int bytesRead = sevenZFile.read(contents, off, contents.length - off);
+            assert (bytesRead >= 0);
+            off += bytesRead;
+        }
+        assertEquals(TEST2_CONTENT, new String(contents, "UTF-8"));
+        assertNull(sevenZFile.getNextEntry());
     }
 
     private void checkHelloWorld(final String filename) throws Exception {
