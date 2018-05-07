@@ -502,7 +502,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         }
         try (SevenZFile archive =
              new SevenZFile(new SeekableInMemoryByteChannel(output.array()), "in memory",
-                            null)) {
+                            (char[]) null)) {
             assertEquals(Boolean.TRUE, verifyFile(archive, 0, methods));
         }
     }
