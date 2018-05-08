@@ -164,9 +164,14 @@ try (ArchiveInputStream i = ... create the stream for your format, use buffering
         String name = fileName(targetDir, entry);
         File f = new File(name);
         if (entry.isDirectory()) {
-            f.mkdirs();
+            if (!f.isDirectory() && !f.mkdirs()) {
+                throw new IOException("failed to create directory " + f);
+            }
         } else {
-            f.getParentFile().mkdirs();
+            File parent = f.getParentFile();
+            if (!parent.isDirectory() && !parent.mkdirs()) {
+                throw new IOException("failed to create directory " + parent);
+            }
             try (OutputStream o = Files.newOutputStream(f.toPath())) {
                 IOUtils.copy(i, o);
             }

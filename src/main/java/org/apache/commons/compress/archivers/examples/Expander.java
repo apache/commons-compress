@@ -246,9 +246,14 @@ public class Expander {
                     + " would craete file outside of " + targetDirectory);
             }
             if (nextEntry.isDirectory()) {
-                f.mkdirs();
+                if (!f.isDirectory() && !f.mkdirs()) {
+                    throw new IOException("failed to create directory " + f);
+                }
             } else {
-                f.getParentFile().mkdirs();
+                File parent = f.getParentFile();
+                if (!parent.isDirectory() && !parent.mkdirs()) {
+                    throw new IOException("failed to create directory " + parent);
+                }
                 try (OutputStream o = Files.newOutputStream(f.toPath())) {
                     writer.writeEntryDataTo(nextEntry, o);
                 }
