@@ -391,7 +391,22 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
     sevenZFile.read(content, offset, content.length - offset);
 }
 ]]></source>
-        </subsection>
+
+        <p>Starting with Compress 1.17 new constructors have been
+        added that accept the password as <code>char[]</code> rather
+        than a <code>byte[]</code>. We recommend you use these in
+        order to avoid the problem above.</p>
+
+<source><![CDATA[
+SevenZFile sevenZFile = new SevenZFile(new File("archive.7z"), "secret".toCharArray());
+SevenZArchiveEntry entry = sevenZFile.getNextEntry();
+byte[] content = new byte[entry.getSize()];
+LOOP UNTIL entry.getSize() HAS BEEN READ {
+    sevenZFile.read(content, offset, content.length - offset);
+}
+]]></source>
+
+      </subsection>
 
       <subsection name="ar">
 

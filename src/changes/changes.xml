@@ -81,6 +81,16 @@ The <action> type attribute can be add,update,fix,remove.
       <action issue="COMPRESS-451" type="fix" date="2018-05-04">
         IOUtils.copy now verifies the buffer size is bigger than 0.
       </action>
+      <action issue="COMPRESS-452" type="add" date="2018-05-09">
+        New constructors have been added to <code>SevenZFile</code>
+        that accept <code>char[]</code>s rather than
+        <code>byte[]</code>s in order to avoid a common error of using
+        the wrong encoding when creating the <code>byte[]</code>.
+        This change may break source compatibility for client code
+        that uses one of the constructors expecting a password and
+        passes in <code>null</code> as password. We recommend to
+        change the code to use a constructor without password argument.
+      </action>
     </release>
     <release version="1.16.1" date="2018-02-10"
              description="Release 1.16.1">
