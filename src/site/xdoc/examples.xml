@@ -102,6 +102,21 @@ CompressorInputStream input = new CompressorStreamFactory()
         size.</p>
       </subsection>
 
+      <subsection name="Statistics">
+        <p>Starting with Compress 1.17 most of the
+        <code>CompressorInputStream</code> implementations as well as
+        <code>ZipArchiveInputStream</code> and all streams returned by
+        <code>ZipFile.getInputStream</code> implement the
+        <code>InputStreamStatistics</code>
+        interface. <code>SevenZFile</code> provides statistics for the
+        current entry via the
+        <code>getStatisticsForCurrentEntry</code> method. This
+        interface can be used to track progress while extracting a
+        stream or to detect potential <a
+        href="https://en.wikipedia.org/wiki/Zip_bomb">zip bombs</a>
+        when the compression ration becomes suspiciously large.</p>
+      </subsection>
+
     </section>
     <section name="Archivers">
 
