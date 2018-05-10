@@ -58,18 +58,13 @@
           of changes see the <a href="changes-report.html">Changes
           Report</a>.</p>
 
-          <subsection name="What's new in 1.16.1?">
+          <subsection name="What's new in 1.17?">
             <ul>
-              <li>Fixed the OSGi manifest that was broken in Compress 1.16.</li>
-            </ul>
-          </subsection>
-
-          <subsection name="What's new in 1.16?">
-            <ul>
-              <li>Support for Zstandard compression.</li>
-              <li>Read-only support for DEFLATE64 compression as
-              stand-alone CompressorInputStream and as method used in
-              ZIP and 7z archives.</li>
+              <li>A new <code>InputStreamStatistics</code> interface
+              is implemented by many streams and may be used to
+              provide feedback or detect abnormally high compression
+              ratios that may indicate a ZIP bomb during
+              decompression.</li>
             </ul>
           </subsection>
 
