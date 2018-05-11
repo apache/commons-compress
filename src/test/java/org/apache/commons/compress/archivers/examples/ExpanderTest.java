@@ -92,14 +92,18 @@ public class ExpanderTest extends AbstractTestCase {
     @Test
     public void sevenZFileVersion() throws IOException, ArchiveException {
         setup7z();
-        new Expander().expand(new SevenZFile(archive), resultDir);
+        try (SevenZFile f = new SevenZFile(archive)) {
+            new Expander().expand(f, resultDir);
+        }
         verifyTargetDir();
     }
 
     @Test
     public void zipFileVersion() throws IOException, ArchiveException {
         setupZip();
-        new Expander().expand(new ZipFile(archive), resultDir);
+        try (ZipFile f = new ZipFile(archive)) {
+            new Expander().expand(f, resultDir);
+        }
         verifyTargetDir();
     }
 
