@@ -141,6 +141,7 @@ public class Expander {
         } else if (ArchiveStreamFactory.SEVEN_Z.equalsIgnoreCase(format)) {
             expand(new SevenZFile(archive), targetDirectory);
         } else {
+            // never reached as prefersSeekableByteChannel only returns true for ZIP and 7z
             throw new ArchiveException("don't know how to handle format " + format);
         }
     }
