@@ -43,10 +43,14 @@ import org.apache.commons.compress.archivers.sevenz.SevenZOutputFile;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class ExpanderTest extends AbstractTestCase {
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     private File archive;
 
@@ -107,6 +111,25 @@ public class ExpanderTest extends AbstractTestCase {
         verifyTargetDir();
     }
 
+    @Test
+    public void fileCantEscapeViaAbsolutePath() throws IOException, ArchiveException {
+        setupZip("/tmp/foo");
+        try (ZipFile f = new ZipFile(archive)) {
+            new Expander().expand(f, resultDir);
+        }
+        assertHelloWorld("tmp/foo", "1");
+    }
+
+    @Test
+    public void fileCantEscapeDoubleDotPath() throws IOException, ArchiveException {
+        thrown.expect(IOException.class);
+        thrown.expectMessage("expanding ../foo would create file outside of");
+        setupZip("../foo");
+        try (ZipFile f = new ZipFile(archive)) {
+            new Expander().expand(f, resultDir);
+        }
+    }
+
     private void setup7z() throws IOException, ArchiveException {
         archive = new File(dir, "test.7z");
         File dummy = new File(dir, "x");
@@ -149,6 +172,21 @@ public class ExpanderTest extends AbstractTestCase {
             aos.closeArchiveEntry();
             aos.putArchiveEntry(aos.createArchiveEntry(dummy, "a/b/c/e.txt"));
             aos.write("Hello, world 2".getBytes(StandardCharsets.UTF_8));
+            aos.closeArchiveEntry();
+            aos.finish();
+        }
+    }
+
+    private void setupZip(String entry) throws IOException, ArchiveException {
+        archive = new File(dir, "test.zip");
+        File dummy = new File(dir, "x");
+        try (OutputStream o = Files.newOutputStream(dummy.toPath())) {
+            o.write(new byte[14]);
+        }
+        try (ArchiveOutputStream aos = new ArchiveStreamFactory()
+             .createArchiveOutputStream("zip", Files.newOutputStream(archive.toPath()))) {
+            aos.putArchiveEntry(aos.createArchiveEntry(dummy, entry));
+            aos.write("Hello, world 1".getBytes(StandardCharsets.UTF_8));
             aos.closeArchiveEntry();
             aos.finish();
         }
