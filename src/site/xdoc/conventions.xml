@@ -35,7 +35,7 @@
             <p>
             We use some of the annotations from 
             <a href="http://jcip.net/annotations/doc/net/jcip/annotations/package-summary.html">JCIP</a>
-            as JavaDoc tags. The used tags are: 
+            as Javadoc tags. The used tags are: 
     
             <ul>
                 <li>@GuardedBy (field or method)</li>
