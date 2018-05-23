@@ -575,6 +575,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
     }
 
     private void getAndMoveToFrontDecode() throws IOException {
+        System.err.println("In getAndMoveToFrontDecode");
         final BitInputStream bin = this.bin;
         this.origPtr = bsR(bin, 24);
         recvDecodingTables();
@@ -605,6 +606,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
         int groupPos = G_SIZE - 1;
         final int eob = this.nInUse + 1;
         int nextSym = getAndMoveToFrontDecode0();
+        System.err.println("Initial nextSym: " + nextSym);
         int lastShadow = -1;
         int zt = selector[groupNo] & 0xff;
         checkBounds(zt, N_GROUPS, "zt");
@@ -649,6 +651,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
                     final int tmp = zvec - base_zt[zn];
                     checkBounds(tmp, MAX_ALPHA_SIZE, "zvec");
                     nextSym = perm_zt[tmp];
+                    System.err.println("nextSym in RLE loop: " + nextSym);
                 }
 
                 final int yy0 = yy[0];
@@ -656,16 +659,18 @@ public class BZip2CompressorInputStream extends CompressorInputStream
                 final byte ch = seqToUnseq[yy0];
                 unzftab[ch & 0xff] += s + 1;
 
+                System.err.println("s: " + s);
                 while (s-- >= 0) {
                     ll8[++lastShadow] = ch;
                 }
 
                 if (lastShadow >= limitLast) {
-                    throw new IOException("block overrun");
+                    throw new IOException("block overrun while expanding RLE in MTF, "
+                        + lastShadow + " exceeds " + limitLast);
                 }
             } else {
                 if (++lastShadow >= limitLast) {
-                    throw new IOException("block overrun");
+                    throw new IOException("block overrun, " + lastShadow + " exceeds " + limitLast);
                 }
                 checkBounds(nextSym, 256 + 1, "nextSym");
 
@@ -712,6 +717,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
                 final int idx = zvec - base_zt[zn];
                 checkBounds(idx, MAX_ALPHA_SIZE, "zvec");
                 nextSym = perm_zt[idx];
+                System.err.println("New nextSym: " + nextSym);
             }
         }
 
