@@ -661,9 +661,9 @@ public class BZip2CompressorInputStream extends CompressorInputStream
                 unzftab[ch & 0xff] += s + 1;
 
                 System.err.println("before loop s: " + s + ", lastShadow: " + lastShadow);
-                while (s-- >= 0) {
-                    ll8[++lastShadow] = ch;
-                }
+                final int from = ++lastShadow;
+                lastShadow += s;
+                Arrays.fill(ll8, from, lastShadow + 1, ch);
                 System.err.println("after loop s: " + s + ", lastShadow: " + lastShadow);
 
                 if (lastShadow >= limitLast) {
