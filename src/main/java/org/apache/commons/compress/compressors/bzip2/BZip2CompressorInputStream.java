@@ -616,6 +616,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
         int minLens_zt = minLens[zt];
 
         while (nextSym != eob) {
+            System.err.println("lastShadow in loop: " + lastShadow);
             if ((nextSym == RUNA) || (nextSym == RUNB)) {
                 int s = -1;
 
@@ -659,10 +660,11 @@ public class BZip2CompressorInputStream extends CompressorInputStream
                 final byte ch = seqToUnseq[yy0];
                 unzftab[ch & 0xff] += s + 1;
 
-                System.err.println("s: " + s);
+                System.err.println("before loop s: " + s + ", lastShadow: " + lastShadow);
                 while (s-- >= 0) {
                     ll8[++lastShadow] = ch;
                 }
+                System.err.println("after loop s: " + s + ", lastShadow: " + lastShadow);
 
                 if (lastShadow >= limitLast) {
                     throw new IOException("block overrun while expanding RLE in MTF, "
