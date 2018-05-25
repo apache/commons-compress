@@ -90,6 +90,10 @@ The <action> type attribute can be add,update,fix,remove.
         in null as password. We recommend to change the code to use a
         constructor without password argument.
       </action>
+      <action issue="COMPRESS-453" type="update" date="2018-05-24">
+        Added a workaround for a bug in AdoptOpenJDK for S/390 to
+        BZip2CompressorInputStream.
+      </action>
     </release>
     <release version="1.16.1" date="2018-02-10"
              description="Release 1.16.1">
