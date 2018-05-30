@@ -5,6 +5,57 @@ compression and archive formats.  These include: bzip2, gzip, pack200,
 lzma, xz, Snappy, traditional Unix Compress, DEFLATE, DEFLATE64, LZ4,
 Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
 
+Release 1.17
+------------
+
+New features:
+o Added a unit test that is supposed to fail if we break the
+  OSGi manifest entries again.
+  Issue: COMPRESS-443.
+o Add a new SkipShieldingInputStream class that can be used wit
+  streams that throw an IOException whne skip is invoked.
+  Issue: COMPRESS-449.
+o New constructors have been added to SevenZFile that accept
+  char[]s rather than byte[]s in order to avoid a common error
+  of using the wrong encoding when creating the byte[].  This
+  change may break source compatibility for client code that
+  uses one of the constructors expecting a password and passes
+  in null as password. We recommend to change the code to use a
+  constructor without password argument.
+  Issue: COMPRESS-452.
+
+Fixed Bugs:
+o Removed the objenesis dependency from the pom as it is not
+  needed at all.
+o Fixed resource leak in ParallelScatterZipCreator#writeTo.
+  Issue: COMPRESS-446.
+o Certain errors when parsing ZIP extra fields in corrupt
+  archives are now turned into ZipException, they used to
+  manifest as ArrayIndexOutOfBoundsException before.
+  Issue: COMPRESS-447.
+o IOUtils.copy now verifies the buffer size is bigger than 0.
+  Issue: COMPRESS-451.
+o ZipArchiveInputStream failed to read some files with stored
+  entries using a data descriptor.
+  Issue: COMPRESS-454.
+
+Changes:
+o Fixed some code examples.
+  Github Pull Request #63.
+  Thanks to Marchenko Sergey.
+o The streams returned by ZipFile and most other decompressing
+  streams now provide information about the number of compressed
+  and uncompressed bytes read so far. This may be used to detect
+  a ZipBomb if the compression ratio exceeds a certain
+  threshold, for example.
+  For SevenZFile a new method returns the statistics for the
+  current entry.
+  Issue: COMPRESS-445.
+  Thanks to Andreas Beeker.
+o Added a workaround for a bug in AdoptOpenJDK for S/390 to
+  BZip2CompressorInputStream.
+  Issue: COMPRESS-453.
+
 Release 1.16.1
 --------------
 
