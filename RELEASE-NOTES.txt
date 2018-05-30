@@ -70,53 +70,53 @@ Release 1.16
 New features:
 o Add read-only support for Zstandard compression based on the
   Zstd-jni project.
-  Issue: COMPRESS-423. Thanks to Andre F de Miranda. 
+  Issue: COMPRESS-423. Thanks to Andre F de Miranda.
 o Added auto-detection for Zstandard compressed streams.
-  Issue: COMPRESS-425. 
+  Issue: COMPRESS-425.
 o Added write-support for Zstandard compression.
-  Issue: COMPRESS-426. 
+  Issue: COMPRESS-426.
 o Added read-only DEFLATE64 support to ZIP archives and as
   stand-alone CompressorInputStream.
-  Issue: COMPRESS-380. Thanks to Christian Marquez Grabia. 
+  Issue: COMPRESS-380. Thanks to Christian Marquez Grabia.
 o Added read-only DEFLATE64 support to 7z archives.
-  Issue: COMPRESS-437. 
+  Issue: COMPRESS-437.
 
 Fixed Bugs:
 o Synchronized iteration over a synchronizedList in
   ParallelScatterZipCreator.
-  Issue: COMPRESS-430. Thanks to Bruno P. Kinoshita. 
+  Issue: COMPRESS-430. Thanks to Bruno P. Kinoshita.
 o ZipFile could get stuck in an infinite loop when parsing ZIP
   archives with certain strong encryption headers.
-  Issue: COMPRESS-432. 
+  Issue: COMPRESS-432.
 o Added improved checks to detect corrupted bzip2 streams and
   throw the expected IOException rather than obscure
   RuntimeExceptions.
-  Issue: COMPRESS-424. 
+  Issue: COMPRESS-424.
 
 Changes:
 o Replaces instanceof checks with a type marker in LZ77 support code.
-  Issue: COMPRESS-435. Thanks to BELUGA BEHR. 
+  Issue: COMPRESS-435. Thanks to BELUGA BEHR.
 o Updated XZ for Java dependency to 1.8 in order to pick up bug fix
-  to LZMA2InputStream's available method. 
+  to LZMA2InputStream's available method.
 o ZipArchiveEntry now exposes how the name or comment have been
   determined when the entry was read.
-  Issue: COMPRESS-429. Thanks to Damiano Albani. 
+  Issue: COMPRESS-429. Thanks to Damiano Albani.
 o ZipFile.getInputStream will now always buffer the stream
   internally in order to improve read performance.
-  Issue: COMPRESS-438. 
+  Issue: COMPRESS-438.
 o Speed improvement for DEFLATE64 decompression.
-  Issue: COMPRESS-440. Thanks to Dawid Weiss. 
+  Issue: COMPRESS-440. Thanks to Dawid Weiss.
 o Added a few extra sanity checks for the rarer compression
   methods used in ZIP archives.
-  Issue: COMPRESS-436. 
+  Issue: COMPRESS-436.
 o Simplified the special handling for the dummy byte required by
   zlib when using java.util.zip.Inflater.
-  Issue: COMPRESS-441. 
+  Issue: COMPRESS-441.
 o Various code cleanups.
-  Github Pull Request #61. Thanks to Shahab Kondri. 
+  Github Pull Request #61. Thanks to Shahab Kondri.
 o TarArchiveEntry's preserveLeadingSlashes constructor argument
   has been renamed and can now also be used to preserve the
-  drive letter on Windows. 
+  drive letter on Windows.
 
 Release 1.15
 ------------
@@ -323,9 +323,9 @@ o TarArchiveInputStream failed to parse PAX headers whose tar entry
 
 Changes:
 o Update requirement from Java 5 to 6.
-  Issue: COMPRESS-349. 
+  Issue: COMPRESS-349.
 o TarArchiveEntry wastefully allocates empty arrays.
-  Issue: COMPRESS-350. 
+  Issue: COMPRESS-350.
 o Javadoc for BZip2CompressorInputStream(InputStream, boolean) should
   refer to IOEx, not NPE.
   Issue: COMPRESS-353.
