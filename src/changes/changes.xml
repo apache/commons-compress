@@ -94,6 +94,10 @@ The <action> type attribute can be add,update,fix,remove.
         Added a workaround for a bug in AdoptOpenJDK for S/390 to
         BZip2CompressorInputStream.
       </action>
+      <action issue="COMPRESS-454" type="fix" date="2018-05-30">
+        ZipArchiveInputStream failed to read some files with stored
+        entries using a data descriptor.
+      </action>
     </release>
     <release version="1.16.1" date="2018-02-10"
              description="Release 1.16.1">
