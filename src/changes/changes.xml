@@ -75,8 +75,8 @@ The <action> type attribute can be add,update,fix,remove.
         OSGi manifest entries again.
       </action>
       <action issue="COMPRESS-449" type="add" date="2018-05-02">
-        Add a new SkipShieldingInputStream class that can be used wit
-        streams that throw an IOException whne skip is invoked.
+        Add a new SkipShieldingInputStream class that can be used with
+        streams that throw an IOException when skip is invoked.
       </action>
       <action issue="COMPRESS-451" type="fix" date="2018-05-04">
         IOUtils.copy now verifies the buffer size is bigger than 0.

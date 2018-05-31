@@ -12,8 +12,8 @@ New features:
 o Added a unit test that is supposed to fail if we break the
   OSGi manifest entries again.
   Issue: COMPRESS-443.
-o Add a new SkipShieldingInputStream class that can be used wit
-  streams that throw an IOException whne skip is invoked.
+o Add a new SkipShieldingInputStream class that can be used with
+  streams that throw an IOException when skip is invoked.
   Issue: COMPRESS-449.
 o New constructors have been added to SevenZFile that accept
   char[]s rather than byte[]s in order to avoid a common error
