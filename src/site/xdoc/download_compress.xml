@@ -102,7 +102,7 @@ limitations under the License.
         It is essential that you
         <a href="https://www.apache.org/info/verification.html">verify the integrity</a>
         of downloaded files, preferably using the <code>PGP</code> signature (<code>*.asc</code> files);
-        failing that using the <code>MD5</code> hash (<code>*.md5</code> checksum files).
+        failing that using the <code>SHA256</code> hash (<code>*.sha256</code> checksum files).
       </p>
       <p>
         The <a href="https://www.apache.org/dist/commons/KEYS">KEYS</a>
@@ -111,32 +111,32 @@ limitations under the License.
       </p>
     </subsection>
     </section>
-    <section name="Apache Commons Compress 1.16.1 ">
+    <section name="Apache Commons Compress 1.17 ">
       <subsection name="Binaries">
         <table>
           <tr>
-              <td><a href="[preferred]/commons/compress/binaries/commons-compress-1.16.1-bin.tar.gz">commons-compress-1.16.1-bin.tar.gz</a></td>
-              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.16.1-bin.tar.gz.md5">md5</a></td>
-              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.16.1-bin.tar.gz.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/compress/binaries/commons-compress-1.17-bin.tar.gz">commons-compress-1.17-bin.tar.gz</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.17-bin.tar.gz.sha256">sha256</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.17-bin.tar.gz.asc">pgp</a></td>
           </tr>
           <tr>
-              <td><a href="[preferred]/commons/compress/binaries/commons-compress-1.16.1-bin.zip">commons-compress-1.16.1-bin.zip</a></td>
-              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.16.1-bin.zip.md5">md5</a></td>
-              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.16.1-bin.zip.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/compress/binaries/commons-compress-1.17-bin.zip">commons-compress-1.17-bin.zip</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.17-bin.zip.sha256">sha256</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.17-bin.zip.asc">pgp</a></td>
           </tr>
         </table>
       </subsection>
       <subsection name="Source">
         <table>
           <tr>
-              <td><a href="[preferred]/commons/compress/source/commons-compress-1.16.1-src.tar.gz">commons-compress-1.16.1-src.tar.gz</a></td>
-              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.16.1-src.tar.gz.md5">md5</a></td>
-              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.16.1-src.tar.gz.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/compress/source/commons-compress-1.17-src.tar.gz">commons-compress-1.17-src.tar.gz</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.17-src.tar.gz.sha256">sha256</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.17-src.tar.gz.asc">pgp</a></td>
           </tr>
           <tr>
-              <td><a href="[preferred]/commons/compress/source/commons-compress-1.16.1-src.zip">commons-compress-1.16.1-src.zip</a></td>
-              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.16.1-src.zip.md5">md5</a></td>
-              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.16.1-src.zip.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/compress/source/commons-compress-1.17-src.zip">commons-compress-1.17-src.zip</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.17-src.zip.sha256">sha256</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.17-src.zip.asc">pgp</a></td>
           </tr>
         </table>
       </subsection>

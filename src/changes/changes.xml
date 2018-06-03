@@ -42,7 +42,10 @@ The <action> type attribute can be add,update,fix,remove.
     <title>commons-compress</title>
   </properties>
   <body>
-    <release version="1.17" date="not released, yet"
+    <release version="1.18" date="not released, yet"
+             description="Release 1.18">
+    </release>
+    <release version="1.17" date="2018-06-03"
              description="Release 1.17">
       <action type="fix" date="2018-02-06">
         Removed the objenesis dependency from the pom as it is not
