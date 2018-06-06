@@ -391,7 +391,7 @@ public class Expander {
             File f = new File(targetDirectory, nextEntry.getName());
             if (!f.getCanonicalPath().startsWith(targetDirPath)) {
                 throw new IOException("expanding " + nextEntry.getName()
-                    + " would craete file outside of " + targetDirectory);
+                    + " would create file outside of " + targetDirectory);
             }
             if (nextEntry.isDirectory()) {
                 f.mkdirs();
