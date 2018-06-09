@@ -504,9 +504,9 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       </build>
     </profile>
     <profile>
-      <id>java9</id>
+      <id>java9+</id>
       <activation>
-        <jdk>9</jdk>
+        <jdk>[9,)</jdk>
       </activation>
       <properties>
         <maven.compiler.release>9</maven.compiler.release>
