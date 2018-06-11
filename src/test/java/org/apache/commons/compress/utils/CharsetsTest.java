@@ -26,7 +26,6 @@ import org.junit.Test;
 /**
  * Sanity checks for {@link Charsets}.
  *
- * @version $Id$
  */
 public class CharsetsTest {
 
