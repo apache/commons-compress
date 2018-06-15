@@ -43,6 +43,7 @@ import org.apache.commons.compress.archivers.sevenz.SevenZOutputFile;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -127,6 +128,26 @@ public class ExpanderTest extends AbstractTestCase {
         setupZip("../foo");
         try (ZipFile f = new ZipFile(archive)) {
             new Expander().expand(f, resultDir);
+        }
+    }
+
+    @Test
+    public void fileCantEscapeDoubleDotPathWithSimilarSibling() throws IOException, ArchiveException {
+        String sibling = resultDir.getName() + "x";
+        File s = new File(resultDir.getParentFile(), sibling);
+        Assume.assumeFalse(s.exists());
+        s.mkdirs();
+        Assume.assumeTrue(s.exists());
+        s.deleteOnExit();
+        try {
+            thrown.expect(IOException.class);
+            thrown.expectMessage("expanding ../" + sibling + "/a would create file outside of");
+            setupZip("../" + sibling + "/a");
+            try (ZipFile f = new ZipFile(archive)) {
+                new Expander().expand(f, resultDir);
+            }
+        } finally {
+            tryHardToDelete(s);
         }
     }
 
