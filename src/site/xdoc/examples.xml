@@ -154,7 +154,7 @@ CompressorInputStream input = new CompressorStreamFactory()
         requires random access to the input and cannot be used for
         general streams. The ZIP implementation can benefit a lot from
         random access as well, see the <a
-        href="zip.html#ZipArchiveInputStream%20vs$20ZipFile">zip
+        href="zip.html#ZipArchiveInputStream_vs_ZipFile">zip
         page</a> for details.</p>
 
         <p>Assuming you want to extract an archive to a target
