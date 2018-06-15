@@ -105,7 +105,7 @@
           over <code>ZipArchiveInputStream</code>.</p>
 
         <p><code>ZipFile</code> requires a
-        <code>SeekableByteChannel</code> that will be obtain
+        <code>SeekableByteChannel</code> that will be obtained
         transparently when reading from a file. The class
         <code>org.apache.commons.compress.utils.SeekableInMemoryByteChannel</code>
         allows you to read from an in-memory archive.</p>
