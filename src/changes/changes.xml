@@ -51,9 +51,8 @@ The <action> type attribute can be add,update,fix,remove.
         directory is a prefix of the sibling directory's name.
       </action>
       <action issue="COMPRESS-456" type="fix" date="2018-06-19">
-        Changed the OSGi Import-Package to import everything as
-        optional package so that the encryption dependency on
-        javax.crypto gets specified correctly.
+        Changed the OSGi Import-Package to also optionally import
+        javax.crypto so encrypted archives can be read.
       </action>
     </release>
     <release version="1.17" date="2018-06-03"
