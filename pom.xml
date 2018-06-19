@@ -50,7 +50,13 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
 
     <commons.manifestlocation>${project.build.outputDirectory}/META-INF</commons.manifestlocation>
     <commons.manifestfile>${commons.manifestlocation}/MANIFEST.MF</commons.manifestfile>
-    <commons.osgi.import>*;resolution:=optional</commons.osgi.import>
+    <commons.osgi.import>
+      org.tukaani.xz;resolution:=optional,
+      org.brotli.dec;resolution:=optional,
+      com.github.luben.zstd;resolution:=optional,
+      javax.crypto.*;resolution:=optional,
+      *
+    </commons.osgi.import>
 
     <!-- only show issues of the current version -->
     <commons.changes.onlyCurrentVersion>true</commons.changes.onlyCurrentVersion>
