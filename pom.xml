@@ -50,6 +50,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
 
     <commons.manifestlocation>${project.build.outputDirectory}/META-INF</commons.manifestlocation>
     <commons.manifestfile>${commons.manifestlocation}/MANIFEST.MF</commons.manifestfile>
+    <commons.osgi.import>*;resolution:=optional</commons.osgi.import>
 
     <!-- only show issues of the current version -->
     <commons.changes.onlyCurrentVersion>true</commons.changes.onlyCurrentVersion>
@@ -341,9 +342,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
         <artifactId>maven-bundle-plugin</artifactId>
         <configuration>
           <manifestLocation>${commons.manifestlocation}</manifestLocation>
-          <instructions>
-            <Import-Package>org.tukaani.xz;resolution:=optional,org.brotli.dec;resolution:=optional,com.github.luben.zstd;resolution:=optional</Import-Package>
-          </instructions>
         </configuration>
       </plugin>
       <plugin>
