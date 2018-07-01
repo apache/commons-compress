@@ -209,7 +209,7 @@ try (ArchiveInputStream i = ... create the stream for your format, use buffering
         <code>CompressorInputStream</code> for example:</p>
 
         <source><![CDATA[
-try (InputStream fi = new Files.newInputStream(Paths.get("my.tar.gz"));
+try (InputStream fi = Files.newInputStream(Paths.get("my.tar.gz"));
      InputStream bi = new BufferedInputStream(fi);
      InputStream gzi = new GzipCompressorInputStream(bi);
      ArchiveInputStream o = new TarArchiveInputStream(gzi)) {
