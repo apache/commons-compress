@@ -184,9 +184,9 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
     public void close() throws IOException {
         if (closed.compareAndSet(false, true)) {
             try {
-            flushBlock();
+                flushBlock();
             } finally {
-            out.close();
+                out.close();
             }
         }
     }

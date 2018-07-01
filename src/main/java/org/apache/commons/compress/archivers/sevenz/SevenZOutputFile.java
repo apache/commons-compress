@@ -131,11 +131,11 @@ public class SevenZOutputFile implements Closeable {
     @Override
     public void close() throws IOException {
         try {
-        if (!finished) {
-            finish();
-        }
+            if (!finished) {
+                finish();
+            }
         } finally {
-        channel.close();
+            channel.close();
         }
     }
 

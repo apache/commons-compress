@@ -68,9 +68,9 @@ public class FileBasedScatterGatherBackingStore implements ScatterGatherBackingS
     @Override
     public void close() throws IOException {
         try {
-        closeForWriting();
+            closeForWriting();
         } finally {
-        target.delete();
+            target.delete();
         }
     }
 }

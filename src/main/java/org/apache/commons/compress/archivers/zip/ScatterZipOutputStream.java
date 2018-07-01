@@ -125,9 +125,9 @@ public class ScatterZipOutputStream implements Closeable {
     @Override
     public void close() throws IOException {
         try {
-        backingStore.close();
+            backingStore.close();
         } finally {
-        streamCompressor.close();
+            streamCompressor.close();
         }
     }
 

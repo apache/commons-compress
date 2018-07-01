@@ -959,11 +959,11 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     @Override
     public void close() throws IOException {
         try {
-        if (!finished) {
-            finish();
-        }
+            if (!finished) {
+                finish();
+            }
         } finally {
-        destroy();
+            destroy();
         }
     }
 
@@ -1601,13 +1601,13 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     void destroy() throws IOException {
         try {
-        if (channel != null) {
-            channel.close();
-        }
+            if (channel != null) {
+                channel.close();
+            }
         } finally {
-        if (out != null) {
-            out.close();
-        }
+            if (out != null) {
+                out.close();
+            }
         }
     }
 

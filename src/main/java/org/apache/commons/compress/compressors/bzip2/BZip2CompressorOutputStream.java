@@ -502,9 +502,9 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         if (!closed) {
             final OutputStream outShadow = this.out;
             try {
-            finish();
+                finish();
             } finally {
-            outShadow.close();
+                outShadow.close();
             }
         }
     }

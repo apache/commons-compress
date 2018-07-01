@@ -131,9 +131,9 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream {
     @Override
     public void close() throws IOException {
         try {
-        finish();
+            finish();
         } finally {
-        os.close();
+            os.close();
         }
     }
 

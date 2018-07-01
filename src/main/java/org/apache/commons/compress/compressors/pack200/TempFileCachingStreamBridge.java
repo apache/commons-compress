@@ -46,9 +46,9 @@ class TempFileCachingStreamBridge extends StreamBridge {
             @Override
             public void close() throws IOException {
                 try {
-                super.close();
+                    super.close();
                 } finally {
-                f.delete();
+                    f.delete();
                 }
             }
         };

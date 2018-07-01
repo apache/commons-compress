@@ -205,11 +205,11 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
     public void close() throws IOException {
         if (!closed) {
             try {
-            finish();
+                finish();
             } finally {
-            deflater.end();
-            out.close();
-            closed = true;
+                deflater.end();
+                out.close();
+                closed = true;
             }
         }
     }
