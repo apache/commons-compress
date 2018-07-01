@@ -253,10 +253,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
         final ZipLong sig = new ZipLong(lfhBuf);
         if (!sig.equals(ZipLong.LFH_SIG)) {
             if (sig.equals(ZipLong.CFH_SIG) || sig.equals(ZipLong.AED_SIG) || isApkSigningBlock(lfhBuf)) {
-            hitCentralDirectory = true;
-            skipRemainderOfArchive();
-            return null;
-        }
+                hitCentralDirectory = true;
+                skipRemainderOfArchive();
+                return null;
+            }
             throw new ZipException(String.format("Unexpected record signature: 0X%X", sig.getValue()));
         }
 
