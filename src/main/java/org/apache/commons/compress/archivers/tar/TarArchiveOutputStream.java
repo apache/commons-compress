@@ -302,13 +302,15 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      */
     @Override
     public void close() throws IOException {
+        try {
         if (!finished) {
             finish();
         }
-
+        } finally {
         if (!closed) {
             out.close();
             closed = true;
+        }
         }
     }
 

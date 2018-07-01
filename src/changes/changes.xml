@@ -54,6 +54,11 @@ The <action> type attribute can be add,update,fix,remove.
         Changed the OSGi Import-Package to also optionally import
         javax.crypto so encrypted archives can be read.
       </action>
+      <action issue="COMPRESS-457" type="fix" date="2018-07-01">
+        Changed various implementations of the close method to better
+        ensure all held resources get closed even if exceptions are
+        thrown during the closing the stream.
+      </action>
     </release>
     <release version="1.17" date="2018-06-03"
              description="Release 1.17">

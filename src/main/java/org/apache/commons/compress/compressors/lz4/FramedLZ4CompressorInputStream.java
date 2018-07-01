@@ -126,11 +126,14 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
     /** {@inheritDoc} */
     @Override
     public void close() throws IOException {
+        try {
         if (currentBlock != null) {
             currentBlock.close();
             currentBlock = null;
         }
+        } finally {
         in.close();
+        }
     }
 
     /** {@inheritDoc} */

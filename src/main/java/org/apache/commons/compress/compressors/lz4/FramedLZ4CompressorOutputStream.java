@@ -226,8 +226,11 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
 
     @Override
     public void close() throws IOException {
+        try {
         finish();
+        } finally {
         out.close();
+        }
     }
 
     /**

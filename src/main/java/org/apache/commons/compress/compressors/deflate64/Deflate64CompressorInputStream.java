@@ -95,10 +95,13 @@ public class Deflate64CompressorInputStream extends CompressorInputStream implem
 
     @Override
     public void close() throws IOException {
+        try {
         closeDecoder();
+        } finally {
         if (originalStream != null) {
             originalStream.close();
             originalStream = null;
+        }
         }
     }
 

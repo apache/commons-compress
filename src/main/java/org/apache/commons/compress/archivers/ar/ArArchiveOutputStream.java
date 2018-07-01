@@ -206,11 +206,14 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
      */
     @Override
     public void close() throws IOException {
+        try {
         if(!finished) {
             finish();
         }
+        } finally {
         out.close();
         prevEntry = null;
+        }
     }
 
     @Override

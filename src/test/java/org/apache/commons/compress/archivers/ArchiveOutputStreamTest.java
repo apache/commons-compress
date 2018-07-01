@@ -176,12 +176,17 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
             fail("Should have raised IOException - close() called before closeArchiveEntry()");
         } catch (final IOException expected) {
         }
+
+        aos1 = createArchiveWithDummyEntry(archiveType, out1, dummy);
         aos1.closeArchiveEntry();
         try {
             aos1.closeArchiveEntry();
             fail("Should have raised IOException - closeArchiveEntry() called with no open entry");
         } catch (final IOException expected) {
         }
+
+        aos1 = createArchiveWithDummyEntry(archiveType, out1, dummy);
+        aos1.closeArchiveEntry();
         aos1.finish();
         aos1.close();
         try {
@@ -189,5 +194,15 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
             fail("Should have raised IOException - finish() called after close()");
         } catch (final IOException expected) {
         }
+    }
+
+    private ArchiveOutputStream createArchiveWithDummyEntry(String archiveType, OutputStream out1, File dummy)
+        throws Exception {
+        ArchiveOutputStream aos1 = factory.createArchiveOutputStream(archiveType, out1);
+        aos1.putArchiveEntry(aos1.createArchiveEntry(dummy, "dummy"));
+        try (InputStream is = new FileInputStream(dummy)) {
+            IOUtils.copy(is, aos1);
+        }
+        return aos1;
     }
 }
