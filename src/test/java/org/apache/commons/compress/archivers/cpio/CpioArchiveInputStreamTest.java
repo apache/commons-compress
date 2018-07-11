@@ -65,4 +65,20 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
 
         assertEquals(count, 1);
     }
+
+    @Test
+    public void testCpioUnarchiveMultibyteCharName() throws Exception {
+        final CpioArchiveInputStream in =
+            new CpioArchiveInputStream(new FileInputStream(getFile("COMPRESS-459.cpio")), "UTF-8");
+        CpioArchiveEntry entry= null;
+
+        int count = 0;
+        while ((entry = (CpioArchiveEntry) in.getNextEntry()) != null) {
+            count++;
+            assertNotNull(entry);
+        }
+        in.close();
+
+        assertEquals(2, count);
+    }
 }

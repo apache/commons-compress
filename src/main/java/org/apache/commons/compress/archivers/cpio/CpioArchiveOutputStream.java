@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -302,7 +303,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         writeAsciiLong(entry.getName().length() + 1L, 8, 16);
         writeAsciiLong(entry.getChksum(), 8, 16);
         writeCString(entry.getName());
-        pad(entry.getHeaderPadCount());
+        pad(entry.getHeaderPadCount(Charset.forName(encoding)));
     }
 
     private void writeOldAsciiEntry(final CpioArchiveEntry entry)
@@ -363,7 +364,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         writeBinaryLong(entry.getName().length() + 1L, 2, swapHalfWord);
         writeBinaryLong(entry.getSize(), 4, swapHalfWord);
         writeCString(entry.getName());
-        pad(entry.getHeaderPadCount());
+        pad(entry.getHeaderPadCount(Charset.forName(encoding)));
     }
 
     /*(non-Javadoc)
