@@ -64,6 +64,11 @@ The <action> type attribute can be add,update,fix,remove.
         used in signed Android APK files and treats it as an "end of
         archive" marker.
       </action>
+      <action issue="COMPRESS-459" type="fix" date="2018-07-11"
+              due-to="Jens Reimann">
+        The cpio stream didn't handle archives using a multi-byte
+        encoding properly.
+      </action>
     </release>
     <release version="1.17" date="2018-06-03"
              description="Release 1.17">
