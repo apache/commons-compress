@@ -481,15 +481,15 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * Get the number of bytes needed to pad the header to the alignment boundary.
      *
      * @param charset
-     *             The character set used to encode the entry name in the stream. 
+     *             The character set used to encode the entry name in the stream.
      * @return the number of bytes needed to pad the header (0,1,2,3)
      * @since 1.18
      */
-    public int getHeaderPadCount(Charset charset){
-        if (name==null) {
+    public int getHeaderPadCount(Charset charset) {
+        if (name == null) {
             return 0;
         }
-        if (charset==null) {
+        if (charset == null) {
             return getHeaderPadCount(name.length());
         }
         return getHeaderPadCount(name.getBytes(charset).length);
@@ -502,17 +502,17 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      *            The length of the name in bytes, as read in the stream.
      *            Without the trailing zero byte.
      * @return the number of bytes needed to pad the header (0,1,2,3)
-     * 
+     *
      * @since 1.18
      */
-    public int getHeaderPadCount(long namesize){
+    public int getHeaderPadCount(long namesize) {
         if (this.alignmentBoundary == 0) { return 0; }
         int size = this.headerSize + 1;  // Name has terminating null
         if (name != null) {
             size += namesize;
         }
         final int remain = size % this.alignmentBoundary;
-        if (remain > 0){
+        if (remain > 0) {
             return this.alignmentBoundary - remain;
         }
         return 0;
