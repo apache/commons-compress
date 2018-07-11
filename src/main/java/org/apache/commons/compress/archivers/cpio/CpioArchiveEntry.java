@@ -18,11 +18,13 @@
  */
 package org.apache.commons.compress.archivers.cpio;
 
+import java.nio.ByteBuffer;
 import java.io.File;
-import java.nio.charset.Charset;
+import java.io.IOException;
 import java.util.Date;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipEncoding;
 
 /**
  * A cpio archive consists of a sequence of files. There are several types of
@@ -468,7 +470,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * Get the number of bytes needed to pad the header to the alignment boundary.
      *
      * @deprecated This method doesn't properly work for multi-byte encodings. And
-     *             creates corrupt archives. Use {@link #getHeaderPadCount(Charset)}
+     *             creates corrupt archives. Use {@link #getHeaderPadCount(ZipEncoding)}
      *             or {@link #getHeaderPadCount(long)} in any case.
      * @return the number of bytes needed to pad the header (0,1,2,3)
      */
@@ -480,19 +482,25 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Get the number of bytes needed to pad the header to the alignment boundary.
      *
-     * @param charset
-     *             The character set used to encode the entry name in the stream.
+     * @param encoding
+     *             The encoding used to encode the entry name in the stream.
      * @return the number of bytes needed to pad the header (0,1,2,3)
      * @since 1.18
      */
-    public int getHeaderPadCount(Charset charset) {
+    public int getHeaderPadCount(ZipEncoding encoding) {
         if (name == null) {
             return 0;
         }
-        if (charset == null) {
+        if (encoding == null) {
             return getHeaderPadCount(name.length());
         }
-        return getHeaderPadCount(name.getBytes(charset).length);
+        try {
+            final ByteBuffer buf = encoding.encode(name);
+            return getHeaderPadCount(buf.limit() - buf.position());
+        } catch (IOException ex) {
+            // won't happen as the output stream has already encoded the name without error
+            throw new RuntimeException("cannot encode " + name, ex);
+        }
     }
 
     /**
