@@ -19,6 +19,7 @@
 package org.apache.commons.compress.archivers.cpio;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.Date;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -466,11 +467,32 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Get the number of bytes needed to pad the header to the alignment boundary.
      *
+     * @deprecated This method doesn't properly work for multi-byte encodings. And
+     *             creates corrupt archives. Use {@link #getHeaderPadCount(Charset)}
+     *             or {@link #getHeaderPadCount(long)} in any case.
      * @return the number of bytes needed to pad the header (0,1,2,3)
      */
+    @Deprecated
     public int getHeaderPadCount(){
-        long namesize = name != null ? name.length() : 0;
-        return getHeaderPadCount(namesize);
+        return getHeaderPadCount(null);
+    }
+
+    /**
+     * Get the number of bytes needed to pad the header to the alignment boundary.
+     *
+     * @param charset
+     *             The character set used to encode the entry name in the stream. 
+     * @return the number of bytes needed to pad the header (0,1,2,3)
+     * @since 1.18
+     */
+    public int getHeaderPadCount(Charset charset){
+        if (name==null) {
+            return 0;
+        }
+        if (charset==null) {
+            return getHeaderPadCount(name.length());
+        }
+        return getHeaderPadCount(name.getBytes(charset).length);
     }
 
     /**
