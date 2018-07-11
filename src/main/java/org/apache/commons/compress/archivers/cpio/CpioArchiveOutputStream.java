@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -300,9 +301,10 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         writeAsciiLong(devMin, 8, 16);
         writeAsciiLong(entry.getRemoteDeviceMaj(), 8, 16);
         writeAsciiLong(entry.getRemoteDeviceMin(), 8, 16);
-        writeAsciiLong(entry.getName().length() + 1L, 8, 16);
+        byte[] name = encode(entry.getName());
+        writeAsciiLong(name.length + 1L, 8, 16);
         writeAsciiLong(entry.getChksum(), 8, 16);
-        writeCString(entry.getName());
+        writeCString(name);
         pad(entry.getHeaderPadCount(Charset.forName(encoding)));
     }
 
@@ -331,9 +333,10 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         writeAsciiLong(entry.getNumberOfLinks(), 6, 8);
         writeAsciiLong(entry.getRemoteDevice(), 6, 8);
         writeAsciiLong(entry.getTime(), 11, 8);
-        writeAsciiLong(entry.getName().length() + 1L, 6, 8);
+        byte[] name = encode(entry.getName());
+        writeAsciiLong(name.length + 1L, 6, 8);
         writeAsciiLong(entry.getSize(), 11, 8);
-        writeCString(entry.getName());
+        writeCString(name);
     }
 
     private void writeOldBinaryEntry(final CpioArchiveEntry entry,
@@ -361,9 +364,10 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         writeBinaryLong(entry.getNumberOfLinks(), 2, swapHalfWord);
         writeBinaryLong(entry.getRemoteDevice(), 2, swapHalfWord);
         writeBinaryLong(entry.getTime(), 4, swapHalfWord);
-        writeBinaryLong(entry.getName().length() + 1L, 2, swapHalfWord);
+        byte[] name = encode(entry.getName());
+        writeBinaryLong(name.length + 1L, 2, swapHalfWord);
         writeBinaryLong(entry.getSize(), 4, swapHalfWord);
-        writeCString(entry.getName());
+        writeCString(name);
         pad(entry.getHeaderPadCount(Charset.forName(encoding)));
     }
 
@@ -537,16 +541,27 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     }
 
     /**
-     * Writes an ASCII string to the stream followed by \0
+     * Encodes the given string using the configured encoding.
+     *
+     * @param str the String to write
+     * @throws IOException if the string couldn't be written
+     * @return result of encoding the string
+     */
+    private byte[] encode(final String str) throws IOException {
+        final ByteBuffer buf = zipEncoding.encode(str);
+        final int len = buf.limit() - buf.position();
+        return Arrays.copyOfRange(buf.array(), buf.arrayOffset(), buf.arrayOffset() + len);
+    }
+
+    /**
+     * Writes an encoded string to the stream followed by \0
      * @param str the String to write
      * @throws IOException if the string couldn't be written
      */
-    private void writeCString(final String str) throws IOException {
-        final ByteBuffer buf = zipEncoding.encode(str);
-        final int len = buf.limit() - buf.position();
-        out.write(buf.array(), buf.arrayOffset(), len);
+    private void writeCString(byte[] str) throws IOException {
+        out.write(str);
         out.write('\0');
-        count(len + 1);
+        count(str.length + 1);
     }
 
     /**
