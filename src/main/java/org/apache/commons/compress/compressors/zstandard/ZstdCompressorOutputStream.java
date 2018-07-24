@@ -34,8 +34,20 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream {
 
     private final ZstdOutputStream encOS;
 
-    public ZstdCompressorOutputStream(final OutputStream out) throws IOException {
-        this.encOS = new ZstdOutputStream(out);
+    public ZstdCompressorOutputStream(final OutputStream outStream, int level, boolean closeFrameOnFlush, boolean useChecksum) throws IOException {
+        this.encOS = new ZstdOutputStream(outStream, level, closeFrameOnFlush, useChecksum);
+    }
+
+    public ZstdCompressorOutputStream(final OutputStream outStream, int level, boolean closeFrameOnFlush) throws IOException {
+        this.encOS = new ZstdOutputStream(outStream, level, closeFrameOnFlush);
+    }
+
+    public ZstdCompressorOutputStream(final OutputStream outStream, int level) throws IOException {
+        this.encOS = new ZstdOutputStream(outStream, level);
+    }
+
+    public ZstdCompressorOutputStream(final OutputStream outStream) throws IOException {
+        this.encOS = new ZstdOutputStream(outStream);
     }
 
     @Override
