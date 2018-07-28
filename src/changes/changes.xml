@@ -69,6 +69,11 @@ The <action> type attribute can be add,update,fix,remove.
         The cpio stream didn't handle archives using a multi-byte
         encoding properly.
       </action>
+      <action issue="COMPRESS-460" type="add" date="2018-07-28"
+              due-to="Carmi Grushko">
+        It is now possible to specify the arguments of zstd-jni's
+        ZstdOutputStream constructors via Commons Compress as well.
+      </action>
     </release>
     <release version="1.17" date="2018-06-03"
              description="Release 1.17">

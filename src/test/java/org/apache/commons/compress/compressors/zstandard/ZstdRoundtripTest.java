@@ -31,14 +31,27 @@ import org.junit.Test;
 
 public class ZstdRoundtripTest extends AbstractTestCase {
 
+    private interface OutputStreamCreator {
+        ZstdCompressorOutputStream wrap(FileOutputStream os) throws IOException;
+    }
+
     @Test
     public void directRoundtrip() throws Exception {
+        roundtrip(new OutputStreamCreator() {
+            @Override
+            public ZstdCompressorOutputStream wrap(FileOutputStream os) throws IOException {
+                return new ZstdCompressorOutputStream(os);
+            }
+        });
+    }
+
+    private void roundtrip(OutputStreamCreator oc) throws IOException {
         File input = getFile("bla.tar");
         long start = System.currentTimeMillis();
         final File output = new File(dir, input.getName() + ".zstd");
         try (FileInputStream is = new FileInputStream(input);
              FileOutputStream os = new FileOutputStream(output);
-             ZstdCompressorOutputStream zos = new ZstdCompressorOutputStream(os)) {
+             ZstdCompressorOutputStream zos = oc.wrap(os)) {
             IOUtils.copy(is, zos);
         }
         System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
@@ -71,6 +84,36 @@ public class ZstdRoundtripTest extends AbstractTestCase {
             byte[] actual = IOUtils.toByteArray(zis);
             Assert.assertArrayEquals(expected, actual);
         }
+    }
+
+    @Test
+    public void roundtripWithCustomLevel() throws Exception {
+        roundtrip(new OutputStreamCreator() {
+            @Override
+            public ZstdCompressorOutputStream wrap(FileOutputStream os) throws IOException {
+                return new ZstdCompressorOutputStream(os, 1);
+            }
+        });
+    }
+
+    @Test
+    public void roundtripWithCloseFrameOnFlush() throws Exception {
+        roundtrip(new OutputStreamCreator() {
+            @Override
+            public ZstdCompressorOutputStream wrap(FileOutputStream os) throws IOException {
+                return new ZstdCompressorOutputStream(os, 3, true);
+            }
+        });
+    }
+
+    @Test
+    public void roundtripWithChecksum() throws Exception {
+        roundtrip(new OutputStreamCreator() {
+            @Override
+            public ZstdCompressorOutputStream wrap(FileOutputStream os) throws IOException {
+                return new ZstdCompressorOutputStream(os, 3, false, true);
+            }
+        });
     }
 
 }
