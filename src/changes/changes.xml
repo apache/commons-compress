@@ -74,6 +74,11 @@ The <action> type attribute can be add,update,fix,remove.
         It is now possible to specify the arguments of zstd-jni's
         ZstdOutputStream constructors via Commons Compress as well.
       </action>
+      <action issue="COMPRESS-463" type="fix" date="2018-08-09">
+        ZipArchiveInputStream#read would silently return -1 on a
+        corrupted stored entry and even return > 0 after hitting the
+        end of the archive.
+      </action>
     </release>
     <release version="1.17" date="2018-06-03"
              description="Release 1.17">

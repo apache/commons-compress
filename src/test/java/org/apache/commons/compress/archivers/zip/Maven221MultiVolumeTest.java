@@ -96,6 +96,13 @@ public class Maven221MultiVolumeTest {
                 assertEquals("Truncated ZIP file", e.getMessage());
             }
 
+            try {
+                zi.read(buffer);
+                fail("shouldn't be able to read from truncated entry after exception");
+            } catch (final IOException e) {
+                assertEquals("Truncated ZIP file", e.getMessage());
+            }
+
             // and now we get another entry, which should also yield
             // an exception
             try {

@@ -421,6 +421,75 @@ public class ZipArchiveInputStreamTest {
         }
     }
 
+    @Test
+    public void singleByteReadThrowsAtEofForCorruptedStoredEntry() throws Exception {
+        byte[] content;
+        try (FileInputStream fs = new FileInputStream(getFile("COMPRESS-264.zip"))) {
+            content = IOUtils.toByteArray(fs);
+        }
+        // make size much bigger than entry's real size
+        for (int i = 17; i < 26; i++) {
+            content[i] = (byte) 0xff;
+        }
+        try (ByteArrayInputStream in = new ByteArrayInputStream(content);
+             ZipArchiveInputStream archive = new ZipArchiveInputStream(in)) {
+            ArchiveEntry e = archive.getNextEntry();
+            try {
+                IOUtils.toByteArray(archive);
+                fail("expected exception");
+            } catch (IOException ex) {
+                assertEquals("Truncated ZIP file", ex.getMessage());
+            }
+            try {
+                archive.read();
+                fail("expected exception");
+            } catch (IOException ex) {
+                assertEquals("Truncated ZIP file", ex.getMessage());
+            }
+            try {
+                archive.read();
+                fail("expected exception");
+            } catch (IOException ex) {
+                assertEquals("Truncated ZIP file", ex.getMessage());
+            }
+        }
+    }
+
+    @Test
+    public void multiByteReadThrowsAtEofForCorruptedStoredEntry() throws Exception {
+        byte[] content;
+        try (FileInputStream fs = new FileInputStream(getFile("COMPRESS-264.zip"))) {
+            content = IOUtils.toByteArray(fs);
+        }
+        // make size much bigger than entry's real size
+        for (int i = 17; i < 26; i++) {
+            content[i] = (byte) 0xff;
+        }
+        byte[] buf = new byte[2];
+        try (ByteArrayInputStream in = new ByteArrayInputStream(content);
+             ZipArchiveInputStream archive = new ZipArchiveInputStream(in)) {
+            ArchiveEntry e = archive.getNextEntry();
+            try {
+                IOUtils.toByteArray(archive);
+                fail("expected exception");
+            } catch (IOException ex) {
+                assertEquals("Truncated ZIP file", ex.getMessage());
+            }
+            try {
+                archive.read(buf);
+                fail("expected exception");
+            } catch (IOException ex) {
+                assertEquals("Truncated ZIP file", ex.getMessage());
+            }
+            try {
+                archive.read(buf);
+                fail("expected exception");
+            } catch (IOException ex) {
+                assertEquals("Truncated ZIP file", ex.getMessage());
+            }
+        }
+    }
+
     private static byte[] readEntry(ZipArchiveInputStream zip, ZipArchiveEntry zae) throws IOException {
         final int len = (int)zae.getSize();
         final byte[] buff = new byte[len];
