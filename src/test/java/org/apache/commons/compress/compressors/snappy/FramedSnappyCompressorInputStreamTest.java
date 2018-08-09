@@ -189,6 +189,33 @@ public final class FramedSnappyCompressorInputStreamTest
         }
     }
 
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = getFile("bla.tar.sz");
+        try (InputStream is = new FileInputStream(input)) {
+            final FramedSnappyCompressorInputStream in =
+                    new FramedSnappyCompressorInputStream(is);
+            IOUtils.toByteArray(in);
+            assertEquals(-1, in.read());
+            assertEquals(-1, in.read());
+            in.close();
+        }
+    }
+
+    @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = getFile("bla.tar.sz");
+        byte[] buf = new byte[2];
+        try (InputStream is = new FileInputStream(input)) {
+            final FramedSnappyCompressorInputStream in =
+                    new FramedSnappyCompressorInputStream(is);
+            IOUtils.toByteArray(in);
+            assertEquals(-1, in.read(buf));
+            assertEquals(-1, in.read(buf));
+            in.close();
+        }
+    }
+
     private void testChecksumUnmasking(final long x) {
         assertEquals(Long.toHexString(x),
                      Long.toHexString(FramedSnappyCompressorInputStream

@@ -18,6 +18,7 @@
 package org.apache.commons.compress.compressors.deflate64;
 
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
+import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -149,6 +150,29 @@ public class Deflate64CompressorInputStreamTest {
         try (Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(new ByteArrayInputStream(data));
              BufferedReader br = new BufferedReader(new InputStreamReader(input))) {
             assertEquals("Hello World", br.readLine());
+        }
+    }
+
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+        try (final Deflate64CompressorInputStream in =
+                    new Deflate64CompressorInputStream(nullDecoder)) {
+            IOUtils.toByteArray(in);
+            assertEquals(-1, in.read());
+            assertEquals(-1, in.read());
+            in.close();
+        }
+    }
+
+    @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+        byte[] buf = new byte[2];
+        try (final Deflate64CompressorInputStream in =
+                    new Deflate64CompressorInputStream(nullDecoder)) {
+            IOUtils.toByteArray(in);
+            assertEquals(-1, in.read(buf));
+            assertEquals(-1, in.read(buf));
+            in.close();
         }
     }
 

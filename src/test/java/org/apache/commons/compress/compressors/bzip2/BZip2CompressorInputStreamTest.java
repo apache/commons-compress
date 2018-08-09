@@ -22,8 +22,11 @@ import static org.apache.commons.compress.AbstractTestCase.getFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -65,6 +68,33 @@ public class BZip2CompressorInputStreamTest {
         Assert.assertEquals(0, bzipIn.read(buffer, 1024, 0));
         Assert.assertEquals(1024, bzipIn.read(buffer, 0, 1024));
         bzipIn.close();
+    }
+
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = getFile("bla.txt.bz2");
+        try (InputStream is = new FileInputStream(input)) {
+            final BZip2CompressorInputStream in =
+                    new BZip2CompressorInputStream(is);
+            IOUtils.toByteArray(in);
+            Assert.assertEquals(-1, in.read());
+            Assert.assertEquals(-1, in.read());
+            in.close();
+        }
+    }
+
+    @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = getFile("bla.txt.bz2");
+        byte[] buf = new byte[2];
+        try (InputStream is = new FileInputStream(input)) {
+            final BZip2CompressorInputStream in =
+                    new BZip2CompressorInputStream(is);
+            IOUtils.toByteArray(in);
+            Assert.assertEquals(-1, in.read(buf));
+            Assert.assertEquals(-1, in.read(buf));
+            in.close();
+        }
     }
 
 }

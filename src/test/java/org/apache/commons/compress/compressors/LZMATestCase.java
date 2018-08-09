@@ -77,6 +77,33 @@ public final class LZMATestCase extends AbstractTestCase {
         }
     }
 
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = getFile("bla.tar.lzma");
+        try (InputStream is = new FileInputStream(input)) {
+            final LZMACompressorInputStream in =
+                    new LZMACompressorInputStream(is);
+            IOUtils.toByteArray(in);
+            Assert.assertEquals(-1, in.read());
+            Assert.assertEquals(-1, in.read());
+            in.close();
+        }
+    }
+
+    @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = getFile("bla.tar.lzma");
+        byte[] buf = new byte[2];
+        try (InputStream is = new FileInputStream(input)) {
+            final LZMACompressorInputStream in =
+                    new LZMACompressorInputStream(is);
+            IOUtils.toByteArray(in);
+            Assert.assertEquals(-1, in.read(buf));
+            Assert.assertEquals(-1, in.read(buf));
+            in.close();
+        }
+    }
+
     private void copy(final InputStream in, final File output) throws IOException {
         FileOutputStream out = null;
         try {

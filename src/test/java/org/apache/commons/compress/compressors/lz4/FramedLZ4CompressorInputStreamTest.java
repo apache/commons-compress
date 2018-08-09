@@ -592,6 +592,33 @@ public final class FramedLZ4CompressorInputStreamTest
         }
     }
 
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = getFile("bla.tar.lz4");
+        try (InputStream is = new FileInputStream(input)) {
+            final FramedLZ4CompressorInputStream in =
+                    new FramedLZ4CompressorInputStream(is);
+            IOUtils.toByteArray(in);
+            assertEquals(-1, in.read());
+            assertEquals(-1, in.read());
+            in.close();
+        }
+    }
+
+    @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = getFile("bla.tar.lz4");
+        byte[] buf = new byte[2];
+        try (InputStream is = new FileInputStream(input)) {
+            final FramedLZ4CompressorInputStream in =
+                    new FramedLZ4CompressorInputStream(is);
+            IOUtils.toByteArray(in);
+            assertEquals(-1, in.read(buf));
+            assertEquals(-1, in.read(buf));
+            in.close();
+        }
+    }
+
     interface StreamWrapper {
         InputStream wrap(InputStream in) throws Exception;
     }

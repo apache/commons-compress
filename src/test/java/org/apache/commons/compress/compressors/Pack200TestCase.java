@@ -198,4 +198,46 @@ public final class Pack200TestCase extends AbstractTestCase {
             os.close();
         }
     }
+
+    @Test
+    public void singleByteReadFromMemoryConsistentlyReturnsMinusOneAtEof() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.IN_MEMORY);
+    }
+
+    @Test
+    public void singleByteReadFromTempFileConsistentlyReturnsMinusOneAtEof() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.TEMP_FILE);
+    }
+
+    private void singleByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy s) throws Exception {
+        final File input = getFile("bla.pack");
+        try (final Pack200CompressorInputStream in = new Pack200CompressorInputStream(input, s)) {
+            IOUtils.toByteArray(in);
+            assertEquals(-1, in.read());
+            assertEquals(-1, in.read());
+            in.close();
+        }
+    }
+
+    @Test
+    public void multiByteReadFromMemoryConsistentlyReturnsMinusOneAtEof() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.IN_MEMORY);
+    }
+
+    @Test
+    public void multiByteReadFromTempFileConsistentlyReturnsMinusOneAtEof() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.TEMP_FILE);
+    }
+
+    private void multiByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy s) throws Exception {
+        final File input = getFile("bla.pack");
+        byte[] buf = new byte[2];
+        try (final Pack200CompressorInputStream in = new Pack200CompressorInputStream(input, s)) {
+            IOUtils.toByteArray(in);
+            assertEquals(-1, in.read(buf));
+            assertEquals(-1, in.read(buf));
+            in.close();
+        }
+    }
+
 }

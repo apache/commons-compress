@@ -18,12 +18,18 @@
  */
 package org.apache.commons.compress.compressors.z;
 
+import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.SequenceInputStream;
 import java.util.Enumeration;
+import org.apache.commons.compress.utils.IOUtils;
 
+import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.mockito.Mockito.mock;
 import static org.powermock.api.mockito.PowerMockito.doReturn;
 
@@ -58,5 +64,31 @@ public class ZCompressorInputStreamTest {
 
     }
 
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = getFile("bla.tar.Z");
+        try (InputStream is = new FileInputStream(input)) {
+            final ZCompressorInputStream in =
+                    new ZCompressorInputStream(is);
+            IOUtils.toByteArray(in);
+            Assert.assertEquals(-1, in.read());
+            Assert.assertEquals(-1, in.read());
+            in.close();
+        }
+    }
+
+    @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = getFile("bla.tar.Z");
+        byte[] buf = new byte[2];
+        try (InputStream is = new FileInputStream(input)) {
+            final ZCompressorInputStream in =
+                    new ZCompressorInputStream(is);
+            IOUtils.toByteArray(in);
+            Assert.assertEquals(-1, in.read(buf));
+            Assert.assertEquals(-1, in.read(buf));
+            in.close();
+        }
+    }
 
 }

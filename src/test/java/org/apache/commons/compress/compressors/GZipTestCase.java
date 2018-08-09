@@ -279,4 +279,31 @@ public final class GZipTestCase extends AbstractTestCase {
         assertEquals("test3.xml", readParams.getFilename());
         assertEquals("Umlaute möglich?", readParams.getComment());
     }
+
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = getFile("bla.tgz");
+        try (InputStream is = new FileInputStream(input)) {
+            final GzipCompressorInputStream in =
+                    new GzipCompressorInputStream(is);
+            IOUtils.toByteArray(in);
+            Assert.assertEquals(-1, in.read());
+            Assert.assertEquals(-1, in.read());
+            in.close();
+        }
+    }
+
+    @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = getFile("bla.tgz");
+        byte[] buf = new byte[2];
+        try (InputStream is = new FileInputStream(input)) {
+            final GzipCompressorInputStream in =
+                    new GzipCompressorInputStream(is);
+            IOUtils.toByteArray(in);
+            Assert.assertEquals(-1, in.read(buf));
+            Assert.assertEquals(-1, in.read(buf));
+            in.close();
+        }
+    }
 }
