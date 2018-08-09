@@ -616,6 +616,89 @@ public class ZipFileTest {
         }
     }
 
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("bla.zip"));
+    }
+
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingStore() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("COMPRESS-264.zip"));
+    }
+
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingUnshrink() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("SHRUNK.ZIP"));
+    }
+
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingExplode() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("imploding-8Kdict-3trees.zip"));
+    }
+
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate64() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("COMPRESS-380/COMPRESS-380.zip"));
+    }
+
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingBzip2() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("bzip2-zip.zip"));
+    }
+
+    private void singleByteReadConsistentlyReturnsMinusOneAtEof(File file) throws Exception {
+        try (ZipFile archive = new ZipFile(file)) {
+            ZipArchiveEntry e = archive.getEntries().nextElement();
+            try (InputStream is = archive.getInputStream(e)) {
+                IOUtils.toByteArray(is);
+                assertEquals(-1, is.read());
+                assertEquals(-1, is.read());
+            }
+        }
+    }
+
+    @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("bla.zip"));
+    }
+
+    @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingStore() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("COMPRESS-264.zip"));
+    }
+
+    @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingUnshrink() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("SHRUNK.ZIP"));
+    }
+
+    @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingExplode() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("imploding-8Kdict-3trees.zip"));
+    }
+
+    @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate64() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("COMPRESS-380/COMPRESS-380.zip"));
+    }
+
+    @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingBzip2() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("bzip2-zip.zip"));
+    }
+
+    private void multiByteReadConsistentlyReturnsMinusOneAtEof(File file) throws Exception {
+        byte[] buf = new byte[2];
+        try (ZipFile archive = new ZipFile(file)) {
+            ZipArchiveEntry e = archive.getEntries().nextElement();
+            try (InputStream is = archive.getInputStream(e)) {
+                IOUtils.toByteArray(is);
+                assertEquals(-1, is.read(buf));
+                assertEquals(-1, is.read(buf));
+            }
+        }
+    }
+
     private void assertAllReadMethods(byte[] expected, ZipFile zipFile, ZipArchiveEntry entry) {
         // simple IOUtil read
         try (InputStream stream = zf.getInputStream(entry)) {

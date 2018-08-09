@@ -23,6 +23,8 @@ import static org.junit.Assert.*;
 import java.io.FileInputStream;
 
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Test;
 
 public class CpioArchiveInputStreamTest extends AbstractTestCase {
@@ -81,4 +83,28 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
 
         assertEquals(2, count);
     }
+
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+        try (FileInputStream in = new FileInputStream(getFile("bla.cpio"));
+             CpioArchiveInputStream archive = new CpioArchiveInputStream(in)) {
+            ArchiveEntry e = archive.getNextEntry();
+            IOUtils.toByteArray(archive);
+            assertEquals(-1, archive.read());
+            assertEquals(-1, archive.read());
+        }
+    }
+
+    @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+        byte[] buf = new byte[2];
+        try (FileInputStream in = new FileInputStream(getFile("bla.cpio"));
+             CpioArchiveInputStream archive = new CpioArchiveInputStream(in)) {
+            ArchiveEntry e = archive.getNextEntry();
+            IOUtils.toByteArray(archive);
+            assertEquals(-1, archive.read(buf));
+            assertEquals(-1, archive.read(buf));
+        }
+    }
+
 }

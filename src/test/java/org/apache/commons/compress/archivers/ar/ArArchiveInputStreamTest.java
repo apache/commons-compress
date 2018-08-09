@@ -26,6 +26,7 @@ import java.io.FileInputStream;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.utils.ArchiveUtils;
+import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Test;
 
 public class ArArchiveInputStreamTest extends AbstractTestCase {
@@ -56,6 +57,47 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
             s.read(bye);
             assertEquals("Bye\n", ArchiveUtils.toAsciiString(bye));
             assertNull(s.getNextEntry());
+        }
+    }
+
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+        try (FileInputStream in = new FileInputStream(getFile("bla.ar"));
+             ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
+            ArchiveEntry e = archive.getNextEntry();
+            IOUtils.toByteArray(archive);
+            assertEquals(-1, archive.read());
+            assertEquals(-1, archive.read());
+        }
+    }
+
+    @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+        byte[] buf = new byte[2];
+        try (FileInputStream in = new FileInputStream(getFile("bla.ar"));
+             ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
+            ArchiveEntry e = archive.getNextEntry();
+            IOUtils.toByteArray(archive);
+            assertEquals(-1, archive.read(buf));
+            assertEquals(-1, archive.read(buf));
+        }
+    }
+
+    @org.junit.Ignore("COMPRESS-462")
+    @Test(expected=IllegalStateException.class)
+    public void cantReadWithoutOpeningAnEntry() throws Exception {
+        try (FileInputStream in = new FileInputStream(getFile("bla.ar"));
+             ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
+            archive.read();
+        }
+    }
+
+    @Test(expected=java.io.IOException.class)
+    public void cantReadAfterClose() throws Exception {
+        try (FileInputStream in = new FileInputStream(getFile("bla.ar"));
+             ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
+            archive.close();
+            archive.read();
         }
     }
 }

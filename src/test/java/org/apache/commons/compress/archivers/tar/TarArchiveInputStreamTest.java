@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.zip.GZIPInputStream;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Test;
@@ -346,6 +347,29 @@ public class TarArchiveInputStreamTest {
             assertEquals("test1.xml", is.getNextTarEntry().getName());
             assertEquals("test2.xml", is.getNextTarEntry().getName());
             assertNull(is.getNextTarEntry());
+        }
+    }
+
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+        try (FileInputStream in = new FileInputStream(getFile("bla.tar"));
+             TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
+            ArchiveEntry e = archive.getNextEntry();
+            IOUtils.toByteArray(archive);
+            assertEquals(-1, archive.read());
+            assertEquals(-1, archive.read());
+        }
+    }
+
+    @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+        byte[] buf = new byte[2];
+        try (FileInputStream in = new FileInputStream(getFile("bla.tar"));
+             TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
+            ArchiveEntry e = archive.getNextEntry();
+            IOUtils.toByteArray(archive);
+            assertEquals(-1, archive.read(buf));
+            assertEquals(-1, archive.read(buf));
         }
     }
 

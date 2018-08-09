@@ -24,7 +24,9 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Test;
 
 public class DumpArchiveInputStreamTest extends AbstractTestCase {
@@ -66,6 +68,29 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
         is.read(actual);
         assertArrayEquals(expected, actual);
         dump.close();
+    }
+
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+        try (FileInputStream in = new FileInputStream(getFile("bla.dump"));
+             DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
+            ArchiveEntry e = archive.getNextEntry();
+            IOUtils.toByteArray(archive);
+            assertEquals(-1, archive.read());
+            assertEquals(-1, archive.read());
+        }
+    }
+
+    @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+        byte[] buf = new byte[2];
+        try (FileInputStream in = new FileInputStream(getFile("bla.dump"));
+             DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
+            ArchiveEntry e = archive.getNextEntry();
+            IOUtils.toByteArray(archive);
+            assertEquals(-1, archive.read(buf));
+            assertEquals(-1, archive.read(buf));
+        }
     }
 
 }
