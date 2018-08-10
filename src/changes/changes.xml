@@ -66,7 +66,7 @@ The <action> type attribute can be add,update,fix,remove.
       </action>
       <action issue="COMPRESS-459" type="fix" date="2018-07-11"
               due-to="Jens Reimann">
-        The cpio stream didn't handle archives using a multi-byte
+        The cpio streams didn't handle archives using a multi-byte
         encoding properly.
       </action>
       <action issue="COMPRESS-460" type="add" date="2018-07-28"

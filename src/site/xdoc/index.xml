@@ -68,6 +68,16 @@
             </ul>
           </subsection>
 
+          <subsection name="What's coming in 1.18?">
+            <ul>
+              <li>The CPIO package now properly handles file names
+              using a mult-byte encoding.</li>
+              <li>ZipArchiveInputStream can now deal with APK files
+              containing an APK signing block.</li>
+              <li>It is no possible to specifiy various parameters
+              for Zstd output.</li>
+            </ul>
+          </subsection>
         </section>
 
         <section name="Documentation">
