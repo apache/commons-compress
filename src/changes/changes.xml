@@ -79,6 +79,10 @@ The <action> type attribute can be add,update,fix,remove.
         corrupted stored entry and even return > 0 after hitting the
         end of the archive.
       </action>
+      <action issue="COMPRESS-462" type="fix" date="2018-08-10">
+        ArArchiveInputStream#read would allow to read from the stream
+        without opening an entry at all.
+      </action>
     </release>
     <release version="1.17" date="2018-06-03"
              description="Release 1.17">

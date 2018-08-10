@@ -83,7 +83,6 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
         }
     }
 
-    @org.junit.Ignore("COMPRESS-462")
     @Test(expected=IllegalStateException.class)
     public void cantReadWithoutOpeningAnEntry() throws Exception {
         try (FileInputStream in = new FileInputStream(getFile("bla.ar"));
@@ -92,7 +91,7 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
         }
     }
 
-    @Test(expected=java.io.IOException.class)
+    @Test(expected=IllegalStateException.class)
     public void cantReadAfterClose() throws Exception {
         try (FileInputStream in = new FileInputStream(getFile("bla.ar"));
              ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
