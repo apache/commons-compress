@@ -43,8 +43,8 @@
 Apache Commons Compress
 ===================
 
-[![Build Status](https://travis-ci.org/apache/commons-compress.svg?branch=master)](https://travis-ci.org/apache/commons-compress)
-[![Coverage Status](https://coveralls.io/repos/apache/commons-compress/badge.svg?branch=master)](https://coveralls.io/r/apache/commons-compress)
+[![Build Status](https://travis-ci.org/apache/commons-compress.svg)](https://travis-ci.org/apache/commons-compress)
+[![Coverage Status](https://coveralls.io/repos/apache/commons-compress/badge.svg)](https://coveralls.io/r/apache/commons-compress)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-compress/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-compress/)
 [![License](https://img.shields.io/:license-apache-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
@@ -101,7 +101,7 @@ Additional Resources
 --------------------
 
 + [Apache Commons Homepage](https://commons.apache.org/)
-+ [Apache Bugtracker (JIRA)](https://issues.apache.org/jira/browse/compress)
++ [Apache Issue Tracker (JIRA)](https://issues.apache.org/jira/browse/COMPRESS)
 + [Apache Commons Twitter Account](https://twitter.com/ApacheCommons)
 + `#apache-commons` IRC channel on `irc.freenode.org`
 
