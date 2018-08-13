@@ -5,6 +5,44 @@ compression and archive formats.  These include: bzip2, gzip, pack200,
 lzma, xz, Snappy, traditional Unix Compress, DEFLATE, DEFLATE64, LZ4,
 Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
 
+Release 1.18
+------------
+
+New features:
+o It is now possible to specify the arguments of zstd-jni's
+  ZstdOutputStream constructors via Commons Compress as well.
+  Issue: COMPRESS-460.
+  Thanks to Carmi Grushko.
+
+Fixed Bugs:
+o The example Expander class has been vulnerable to a path
+  traversal in the edge case that happens when the target
+  directory has a sibling directory and the name of the target
+  directory is a prefix of the sibling directory's name.
+  Thanks to Didier Loiseau.
+o Changed the OSGi Import-Package to also optionally import
+  javax.crypto so encrypted archives can be read.
+  Issue: COMPRESS-456.
+o Changed various implementations of the close method to better
+  ensure all held resources get closed even if exceptions are
+  thrown during the closing the stream.
+  Issue: COMPRESS-457.
+o ZipArchiveInputStream can now detect the APK Signing Block
+  used in signed Android APK files and treats it as an "end of
+  archive" marker.
+  Issue: COMPRESS-455.
+o The cpio streams didn't handle archives using a multi-byte
+  encoding properly.
+  Issue: COMPRESS-459.
+  Thanks to Jens Reimann.
+o ZipArchiveInputStream#read would silently return -1 on a
+  corrupted stored entry and even return > 0 after hitting the
+  end of the archive.
+  Issue: COMPRESS-463.
+o ArArchiveInputStream#read would allow to read from the stream
+  without opening an entry at all.
+  Issue: COMPRESS-462.
+
 Release 1.17
 ------------
 
