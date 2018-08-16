@@ -42,7 +42,10 @@ The <action> type attribute can be add,update,fix,remove.
     <title>commons-compress</title>
   </properties>
   <body>
-    <release version="1.18" date="not released, yet"
+    <release version="1.19" date="not released, yet"
+             description="Release 1.19">
+    </release>
+    <release version="1.18" date="2018-08-16"
              description="Release 1.18">
       <action type="fix" date="2018-06-15" due-to="DidierLoiseau">
         The example Expander class has been vulnerable to a path
