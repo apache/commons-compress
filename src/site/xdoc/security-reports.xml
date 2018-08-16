@@ -54,6 +54,29 @@
         the descriptions here are incomplete, please report them
         privately to the Apache Security Team. Thank you.</p>
 
+        <subsection name="Fixed in Apache Commons Compress 1.18">
+          <p><b>Low: Denial of Service</b> <a
+          href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-11771">CVE-2018-11771</a></p>
+
+          <p>When reading a specially crafted ZIP archive, the read
+          method of <code>ZipArchiveInputStream</code> can fail to
+          return the correct EOF indication after the end of the
+          stream has been reached. When combined with a
+          <code>java.io.InputStreamReader</code> this can lead to an
+          infinite stream, which can be used to mount a denial of
+          service attack against services that use Compress' zip
+          package</p>
+
+          <p>This was fixed in revision <a
+          href="https://git-wip-us.apache.org/repos/asf?p=commons-compress.git;a=blobdiff;f=src/main/java/org/apache/commons/compress/archivers/zip/ZipArchiveInputStream.java;h=e1995d7aa51dfac6ae933987fb0b7760c607582b;hp=0a2c1aa0063c620c867715119eae2013c87b5e70;hb=a41ce6892cb0590b2e658704434ac0dbcb6834c8;hpb=64ed6dde03afbef6715fdfdeab5fc04be6192899">a41ce68</a>.</p>
+
+          <p>This was <!-- first reported to the Security Team on 12 April
+          2012 and --> made public on 16 August 2018.</p>
+
+          <p>Affects: 1.7 - 1.17</p>
+
+        </subsection>
+
         <subsection name="Fixed in Apache Commons Compress 1.16">
           <p><b>Low: Denial of Service</b> <a
           href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-1324">CVE-2018-1324</a></p>
