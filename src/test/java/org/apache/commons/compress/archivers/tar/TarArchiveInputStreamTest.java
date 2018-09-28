@@ -19,7 +19,6 @@
 package org.apache.commons.compress.archivers.tar;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.apache.commons.compress.AbstractTestCase.mkdir;
 import static org.apache.commons.compress.AbstractTestCase.rmdir;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -35,6 +34,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
@@ -232,7 +232,7 @@ public class TarArchiveInputStreamTest {
 
     @Test(expected = IOException.class)
     public void shouldThrowAnExceptionOnTruncatedEntries() throws Exception {
-        final File dir = mkdir("COMPRESS-279");
+        final File dir = Files.createTempDirectory("COMPRESS-279").toFile();
         final TarArchiveInputStream is = getTestStream("/COMPRESS-279.tar");
         FileOutputStream out = null;
         try {
