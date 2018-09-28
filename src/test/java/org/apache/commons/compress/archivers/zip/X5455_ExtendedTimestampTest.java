@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -34,7 +35,6 @@ import java.util.TimeZone;
 import java.util.zip.ZipException;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.apache.commons.compress.AbstractTestCase.mkdir;
 import static org.apache.commons.compress.AbstractTestCase.rmdir;
 import static org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp.ACCESS_TIME_BIT;
 import static org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp.CREATE_TIME_BIT;
@@ -420,7 +420,7 @@ public class X5455_ExtendedTimestampTest {
 
     @Test
     public void testWriteReadRoundtrip() throws IOException {
-        tmpDir = mkdir("X5455");
+        tmpDir = Files.createTempDirectory("X5455").toFile();
         final File output = new File(tmpDir, "write_rewrite.zip");
         final OutputStream out = new FileOutputStream(output);
         final Date d = new Date(97, 8, 24, 15, 10, 2);

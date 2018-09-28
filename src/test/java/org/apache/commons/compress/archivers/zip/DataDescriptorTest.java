@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 
 import org.apache.commons.compress.utils.IOUtils;
@@ -29,7 +30,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.apache.commons.compress.AbstractTestCase.mkdir;
 import static org.apache.commons.compress.AbstractTestCase.rmdir;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -41,7 +41,7 @@ public class DataDescriptorTest {
 
     @Before
     public void setUp() throws Exception {
-        dir = mkdir("ddtest");
+        dir = Files.createTempDirectory("ddtest").toFile();
     }
 
     @After

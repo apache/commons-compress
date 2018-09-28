@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -55,16 +56,9 @@ public abstract class AbstractTestCase {
 
     @Before
     public void setUp() throws Exception {
-        dir = mkdir("dir");
-        resultDir = mkdir("dir-result");
+        dir = Files.createTempDirectory("dir").toFile();
+        resultDir = Files.createTempDirectory("dir-result").toFile();
         archive = null;
-    }
-
-    public static File mkdir(final String name) throws IOException {
-        final File f = File.createTempFile(name, "");
-        f.delete();
-        f.mkdir();
-        return f;
     }
 
     public static File getFile(final String path) throws IOException {
@@ -314,7 +308,7 @@ public abstract class AbstractTestCase {
      */
     protected File checkArchiveContent(final ArchiveInputStream in, final List<String> expected, final boolean cleanUp)
             throws Exception {
-        final File result = mkdir("dir-result");
+        final File result = Files.createTempDirectory("dir-result").toFile();
         result.deleteOnExit();
 
         try {
@@ -385,7 +379,7 @@ public abstract class AbstractTestCase {
     }
 
     protected File createTempDir() throws IOException {
-        final File tmpDir = mkdir("testdir");
+        final File tmpDir = Files.createTempDirectory("testdir").toFile();
         tmpDir.deleteOnExit();
         return tmpDir;
     }
