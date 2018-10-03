@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -61,10 +62,7 @@ public abstract class AbstractTestCase {
     }
 
     public static File mkdir(final String name) throws IOException {
-        final File f = File.createTempFile(name, "");
-        f.delete();
-        f.mkdir();
-        return f;
+        return Files.createTempDirectory(name).toFile();
     }
 
     public static File getFile(final String path) throws IOException {
