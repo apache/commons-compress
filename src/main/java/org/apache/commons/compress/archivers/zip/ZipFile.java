@@ -295,6 +295,7 @@ public class ZipFile implements Closeable {
             final Map<ZipArchiveEntry, NameAndComment> entriesWithoutUTF8Flag =
                 populateFromCentralDirectory();
             resolveLocalFileHeaderData(entriesWithoutUTF8Flag);
+            fillNameMap();
             success = true;
         } finally {
             closed = !success;
@@ -1064,7 +1065,13 @@ public class ZipFile implements Closeable {
                 ZipUtil.setNameAndCommentFromExtraFields(ze, nc.name,
                                                          nc.comment);
             }
+        }
+    }
 
+    private void fillNameMap() {
+        for (final ZipArchiveEntry ze : entries) {
+            // entries is filled in populateFromCentralDirectory and
+            // never modified
             final String name = ze.getName();
             LinkedList<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
             if (entriesOfThatName == null) {
