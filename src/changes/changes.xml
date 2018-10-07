@@ -48,6 +48,12 @@ The <action> type attribute can be add,update,fix,remove.
         ZipArchiveInputStream could forget the compression level has
         changed under certain circumstances.
       </action>
+      <action issue="COMPRESS-466" type="add" date="2018-10-07">
+        It is now possible to skip parsing of local file headers when
+        using ZipFile which may speed up reading the archive at the
+        cost of potentially missing important information. See the
+        javadocs of the ZipFile class for details.
+      </action>
     </release>
     <release version="1.18" date="2018-08-16"
              description="Release 1.18">
