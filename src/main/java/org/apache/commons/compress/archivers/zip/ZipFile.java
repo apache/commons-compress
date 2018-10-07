@@ -736,6 +736,8 @@ public class ZipFile implements Closeable {
         if (!hasUTF8Flag && useUnicodeExtraFields) {
             noUTF8Flag.put(ze, new NameAndComment(fileName, comment));
         }
+
+        ze.setStreamContiguous(true);
     }
 
     /**
@@ -1056,7 +1058,6 @@ public class ZipFile implements Closeable {
             final byte[] localExtraData = new byte[extraFieldLen];
             IOUtils.readFully(archive, ByteBuffer.wrap(localExtraData));
             ze.setExtra(localExtraData);
-            ze.setStreamContiguous(true);
 
             if (entriesWithoutUTF8Flag.containsKey(ze)) {
                 final NameAndComment nc = entriesWithoutUTF8Flag.get(ze);
