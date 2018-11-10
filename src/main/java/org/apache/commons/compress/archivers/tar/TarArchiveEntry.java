@@ -151,7 +151,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * mode an the archive contains illegal fields.
      * @since 1.19
      */
-    private static final long UNKNOWN = -1l;
+    public static final long UNKNOWN = -1l;
 
     /** The entry's name. */
     private String name = "";
