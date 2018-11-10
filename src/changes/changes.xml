@@ -54,6 +54,10 @@ The <action> type attribute can be add,update,fix,remove.
         cost of potentially missing important information. See the
         javadocs of the ZipFile class for details.
       </action>
+      <action issue="COMPRESS-469" type="add" date="2018-11-10">
+        TarArchiveInputStream has a new constructor-arg lenient that
+        can be used to accept certain broken archives.
+      </action>
     </release>
     <release version="1.18" date="2018-08-16"
              description="Release 1.18">
