@@ -333,8 +333,8 @@ public final class TarTestCase extends AbstractTestCase {
     @Test
     public void testCOMPRESS178Lenient() throws Exception {
         final File input = getFile("COMPRESS-178.tar");
-        final InputStream is = new FileInputStream(input);
-        try (final ArchiveInputStream in = new TarArchiveInputStream(is, true)) {
+        try (final InputStream is = new FileInputStream(input);
+             final ArchiveInputStream in = new TarArchiveInputStream(is, true)) {
             in.getNextEntry();
         }
     }
