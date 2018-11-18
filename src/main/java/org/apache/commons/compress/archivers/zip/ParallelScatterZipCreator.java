@@ -240,28 +240,28 @@ public class ParallelScatterZipCreator {
             throws IOException, InterruptedException, ExecutionException {
 
         try {
-        // Make sure we catch any exceptions from parallel phase
-        try {
-            for (final Future<?> future : futures) {
-                future.get();
+            // Make sure we catch any exceptions from parallel phase
+            try {
+                for (final Future<?> future : futures) {
+                    future.get();
+                }
+            } finally {
+                es.shutdown();
             }
-        } finally {
-            es.shutdown();
-        }
 
-        es.awaitTermination(1000 * 60L, TimeUnit.SECONDS);  // == Infinity. We really *must* wait for this to complete
+            es.awaitTermination(1000 * 60L, TimeUnit.SECONDS);  // == Infinity. We really *must* wait for this to complete
 
-        // It is important that all threads terminate before we go on, ensure happens-before relationship
-        compressionDoneAt = System.currentTimeMillis();
+            // It is important that all threads terminate before we go on, ensure happens-before relationship
+            compressionDoneAt = System.currentTimeMillis();
 
-        synchronized (streams) {
-            for (final ScatterZipOutputStream scatterStream : streams) {
-                scatterStream.writeTo(targetStream);
-                scatterStream.close();
+            synchronized (streams) {
+                for (final ScatterZipOutputStream scatterStream : streams) {
+                    scatterStream.writeTo(targetStream);
+                    scatterStream.close();
+                }
             }
-        }
 
-        scatterDoneAt = System.currentTimeMillis();
+            scatterDoneAt = System.currentTimeMillis();
         } finally {
             ensureStreamsAreClosed();
         }
