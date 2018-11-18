@@ -58,6 +58,10 @@ The <action> type attribute can be add,update,fix,remove.
         TarArchiveInputStream has a new constructor-arg lenient that
         can be used to accept certain broken archives.
       </action>
+      <action issue="COMPRESS-470" type="fix" date="2018-11-18">
+        Fixed another potential resource leak in
+        ParallelScatterZipCreator#writeTo.
+      </action>
     </release>
     <release version="1.18" date="2018-08-16"
              description="Release 1.18">

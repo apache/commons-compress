@@ -239,6 +239,7 @@ public class ParallelScatterZipCreator {
     public void writeTo(final ZipArchiveOutputStream targetStream)
             throws IOException, InterruptedException, ExecutionException {
 
+        try {
         // Make sure we catch any exceptions from parallel phase
         try {
             for (final Future<?> future : futures) {
@@ -261,6 +262,9 @@ public class ParallelScatterZipCreator {
         }
 
         scatterDoneAt = System.currentTimeMillis();
+        } finally {
+            ensureStreamsAreClosed();
+        }
     }
 
     /**
@@ -270,6 +274,18 @@ public class ParallelScatterZipCreator {
      */
     public ScatterStatistics getStatisticsMessage() {
         return new ScatterStatistics(compressionDoneAt - startedAt, scatterDoneAt - compressionDoneAt);
+    }
+
+    private void ensureStreamsAreClosed() {
+        synchronized (streams) {
+            for (final ScatterZipOutputStream scatterStream : streams) {
+                try {
+                    scatterStream.close();
+                } catch (IOException ex) {
+                    // no way to properly log this
+                }
+            }
+        }
     }
 }
 
