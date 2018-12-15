@@ -62,6 +62,10 @@ The <action> type attribute can be add,update,fix,remove.
         Fixed another potential resource leak in
         ParallelScatterZipCreator#writeTo.
       </action>
+      <action issue="COMPRESS-475" type="add" date="2018-12-15">
+        ArjArchiveEntry and SevenZArchiveEntry now implement hashCode
+        and equals.
+      </action>
     </release>
     <release version="1.18" date="2018-08-16"
              description="Release 1.18">
