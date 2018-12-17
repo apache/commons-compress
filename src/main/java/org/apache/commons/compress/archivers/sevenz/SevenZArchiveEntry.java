@@ -489,8 +489,8 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     @Override
     public int hashCode() {
-        final String name = getName();
-        return name == null ? 0 : name.hashCode();
+        final String n = getName();
+        return n == null ? 0 : n.hashCode();
     }
 
     @Override
