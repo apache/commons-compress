@@ -68,7 +68,7 @@
           package</p>
 
           <p>This was fixed in revision <a
-          href="https://git-wip-us.apache.org/repos/asf?p=commons-compress.git;a=blobdiff;f=src/main/java/org/apache/commons/compress/archivers/zip/ZipArchiveInputStream.java;h=e1995d7aa51dfac6ae933987fb0b7760c607582b;hp=0a2c1aa0063c620c867715119eae2013c87b5e70;hb=a41ce6892cb0590b2e658704434ac0dbcb6834c8;hpb=64ed6dde03afbef6715fdfdeab5fc04be6192899">a41ce68</a>.</p>
+          href="https://gitbox.apache.org/repos/asf?p=commons-compress.git;a=blobdiff;f=src/main/java/org/apache/commons/compress/archivers/zip/ZipArchiveInputStream.java;h=e1995d7aa51dfac6ae933987fb0b7760c607582b;hp=0a2c1aa0063c620c867715119eae2013c87b5e70;hb=a41ce6892cb0590b2e658704434ac0dbcb6834c8;hpb=64ed6dde03afbef6715fdfdeab5fc04be6192899">a41ce68</a>.</p>
 
           <p>This was first reported to the Security Team on 14 June
           2018 and made public on 16 August 2018.</p>
@@ -89,7 +89,7 @@
           that use Compress' zip package.</p>
 
           <p>This was fixed in revision <a
-          href="https://git-wip-us.apache.org/repos/asf?p=commons-compress.git;a=blobdiff;f=src/main/java/org/apache/commons/compress/archivers/zip/X0017_StrongEncryptionHeader.java;h=acc3b22346b49845e85b5ef27a5814b69e834139;hp=0feb9c98cc622cde1defa3bbd268ef82b4ae5c18;hb=2a2f1dc48e22a34ddb72321a4db211da91aa933b;hpb=dcb0486fb4cb2b6592c04d6ec2edbd3f690df5f2">2a2f1dc4</a>.</p>
+          href="https://gitbox.apache.org/repos/asf?p=commons-compress.git;a=blobdiff;f=src/main/java/org/apache/commons/compress/archivers/zip/X0017_StrongEncryptionHeader.java;h=acc3b22346b49845e85b5ef27a5814b69e834139;hp=0feb9c98cc622cde1defa3bbd268ef82b4ae5c18;hb=2a2f1dc48e22a34ddb72321a4db211da91aa933b;hpb=dcb0486fb4cb2b6592c04d6ec2edbd3f690df5f2">2a2f1dc4</a>.</p>
 
           <p>This was first reported to the project's JIRA on <a
           href="https://issues.apache.org/jira/browse/COMPRESS-432">19

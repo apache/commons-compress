@@ -255,9 +255,9 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
   </contributors>
 
   <scm>
-    <connection>scm:git:https://git-wip-us.apache.org/repos/asf/commons-compress.git</connection>
-    <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/commons-compress.git</developerConnection>
-    <url>https://git-wip-us.apache.org/repos/asf?p=commons-compress.git</url>
+    <connection>scm:git:https://gitbox.apache.org/repos/asf/commons-compress.git</connection>
+    <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/commons-compress.git</developerConnection>
+    <url>https://gitbox.apache.org/repos/asf?p=commons-compress.git</url>
   </scm>
 
   <build>
