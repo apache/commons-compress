@@ -18,10 +18,10 @@
 
 package org.apache.commons.compress.archivers.ar;
 
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
+import java.io.*;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -80,6 +80,34 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read(buf));
             assertEquals(-1, archive.read(buf));
+        }
+    }
+
+    @Test
+    public void simpleInputStream() throws IOException {
+        try (final FileInputStream fileInputStream = new FileInputStream(getFile("bla.ar"))) {
+
+            // This default implementation of InputStream.available() always returns zero,
+            // and there are many streams in practice where the total length of the stream is not known.
+
+            final InputStream simpleInputStream = new InputStream() {
+                @Override
+                public int read() throws IOException {
+                    return fileInputStream.read();
+                }
+            };
+
+            ArArchiveInputStream archiveInputStream = new ArArchiveInputStream(simpleInputStream);
+            ArArchiveEntry entry1 = archiveInputStream.getNextArEntry();
+            assertThat(entry1, not(nullValue()));
+            assertThat(entry1.getName(), equalTo("test1.xml"));
+            assertThat(entry1.getLength(), equalTo(610L));
+
+            ArArchiveEntry entry2 = archiveInputStream.getNextArEntry();
+            assertThat(entry2.getName(), equalTo("test2.xml"));
+            assertThat(entry2.getLength(), equalTo(82L));
+
+            assertThat(archiveInputStream.getNextArEntry(), nullValue());
         }
     }
 
