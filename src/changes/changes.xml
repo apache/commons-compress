@@ -66,6 +66,10 @@ The <action> type attribute can be add,update,fix,remove.
         ArjArchiveEntry and SevenZArchiveEntry now implement hashCode
         and equals.
       </action>
+      <action type="fix" date="2019-02-18" due-to="Alex Bertram">
+        ArArchiveInputStream could think it had hit EOF prematurely.
+        Github Pull Request #74.
+      </action>
     </release>
     <release version="1.18" date="2018-08-16"
              description="Release 1.18">
