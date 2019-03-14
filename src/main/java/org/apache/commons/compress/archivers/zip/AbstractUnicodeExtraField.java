@@ -168,15 +168,12 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
 
         final int version = buffer[offset];
 
-        if (version != 0x01) {
-            throw new ZipException("Unsupported version [" + version
-                                   + "] for UniCode path extra data.");
+        if (version == 0x01) {
+            nameCRC32 = ZipLong.getValue(buffer, offset + 1);
+            unicodeName = new byte[length - 5];
+            System.arraycopy(buffer, offset + 5, unicodeName, 0, length - 5);
+            data = null;
         }
-
-        nameCRC32 = ZipLong.getValue(buffer, offset + 1);
-        unicodeName = new byte[length - 5];
-        System.arraycopy(buffer, offset + 5, unicodeName, 0, length - 5);
-        data = null;
     }
 
     /**

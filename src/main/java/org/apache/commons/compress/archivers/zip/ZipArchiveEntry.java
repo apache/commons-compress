@@ -852,10 +852,14 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
                 } else {
                     if (local) {
                         final byte[] b = element.getLocalFileDataData();
-                        existing.parseFromLocalFileData(b, 0, b.length);
+                        if (b != null) {
+                            existing.parseFromLocalFileData(b, 0, b.length);
+                        }
                     } else {
                         final byte[] b = element.getCentralDirectoryData();
-                        existing.parseFromCentralDirectoryData(b, 0, b.length);
+                        if (b != null) {
+                            existing.parseFromCentralDirectoryData(b, 0, b.length);
+                        }
                     }
                 }
             }

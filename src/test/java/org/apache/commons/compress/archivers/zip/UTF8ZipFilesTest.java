@@ -193,6 +193,21 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
     }
 
     @Test
+    public void testZipArchiveWithUnsupportedUnicodeVersion() throws IOException {
+        ZipFile zipFile = null;
+        try {
+            zipFile = new ZipFile(getFile("COMPRESS-479.zip"));
+            assertNotNull(zipFile.getEntry(ASCII_TXT));
+            assertNotNull(zipFile.getEntry(EURO_FOR_DOLLAR_TXT));
+            assertNotNull(zipFile.getEntry(OIL_BARREL_TXT));
+        } finally {
+            if (zipFile != null) {
+                zipFile.close();
+            }
+        }
+    }
+
+    @Test
     public void testZipArchiveInputStreamReadsUnicodeFields()
         throws IOException {
         final File file = File.createTempFile("unicode-test", ".zip");
