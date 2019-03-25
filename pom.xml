@@ -20,7 +20,7 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>47</version>
+    <version>48</version>
   </parent>
 
   <artifactId>commons-compress</artifactId>
@@ -45,6 +45,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <!-- configuration bits for cutting a release candidate -->
     <commons.release.version>${project.version}</commons.release.version>
     <commons.rc.version>RC1</commons.rc.version>
+    <commons.bc.version>1.18</commons.bc.version>
     <powermock.version>1.7.3</powermock.version>
     <commons.pmd-plugin.version>3.8</commons.pmd-plugin.version>
 
@@ -63,12 +64,11 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
 
     <!-- generate report even if there are binary incompatible changes -->
     <commons.japicmp.breakBuildOnBinaryIncompatibleModifications>false</commons.japicmp.breakBuildOnBinaryIncompatibleModifications>
-    <!-- 0.12.0 dies with a NullPointerException -->
-    <commons.japicmp.version>0.11.1</commons.japicmp.version>
 
     <!-- definition uses commons.componentId starting with parent 47,
          this doesn't work for us -->
     <commons.scmPubUrl>https://svn.apache.org/repos/infra/websites/production/commons/content/proper/${project.artifactId}</commons.scmPubUrl>
+    <japicmp.skip>false</japicmp.skip>
 
     <pax.exam.version>4.11.0</pax.exam.version>
     <slf4j.version>1.7.26</slf4j.version>
@@ -322,15 +322,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
           <version>${commons.felix.version}</version>
-        </plugin>
-        <!-- override skip property of parent pom, can be removed once
-             we adopt parent 48+ -->
-        <plugin>
-          <groupId>com.github.siom79.japicmp</groupId>
-          <artifactId>japicmp-maven-plugin</artifactId>
-          <configuration>
-            <skip>false</skip>
-          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
