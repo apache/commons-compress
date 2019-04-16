@@ -46,7 +46,8 @@ public class AES256SHA256DecoderTest {
         byte[] byteArray = new byte[8];
         byteArray[1] = (byte) (-72);
         coder.properties = byteArray;
-        InputStream inputStream = aES256SHA256Decoder.decode("x", bufferedInputStream, 3138, coder, coder.properties);
+        InputStream inputStream = aES256SHA256Decoder.decode("x", bufferedInputStream, 3138, coder, coder.properties,
+                Integer.MAX_VALUE);
 
         ObjectInputStream objectInputStream = null;
 

@@ -33,6 +33,7 @@ import java.util.Random;
 import javax.crypto.Cipher;
 
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.PasswordRequiredException;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
@@ -291,6 +292,13 @@ public class SevenZFileTest extends AbstractTestCase {
                 entry = sevenZFile.getNextEntry();
             }
             assertEquals(5, entries);
+        }
+    }
+
+    @Test(expected = MemoryLimitException.class)
+    public void limitExtractionMemory() throws IOException {
+        try (SevenZFile sevenZFile = new SevenZFile(getFile("bla.7z"), 1)) {
+            // Do nothing. Exception should be thrown
         }
     }
 

@@ -51,7 +51,8 @@ public class SevenZNativeHeapTest extends AbstractTestCase {
     public void testEndInflaterOnCloseStream() throws Exception {
         Coders.DeflateDecoder deflateDecoder = new DeflateDecoder();
         final DeflateDecoderInputStream inputStream =
-            (DeflateDecoderInputStream) deflateDecoder.decode("dummy",new ByteArrayInputStream(new byte[0]),0,null,null);
+                (DeflateDecoderInputStream) deflateDecoder
+                        .decode("dummy", new ByteArrayInputStream(new byte[0]), 0, null, null, Integer.MAX_VALUE);
         DelegatingInflater delegatingInflater = new DelegatingInflater(inputStream.inflater);
         inputStream.inflater = delegatingInflater;
         inputStream.close();
