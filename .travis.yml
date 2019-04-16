@@ -21,8 +21,11 @@ jdk:
   - openjdk8
   - oraclejdk8
   - oraclejdk9
+  - oraclejdk11
   - openjdk10
   - openjdk11
+  - openjdk12
+  - openjdk-ea
 
 cache:
   directories:
