@@ -37,8 +37,9 @@ class LZMA2Decoder extends CoderBase {
             final Coder coder, final byte[] password, int maxMemoryLimitInKb) throws IOException {
         try {
             final int dictionarySize = getDictionarySize(coder);
-            if ((dictionarySize / 1024) > maxMemoryLimitInKb) {
-                throw new MemoryLimitException(dictionarySize / 1024, maxMemoryLimitInKb);
+            final int memoryUsageInKb = LZMA2InputStream.getMemoryUsage(dictionarySize);
+            if (memoryUsageInKb > maxMemoryLimitInKb) {
+                throw new MemoryLimitException(memoryUsageInKb, maxMemoryLimitInKb);
             }
             return new LZMA2InputStream(in, dictionarySize);
         } catch (final IllegalArgumentException ex) {  // NOSONAR

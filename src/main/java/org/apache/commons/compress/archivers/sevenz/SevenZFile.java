@@ -114,7 +114,8 @@ public class SevenZFile implements Closeable {
      *
      * @param filename the file to read
      * @param password optional password if the archive is encrypted
-     * @param maxMemoryLimitInKb limit of the maximum amount of memory to use for extraction
+     * @param maxMemoryLimitInKb limit of the maximum amount of memory to use for extraction. Not all codecs will honor
+     *                           this setting. Currently only lzma and lzma2 are supported.
      * @throws IOException if reading the archive fails or the memory limit is too small
      * @since 1.19
      */
@@ -144,7 +145,8 @@ public class SevenZFile implements Closeable {
      * @param password optional password if the archive is encrypted -
      * the byte array is supposed to be the UTF16-LE encoded
      * representation of the password.
-     * @param maxMemoryLimitInKb limit of the maximum amount of memory to use for extraction
+     * @param maxMemoryLimitInKb limit of the maximum amount of memory to use for extraction. Not all codecs will honor
+     *                           this setting. Currently only lzma and lzma2 are supported.
      * @throws IOException if reading the archive fails or the memory limit is too small
      * @deprecated use the char[]-arg version for the password instead
      * @since 1.19
@@ -177,7 +179,8 @@ public class SevenZFile implements Closeable {
      * allows you to read from an in-memory archive.</p>
      *
      * @param channel the channel to read
-     * @param maxMemoryLimitInKb limit of the maximum amount of memory to use for extraction
+     * @param maxMemoryLimitInKb limit of the maximum amount of memory to use for extraction. Not all codecs will honor
+     *                           this setting. Currently only lzma and lzma2 are supported.
      * @throws IOException if reading the archive fails or the memory limit is too small
      * @since 1.19
      */
@@ -211,7 +214,8 @@ public class SevenZFile implements Closeable {
      *
      * @param channel the channel to read
      * @param password optional password if the archive is encrypted
-     * @param maxMemoryLimitInKb limit of the maximum amount of memory to use for extraction
+     * @param maxMemoryLimitInKb limit of the maximum amount of memory to use for extraction. Not all codecs will honor
+     *                           this setting. Currently only lzma and lzma2 are supported.
      * @throws IOException if reading the archive fails or the memory limit is too small
      * @since 1.19
      */
@@ -248,7 +252,8 @@ public class SevenZFile implements Closeable {
      * @param channel the channel to read
      * @param filename name of the archive - only used for error reporting
      * @param password optional password if the archive is encrypted
-     * @param maxMemoryLimitInKb limit of the maximum amount of memory to use for extraction
+     * @param maxMemoryLimitInKb limit of the maximum amount of memory to use for extraction. Not all codecs will honor
+     *                           this setting. Currently only lzma and lzma2 are supported.
      * @throws IOException if reading the archive fails or the memory limit is too small
      * @since 1.19
      */
@@ -283,7 +288,8 @@ public class SevenZFile implements Closeable {
      *
      * @param channel the channel to read
      * @param filename name of the archive - only used for error reporting
-     * @param maxMemoryLimitInKb limit of the maximum amount of memory to use for extraction
+     * @param maxMemoryLimitInKb limit of the maximum amount of memory to use for extraction. Not all codecs will honor
+     *                           this setting. Currently only lzma and lzma2 are supported.
      * @throws IOException if reading the archive fails or the memory limit is too small
      * @since 1.19
      */
@@ -323,7 +329,8 @@ public class SevenZFile implements Closeable {
      * @param password optional password if the archive is encrypted -
      * the byte array is supposed to be the UTF16-LE encoded
      * representation of the password.
-     * @param maxMemoryLimitInKb limit of the maximum amount of memory to use for extraction
+     * @param maxMemoryLimitInKb limit of the maximum amount of memory to use for extraction. Not all codecs will honor
+     *                           this setting. Currently only lzma and lzma2 are supported.
      * @throws IOException if reading the archive fails or the memory limit is too small
      * @since 1.19
      * @deprecated use the char[]-arg version for the password instead
@@ -366,7 +373,8 @@ public class SevenZFile implements Closeable {
      * @param password optional password if the archive is encrypted -
      * the byte array is supposed to be the UTF16-LE encoded
      * representation of the password.
-     * @param maxMemoryLimitInKb limit of the maximum amount of memory to use for extraction
+     * @param maxMemoryLimitInKb limit of the maximum amount of memory to use for extraction. Not all codecs will honor
+     *                           this setting. Currently only lzma and lzma2 are supported.
      * @throws IOException if reading the archive fails or the memory limit is too small
      * @since 1.19
      * @deprecated use the char[]-arg version for the password instead
@@ -411,7 +419,8 @@ public class SevenZFile implements Closeable {
      * Reads a file as unencrypted 7z archive
      *
      * @param filename the file to read
-     * @param maxMemoryLimitInKb limit of the maximum amount of memory to use for extraction
+     * @param maxMemoryLimitInKb limit of the maximum amount of memory to use for extraction. Not all codecs will honor
+     *                           this setting. Currently only lzma and lzma2 are supported.
      * @throws IOException if reading the archive fails or the memory limit is too small
      * @since 1.19
      */

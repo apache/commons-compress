@@ -40,8 +40,10 @@ class LZMADecoder extends CoderBase {
         final int dictSize = getDictionarySize(coder);
         if (dictSize > LZMAInputStream.DICT_SIZE_MAX) {
             throw new IOException("Dictionary larger than 4GiB maximum size used in " + archiveName);
-        } else if ((dictSize / 1024) > maxMemoryLimitInKb) {
-            throw new MemoryLimitException(dictSize / 1024, maxMemoryLimitInKb);
+        }
+        final int memoryUsageInKb = LZMAInputStream.getMemoryUsage(dictSize, propsByte);
+        if (memoryUsageInKb > maxMemoryLimitInKb) {
+            throw new MemoryLimitException(memoryUsageInKb, maxMemoryLimitInKb);
         }
         return new LZMAInputStream(in, uncompressedLength, propsByte, dictSize);
     }
