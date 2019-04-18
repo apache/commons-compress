@@ -75,6 +75,11 @@ The <action> type attribute can be add,update,fix,remove.
         LZMA(2) compressed content.
         Github Pull Request #76.
       </action>
+      <action type="update" date="2019-04-18"
+              due-to="Rostislav Krasny" issue="COMPRESS-464">
+        The ARJ package has been updated to contain constants for more
+        recent specifications.
+      </action>
     </release>
     <release version="1.18" date="2018-08-16"
              description="Release 1.18">
