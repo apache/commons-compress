@@ -70,7 +70,8 @@ The <action> type attribute can be add,update,fix,remove.
         ArArchiveInputStream could think it had hit EOF prematurely.
         Github Pull Request #74.
       </action>
-      <action type="update" date="2019-04-16" due-to="Robin Schimpf ">
+      <action type="update" date="2019-04-16" due-to="Robin Schimpf"
+              issue="COMPRESS-481">
         SevenZFile now provides a way to cap memory consumption for
         LZMA(2) compressed content.
         Github Pull Request #76.
