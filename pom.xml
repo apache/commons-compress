@@ -51,7 +51,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <commons.rc.version>RC1</commons.rc.version>
     <commons.bc.version>1.18</commons.bc.version>
     <powermock.version>1.7.3</powermock.version>
-    <commons.pmd-plugin.version>3.8</commons.pmd-plugin.version>
+    <commons.pmd-plugin.version>3.12.0</commons.pmd-plugin.version>
 
     <commons.manifestlocation>${project.build.outputDirectory}/META-INF</commons.manifestlocation>
     <commons.manifestfile>${commons.manifestlocation}/MANIFEST.MF</commons.manifestfile>
