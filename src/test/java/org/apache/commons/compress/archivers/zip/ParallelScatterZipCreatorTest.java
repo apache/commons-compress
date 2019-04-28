@@ -17,6 +17,7 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import org.apache.commons.compress.archivers.zip.ParallelScatterZipCreator.ParallelScatterZipEntry;
 import org.apache.commons.compress.parallel.FileBasedScatterGatherBackingStore;
 import org.apache.commons.compress.parallel.InputStreamSupplier;
 import org.apache.commons.compress.parallel.ScatterGatherBackingStore;
@@ -70,12 +71,30 @@ public class ParallelScatterZipCreatorTest {
     }
 
     @Test
+    public void concurrent_startWriteToFinish()
+            throws Exception {
+        result = File.createTempFile("parallelScatterGather1", ".zip");
+        final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(result);
+        zos.setEncoding("UTF-8");
+        final ParallelScatterZipCreator zipCreator = new ParallelScatterZipCreator();
+
+        zipCreator.startWriteTo(zos);
+        final Map<String, byte[]> entries = writeEntries(zipCreator);
+        zipCreator.waitFinishWriteTo();
+
+        zos.close();
+        removeEntriesFoundInZipFile(result, entries);
+        assertTrue(entries.size() == 0);
+        assertNotNull( zipCreator.getStatisticsMessage());
+    }
+
+    @Test
     public void callableApi()
             throws Exception {
         result = File.createTempFile("parallelScatterGather2", "");
         final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(result);
         zos.setEncoding("UTF-8");
-        final ExecutorService es = Executors.newFixedThreadPool(1);
+        final ExecutorService es = Executors.newFixedThreadPool(2);
 
         final ScatterGatherBackingStoreSupplier supp = new ScatterGatherBackingStoreSupplier() {
             @Override
@@ -84,7 +103,7 @@ public class ParallelScatterZipCreatorTest {
             }
         };
 
-        final ParallelScatterZipCreator zipCreator = new ParallelScatterZipCreator(es, supp);
+        final ParallelScatterZipCreator zipCreator = new ParallelScatterZipCreator(es, true, supp);
         final Map<String, byte[]> entries = writeEntriesAsCallable(zipCreator);
         zipCreator.writeTo(zos);
         zos.close();
@@ -145,7 +164,7 @@ public class ParallelScatterZipCreatorTest {
                     return new ByteArrayInputStream(payloadBytes);
                 }
             };
-            final Callable<Object> callable;
+            final Callable<ParallelScatterZipEntry> callable;
             if (i % 2 == 0) {
                 callable = zipCreator.createCallable(za, iss);
             } else {

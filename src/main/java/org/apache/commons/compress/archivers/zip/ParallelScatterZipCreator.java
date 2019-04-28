@@ -17,49 +17,145 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.parallel.FileBasedScatterGatherBackingStore;
-import org.apache.commons.compress.parallel.InputStreamSupplier;
-import org.apache.commons.compress.parallel.ScatterGatherBackingStore;
-import org.apache.commons.compress.parallel.ScatterGatherBackingStoreSupplier;
+import static java.util.Collections.synchronizedList;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.zip.Deflater;
+import java.util.zip.ZipEntry;
 
-import static java.util.Collections.synchronizedList;
-import static org.apache.commons.compress.archivers.zip.ZipArchiveEntryRequest.createZipArchiveEntryRequest;
+import org.apache.commons.compress.parallel.FileBasedScatterGatherBackingStore;
+import org.apache.commons.compress.parallel.InputStreamSupplier;
+import org.apache.commons.compress.parallel.ScatterGatherBackingStore;
+import org.apache.commons.compress.parallel.ScatterGatherBackingStoreSupplier;
+import org.apache.commons.compress.utils.BoundedInputStream;
 
 /**
- * Creates a zip in parallel by using multiple threadlocal {@link ScatterZipOutputStream} instances.
- * <p>
- * Note that this class generally makes no guarantees about the order of things written to
- * the output file. Things that need to come in a specific order (manifests, directories)
- * must be handled by the client of this class, usually by writing these things to the
- * {@link ZipArchiveOutputStream} <em>before</em> calling {@link #writeTo writeTo} on this class.</p>
- * <p>
- * The client can supply an {@link java.util.concurrent.ExecutorService}, but for reasons of
- * memory model consistency, this will be shut down by this class prior to completion.
- * </p>
- * @since 1.10
+ * Creates a zip using internally parallel thread executor, but ensuring consistent zip entries order
+ *
+ * Public method of this class are expected to be called from a single client thread
+ *
+ * creating instances:
+ * either use externally defined ThreadPool executor (must have at least 2 threads, 1 for compressing + 1 for writing)
+ * <PRE>
+ * ExecutorService es = ..
+ * OrderedParallelScatterZipCreator zipCreator = new OrderedParallelScatterZipCreator(es, false);
+ * </PRE>
+ * or use auto-created (and shutdown) ThreadPool executor
+ * <PRE>
+ * OrderedParallelScatterZipCreator zipCreator = new OrderedParallelScatterZipCreator();
+ * <PRE>
+ *
+ * Adding entries, then writing result zip output
+ * <PRE>
+ * zipCreator.addArchiveEntry(..)
+ * zipCreator.addArchiveEntry(..)
+ *
+ * ZipArchiveOutputStream zipOutputStream = ...
+ * zipCreator.finishWrite(zipOutputStream);
+ * </PRE>
+ *
+ * or (better parallelization, writing compressed results on the fly)
+ *
+ * <PRE>
+ * zipCreator.addArchiveEntry(..)
+ * zipCreator.addArchiveEntry(..)
+ *
+ * ZipArchiveOutputStream zipOutputStream = ...
+ * zipCreator.startWriteTo(zipOutputStream);
+ *
+ * zipCreator.addArchiveEntry(..)
+ * zipCreator.addArchiveEntry(..)
+ *
+ * zipCreator.waitFinishWriteTo();
+ * </PRE>
  */
 public class ParallelScatterZipCreator {
-    private final List<ScatterZipOutputStream> streams = synchronizedList(new ArrayList<ScatterZipOutputStream>());
-    private final ExecutorService es;
-    private final ScatterGatherBackingStoreSupplier backingStoreSupplier;
-    private final List<Future<Object>> futures = new ArrayList<>();
 
-    private final long startedAt = System.currentTimeMillis();
-    private long compressionDoneAt = 0;
-    private long scatterDoneAt;
+    private static final ParallelScatterZipEntry EOF_MARKER = new ParallelScatterZipEntry(null, 0, null);
+
+    private final ExecutorService es;
+    private final boolean closeExecutorService;
+    private final ScatterGatherBackingStoreSupplier backingStoreSupplier;
+
+    private final List<ThreadBackingStore> threadBackingStores = synchronizedList(new ArrayList<ThreadBackingStore>());
+
+    private BlockingQueue<Future<ParallelScatterZipEntry>> futureWriteQueue = new LinkedBlockingDeque<>();
+    private Future<?> mainWriter;
+    private Exception mainWriterEx;
+
+    private final AtomicLong compressionElapsed = new AtomicLong();
+    private final AtomicLong scatterElapsed = new AtomicLong();
+
+    public static class ParallelScatterZipEntry {
+        private final ZipArchiveEntry zipArchiveEntry;
+        private final long len;
+        private final ThreadBackingStore threadBackingStore;
+
+        ParallelScatterZipEntry(ZipArchiveEntry zipArchiveEntry,
+                long len, ThreadBackingStore threadBackingStore) {
+            this.zipArchiveEntry = zipArchiveEntry;
+            this.len = len;
+            this.threadBackingStore = threadBackingStore;
+        }
+
+        InputStream createInputStream() {
+            return new BoundedInputStream(threadBackingStore.inputStream, len);
+        }
+
+    }
+
+    /** inner input/output Streams backing store, per Thread */
+    private class ThreadBackingStore {
+        ScatterGatherBackingStore backingStore;
+        OutputStream ouputStream;
+        InputStream inputStream;
+
+        ThreadBackingStore(ScatterGatherBackingStore backingStore) throws IOException {
+            this.backingStore = backingStore;
+            this.ouputStream = createOutputStream();
+            this.inputStream = backingStore.getInputStream();
+        }
+
+        // ... adapter for non-existent method backingStore.createOutputStream();
+        // TODO move to class ScatterGatherBackingStore
+        OutputStream createOutputStream() {
+            return new OutputStream() {
+                @Override
+                public void write(int b) throws IOException {
+                    byte[] data = new byte[] { (byte) b };
+                    backingStore.writeOut(data, 0, 1);
+                }
+                @Override
+                public void write(byte[] b, int off, int len) throws IOException {
+                    backingStore.writeOut(b, off, len);
+                }
+                @Override
+                public void flush() throws IOException {
+                    // backingStore.flush();
+                }
+                @Override
+                public void close() throws IOException {
+                    // do not close underlyinh backingstore
+                }
+            };
+        }
+
+    }
 
     private static class DefaultBackingStoreSupplier implements ScatterGatherBackingStoreSupplier {
         final AtomicInteger storeNum = new AtomicInteger(0);
@@ -71,21 +167,13 @@ public class ParallelScatterZipCreator {
         }
     }
 
-    private ScatterZipOutputStream createDeferred(final ScatterGatherBackingStoreSupplier scatterGatherBackingStoreSupplier)
-            throws IOException {
-        final ScatterGatherBackingStore bs = scatterGatherBackingStoreSupplier.get();
-        // lifecycle is bound to the ScatterZipOutputStream returned
-        final StreamCompressor sc = StreamCompressor.create(Deflater.DEFAULT_COMPRESSION, bs); //NOSONAR
-        return new ScatterZipOutputStream(bs, sc);
-    }
-
-    private final ThreadLocal<ScatterZipOutputStream> tlScatterStreams = new ThreadLocal<ScatterZipOutputStream>() {
+    private final ThreadLocal<ThreadBackingStore> tlScatterStreams = new ThreadLocal<ThreadBackingStore>() {
         @Override
-        protected ScatterZipOutputStream initialValue() {
+        protected ThreadBackingStore initialValue() {
             try {
-                final ScatterZipOutputStream scatterStream = createDeferred(backingStoreSupplier);
-                streams.add(scatterStream);
-                return scatterStream;
+                final ThreadBackingStore res = new ThreadBackingStore(backingStoreSupplier.get());
+                threadBackingStores.add(res);
+                return res;
             } catch (final IOException e) {
                 throw new RuntimeException(e); //NOSONAR
             }
@@ -93,41 +181,59 @@ public class ParallelScatterZipCreator {
     };
 
     /**
-     * Create a ParallelScatterZipCreator with default threads, which is set to the number of available
-     * processors, as defined by {@link java.lang.Runtime#availableProcessors}
+     * Create a OrderedParallelScatterZipCreator with default threads, which is set to the number of available
+     * processors (or min 2), as defined by {@link java.lang.Runtime#availableProcessors}
      */
     public ParallelScatterZipCreator() {
-        this(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
+        this(createExecutorService(), true, new DefaultBackingStoreSupplier());
     }
 
     /**
-     * Create a ParallelScatterZipCreator
+     * Create a OrderedParallelScatterZipCreator with default threads, which is set to the number of available
+     * processors (or min 2), as defined by {@link java.lang.Runtime#availableProcessors}
      *
-     * @param executorService The executorService to use for parallel scheduling. For technical reasons,
-     *                        this will be shut down by this class.
-     */
-    public ParallelScatterZipCreator(final ExecutorService executorService) {
-        this(executorService, new DefaultBackingStoreSupplier());
-    }
-
-    /**
-     * Create a ParallelScatterZipCreator
-     *
-     * @param executorService The executorService to use. For technical reasons, this will be shut down
-     *                        by this class.
      * @param backingStoreSupplier The supplier of backing store which shall be used
      */
-    public ParallelScatterZipCreator(final ExecutorService executorService,
-                                     final ScatterGatherBackingStoreSupplier backingStoreSupplier) {
+    public ParallelScatterZipCreator(
+            final ScatterGatherBackingStoreSupplier backingStoreSupplier) {
+        this(createExecutorService(), true, backingStoreSupplier);
+    }
+
+    private static ExecutorService createExecutorService() {
+        int nThreads = Math.max(2, Runtime.getRuntime().availableProcessors());
+        return Executors.newFixedThreadPool(nThreads);
+    }
+
+    /**
+     * Create a OrderedParallelScatterZipCreator
+     *
+     * @param executorService The executorService to use.
+     * @param closeExecutorService flag to close executor service at end
+     */
+    public ParallelScatterZipCreator(
+            final ExecutorService executorService,
+            final boolean closeExecutorService) {
+        this(executorService, closeExecutorService, new DefaultBackingStoreSupplier());
+    }
+
+    /**
+     * Create a OrderedParallelScatterZipCreator
+     *
+     * @param executorService The executorService to use.
+     * @param closeExecutorService flag to close executor service at end
+     * @param backingStoreSupplier The supplier of backing store which shall be used
+     */
+    public ParallelScatterZipCreator(
+            final ExecutorService executorService,
+            final boolean closeExecutorService,
+            final ScatterGatherBackingStoreSupplier backingStoreSupplier) {
+        this.es = executorService;
+        this.closeExecutorService = closeExecutorService;
         this.backingStoreSupplier = backingStoreSupplier;
-        es = executorService;
     }
 
     /**
      * Adds an archive entry to this archive.
-     * <p>
-     * This method is expected to be called from a single client thread
-     * </p>
      *
      * @param zipArchiveEntry The entry to add.
      * @param source          The source input stream supplier
@@ -139,131 +245,191 @@ public class ParallelScatterZipCreator {
 
     /**
      * Adds an archive entry to this archive.
-     * <p>
-     * This method is expected to be called from a single client thread
-     * </p>
      *
      * @param zipArchiveEntryRequestSupplier Should supply the entry to be added.
-     * @since 1.13
      */
     public void addArchiveEntry(final ZipArchiveEntryRequestSupplier zipArchiveEntryRequestSupplier) {
         submit(createCallable(zipArchiveEntryRequestSupplier));
     }
 
     /**
-     * Submit a callable for compression.
-     *
-     * @see ParallelScatterZipCreator#createCallable for details of if/when to use this.
-     *
-     * @param callable The callable to run, created by {@link #createCallable createCallable}, possibly wrapped by caller.
+     * Submit an entry for compression.
      */
-    public final void submit(final Callable<Object> callable) {
-        futures.add(es.submit(callable));
+    protected final void submit(final Callable<ParallelScatterZipEntry> callable) {
+        Future<ParallelScatterZipEntry> futureEntry = es.submit(callable);
+        futureWriteQueue.add(futureEntry);
     }
 
     /**
      * Create a callable that will compress the given archive entry.
-     *
-     * <p>This method is expected to be called from a single client thread.</p>
-     *
-     * Consider using {@link #addArchiveEntry addArchiveEntry}, which wraps this method and {@link #submit submit}.
-     * The most common use case for using {@link #createCallable createCallable} and {@link #submit submit} from a
-     * client is if you want to wrap the callable in something that can be prioritized by the supplied
-     * {@link ExecutorService}, for instance to process large or slow files first.
-     * Since the creation of the {@link ExecutorService} is handled by the client, all of this is up to the client.
-     *
-     * @param zipArchiveEntry The entry to add.
-     * @param source          The source input stream supplier
-     * @return A callable that should subsequently passed to #submit, possibly in a wrapped/adapted from. The
-     * value of this callable is not used, but any exceptions happening inside the compression
-     * will be propagated through the callable.
      */
-
-    public final Callable<Object> createCallable(final ZipArchiveEntry zipArchiveEntry, final InputStreamSupplier source) {
-        final int method = zipArchiveEntry.getMethod();
+    protected final Callable<ParallelScatterZipEntry> createCallable(final ZipArchiveEntry ze, final InputStreamSupplier inputStreamSupplier) {
+        final int method = ze.getMethod();
         if (method == ZipMethod.UNKNOWN_CODE) {
-            throw new IllegalArgumentException("Method must be set on zipArchiveEntry: " + zipArchiveEntry);
+            throw new IllegalArgumentException("Method must be set on zipArchiveEntry: " + ze);
         }
-        final ZipArchiveEntryRequest zipArchiveEntryRequest = createZipArchiveEntryRequest(zipArchiveEntry, source);
-        return new Callable<Object>() {
+        return new Callable<ParallelScatterZipEntry>() {
             @Override
-            public Object call() throws Exception {
-                tlScatterStreams.get().addArchiveEntry(zipArchiveEntryRequest);
-                return null;
+            public ParallelScatterZipEntry call() throws Exception {
+                try (InputStream stream = inputStreamSupplier.get()) {
+                    return compressEntryToAppend(ze, stream);
+                }
             }
         };
     }
 
     /**
      * Create a callable that will compress archive entry supplied by {@link ZipArchiveEntryRequestSupplier}.
-     *
-     * <p>This method is expected to be called from a single client thread.</p>
-     *
-     * The same as {@link #createCallable(ZipArchiveEntry, InputStreamSupplier)}, but the archive entry
-     * to be added is supplied by a {@link ZipArchiveEntryRequestSupplier}.
-     *
-     * @see #createCallable(ZipArchiveEntry, InputStreamSupplier)
-     *
-     * @param zipArchiveEntryRequestSupplier Should supply the entry to be added.
-     * @return A callable that should subsequently passed to #submit, possibly in a wrapped/adapted from. The
-     * value of this callable is not used, but any exceptions happening inside the compression
-     * will be propagated through the callable.
-     * @since 1.13
      */
-    public final Callable<Object> createCallable(final ZipArchiveEntryRequestSupplier zipArchiveEntryRequestSupplier) {
-        return new Callable<Object>() {
+    protected final Callable<ParallelScatterZipEntry> createCallable(final ZipArchiveEntryRequestSupplier zipArchiveEntryRequestSupplier) {
+        return new Callable<ParallelScatterZipEntry>() {
             @Override
-            public Object call() throws Exception {
-                tlScatterStreams.get().addArchiveEntry(zipArchiveEntryRequestSupplier.get());
-                return null;
+            public ParallelScatterZipEntry call() throws Exception {
+                ZipArchiveEntryRequest zeReq = zipArchiveEntryRequestSupplier.get();
+                ZipArchiveEntry ze = zeReq.getZipArchiveEntry();
+                try (InputStream stream = zeReq.getPayloadStream()) {
+                    return compressEntryToAppend(ze, stream);
+                }
             }
         };
+    }
+
+    protected ParallelScatterZipEntry compressEntryToAppend(
+            ZipArchiveEntry ze, InputStream payloadStream
+            ) throws IOException {
+        long startTime = System.currentTimeMillis();
+
+        final ThreadBackingStore threadBackingStore = tlScatterStreams.get();
+        OutputStream outputStream = threadBackingStore.ouputStream;
+
+        Deflater deflater = new Deflater(Deflater.DEFAULT_COMPRESSION, true);
+        StreamCompressor streamCompressor = StreamCompressor.create(
+                outputStream, deflater);
+
+        streamCompressor.deflate(payloadStream, ze.getMethod());
+
+        ze.setCrc(streamCompressor.getCrc32());
+        long bytesWrittenForLastEntry = streamCompressor.getBytesWrittenForLastEntry();
+        ze.setCompressedSize(bytesWrittenForLastEntry);
+        ze.setSize(streamCompressor.getBytesRead());
+        ze.setMethod(ZipEntry.DEFLATED);
+        // za.setUnixMode(UnixStat.FILE_FLAG | 0664);
+
+        deflater.finish();
+        streamCompressor.close();
+
+        ParallelScatterZipEntry res = new ParallelScatterZipEntry(ze, bytesWrittenForLastEntry, threadBackingStore);
+
+        long millis = System.currentTimeMillis() - startTime;
+        scatterElapsed.addAndGet(millis);
+        return res;
+    }
+
+    /**
+     * alternative to <code>startWriteTo(); waitFinishWriteTo(); </code>
+     * when using the caller thread directly
+     * @throws Exception
+     */
+    public void writeTo(ZipArchiveOutputStream zipOutputStream) throws IOException, InterruptedException, ExecutionException {
+        addEndOfEntryMarker();
+        mainWriterLoop(zipOutputStream);
+    }
+
+	private void addEndOfEntryMarker() {
+		// jdk8: CompletableFuture.completedFuture(EOF_MARKER));
+		Future<ParallelScatterZipEntry> completedMarker = new Future<ParallelScatterZipEntry>() {
+			@Override
+			public boolean isDone() {
+				return true;
+			}
+			@Override
+			public ParallelScatterZipEntry get() throws InterruptedException, ExecutionException {
+				return EOF_MARKER;
+			}
+			@Override
+			public ParallelScatterZipEntry get(long timeout, TimeUnit unit) {
+				return EOF_MARKER;
+			}
+			@Override
+			public boolean cancel(boolean mayInterruptIfRunning) {
+				return false;
+			}
+			@Override
+			public boolean isCancelled() {
+				return false;
+			}        			
+		};
+		this.futureWriteQueue.add(completedMarker);
+	}
+
+    public void startWriteTo(final ZipArchiveOutputStream zipOutputStream) {
+        this.mainWriter = es.submit(new Runnable() {  // Does not work if es is FixedThreadPool(1) !!!
+            public void run() {
+                try {
+                    mainWriterLoop(zipOutputStream);
+                } catch (Exception ex) {
+                    mainWriterEx = ex;
+                    // no rethrow! executed within thread
+                }
+            }
+        });
+    }
+
+    private void mainWriterLoop(ZipArchiveOutputStream zipOutputStream) throws IOException, InterruptedException, ExecutionException {
+        for(;;) {
+            Future<ParallelScatterZipEntry> future = futureWriteQueue.take();
+            ParallelScatterZipEntry entry = future.get();
+
+            long startTime = System.currentTimeMillis();
+            if (entry == EOF_MARKER) {
+                break;
+            }
+
+            ZipArchiveEntry ze = entry.zipArchiveEntry;
+            try (InputStream rawInput = entry.createInputStream()) {
+                zipOutputStream.addRawArchiveEntry(ze, rawInput);
+            }
+
+            long millis = System.currentTimeMillis() - startTime;
+            scatterElapsed.addAndGet(millis);
+        }
+
+        // cleanup on finish
+        for(ThreadBackingStore threadBackingStore : threadBackingStores) {
+            try {
+                threadBackingStore.backingStore.close();
+            } catch (IOException ex) { //NOSONAR
+                // no way to properly log this
+            }
+        }
     }
 
     /**
      * Write the contents this to the target {@link ZipArchiveOutputStream}.
      * <p>
-     * It may be beneficial to write things like directories and manifest files to the targetStream
-     * before calling this method.
-     * </p>
      *
-     * <p>Calling this method will shut down the {@link ExecutorService} used by this class. If any of the {@link
-     * Callable}s {@link #submit}ted to this instance throws an exception, the archive can not be created properly and
-     * this method will throw an exception.</p>
-     *
-     * @param targetStream The {@link ZipArchiveOutputStream} to receive the contents of the scatter streams
      * @throws IOException          If writing fails
      * @throws InterruptedException If we get interrupted
      * @throws ExecutionException   If something happens in the parallel execution
      */
-    public void writeTo(final ZipArchiveOutputStream targetStream)
-            throws IOException, InterruptedException, ExecutionException {
-
+    public void waitFinishWriteTo() throws IOException, InterruptedException, ExecutionException {
+    	addEndOfEntryMarker();
         try {
-            // Make sure we catch any exceptions from parallel phase
-            try {
-                for (final Future<?> future : futures) {
-                    future.get();
-                }
-            } finally {
-                es.shutdown();
-            }
-
-            es.awaitTermination(1000 * 60L, TimeUnit.SECONDS);  // == Infinity. We really *must* wait for this to complete
-
-            // It is important that all threads terminate before we go on, ensure happens-before relationship
-            compressionDoneAt = System.currentTimeMillis();
-
-            synchronized (streams) {
-                for (final ScatterZipOutputStream scatterStream : streams) {
-                    scatterStream.writeTo(targetStream);
-                    scatterStream.close();
-                }
-            }
-
-            scatterDoneAt = System.currentTimeMillis();
+            mainWriter.get();
+        } catch(Exception ex) {
+            mainWriterEx = ex; // ?? redundant
         } finally {
-            closeAll();
+            if (closeExecutorService) {
+                es.shutdown();
+                es.awaitTermination(5, TimeUnit.MINUTES);
+            }
+        }
+
+        if (mainWriterEx != null) {
+            if (mainWriterEx instanceof IOException) {
+                throw (IOException) mainWriterEx;
+            }
+            throw new ExecutionException(mainWriterEx);
         }
     }
 
@@ -273,19 +439,8 @@ public class ParallelScatterZipCreator {
      * @return A string
      */
     public ScatterStatistics getStatisticsMessage() {
-        return new ScatterStatistics(compressionDoneAt - startedAt, scatterDoneAt - compressionDoneAt);
+        return new ScatterStatistics(compressionElapsed.get(), scatterElapsed.get());
     }
 
-    private void closeAll() {
-        synchronized (streams) {
-            for (final ScatterZipOutputStream scatterStream : streams) {
-                try {
-                    scatterStream.close();
-                } catch (IOException ex) { //NOSONAR
-                    // no way to properly log this
-                }
-            }
-        }
-    }
 }
 
