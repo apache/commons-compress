@@ -81,6 +81,10 @@ The <action> type attribute can be add,update,fix,remove.
         The ARJ package has been updated to contain constants for more
         recent specifications.
       </action>
+      <action type="update" date="2019-04-30"
+              issue="COMPRESS-484">
+        Update optional library zstd-jni from 1.3.3-3 to 1.4.0-1.
+      </action>
     </release>
     <release version="1.18" date="2018-08-16"
              description="Release 1.18">
