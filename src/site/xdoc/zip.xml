@@ -551,14 +551,17 @@
           <p>To assist this process, clients can use
           <code>ParallelScatterZipCreator</code> that will handle threads
           pools and correct memory model consistency so the client
-          can avoid these issues. Please note that when writing well-formed
-          Zip files this way, it is usually necessary to keep a
-          separate <code>ScatterZipOutputStream</code> that receives all directories
-          and writes this to the target <code>ZipArchiveOutputStream</code> before
-          the ones created through <code>ParallelScatterZipCreator</code>. This is the responsibility of the client.</p>
+          can avoid these issues.</p>
 
-          <p>There is no guarantee of order of the entries when writing a Zip
-          file with <code>ParallelScatterZipCreator</code>.</p>
+          <p>Until version 1.18, there was no guarantee of order of the entries when writing a Zip
+          file with <code>ParallelScatterZipCreator</code>.  In consequence, when writing well-formed
+          Zip files this way, it was usually necessary to keep a
+          separate <code>ScatterZipOutputStream</code> that received all directories
+          and wrote this to the target <code>ZipArchiveOutputStream</code> before
+          the ones created through <code>ParallelScatterZipCreator</code>. This was the responsibility of the client.</p>
+
+          <p>Starting with version 1.19, entries order is kept, then this specific handling of directories is not
+          necessary any more.</p>
 
           See the examples section for a code sample demonstrating how to make a zip file.
       </subsection>
