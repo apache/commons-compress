@@ -41,9 +41,9 @@ import static org.apache.commons.compress.archivers.zip.ZipArchiveEntryRequest.c
 /**
  * Creates a zip in parallel by using multiple threadlocal {@link ScatterZipOutputStream} instances.
  * <p>
- * Note that this class generally makes no guarantees about the order of things written to
- * the output file. Things that need to come in a specific order (manifests, directories)
- * must be handled by the client of this class, usually by writing these things to the
+ * Note that until 1.18, this class generally made no guarantees about the order of things written to
+ * the output file. Things that needed to come in a specific order (manifests, directories)
+ * had to be handled by the client of this class, usually by writing these things to the
  * {@link ZipArchiveOutputStream} <em>before</em> calling {@link #writeTo writeTo} on this class.</p>
  * <p>
  * The client can supply an {@link java.util.concurrent.ExecutorService}, but for reasons of
@@ -55,7 +55,7 @@ public class ParallelScatterZipCreator {
     private final List<ScatterZipOutputStream> streams = synchronizedList(new ArrayList<ScatterZipOutputStream>());
     private final ExecutorService es;
     private final ScatterGatherBackingStoreSupplier backingStoreSupplier;
-    private final List<Future<Object>> futures = new ArrayList<>();
+    private final List<Future<ScatterZipOutputStream>> futures = new ArrayList<>();
 
     private final long startedAt = System.currentTimeMillis();
     private long compressionDoneAt = 0;
@@ -157,7 +157,7 @@ public class ParallelScatterZipCreator {
      *
      * @param callable The callable to run, created by {@link #createCallable createCallable}, possibly wrapped by caller.
      */
-    public final void submit(final Callable<Object> callable) {
+    public final void submit(final Callable<ScatterZipOutputStream> callable) {
         futures.add(es.submit(callable));
     }
 
@@ -179,17 +179,18 @@ public class ParallelScatterZipCreator {
      * will be propagated through the callable.
      */
 
-    public final Callable<Object> createCallable(final ZipArchiveEntry zipArchiveEntry, final InputStreamSupplier source) {
+    public final Callable<ScatterZipOutputStream> createCallable(final ZipArchiveEntry zipArchiveEntry, final InputStreamSupplier source) {
         final int method = zipArchiveEntry.getMethod();
         if (method == ZipMethod.UNKNOWN_CODE) {
             throw new IllegalArgumentException("Method must be set on zipArchiveEntry: " + zipArchiveEntry);
         }
         final ZipArchiveEntryRequest zipArchiveEntryRequest = createZipArchiveEntryRequest(zipArchiveEntry, source);
-        return new Callable<Object>() {
+        return new Callable<ScatterZipOutputStream>() {
             @Override
-            public Object call() throws Exception {
-                tlScatterStreams.get().addArchiveEntry(zipArchiveEntryRequest);
-                return null;
+            public ScatterZipOutputStream call() throws Exception {
+                ScatterZipOutputStream scatterStream = tlScatterStreams.get();
+                scatterStream.addArchiveEntry(zipArchiveEntryRequest);
+                return scatterStream;
             }
         };
     }
@@ -210,12 +211,13 @@ public class ParallelScatterZipCreator {
      * will be propagated through the callable.
      * @since 1.13
      */
-    public final Callable<Object> createCallable(final ZipArchiveEntryRequestSupplier zipArchiveEntryRequestSupplier) {
-        return new Callable<Object>() {
+    public final Callable<ScatterZipOutputStream> createCallable(final ZipArchiveEntryRequestSupplier zipArchiveEntryRequestSupplier) {
+        return new Callable<ScatterZipOutputStream>() {
             @Override
-            public Object call() throws Exception {
-                tlScatterStreams.get().addArchiveEntry(zipArchiveEntryRequestSupplier.get());
-                return null;
+            public ScatterZipOutputStream call() throws Exception {
+                ScatterZipOutputStream scatterStream = tlScatterStreams.get();
+                scatterStream.addArchiveEntry(zipArchiveEntryRequestSupplier.get());
+                return scatterStream;
             }
         };
     }
@@ -255,8 +257,13 @@ public class ParallelScatterZipCreator {
             compressionDoneAt = System.currentTimeMillis();
 
             synchronized (streams) {
+                // write zip entries in the order they were added (kept as futures)
+                for (final Future<ScatterZipOutputStream> future : futures) {
+                    ScatterZipOutputStream scatterStream = future.get();
+                    scatterStream.zipEntryWriter().writeNextZipEntry(targetStream);
+                }
+
                 for (final ScatterZipOutputStream scatterStream : streams) {
-                    scatterStream.writeTo(targetStream);
                     scatterStream.close();
                 }
             }

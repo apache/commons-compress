@@ -98,12 +98,15 @@ public class ParallelScatterZipCreatorTest {
     private void removeEntriesFoundInZipFile(final File result, final Map<String, byte[]> entries) throws IOException {
         final ZipFile zf = new ZipFile(result);
         final Enumeration<ZipArchiveEntry> entriesInPhysicalOrder = zf.getEntriesInPhysicalOrder();
+        int i = 0;
         while (entriesInPhysicalOrder.hasMoreElements()){
             final ZipArchiveEntry zipArchiveEntry = entriesInPhysicalOrder.nextElement();
             final InputStream inputStream = zf.getInputStream(zipArchiveEntry);
             final byte[] actual = IOUtils.toByteArray(inputStream);
             final byte[] expected = entries.remove(zipArchiveEntry.getName());
             assertArrayEquals( "For " + zipArchiveEntry.getName(),  expected, actual);
+            // check order of zip entries vs order of order of addition to the parallel zip creator
+            assertEquals( "For " + zipArchiveEntry.getName(),  "file" + i++, zipArchiveEntry.getName());
         }
         zf.close();
     }
@@ -145,7 +148,7 @@ public class ParallelScatterZipCreatorTest {
                     return new ByteArrayInputStream(payloadBytes);
                 }
             };
-            final Callable<Object> callable;
+            final Callable<ScatterZipOutputStream> callable;
             if (i % 2 == 0) {
                 callable = zipCreator.createCallable(za, iss);
             } else {
