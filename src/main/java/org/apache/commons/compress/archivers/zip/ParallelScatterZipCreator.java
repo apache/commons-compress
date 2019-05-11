@@ -24,9 +24,9 @@ import org.apache.commons.compress.parallel.ScatterGatherBackingStoreSupplier;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Deque;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -35,7 +35,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.Deflater;
 
-import static java.util.Collections.synchronizedList;
 import static org.apache.commons.compress.archivers.zip.ZipArchiveEntryRequest.createZipArchiveEntryRequest;
 
 /**
@@ -52,10 +51,10 @@ import static org.apache.commons.compress.archivers.zip.ZipArchiveEntryRequest.c
  * @since 1.10
  */
 public class ParallelScatterZipCreator {
-    private final List<ScatterZipOutputStream> streams = synchronizedList(new ArrayList<ScatterZipOutputStream>());
+    private final Deque<ScatterZipOutputStream> streams = new ConcurrentLinkedDeque<>();
     private final ExecutorService es;
     private final ScatterGatherBackingStoreSupplier backingStoreSupplier;
-    private final List<Future<ScatterZipOutputStream>> futures = new ArrayList<>();
+    private final Deque<Future<ScatterZipOutputStream>> futures = new ConcurrentLinkedDeque<>();
 
     private final long startedAt = System.currentTimeMillis();
     private long compressionDoneAt = 0;
@@ -256,16 +255,13 @@ public class ParallelScatterZipCreator {
             // It is important that all threads terminate before we go on, ensure happens-before relationship
             compressionDoneAt = System.currentTimeMillis();
 
-            synchronized (streams) {
-                // write zip entries in the order they were added (kept as futures)
-                for (final Future<ScatterZipOutputStream> future : futures) {
-                    ScatterZipOutputStream scatterStream = future.get();
-                    scatterStream.zipEntryWriter().writeNextZipEntry(targetStream);
-                }
+            for (final Future<ScatterZipOutputStream> future : futures) {
+                ScatterZipOutputStream scatterStream = future.get();
+                scatterStream.zipEntryWriter().writeNextZipEntry(targetStream);
+            }
 
-                for (final ScatterZipOutputStream scatterStream : streams) {
-                    scatterStream.close();
-                }
+            for (final ScatterZipOutputStream scatterStream : streams) {
+                scatterStream.close();
             }
 
             scatterDoneAt = System.currentTimeMillis();
@@ -284,13 +280,11 @@ public class ParallelScatterZipCreator {
     }
 
     private void closeAll() {
-        synchronized (streams) {
-            for (final ScatterZipOutputStream scatterStream : streams) {
-                try {
-                    scatterStream.close();
-                } catch (IOException ex) { //NOSONAR
-                    // no way to properly log this
-                }
+        for (final ScatterZipOutputStream scatterStream : streams) {
+            try {
+                scatterStream.close();
+            } catch (IOException ex) { //NOSONAR
+                // no way to properly log this
             }
         }
     }
