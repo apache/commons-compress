@@ -58,7 +58,7 @@ import org.apache.commons.compress.utils.BoundedInputStream;
  * or use auto-created (and shutdown) ThreadPool executor
  * <PRE>
  * OrderedParallelScatterZipCreator zipCreator = new OrderedParallelScatterZipCreator();
- * <PRE>
+ * </PRE>
  *
  * Adding entries, then writing result zip output
  * <PRE>
@@ -254,6 +254,8 @@ public class ParallelScatterZipCreator {
 
     /**
      * Submit an entry for compression.
+     * 
+     * @param callable the entry to be added
      */
     protected final void submit(final Callable<ParallelScatterZipEntry> callable) {
         Future<ParallelScatterZipEntry> futureEntry = es.submit(callable);
@@ -262,6 +264,10 @@ public class ParallelScatterZipCreator {
 
     /**
      * Create a callable that will compress the given archive entry.
+     * 
+     * @param ze entry to add
+     * @param inputStreamSupplier supplier for input stream of zip entry
+     * @return the callable to submit for adding the entry
      */
     protected final Callable<ParallelScatterZipEntry> createCallable(final ZipArchiveEntry ze, final InputStreamSupplier inputStreamSupplier) {
         final int method = ze.getMethod();
@@ -280,6 +286,9 @@ public class ParallelScatterZipCreator {
 
     /**
      * Create a callable that will compress archive entry supplied by {@link ZipArchiveEntryRequestSupplier}.
+     * 
+     * @param zipArchiveEntryRequestSupplier supplier for a zip entry to add
+     * @return the callable to submit for adding the entry
      */
     protected final Callable<ParallelScatterZipEntry> createCallable(final ZipArchiveEntryRequestSupplier zipArchiveEntryRequestSupplier) {
         return new Callable<ParallelScatterZipEntry>() {
@@ -328,7 +337,11 @@ public class ParallelScatterZipCreator {
     /**
      * alternative to <code>startWriteTo(); waitFinishWriteTo(); </code>
      * when using the caller thread directly
-     * @throws Exception
+     * 
+     * @param zipOutputStream the target to write to 
+     * @throws IOException          If writing fails
+     * @throws InterruptedException If we get interrupted
+     * @throws ExecutionException   If something happens in the parallel execution
      */
     public void writeTo(ZipArchiveOutputStream zipOutputStream) throws IOException, InterruptedException, ExecutionException {
         addEndOfEntryMarker();
