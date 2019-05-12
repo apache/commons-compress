@@ -84,12 +84,12 @@ public class Expander {
     public void expand(String format, File archive, File targetDirectory) throws IOException, ArchiveException {
         if (prefersSeekableByteChannel(format)) {
             try (SeekableByteChannel c = FileChannel.open(archive.toPath(), StandardOpenOption.READ)) {
-                expand(format, c, targetDirectory);
+                expand(format, c, targetDirectory, CloseableConsumer.CLOSING_CONSUMER);
             }
             return;
         }
         try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()))) {
-            expand(format, i, targetDirectory);
+            expand(format, i, targetDirectory, CloseableConsumer.CLOSING_CONSUMER);
         }
     }
 
@@ -98,17 +98,55 @@ public class Expander {
      *
      * <p>Tries to auto-detect the archive's format.</p>
      *
+     * <p>This method creates a wrapper around the archive stream
+     * which is never closed and thus leaks resources, please use
+     * {@link #expand(InputStream,File,CloseableConsumer)}
+     * instead.</p>
+     *
      * @param archive the file to expand
      * @param targetDirectory the directory to write to
      * @throws IOException if an I/O error occurs
      * @throws ArchiveException if the archive cannot be read for other reasons
+     * @deprecated this method leaks resources
      */
+    @Deprecated
     public void expand(InputStream archive, File targetDirectory) throws IOException, ArchiveException {
-        expand(new ArchiveStreamFactory().createArchiveInputStream(archive), targetDirectory);
+        expand(archive, targetDirectory, CloseableConsumer.NULL_CONSUMER);
     }
 
     /**
      * Expands {@code archive} into {@code targetDirectory}.
+     *
+     * <p>Tries to auto-detect the archive's format.</p>
+     *
+     * <p>This method creates a wrapper around the archive stream and
+     * the caller of this method is responsible for closing it -
+     * probably at the same time as closing the stream itself. The
+     * caller is informed about the wrapper object via the {@code
+     * closeableConsumer} callback</p>
+     *
+     * @param archive the file to expand
+     * @param targetDirectory the directory to write to
+     * @param closeableConsumer is informed about the stream wrapped around the passed in stream
+     * @throws IOException if an I/O error occurs
+     * @throws ArchiveException if the archive cannot be read for other reasons
+     * @since 1.19
+     */
+    public void expand(InputStream archive, File targetDirectory, CloseableConsumer closeableConsumer)
+        throws IOException, ArchiveException {
+        try (CloseableConsumerAdapter c = new CloseableConsumerAdapter(closeableConsumer)) {
+            expand(c.track(new ArchiveStreamFactory().createArchiveInputStream(archive)),
+                targetDirectory);
+        }
+    }
+
+    /**
+     * Expands {@code archive} into {@code targetDirectory}.
+     *
+     * <p>This method creates a wrapper around the archive stream
+     * which is never closed and thus leaks resources, please use
+     * {@link #expand(String,InputStream,File,CloseableConsumer)}
+     * instead.</p>
      *
      * @param archive the file to expand
      * @param targetDirectory the directory to write to
@@ -116,14 +154,47 @@ public class Expander {
      * accepted by {@link ArchiveStreamFactory}.
      * @throws IOException if an I/O error occurs
      * @throws ArchiveException if the archive cannot be read for other reasons
+     * @deprecated this method leaks resources
      */
+    @Deprecated
     public void expand(String format, InputStream archive, File targetDirectory)
         throws IOException, ArchiveException {
-        expand(new ArchiveStreamFactory().createArchiveInputStream(format, archive), targetDirectory);
+        expand(format, archive, targetDirectory, CloseableConsumer.NULL_CONSUMER);
     }
 
     /**
      * Expands {@code archive} into {@code targetDirectory}.
+     *
+     * <p>This method creates a wrapper around the archive stream and
+     * the caller of this method is responsible for closing it -
+     * probably at the same time as closing the stream itself. The
+     * caller is informed about the wrapper object via the {@code
+     * closeableConsumer} callback</p>
+     *
+     * @param archive the file to expand
+     * @param targetDirectory the directory to write to
+     * @param format the archive format. This uses the same format as
+     * accepted by {@link ArchiveStreamFactory}.
+     * @param closeableConsumer is informed about the stream wrapped around the passed in stream
+     * @throws IOException if an I/O error occurs
+     * @throws ArchiveException if the archive cannot be read for other reasons
+     * @since 1.19
+     */
+    public void expand(String format, InputStream archive, File targetDirectory, CloseableConsumer closeableConsumer)
+        throws IOException, ArchiveException {
+        try (CloseableConsumerAdapter c = new CloseableConsumerAdapter(closeableConsumer)) {
+            expand(c.track(new ArchiveStreamFactory().createArchiveInputStream(format, archive)),
+                targetDirectory);
+        }
+    }
+
+    /**
+     * Expands {@code archive} into {@code targetDirectory}.
+     *
+     * <p>This method creates a wrapper around the archive channel
+     * which is never closed and thus leaks resources, please use
+     * {@link #expand(String,SeekableByteChannel,File,CloseableConsumer)}
+     * instead.</p>
      *
      * @param archive the file to expand
      * @param targetDirectory the directory to write to
@@ -131,18 +202,46 @@ public class Expander {
      * accepted by {@link ArchiveStreamFactory}.
      * @throws IOException if an I/O error occurs
      * @throws ArchiveException if the archive cannot be read for other reasons
+     * @deprecated this method leaks resources
      */
+    @Deprecated
     public void expand(String format, SeekableByteChannel archive, File targetDirectory)
         throws IOException, ArchiveException {
+        expand(format, archive, targetDirectory, CloseableConsumer.NULL_CONSUMER);
+    }
+
+    /**
+     * Expands {@code archive} into {@code targetDirectory}.
+     *
+     * <p>This method creates a wrapper around the archive channel and
+     * the caller of this method is responsible for closing it -
+     * probably at the same time as closing the channel itself. The
+     * caller is informed about the wrapper object via the {@code
+     * closeableConsumer} callback</p>
+     *
+     * @param archive the file to expand
+     * @param targetDirectory the directory to write to
+     * @param format the archive format. This uses the same format as
+     * accepted by {@link ArchiveStreamFactory}.
+     * @param closeableConsumer is informed about the stream wrapped around the passed in channel
+     * @throws IOException if an I/O error occurs
+     * @throws ArchiveException if the archive cannot be read for other reasons
+     * @since 1.19
+     */
+    public void expand(String format, SeekableByteChannel archive, File targetDirectory,
+        CloseableConsumer closeableConsumer)
+        throws IOException, ArchiveException {
+        try (CloseableConsumerAdapter c = new CloseableConsumerAdapter(closeableConsumer)) {
         if (!prefersSeekableByteChannel(format)) {
-            expand(format, Channels.newInputStream(archive), targetDirectory);
+            expand(format, c.track(Channels.newInputStream(archive)), targetDirectory);
         } else if (ArchiveStreamFactory.ZIP.equalsIgnoreCase(format)) {
-            expand(new ZipFile(archive), targetDirectory);
+            expand(c.track(new ZipFile(archive)), targetDirectory);
         } else if (ArchiveStreamFactory.SEVEN_Z.equalsIgnoreCase(format)) {
-            expand(new SevenZFile(archive), targetDirectory);
+            expand(c.track(new SevenZFile(archive)), targetDirectory);
         } else {
             // never reached as prefersSeekableByteChannel only returns true for ZIP and 7z
             throw new ArchiveException("Don't know how to handle format " + format);
+        }
         }
     }
 

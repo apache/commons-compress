@@ -71,12 +71,12 @@ public class Archiver {
         if (prefersSeekableByteChannel(format)) {
             try (SeekableByteChannel c = FileChannel.open(target.toPath(), StandardOpenOption.WRITE,
                 StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-                create(format, c, directory);
+                create(format, c, directory, CloseableConsumer.CLOSING_CONSUMER);
             }
             return;
         }
         try (OutputStream o = Files.newOutputStream(target.toPath())) {
-            create(format, o, directory);
+            create(format, o, directory, CloseableConsumer.CLOSING_CONSUMER);
         }
     }
 
@@ -84,6 +84,11 @@ public class Archiver {
      * Creates an archive {@code target} using the format {@code
      * format} by recursively including all files and directories in
      * {@code directory}.
+     *
+     * <p>This method creates a wrapper around the target stream
+     * which is never closed and thus leaks resources, please use
+     * {@link #create(String,OutputStream,File,CloseableConsumer)}
+     * instead.</p>
      *
      * @param format the archive format. This uses the same format as
      * accepted by {@link ArchiveStreamFactory}.
@@ -91,9 +96,11 @@ public class Archiver {
      * @param directory the directory that contains the files to archive.
      * @throws IOException if an I/O error occurs
      * @throws ArchiveException if the archive cannot be created for other reasons
+     * @deprecated this method leaks resources
      */
+    @Deprecated
     public void create(String format, OutputStream target, File directory) throws IOException, ArchiveException {
-        create(new ArchiveStreamFactory().createArchiveOutputStream(format, target), directory);
+        create(format, target, directory, CloseableConsumer.NULL_CONSUMER);
     }
 
     /**
@@ -101,24 +108,87 @@ public class Archiver {
      * format} by recursively including all files and directories in
      * {@code directory}.
      *
+     * <p>This method creates a wrapper around the archive stream and
+     * the caller of this method is responsible for closing it -
+     * probably at the same time as closing the stream itself. The
+     * caller is informed about the wrapper object via the {@code
+     * closeableConsumer} callback</p>
+     *
+     * @param format the archive format. This uses the same format as
+     * accepted by {@link ArchiveStreamFactory}.
+     * @param target the stream to write the new archive to.
+     * @param directory the directory that contains the files to archive.
+     * @param closeableConsumer is informed about the stream wrapped around the passed in stream
+     * @throws IOException if an I/O error occurs
+     * @throws ArchiveException if the archive cannot be created for other reasons
+     * @since 1.19
+     */
+    public void create(String format, OutputStream target, File directory,
+        CloseableConsumer closeableConsumer) throws IOException, ArchiveException {
+        try (CloseableConsumerAdapter c = new CloseableConsumerAdapter(closeableConsumer)) {
+            create(c.track(new ArchiveStreamFactory().createArchiveOutputStream(format, target)),
+                directory);
+        }
+    }
+
+    /**
+     * Creates an archive {@code target} using the format {@code
+     * format} by recursively including all files and directories in
+     * {@code directory}.
+     *
+     * <p>This method creates a wrapper around the target channel
+     * which is never closed and thus leaks resources, please use
+     * {@link #create(String,SeekableByteChannel,File,CloseableConsumer)}
+     * instead.</p>
+     *
      * @param format the archive format. This uses the same format as
      * accepted by {@link ArchiveStreamFactory}.
      * @param target the channel to write the new archive to.
      * @param directory the directory that contains the files to archive.
      * @throws IOException if an I/O error occurs
      * @throws ArchiveException if the archive cannot be created for other reasons
+     * @deprecated this method leaks resources
      */
+    @Deprecated
     public void create(String format, SeekableByteChannel target, File directory)
         throws IOException, ArchiveException {
+        create(format, target, directory, CloseableConsumer.NULL_CONSUMER);
+    }
+
+    /**
+     * Creates an archive {@code target} using the format {@code
+     * format} by recursively including all files and directories in
+     * {@code directory}.
+     *
+     * <p>This method creates a wrapper around the archive channel and
+     * the caller of this method is responsible for closing it -
+     * probably at the same time as closing the channel itself. The
+     * caller is informed about the wrapper object via the {@code
+     * closeableConsumer} callback</p>
+     *
+     * @param format the archive format. This uses the same format as
+     * accepted by {@link ArchiveStreamFactory}.
+     * @param target the channel to write the new archive to.
+     * @param directory the directory that contains the files to archive.
+     * @param closeableConsumer is informed about the stream wrapped around the passed in stream
+     * @throws IOException if an I/O error occurs
+     * @throws ArchiveException if the archive cannot be created for other reasons
+     * @since 1.19
+     */
+    public void create(String format, SeekableByteChannel target, File directory,
+        CloseableConsumer closeableConsumer)
+        throws IOException, ArchiveException {
+        try (CloseableConsumerAdapter c = new CloseableConsumerAdapter(closeableConsumer)) {
         if (!prefersSeekableByteChannel(format)) {
-            create(format, Channels.newOutputStream(target), directory);
+            create(format, c.track(Channels.newOutputStream(target)), directory);
         } else if (ArchiveStreamFactory.ZIP.equalsIgnoreCase(format)) {
-            create(new ZipArchiveOutputStream(target), directory);
+            create(c.track(new ZipArchiveOutputStream(target)), directory);
         } else if (ArchiveStreamFactory.SEVEN_Z.equalsIgnoreCase(format)) {
-            create(new SevenZOutputFile(target), directory);
+            create(c.track(new SevenZOutputFile(target)), directory);
         } else {
             // never reached as prefersSeekableByteChannel only returns true for ZIP and 7z
             throw new ArchiveException("Don't know how to handle format " + format);
+        }
         }
     }
 

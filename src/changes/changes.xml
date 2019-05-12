@@ -96,6 +96,13 @@ The <action> type attribute can be add,update,fix,remove.
         Throw IOException rather than RuntimeExceptions for certain
         malformed LZ4 or Snappy inputs.
       </action>
+      <action type="update" date="2019-08-09" issue="COMPRESS-486">
+        The Expander and Archive example classes can leak resources
+        they have wrapped around passed in streams or channels. The
+        methods consuming streams and channels have been adapted to
+        give the calling code a chance to deal with those wrapper
+        resources.
+      </action>
     </release>
     <release version="1.18" date="2018-08-16"
              description="Release 1.18">
