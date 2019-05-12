@@ -136,6 +136,30 @@ public class ExtraFieldUtils {
     public static ZipExtraField[] parse(final byte[] data, final boolean local,
                                         final UnparseableExtraField onUnparseableData)
         throws ZipException {
+        return parse(data, local, onUnparseableData, ParseErrorBehavior.THROW);
+    }
+
+    /**
+     * Split the array into ExtraFields and populate them with the
+     * given data.
+     * @param data an array of bytes
+     * @param local whether data originates from the local file data
+     * or the central directory
+     * @param onUnparseableData what to do if the extra field data
+     * cannot be parsed.
+     * @param onParseError what to do if the field's key is recognized
+     * but our implementation class fails to handle it. If the key and
+     * length cannot be parsed at all {@code onUnparseableData} will
+     * determine the behavior.
+     * @return an array of ExtraFields
+     * @throws ZipException on error
+     *
+     * @since 1.19
+     */
+    public static ZipExtraField[] parse(final byte[] data, final boolean local,
+                                        final UnparseableExtraField onUnparseableData,
+                                        final ParseErrorBehavior onParseError)
+        throws ZipException {
         final List<ZipExtraField> v = new ArrayList<>();
         int start = 0;
         LOOP:
@@ -173,21 +197,21 @@ public class ExtraFieldUtils {
                                            + onUnparseableData.getKey());
                 }
             }
-            try {
-                final ZipExtraField ze = createExtraField(headerId);
+            switch (onParseError) {
+            case MAKE_UNRECOGNIZED:
                 try {
-                    if (local) {
-                        ze.parseFromLocalFileData(data, start + WORD, length);
-                    } else {
-                        ze.parseFromCentralDirectoryData(data, start + WORD, length);
-                    }
-                } catch (ArrayIndexOutOfBoundsException aiobe) {
-                    throw (ZipException) new ZipException("Failed to parse corrupt ZIP extra field of type "
-                        + Integer.toHexString(headerId.getValue())).initCause(aiobe);
+                    v.add(parseField(headerId, local, data, start + WORD, length));
+                } catch (ZipException ex) {
+                    final UnrecognizedExtraField u = new UnrecognizedExtraField();
+                    u.setHeaderId(headerId);
+                    fillField(u, local, data, start + WORD, length);
+                    v.add(u);
                 }
-                v.add(ze);
-            } catch (final InstantiationException | IllegalAccessException ie) {
-                throw (ZipException) new ZipException(ie.getMessage()).initCause(ie);
+                break;
+            case THROW: // FALLTHROUGH
+            default:
+                v.add(parseField(headerId, local, data, start + WORD, length));
+                break;
             }
             start += length + WORD;
         }
@@ -273,6 +297,31 @@ public class ExtraFieldUtils {
         return result;
     }
 
+    private static ZipExtraField parseField(final ZipShort headerId, final boolean local, final byte[] data,
+        final int off, final int len) throws ZipException {
+        try {
+            final ZipExtraField ze = createExtraField(headerId);
+            fillField(ze, local, data, off, len);
+            return ze;
+        } catch (final InstantiationException | IllegalAccessException ie) {
+            throw (ZipException) new ZipException(ie.getMessage()).initCause(ie);
+        }
+    }
+
+    private static void fillField(final ZipExtraField ze, final boolean local, final byte[] data, final int off,
+        final int len) throws ZipException {
+        try {
+            if (local) {
+                ze.parseFromLocalFileData(data, off, len);
+            } else {
+                ze.parseFromCentralDirectoryData(data, off, len);
+            }
+        } catch (ArrayIndexOutOfBoundsException aiobe) {
+            throw (ZipException) new ZipException("Failed to parse corrupt ZIP extra field of type "
+                + Integer.toHexString(ze.getHeaderId().getValue())).initCause(aiobe);
+        }
+    }
+
     /**
      * "enum" for the possible actions to take if the extra field
      * cannot be parsed.
@@ -324,5 +373,21 @@ public class ExtraFieldUtils {
          * @return the key
          */
         public int getKey() { return key; }
+    }
+
+    /**
+     * What shall {@link #parse} do if parsing the extra field fails.
+     *
+     * @since 1.19
+     */
+    public enum ParseErrorBehavior {
+        /**
+         * Throw an exception if parsing the extra field fails.
+         */
+        THROW,
+        /**
+         * Replace the extra field with an instance of an {@link UnrecognizedExtraField}.
+         */
+        MAKE_UNRECOGNIZED;
     }
 }
