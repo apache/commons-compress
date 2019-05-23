@@ -90,7 +90,7 @@ public class ExtraFieldUtilsTest implements UnixStat {
             fail("data should be invalid");
         } catch (final Exception e) {
             assertEquals("message",
-                         "bad extra field starting at "+(4 + aLocal.length)
+                         "Bad extra field starting at "+(4 + aLocal.length)
                          + ".  Block length of 1 bytes exceeds remaining data of 0 bytes.",
                          e.getMessage());
         }

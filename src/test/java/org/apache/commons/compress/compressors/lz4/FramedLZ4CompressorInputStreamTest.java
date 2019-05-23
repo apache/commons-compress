@@ -522,7 +522,7 @@ public final class FramedLZ4CompressorInputStreamTest
                 fail("expected exception");
             }
         } catch (IOException ex) {
-            assertThat(ex.getMessage(), containsString("premature end of data"));
+            assertThat(ex.getMessage(), containsString("Premature end of data"));
         }
     }
 
