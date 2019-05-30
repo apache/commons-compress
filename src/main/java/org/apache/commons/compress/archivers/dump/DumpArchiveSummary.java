@@ -154,10 +154,10 @@ public class DumpArchiveSummary {
 
     /**
      * Set the last mountpoint.
-     * @param filesystem the last mountpoint
+     * @param fileSystem the last mountpoint
      */
-    public void setFilesystem(final String filesystem) {
-        this.filesys = filesystem;
+    public void setFilesystem(final String fileSystem) {
+        this.filesys = fileSystem;
     }
 
     /**
