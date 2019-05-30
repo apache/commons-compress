@@ -72,7 +72,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     private Queue<DumpArchiveEntry> queue;
 
     /**
-     * The encoding to use for filenames and labels.
+     * The encoding to use for file names and labels.
      */
     private final ZipEncoding zipEncoding;
 

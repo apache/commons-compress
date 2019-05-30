@@ -89,7 +89,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
     private final int blockSize;
 
     /**
-     * The encoding to use for filenames and labels.
+     * The encoding to use for file names and labels.
      */
     private final ZipEncoding zipEncoding;
 

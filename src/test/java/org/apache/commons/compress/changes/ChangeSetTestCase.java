@@ -1202,7 +1202,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     }
 
     /**
-     * Adds a file with the same filename as an existing file from the stream.
+     * Adds a file with the same file name as an existing file from the stream.
      * Should lead to a replacement.
      *
      * @throws Exception
@@ -1247,7 +1247,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     }
 
     /**
-     * Adds a file with the same filename as an existing file from the stream.
+     * Adds a file with the same file name as an existing file from the stream.
      * Should lead to a replacement.
      *
      * @throws Exception

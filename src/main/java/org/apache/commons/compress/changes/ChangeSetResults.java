@@ -30,7 +30,7 @@ public class ChangeSetResults {
     private final List<String> deleted = new ArrayList<>();
 
     /**
-     * Adds the filename of a recently deleted file to the result list.
+     * Adds the file name of a recently deleted file to the result list.
      * @param fileName the file which has been deleted
      */
     void deleted(final String fileName) {
@@ -56,35 +56,35 @@ public class ChangeSetResults {
     }
 
     /**
-     * Returns a list of filenames which has been added from the changeset
-     * @return the list of filenames
+     * Returns a list of file names which has been added from the changeset
+     * @return the list of file names
      */
     public List<String> getAddedFromChangeSet() {
         return addedFromChangeSet;
     }
 
     /**
-     * Returns a list of filenames which has been added from the original stream
-     * @return the list of filenames
+     * Returns a list of file names which has been added from the original stream
+     * @return the list of file names
      */
     public List<String> getAddedFromStream() {
         return addedFromStream;
     }
 
     /**
-     * Returns a list of filenames which has been deleted
-     * @return the list of filenames
+     * Returns a list of file names which has been deleted
+     * @return the list of file names
      */
     public List<String> getDeleted() {
         return deleted;
     }
 
     /**
-     * Checks if an filename already has been added to the result list
-     * @param filename the filename to check
-     * @return true, if this filename already has been added
+     * Checks if an file name already has been added to the result list
+     * @param fileName the file name to check
+     * @return true, if this file name already has been added
      */
-    boolean hasBeenAdded(final String filename) {
-        return addedFromChangeSet.contains(filename) || addedFromStream.contains(filename);
+    boolean hasBeenAdded(final String fileName) {
+        return addedFromChangeSet.contains(fileName) || addedFromStream.contains(fileName);
     }
 }

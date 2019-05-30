@@ -42,15 +42,15 @@ class Change {
     static final int TYPE_DELETE_DIR = 4;
 
     /**
-     * Constructor. Takes the filename of the file to be deleted
+     * Constructor. Takes the file name of the file to be deleted
      * from the stream as argument.
-     * @param pFilename the filename of the file to delete
+     * @param fileName the file name of the file to delete
      */
-    Change(final String pFilename, final int type) {
-        if(pFilename == null) {
+    Change(final String fileName, final int type) {
+        if(fileName == null) {
             throw new NullPointerException();
         }
-        this.targetFile = pFilename;
+        this.targetFile = fileName;
         this.type = type;
         this.input = null;
         this.entry = null;

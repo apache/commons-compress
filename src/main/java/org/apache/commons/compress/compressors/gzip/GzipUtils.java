@@ -55,14 +55,14 @@ public class GzipUtils {
     }
 
     /**
-     * Detects common gzip suffixes in the given filename.
+     * Detects common gzip suffixes in the given file name.
      *
-     * @param filename name of a file
-     * @return {@code true} if the filename has a common gzip suffix,
+     * @param fileName name of a file
+     * @return {@code true} if the file name has a common gzip suffix,
      *         {@code false} otherwise
      */
-    public static boolean isCompressedFilename(final String filename) {
-        return fileNameUtil.isCompressedFilename(filename);
+    public static boolean isCompressedFilename(final String fileName) {
+        return fileNameUtil.isCompressedFilename(fileName);
     }
 
     /**
@@ -70,31 +70,31 @@ public class GzipUtils {
      * file should have after uncompression. Commonly used file type specific
      * suffixes like ".tgz" or ".svgz" are automatically detected and
      * correctly mapped. For example the name "package.tgz" is mapped to
-     * "package.tar". And any filenames with the generic ".gz" suffix
+     * "package.tar". And any file names with the generic ".gz" suffix
      * (or any other generic gzip suffix) is mapped to a name without that
-     * suffix. If no gzip suffix is detected, then the filename is returned
+     * suffix. If no gzip suffix is detected, then the file name is returned
      * unmapped.
      *
-     * @param filename name of a file
+     * @param fileName name of a file
      * @return name of the corresponding uncompressed file
      */
-    public static String getUncompressedFilename(final String filename) {
-        return fileNameUtil.getUncompressedFilename(filename);
+    public static String getUncompressedFilename(final String fileName) {
+        return fileNameUtil.getUncompressedFilename(fileName);
     }
 
     /**
-     * Maps the given filename to the name that the file should have after
+     * Maps the given file name to the name that the file should have after
      * compression with gzip. Common file types with custom suffixes for
      * compressed versions are automatically detected and correctly mapped.
      * For example the name "package.tar" is mapped to "package.tgz". If no
      * custom mapping is applicable, then the default ".gz" suffix is appended
-     * to the filename.
+     * to the file name.
      *
-     * @param filename name of a file
+     * @param fileName name of a file
      * @return name of the corresponding compressed file
      */
-    public static String getCompressedFilename(final String filename) {
-        return fileNameUtil.getCompressedFilename(filename);
+    public static String getCompressedFilename(final String fileName) {
+        return fileNameUtil.getCompressedFilename(fileName);
     }
 
 }

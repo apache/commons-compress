@@ -91,7 +91,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     private long nextArtificalDeviceAndInode = 1;
 
     /**
-     * The encoding to use for filenames and labels.
+     * The encoding to use for file names and labels.
      */
     private final ZipEncoding zipEncoding;
 

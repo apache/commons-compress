@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 
 /**
- * Static helper functions for robustly encoding filenames in zip files.
+ * Static helper functions for robustly encoding file names in zip files.
  */
 public abstract class ZipEncodingHelper {
 

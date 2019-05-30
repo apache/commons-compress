@@ -64,11 +64,11 @@ public class SevenZOutputFile implements Closeable {
     /**
      * Opens file to write a 7z archive to.
      *
-     * @param filename the file to write to
+     * @param fileName the file to write to
      * @throws IOException if opening the file fails
      */
-    public SevenZOutputFile(final File filename) throws IOException {
-        this(Files.newByteChannel(filename.toPath(),
+    public SevenZOutputFile(final File fileName) throws IOException {
+        this(Files.newByteChannel(fileName.toPath(),
             EnumSet.of(StandardOpenOption.CREATE, StandardOpenOption.WRITE,
                        StandardOpenOption.TRUNCATE_EXISTING)));
     }

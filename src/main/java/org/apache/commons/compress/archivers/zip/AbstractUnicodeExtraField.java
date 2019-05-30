@@ -41,11 +41,11 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
      * encoding of the original zip entry.
      *
      * @param text The file name or comment.
-     * @param bytes The encoded of the filename or comment in the zip
+     * @param bytes The encoded of the file name or comment in the zip
      * file.
-     * @param off The offset of the encoded filename or comment in
+     * @param off The offset of the encoded file name or comment in
      * <code>bytes</code>.
-     * @param len The length of the encoded filename or commentin
+     * @param len The length of the encoded file name or commentin
      * <code>bytes</code>.
      */
     protected AbstractUnicodeExtraField(final String text, final byte[] bytes, final int off, final int len) {
@@ -65,7 +65,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
      * encoding of the original zip entry.
      *
      * @param text The file name or comment.
-     * @param bytes The encoded of the filename or comment in the zip
+     * @param bytes The encoded of the file name or comment in the zip
      * file.
      */
     protected AbstractUnicodeExtraField(final String text, final byte[] bytes) {
@@ -85,7 +85,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
     }
 
     /**
-     * @return The CRC32 checksum of the filename or comment as
+     * @return The CRC32 checksum of the file name or comment as
      *         encoded in the central directory of the zip file.
      */
     public long getNameCRC32() {
@@ -93,7 +93,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
     }
 
     /**
-     * @param nameCRC32 The CRC32 checksum of the filename as encoded
+     * @param nameCRC32 The CRC32 checksum of the file name as encoded
      *         in the central directory of the zip file to set.
      */
     public void setNameCRC32(final long nameCRC32) {

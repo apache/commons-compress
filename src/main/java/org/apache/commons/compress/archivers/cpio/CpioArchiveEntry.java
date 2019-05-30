@@ -53,8 +53,8 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * <h3>OLD FORMAT</h3>
  *
  * <p>Each file has a 76 (ascii) / 26 (binary) byte header, a variable
- * length, NUL terminated filename, and variable length file data. A
- * header for a filename "TRAILER!!!" indicates the end of the
+ * length, NUL terminated file name, and variable length file data. A
+ * header for a file name "TRAILER!!!" indicates the end of the
  * archive.</p>
  *
  * <p>All the fields in the header are ISO 646 (approximately ASCII)
@@ -88,7 +88,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * apart from c_mtime and c_filesize which are 32-bit integer values
  * </pre>
  *
- * <p>If necessary, the filename and file data are padded with a NUL byte to an even length</p>
+ * <p>If necessary, the file name and file data are padded with a NUL byte to an even length</p>
  *
  * <p>Special files, directories, and the trailer are recorded with
  * the h_filesize field equal to 0.</p>
@@ -99,8 +99,8 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * <h3>NEW FORMAT</h3>
  *
  * <p>Each file has a 110 byte header, a variable length, NUL
- * terminated filename, and variable length file data. A header for a
- * filename "TRAILER!!!" indicates the end of the archive. All the
+ * terminated file name, and variable length file data. A header for a
+ * file name "TRAILER!!!" indicates the end of the archive. All the
  * fields in the header are ISO 646 (approximately ASCII) strings of
  * hexadecimal numbers, left padded, not NUL terminated.</p>
  *

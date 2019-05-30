@@ -351,16 +351,16 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      * Is this the name of the "Archive String Table" as used by
      * SVR4/GNU to store long file names?
      *
-     * <p>GNU ar stores multiple extended filenames in the data section
+     * <p>GNU ar stores multiple extended file names in the data section
      * of a file with the name "//", this record is referred to by
      * future headers.</p>
      *
-     * <p>A header references an extended filename by storing a "/"
-     * followed by a decimal offset to the start of the filename in
-     * the extended filename data section.</p>
+     * <p>A header references an extended file name by storing a "/"
+     * followed by a decimal offset to the start of the file name in
+     * the extended file name data section.</p>
      *
      * <p>The format of the "//" file itself is simply a list of the
-     * long filenames, each separated by one or more LF
+     * long file names, each separated by one or more LF
      * characters. Note that the decimal offsets are number of
      * characters, not line or string number within the "//" file.</p>
      */

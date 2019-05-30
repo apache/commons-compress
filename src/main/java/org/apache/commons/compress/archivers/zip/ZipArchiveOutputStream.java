@@ -136,7 +136,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     static final String DEFAULT_ENCODING = ZipEncodingHelper.UTF8;
 
     /**
-     * General purpose flag, which indicates that filenames are
+     * General purpose flag, which indicates that file names are
      * written in UTF-8.
      * @deprecated use {@link GeneralPurposeBit#UFT8_NAMES_FLAG} instead
      */
@@ -208,7 +208,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         new HashMap<>();
 
     /**
-     * The encoding to use for filenames and the file comment.
+     * The encoding to use for file names and the file comment.
      *
      * <p>For a list of possible values see <a
      * href="http://java.sun.com/j2se/1.5.0/docs/guide/intl/encoding.doc.html">http://java.sun.com/j2se/1.5.0/docs/guide/intl/encoding.doc.html</a>.
@@ -217,7 +217,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private String encoding = DEFAULT_ENCODING;
 
     /**
-     * The zip encoding to use for filenames and the file comment.
+     * The zip encoding to use for file names and the file comment.
      *
      * This field is of internal use and will be set in {@link
      * #setEncoding(String)}.
@@ -240,7 +240,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
     /**
      * whether to use the general purpose bit flag when writing UTF-8
-     * filenames or not.
+     * file names or not.
      */
     private boolean useUTF8Flag = true;
 
@@ -339,7 +339,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * The encoding to use for filenames and the file comment.
+     * The encoding to use for file names and the file comment.
      *
      * <p>For a list of possible values see <a
      * href="http://java.sun.com/j2se/1.5.0/docs/guide/intl/encoding.doc.html">http://java.sun.com/j2se/1.5.0/docs/guide/intl/encoding.doc.html</a>.
@@ -356,7 +356,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * The encoding to use for filenames and the file comment.
+     * The encoding to use for file names and the file comment.
      *
      * @return null if using the platform's default character encoding.
      */
@@ -1628,7 +1628,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
          */
         public static final UnicodeExtraFieldPolicy NEVER = new UnicodeExtraFieldPolicy("never");
         /**
-         * Create Unicode extra fields for filenames that cannot be
+         * Create Unicode extra fields for file names that cannot be
          * encoded using the specified encoding.
          */
         public static final UnicodeExtraFieldPolicy NOT_ENCODEABLE =

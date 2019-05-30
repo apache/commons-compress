@@ -105,39 +105,39 @@ public class LZMAUtils {
     }
 
     /**
-     * Detects common lzma suffixes in the given filename.
+     * Detects common lzma suffixes in the given file name.
      *
-     * @param filename name of a file
-     * @return {@code true} if the filename has a common lzma suffix,
+     * @param fileName name of a file
+     * @return {@code true} if the file name has a common lzma suffix,
      *         {@code false} otherwise
      */
-    public static boolean isCompressedFilename(final String filename) {
-        return fileNameUtil.isCompressedFilename(filename);
+    public static boolean isCompressedFilename(final String fileName) {
+        return fileNameUtil.isCompressedFilename(fileName);
     }
 
     /**
      * Maps the given name of a lzma-compressed file to the name that
-     * the file should have after uncompression.  Any filenames with
+     * the file should have after uncompression.  Any file names with
      * the generic ".lzma" suffix (or any other generic lzma suffix)
      * is mapped to a name without that suffix. If no lzma suffix is
-     * detected, then the filename is returned unmapped.
+     * detected, then the file name is returned unmapped.
      *
-     * @param filename name of a file
+     * @param fileName name of a file
      * @return name of the corresponding uncompressed file
      */
-    public static String getUncompressedFilename(final String filename) {
-        return fileNameUtil.getUncompressedFilename(filename);
+    public static String getUncompressedFilename(final String fileName) {
+        return fileNameUtil.getUncompressedFilename(fileName);
     }
 
     /**
-     * Maps the given filename to the name that the file should have after
+     * Maps the given file name to the name that the file should have after
      * compression with lzma.
      *
-     * @param filename name of a file
+     * @param fileName name of a file
      * @return name of the corresponding compressed file
      */
-    public static String getCompressedFilename(final String filename) {
-        return fileNameUtil.getCompressedFilename(filename);
+    public static String getCompressedFilename(final String fileName) {
+        return fileNameUtil.getCompressedFilename(fileName);
     }
 
     /**

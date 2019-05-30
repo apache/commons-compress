@@ -89,7 +89,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
     }
 
     /*
-     * 7-ZIP created archive, uses EFS to signal UTF-8 filenames.
+     * 7-ZIP created archive, uses EFS to signal UTF-8 file names.
      *
      * 7-ZIP doesn't use EFS for strings that can be encoded in CP437
      * - which is true for OIL_BARREL_TXT.

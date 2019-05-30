@@ -157,9 +157,9 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * </pre>
  * <p>
  * It is important to note that the header DOES NOT have the name of the
- * file. It can't since hard links mean that you may have multiple filenames
+ * file. It can't since hard links mean that you may have multiple file names
  * for a single physical file. You must read the contents of the directory
- * entries to learn the mapping(s) from filename to inode.
+ * entries to learn the mapping(s) from file name to inode.
  * </p>
  *
  * <p>
@@ -215,9 +215,9 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Constructor taking only filename.
+     * Constructor taking only file name.
      * @param name pathname
-     * @param simpleName actual filename.
+     * @param simpleName actual file name.
      */
     public DumpArchiveEntry(final String name, final String simpleName) {
         setName(name);

@@ -80,7 +80,7 @@ import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC
  */
 public class ZipArchiveInputStream extends ArchiveInputStream implements InputStreamStatistics {
 
-    /** The zip encoding to use for filenames and the file comment. */
+    /** The zip encoding to use for file names and the file comment. */
     private final ZipEncoding zipEncoding;
 
     // the provided encoding (for unit tests)

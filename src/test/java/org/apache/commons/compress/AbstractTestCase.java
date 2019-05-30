@@ -277,7 +277,7 @@ public abstract class AbstractTestCase {
      * @param archive
      *            the archive to check
      * @param expected
-     *            a list with expected string filenames
+     *            a list with expected string file names
      * @throws Exception
      */
     protected void checkArchiveContent(final File archive, final List<String> expected)

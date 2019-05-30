@@ -24,7 +24,7 @@ import java.nio.ByteBuffer;
 
 /**
  * An interface for encoders that do a pretty encoding of ZIP
- * filenames.
+ * file names.
  *
  * <p>There are mostly two implementations, one that uses java.nio
  * {@link java.nio.charset.Charset Charset} and one implementation,
@@ -35,7 +35,7 @@ import java.nio.ByteBuffer;
  * the problems with {@link java.lang.String#getBytes(String)
  * String.getBytes}, which encodes unknown characters as ASCII
  * quotation marks ('?'). Quotation marks are per definition an
- * invalid filename on some operating systems  like Windows, which
+ * invalid file name on some operating systems  like Windows, which
  * leads to ignored ZIP entries.</p>
  *
  * <p>All implementations should implement this interface in a
@@ -46,13 +46,13 @@ public interface ZipEncoding {
      * Check, whether the given string may be losslessly encoded using this
      * encoding.
      *
-     * @param name A filename or ZIP comment.
+     * @param name A file name or ZIP comment.
      * @return Whether the given name may be encoded with out any losses.
      */
     boolean canEncode(String name);
 
     /**
-     * Encode a filename or a comment to a byte array suitable for
+     * Encode a file name or a comment to a byte array suitable for
      * storing it to a serialized zip entry.
      *
      * <p>Examples for CP 437 (in pseudo-notation, right hand side is
@@ -62,7 +62,7 @@ public interface ZipEncoding {
      *  encode("\u00D6lf\u00E4sser.txt") = "\231lf\204sser.txt"
      * </pre>
      *
-     * @param name A filename or ZIP comment.
+     * @param name A file name or ZIP comment.
      * @return A byte buffer with a backing array containing the
      *         encoded name.  Unmappable characters or malformed
      *         character sequences are mapped to a sequence of utf-16

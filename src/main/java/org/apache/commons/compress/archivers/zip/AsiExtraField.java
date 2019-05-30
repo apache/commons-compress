@@ -36,7 +36,7 @@ import java.util.zip.ZipException;
  *         SizDev        Long            symlink'd size OR major/minor dev num
  *         UID           Short           user ID
  *         GID           Short           group ID
- *         (var.)        variable        symbolic link filename
+ *         (var.)        variable        symbolic link file name
  * </pre>
  * <p>taken from appnote.iz (Info-ZIP note, 981119) found at <a
  * href="ftp://ftp.uu.net/pub/archiving/zip/doc/">ftp://ftp.uu.net/pub/archiving/zip/doc/</a></p>
@@ -195,7 +195,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     }
 
     /**
-     * Indicate that this entry is a symbolic link to the given filename.
+     * Indicate that this entry is a symbolic link to the given file name.
      *
      * @param name Name of the file this entry links to, empty String
      *             if it is not a symbolic link.

@@ -110,7 +110,7 @@ public class ZipFile implements Closeable {
         new HashMap<>(HASH_SIZE);
 
     /**
-     * The encoding to use for filenames and the file comment.
+     * The encoding to use for file names and the file comment.
      *
      * <p>For a list of possible values see <a
      * href="http://java.sun.com/j2se/1.5.0/docs/guide/intl/encoding.doc.html">http://java.sun.com/j2se/1.5.0/docs/guide/intl/encoding.doc.html</a>.
@@ -119,7 +119,7 @@ public class ZipFile implements Closeable {
     private final String encoding;
 
     /**
-     * The zip encoding to use for filenames and the file comment.
+     * The zip encoding to use for file names and the file comment.
      */
     private final ZipEncoding zipEncoding;
 
@@ -375,7 +375,7 @@ public class ZipFile implements Closeable {
     }
 
     /**
-     * The encoding to use for filenames and the file comment.
+     * The encoding to use for file names and the file comment.
      *
      * @return null if using the platform's default character encoding.
      */
@@ -664,7 +664,7 @@ public class ZipFile implements Closeable {
         /* crc-32                          */ + WORD
         /* compressed size                 */ + WORD
         /* uncompressed size               */ + WORD
-        /* filename length                 */ + SHORT
+        /* file name length                 */ + SHORT
         /* extra field length              */ + SHORT
         /* file comment length             */ + SHORT
         /* disk number start               */ + SHORT
@@ -1093,7 +1093,7 @@ public class ZipFile implements Closeable {
 
     /**
      * Number of bytes in local file header up to the &quot;length of
-     * filename&quot; entry.
+     * file name&quot; entry.
      */
     private static final long LFH_OFFSET_FOR_FILENAME_LENGTH =
         /* local file header signature     */ WORD

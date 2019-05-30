@@ -37,13 +37,13 @@ public final class ChangeSet {
     private final Set<Change> changes = new LinkedHashSet<>();
 
     /**
-     * Deletes the file with the filename from the archive.
+     * Deletes the file with the file name from the archive.
      *
-     * @param filename
-     *            the filename of the file to delete
+     * @param fileName
+     *            the file name of the file to delete
      */
-    public void delete(final String filename) {
-        addDeletion(new Change(filename, Change.TYPE_DELETE));
+    public void delete(final String fileName) {
+        addDeletion(new Change(fileName, Change.TYPE_DELETE));
     }
 
     /**

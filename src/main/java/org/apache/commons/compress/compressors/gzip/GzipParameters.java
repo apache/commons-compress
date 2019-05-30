@@ -74,10 +74,10 @@ public class GzipParameters {
     /**
      * Sets the name of the compressed file.
      *
-     * @param filename the name of the file without the directory path
+     * @param fileName the name of the file without the directory path
      */
-    public void setFilename(final String filename) {
-        this.filename = filename;
+    public void setFilename(final String fileName) {
+        this.filename = fileName;
     }
 
     public String getComment() {
