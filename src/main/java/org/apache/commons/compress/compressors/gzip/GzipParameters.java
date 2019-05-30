@@ -96,18 +96,18 @@ public class GzipParameters {
      * Sets the operating system on which the compression took place.
      * The defined values are:
      * <ul>
-     *   <li>0: FAT filesystem (MS-DOS, OS/2, NT/Win32)</li>
+     *   <li>0: FAT file system (MS-DOS, OS/2, NT/Win32)</li>
      *   <li>1: Amiga</li>
      *   <li>2: VMS (or OpenVMS)</li>
      *   <li>3: Unix</li>
      *   <li>4: VM/CMS</li>
      *   <li>5: Atari TOS</li>
-     *   <li>6: HPFS filesystem (OS/2, NT)</li>
+     *   <li>6: HPFS file system (OS/2, NT)</li>
      *   <li>7: Macintosh</li>
      *   <li>8: Z-System</li>
      *   <li>9: CP/M</li>
      *   <li>10: TOPS-20</li>
-     *   <li>11: NTFS filesystem (NT)</li>
+     *   <li>11: NTFS file system (NT)</li>
      *   <li>12: QDOS</li>
      *   <li>13: Acorn RISCOS</li>
      *   <li>255: Unknown</li>
