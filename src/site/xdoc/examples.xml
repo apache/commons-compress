@@ -782,7 +782,7 @@ bzIn.close();
           get closed properly):</p>
 <source><![CDATA[
 InputStream in = Files.newInputStream(Paths.get("archive.tar"));
-OutputStream fout = Files.newOutputStream(Paths.get("archive.tar.gz"));
+OutputStream fout = Files.newOutputStream(Paths.get("archive.tar.bz2"));
 BufferedOutputStream out = new BufferedOutputStream(fout);
 BZip2CompressorOutputStream bzOut = new BZip2CompressorOutputStream(out);
 final byte[] buffer = new byte[buffersize];
