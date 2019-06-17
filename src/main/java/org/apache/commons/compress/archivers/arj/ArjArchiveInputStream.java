@@ -261,7 +261,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
                     }
                     extendedHeaders.add(extendedHeaderBytes);
                 }
-                localFileHeader.extendedHeaders = extendedHeaders.toArray(new byte[extendedHeaders.size()][]);
+                localFileHeader.extendedHeaders = extendedHeaders.toArray(new byte[0][]);
 
                 return localFileHeader;
             }

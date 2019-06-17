@@ -411,7 +411,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
                 newFields.add( field);
             }
         }
-        extraFields = newFields.toArray(new ZipExtraField[newFields.size()]);
+        extraFields = newFields.toArray(new ZipExtraField[0]);
         setExtra();
     }
 
@@ -560,7 +560,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         if (extraFields.length == newResult.size()) {
             throw new java.util.NoSuchElementException();
         }
-        extraFields = newResult.toArray(new ZipExtraField[newResult.size()]);
+        extraFields = newResult.toArray(new ZipExtraField[0]);
         setExtra();
     }
 
