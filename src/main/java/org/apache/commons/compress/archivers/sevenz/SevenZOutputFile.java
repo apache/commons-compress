@@ -322,7 +322,7 @@ public class SevenZOutputFile implements Closeable {
             first = false;
         }
         if (!moreStreams.isEmpty()) {
-            additionalCountingStreams = moreStreams.toArray(new CountingOutputStream[moreStreams.size()]);
+            additionalCountingStreams = moreStreams.toArray(new CountingOutputStream[0]);
         }
         return new CountingOutputStream(out) {
             @Override
