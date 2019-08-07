@@ -85,6 +85,12 @@ The <action> type attribute can be add,update,fix,remove.
               issue="COMPRESS-484">
         Update optional library zstd-jni from 1.3.3-3 to 1.4.0-1.
       </action>
+      <action type="update" date="2019-08-07" due-to="Hervé Boutemy"
+              issue="COMPRESS-485">
+        ParallelScatterZipCreator now writes the entries to the
+        gathered output in the same order they have been added.
+        Github Pull Request #78.
+      </action>
     </release>
     <release version="1.18" date="2018-08-16"
              description="Release 1.18">
