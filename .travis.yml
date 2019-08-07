@@ -16,16 +16,28 @@
 sudo: false
 language: java
 
-jdk:
-  - openjdk7
-  - openjdk8
-  - oraclejdk8
-  - oraclejdk9
-  - oraclejdk11
-  - openjdk10
-  - openjdk11
-  - openjdk12
-  - openjdk-ea
+matrix:
+  include:
+    - dist: trusty
+      jdk: openjdk7
+    - dist: trusty
+      jdk: openjdk8
+    - dist: xenial
+      jdk: openjdk10
+    - dist: xenial
+      jdk: openjdk11
+    - dist: trusty
+      jdk: oraclejdk8
+    - dist: trusty
+      jdk: oraclejdk9
+    - dist: trusty
+      jdk: oraclejdk11
+    - dist: trusty
+      jdk: oraclejdk12
+    - dist: trusty
+      jdk: openjdk12
+    - dist: trusty
+      jdk: openjdk-ea
 
 cache:
   directories:
