@@ -251,6 +251,9 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
         long len = ByteUtils.fromLittleEndian(supplier, 4);
         boolean uncompressed = (len & UNCOMPRESSED_FLAG_MASK) != 0;
         int realLen = (int) (len & (~UNCOMPRESSED_FLAG_MASK));
+        if (realLen < 0) {
+            throw new IOException("found illegal block with negative size");
+        }
         if (realLen == 0) {
             verifyContentChecksum();
             if (!decompressConcatenated) {
@@ -353,7 +356,10 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
     private int skipSkippableFrame(byte[] b) throws IOException {
         int read = 4;
         while (read == 4 && isSkippableFrameSignature(b)) {
-            long len = ByteUtils.fromLittleEndian(supplier, 4);
+            final long len = ByteUtils.fromLittleEndian(supplier, 4);
+            if (len < 0) {
+                throw new IOException("found illegal skippable frame with negative size");
+            }
             long skipped = IOUtils.skip(in, len);
             count(skipped);
             if (len != skipped) {

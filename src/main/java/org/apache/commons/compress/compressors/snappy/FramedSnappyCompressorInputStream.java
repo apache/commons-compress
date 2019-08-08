@@ -120,12 +120,16 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
      * @param blockSize the block size to use for the compressed stream
      * @param dialect the dialect used by the compressed stream
      * @throws IOException if reading fails
+     * @throws IllegalArgumentException if blockSize is not bigger than 0
      * @since 1.14
      */
     public FramedSnappyCompressorInputStream(final InputStream in,
                                              final int blockSize,
                                              final FramedSnappyDialect dialect)
         throws IOException {
+        if (blockSize <= 0) {
+            throw new IllegalArgumentException("blockSize must be bigger than 0");
+        }
         countingStream = new CountingInputStream(in);
         this.in = new PushbackInputStream(countingStream, 1);
         this.blockSize = blockSize;
@@ -246,10 +250,16 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
         } else if (type == UNCOMPRESSED_CHUNK_TYPE) {
             inUncompressedChunk = true;
             uncompressedBytesRemaining = readSize() - 4 /* CRC */;
+            if (uncompressedBytesRemaining < 0) {
+                throw new IOException("found illegal chunk with negative size");
+            }
             expectedChecksum = unmask(readCrc());
         } else if (type == COMPRESSED_CHUNK_TYPE) {
             final boolean expectChecksum = dialect.usesChecksumWithCompressedChunks();
             final long size = readSize() - (expectChecksum ? 4L : 0L);
+            if (size < 0) {
+                throw new IOException("found illegal chunk with negative size");
+            }
             if (expectChecksum) {
                 expectedChecksum = unmask(readCrc());
             } else {
@@ -290,6 +300,9 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
 
     private void skipBlock() throws IOException {
         final int size = readSize();
+        if (size < 0) {
+            throw new IOException("found illegal chunk with negative size");
+        }
         final long read = IOUtils.skip(in, size);
         count(read);
         if (read != size) {
