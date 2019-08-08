@@ -76,6 +76,11 @@
           <li>may return unknown sizes and CRC values for entries
           until the next entry has been reached if the archive uses
           the data descriptor feature (see below).</li>
+          <li>can not skip over bytes that occur before the real zip
+          stream. This means self-extracting zips as they are created
+          by some tools can not be read using
+          <code>ZipArchiveInputStream</code> at all. This also applies
+          to Chrome extension archives, for example.</li>
         </ul>
 
         <p><code>ZipArchiveInputStream</code> shares these limitations
