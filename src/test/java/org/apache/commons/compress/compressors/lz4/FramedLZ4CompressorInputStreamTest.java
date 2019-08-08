@@ -32,10 +32,15 @@ import java.util.Arrays;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public final class FramedLZ4CompressorInputStreamTest
     extends AbstractTestCase {
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void testMatches() throws IOException {
@@ -619,6 +624,21 @@ public final class FramedLZ4CompressorInputStreamTest
         }
     }
 
+    @Test
+    public void backreferenceOfSize0CausesIOException() throws IOException {
+        expectIOException("COMPRESS-490/ArithmeticException.lz4");
+    }
+
+    @Test
+    public void backreferenceAtStartCausesIOException() throws IOException {
+        expectIOException("COMPRESS-490/ArrayIndexOutOfBoundsException1.lz4");
+    }
+
+    @Test
+    public void backreferenceWithOffsetTooBigCausesIOException() throws IOException {
+        expectIOException("COMPRESS-490/ArrayIndexOutOfBoundsException2.lz4");
+    }
+
     interface StreamWrapper {
         InputStream wrap(InputStream in) throws Exception;
     }
@@ -642,4 +662,13 @@ public final class FramedLZ4CompressorInputStreamTest
         System.arraycopy(from, 0, to, from.length, from.length);
         return to;
     }
+
+    private void expectIOException(String fileName) throws IOException {
+        thrown.expect(IOException.class);
+        try (InputStream is = new FileInputStream(getFile(fileName))) {
+            final FramedLZ4CompressorInputStream in = new FramedLZ4CompressorInputStream(is);
+            IOUtils.toByteArray(in);
+        }
+    }
+
 }
