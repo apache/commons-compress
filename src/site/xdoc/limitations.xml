@@ -204,7 +204,7 @@
          <li>no support for encryption or multi-volume archives</li>
          <li>In versions prior to Compress 1.6
          <code>ZipArchiveEntries</code> read from an archive will
-         contain non-zero millisecond values when using Java8 rather
+         contain non-zero millisecond values when using Java 8 or later rather
          than the expected two-second granularity.</li>
          <li>Compress 1.7 has a known bug where the very first entry
          of an archive will not be read correctly by
