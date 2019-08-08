@@ -92,6 +92,10 @@ The <action> type attribute can be add,update,fix,remove.
         gathered output in the same order they have been added.
         Github Pull Requests #78 and #79.
       </action>
+      <action type="fix" date="2019-08-08" issue="COMPRESS-490">
+        Throw IOException rather than RuntimeExceptions for certain
+        malformed LZ4 or Snappy inputs.
+      </action>
     </release>
     <release version="1.18" date="2018-08-16"
              description="Release 1.18">

@@ -130,9 +130,13 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      *            Size of the window kept for back-references, must be bigger than the biggest offset expected.
      *
      * @throws IOException if reading fails
+     * @throws IllegalArgumentException if windowSize is not bigger than 0
      */
     public AbstractLZ77CompressorInputStream(final InputStream is, int windowSize) throws IOException {
         this.in = new CountingInputStream(is);
+        if (windowSize <= 0) {
+            throw new IllegalArgumentException("windowSize must be bigger than 0");
+        }
         this.windowSize = windowSize;
         buf = new byte[3 * windowSize];
         writeIndex = readIndex = 0;
@@ -201,8 +205,12 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      * Used by subclasses to signal the next block contains the given
      * amount of literal data.
      * @param length the length of the block
+     * @throws IllegalArgumentException if length is negative
      */
     protected final void startLiteral(long length) {
+        if (length < 0) {
+            throw new IllegalArgumentException("length must not be negative");
+        }
         bytesRemaining = length;
     }
 
@@ -224,6 +232,10 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      * @throws IOException if the underlying stream throws or signals
      * an EOF before the amount of data promised for the block have
      * been read
+     * @throws NullPointerException if <code>b</code> is null
+     * @throws IndexOutOfBoundsException if <code>off</code> is
+     * negative, <code>len</code> is negative, or <code>len</code> is
+     * greater than <code>b.length - off</code>
      */
     protected final int readLiteral(final byte[] b, final int off, final int len) throws IOException {
         final int avail = available();
@@ -234,7 +246,7 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
     }
 
     private void tryToReadLiteral(int bytesToRead) throws IOException {
-        // min of "what is still inside the literal", "what does the user want" and "how muc can fit into the buffer"
+        // min of "what is still inside the literal", "what does the user want" and "how much can fit into the buffer"
         final int reallyTryToRead = Math.min((int) Math.min(bytesToRead, bytesRemaining),
                                              buf.length - writeIndex);
         final int bytesRead = reallyTryToRead > 0
@@ -271,8 +283,18 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      * Used by subclasses to signal the next block contains a back-reference with the given coordinates.
      * @param offset the offset of the back-reference
      * @param length the length of the back-reference
+     * @throws IllegalArgumentException if offset not bigger than 0 or
+     * bigger than the number of bytes available for back-references
+     * or if length is negative
      */
     protected final void startBackReference(int offset, long length) {
+        if (offset <= 0 || offset > writeIndex) {
+            throw new IllegalArgumentException("offset must be bigger than 0 but not bigger than the number"
+                + " of bytes available for back-references");
+        }
+        if (length < 0) {
+            throw new IllegalArgumentException("length must not be negative");
+        }
         backReferenceOffset = offset;
         bytesRemaining = length;
     }
@@ -284,6 +306,10 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      * @param len maximum amount of data to read
      * @return number of bytes read, may be 0. Will never return -1 as
      * EOF-detection is the responsibility of the subclass
+     * @throws NullPointerException if <code>b</code> is null
+     * @throws IndexOutOfBoundsException if <code>off</code> is
+     * negative, <code>len</code> is negative, or <code>len</code> is
+     * greater than <code>b.length - off</code>
      */
     protected final int readBackReference(final byte[] b, final int off, final int len) {
         final int avail = available();

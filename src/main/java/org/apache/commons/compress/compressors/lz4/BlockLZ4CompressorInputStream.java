@@ -100,6 +100,9 @@ public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputSt
         if (literalSizePart == BACK_REFERENCE_SIZE_MASK) {
             literalSizePart += readSizeBytes();
         }
+        if (literalSizePart < 0) {
+            throw new IOException("illegal block with a negative literal size found");
+        }
         startLiteral(literalSizePart);
         state = State.IN_LITERAL;
     }
@@ -136,7 +139,14 @@ public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputSt
             backReferenceSize += readSizeBytes();
         }
         // minimal match length 4 is encoded as 0
-        startBackReference(backReferenceOffset, backReferenceSize + 4);
+        if (backReferenceSize < 0) {
+            throw new IOException("illegal block with a negative match length found");
+        }
+        try {
+            startBackReference(backReferenceOffset, backReferenceSize + 4);
+        } catch (IllegalArgumentException ex) {
+            throw new IOException("illegal block with bad offset found", ex);
+        }
         state = State.IN_BACK_REFERENCE;
         return true;
     }
