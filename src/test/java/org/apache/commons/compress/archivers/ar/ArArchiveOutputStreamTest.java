@@ -39,7 +39,7 @@ public class ArArchiveOutputStreamTest extends AbstractTestCase {
             os.putArchiveEntry(ae);
             fail("Expected an exception");
         } catch (final IOException ex) {
-            assertTrue(ex.getMessage().startsWith("filename too long"));
+            assertTrue(ex.getMessage().startsWith("File name too long"));
         }
     }
 

@@ -94,7 +94,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
             writeArchiveHeader();
         } else {
             if (prevEntry.getLength() != entryOffset) {
-                throw new IOException("length does not match entry (" + prevEntry.getLength() + " != " + entryOffset);
+                throw new IOException("Length does not match entry (" + prevEntry.getLength() + " != " + entryOffset);
             }
 
             if (haveUnclosedEntry) {
@@ -135,7 +135,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
 
         final String n = pEntry.getName();
         if (LONGFILE_ERROR == longFileMode && n.length() > 16) {
-            throw new IOException("filename too long, > 16 chars: "+n);
+            throw new IOException("File name too long, > 16 chars: "+n);
         }
         if (LONGFILE_BSD == longFileMode &&
             (n.length() > 16 || n.contains(" "))) {
@@ -149,28 +149,28 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         offset = fill(offset, 16, ' ');
         final String m = "" + pEntry.getLastModified();
         if (m.length() > 12) {
-            throw new IOException("modified too long");
+            throw new IOException("Last modified too long");
         }
         offset += write(m);
 
         offset = fill(offset, 28, ' ');
         final String u = "" + pEntry.getUserId();
         if (u.length() > 6) {
-            throw new IOException("userid too long");
+            throw new IOException("User id too long");
         }
         offset += write(u);
 
         offset = fill(offset, 34, ' ');
         final String g = "" + pEntry.getGroupId();
         if (g.length() > 6) {
-            throw new IOException("groupid too long");
+            throw new IOException("Group id too long");
         }
         offset += write(g);
 
         offset = fill(offset, 40, ' ');
         final String fm = "" + Integer.toString(pEntry.getMode(), 8);
         if (fm.length() > 8) {
-            throw new IOException("filemode too long");
+            throw new IOException("Filemode too long");
         }
         offset += write(fm);
 
@@ -179,7 +179,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
             String.valueOf(pEntry.getLength()
                            + (mustAppendName ? n.length() : 0));
         if (s.length() > 10) {
-            throw new IOException("size too long");
+            throw new IOException("Size too long");
         }
         offset += write(s);
 

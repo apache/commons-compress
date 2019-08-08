@@ -137,7 +137,7 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
 
             length = readLiteralLength(b);
             if (length < 0) {
-                throw new IOException("illegal block with a negative literal size found");
+                throw new IOException("Illegal block with a negative literal size found");
             }
             uncompressedBytesRemaining -= length;
             startLiteral(length);
@@ -157,7 +157,7 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
 
             length = 4 + ((b >> 2) & 0x07);
             if (length < 0) {
-                throw new IOException("illegal block with a negative match length found");
+                throw new IOException("Illegal block with a negative match length found");
             }
             uncompressedBytesRemaining -= length;
             offset = (b & 0xE0) << 3;
@@ -170,7 +170,7 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
             try {
                 startBackReference(offset, length);
             } catch (IllegalArgumentException ex) {
-                throw new IOException("illegal block with bad offset found", ex);
+                throw new IOException("Illegal block with bad offset found", ex);
             }
             state = State.IN_BACK_REFERENCE;
             break;
@@ -187,7 +187,7 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
 
             length = (b >> 2) + 1;
             if (length < 0) {
-                throw new IOException("illegal block with a negative match length found");
+                throw new IOException("Illegal block with a negative match length found");
             }
             uncompressedBytesRemaining -= length;
 
@@ -196,7 +196,7 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
             try {
                 startBackReference(offset, length);
             } catch (IllegalArgumentException ex) {
-                throw new IOException("illegal block with bad offset found", ex);
+                throw new IOException("Illegal block with bad offset found", ex);
             }
             state = State.IN_BACK_REFERENCE;
             break;
@@ -212,7 +212,7 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
 
             length = (b >> 2) + 1;
             if (length < 0) {
-                throw new IOException("illegal block with a negative match length found");
+                throw new IOException("Illegal block with a negative match length found");
             }
             uncompressedBytesRemaining -= length;
 
@@ -221,7 +221,7 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
             try {
                 startBackReference(offset, length);
             } catch (IllegalArgumentException ex) {
-                throw new IOException("illegal block with bad offset found", ex);
+                throw new IOException("Illegal block with bad offset found", ex);
             }
             state = State.IN_BACK_REFERENCE;
             break;
