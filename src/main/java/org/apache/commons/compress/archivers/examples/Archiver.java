@@ -112,7 +112,8 @@ public class Archiver {
      * the caller of this method is responsible for closing it -
      * probably at the same time as closing the stream itself. The
      * caller is informed about the wrapper object via the {@code
-     * closeableConsumer} callback</p>
+     * closeableConsumer} callback as soon as it is no longer needed
+     * by this class.</p>
      *
      * @param format the archive format. This uses the same format as
      * accepted by {@link ArchiveStreamFactory}.
@@ -164,7 +165,8 @@ public class Archiver {
      * the caller of this method is responsible for closing it -
      * probably at the same time as closing the channel itself. The
      * caller is informed about the wrapper object via the {@code
-     * closeableConsumer} callback</p>
+     * closeableConsumer} callback as soon as it is no longer needed
+     * by this class.</p>
      *
      * @param format the archive format. This uses the same format as
      * accepted by {@link ArchiveStreamFactory}.

@@ -22,8 +22,9 @@ import java.io.Closeable;
 import java.io.IOException;
 
 /**
- * Is informed about a closable resource that has been wrapped around
- * a passed in stream or channel by Expander or Archiver.
+ * Callback that is informed about a closable resource that has been
+ * wrapped around a passed in stream or channel by Expander or
+ * Archiver when Expander or Archiver no longer need them.
  *
  * <p>This provides a way to close said resources in the calling code.</p>
  *
@@ -49,8 +50,9 @@ public interface CloseableConsumer {
     };
 
     /**
-     * Is informed about a closable resource that has been wrapped around
-     * a passed in stream or channel by Expander or Archiver.
+     * Callback that is informed about a closable resource that has
+     * been wrapped around a passed in stream or channel by Expander
+     * or Archiver when Expander or Archiver no longer need them.
      */
     void accept(Closeable c) throws IOException;
 }
