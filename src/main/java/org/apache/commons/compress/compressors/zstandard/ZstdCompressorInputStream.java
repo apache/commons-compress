@@ -55,7 +55,7 @@ public class ZstdCompressorInputStream extends CompressorInputStream
 
     @Override
     public int read(final byte[] b) throws IOException {
-        return decIS.read(b);
+        return read(b, 0, b.length);
     }
 
     @Override
