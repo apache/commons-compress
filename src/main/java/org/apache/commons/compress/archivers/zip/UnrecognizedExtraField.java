@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import java.util.Arrays;
+
 /**
  * Simple placeholder for all those extra fields we don't want to deal
  * with.
@@ -130,9 +132,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
      */
     @Override
     public void parseFromLocalFileData(final byte[] data, final int offset, final int length) {
-        final byte[] tmp = new byte[length];
-        System.arraycopy(data, offset, tmp, 0, length);
-        setLocalFileDataData(tmp);
+        setLocalFileDataData(Arrays.copyOfRange(data, offset, offset + length));
     }
 
     /**
@@ -144,8 +144,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     @Override
     public void parseFromCentralDirectoryData(final byte[] data, final int offset,
                                               final int length) {
-        final byte[] tmp = new byte[length];
-        System.arraycopy(data, offset, tmp, 0, length);
+        final byte[] tmp = Arrays.copyOfRange(data, offset, offset + length);
         setCentralDirectoryData(tmp);
         if (localData == null) {
             setLocalFileDataData(tmp);

@@ -117,8 +117,8 @@ public final class ZipEightByteInteger implements Serializable {
     }
 
     /**
-     * Get value as Java long.
-     * @return value as a long
+     * Get value as Java BigInteger.
+     * @return value as a BigInteger
      */
     public BigInteger getValue() {
         return value;

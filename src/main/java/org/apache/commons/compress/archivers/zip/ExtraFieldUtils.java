@@ -258,16 +258,16 @@ public class ExtraFieldUtils {
             System.arraycopy(data[i].getCentralDirectoryLength().getBytes(),
                              0, result, start + 2, 2);
             start += WORD;
-            final byte[] local = data[i].getCentralDirectoryData();
-            if (local != null) {
-                System.arraycopy(local, 0, result, start, local.length);
-                start += local.length;
+            final byte[] central = data[i].getCentralDirectoryData();
+            if (central != null) {
+                System.arraycopy(central, 0, result, start, central.length);
+                start += central.length;
             }
         }
         if (lastIsUnparseableHolder) {
-            final byte[] local = data[data.length - 1].getCentralDirectoryData();
-            if (local != null) {
-                System.arraycopy(local, 0, result, start, local.length);
+            final byte[] central = data[data.length - 1].getCentralDirectoryData();
+            if (central != null) {
+                System.arraycopy(central, 0, result, start, central.length);
             }
         }
         return result;

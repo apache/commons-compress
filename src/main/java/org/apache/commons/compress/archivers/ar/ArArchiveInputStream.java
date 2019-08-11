@@ -21,6 +21,7 @@ package org.apache.commons.compress.archivers.ar;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -106,10 +107,8 @@ public class ArArchiveInputStream extends ArchiveInputStream {
             if (read != expected.length) {
                 throw new IOException("Failed to read header. Occured at byte: " + getBytesRead());
             }
-            for (int i = 0; i < expected.length; i++) {
-                if (expected[i] != realized[i]) {
-                    throw new IOException("Invalid header " + ArchiveUtils.toAsciiString(realized));
-                }
+            if (!Arrays.equals(expected, realized)) {
+                throw new IOException("Invalid header " + ArchiveUtils.toAsciiString(realized));
             }
         }
 
@@ -140,10 +139,8 @@ public class ArArchiveInputStream extends ArchiveInputStream {
             if (read != expected.length) {
                 throw new IOException("Failed to read entry trailer. Occured at byte: " + getBytesRead());
             }
-            for (int i = 0; i < expected.length; i++) {
-                if (expected[i] != realized[i]) {
-                    throw new IOException("Invalid entry trailer. not read the content? Occured at byte: " + getBytesRead());
-                }
+            if (!Arrays.equals(expected, realized)) {
+                throw new IOException("Invalid entry trailer. not read the content? Occured at byte: " + getBytesRead());
             }
         }
 

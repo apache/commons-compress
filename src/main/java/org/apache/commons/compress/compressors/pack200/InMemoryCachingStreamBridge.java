@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * StreamSwitcher that caches all data written to the output side in
+ * StreamBridge that caches all data written to the output side in
  * memory.
  * @since 1.3
  */

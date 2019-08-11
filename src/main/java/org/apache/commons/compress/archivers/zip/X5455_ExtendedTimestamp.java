@@ -19,6 +19,7 @@
 package org.apache.commons.compress.archivers.zip;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.zip.ZipException;
 
@@ -200,13 +201,9 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      */
     @Override
     public byte[] getCentralDirectoryData() {
-        final byte[] centralData = new byte[getCentralDirectoryLength().getValue()];
-        final byte[] localData = getLocalFileDataData();
-
         // Truncate out create & access time (last 8 bytes) from
         // the copy of the local data we obtained:
-        System.arraycopy(localData, 0, centralData, 0, centralData.length);
-        return centralData;
+        return Arrays.copyOf(getLocalFileDataData(), getCentralDirectoryLength().getValue());
     }
 
     /**

@@ -19,10 +19,12 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+
+import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * Binary tree of positive values.
@@ -115,7 +117,10 @@ class BinaryTree {
         }
 
         final byte[] encodedTree = new byte[size];
-        new DataInputStream(in).readFully(encodedTree);
+        final int read = IOUtils.readFully(in, encodedTree);
+        if (read != size) {
+            throw new EOFException();
+        }
 
         /** The maximum bit length for a value (16 or lower) */
         int maxLength = 0;

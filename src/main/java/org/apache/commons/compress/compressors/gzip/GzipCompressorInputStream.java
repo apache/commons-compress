@@ -182,7 +182,6 @@ public class GzipCompressorInputStream extends CompressorInputStream
 
         // Check the magic bytes without a possibility of EOFException.
         final int magic0 = in.read();
-        final int magic1 = in.read();
 
         // If end of input was reached after decompressing at least
         // one .gz member, we have reached the end of the file successfully.
@@ -190,7 +189,7 @@ public class GzipCompressorInputStream extends CompressorInputStream
             return false;
         }
 
-        if (magic0 != 31 || magic1 != 139) {
+        if (magic0 != 31 || in.read() != 139) {
             throw new IOException(isFirstMember
                                   ? "Input is not in the .gz format"
                                   : "Garbage after a valid .gz stream");
@@ -266,12 +265,13 @@ public class GzipCompressorInputStream extends CompressorInputStream
     }
 
     private static byte[] readToNull(final DataInput inData) throws IOException {
-        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        int b = 0;
-        while ((b = inData.readUnsignedByte()) != 0x00) { // NOPMD NOSONAR
-            bos.write(b);
+        try (final ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+            int b = 0;
+            while ((b = inData.readUnsignedByte()) != 0x00) { // NOPMD NOSONAR
+                bos.write(b);
+            }
+            return bos.toByteArray();
         }
-        return bos.toByteArray();
     }
 
     @Override

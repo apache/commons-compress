@@ -98,7 +98,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
 
     /**
      * Read the next code and expand it.
-     * @return the expanded next code
+     * @return the expanded next code, negative on EOF
      * @throws IOException on error
      */
     protected abstract int decompressNextSymbol() throws IOException;
@@ -180,7 +180,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
      * @param previousCode the previous code
      * @param character the character to append
      * @param maxTableSize the maximum table size
-     * @return the new code
+     * @return the new code or -1 if maxTableSize has been reached already
      */
     protected int addEntry(final int previousCode, final byte character, final int maxTableSize) {
         if (tableSize < maxTableSize) {
@@ -193,7 +193,8 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
 
     /**
      * Add entry for repeat of previousCode we haven't added, yet.
-     * @return new code for a repeat of the previous code
+     * @return new code for a repeat of the previous code or -1 if
+     * maxTableSize has been reached already
      * @throws IOException on error
      */
     protected int addRepeatOfPreviousCode() throws IOException {

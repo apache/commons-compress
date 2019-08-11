@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import java.util.Arrays;
+
 /**
  * Wrapper for extra field data that doesn't conform to the recommended format of header-tag + size + data.
  *
@@ -96,8 +98,7 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
      */
     @Override
     public void parseFromLocalFileData(final byte[] buffer, final int offset, final int length) {
-        localFileData = new byte[length];
-        System.arraycopy(buffer, offset, localFileData, 0, length);
+        localFileData = Arrays.copyOfRange(buffer, offset, offset + length);
     }
 
     /**
@@ -110,8 +111,7 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
     @Override
     public void parseFromCentralDirectoryData(final byte[] buffer, final int offset,
                                               final int length) {
-        centralDirectoryData = new byte[length];
-        System.arraycopy(buffer, offset, centralDirectoryData, 0, length);
+        centralDirectoryData = Arrays.copyOfRange(buffer, offset, offset + length);
         if (localFileData == null) {
             parseFromLocalFileData(buffer, offset, length);
         }

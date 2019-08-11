@@ -26,7 +26,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 
 /**
- * StreamSwitcher that caches all data written to the output side in
+ * StreamBridge that caches all data written to the output side in
  * a temporary file.
  * @since 1.3
  */

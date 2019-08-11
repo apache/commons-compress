@@ -18,8 +18,9 @@
 package org.apache.commons.compress.archivers.sevenz;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
 
 public class CLI {
 
@@ -82,7 +83,7 @@ public class CLI {
                 if (parent != null && !parent.exists() && !parent.mkdirs()) {
                     throw new IOException("Cannot create " + parent);
                 }
-                try (final FileOutputStream fos = new FileOutputStream(outFile)) {
+                try (final OutputStream fos = Files.newOutputStream(outFile.toPath())) {
                     final long total = entry.getSize();
                     long off = 0;
                     while (off < total) {

@@ -109,16 +109,17 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
     }
 
     private String readString(final DataInputStream dataIn) throws IOException {
-        final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        int nextByte;
-        while ((nextByte = dataIn.readUnsignedByte()) != 0) {
-            buffer.write(nextByte);
+        try (final ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
+            int nextByte;
+            while ((nextByte = dataIn.readUnsignedByte()) != 0) {
+                buffer.write(nextByte);
+            }
+            if (charsetName != null) {
+                return new String(buffer.toByteArray(), charsetName);
+            }
+            // intentionally using the default encoding as that's the contract for a null charsetName
+            return new String(buffer.toByteArray());
         }
-        if (charsetName != null) {
-            return new String(buffer.toByteArray(), charsetName);
-        }
-        // intentionally using the default encoding as that's the contract for a null charsetName
-        return new String(buffer.toByteArray());
     }
 
     private void readFully(final DataInputStream dataIn, final byte[] b)

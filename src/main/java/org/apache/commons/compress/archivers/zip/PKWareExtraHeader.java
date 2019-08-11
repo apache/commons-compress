@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -170,9 +171,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      */
     @Override
     public void parseFromLocalFileData(final byte[] data, final int offset, final int length) {
-        final byte[] tmp = new byte[length];
-        System.arraycopy(data, offset, tmp, 0, length);
-        setLocalFileDataData(tmp);
+        setLocalFileDataData(Arrays.copyOfRange(data, offset, offset + length));
     }
 
     /**
@@ -186,8 +185,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      */
     @Override
     public void parseFromCentralDirectoryData(final byte[] data, final int offset, final int length) {
-        final byte[] tmp = new byte[length];
-        System.arraycopy(data, offset, tmp, 0, length);
+        final byte[] tmp = Arrays.copyOfRange(data, offset, offset + length);
         setCentralDirectoryData(tmp);
         if (localData == null) {
             setLocalFileDataData(tmp);

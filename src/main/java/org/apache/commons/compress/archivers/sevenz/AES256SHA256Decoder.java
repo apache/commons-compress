@@ -111,7 +111,10 @@ class AES256SHA256Decoder extends CoderBase {
             }
 
             @Override
-            public void close() {
+            public void close() throws IOException {
+                if (cipherInputStream != null) {
+                    cipherInputStream.close();
+                }
             }
         };
     }

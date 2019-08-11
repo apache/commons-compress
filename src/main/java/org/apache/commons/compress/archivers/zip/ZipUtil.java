@@ -19,6 +19,7 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.zip.CRC32;
@@ -75,7 +76,7 @@ public abstract class ZipUtil {
 
         final int year = c.get(Calendar.YEAR);
         if (year < 1980) {
-            System.arraycopy(DOS_TIME_MIN, 0, buf, offset, DOS_TIME_MIN.length);// stop callers from changing the array
+            copy(DOS_TIME_MIN, buf, offset); // stop callers from changing the array
             return;
         }
         final int month = c.get(Calendar.MONTH) + 1;
@@ -290,9 +291,7 @@ public abstract class ZipUtil {
      */
     static byte[] copy(final byte[] from) {
         if (from != null) {
-            final byte[] to = new byte[from.length];
-            System.arraycopy(from, 0, to, 0, to.length);
-            return to;
+            return Arrays.copyOf(from, from.length);
         }
         return null;
     }

@@ -136,7 +136,7 @@ public class AsiExtraFieldTest implements UnixStat {
             a.parseFromLocalFileData(data, 0, data.length);
             fail("should raise bad CRC exception");
         } catch (final Exception e) {
-            assertEquals("Bad CRC checksum 0 instead of ebf018e",
+            assertEquals("Bad CRC checksum, expected 0 instead of ebf018e",
                          e.getMessage());
         }
     }
