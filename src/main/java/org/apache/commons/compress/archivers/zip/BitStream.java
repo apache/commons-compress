@@ -52,6 +52,9 @@ class BitStream extends BitInputStream {
      * @return The value formed by the n bits, or -1 if the end of the stream has been reached
      */
     long nextBits(final int n) throws IOException {
+        if (n < 0 || n > 8) {
+            throw new IOException("Trying to read " + n + " bits, at most 8 are allowed");
+        }
         return readBits(n);
     }
 

@@ -18,6 +18,9 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import java.util.Arrays;
+import java.util.zip.ZipException;
+
 /**
  * Strong Encryption Header (0x0017).
  *
@@ -299,7 +302,10 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
      * @param offset offset into buffer to read data
      * @param length the length of data
      */
-    public void parseCentralDirectoryFormat(final byte[] data, final int offset, final int length) {
+    public void parseCentralDirectoryFormat(final byte[] data, final int offset, final int length)
+        throws ZipException {
+        assertMinimalLength(12, length);
+        // TODO: double check we really do not want to call super here
         this.format = ZipShort.getValue(data, offset);
         this.algId = EncryptionAlgorithm.getAlgorithmByCode(ZipShort.getValue(data, offset + 2));
         this.bitlen = ZipShort.getValue(data, offset + 4);
@@ -307,6 +313,7 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
         this.rcount = ZipLong.getValue(data, offset + 8);
 
         if (rcount > 0) {
+            assertMinimalLength(16, length);
             this.hashAlg = HashAlgorithm.getAlgorithmByCode(ZipShort.getValue(data, offset + 12));
             this.hashSize = ZipShort.getValue(data, offset + 14);
             // srlist... hashed public keys
@@ -327,38 +334,64 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
      * @param offset offset into buffer to read data
      * @param length the length of data
      */
-    public void parseFileFormat(final byte[] data, final int offset, final int length) {
+    public void parseFileFormat(final byte[] data, final int offset, final int length)
+        throws ZipException {
+        assertMinimalLength(4, length);
         final int ivSize = ZipShort.getValue(data, offset);
-        this.ivData = new byte[ivSize];
-        System.arraycopy(data, offset + 4, this.ivData, 0, ivSize);
+        assertDynamicLengthFits("ivSize", ivSize, 4, length);
+        // TODO: what is at offset + 2?
+        this.ivData = Arrays.copyOfRange(data, offset + 4, ivSize);
 
+        assertMinimalLength(16 + ivSize, length); // up to and including erdSize
+        // TODO: what is at offset + 4 + ivSize?
         this.format = ZipShort.getValue(data, offset + ivSize + 6);
         this.algId = EncryptionAlgorithm.getAlgorithmByCode(ZipShort.getValue(data, offset + ivSize + 8));
         this.bitlen = ZipShort.getValue(data, offset + ivSize + 10);
         this.flags = ZipShort.getValue(data, offset + ivSize + 12);
 
         final int erdSize = ZipShort.getValue(data, offset + ivSize + 14);
-        this.erdData = new byte[erdSize];
-        System.arraycopy(data, offset + ivSize + 16, this.erdData, 0, erdSize);
+        assertDynamicLengthFits("erdSize", erdSize, ivSize + 16, length);
+        this.erdData = Arrays.copyOfRange(data, offset + ivSize + 16, erdSize);
 
+        assertMinimalLength(16 + 4 + ivSize + erdSize, length);
         this.rcount = ZipLong.getValue(data, offset + ivSize + 16 + erdSize);
-        System.out.println("rcount: " + rcount);
         if (rcount == 0) {
+            assertMinimalLength(ivSize + 20 + erdSize + 2, length);
             final int vSize = ZipShort.getValue(data, offset + ivSize + 20 + erdSize);
-            this.vData = new byte[vSize - 4];
-            this.vCRC32 = new byte[4];
-            System.arraycopy(data, offset + ivSize + 22 + erdSize , this.vData, 0, vSize - 4);
-            System.arraycopy(data, offset + ivSize + 22 + erdSize + vSize - 4, vCRC32, 0, 4);
+            assertDynamicLengthFits("vSize", vSize, ivSize + 22 + erdSize, length);
+            if (vSize < 4) {
+                throw new ZipException("Invalid X0017_StrongEncryptionHeader: vSize " + vSize
+                    + " is too small to hold CRC");
+            }
+            this.vData = Arrays.copyOfRange(data, offset + ivSize + 22 + erdSize, vSize - 4);
+            this.vCRC32 = Arrays.copyOfRange(data, offset + ivSize + 22 + erdSize + vSize - 4, 4);
         } else {
+            assertMinimalLength(ivSize + 20 + erdSize + 6, length); // up to and including resize
             this.hashAlg = HashAlgorithm.getAlgorithmByCode(ZipShort.getValue(data, offset + ivSize + 20 + erdSize));
             this.hashSize = ZipShort.getValue(data, offset + ivSize + 22 + erdSize);
             final int resize = ZipShort.getValue(data, offset + ivSize + 24 + erdSize);
+
             this.recipientKeyHash = new byte[this.hashSize];
+            if (resize < this.hashSize) {
+                throw new ZipException("Invalid X0017_StrongEncryptionHeader: resize " + resize
+                    + " is too small to hold hashSize" + this.hashSize);
+            }
             this.keyBlob = new byte[resize - this.hashSize];
+            // TODO: this looks suspicious, 26 rather than 24 would be "after" resize
+            assertDynamicLengthFits("resize", resize, ivSize + 24 + erdSize, length);
+            // TODO use Arrays.copyOfRange
             System.arraycopy(data, offset + ivSize + 24 + erdSize, this.recipientKeyHash, 0, this.hashSize);
             System.arraycopy(data, offset + ivSize + 24 + erdSize + this.hashSize, this.keyBlob, 0, resize - this.hashSize);
 
+            assertMinimalLength(ivSize + 26 + erdSize + resize + 2, length);
             final int vSize = ZipShort.getValue(data, offset + ivSize + 26 + erdSize + resize);
+            if (vSize < 4) {
+                throw new ZipException("Invalid X0017_StrongEncryptionHeader: vSize " + vSize
+                    + " is too small to hold CRC");
+            }
+            // TODO: these offsets look even more suspicious, the constant should likely be 28 rather than 22
+            assertDynamicLengthFits("vSize", vSize, ivSize + 22 + erdSize + resize, length);
+            // TODO: use Arrays.copyOfRange
             this.vData = new byte[vSize - 4];
             this.vCRC32 = new byte[4];
             System.arraycopy(data, offset + ivSize + 22 + erdSize + resize, this.vData, 0, vSize - 4);
@@ -369,14 +402,25 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
     }
 
     @Override
-    public void parseFromLocalFileData(final byte[] data, final int offset, final int length) {
+    public void parseFromLocalFileData(final byte[] data, final int offset, final int length)
+        throws ZipException {
         super.parseFromLocalFileData(data, offset, length);
         parseFileFormat(data, offset, length);
     }
 
     @Override
-    public void parseFromCentralDirectoryData(final byte[] data, final int offset, final int length) {
+    public void parseFromCentralDirectoryData(final byte[] data, final int offset, final int length)
+        throws ZipException {
         super.parseFromCentralDirectoryData(data, offset, length);
         parseCentralDirectoryFormat(data, offset, length);
+    }
+
+    private void assertDynamicLengthFits(final String what, final int dynamicLength, final int prefixLength,
+        final int length) throws ZipException {
+        if (prefixLength + dynamicLength > length) {
+            throw new ZipException("Invalid X0017_StrongEncryptionHeader: " + what + " "
+                + dynamicLength + " doesn't fit into " + length + " bytes of data at position "
+                + prefixLength);
+        }
     }
 }

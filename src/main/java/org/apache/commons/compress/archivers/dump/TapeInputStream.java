@@ -63,11 +63,17 @@ class TapeInputStream extends FilterInputStream {
      *             more than one block has been read
      * @throws IOException
      *             there was an error reading additional blocks.
+     * @throws IOException
+     *             recsPerBlock is smaller than 1
      */
     public void resetBlockSize(final int recsPerBlock, final boolean isCompressed)
         throws IOException {
         this.isCompressed = isCompressed;
 
+        if (recsPerBlock < 1) {
+            throw new IOException("Block with " + recsPerBlock
+                + " records found, must be at least 1");
+        }
         blockSize = RECORD_SIZE * recsPerBlock;
 
         // save first block in case we need it again

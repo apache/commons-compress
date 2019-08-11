@@ -39,6 +39,12 @@ public class ExtraFieldUtilsTest implements UnixStat {
      */
     static final ZipShort UNRECOGNIZED_HEADER = new ZipShort(0x5555);
 
+    /**
+     * Header-ID of a ZipExtraField not supported by Commons Compress
+     * used for the ArrayIndexOutOfBoundsTest.
+     */
+    static final ZipShort AIOB_HEADER = new ZipShort(0x1000);
+
     private AsiExtraField a;
     private UnrecognizedExtraField dummy;
     private byte[] data;
@@ -98,26 +104,18 @@ public class ExtraFieldUtilsTest implements UnixStat {
 
     @Test
     public void parseTurnsArrayIndexOutOfBoundsIntoZipException() throws Exception {
-        AsiExtraField f = new AsiExtraField();
-        f.setLinkedFile("foo");
-        byte[] l = f.getLocalFileDataData();
-        // manipulate size of path name to read 4 rather than 3
-        l[9] = 4;
-        // and fake CRC so we actually reach the AIOBE
-        l[0] = (byte) 0x52;
-        l[1] = (byte) 0x26;
-        l[2] = (byte) 0x18;
-        l[3] = (byte) 0x19;
-        byte[] d = new byte[4 + l.length];
+        ExtraFieldUtils.register(AiobThrowingExtraField.class);
+        AiobThrowingExtraField f = new AiobThrowingExtraField();
+        byte[] d = new byte[4 + AiobThrowingExtraField.LENGTH];
         System.arraycopy(f.getHeaderId().getBytes(), 0, d, 0, 2);
         System.arraycopy(f.getLocalFileDataLength().getBytes(), 0, d, 2, 2);
-        System.arraycopy(l, 0, d, 4, l.length);
+        System.arraycopy(f.getLocalFileDataData(), 0, d, 4, AiobThrowingExtraField.LENGTH);
         try {
             ExtraFieldUtils.parse(d);
             fail("data should be invalid");
         } catch (final ZipException e) {
             assertEquals("message",
-                         "Failed to parse corrupt ZIP extra field of type 756e",
+                         "Failed to parse corrupt ZIP extra field of type 1000",
                          e.getMessage());
         }
     }
@@ -245,5 +243,44 @@ public class ExtraFieldUtilsTest implements UnixStat {
             assertEquals("central byte " + i, data2[i], central[i]);
         }
 
+    }
+
+    public static class AiobThrowingExtraField implements ZipExtraField {
+        static final int LENGTH = 4;
+        @Override
+        public ZipShort getHeaderId() {
+            return AIOB_HEADER;
+        }
+        @Override
+        public ZipShort getLocalFileDataLength() {
+            return new ZipShort(LENGTH);
+        }
+
+        @Override
+        public ZipShort getCentralDirectoryLength() {
+            return getLocalFileDataLength();
+        }
+
+        @Override
+        public byte[] getLocalFileDataData() {
+            return new byte[LENGTH];
+        }
+
+        @Override
+        public byte[] getCentralDirectoryData() {
+            return getLocalFileDataData();
+        }
+
+        @Override
+        public void parseFromLocalFileData(byte[] buffer, int offset, int length)
+            throws ZipException {
+            throw new ArrayIndexOutOfBoundsException();
+        }
+
+        @Override
+        public void parseFromCentralDirectoryData(byte[] buffer, int offset, int length)
+            throws ZipException {
+            parseFromLocalFileData(buffer, offset, length);
+        }
     }
 }

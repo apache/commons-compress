@@ -47,7 +47,11 @@ class BinaryTree {
     private final int[] tree;
 
     public BinaryTree(final int depth) {
-        tree = new int[(1 << (depth + 1)) - 1];
+        if (depth < 0 || depth > 30) {
+            throw new IllegalArgumentException("depth must be bigger than 0 and not bigger than 30"
+                + " but is " + depth);
+        }
+        tree = new int[(int) ((1l << (depth + 1)) - 1)];
         Arrays.fill(tree, UNDEFINED);
     }
 
@@ -110,6 +114,10 @@ class BinaryTree {
      * Decodes the packed binary tree from the specified stream.
      */
     static BinaryTree decode(final InputStream in, final int totalNumberOfValues) throws IOException {
+        if (totalNumberOfValues < 0) {
+            throw new IllegalArgumentException("totalNumberOfValues must be bigger than 0, is "
+                + totalNumberOfValues);
+        }
         // the first byte contains the size of the structure minus one
         final int size = in.read() + 1;
         if (size == 0) {
@@ -130,6 +138,9 @@ class BinaryTree {
         for (final byte b : encodedTree) {
             // each byte encodes the number of values (upper 4 bits) for a bit length (lower 4 bits)
             final int numberOfValues = ((b & 0xF0) >> 4) + 1;
+            if (pos + numberOfValues > totalNumberOfValues) {
+                throw new IOException("Number of values exceeds given total number of values");
+            }
             final int bitLength = (b & 0x0F) + 1;
 
             for (int j = 0; j < numberOfValues; j++) {

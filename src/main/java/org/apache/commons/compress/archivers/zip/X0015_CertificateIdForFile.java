@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import java.util.zip.ZipException;
+
 /**
  * X.509 Certificate ID and Signature for individual file (0x0015).
  *
@@ -67,7 +69,9 @@ public class X0015_CertificateIdForFile extends PKWareExtraHeader {
     }
 
     @Override
-    public void parseFromCentralDirectoryData(final byte[] data, final int offset, final int length) {
+    public void parseFromCentralDirectoryData(final byte[] data, final int offset, final int length)
+        throws ZipException {
+        assertMinimalLength(4, length);
         super.parseFromCentralDirectoryData(data, offset, length);
         this.rcount = ZipShort.getValue(data, offset);
         this.hashAlg = HashAlgorithm.getAlgorithmByCode(ZipShort.getValue(data, offset + 2));

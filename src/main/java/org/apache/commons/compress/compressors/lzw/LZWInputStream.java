@@ -128,9 +128,14 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
      * @param maxCodeSize maximum code size
      * @param memoryLimitInKb maximum allowed estimated memory usage in Kb
      * @throws MemoryLimitException if estimated memory usage is greater than memoryLimitInKb
+     * @throws IllegalArgumentException if <code>maxCodeSize</code> is not bigger than 0
      */
     protected void initializeTables(final int maxCodeSize, final int memoryLimitInKb)
             throws MemoryLimitException {
+        if (maxCodeSize <= 0) {
+            throw new IllegalArgumentException("maxCodeSize is " + maxCodeSize
+                + ", must be bigger than 0");
+        }
 
         if (memoryLimitInKb > -1) {
             final int maxTableSize = 1 << maxCodeSize;
@@ -148,8 +153,13 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     /**
      * Initializes the arrays based on the maximum code size.
      * @param maxCodeSize maximum code size
+     * @throws IllegalArgumentException if <code>maxCodeSize</code> is not bigger than 0
      */
     protected void initializeTables(final int maxCodeSize) {
+        if (maxCodeSize <= 0) {
+            throw new IllegalArgumentException("maxCodeSize is " + maxCodeSize
+                + ", must be bigger than 0");
+        }
         final int maxTableSize = 1 << maxCodeSize;
         prefixes = new int[maxTableSize];
         characters = new byte[maxTableSize];

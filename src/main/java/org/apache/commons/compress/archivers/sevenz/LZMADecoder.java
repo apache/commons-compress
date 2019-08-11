@@ -36,6 +36,12 @@ class LZMADecoder extends CoderBase {
     @Override
     InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
             final Coder coder, final byte[] password, int maxMemoryLimitInKb) throws IOException {
+        if (coder.properties == null) {
+            throw new IOException("Missing LZMA properties");
+        }
+        if (coder.properties.length < 1) {
+            throw new IOException("LZMA properties too short");
+        }
         final byte propsByte = coder.properties[0];
         final int dictSize = getDictionarySize(coder);
         if (dictSize > LZMAInputStream.DICT_SIZE_MAX) {
@@ -69,6 +75,12 @@ class LZMADecoder extends CoderBase {
 
     @Override
     Object getOptionsFromCoder(final Coder coder, final InputStream in) throws IOException {
+        if (coder.properties == null) {
+            throw new IOException("Missing LZMA properties");
+        }
+        if (coder.properties.length < 1) {
+            throw new IOException("LZMA properties too short");
+        }
         final byte propsByte = coder.properties[0];
         int props = propsByte & 0xFF;
         int pb = props / (9 * 5);

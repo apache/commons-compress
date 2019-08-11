@@ -288,6 +288,9 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
 
         if (linkArray.length == 0) {
             link = "";
+        } else if (linkArray.length > tmp.length - 10) {
+            throw new ZipException("Bad symbolic link name length " + linkArray.length
+                + " in ASI extra field");
         } else {
             System.arraycopy(tmp, 10, linkArray, 0, linkArray.length);
             link = new String(linkArray); // Uses default charset - see class Javadoc

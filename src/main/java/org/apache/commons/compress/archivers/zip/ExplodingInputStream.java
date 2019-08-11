@@ -161,7 +161,10 @@ class ExplodingInputStream extends InputStream implements InputStreamStatistics 
         init();
 
         final int bit = bits.nextBit();
-        if (bit == 1) {
+        if (bit == -1) {
+            // EOF
+            return;
+        } else if (bit == 1) {
             // literal value
             int literal;
             if (literalTree != null) {
@@ -190,7 +193,12 @@ class ExplodingInputStream extends InputStream implements InputStreamStatistics 
 
             int length = lengthTree.read(bits);
             if (length == 63) {
-                length += bits.nextBits(8);
+                final long nextByte = bits.nextBits(8);
+                if (nextByte == -1) {
+                    // EOF
+                    return;
+                }
+                length += nextByte;
             }
             length += minimumMatchLength;
 

@@ -20,6 +20,7 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.zip.ZipException;
 
 import static org.apache.commons.compress.archivers.zip.ZipUtil.reverse;
@@ -224,16 +225,26 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
             final byte[] data, int offset, final int length
     ) throws ZipException {
         reset();
+        if (length < 3) {
+            throw new ZipException("X7875_NewUnix length is too short, only "
+                + length + " bytes");
+        }
         this.version = signedByteToUnsignedInt(data[offset++]);
         final int uidSize = signedByteToUnsignedInt(data[offset++]);
-        final byte[] uidBytes = new byte[uidSize];
-        System.arraycopy(data, offset, uidBytes, 0, uidSize);
+        if (uidSize + 3 > length) {
+            throw new ZipException("X7875_NewUnix invalid: uidSize " + uidSize
+                + " doesn't fit into " + length + " bytes");
+        }
+        final byte[] uidBytes = Arrays.copyOfRange(data, offset, offset + uidSize);
         offset += uidSize;
         this.uid = new BigInteger(1, reverse(uidBytes)); // sign-bit forced positive
 
         final int gidSize = signedByteToUnsignedInt(data[offset++]);
-        final byte[] gidBytes = new byte[gidSize];
-        System.arraycopy(data, offset, gidBytes, 0, gidSize);
+        if (uidSize + 3 + gidSize > length) {
+            throw new ZipException("X7875_NewUnix invalid: gidSize " + gidSize
+                + " doesn't fit into " + length + " bytes");
+        }
+        final byte[] gidBytes = Arrays.copyOfRange(data, offset, offset + gidSize);
         this.gid = new BigInteger(1, reverse(gidBytes)); // sign-bit forced positive
     }
 

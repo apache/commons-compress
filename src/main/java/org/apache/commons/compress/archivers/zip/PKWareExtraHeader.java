@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.ZipException;
 
 /**
  * Base class for all PKWare strong crypto extra headers.
@@ -170,7 +171,8 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      * @see ZipExtraField#parseFromLocalFileData(byte[], int, int)
      */
     @Override
-    public void parseFromLocalFileData(final byte[] data, final int offset, final int length) {
+    public void parseFromLocalFileData(final byte[] data, final int offset, final int length)
+        throws ZipException {
         setLocalFileDataData(Arrays.copyOfRange(data, offset, offset + length));
     }
 
@@ -184,11 +186,20 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      * @see ZipExtraField#parseFromCentralDirectoryData(byte[], int, int)
      */
     @Override
-    public void parseFromCentralDirectoryData(final byte[] data, final int offset, final int length) {
+    public void parseFromCentralDirectoryData(final byte[] data, final int offset, final int length)
+        throws ZipException {
         final byte[] tmp = Arrays.copyOfRange(data, offset, offset + length);
         setCentralDirectoryData(tmp);
         if (localData == null) {
             setLocalFileDataData(tmp);
+        }
+    }
+
+    protected final void assertMinimalLength(final int minimum, final int length)
+        throws ZipException {
+        if (length < minimum) {
+            throw new ZipException(getClass().getName() + " is too short, only "
+                + length + " bytes, expected at least " + minimum);
         }
     }
 

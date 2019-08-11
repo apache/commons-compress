@@ -148,10 +148,14 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
      * @param encoding
      *            The encoding of file names to expect - use null for
      *            the platform's default.
+     * @throws IllegalArgumentException if <code>blockSize</code> is not bigger than 0
      * @since 1.6
      */
     public CpioArchiveInputStream(final InputStream in, final int blockSize, final String encoding) {
         this.in = in;
+        if (blockSize <= 0) {
+            throw new IllegalArgumentException("blockSize must be bigger than 0");
+        }
         this.blockSize = blockSize;
         this.encoding = encoding;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
@@ -382,11 +386,17 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         ret.setNumberOfLinks(readAsciiLong(8, 16));
         ret.setTime(readAsciiLong(8, 16));
         ret.setSize(readAsciiLong(8, 16));
+        if (ret.getSize() < 0) {
+            throw new IOException("Found illegal entry with negative length");
+        }
         ret.setDeviceMaj(readAsciiLong(8, 16));
         ret.setDeviceMin(readAsciiLong(8, 16));
         ret.setRemoteDeviceMaj(readAsciiLong(8, 16));
         ret.setRemoteDeviceMin(readAsciiLong(8, 16));
         final long namesize = readAsciiLong(8, 16);
+        if (namesize < 0) {
+            throw new IOException("Found illegal entry with negative name length");
+        }
         ret.setChksum(readAsciiLong(8, 16));
         final String name = readCString((int) namesize);
         ret.setName(name);
@@ -415,7 +425,13 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         ret.setRemoteDevice(readAsciiLong(6, 8));
         ret.setTime(readAsciiLong(11, 8));
         final long namesize = readAsciiLong(6, 8);
+        if (namesize < 0) {
+            throw new IOException("Found illegal entry with negative name length");
+        }
         ret.setSize(readAsciiLong(11, 8));
+        if (ret.getSize() < 0) {
+            throw new IOException("Found illegal entry with negative length");
+        }
         final String name = readCString((int) namesize);
         ret.setName(name);
         if (CpioUtil.fileType(mode) == 0 && !name.equals(CPIO_TRAILER)){
@@ -443,7 +459,13 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         ret.setRemoteDevice(readBinaryLong(2, swapHalfWord));
         ret.setTime(readBinaryLong(4, swapHalfWord));
         final long namesize = readBinaryLong(2, swapHalfWord);
+        if (namesize < 0) {
+            throw new IOException("Found illegal entry with negative name length");
+        }
         ret.setSize(readBinaryLong(4, swapHalfWord));
+        if (ret.getSize() < 0) {
+            throw new IOException("Found illegal entry with negative length");
+        }
         final String name = readCString((int) namesize);
         ret.setName(name);
         if (CpioUtil.fileType(mode) == 0 && !name.equals(CPIO_TRAILER)){
@@ -460,7 +482,9 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         // don't include trailing NUL in file name to decode
         final byte tmpBuffer[] = new byte[length - 1];
         readFully(tmpBuffer, 0, tmpBuffer.length);
-        this.in.read();
+        if (this.in.read() == -1) {
+            throw new EOFException();
+        }
         return zipEncoding.decode(tmpBuffer);
     }
 

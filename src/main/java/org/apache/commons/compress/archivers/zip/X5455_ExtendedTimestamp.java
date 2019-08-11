@@ -219,15 +219,15 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
             final byte[] data, int offset, final int length
     ) throws ZipException {
         reset();
+        if (length < 1) {
+            throw new ZipException("X5455_ExtendedTimestamp too short, only " + length + " bytes");
+        }
         final int len = offset + length;
         setFlags(data[offset++]);
-        if (bit0_modifyTimePresent) {
+        if (bit0_modifyTimePresent && offset + 4 <= len) {
             modifyTime = new ZipLong(data, offset);
             offset += 4;
         }
-
-        // Notice the extra length check in case we are parsing the shorter
-        // central data field (for both access and create timestamps).
         if (bit1_accessTimePresent && offset + 4 <= len) {
             accessTime = new ZipLong(data, offset);
             offset += 4;

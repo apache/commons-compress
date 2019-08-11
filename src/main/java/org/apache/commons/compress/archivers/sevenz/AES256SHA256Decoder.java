@@ -41,6 +41,12 @@ class AES256SHA256Decoder extends CoderBase {
                 if (isInitialized) {
                     return cipherInputStream;
                 }
+                if (coder.properties == null) {
+                    throw new IOException("Missing AES256 properties in " + archiveName);
+                }
+                if (coder.properties.length < 2) {
+                    throw new IOException("AES256 properties too short in " + archiveName);
+                }
                 final int byte0 = 0xff & coder.properties[0];
                 final int numCyclesPower = byte0 & 0x3f;
                 final int byte1 = 0xff & coder.properties[1];

@@ -66,7 +66,8 @@ class LZMA2Decoder extends CoderBase {
     }
 
     @Override
-    Object getOptionsFromCoder(final Coder coder, final InputStream in) {
+    Object getOptionsFromCoder(final Coder coder, final InputStream in)
+        throws IOException {
         return getDictionarySize(coder);
     }
 
@@ -77,13 +78,19 @@ class LZMA2Decoder extends CoderBase {
         return numberOptionOrDefault(opts);
     }
 
-    private int getDictionarySize(final Coder coder) throws IllegalArgumentException {
+    private int getDictionarySize(final Coder coder) throws IOException {
+        if (coder.properties == null) {
+            throw new IOException("Missing LZMA2 properties");
+        }
+        if (coder.properties.length < 1) {
+            throw new IOException("LZMA2 properties too short");
+        }
         final int dictionarySizeBits = 0xff & coder.properties[0];
         if ((dictionarySizeBits & (~0x3f)) != 0) {
-            throw new IllegalArgumentException("Unsupported LZMA2 property bits");
+            throw new IOException("Unsupported LZMA2 property bits");
         }
         if (dictionarySizeBits > 40) {
-            throw new IllegalArgumentException("Dictionary larger than 4GiB maximum size");
+            throw new IOException("Dictionary larger than 4GiB maximum size");
         }
         if (dictionarySizeBits == 40) {
             return 0xFFFFffff;
