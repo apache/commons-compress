@@ -239,6 +239,31 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         }
     }
 
+    /**
+     * @see https://issues.apache.org/jira/browse/COMPRESS-479
+     */
+    @Test
+    public void streamSkipsOverUnicodeExtraFieldWithUnsupportedVersion() throws IOException {
+        try (FileInputStream archive = new FileInputStream(getFile("COMPRESS-479.zip"));
+             ZipArchiveInputStream zi = new ZipArchiveInputStream(archive)) {
+            assertEquals(OIL_BARREL_TXT, zi.getNextEntry().getName());
+            assertEquals("%U20AC_for_Dollar.txt", zi.getNextEntry().getName());
+            assertEquals(ASCII_TXT, zi.getNextEntry().getName());
+        }
+    }
+
+    /**
+     * @see https://issues.apache.org/jira/browse/COMPRESS-479
+     */
+    @Test
+    public void zipFileSkipsOverUnicodeExtraFieldWithUnsupportedVersion() throws IOException {
+        try (ZipFile zf = new ZipFile(getFile("COMPRESS-479.zip"))) {
+            assertNotNull(zf.getEntry(ASCII_TXT));
+            assertNotNull(zf.getEntry("%U20AC_for_Dollar.txt"));
+            assertNotNull(zf.getEntry(OIL_BARREL_TXT));
+        }
+    }
+
     private static void testFileRoundtrip(final String encoding, final boolean withEFS,
                                           final boolean withExplicitUnicodeExtra)
         throws IOException {

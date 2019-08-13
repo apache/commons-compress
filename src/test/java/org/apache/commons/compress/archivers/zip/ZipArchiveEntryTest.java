@@ -23,14 +23,20 @@ import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 /**
  * JUnit testcases for org.apache.commons.compress.archivers.zip.ZipEntry.
  *
  */
 public class ZipArchiveEntryTest {
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     /**
      * test handling of extra fields
@@ -288,6 +294,17 @@ public class ZipArchiveEntryTest {
         assertTrue(ze.isUnixSymlink());
         ze.setUnixMode(UnixStat.LINK_FLAG | UnixStat.DIR_FLAG);
         assertFalse(ze.isUnixSymlink());
+    }
+
+    @Test
+    public void reparsingUnicodeExtraWithUnsupportedversionThrowsInStrictMode()
+        throws Exception {
+        thrown.expect(ZipException.class);
+        thrown.expectMessage("Unsupported version [116] for UniCode path extra data.");
+        try (ZipFile zf = new ZipFile(getFile("COMPRESS-479.zip"))) {
+            ZipArchiveEntry ze = zf.getEntry("%U20AC_for_Dollar.txt");
+            ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.STRICT_FOR_KNOW_EXTRA_FIELDS);
+        }
     }
 
 }

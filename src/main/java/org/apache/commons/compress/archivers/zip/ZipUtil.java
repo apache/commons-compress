@@ -233,8 +233,9 @@ public abstract class ZipUtil {
     static void setNameAndCommentFromExtraFields(final ZipArchiveEntry ze,
                                                  final byte[] originalNameBytes,
                                                  final byte[] commentBytes) {
-        final UnicodePathExtraField name = (UnicodePathExtraField)
-            ze.getExtraField(UnicodePathExtraField.UPATH_ID);
+        final ZipExtraField nameCandidate = ze.getExtraField(UnicodePathExtraField.UPATH_ID);
+        final UnicodePathExtraField name = nameCandidate instanceof UnicodePathExtraField
+            ? (UnicodePathExtraField) nameCandidate : null;
         final String newName = getUnicodeStringIfOriginalMatches(name,
                                                            originalNameBytes);
         if (newName != null) {
@@ -243,8 +244,9 @@ public abstract class ZipUtil {
         }
 
         if (commentBytes != null && commentBytes.length > 0) {
-            final UnicodeCommentExtraField cmt = (UnicodeCommentExtraField)
-                ze.getExtraField(UnicodeCommentExtraField.UCOM_ID);
+            final ZipExtraField cmtCandidate = ze.getExtraField(UnicodeCommentExtraField.UCOM_ID);
+            final UnicodeCommentExtraField cmt = cmtCandidate instanceof UnicodeCommentExtraField
+                ? (UnicodeCommentExtraField) cmtCandidate : null;
             final String newComment =
                 getUnicodeStringIfOriginalMatches(cmt, commentBytes);
             if (newComment != null) {

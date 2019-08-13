@@ -174,8 +174,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         final byte[] extra = entry.getExtra();
         if (extra != null) {
             setExtraFields(ExtraFieldUtils.parse(extra, true,
-                                                 ExtraFieldUtils
-                                                 .UnparseableExtraField.READ));
+                ExtraFieldUtils.UnparseableExtraField.READ, ExtraFieldUtils.ParseErrorBehavior.MAKE_UNRECOGNIZED));
         } else {
             // initializes extra data to an empty byte array
             setExtra();
@@ -444,6 +443,50 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
                 getParseableExtraFields();
     }
 
+    /**
+     * Retrieves extra fields.
+     * @param includeUnparseable whether to also return unparseable
+     * extra fields as {@link UnparseableExtraFieldData} if such data
+     * exists.
+     * @return an array of the extra fields
+     *
+     * @throws ZipException if parsing fails, can not happen if {@code
+     * mode} is {@link ExtraFieldParsingMode.BEST_EFFORT}.
+     *
+     * @since 1.19
+     */
+    public ZipExtraField[] getExtraFields(final ExtraFieldParsingMode mode)
+        throws ZipException {
+        if (mode == ExtraFieldParsingMode.BEST_EFFORT) {
+            return getExtraFields(true);
+        }
+        byte[] local = getExtra();
+        List<ZipExtraField> localFields = new ArrayList<>(Arrays.asList(ExtraFieldUtils.parse(local, true,
+            mode.getOnUnparseableData(), mode.getOnParseError())));
+        byte[] central = ExtraFieldUtils.mergeCentralDirectoryData(getAllExtraFieldsNoCopy());
+        List<ZipExtraField> centralFields = new ArrayList<>(Arrays.asList(ExtraFieldUtils.parse(central, false,
+            mode.getOnUnparseableData(), mode.getOnParseError())));
+        List<ZipExtraField> merged = new ArrayList<>();
+        for (ZipExtraField l : localFields) {
+            ZipExtraField c = null;
+            if (l instanceof UnparseableExtraFieldData) {
+                c = findUnparseable(centralFields);
+            } else {
+                c = findMatching(l.getHeaderId(), centralFields);
+            }
+            if (c != null) {
+                byte[] cd = c.getCentralDirectoryData();
+                if (cd != null && cd.length > 0) {
+                    l.parseFromCentralDirectoryData(cd, 0, cd.length);
+                }
+                centralFields.remove(c);
+            }
+            merged.add(l);
+        }
+        merged.addAll(centralFields);
+        return merged.toArray(new ZipExtraField[0]);
+    }
+
     private ZipExtraField[] getParseableExtraFieldsNoCopy() {
         if (extraFields == null) {
             return noExtraFields;
@@ -491,6 +534,25 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         final ZipExtraField[] allExtraFieldsNoCopy = getAllExtraFieldsNoCopy();
         return (allExtraFieldsNoCopy == extraFields) ? copyOf( allExtraFieldsNoCopy) : allExtraFieldsNoCopy;
     }
+
+    private ZipExtraField findUnparseable(List<ZipExtraField> fs) {
+        for (ZipExtraField f : fs) {
+            if (f instanceof UnparseableExtraFieldData) {
+                return f;
+            }
+        }
+        return null;
+    }
+
+    private ZipExtraField findMatching(ZipShort headerId, List<ZipExtraField> fs) {
+        for (ZipExtraField f : fs) {
+            if (headerId.equals(f.getHeaderId())) {
+                return f;
+            }
+        }
+        return null;
+    }
+
     /**
      * Adds an extra field - replacing an already present extra field
      * of the same type.
@@ -618,7 +680,8 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         try {
             final ZipExtraField[] local =
                 ExtraFieldUtils.parse(extra, true,
-                                      ExtraFieldUtils.UnparseableExtraField.READ);
+                    ExtraFieldUtils.UnparseableExtraField.READ,
+                    ExtraFieldUtils.ParseErrorBehavior.MAKE_UNRECOGNIZED);
             mergeExtraFields(local, true);
         } catch (final ZipException e) {
             // actually this is not possible as of Commons Compress 1.1
@@ -645,9 +708,11 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         try {
             final ZipExtraField[] central =
                 ExtraFieldUtils.parse(b, false,
-                                      ExtraFieldUtils.UnparseableExtraField.READ);
+                    ExtraFieldUtils.UnparseableExtraField.READ,
+                    ExtraFieldUtils.ParseErrorBehavior.MAKE_UNRECOGNIZED);
             mergeExtraFields(central, false);
         } catch (final ZipException e) {
+            // actually this is not possible as of Commons Compress 1.19
             throw new RuntimeException(e.getMessage(), e); //NOSONAR
         }
     }
@@ -850,12 +915,33 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
                 if (existing == null) {
                     addExtraField(element);
                 } else {
-                    if (local) {
-                        final byte[] b = element.getLocalFileDataData();
-                        existing.parseFromLocalFileData(b, 0, b.length);
-                    } else {
-                        final byte[] b = element.getCentralDirectoryData();
-                        existing.parseFromCentralDirectoryData(b, 0, b.length);
+                    byte[] b = null;
+                    try {
+                        if (local) {
+                            b = element.getLocalFileDataData();
+                            existing.parseFromLocalFileData(b, 0, b.length);
+                        } else {
+                            b = element.getCentralDirectoryData();
+                            existing.parseFromCentralDirectoryData(b, 0, b.length);
+                        }
+                    } catch (ZipException ex) {
+                        if (b == null) {
+                            throw ex;
+                        }
+                        // emulate ExtraFieldUtils.ParseErrorBehavior.MAKE_UNRECOGNIZED
+                        final UnrecognizedExtraField u = new UnrecognizedExtraField();
+                        u.setHeaderId(existing.getHeaderId());
+                        if (local) {
+                            final byte[] raw = existing.getCentralDirectoryData();
+                            u.parseFromLocalFileData(b, 0, b.length);
+                            u.parseFromCentralDirectoryData(raw, 0, raw.length);
+                        } else {
+                            final byte[] raw = existing.getLocalFileDataData();
+                            u.parseFromLocalFileData(raw, 0, raw.length);
+                            u.parseFromCentralDirectoryData(b, 0, b.length);
+                        }
+                        removeExtraField(existing.getHeaderId());
+                        addExtraField(u);
                     }
                 }
             }
@@ -1013,4 +1099,102 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         this.commentSource = commentSource;
     }
 
+
+    /**
+     * How to try to parse the extra fields.
+     *
+     * <p>Configures the bahvior for:</p>
+     * <ul>
+     *   <li>What shall happen if the extra field content doesn't
+     *   follow the recommended pattern of two-byte id followed by a
+     *   two-byte length?</li>
+     *  <li>What shall happen if an extra field is generally supported
+     *  by Commons Compress but its content cannot be parsed
+     *  correctly? This may for example happen if the archive is
+     *  corrupt, it triggers a bug in Commons Compress or the extra
+     *  field uses a version not (yet) supported by Commons
+     *  Compress.</li>
+     * </ul>
+     *
+     * @since 1.19
+     */
+    public enum ExtraFieldParsingMode {
+        /**
+         * Try to parse as many extra fields as possible and wrap
+         * unknown extra fields as well as supported extra fields that
+         * cannot be parsed in {@link UnrecognizedExtraField}.
+         *
+         * <p>Wrap extra data that doesn't follow the recommended
+         * pattern in an {@link UnparseableExtraFieldData}
+         * instance.</p>
+         *
+         * <p>This is the default behavior starting with Commons Compress 1.19.</p>
+         */
+        BEST_EFFORT(ExtraFieldUtils.UnparseableExtraField.READ,
+            ExtraFieldUtils.ParseErrorBehavior.MAKE_UNRECOGNIZED),
+        /**
+         * Try to parse as many extra fields as possible and wrap
+         * unknown extra fields in {@link UnrecognizedExtraField}.
+         *
+         * <p>Wrap extra data that doesn't follow the recommended
+         * pattern in an {@link UnparseableExtraFieldData}
+         * instance.</p>
+         *
+         * <p>Throw an exception if an extra field that is generally
+         * supported cannot be parsed.</p>
+         *
+         * <p>This used to be the default behavior prior to Commons
+         * Compress 1.19.</p>
+         */
+        STRICT_FOR_KNOW_EXTRA_FIELDS(ExtraFieldUtils.UnparseableExtraField.READ,
+            ExtraFieldUtils.ParseErrorBehavior.THROW),
+        /**
+         * Try to parse as many extra fields as possible and wrap
+         * unknown extra fields as well as supported extra fields that
+         * cannot be parsed in {@link UnrecognizedExtraField}.
+         *
+         * <p>Ignore extra data that doesn't follow the recommended
+         * pattern.</p>
+         *
+         * <p>This used to be the default behavior prior to Commons
+         * Compress 1.19.</p>
+         */
+        ONLY_PARSEABLE_LENIENT(ExtraFieldUtils.UnparseableExtraField.SKIP,
+            ExtraFieldUtils.ParseErrorBehavior.THROW),
+        /**
+         * Try to parse as many extra fields as possible and wrap
+         * unknown extra fields in {@link UnrecognizedExtraField}.
+         *
+         * <p>Ignore extra data that doesn't follow the recommended
+         * pattern.</p>
+         *
+         * <p>Throw an exception if an extra field that is generally
+         * supported cannot be parsed.</p>
+         */
+        ONLY_PARSEABLE_STRICT(ExtraFieldUtils.UnparseableExtraField.SKIP,
+            ExtraFieldUtils.ParseErrorBehavior.THROW),
+        /**
+         * Throw an exception if any of the recognized extra fields
+         * cannot be parsed or any extra field violates the
+         * recommended pattern.
+         */
+        DRACONIC(ExtraFieldUtils.UnparseableExtraField.THROW,
+            ExtraFieldUtils.ParseErrorBehavior.THROW);
+
+        private final ExtraFieldUtils.UnparseableExtraField onUnparseableData;
+        private final ExtraFieldUtils.ParseErrorBehavior onParseError;
+
+        private ExtraFieldParsingMode(ExtraFieldUtils.UnparseableExtraField onUnparseableData,
+                                      ExtraFieldUtils.ParseErrorBehavior onParseError) {
+            this.onUnparseableData = onUnparseableData;
+            this.onParseError = onParseError;
+        }
+
+        public ExtraFieldUtils.UnparseableExtraField getOnUnparseableData() {
+            return onUnparseableData;
+        }
+        public ExtraFieldUtils.ParseErrorBehavior getOnParseError() {
+            return onParseError;
+        }
+    }
 }
