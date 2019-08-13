@@ -510,14 +510,12 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         return unparseableExtra != null ? getMergedFields() : extraFields;
     }
 
-    private ZipExtraField[] copyOf(final ZipExtraField[] src){
+    private ZipExtraField[] copyOf(final ZipExtraField[] src) {
         return copyOf(src, src.length);
     }
 
     private ZipExtraField[] copyOf(final ZipExtraField[] src, final int length) {
-        final ZipExtraField[] cpy = new ZipExtraField[length];
-        System.arraycopy(src, 0, cpy, 0, Math.min(src.length, length));
-        return cpy;
+        return Arrays.copyOf(src, length);
     }
 
     private ZipExtraField[] getMergedFields() {
@@ -821,9 +819,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      */
     public byte[] getRawName() {
         if (rawName != null) {
-            final byte[] b = new byte[rawName.length];
-            System.arraycopy(rawName, 0, b, 0, rawName.length);
-            return b;
+            return Arrays.copyOf(rawName, rawName.length);
         }
         return null;
     }
