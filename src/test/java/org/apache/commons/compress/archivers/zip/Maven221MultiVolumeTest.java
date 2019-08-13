@@ -72,7 +72,7 @@ public class Maven221MultiVolumeTest {
             new FileInputStream(getFile("apache-maven-2.2.1.zip.001"));
         ZipArchiveInputStream zi = null;
         try {
-            zi = new ZipArchiveInputStream(archive, (String) null, false);
+            zi = new ZipArchiveInputStream(archive,null,false);
 
             // these are the entries that are supposed to be processed
             // correctly without any problems

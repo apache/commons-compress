@@ -27,7 +27,6 @@ import java.io.PushbackInputStream;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.zip.CRC32;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
@@ -81,10 +80,14 @@ import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC
  */
 public class ZipArchiveInputStream extends ArchiveInputStream implements InputStreamStatistics {
 
-    private final ZipReadingOptions options;
+    /** The zip encoding to use for file names and the file comment. */
+    private final ZipEncoding zipEncoding;
 
     // the provided encoding (for unit tests)
     final String encoding;
+
+    /** Whether to look for and use Unicode extra fields. */
+    private final boolean useUnicodeExtraFields;
 
     /** Wrapped stream, will always be a PushbackInputStream. */
     private final InputStream in;
@@ -165,11 +168,11 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
     private int entriesRead = 0;
 
     /**
-     * Create an instance using the {@link ZipReadingOptions#DEFAULT default reading options}.
+     * Create an instance using UTF-8 encoding
      * @param inputStream the stream to wrap
      */
     public ZipArchiveInputStream(final InputStream inputStream) {
-        this(inputStream, ZipReadingOptions.DEFAULT);
+        this(inputStream, ZipEncodingHelper.UTF8);
     }
 
     /**
@@ -180,7 +183,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
      * @since 1.5
      */
     public ZipArchiveInputStream(final InputStream inputStream, final String encoding) {
-        this(inputStream, ZipReadingOptions.builder().withEncoding(encoding).build());
+        this(inputStream, encoding, true);
     }
 
     /**
@@ -192,9 +195,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
      * Extra Fields (if present) to set the file names.
      */
     public ZipArchiveInputStream(final InputStream inputStream, final String encoding, final boolean useUnicodeExtraFields) {
-        this(inputStream, ZipReadingOptions.builder()
-             .withEncoding(encoding).withUseUnicodeExtraFields(useUnicodeExtraFields)
-             .build(), false);
+        this(inputStream, encoding, useUnicodeExtraFields, false);
     }
 
     /**
@@ -212,37 +213,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
                                  final String encoding,
                                  final boolean useUnicodeExtraFields,
                                  final boolean allowStoredEntriesWithDataDescriptor) {
-        this(inputStream, ZipReadingOptions.builder()
-             .withEncoding(encoding).withUseUnicodeExtraFields(useUnicodeExtraFields)
-             .build(), allowStoredEntriesWithDataDescriptor);
-    }
-
-    /**
-     * Create an instance using the specified reading options.
-     * @param inputStream the stream to wrap
-     * @param options the reading options
-     * @throws NullPointerException if {@code options} is null
-     * @since 1.19
-     */
-    public ZipArchiveInputStream(final InputStream inputStream, final ZipReadingOptions options) {
-        this(inputStream, options, false);
-    }
-
-    /**
-     * Create an instance using the specified reading options.
-     * @param inputStream the stream to wrap
-     * @param options the reading options
-     * @param allowStoredEntriesWithDataDescriptor whether the stream
-     * will try to read STORED entries that use a data descriptor
-     * @throws NullPointerException if {@code options} is null
-     * @since 1.19
-     */
-    public ZipArchiveInputStream(final InputStream inputStream, final ZipReadingOptions options,
-                                 final boolean allowStoredEntriesWithDataDescriptor) {
-        this.options = Objects.requireNonNull(options, "options must not be null");
-        this.encoding = options.getZipEncoding() instanceof NioZipEncoding
-            ? ((NioZipEncoding) options.getZipEncoding()).getCharset().name()
-            : null;
+        this.encoding = encoding;
+        zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
+        this.useUnicodeExtraFields = useUnicodeExtraFields;
         in = new PushbackInputStream(inputStream, buf.capacity());
         this.allowStoredEntriesWithDataDescriptor =
             allowStoredEntriesWithDataDescriptor;
@@ -296,8 +269,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
 
         final GeneralPurposeBit gpFlag = GeneralPurposeBit.parse(lfhBuf, off);
         final boolean hasUTF8Flag = gpFlag.usesUTF8ForNames();
-        final ZipEncoding entryEncoding = hasUTF8Flag ? ZipEncodingHelper.UTF8_ZIP_ENCODING
-            : options.getZipEncoding();
+        final ZipEncoding entryEncoding = hasUTF8Flag ? ZipEncodingHelper.UTF8_ZIP_ENCODING : zipEncoding;
         current.hasDataDescriptor = gpFlag.usesDataDescriptor();
         current.entry.setGeneralPurposeBit(gpFlag);
 
@@ -342,7 +314,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
         readFully(extraData);
         current.entry.setExtra(extraData);
 
-        if (!hasUTF8Flag && options.getUseUnicodeExtraFields()) {
+        if (!hasUTF8Flag && useUnicodeExtraFields) {
             ZipUtil.setNameAndCommentFromExtraFields(current.entry, fileName, null);
         }
 

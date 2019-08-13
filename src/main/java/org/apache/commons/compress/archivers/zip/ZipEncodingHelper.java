@@ -32,7 +32,7 @@ public abstract class ZipEncodingHelper {
     /**
      * name of the encoding UTF-8
      */
-    static final String UTF8 = "UTF-8";
+    static final String UTF8 = "UTF8";
 
     /**
      * the encoding UTF-8

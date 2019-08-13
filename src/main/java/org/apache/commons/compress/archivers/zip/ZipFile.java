@@ -39,7 +39,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.zip.Inflater;
 import java.util.zip.ZipException;
 
@@ -110,7 +109,19 @@ public class ZipFile implements Closeable {
     private final Map<String, LinkedList<ZipArchiveEntry>> nameMap =
         new HashMap<>(HASH_SIZE);
 
-    private final ZipReadingOptions options;
+    /**
+     * The encoding to use for file names and the file comment.
+     *
+     * <p>For a list of possible values see <a
+     * href="http://java.sun.com/j2se/1.5.0/docs/guide/intl/encoding.doc.html">http://java.sun.com/j2se/1.5.0/docs/guide/intl/encoding.doc.html</a>.
+     * Defaults to UTF-8.</p>
+     */
+    private final String encoding;
+
+    /**
+     * The zip encoding to use for file names and the file comment.
+     */
+    private final ZipEncoding zipEncoding;
 
     /**
      * File name of actual source.
@@ -121,6 +132,11 @@ public class ZipFile implements Closeable {
      * The actual data source.
      */
     private final SeekableByteChannel archive;
+
+    /**
+     * Whether to look for and use Unicode extra fields.
+     */
+    private final boolean useUnicodeExtraFields;
 
     /**
      * Whether the file is closed.
@@ -137,27 +153,25 @@ public class ZipFile implements Closeable {
     private final ByteBuffer cfhBbuf = ByteBuffer.wrap(cfhBuf);
 
     /**
-     * Opens the given file for reading using {@link
-     * ZipReadingOptions#DEFAULT default reading options}.
+     * Opens the given file for reading, assuming "UTF8" for file names.
      *
      * @param f the archive.
      *
      * @throws IOException if an error occurs while reading the file.
      */
     public ZipFile(final File f) throws IOException {
-        this(f, ZipReadingOptions.DEFAULT);
+        this(f, ZipEncodingHelper.UTF8);
     }
 
     /**
-     * Opens the given file for reading using {@link
-     * ZipReadingOptions#DEFAULT default reading options}.
+     * Opens the given file for reading, assuming "UTF8".
      *
      * @param name name of the archive.
      *
      * @throws IOException if an error occurs while reading the file.
      */
     public ZipFile(final String name) throws IOException {
-        this(new File(name));
+        this(new File(name), ZipEncodingHelper.UTF8);
     }
 
     /**
@@ -171,7 +185,7 @@ public class ZipFile implements Closeable {
      * @throws IOException if an error occurs while reading the file.
      */
     public ZipFile(final String name, final String encoding) throws IOException {
-        this(new File(name), ZipReadingOptions.builder().withEncoding(encoding).build());
+        this(new File(name), encoding, true);
     }
 
     /**
@@ -185,7 +199,7 @@ public class ZipFile implements Closeable {
      * @throws IOException if an error occurs while reading the file.
      */
     public ZipFile(final File f, final String encoding) throws IOException {
-        this(f, ZipReadingOptions.builder().withEncoding(encoding).build());
+        this(f, encoding, true);
     }
 
     /**
@@ -202,25 +216,7 @@ public class ZipFile implements Closeable {
      */
     public ZipFile(final File f, final String encoding, final boolean useUnicodeExtraFields)
         throws IOException {
-        this(f, ZipReadingOptions.builder()
-             .withEncoding(encoding).withUseUnicodeExtraFields(useUnicodeExtraFields)
-             .build());
-    }
-
-    /**
-     * Opens the given file for reading, assuming the specified
-     * options.
-     *
-     * @param f the archive.
-     * @param options the reading options
-     *
-     * @throws IOException if an error occurs while reading the file.
-     * @throws NullPointerException if {@code options} is null
-     * @since 1.19
-     */
-    public ZipFile(final File f, final ZipReadingOptions options)
-        throws IOException {
-        this(f, options, false);
+        this(f, encoding, useUnicodeExtraFields, false);
     }
 
     /**
@@ -238,24 +234,25 @@ public class ZipFile implements Closeable {
      * true}.</p>
      *
      * @param f the archive.
-     * @param options the reading options
+     * @param encoding the encoding to use for file names, use null
+     * for the platform's default encoding
+     * @param useUnicodeExtraFields whether to use InfoZIP Unicode
+     * Extra Fields (if present) to set the file names.
      * @param ignoreLocalFileHeader whether to ignore information
      * stored inside the local file header (see the notes in this method's javadoc)
      *
      * @throws IOException if an error occurs while reading the file.
-     * @throws NullPointerException if {@code options} is null
      * @since 1.19
      */
-    public ZipFile(final File f, final ZipReadingOptions options,
+    public ZipFile(final File f, final String encoding, final boolean useUnicodeExtraFields,
                    final boolean ignoreLocalFileHeader)
         throws IOException {
         this(Files.newByteChannel(f.toPath(), EnumSet.of(StandardOpenOption.READ)),
-             f.getAbsolutePath(), options, true, ignoreLocalFileHeader);
+             f.getAbsolutePath(), encoding, useUnicodeExtraFields, true, ignoreLocalFileHeader);
     }
 
     /**
-     * Opens the given channel for reading using {@link
-     * ZipReadingOptions#DEFAULT default reading options}.
+     * Opens the given channel for reading, assuming "UTF8" for file names.
      *
      * <p>{@link
      * org.apache.commons.compress.utils.SeekableInMemoryByteChannel}
@@ -268,7 +265,7 @@ public class ZipFile implements Closeable {
      */
     public ZipFile(final SeekableByteChannel channel)
             throws IOException {
-        this(channel, "unknown archive", ZipReadingOptions.DEFAULT);
+        this(channel, "unknown archive", ZipEncodingHelper.UTF8, true);
     }
 
     /**
@@ -288,7 +285,7 @@ public class ZipFile implements Closeable {
      */
     public ZipFile(final SeekableByteChannel channel, final String encoding)
         throws IOException {
-        this(channel, "unknown archive", ZipReadingOptions.builder().withEncoding(encoding).build());
+        this(channel, "unknown archive", encoding, true);
     }
 
     /**
@@ -312,30 +309,7 @@ public class ZipFile implements Closeable {
     public ZipFile(final SeekableByteChannel channel, final String archiveName,
                    final String encoding, final boolean useUnicodeExtraFields)
         throws IOException {
-        this(channel, archiveName, ZipReadingOptions.builder()
-             .withEncoding(encoding).withUseUnicodeExtraFields(useUnicodeExtraFields)
-             .build());
-    }
-
-    /**
-     * Opens the given channel for reading, assuming the specified
-     * reading options.
-     *
-     * <p>{@link
-     * org.apache.commons.compress.utils.SeekableInMemoryByteChannel}
-     * allows you to read from an in-memory archive.</p>
-     *
-     * @param channel the archive.
-     * @param archiveName name of the archive, used for error messages only.
-     * @param options the reading options
-     *
-     * @throws IOException if an error occurs while reading the file.
-     * @throws NullPointerException if {@code options} is null
-     * @since 1.19
-     */
-    public ZipFile(final SeekableByteChannel channel, final String archiveName,
-                   final ZipReadingOptions options) throws IOException {
-        this(channel, archiveName, options, false);
+        this(channel, archiveName, encoding, useUnicodeExtraFields, false, false);
     }
 
     /**
@@ -357,27 +331,31 @@ public class ZipFile implements Closeable {
      *
      * @param channel the archive.
      * @param archiveName name of the archive, used for error messages only.
-     * @param options the reading options
+     * @param encoding the encoding to use for file names, use null
+     * for the platform's default encoding
+     * @param useUnicodeExtraFields whether to use InfoZIP Unicode
+     * Extra Fields (if present) to set the file names.
      * @param ignoreLocalFileHeader whether to ignore information
      * stored inside the local file header (see the notes in this method's javadoc)
      *
      * @throws IOException if an error occurs while reading the file.
-     * @throws NullPointerException if {@code options} is null
      * @since 1.19
      */
     public ZipFile(final SeekableByteChannel channel, final String archiveName,
-                   final ZipReadingOptions options,
+                   final String encoding, final boolean useUnicodeExtraFields,
                    final boolean ignoreLocalFileHeader)
         throws IOException {
-        this(channel, archiveName, options, false, ignoreLocalFileHeader);
+        this(channel, archiveName, encoding, useUnicodeExtraFields, false, ignoreLocalFileHeader);
     }
 
     private ZipFile(final SeekableByteChannel channel, final String archiveName,
-                    final ZipReadingOptions options,
+                    final String encoding, final boolean useUnicodeExtraFields,
                     final boolean closeOnError, final boolean ignoreLocalFileHeader)
         throws IOException {
         this.archiveName = archiveName;
-        this.options = Objects.requireNonNull(options, "options must not be null");
+        this.encoding = encoding;
+        this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
+        this.useUnicodeExtraFields = useUnicodeExtraFields;
         archive = channel;
         boolean success = false;
         try {
@@ -402,9 +380,7 @@ public class ZipFile implements Closeable {
      * @return null if using the platform's default character encoding.
      */
     public String getEncoding() {
-        return options.getZipEncoding() instanceof NioZipEncoding
-            ? ((NioZipEncoding) options.getZipEncoding()).getCharset().name()
-            : null;
+        return encoding;
     }
 
     /**
@@ -650,7 +626,7 @@ public class ZipFile implements Closeable {
     public String getUnixSymlink(final ZipArchiveEntry entry) throws IOException {
         if (entry != null && entry.isUnixSymlink()) {
             try (InputStream in = getInputStream(entry)) {
-                return options.getZipEncoding().decode(IOUtils.toByteArray(in));
+                return zipEncoding.decode(IOUtils.toByteArray(in));
             }
         }
         return null;
@@ -763,7 +739,7 @@ public class ZipFile implements Closeable {
         final GeneralPurposeBit gpFlag = GeneralPurposeBit.parse(cfhBuf, off);
         final boolean hasUTF8Flag = gpFlag.usesUTF8ForNames();
         final ZipEncoding entryEncoding =
-            hasUTF8Flag ? ZipEncodingHelper.UTF8_ZIP_ENCODING : options.getZipEncoding();
+            hasUTF8Flag ? ZipEncodingHelper.UTF8_ZIP_ENCODING : zipEncoding;
         if (hasUTF8Flag) {
             ze.setNameSource(ZipArchiveEntry.NameSource.NAME_WITH_EFS_FLAG);
         }
@@ -826,7 +802,7 @@ public class ZipFile implements Closeable {
         IOUtils.readFully(archive, ByteBuffer.wrap(comment));
         ze.setComment(entryEncoding.decode(comment));
 
-        if (!hasUTF8Flag && options.getUseUnicodeExtraFields()) {
+        if (!hasUTF8Flag && useUnicodeExtraFields) {
             noUTF8Flag.put(ze, new NameAndComment(fileName, comment));
         }
 

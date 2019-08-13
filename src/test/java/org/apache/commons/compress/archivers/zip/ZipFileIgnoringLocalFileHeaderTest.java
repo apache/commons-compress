@@ -103,6 +103,6 @@ public class ZipFileIgnoringLocalFileHeaderTest {
     }
 
     private static ZipFile openZipWithoutLFH(String fileName) throws IOException {
-        return new ZipFile(AbstractTestCase.getFile(fileName), ZipReadingOptions.DEFAULT, true);
+        return new ZipFile(AbstractTestCase.getFile(fileName), ZipEncodingHelper.UTF8, true, true);
     }
 }

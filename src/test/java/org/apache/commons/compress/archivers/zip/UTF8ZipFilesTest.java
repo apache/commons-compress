@@ -134,7 +134,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         final File archive = getFile("utf8-winzip-test.zip");
         ZipFile zf = null;
         try {
-            zf = new ZipFile(archive, (String) null, true);
+            zf = new ZipFile(archive, null, true);
             assertCanRead(zf, ASCII_TXT);
             assertCanRead(zf, EURO_FOR_DOLLAR_TXT);
             assertCanRead(zf, OIL_BARREL_TXT);
@@ -161,7 +161,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
             new FileInputStream(getFile("utf8-winzip-test.zip"));
         ZipArchiveInputStream zi = null;
         try {
-            zi = new ZipArchiveInputStream(archive, (String) null, true);
+            zi = new ZipArchiveInputStream(archive, null, true);
             assertEquals(EURO_FOR_DOLLAR_TXT, zi.getNextEntry().getName());
             assertEquals(OIL_BARREL_TXT, zi.getNextEntry().getName());
             assertEquals(ASCII_TXT, zi.getNextEntry().getName());
