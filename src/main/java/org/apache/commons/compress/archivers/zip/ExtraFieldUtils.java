@@ -306,6 +306,9 @@ public class ExtraFieldUtils {
      * "enum" for the possible actions to take if the extra field
      * cannot be parsed.
      *
+     * <p>This class has been created long before Java 5 and would
+     * have been a real enum ever since.</p>
+     *
      * @since 1.1
      */
     public static final class UnparseableExtraField implements UnparseableExtraFieldBehavior {
