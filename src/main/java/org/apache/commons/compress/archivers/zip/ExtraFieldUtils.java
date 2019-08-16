@@ -85,13 +85,31 @@ public class ExtraFieldUtils {
      */
     public static ZipExtraField createExtraField(final ZipShort headerId)
         throws InstantiationException, IllegalAccessException {
-        final Class<?> c = implementations.get(headerId);
-        if (c != null) {
-            return (ZipExtraField) c.newInstance();
+        ZipExtraField field = createExtraFieldNoDefault(headerId);
+        if (field != null) {
+            return field;
         }
         final UnrecognizedExtraField u = new UnrecognizedExtraField();
         u.setHeaderId(headerId);
         return u;
+    }
+
+    /**
+     * Create an instance of the appropriate ExtraField.
+     * @param headerId the header identifier
+     * @return an instance of the appropriate ExtraField or null if
+     * the id is not supported
+     * @throws InstantiationException if unable to instantiate the class
+     * @throws IllegalAccessException if not allowed to instantiate the class
+     * @since 1.19
+     */
+    public static ZipExtraField createExtraFieldNoDefault(final ZipShort headerId)
+        throws InstantiationException, IllegalAccessException {
+        final Class<?> c = implementations.get(headerId);
+        if (c != null) {
+            return (ZipExtraField) c.newInstance();
+        }
+        return null;
     }
 
     /**
@@ -136,7 +154,25 @@ public class ExtraFieldUtils {
     public static ZipExtraField[] parse(final byte[] data, final boolean local,
                                         final UnparseableExtraFieldBehavior onUnparseableData)
         throws ZipException {
-        return parse(data, local, onUnparseableData, ParseErrorBehavior.THROW);
+        return parse(data, local, new ExtraFieldParsingBehavior() {
+            @Override
+            public ZipExtraField onUnparseableExtraField(byte[] data, int off, int len, boolean local,
+                int claimedLength) throws ZipException {
+                return onUnparseableData.onUnparseableExtraField(data, off, len, local, claimedLength);
+            }
+
+            @Override
+            public ZipExtraField createExtraField(final ZipShort headerId)
+                throws ZipException, InstantiationException, IllegalAccessException {
+                return ExtraFieldUtils.createExtraField(headerId);
+            }
+
+            @Override
+            public ZipExtraField fill(ZipExtraField field, byte[] data, int off, int len, boolean local)
+                throws ZipException {
+                return fillExtraField(field, data, off, len, local);
+            }
+        });
     }
 
     /**
@@ -157,8 +193,7 @@ public class ExtraFieldUtils {
      * @since 1.19
      */
     public static ZipExtraField[] parse(final byte[] data, final boolean local,
-                                        final UnparseableExtraFieldBehavior onUnparseableData,
-                                        final ParseErrorBehavior onParseError)
+                                        final ExtraFieldParsingBehavior parsingbehavior)
         throws ZipException {
         final List<ZipExtraField> v = new ArrayList<>();
         int start = 0;
@@ -167,7 +202,7 @@ public class ExtraFieldUtils {
             final ZipShort headerId = new ZipShort(data, start);
             final int length = new ZipShort(data, start + 2).getValue();
             if (start + WORD + length > data.length) {
-                ZipExtraField field = onUnparseableData.onUnparseableExtraField(data, start, data.length - start,
+                ZipExtraField field = parsingbehavior.onUnparseableExtraField(data, start, data.length - start,
                     local, length);
                 if (field != null) {
                     v.add(field);
@@ -177,23 +212,13 @@ public class ExtraFieldUtils {
                 // available data
                 break LOOP;
             }
-            switch (onParseError) {
-            case MAKE_UNRECOGNIZED:
-                try {
-                    v.add(parseField(headerId, local, data, start + WORD, length));
-                } catch (ZipException ex) {
-                    final UnrecognizedExtraField u = new UnrecognizedExtraField();
-                    u.setHeaderId(headerId);
-                    fillField(u, local, data, start + WORD, length);
-                    v.add(u);
-                }
-                break;
-            case THROW: // FALLTHROUGH
-            default:
-                v.add(parseField(headerId, local, data, start + WORD, length));
-                break;
+            try {
+                ZipExtraField ze = parsingbehavior.createExtraField(headerId);
+                v.add(parsingbehavior.fill(ze, data, start + WORD, length, local));
+                start += length + WORD;
+            } catch (final InstantiationException | IllegalAccessException ie) {
+                throw (ZipException) new ZipException(ie.getMessage()).initCause(ie);
             }
-            start += length + WORD;
         }
 
         final ZipExtraField[] result = new ZipExtraField[v.size()];
@@ -277,25 +302,22 @@ public class ExtraFieldUtils {
         return result;
     }
 
-    private static ZipExtraField parseField(final ZipShort headerId, final boolean local, final byte[] data,
-        final int off, final int len) throws ZipException {
-        try {
-            final ZipExtraField ze = createExtraField(headerId);
-            fillField(ze, local, data, off, len);
-            return ze;
-        } catch (final InstantiationException | IllegalAccessException ie) {
-            throw (ZipException) new ZipException(ie.getMessage()).initCause(ie);
-        }
-    }
-
-    private static void fillField(final ZipExtraField ze, final boolean local, final byte[] data, final int off,
-        final int len) throws ZipException {
+    /**
+     * Fills in the extra field data into the given instance.
+     *
+     * <p>Calls {@link ZipExtraField#parseFromCentralDirectoryData} or {@link ZipExtraField#parseFromLocalFileData} internally and wraps any {@link ArrayIndexOutOfBoundsException} thrown into a {@link ZipException}.</p>
+     *
+     * @since 1.19
+     */
+    public static ZipExtraField fillExtraField(final ZipExtraField ze, final byte[] data, final int off,
+        final int len, final boolean local) throws ZipException {
         try {
             if (local) {
                 ze.parseFromLocalFileData(data, off, len);
             } else {
                 ze.parseFromCentralDirectoryData(data, off, len);
             }
+            return ze;
         } catch (ArrayIndexOutOfBoundsException aiobe) {
             throw (ZipException) new ZipException("Failed to parse corrupt ZIP extra field of type "
                 + Integer.toHexString(ze.getHeaderId().getValue())).initCause(aiobe);
@@ -383,21 +405,5 @@ public class ExtraFieldUtils {
             }
         }
 
-    }
-
-    /**
-     * What shall {@link #parse} do if parsing the extra field fails.
-     *
-     * @since 1.19
-     */
-    public enum ParseErrorBehavior {
-        /**
-         * Throw an exception if parsing the extra field fails.
-         */
-        THROW,
-        /**
-         * Replace the extra field with an instance of an {@link UnrecognizedExtraField}.
-         */
-        MAKE_UNRECOGNIZED;
     }
 }
