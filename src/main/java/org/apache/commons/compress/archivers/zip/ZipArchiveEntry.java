@@ -447,7 +447,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * @return an array of the extra fields
      *
      * @throws ZipException if parsing fails, can not happen if {@code
-     * parsingBehavior} is {@link ExtraFieldParsingMode.BEST_EFFORT}.
+     * parsingBehavior} is {@link ExtraFieldParsingMode#BEST_EFFORT}.
      *
      * @since 1.19
      */

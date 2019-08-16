@@ -53,6 +53,11 @@ public interface CloseableConsumer {
      * Callback that is informed about a closable resource that has
      * been wrapped around a passed in stream or channel by Expander
      * or Archiver when Expander or Archiver no longer need them.
+     *
+     * @param c Closeable created by Expander or Archiver that is now
+     * no longer used
+     *
+     * @throws IOException on error
      */
     void accept(Closeable c) throws IOException;
 }
