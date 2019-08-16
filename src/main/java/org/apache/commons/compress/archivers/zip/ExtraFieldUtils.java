@@ -20,6 +20,7 @@ package org.apache.commons.compress.archivers.zip;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.ZipException;
 
@@ -213,8 +214,10 @@ public class ExtraFieldUtils {
                 break LOOP;
             }
             try {
-                ZipExtraField ze = parsingbehavior.createExtraField(headerId);
-                v.add(parsingbehavior.fill(ze, data, start + WORD, length, local));
+                ZipExtraField ze = Objects.requireNonNull(parsingbehavior.createExtraField(headerId),
+                    "createExtraField must not return null");
+                v.add(Objects.requireNonNull(parsingbehavior.fill(ze, data, start + WORD, length, local),
+                    "fill must not return null"));
                 start += length + WORD;
             } catch (final InstantiationException | IllegalAccessException ie) {
                 throw (ZipException) new ZipException(ie.getMessage()).initCause(ie);
