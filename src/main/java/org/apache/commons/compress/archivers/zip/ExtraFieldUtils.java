@@ -134,7 +134,7 @@ public class ExtraFieldUtils {
      * @since 1.1
      */
     public static ZipExtraField[] parse(final byte[] data, final boolean local,
-                                        final UnparseableExtraField onUnparseableData)
+                                        final UnparseableExtraFieldBehavior onUnparseableData)
         throws ZipException {
         return parse(data, local, onUnparseableData, ParseErrorBehavior.THROW);
     }
@@ -157,7 +157,7 @@ public class ExtraFieldUtils {
      * @since 1.19
      */
     public static ZipExtraField[] parse(final byte[] data, final boolean local,
-                                        final UnparseableExtraField onUnparseableData,
+                                        final UnparseableExtraFieldBehavior onUnparseableData,
                                         final ParseErrorBehavior onParseError)
         throws ZipException {
         final List<ZipExtraField> v = new ArrayList<>();
@@ -167,35 +167,15 @@ public class ExtraFieldUtils {
             final ZipShort headerId = new ZipShort(data, start);
             final int length = new ZipShort(data, start + 2).getValue();
             if (start + WORD + length > data.length) {
-                switch(onUnparseableData.getKey()) {
-                case UnparseableExtraField.THROW_KEY:
-                    throw new ZipException("Bad extra field starting at "
-                                           + start + ".  Block length of "
-                                           + length + " bytes exceeds remaining"
-                                           + " data of "
-                                           + (data.length - start - WORD)
-                                           + " bytes.");
-                case UnparseableExtraField.READ_KEY:
-                    final UnparseableExtraFieldData field =
-                        new UnparseableExtraFieldData();
-                    if (local) {
-                        field.parseFromLocalFileData(data, start,
-                                                     data.length - start);
-                    } else {
-                        field.parseFromCentralDirectoryData(data, start,
-                                                            data.length - start);
-                    }
+                ZipExtraField field = onUnparseableData.onUnparseableExtraField(data, start, data.length - start,
+                    local, length);
+                if (field != null) {
                     v.add(field);
-                    //$FALL-THROUGH$
-                case UnparseableExtraField.SKIP_KEY:
-                    // since we cannot parse the data we must assume
-                    // the extra field consumes the whole rest of the
-                    // available data
-                    break LOOP;
-                default:
-                    throw new ZipException("Unknown UnparseableExtraField key: "
-                                           + onUnparseableData.getKey());
                 }
+                // since we cannot parse the data we must assume
+                // the extra field consumes the whole rest of the
+                // available data
+                break LOOP;
             }
             switch (onParseError) {
             case MAKE_UNRECOGNIZED:
@@ -328,7 +308,7 @@ public class ExtraFieldUtils {
      *
      * @since 1.1
      */
-    public static final class UnparseableExtraField {
+    public static final class UnparseableExtraField implements UnparseableExtraFieldBehavior {
         /**
          * Key for "throw an exception" action.
          */
@@ -373,6 +353,33 @@ public class ExtraFieldUtils {
          * @return the key
          */
         public int getKey() { return key; }
+
+        @Override
+        public ZipExtraField onUnparseableExtraField(byte[] data, int off, int len, boolean local,
+            int claimedLength) throws ZipException {
+            switch(key) {
+            case THROW_KEY:
+                throw new ZipException("Bad extra field starting at "
+                                       + off + ".  Block length of "
+                                       + claimedLength + " bytes exceeds remaining"
+                                       + " data of "
+                                       + (len - WORD)
+                                       + " bytes.");
+            case READ_KEY:
+                final UnparseableExtraFieldData field = new UnparseableExtraFieldData();
+                if (local) {
+                    field.parseFromLocalFileData(data, off, len);
+                } else {
+                    field.parseFromCentralDirectoryData(data, off, len);
+                }
+                return field;
+            case SKIP_KEY:
+                return null;
+            default:
+                throw new ZipException("Unknown UnparseableExtraField key: " + key);
+            }
+        }
+
     }
 
     /**
