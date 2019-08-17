@@ -43,7 +43,21 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
     <release version="1.19" date="not released, yet"
-             description="Release 1.19">
+             description="Release 1.19
+----------------------------------------
+
+ZipArchiveInputStream and ZipFile will no longer throw an exception if
+an extra field generally understood by Commons Compress is malformed
+but rather turn them into UnrecognizedExtraField instances.
+You can influence the way extra fields are parsed in more detail by
+using the new getExtraFields(ExtraFieldParsingBehavior) method of
+ZipArchiveEntry now.
+
+Some of the ZIP extra fields related to strong encryption will now
+throw ZipExceptions rather than ArrayIndexOutOfBoundsExceptions in
+certain cases when used directly. There is no practical difference
+when they are read via ZipArchiveInputStream or ZipFile.
+">
       <action type="fix" date="2018-09-07">
         ZipArchiveInputStream could forget the compression level has
         changed under certain circumstances.
@@ -102,6 +116,16 @@ The <action> type attribute can be add,update,fix,remove.
         methods consuming streams and channels have been adapted to
         give the calling code a chance to deal with those wrapper
         resources.
+      </action>
+      <action type="update" date="2019-08-16" issue="COMPRESS-479">
+        ZipArchiveInputStream and ZipFile no longer assume Commons
+        Compress would understand extra fields better than the writer
+        of the archive and silently turn extra fields that Commons
+        Compress should understand into UnrecognizedExtraFields if
+        parsing said fields fails.
+        It is now possible to take more control over the extra field
+        parsing process with a new overload of
+        ZipArchiveEntry#getExtraFields.
       </action>
     </release>
     <release version="1.18" date="2018-08-16"

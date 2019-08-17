@@ -152,7 +152,7 @@
 
         <p>Actually the extra data is supposed to be more structured
           than that and Compress' ZIP package provides access to the
-          structured data as <code>ExtraField</code> instances.  Only
+          structured data as <code>ZipExtraField</code> instances.  Only
           a subset of all defined extra field formats is supported by
           the package, any other extra field will be stored
           as <code>UnrecognizedExtraField</code>.</p>
@@ -163,6 +163,15 @@
           exception.  Starting with version 1.1 these extra fields
           will now be read
           as <code>UnparseableExtraFieldData</code>.</p>
+
+        <p>Prior to version 1.19 of this library trying to read an
+          archive with extra fields that Compress expects to
+          understand but that used a different content than expected
+          would cause Compress to throw an exception.  Starting with
+          version 1.19 these extra fields will now be read as
+          <code>UnrecognizedExtraField</code>. Using
+          <code>ZipArchiveEntry.getExtraFields(ExtraFieldParsingBehavior)</code>
+          you have a more fine grained control over the parser.</p>
 
       </subsection>
 
