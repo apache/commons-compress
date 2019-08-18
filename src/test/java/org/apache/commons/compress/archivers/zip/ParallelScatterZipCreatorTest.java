@@ -70,9 +70,38 @@ public class ParallelScatterZipCreatorTest {
     }
 
     @Test
-    public void callableApi()
-            throws Exception {
+    public void callableApiUsingSubmit() throws Exception {
         result = File.createTempFile("parallelScatterGather2", "");
+        callableApi(new CallableConsumerSupplier() {
+            @Override
+            public CallableConsumer apply(final ParallelScatterZipCreator zipCreator) {
+                return new CallableConsumer() {
+                    @Override
+                    public void accept(Callable<? extends ScatterZipOutputStream> c) {
+                        zipCreator.submit(c);
+                    }
+                };
+            }
+        });
+    }
+
+    @Test
+    public void callableApiUsingSubmitStreamAwareCallable() throws Exception {
+        result = File.createTempFile("parallelScatterGather3", "");
+        callableApi(new CallableConsumerSupplier() {
+            @Override
+            public CallableConsumer apply(final ParallelScatterZipCreator zipCreator) {
+                return new CallableConsumer() {
+                    @Override
+                    public void accept(Callable<? extends ScatterZipOutputStream> c) {
+                        zipCreator.submitStreamAwareCallable(c);
+                    }
+                };
+            }
+        });
+    }
+
+    private void callableApi(CallableConsumerSupplier consumerSupplier) throws Exception {
         final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(result);
         zos.setEncoding("UTF-8");
         final ExecutorService es = Executors.newFixedThreadPool(1);
@@ -85,7 +114,7 @@ public class ParallelScatterZipCreatorTest {
         };
 
         final ParallelScatterZipCreator zipCreator = new ParallelScatterZipCreator(es, supp);
-        final Map<String, byte[]> entries = writeEntriesAsCallable(zipCreator);
+        final Map<String, byte[]> entries = writeEntriesAsCallable(zipCreator, consumerSupplier.apply(zipCreator));
         zipCreator.writeTo(zos);
         zos.close();
 
@@ -137,7 +166,8 @@ public class ParallelScatterZipCreatorTest {
         return entries;
     }
 
-    private Map<String, byte[]> writeEntriesAsCallable(final ParallelScatterZipCreator zipCreator) {
+    private Map<String, byte[]> writeEntriesAsCallable(final ParallelScatterZipCreator zipCreator,
+                                                       final CallableConsumer consumer) {
         final Map<String, byte[]> entries = new HashMap<>();
         for (int i = 0; i < NUMITEMS; i++){
             final byte[] payloadBytes = ("content" + i).getBytes();
@@ -161,7 +191,7 @@ public class ParallelScatterZipCreatorTest {
                 callable = zipCreator.createCallable(zaSupplier);
             }
 
-            zipCreator.submit(callable);
+            consumer.accept(callable);
         }
         return entries;
     }
@@ -173,5 +203,12 @@ public class ParallelScatterZipCreatorTest {
         za.setSize(payloadBytes.length);
         za.setUnixMode(UnixStat.FILE_FLAG | 0664);
         return za;
+    }
+
+    private interface CallableConsumer {
+        void accept(Callable<? extends ScatterZipOutputStream> c);
+    }
+    private interface CallableConsumerSupplier {
+        CallableConsumer apply(ParallelScatterZipCreator zipCreator);
     }
 }
