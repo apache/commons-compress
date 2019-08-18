@@ -21,6 +21,7 @@ package org.apache.commons.compress.utils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
+import java.nio.channels.NonWritableChannelException;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -104,6 +105,43 @@ public class MultiReadOnlySeekableByteChannelTest {
             }, grouped(new byte[] { 1, 2, 3, 4, 5, }, 3));
     }
 
+    @Test
+    public void closesAllAndThrowsExceptionIfCloseThrows() {
+        SeekableByteChannel[] ts = new ThrowingSeekableByteChannel[] {
+            new ThrowingSeekableByteChannel(),
+            new ThrowingSeekableByteChannel()
+        };
+        SeekableByteChannel s = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(ts);
+        try {
+            s.close();
+            Assert.fail("IOException expected");
+        } catch (IOException expected) {
+        }
+        Assert.assertFalse(ts[0].isOpen());
+        Assert.assertFalse(ts[1].isOpen());
+    }
+
+    @Test
+    public void cantTruncate() throws IOException {
+        SeekableByteChannel s = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(makeEmpty(), makeEmpty());
+        thrown.expect(NonWritableChannelException.class);
+        s.truncate(1);
+    }
+
+    @Test
+    public void cantWrite() throws IOException {
+        SeekableByteChannel s = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(makeEmpty(), makeEmpty());
+        thrown.expect(NonWritableChannelException.class);
+        s.write(ByteBuffer.allocate(10));
+    }
+
+    @Test
+    public void cantPositionToANegativePosition() throws IOException {
+        SeekableByteChannel s = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(makeEmpty(), makeEmpty());
+        thrown.expect(IllegalArgumentException.class);
+        s.position(-1);
+    }
+
     private SeekableByteChannel makeEmpty() {
         return makeSingle(new byte[0]);
     }
@@ -167,6 +205,8 @@ public class MultiReadOnlySeekableByteChannelTest {
         Assert.assertEquals("readBufferSize " + readBufferSize, expected.length, channel.size());
         channel.position(0);
         Assert.assertEquals("readBufferSize " + readBufferSize, 0, channel.position());
+        Assert.assertEquals("readBufferSize " + readBufferSize, 0,
+            channel.read(ByteBuffer.allocate(0)));
 
         // Will hold the entire result that we read
         final ByteBuffer resultBuffer = ByteBuffer.allocate(expected.length + 100);
@@ -213,5 +253,42 @@ public class MultiReadOnlySeekableByteChannelTest {
             groups.add(Arrays.copyOfRange(input, idx, input.length));
         }
         return groups.toArray(new byte[0][]);
+    }
+
+    private static class ThrowingSeekableByteChannel implements SeekableByteChannel {
+        private boolean closed = false;
+        @Override
+        public boolean isOpen() {
+            return !closed;
+        }
+        @Override
+        public void close() throws IOException {
+            closed = true;
+            throw new IOException("foo");
+        }
+        @Override
+        public int read(ByteBuffer dst) throws IOException {
+            return -1;
+        }
+        @Override
+        public int write(ByteBuffer src) throws IOException {
+            return 0;
+        }
+        @Override
+        public long position() throws IOException {
+            return 0;
+        }
+        @Override
+        public SeekableByteChannel position(long newPosition) throws IOException {
+            return this;
+        }
+        @Override
+        public long size() throws IOException {
+            return 0;
+        }
+        @Override
+        public SeekableByteChannel truncate(long size) throws IOException {
+            return this;
+        }
     }
 }
