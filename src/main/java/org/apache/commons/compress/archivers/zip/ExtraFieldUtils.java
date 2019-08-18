@@ -153,7 +153,7 @@ public class ExtraFieldUtils {
      * @since 1.1
      */
     public static ZipExtraField[] parse(final byte[] data, final boolean local,
-                                        final UnparseableExtraFieldBehavior onUnparseableData)
+                                        final UnparseableExtraField onUnparseableData)
         throws ZipException {
         return parse(data, local, new ExtraFieldParsingBehavior() {
             @Override
