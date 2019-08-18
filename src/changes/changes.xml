@@ -127,10 +127,27 @@ when they are read via ZipArchiveInputStream or ZipFile.
         parsing process with a new overload of
         ZipArchiveEntry#getExtraFields.
       </action>
-      <action type="update" date="2019-08-18" issue="COMPRESS-482">
+      <action type="fix" date="2019-08-18" issue="COMPRESS-482">
         ZipArchiveInputStream failed to read stored entries with a
         data descriptor if the data descriptor didn't use the
         signature invented by InfoZIP.
+      </action>
+      <action type="update" date="2019-08-18" issue="COMPRESS-483">
+        ZipArchiveInputStream will now throw an exception if reading a
+        stored entry with a data descriptor and the data descriptor
+        doesn't match what it has actually read.
+
+        The most common case for a situation like this is a stored ZIP
+        archive inside of the archive ZipArchiveInputStream currently
+        reads. In such a case ZipArchiveInputStream would happily
+        extract the contained archive and stop once the central
+        directory of the inner archive has been hit. This is a case
+        where ZipArchiveInputStream simply can not be used and only
+        ZipFile is able to read the archive.
+
+        The only other explanation is a broken archive. So the
+        exception prevents uers from thinking they had successfully
+        read the contents of the archive.
       </action>
     </release>
     <release version="1.18" date="2018-08-16"

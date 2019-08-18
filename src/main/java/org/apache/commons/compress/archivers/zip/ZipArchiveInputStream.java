@@ -865,6 +865,12 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
                 && entry.getMethod() == ZipEntry.STORED);
     }
 
+    private static final String USE_ZIPFILE_INSTEAD_OF_STREAM_DISCLAIMER =
+        " while reading a stored entry using data descriptor. Either the archive is broken"
+        + " or it can not be read using ZipArchiveInputStream and you must use ZipFile."
+        + " A common cause for this is a ZIP archive containing a ZIP archive."
+        + " See http://commons.apache.org/proper/commons-compress/zip.html#ZipArchiveInputStream_vs_ZipFile";
+
     /**
      * Caches a stored entry that uses the data descriptor.
      *
@@ -908,8 +914,15 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
                 off = cacheBytesRead(bos, off, r, ddLen);
             }
         }
-
+        if (current.entry.getCompressedSize() != current.entry.getSize()) {
+            throw new ZipException("compressed and uncompressed size don't match"
+                                   + USE_ZIPFILE_INSTEAD_OF_STREAM_DISCLAIMER);
+        }
         final byte[] b = bos.toByteArray();
+        if (b.length != current.entry.getSize()) {
+            throw new ZipException("actual and claimed size don't match"
+                                   + USE_ZIPFILE_INSTEAD_OF_STREAM_DISCLAIMER);
+        }
         lastStoredEntry = new ByteArrayInputStream(b);
     }
 

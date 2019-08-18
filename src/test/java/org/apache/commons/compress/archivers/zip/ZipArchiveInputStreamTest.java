@@ -566,6 +566,36 @@ public class ZipArchiveInputStreamTest {
         }
     }
 
+    @Test
+    public void throwsIfStoredDDIsInconsistent() throws IOException {
+        try (FileInputStream fs = new FileInputStream(getFile("bla-stored-dd-sizes-differ.zip"));
+             ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, "UTF-8", true, true)) {
+            ZipArchiveEntry e = archive.getNextZipEntry();
+            assertNotNull(e);
+            assertEquals("test1.xml", e.getName());
+            assertEquals(-1, e.getCompressedSize());
+            assertEquals(-1, e.getSize());
+            thrown.expect(ZipException.class);
+            thrown.expectMessage("compressed and uncompressed size don't match");
+            byte[] data = IOUtils.toByteArray(archive);
+        }
+    }
+
+    @Test
+    public void throwsIfStoredDDIsDifferentFromLengthRead() throws IOException {
+        try (FileInputStream fs = new FileInputStream(getFile("bla-stored-dd-contradicts-actualsize.zip"));
+             ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, "UTF-8", true, true)) {
+            ZipArchiveEntry e = archive.getNextZipEntry();
+            assertNotNull(e);
+            assertEquals("test1.xml", e.getName());
+            assertEquals(-1, e.getCompressedSize());
+            assertEquals(-1, e.getSize());
+            thrown.expect(ZipException.class);
+            thrown.expectMessage("actual and claimed size don't match");
+            byte[] data = IOUtils.toByteArray(archive);
+        }
+    }
+
     private static byte[] readEntry(ZipArchiveInputStream zip, ZipArchiveEntry zae) throws IOException {
         final int len = (int)zae.getSize();
         final byte[] buff = new byte[len];
