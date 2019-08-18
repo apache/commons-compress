@@ -127,6 +127,11 @@ when they are read via ZipArchiveInputStream or ZipFile.
         parsing process with a new overload of
         ZipArchiveEntry#getExtraFields.
       </action>
+      <action type="update" date="2019-08-18" issue="COMPRESS-482">
+        ZipArchiveInputStream failed to read stored entries with a
+        data descriptor if the data descriptor didn't use the
+        signature invented by InfoZIP.
+      </action>
     </release>
     <release version="1.18" date="2018-08-16"
              description="Release 1.18">
