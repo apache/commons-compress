@@ -146,7 +146,7 @@ when they are read via ZipArchiveInputStream or ZipFile.
         ZipFile is able to read the archive.
 
         The only other explanation is a broken archive. So the
-        exception prevents uers from thinking they had successfully
+        exception prevents users from thinking they had successfully
         read the contents of the archive.
       </action>
     </release>
