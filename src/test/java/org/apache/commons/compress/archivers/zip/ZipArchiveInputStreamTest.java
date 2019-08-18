@@ -22,6 +22,8 @@ import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -38,9 +40,14 @@ import java.util.zip.ZipException;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class ZipArchiveInputStreamTest {
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     /**
      * @see "https://issues.apache.org/jira/browse/COMPRESS-176"
@@ -487,6 +494,75 @@ public class ZipArchiveInputStreamTest {
             } catch (IOException ex) {
                 assertEquals("Truncated ZIP file", ex.getMessage());
             }
+        }
+    }
+
+    @Test
+    public void properlyReadsStoredEntries() throws IOException {
+        try (FileInputStream fs = new FileInputStream(getFile("bla-stored.zip"));
+             ZipArchiveInputStream archive = new ZipArchiveInputStream(fs)) {
+            ZipArchiveEntry e = archive.getNextZipEntry();
+            assertNotNull(e);
+            assertEquals("test1.xml", e.getName());
+            assertEquals(610, e.getCompressedSize());
+            assertEquals(610, e.getSize());
+            byte[] data = IOUtils.toByteArray(archive);
+            assertEquals(610, data.length);
+            e = archive.getNextZipEntry();
+            assertNotNull(e);
+            assertEquals("test2.xml", e.getName());
+            assertEquals(82, e.getCompressedSize());
+            assertEquals(82, e.getSize());
+            data = IOUtils.toByteArray(archive);
+            assertEquals(82, data.length);
+            assertNull(archive.getNextEntry());
+        }
+    }
+
+    @Test
+    public void rejectsStoredEntriesWithDataDescriptorByDefault() throws IOException {
+        try (FileInputStream fs = new FileInputStream(getFile("bla-stored-dd.zip"));
+             ZipArchiveInputStream archive = new ZipArchiveInputStream(fs)) {
+            ZipArchiveEntry e = archive.getNextZipEntry();
+            assertNotNull(e);
+            assertEquals("test1.xml", e.getName());
+            assertEquals(-1, e.getCompressedSize());
+            assertEquals(-1, e.getSize());
+            thrown.expect(UnsupportedZipFeatureException.class);
+            thrown.expectMessage("Unsupported feature data descriptor used in entry test1.xml");
+            byte[] data = IOUtils.toByteArray(archive);
+        }
+    }
+
+    @Test
+    public void properlyReadsStoredEntryWithDataDescriptorWithSignature() throws IOException {
+        try (FileInputStream fs = new FileInputStream(getFile("bla-stored-dd.zip"));
+             ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, "UTF-8", true, true)) {
+            ZipArchiveEntry e = archive.getNextZipEntry();
+            assertNotNull(e);
+            assertEquals("test1.xml", e.getName());
+            assertEquals(-1, e.getCompressedSize());
+            assertEquals(-1, e.getSize());
+            byte[] data = IOUtils.toByteArray(archive);
+            assertEquals(610, data.length);
+            assertEquals(610, e.getCompressedSize());
+            assertEquals(610, e.getSize());
+        }
+    }
+
+    @Test
+    public void properlyReadsStoredEntryWithDataDescriptorWithoutSignature() throws IOException {
+        try (FileInputStream fs = new FileInputStream(getFile("bla-stored-dd-nosig.zip"));
+             ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, "UTF-8", true, true)) {
+            ZipArchiveEntry e = archive.getNextZipEntry();
+            assertNotNull(e);
+            assertEquals("test1.xml", e.getName());
+            assertEquals(-1, e.getCompressedSize());
+            assertEquals(-1, e.getSize());
+            byte[] data = IOUtils.toByteArray(archive);
+            assertEquals(610, data.length);
+            assertEquals(610, e.getCompressedSize());
+            assertEquals(610, e.getSize());
         }
     }
 

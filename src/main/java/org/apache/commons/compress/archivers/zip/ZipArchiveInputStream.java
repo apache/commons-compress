@@ -929,18 +929,17 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
             throws IOException {
 
         boolean done = false;
-        int readTooMuch = 0;
         for (int i = 0; !done && i < offset + lastRead - 4; i++) {
             if (buf.array()[i] == LFH[0] && buf.array()[i + 1] == LFH[1]) {
+                int expectDDPos = i;
                 if ((buf.array()[i + 2] == LFH[2] && buf.array()[i + 3] == LFH[3])
                     || (buf.array()[i] == CFH[2] && buf.array()[i + 3] == CFH[3])) {
                     // found a LFH or CFH:
-                    readTooMuch = offset + lastRead - i - expectedDDLen;
+                    expectDDPos = i - expectedDDLen;
                     done = true;
                 }
                 else if (buf.array()[i + 2] == DD[2] && buf.array()[i + 3] == DD[3]) {
                     // found DD:
-                    readTooMuch = offset + lastRead - i;
                     done = true;
                 }
                 if (done) {
@@ -948,8 +947,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
                     //   descriptor
                     // * copy the remaining bytes to cache
                     // * read data descriptor
-                    pushback(buf.array(), offset + lastRead - readTooMuch, readTooMuch);
-                    bos.write(buf.array(), 0, i);
+                    pushback(buf.array(), expectDDPos, offset + lastRead - expectDDPos);
+                    bos.write(buf.array(), 0, expectDDPos);
                     readDataDescriptor();
                 }
             }
