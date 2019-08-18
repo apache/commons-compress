@@ -143,7 +143,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
     public int write(ByteBuffer src) {
         throw new NonWritableChannelException();
     }
-    
+
     @Override
     public synchronized SeekableByteChannel position(long newPosition) throws IOException {
         if (newPosition < 0) {

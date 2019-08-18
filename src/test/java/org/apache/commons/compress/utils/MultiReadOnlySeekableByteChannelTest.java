@@ -46,13 +46,13 @@ public class MultiReadOnlySeekableByteChannelTest {
         thrown.expect(NullPointerException.class);
         new MultiReadOnlySeekableByteChannel(null);
     }
-    
+
     @Test
     public void forSeekableByteChannelsThrowsOnNullArg() {
         thrown.expect(NullPointerException.class);
         MultiReadOnlySeekableByteChannel.forSeekableByteChannels(null);
     }
-    
+
     @Test
     public void forFilesThrowsOnNullArg() throws IOException {
         thrown.expect(NullPointerException.class);
@@ -80,13 +80,13 @@ public class MultiReadOnlySeekableByteChannelTest {
     public void checkForSingleByte() throws IOException {
         check(new byte[] { 0 });
     }
-    
+
     @Test
     public void checkForString() throws IOException {
         check("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
             .getBytes(StandardCharsets.UTF_8));
     }
-    
+
     @Test
     public void verifyGrouped() {
         Assert.assertArrayEquals(new byte[][] {
