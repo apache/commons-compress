@@ -193,6 +193,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
      *
      * @param channels the channels to concatenate
      * @throws NullPointerException if channels is null
+     * @return SeekableByteChannel that concatenates all provided channels
      */
     public static SeekableByteChannel forSeekableByteChannels(SeekableByteChannel... channels) {
         if (Objects.requireNonNull(channels, "channels must not be null").length == 1) {
@@ -207,6 +208,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
      * @param files the files to concatenate
      * @throws NullPointerException if files is null
      * @throws IOException if opening a channel for one of the files fails
+     * @return SeekableByteChannel that concatenates all provided files
      */
     public static SeekableByteChannel forFiles(File... files) throws IOException {
         List<SeekableByteChannel> channels = new ArrayList<>();
