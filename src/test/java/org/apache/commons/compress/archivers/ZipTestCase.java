@@ -195,13 +195,7 @@ public final class ZipTestCase extends AbstractTestCase {
      * >COMPRESS-93</a>.
      */
     @Test
-    public void testSupportedCompressionMethod() throws IOException {
-        /*
-        ZipFile bla = new ZipFile(getFile("bla.zip"));
-        assertTrue(bla.canReadEntryData(bla.getEntry("test1.xml")));
-        bla.close();
-        */
-
+    public void testTokenizationCompressionMethod() throws IOException {
         final ZipFile moby = new ZipFile(getFile("moby.zip"));
         final ZipArchiveEntry entry = moby.getEntry("README");
         assertEquals("method", ZipMethod.TOKENIZATION.getCode(), entry.getMethod());
