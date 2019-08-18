@@ -64,6 +64,9 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
         if (!isOpen()) {
             throw new ClosedChannelException();
         }
+        if (!dst.hasRemaining()) {
+            return 0;
+        }
 
         int totalBytesRead = 0;
         while (dst.hasRemaining() && currentChannelIdx < channels.size()) {
