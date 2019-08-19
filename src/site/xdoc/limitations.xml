@@ -59,9 +59,10 @@
          LZMA.</li>
          <li>Several of the "methods" supported by 7z are not
          implemented in Compress.</li>
-         <li>No support for multi-volume archives. It seems multi
-         volume archives can be concatenated and then read by
-         <code>SevenZFile</code>, though.</li>
+         <li>No support for writing multi-volume archives Such
+         archives can be read by simply concatenating the parts, for
+         example by using
+         <code>MultiReadOnlySeekableByteChannel</code>.</li>
          <li>Support for some BCJ filters and the DELTA filter has
          been added with Compress 1.8.  Because of a known bug in
          version 1.4 of the <a

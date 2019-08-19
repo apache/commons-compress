@@ -72,6 +72,11 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
  * contents can be read, but the use of
  * encryption isn't plausibly deniable.
  *
+ * <p>Multi volume archives can be read by concatenating the parts in
+ * correct order - either manually or by using {link
+ * org.apache.commons.compress.utils.MultiReadOnlySeekableByteChannel}
+ * for example.</p>
+ *
  * @NotThreadSafe
  * @since 1.6
  */

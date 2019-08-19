@@ -304,7 +304,10 @@ try (OutputStream fo = Files.newOutputStream(Paths.get("my.tar.gz"));
         Deflate are supported - in addition to those reading supports
         AES-256/SHA-256 and DEFLATE64.</p>
 
-        <p>Multipart archives are not supported at all.</p>
+        <p>Writing multipart archives is not supported at
+        all. Multipart archives can be read by concatenating the parts
+        for example by using
+        <code>MultiReadOnlySeekableByteChannel</code>.</p>
 
         <p>7z archives can use multiple compression and encryption
         methods as well as filters combined as a pipeline of methods

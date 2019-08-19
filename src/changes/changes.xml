@@ -149,6 +149,12 @@ when they are read via ZipArchiveInputStream or ZipFile.
         exception prevents users from thinking they had successfully
         read the contents of the archive.
       </action>
+      <action type="add" date="2019-08-18" issue="COMPRESS-231"
+              due-to="Tim Underwood">
+        Added a <code>MultiReadOnlySeekableByteChannel</code> class
+        that can be used to concatenate the parts of a multi volume 7z
+        archive so that <code>SevenZFile</code> can read them.
+      </action>
     </release>
     <release version="1.18" date="2018-08-16"
              description="Release 1.18">
