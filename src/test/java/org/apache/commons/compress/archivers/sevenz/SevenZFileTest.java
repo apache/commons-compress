@@ -18,7 +18,6 @@
 package org.apache.commons.compress.archivers.sevenz;
 
 import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.endsWith;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -316,7 +315,7 @@ public class SevenZFileTest extends AbstractTestCase {
     @Test
     public void getDefaultNameWorksAsExpected() throws Exception {
         try (SevenZFile sevenZFile = new SevenZFile(getFile("bla.deflate64.7z"))) {
-            assertThat(sevenZFile.getDefaultName(), endsWith("bla.deflate64"));
+            assertEquals("bla.deflate64", sevenZFile.getDefaultName());
         }
         try (SevenZFile sevenZFile = new SevenZFile(Files.newByteChannel(getFile("bla.deflate64.7z").toPath()))) {
             assertNull(sevenZFile.getDefaultName());

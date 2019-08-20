@@ -1402,11 +1402,12 @@ public class SevenZFile implements Closeable {
             return null;
         }
 
-        final int dotPos = fileName.lastIndexOf(".");
+        final String lastSegment = new File(fileName).getName();
+        final int dotPos = lastSegment.lastIndexOf(".");
         if (dotPos > 0) { // if the file starts with a dot then this is not an extension
-            return fileName.substring(0, dotPos);
+            return lastSegment.substring(0, dotPos);
         }
-        return fileName + "~";
+        return lastSegment + "~";
     }
 
     private static final CharsetEncoder PASSWORD_ENCODER = StandardCharsets.UTF_16LE.newEncoder();
