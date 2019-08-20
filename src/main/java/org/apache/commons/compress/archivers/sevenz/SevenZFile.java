@@ -83,6 +83,8 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
 public class SevenZFile implements Closeable {
     static final int SIGNATURE_HEADER_SIZE = 32;
 
+    private static final String DEFAULT_FILE_NAME = "unknown archive";
+
     private final String fileName;
     private SeekableByteChannel channel;
     private final Archive archive;
@@ -190,7 +192,7 @@ public class SevenZFile implements Closeable {
      * @since 1.19
      */
     public SevenZFile(final SeekableByteChannel channel, final int maxMemoryLimitInKb) throws IOException {
-        this(channel, "unknown archive", (char[]) null, maxMemoryLimitInKb);
+        this(channel, DEFAULT_FILE_NAME, (char[]) null, maxMemoryLimitInKb);
     }
 
     /**
@@ -226,7 +228,7 @@ public class SevenZFile implements Closeable {
      */
     public SevenZFile(final SeekableByteChannel channel, final char[] password, final int maxMemoryLimitInKb)
             throws IOException {
-        this(channel, "unknown archive", utf16Decode(password), maxMemoryLimitInKb);
+        this(channel, DEFAULT_FILE_NAME, utf16Decode(password), maxMemoryLimitInKb);
     }
 
     /**
@@ -320,7 +322,7 @@ public class SevenZFile implements Closeable {
      */
     public SevenZFile(final SeekableByteChannel channel,
                       final byte[] password) throws IOException {
-        this(channel, "unknown archive", password);
+        this(channel, DEFAULT_FILE_NAME, password);
     }
 
     /**
@@ -342,7 +344,7 @@ public class SevenZFile implements Closeable {
      */
     public SevenZFile(final SeekableByteChannel channel, final byte[] password, final int maxMemoryLimitInKb)
             throws IOException {
-        this(channel, "unknown archive", password, maxMemoryLimitInKb);
+        this(channel, DEFAULT_FILE_NAME, password, maxMemoryLimitInKb);
     }
 
     /**
@@ -1376,6 +1378,35 @@ public class SevenZFile implements Closeable {
     @Override
     public String toString() {
       return archive.toString();
+    }
+
+    /**
+     * Derives a default file name from the archive name - if known.
+     *
+     * <p>This implements the same heuristics the 7z tools use. In
+     * 7z's case if an archive contains entries without a name -
+     * i.e. {@link SevenZArchiveEntry#getName} returns {@code null} -
+     * then its command line and GUI tools will use this default name
+     * when extracting the entries.</p>
+     *
+     * @return null if the name of the archive is unknown. Otherwise
+     * if the name of the archive has got any extension, it is
+     * stripped and the remainder returned. Finally if the name of the
+     * archive hasn't got any extension then a {@code ~} character is
+     * appended to the archive name.
+     *
+     * @since 1.19
+     */
+    public String getDefaultName() {
+        if (DEFAULT_FILE_NAME.equals(fileName) || fileName == null) {
+            return null;
+        }
+
+        final int dotPos = fileName.lastIndexOf(".");
+        if (dotPos > 0) { // if the file starts with a dot then this is not an extension
+            return fileName.substring(0, dotPos);
+        }
+        return fileName + "~";
     }
 
     private static final CharsetEncoder PASSWORD_ENCODER = StandardCharsets.UTF_16LE.newEncoder();

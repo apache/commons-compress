@@ -18,11 +18,13 @@
 package org.apache.commons.compress.archivers.sevenz;
 
 import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.endsWith;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -308,6 +310,22 @@ public class SevenZFileTest extends AbstractTestCase {
         try (SevenZFile sevenZFile = new SevenZFile(MultiReadOnlySeekableByteChannel
             .forFiles(getFile("bla-multi.7z.001"), getFile("bla-multi.7z.002")))) {
             test7zUnarchive(sevenZFile, SevenZMethod.LZMA2);
+        }
+    }
+
+    @Test
+    public void getDefaultNameWorksAsExpected() throws Exception {
+        try (SevenZFile sevenZFile = new SevenZFile(getFile("bla.deflate64.7z"))) {
+            assertThat(sevenZFile.getDefaultName(), endsWith("bla.deflate64"));
+        }
+        try (SevenZFile sevenZFile = new SevenZFile(Files.newByteChannel(getFile("bla.deflate64.7z").toPath()))) {
+            assertNull(sevenZFile.getDefaultName());
+        }
+        try (SevenZFile sevenZFile = new SevenZFile(Files.newByteChannel(getFile("bla.deflate64.7z").toPath()), "foo")) {
+            assertEquals("foo~", sevenZFile.getDefaultName());
+        }
+        try (SevenZFile sevenZFile = new SevenZFile(Files.newByteChannel(getFile("bla.deflate64.7z").toPath()), ".foo")) {
+            assertEquals(".foo~", sevenZFile.getDefaultName());
         }
     }
 
