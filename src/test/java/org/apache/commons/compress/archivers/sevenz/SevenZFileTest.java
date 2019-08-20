@@ -299,7 +299,8 @@ public class SevenZFileTest extends AbstractTestCase {
 
     @Test(expected = MemoryLimitException.class)
     public void limitExtractionMemory() throws IOException {
-        try (SevenZFile sevenZFile = new SevenZFile(getFile("bla.7z"), 1)) {
+        try (SevenZFile sevenZFile = new SevenZFile(getFile("bla.7z"),
+            SevenZFileOptions.builder().withMaxMemoryLimitInKb(1).build())) {
             // Do nothing. Exception should be thrown
         }
     }
@@ -325,6 +326,47 @@ public class SevenZFileTest extends AbstractTestCase {
         }
         try (SevenZFile sevenZFile = new SevenZFile(Files.newByteChannel(getFile("bla.deflate64.7z").toPath()), ".foo")) {
             assertEquals(".foo~", sevenZFile.getDefaultName());
+        }
+    }
+
+    @Test
+    public void noNameMeansNoNameByDefault() throws Exception {
+        try (SevenZFile sevenZFile = new SevenZFile(getFile("bla-nonames.7z"))) {
+            SevenZArchiveEntry ae = sevenZFile.getNextEntry();
+            assertNotNull(ae);
+            assertNull(ae.getName());
+            ae = sevenZFile.getNextEntry();
+            assertNotNull(ae);
+            assertNull(ae.getName());
+            assertNull(sevenZFile.getNextEntry());
+        }
+    }
+
+    @Test
+    public void noNameCanBeReplacedByDefaultName() throws Exception {
+        try (SevenZFile sevenZFile = new SevenZFile(getFile("bla-nonames.7z"),
+            SevenZFileOptions.builder().withUseDefaultNameForUnnamedEntries(true).build())) {
+            SevenZArchiveEntry ae = sevenZFile.getNextEntry();
+            assertNotNull(ae);
+            assertEquals("bla-nonames", ae.getName());
+            ae = sevenZFile.getNextEntry();
+            assertNotNull(ae);
+            assertEquals("bla-nonames", ae.getName());
+            assertNull(sevenZFile.getNextEntry());
+        }
+    }
+
+    @Test
+    public void givenNameWinsOverDefaultName() throws Exception {
+        try (SevenZFile sevenZFile = new SevenZFile(getFile("bla.7z"),
+            SevenZFileOptions.builder().withUseDefaultNameForUnnamedEntries(true).build())) {
+            SevenZArchiveEntry ae = sevenZFile.getNextEntry();
+            assertNotNull(ae);
+            assertEquals("test1.xml", ae.getName());
+            ae = sevenZFile.getNextEntry();
+            assertNotNull(ae);
+            assertEquals("test2.xml", ae.getName());
+            assertNull(sevenZFile.getNextEntry());
         }
     }
 

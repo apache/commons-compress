@@ -89,7 +89,9 @@ public final class Lister {
             System.out.println("Created " + z.toString());
             ArchiveEntry ae;
             while ((ae = z.getNextEntry()) != null) {
-                System.out.println(ae.getName());
+                String name = ae.getName() == null ? z.getDefaultName() + " (entry name was null)"
+                    : ae.getName();
+                System.out.println(name);
             }
         }
     }
