@@ -151,9 +151,17 @@ when they are read via ZipArchiveInputStream or ZipFile.
       </action>
       <action type="add" date="2019-08-18" issue="COMPRESS-231"
               due-to="Tim Underwood">
-        Added a <code>MultiReadOnlySeekableByteChannel</code> class
+        Added a MultiReadOnlySeekableByteChannel class
         that can be used to concatenate the parts of a multi volume 7z
-        archive so that <code>SevenZFile</code> can read them.
+        archive so that SevenZFile can read them.
+      </action>
+      <action type="update" date="2019-08-20" issue="COMPRESS-478">
+        The 7zip tools provide a default name for archive entries
+        without name; SevenZFile returns a null name for such
+        entries. A new method getDefaultName has been added to derive
+        the same name the 7zip tools would use and an option has been
+        added that sets SevenZArchiveEntry's name to the default name
+        if it is not contained inside the archive.
       </action>
     </release>
     <release version="1.18" date="2018-08-16"

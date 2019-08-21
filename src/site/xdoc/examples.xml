@@ -342,6 +342,14 @@ try (OutputStream fo = Files.newOutputStream(Paths.get("my.tar.gz"));
         <code>org.apache.commons.compress.utils.SeekableInMemoryByteChannel</code>
         allows you to read from or write to an in-memory archive.</p>
 
+        <p>Some 7z archives don't contain any names for the archive
+        entries. The native 7zip tools derive a default name from the
+        name of the archive itself for such entries. Starting with
+        Compress 1.19 <code>SevenZFile</code> has an option to mimic
+        this behavior, but by default unnanmed archive entries will
+        return <code>null</code> from
+        <code>SevenZArchiveEntry#getName</code>.</p>
+
         <p>Adding an entry to a 7z archive:</p>
 <source><![CDATA[
 SevenZOutputFile sevenZOutput = new SevenZOutputFile(file);
