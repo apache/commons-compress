@@ -43,7 +43,7 @@ public class SevenZFileOptions {
      *   <li>don't modifiy the name of unnamed entries</li>
      * </ul>
      */
-    public static SevenZFileOptions DEFAULT = new SevenZFileOptions(DEFAUL_MEMORY_LIMIT_IN_KB,
+    public static final SevenZFileOptions DEFAULT = new SevenZFileOptions(DEFAUL_MEMORY_LIMIT_IN_KB,
         DEFAULT_USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES);
 
     /**
