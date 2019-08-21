@@ -48,6 +48,7 @@ public class SevenZFileOptions {
 
     /**
      * Obtains a builder for SevenZFileOptions.
+     * @return a builder for SevenZFileOptions.
      */
     public static Builder builder() {
         return new Builder();
@@ -57,6 +58,7 @@ public class SevenZFileOptions {
      * Gets the maximum amount of memory to use for extraction. Not
      * all codecs will honor this setting. Currently only lzma and
      * lzma2 are supported.
+     * @return the maximum amount of memory to use for extraction
      */
     public int getMaxMemoryLimitInKb() {
         return maxMemoryLimitInKb;
@@ -65,6 +67,8 @@ public class SevenZFileOptions {
     /**
      * Gets whether entries without a name should get their names set
      * to the archive's default file name.
+     * @return whether entries without a name should get their names
+     * set to the archive's default file name
      */
     public boolean getUseDefaultNameForUnnamedEntries() {
         return useDefaultNameForUnnamedEntries;
