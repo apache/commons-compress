@@ -163,7 +163,7 @@ CompressorInputStream input = new CompressorStreamFactory()
         <p>Assuming you want to extract an archive to a target
         directory you'd call <code>getNextEntry</code>, verify the
         entry can be read, construct a sane file name from the entry's
-        name, create a <codee>File</codee> and write all contents to
+        name, create a <code>File</code> and write all contents to
         it - here <code>IOUtils.copy</code> may come handy. You do so
         for every entry until <code>getNextEntry</code> returns
         <code>null</code>.</p>
