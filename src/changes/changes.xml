@@ -42,7 +42,10 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Compress Release Notes</title>
   </properties>
   <body>
-    <release version="1.19" date="not released, yet"
+    <release version="1.20" date="not released, yet"
+             description="Release 1.20">
+    </release>
+    <release version="1.19" date="2019-08-27"
              description="Release 1.19
 ----------------------------------------
 
