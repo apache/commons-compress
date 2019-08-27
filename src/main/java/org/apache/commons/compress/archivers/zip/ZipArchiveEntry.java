@@ -27,8 +27,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipException;
 
-import static java.util.Arrays.copyOf;
-
 /**
  * Extension that adds better handling of extra fields and provides
  * access to the internal and external file attributes.
@@ -812,7 +810,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      */
     public byte[] getRawName() {
         if (rawName != null) {
-            return copyOf(rawName, rawName.length);
+            return Arrays.copyOf(rawName, rawName.length);
         }
         return null;
     }
@@ -1082,6 +1080,11 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         this.commentSource = commentSource;
     }
 
+    private ZipExtraField[] copyOf(final ZipExtraField[] src, final int length) {
+        final ZipExtraField[] cpy = new ZipExtraField[length];
+        System.arraycopy(src, 0, cpy, 0, Math.min(src.length, length));
+        return cpy;
+    }
 
     /**
      * How to try to parse the extra fields.
