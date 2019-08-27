@@ -166,6 +166,10 @@ when they are read via ZipArchiveInputStream or ZipFile.
         added that sets SevenZArchiveEntry's name to the default name
         if it is not contained inside the archive.
       </action>
+      <action type="fix" date="2019-08-20">
+        NioZipEncoding#encode could enter an infinite loop for certain
+        inputs.
+      </action>
     </release>
     <release version="1.18" date="2018-08-16"
              description="Release 1.18">
