@@ -47,6 +47,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action issue="COMPRESS-493" type="update" date="2019-08-27">
         Update optional library com.github.luben:zstd-jni from 1.4.0-1 to 1.4.3-1.
       </action>
+      <action type="update" date="2019-08-27">
+        Update tests from org.apache.felix:org.apache.felix.framework 6.0.2 to 6.0.3.
+      </action>
     </release>
     <release version="1.19" date="2019-08-27"
              description="Release 1.19
