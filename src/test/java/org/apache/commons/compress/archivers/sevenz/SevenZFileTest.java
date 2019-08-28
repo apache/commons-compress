@@ -370,6 +370,31 @@ public class SevenZFileTest extends AbstractTestCase {
         }
     }
 
+    /**
+     * @see https://issues.apache.org/jira/browse/COMPRESS-492
+     */
+    @Test
+    public void handlesEmptyArchiveWithFilesInfo() throws Exception {
+        File f = new File(dir, "empty.7z");
+        try (SevenZOutputFile s = new SevenZOutputFile(f)) {
+        }
+        try (SevenZFile z = new SevenZFile(f)) {
+            assertFalse(z.getEntries().iterator().hasNext());
+            assertNull(z.getNextEntry());
+        }
+    }
+
+    /**
+     * @see https://issues.apache.org/jira/browse/COMPRESS-492
+     */
+    @Test
+    public void handlesEmptyArchiveWithoutFilesInfo() throws Exception {
+        try (SevenZFile z = new SevenZFile(getFile("COMPRESS-492.7z"))) {
+            assertFalse(z.getEntries().iterator().hasNext());
+            assertNull(z.getNextEntry());
+        }
+    }
+
     private void test7zUnarchive(final File f, final SevenZMethod m, final byte[] password) throws Exception {
         try (SevenZFile sevenZFile = new SevenZFile(f, password)) {
             test7zUnarchive(sevenZFile, m);

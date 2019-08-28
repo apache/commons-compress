@@ -1002,6 +1002,9 @@ public class SevenZFile implements Closeable {
         for (int i = 0; i < files.length; i++) {
             files[i].setHasStream(isEmptyStream == null || !isEmptyStream.get(i));
             if (files[i].hasStream()) {
+                if (archive.subStreamsInfo == null) {
+                    throw new IOException("Archive contains file with streams but no subStreamsInfo");
+                }
                 files[i].setDirectory(false);
                 files[i].setAntiItem(false);
                 files[i].setHasCrc(archive.subStreamsInfo.hasCrc.get(nonEmptyFileCounter));
@@ -1074,6 +1077,9 @@ public class SevenZFile implements Closeable {
     }
 
     private void buildDecodingStream() throws IOException {
+        if (archive.streamMap == null) {
+            throw new IOException("Archive doesn't contain stream information to read entries");
+        }
         final int folderIndex = archive.streamMap.fileFolderIndex[currentEntryIndex];
         if (folderIndex < 0) {
             deferredBlockStreams.clear();

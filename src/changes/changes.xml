@@ -50,6 +50,11 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" date="2019-08-27">
         Update tests from org.apache.felix:org.apache.felix.framework 6.0.2 to 6.0.3.
       </action>
+      <action issue="COMPRESS-492" type="fix" date="2019-08-28">
+        SevenZFile could throw NullPointerException rather than
+        IOException for certain archives. In addition it now handles
+        certain empty archives more gracefully.
+      </action>
     </release>
     <release version="1.19" date="2019-08-27"
              description="Release 1.19
