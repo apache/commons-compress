@@ -624,6 +624,9 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      */
     @Override
     public int read(final byte[] buf, final int offset, int numToRead) throws IOException {
+        if (numToRead == 0) {
+            return 0;
+        }
     	int totalRead = 0;
 
         if (isAtEOF() || isDirectory() || entryOffset >= entrySize) {

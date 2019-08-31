@@ -161,6 +161,9 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
     /** {@inheritDoc} */
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
+        if (len == 0) {
+            return 0;
+        }
         int read = readOnce(b, off, len);
         if (read == -1) {
             readNextBlock();

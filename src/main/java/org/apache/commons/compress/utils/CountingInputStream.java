@@ -48,6 +48,9 @@ public class CountingInputStream extends FilterInputStream {
     }
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
+        if (len == 0) {
+            return 0;
+        }
         final int r = in.read(b, off, len);
         if (r >= 0) {
             count(r);

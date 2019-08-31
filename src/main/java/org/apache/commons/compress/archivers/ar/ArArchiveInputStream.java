@@ -257,6 +257,9 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      */
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
+        if (len == 0) {
+            return 0;
+        }
         if (currentEntry == null) {
             throw new IllegalStateException("No current ar entry");
         }

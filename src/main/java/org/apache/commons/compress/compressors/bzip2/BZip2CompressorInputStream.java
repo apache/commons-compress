@@ -154,6 +154,9 @@ public class BZip2CompressorInputStream extends CompressorInputStream
     @Override
     public int read(final byte[] dest, final int offs, final int len)
         throws IOException {
+        if (len == 0) {
+            return 0;
+        }
         if (offs < 0) {
             throw new IndexOutOfBoundsException("offs(" + offs + ") < 0.");
         }

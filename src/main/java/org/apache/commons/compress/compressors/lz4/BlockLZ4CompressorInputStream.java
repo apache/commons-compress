@@ -61,6 +61,9 @@ public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputSt
      */
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
+        if (len == 0) {
+            return 0;
+        }
         switch (state) {
         case EOF:
             return -1;

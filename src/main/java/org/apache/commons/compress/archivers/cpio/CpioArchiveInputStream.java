@@ -303,6 +303,9 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
     @Override
     public int read(final byte[] b, final int off, final int len)
             throws IOException {
+        if (len == 0) {
+            return 0;
+        }
         ensureOpen();
         if (off < 0 || len < 0 || off > b.length - len) {
             throw new IndexOutOfBoundsException();

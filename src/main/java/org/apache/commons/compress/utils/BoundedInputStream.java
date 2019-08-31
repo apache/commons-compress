@@ -51,6 +51,9 @@ public class BoundedInputStream extends InputStream {
 
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
+        if (len == 0) {
+            return 0;
+        }
         if (bytesRemaining == 0) {
             return -1;
         }

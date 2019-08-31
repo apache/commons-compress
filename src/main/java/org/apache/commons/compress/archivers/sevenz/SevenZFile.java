@@ -1140,6 +1140,9 @@ public class SevenZFile implements Closeable {
             }
             @Override
             public int read(final byte[] b, final int off, final int len) throws IOException {
+                if (len == 0) {
+                    return 0;
+                }
                 final int r = in.read(b, off, len);
                 if (r >= 0) {
                     count(r);
@@ -1228,6 +1231,9 @@ public class SevenZFile implements Closeable {
      *             if an I/O error has occurred
      */
     public int read(final byte[] b, final int off, final int len) throws IOException {
+        if (len == 0) {
+            return 0;
+        }
         int cnt = getCurrentStream().read(b, off, len);
         if (cnt > 0) {
             uncompressedBytesReadFromCurrentEntry += cnt;

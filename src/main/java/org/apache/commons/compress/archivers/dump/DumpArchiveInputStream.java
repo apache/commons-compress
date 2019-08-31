@@ -465,6 +465,9 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      */
     @Override
     public int read(final byte[] buf, int off, int len) throws IOException {
+        if (len == 0) {
+            return 0;
+        }
         int totalRead = 0;
 
         if (hasHitEOF || isClosed || entryOffset >= entrySize) {

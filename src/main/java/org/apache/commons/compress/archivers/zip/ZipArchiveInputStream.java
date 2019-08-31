@@ -428,6 +428,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
 
     @Override
     public int read(final byte[] buffer, final int offset, final int length) throws IOException {
+        if (length == 0) {
+            return 0;
+        }
         if (closed) {
             throw new IOException("The stream is closed");
         }
@@ -1256,6 +1259,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
 
         @Override
         public int read(final byte[] b, final int off, final int len) throws IOException {
+            if (len == 0) {
+                return 0;
+            }
             if (max >= 0 && pos >= max) {
                 return -1;
             }

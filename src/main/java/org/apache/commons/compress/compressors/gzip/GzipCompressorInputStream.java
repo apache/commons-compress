@@ -286,6 +286,9 @@ public class GzipCompressorInputStream extends CompressorInputStream
      */
     @Override
     public int read(final byte[] b, int off, int len) throws IOException {
+        if (len == 0) {
+            return 0;
+        }
         if (endReached) {
             return -1;
         }

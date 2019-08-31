@@ -214,6 +214,9 @@ class HuffmanDecoder implements Closeable {
 
         @Override
         int read(byte[] b, int off, int len) throws IOException {
+            if (len == 0) {
+                return 0;
+            }
             // as len is an int and (blockLength - read) is >= 0 the min must fit into an int as well
             int max = (int) Math.min(blockLength - read, len);
             int readSoFar = 0;
@@ -255,6 +258,9 @@ class HuffmanDecoder implements Closeable {
 
         @Override
         int read(byte[] b, int off, int len) throws IOException {
+            if (len == 0) {
+                return 0;
+            }
             throw new IllegalStateException("Cannot read in this state");
         }
 
@@ -292,6 +298,9 @@ class HuffmanDecoder implements Closeable {
 
         @Override
         int read(byte[] b, int off, int len) throws IOException {
+            if (len == 0) {
+                return 0;
+            }
             return decodeNext(b, off, len);
         }
 

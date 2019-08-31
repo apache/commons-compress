@@ -139,6 +139,9 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
     /** {@inheritDoc} */
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
+        if (len == 0) {
+            return 0;
+        }
         if (endReached) {
             return -1;
         }
