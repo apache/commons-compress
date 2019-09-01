@@ -325,9 +325,6 @@ public class GzipCompressorInputStream extends CompressorInputStream
             if (inf.finished()) {
                 // We may have read too many bytes. Rewind the read
                 // position to match the actual amount used.
-                //
-                // NOTE: The "if" is there just in case. Since we used
-                // in.mark earlier, it should always skip enough.
                 in.reset();
 
                 final int skipAmount = bufUsed - inf.getRemaining();
