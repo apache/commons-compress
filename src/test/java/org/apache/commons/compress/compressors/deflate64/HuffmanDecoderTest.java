@@ -214,9 +214,6 @@ public class HuffmanDecoderTest {
         assertEquals("Hello World\nHello World\nHello World\nHello World\n", new String(result, 0, len));
 
         len = decoder.decode(result);
-        assertEquals(0, len);
-
-        len = decoder.decode(result);
         assertEquals(-1, len);
     }
 }

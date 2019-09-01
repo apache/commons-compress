@@ -149,7 +149,10 @@ class HuffmanDecoder implements Closeable {
                     throw new IllegalStateException("Unsupported compression: " + mode);
                 }
             } else {
-                return state.read(b, off, len);
+                int r = state.read(b, off, len);
+                if (r != 0) {
+                    return r;
+                }
             }
         }
         return -1;
