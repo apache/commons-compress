@@ -286,7 +286,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         byte[] headerBuf = getRecord();
 
         if (headerErrorOccurred) {
-            do {
+            while (headerBuf != null) {
                 try {
                     if (TarUtils.verifyCheckSum(headerBuf)) {
                         break;
@@ -295,8 +295,10 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                     // next record is not a valid tar header either
                 }
                 entryOffset += recordSize;
-            } while ((headerBuf = getRecord()) != null);
+                headerBuf = getRecord();
+            }
         }
+        headerErrorOccurred = false;
 
         if (headerBuf == null) {
             /* hit EOF */
@@ -307,6 +309,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         try {
             currEntry = new TarArchiveEntry(headerBuf, zipEncoding);
         } catch (final IllegalArgumentException e) {
+            headerErrorOccurred = true;
             throw new InvalidTarHeaderException(e);
         }
 
