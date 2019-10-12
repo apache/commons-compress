@@ -59,6 +59,12 @@ The <action> type attribute can be add,update,fix,remove.
         Deflate64CompressorInputStream.read would return 0 for some
         inputs in violation of the InputStream.read contract.
       </action>
+      <action issue="COMPRESS-495" type="remove" date="2019-10-12">
+        Removed the extraction code from the example CLI class inside
+        of the SevenZ package. Not only is it superseeded by the
+        examples package, its implementation was vulnerable to the
+        ZipSlip attack.
+      </action>
     </release>
     <release version="1.19" date="2019-08-27"
              description="Release 1.19
