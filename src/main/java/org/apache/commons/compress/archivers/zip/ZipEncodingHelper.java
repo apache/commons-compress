@@ -47,15 +47,15 @@ public abstract class ZipEncodingHelper {
      *     If the requested characer set cannot be found, the platform default will
      *     be used instead.
      * </p>
-     * @param name The name of the zip encoding. Specify {@code null} for
+     * @param encoding The name of the zip encoding. Specify {@code null} for
      *             the platform's default encoding.
      * @return A zip encoding for the given encoding name.
      */
-    public static ZipEncoding getZipEncoding(final String name) {
+    public static ZipEncoding getZipEncoding(final String encoding) {
         Charset cs = Charset.defaultCharset();
-        if (name != null) {
+        if (encoding != null) {
             try {
-                cs = Charset.forName(name);
+                cs = Charset.forName(encoding);
             } catch (UnsupportedCharsetException e) { // NOSONAR we use the default encoding instead
             }
         }

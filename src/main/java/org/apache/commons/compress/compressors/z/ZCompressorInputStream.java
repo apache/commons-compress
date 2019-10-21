@@ -103,12 +103,12 @@ public class ZCompressorInputStream extends LZWInputStream {
     @Override
     protected int addEntry(final int previousCode, final byte character) throws IOException {
         final int maxTableSize = 1 << getCodeSize();
-        final int r = addEntry(previousCode, character, maxTableSize);
+        final int idx = addEntry(previousCode, character, maxTableSize);
         if (getTableSize() == maxTableSize && getCodeSize() < maxCodeSize) {
             reAlignReading();
             incrementCodeSize();
         }
-        return r;
+        return idx;
     }
 
     /**

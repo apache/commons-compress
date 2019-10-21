@@ -259,9 +259,9 @@ public abstract class StreamCompressor implements Closeable {
     }
 
     void deflate() throws IOException {
-        final int len = def.deflate(outputBuffer, 0, outputBuffer.length);
-        if (len > 0) {
-            writeCounted(outputBuffer, 0, len);
+        final int length = def.deflate(outputBuffer, 0, outputBuffer.length);
+        if (length > 0) {
+            writeCounted(outputBuffer, 0, length);
         }
     }
 
