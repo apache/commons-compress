@@ -1209,10 +1209,6 @@ public class SevenZFile implements Closeable {
     }
 
     public InputStream getInputStream(SevenZArchiveEntry entry) throws IOException {
-        if(entry.isDirectory()) {
-            throw new IllegalArgumentException("Can not get input stream of a directory");
-        }
-
         int entryIndex = -1;
         for(int i = 0; i < this.archive.files.length;i++) {
             if(entry == this.archive.files[i]) {

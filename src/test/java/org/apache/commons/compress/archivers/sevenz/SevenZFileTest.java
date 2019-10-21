@@ -19,10 +19,7 @@ package org.apache.commons.compress.archivers.sevenz;
 
 import static org.junit.Assert.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -39,11 +36,16 @@ import org.apache.commons.compress.PasswordRequiredException;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.MultiReadOnlySeekableByteChannel;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class SevenZFileTest extends AbstractTestCase {
     private static final String TEST2_CONTENT = "<?xml version = '1.0'?>\r\n<!DOCTYPE"
         + " connections>\r\n<meinxml>\r\n\t<leer />\r\n</meinxml>\n";
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     // https://issues.apache.org/jira/browse/COMPRESS-320
     @Test
@@ -392,6 +394,47 @@ public class SevenZFileTest extends AbstractTestCase {
         try (SevenZFile z = new SevenZFile(getFile("COMPRESS-492.7z"))) {
             assertFalse(z.getEntries().iterator().hasNext());
             assertNull(z.getNextEntry());
+        }
+    }
+
+    @Test
+    public void extractSpecifiedFile() throws Exception {
+        try (SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-256.7z"))) {
+            String testTxtContents = "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011";
+
+            for(SevenZArchiveEntry entry : sevenZFile.getEntries()) {
+                if(entry.getName().equals("commons-compress-1.7-src/src/test/resources/test.txt")) {
+                    final byte[] contents = new byte[(int) entry.getSize()];
+                    int off = 0;
+                    InputStream inputStream = sevenZFile.getInputStream(entry);
+                    while ((off < contents.length)) {
+                        final int bytesRead = inputStream.read(contents, off, contents.length - off);
+                        assert (bytesRead >= 0);
+                        off += bytesRead;
+                    }
+                    assertEquals(testTxtContents, new String(contents, "UTF-8"));
+                }
+            }
+        }
+    }
+
+    @Test
+    public void extractNonExistSpecifiedFile() throws Exception {
+        try (SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-256.7z"))) {
+            SevenZFile anotherSevenZFile = new SevenZFile(getFile("bla.7z"));
+            for(SevenZArchiveEntry nonExistEntry : anotherSevenZFile.getEntries()) {
+                thrown.expect(IllegalArgumentException.class);
+                sevenZFile.getInputStream(nonExistEntry);
+            }
         }
     }
 
