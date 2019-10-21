@@ -1208,6 +1208,46 @@ public class SevenZFile implements Closeable {
         return deferredBlockStreams.get(0);
     }
 
+    public InputStream getInputStream(SevenZArchiveEntry entry) throws IOException {
+        if(entry.isDirectory()) {
+            throw new IllegalArgumentException("Can not get input stream of a directory");
+        }
+
+        int entryIndex = -1;
+        for(int i = 0; i < this.archive.files.length;i++) {
+            if(entry == this.archive.files[i]) {
+                entryIndex = i;
+            }
+        }
+        if(entryIndex < 0) {
+            throw new IllegalArgumentException("Can not find " + entry.getName() + " in " + this.fileName);
+        }
+
+        // return empty stream for empty files
+        if(entry.getSize() == 0) {
+            return new ByteArrayInputStream(new byte[0]);
+        }
+
+        final int folderIndex = archive.streamMap.fileFolderIndex[entryIndex];
+        final Folder folder = archive.folders[folderIndex];
+        final int firstPackStreamIndex = archive.streamMap.folderFirstPackStreamIndex[folderIndex];
+        final long folderOffset = SIGNATURE_HEADER_SIZE + archive.packPos +
+                archive.streamMap.packStreamOffsets[firstPackStreamIndex];
+        InputStream folderInputStream = buildDecoderStack(folder, folderOffset, firstPackStreamIndex, entry);
+
+        final int firstFileInFolderIndex = archive.streamMap.folderFirstFileIndex[folderIndex];
+        if(firstFileInFolderIndex < entryIndex) {
+            long skipSize = 0;
+            for(int i = firstFileInFolderIndex; i < entryIndex;i++) {
+                skipSize += archive.files[i].getSize();
+            }
+            InputStream inputStreamToSkip = new BoundedInputStream(folderInputStream, skipSize);
+            IOUtils.skip(inputStreamToSkip, Long.MAX_VALUE);
+        }
+
+        return new BoundedInputStream(folderInputStream, entry.getSize());
+    }
+
     /**
      * Reads data into an array of bytes.
      *
