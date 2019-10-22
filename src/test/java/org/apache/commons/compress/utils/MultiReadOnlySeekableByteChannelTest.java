@@ -49,7 +49,7 @@ public class MultiReadOnlySeekableByteChannelTest {
     }
 
     @Test
-    public void forSeekableByteChannelsThrowsOnNullArg() {
+    public void forSeekableByteChannelsThrowsOnNullArg() throws IOException {
         thrown.expect(NullPointerException.class);
         MultiReadOnlySeekableByteChannel.forSeekableByteChannels(null);
     }
@@ -61,7 +61,7 @@ public class MultiReadOnlySeekableByteChannelTest {
     }
 
     @Test
-    public void forSeekableByteChannelsReturnsIdentityForSingleElement() {
+    public void forSeekableByteChannelsReturnsIdentityForSingleElement() throws IOException {
         final SeekableByteChannel e = makeEmpty();
         final SeekableByteChannel m = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(e);
         Assert.assertSame(e, m);
@@ -106,7 +106,7 @@ public class MultiReadOnlySeekableByteChannelTest {
     }
 
     @Test
-    public void closesAllAndThrowsExceptionIfCloseThrows() {
+    public void closesAllAndThrowsExceptionIfCloseThrows() throws IOException {
         SeekableByteChannel[] ts = new ThrowingSeekableByteChannel[] {
             new ThrowingSeekableByteChannel(),
             new ThrowingSeekableByteChannel()
@@ -150,7 +150,7 @@ public class MultiReadOnlySeekableByteChannelTest {
         return new SeekableInMemoryByteChannel(arr);
     }
 
-    private SeekableByteChannel makeMulti(byte[][] arr) {
+    private SeekableByteChannel makeMulti(byte[][] arr) throws IOException {
         SeekableByteChannel[] s = new SeekableByteChannel[arr.length];
         for (int i = 0; i < s.length; i++) {
             s[i] = makeSingle(arr[i]);

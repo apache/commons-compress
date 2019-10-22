@@ -44,9 +44,9 @@ import java.util.Objects;
  */
 public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
 
-    private final List<SeekableByteChannel> channels;
-    private long globalPosition;
-    private int currentChannelIdx;
+    protected final List<SeekableByteChannel> channels;
+    protected long globalPosition;
+    protected int currentChannelIdx;
 
     /**
      * Concatenates the given channels.
@@ -195,7 +195,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
      * @throws NullPointerException if channels is null
      * @return SeekableByteChannel that concatenates all provided channels
      */
-    public static SeekableByteChannel forSeekableByteChannels(SeekableByteChannel... channels) {
+    public static SeekableByteChannel forSeekableByteChannels(SeekableByteChannel... channels) throws IOException {
         if (Objects.requireNonNull(channels, "channels must not be null").length == 1) {
             return channels[0];
         }
