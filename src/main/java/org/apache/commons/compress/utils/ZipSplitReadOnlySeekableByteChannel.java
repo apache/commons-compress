@@ -1,3 +1,21 @@
+/*
+ *  Licensed to the Apache Software Foundation (ASF) under one or more
+ *  contributor license agreements.  See the NOTICE file distributed with
+ *  this work for additional information regarding copyright ownership.
+ *  The ASF licenses this file to You under the Apache License, Version 2.0
+ *  (the "License"); you may not use this file except in compliance with
+ *  the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
 package org.apache.commons.compress.utils;
 
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
@@ -18,8 +36,8 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableByteChannel {
-    private final int ZIP_SPLIT_SIGNATURE_LENGTH = 4;
-    private ByteBuffer zipSplitSignatureByteBuffer = ByteBuffer.allocate(ZIP_SPLIT_SIGNATURE_LENGTH);
+    protected final int ZIP_SPLIT_SIGNATURE_LENGTH = 4;
+    protected ByteBuffer zipSplitSignatureByteBuffer = ByteBuffer.allocate(ZIP_SPLIT_SIGNATURE_LENGTH);
 
     /**
      * Concatenates the given channels.
@@ -35,27 +53,41 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
     public ZipSplitReadOnlySeekableByteChannel(List<SeekableByteChannel> channels) throws IOException {
         super(channels);
 
-        // each split zip segment should begin with zip splite signature
-        for(SeekableByteChannel channel : channels) {
+        // each split zip segment should begin with zip split signature
+        validSplitSignature(channels);
+    }
+
+    /**
+     * the first 4 bytes of zip split segments should be the zip split signature(0x08074B50)
+     *
+     * @param channels channels to be valided
+     * @throws IOException
+     */
+    private void validSplitSignature(final List<SeekableByteChannel> channels) throws IOException {
+        for(int i = 0;i < channels.size();i++) {
+            SeekableByteChannel channel = channels.get(i);
+            // the zip split file signature is always at the beginning of the segment
             channel.position(0L);
-            validSplitSignature(channel);
+
+            channel.read(zipSplitSignatureByteBuffer);
+            final ZipLong signature = new ZipLong(zipSplitSignatureByteBuffer.array());
+            if(!signature.equals(ZipLong.DD_SIG)) {
+                channel.position(0L);
+                throw new IOException("No." + (i + 1) +  " split zip file is not begin with split zip file signature");
+            }
+
             channel.position(0L);
         }
     }
 
-    private void validSplitSignature(final SeekableByteChannel channel) throws IOException {
-        // the zip split file signature is always at the beginning of the segment
-        if (channel.position() > 0) {
-            return;
-        }
-
-        channel.read(zipSplitSignatureByteBuffer);
-        final ZipLong signature = new ZipLong(zipSplitSignatureByteBuffer.array());
-        if(!signature.equals(ZipLong.DD_SIG)) {
-            throw new IOException("No." + (currentChannelIdx + 1) +  " split zip file is not begin with split zip file signature");
-        }
-    }
-
+    /**
+     * set the position based on the given disk number and relative offset
+     *
+     * @param diskNumber the disk number of split zip files
+     * @param relativeOffset the offset in the split zip segment with given disk number
+     * @return global position of all split zip files as if they are a single channel
+     * @throws IOException
+     */
     public synchronized SeekableByteChannel position(long diskNumber, long relativeOffset) throws IOException {
         long globalPosition = relativeOffset;
         for(int i = 0; i < diskNumber;i++) {
@@ -68,7 +100,8 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
     /**
      * Concatenates the given channels.
      *
-     * @param channels the channels to concatenate
+     * @param channels the channels to concatenate, note that the LAST CHANNEL of channels should be the LAST SEGMENT(.zip)
+     *                 and theses channels should be added in correct order (e.g. .z01, .z02... .z99, .zip)
      * @throws NullPointerException if channels is null
      * @return SeekableByteChannel that concatenates all provided channels
      */
@@ -79,9 +112,18 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
         return new ZipSplitReadOnlySeekableByteChannel(Arrays.asList(channels));
     }
 
+    /**
+     * Concatenates the given channels.
+     *
+     * @param lastSegmentChannel channel of the last segment of split zip segments, its extension should be .zip
+     * @param channels the channels to concatenate except for the last segment,
+     *                 note theses channels should be added in correct order (e.g. .z01, .z02... .z99)
+     * @return SeekableByteChannel that concatenates all provided channels
+     * @throws NullPointerException if lastSegmentChannel or channels is null
+     */
     public static SeekableByteChannel forSeekableByteChannels(SeekableByteChannel lastSegmentChannel, Iterable<SeekableByteChannel> channels) throws IOException {
         if(channels == null || lastSegmentChannel == null) {
-            throw new IllegalArgumentException("channels must not be null");
+            throw new NullPointerException("channels must not be null");
         }
 
         List<SeekableByteChannel> channelsList = new ArrayList<>();
@@ -90,12 +132,17 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
         }
         channelsList.add(lastSegmentChannel);
 
-        if (channelsList.size() == 1) {
-            return channelsList.get(0);
-        }
-        return new ZipSplitReadOnlySeekableByteChannel(channelsList);
+        SeekableByteChannel[] channelArray = new SeekableByteChannel[channelsList.size()];
+        return forSeekableByteChannels(channelsList.toArray(channelArray));
     }
 
+    /**
+     * Concatenates zip split files from the last segment(the extension SHOULD be .zip)
+     *
+     * @param lastSegmentFile the last segment of zip split files, note that the extension SHOULD be .zip
+     * @return SeekableByteChannel that concatenates all zip split files
+     * @throws IllegalArgumentException if the lastSegmentFile's extension is NOT .zip
+     */
     public static SeekableByteChannel buildFromLastSplitSegment(File lastSegmentFile) throws IOException {
         String extension = FileNameUtil.getExtension(lastSegmentFile.getCanonicalPath());
         if(!extension.equals(ArchiveStreamFactory.ZIP)) {
@@ -123,7 +170,8 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
     /**
      * Concatenates the given files.
      *
-     * @param files the files to concatenate
+     * @param files the files to concatenate, note that the LAST FILE of files should be the LAST SEGMENT(.zip)
+     *              and theses files should be added in correct order (e.g. .z01, .z02... .z99, .zip)
      * @throws NullPointerException if files is null
      * @throws IOException if opening a channel for one of the files fails
      * @return SeekableByteChannel that concatenates all provided files
@@ -139,20 +187,28 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
         return new ZipSplitReadOnlySeekableByteChannel(channels);
     }
 
+    /**
+     * Concatenates the given files.
+     *
+     * @param lastSegmentFile the last segment of split zip segments, its extension should be .zip
+     * @param files the files to concatenate except for the last segment,
+     *              note theses files should be added in correct order (e.g. .z01, .z02... .z99)
+     * @return SeekableByteChannel that concatenates all provided files
+     * @throws IOException
+     * @throws NullPointerException if files or lastSegmentFile is null
+     */
     public static SeekableByteChannel forFiles(File lastSegmentFile, Iterable<File> files) throws IOException {
         if(files == null || lastSegmentFile == null) {
-            throw new IllegalArgumentException("files must not be null");
+            throw new NullPointerException("files must not be null");
         }
 
-        List<SeekableByteChannel> channelsList = new ArrayList<>();
+        List<File> filesList = new ArrayList<>();
         for (File f : files) {
-            channelsList.add(Files.newByteChannel(f.toPath(), StandardOpenOption.READ));
+            filesList.add(f);
         }
-        channelsList.add(Files.newByteChannel(lastSegmentFile.toPath(), StandardOpenOption.READ));
+        filesList.add(lastSegmentFile);
 
-        if (channelsList.size() == 1) {
-            return channelsList.get(0);
-        }
-        return new ZipSplitReadOnlySeekableByteChannel(channelsList);
+        File[] filesArray = new File[filesList.size()];
+        return forFiles(filesList.toArray(filesArray));
     }
 }
