@@ -395,6 +395,11 @@ public class SevenZFileTest extends AbstractTestCase {
         }
     }
 
+    @Test
+    public void test7zUnarchiveWithDefectHeader() throws Exception {
+        test7zUnarchive(getFile("bla.noendheaderoffset.7z"), SevenZMethod.LZMA);
+    }
+
     private void test7zUnarchive(final File f, final SevenZMethod m, final byte[] password) throws Exception {
         try (SevenZFile sevenZFile = new SevenZFile(f, password)) {
             test7zUnarchive(sevenZFile, m);
