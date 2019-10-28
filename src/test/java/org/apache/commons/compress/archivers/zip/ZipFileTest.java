@@ -46,12 +46,9 @@ import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
-import org.apache.commons.compress.utils.ZipSplitReadOnlySeekableByteChannel;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
-import shaded.org.apache.commons.io.FileUtils;
-import shaded.org.apache.commons.io.FilenameUtils;
 
 public class ZipFileTest {
     private ZipFile zf = null;
@@ -697,8 +694,8 @@ public class ZipFileTest {
     @Test
     public void extractFileLiesAcrossSplitZipSegmentsCreatedByZip() throws Exception {
         File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.zip");
-        SeekableByteChannel splitInputStream = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
-        zf = new ZipFile(splitInputStream);
+        SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
+        zf = new ZipFile(channel);
 
         // the compressed content of UnsupportedCompressionAlgorithmException.java lies between .z01 and .z02
         ZipArchiveEntry zipEntry = zf.getEntry("commons-compress/src/main/java/org/apache/commons/compress/archivers/dump/UnsupportedCompressionAlgorithmException.java");
@@ -714,8 +711,8 @@ public class ZipFileTest {
     @Test
     public void extractFileLiesAcrossSplitZipSegmentsCreatedByZipOfZip64() throws Exception {
         File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip_zip64.zip");
-        SeekableByteChannel splitInputStream = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
-        zf = new ZipFile(splitInputStream);
+        SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
+        zf = new ZipFile(channel);
 
         // the compressed content of UnsupportedCompressionAlgorithmException.java lies between .z01 and .z02
         ZipArchiveEntry zipEntry = zf.getEntry("commons-compress/src/main/java/org/apache/commons/compress/archivers/dump/UnsupportedCompressionAlgorithmException.java");
@@ -731,11 +728,11 @@ public class ZipFileTest {
     @Test
     public void extractFileLiesAcrossSplitZipSegmentsCreatedByWinrar() throws Exception {
         File lastFile = getFile("COMPRESS-477/split_zip_created_by_winrar/split_zip_created_by_winrar.zip");
-        SeekableByteChannel splitInputStream = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
-        zf = new ZipFile(splitInputStream);
+        SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
+        zf = new ZipFile(channel);
 
         // the compressed content of ZipArchiveInputStream.java lies between .z01 and .z02
-        ZipArchiveEntry zipEntry = zf.getEntry("main/java/org/apache/commons/compress/archivers/zip/ZipArchiveInputStream.java");
+        ZipArchiveEntry zipEntry = zf.getEntry("commons-compress/src/main/java/org/apache/commons/compress/archivers/zip/ZipArchiveInputStream.java");
         File fileToCompare = getFile("COMPRESS-477/split_zip_created_by_winrar/file_to_compare_1");
         assertFileEqualsToEntry(fileToCompare, zipEntry, zf);
     }

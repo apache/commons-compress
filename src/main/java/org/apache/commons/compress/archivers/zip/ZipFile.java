@@ -48,7 +48,6 @@ import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInpu
 import org.apache.commons.compress.utils.CountingInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
-import org.apache.commons.compress.utils.ZipSplitReadOnlySeekableByteChannel;
 
 import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
@@ -147,7 +146,7 @@ public class ZipFile implements Closeable {
     /**
      * Whether the zip archive is a splite zip archive
      */
-    private boolean isSplitZipArchive = false;
+    private final boolean isSplitZipArchive;
 
     // cached buffers - must only be used locally in the class (COMPRESS-172 - reduce garbage collection)
     private final byte[] dwordBuf = new byte[DWORD];
@@ -361,6 +360,8 @@ public class ZipFile implements Closeable {
         throws IOException {
         if(channel instanceof ZipSplitReadOnlySeekableByteChannel) {
             isSplitZipArchive = true;
+        } else {
+            isSplitZipArchive = false;
         }
 
         this.archiveName = archiveName;

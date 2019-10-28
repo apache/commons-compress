@@ -18,6 +18,7 @@
 
 package org.apache.commons.compress.utils;
 
+import org.apache.commons.compress.archivers.zip.ZipSplitReadOnlySeekableByteChannel;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -57,7 +58,7 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
     public void channelsPositionIsZeroAfterConstructor() throws IOException {
         List<SeekableByteChannel> channels = getSplitZipChannels();
         new ZipSplitReadOnlySeekableByteChannel(channels);
-        for(SeekableByteChannel channel : channels) {
+        for (SeekableByteChannel channel : channels) {
             Assert.assertEquals(0, channel.position());
         }
     }
@@ -142,19 +143,19 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
     @Test
     public void positionToSomeZipSplitSegment() throws IOException {
         File firstFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
-        int firstFileSize = (int)firstFile.length();
+        int firstFileSize = (int) firstFile.length();
 
         File secondFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z02");
-        int secondFileSize = (int)secondFile.length();
+        int secondFileSize = (int) secondFile.length();
 
         File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.zip");
-        int lastFileSize = (int)lastFile.length();
+        int lastFileSize = (int) lastFile.length();
 
         Random random = new Random();
         int randomDiskNumber = random.nextInt(3);
-        int randomOffset = randomDiskNumber < 2 ? random.nextInt(firstFileSize):random.nextInt(lastFileSize);
+        int randomOffset = randomDiskNumber < 2 ? random.nextInt(firstFileSize) : random.nextInt(lastFileSize);
 
-        ZipSplitReadOnlySeekableByteChannel channel = (ZipSplitReadOnlySeekableByteChannel)ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
+        ZipSplitReadOnlySeekableByteChannel channel = (ZipSplitReadOnlySeekableByteChannel) ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
         channel.position(randomDiskNumber, randomOffset);
         long expectedPosition = randomOffset;
 

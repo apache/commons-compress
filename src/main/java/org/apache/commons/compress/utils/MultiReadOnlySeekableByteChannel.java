@@ -44,9 +44,9 @@ import java.util.Objects;
  */
 public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
 
-    protected final List<SeekableByteChannel> channels;
-    protected long globalPosition;
-    protected int currentChannelIdx;
+    private final List<SeekableByteChannel> channels;
+    private long globalPosition;
+    private int currentChannelIdx;
 
     /**
      * Concatenates the given channels.
@@ -120,6 +120,23 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
     @Override
     public long position() {
         return globalPosition;
+    }
+
+    /**
+     * set the position based on the given channel number and relative offset
+     *
+     * @param channelNumber  the channel number
+     * @param relativeOffset the relative offset in the corresponding channel
+     * @return global position of all channels as if they are a single channel
+     * @throws IOException
+     */
+    public synchronized SeekableByteChannel position(long channelNumber, long relativeOffset) throws IOException {
+        long globalPosition = relativeOffset;
+        for (int i = 0; i < channelNumber; i++) {
+            globalPosition += channels.get(i).size();
+        }
+
+        return position(globalPosition);
     }
 
     @Override
