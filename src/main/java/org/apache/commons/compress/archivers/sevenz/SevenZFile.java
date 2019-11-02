@@ -465,43 +465,48 @@ public class SevenZFile implements Closeable {
             return initializeArchive(startHeader, password, true);
         } else {
             // No valid header found - probably first file of multipart archive was removed too early. Scan for end header.
-            ByteBuffer nidBuf = ByteBuffer.allocate(1);
-            final long searchLimit = 1024 * 1024 * 1;
-            final long previousDataSize = channel.position() + 20;  // Main header, plus bytes that readStartHeader would read
-            final long minPos;
-            // Determine minimal position - can't start before current position
-            if (channel.position() + searchLimit > channel.size()) {
-                minPos = channel.position();
-            } else {
-                minPos = channel.size() - searchLimit;
-            }
-            long pos = channel.size() - 1;
-            // Loop: Try from end of archive
-            while (pos > minPos) {
-                pos--;
-                channel.position(pos);
-                nidBuf.rewind();
-                channel.read(nidBuf);
-                int nid = nidBuf.array()[0];
-                // First indicator: Byte equals one of these header identifiers
-                if ((nid == NID.kEncodedHeader) || (nid == NID.kHeader)) {
-                    try {
-                        // Try to initialize Archive structure from here
-                        final StartHeader startHeader = new StartHeader();
-                        startHeader.nextHeaderOffset = pos - previousDataSize;
-                        startHeader.nextHeaderSize = channel.size() - pos;
-                        Archive result = initializeArchive(startHeader, password, false);
-                        // Sanity check: There must be some data...
-                        if (result.packSizes!=null && result.files.length>0) {
-                            return result;
-                        }
-                    } catch (Exception ignore) {
-                        // Wrong guess...
+            return tryToLocateEndHeader(password);
+        }
+    }
+
+    private Archive tryToLocateEndHeader(final byte[] password) throws IOException {
+        ByteBuffer nidBuf = ByteBuffer.allocate(1);
+        final long searchLimit = 1024 * 1024 * 1;
+        // Main header, plus bytes that readStartHeader would read
+        final long previousDataSize = channel.position() + 20;
+        final long minPos;
+        // Determine minimal position - can't start before current position
+        if (channel.position() + searchLimit > channel.size()) {
+            minPos = channel.position();
+        } else {
+            minPos = channel.size() - searchLimit;
+        }
+        long pos = channel.size() - 1;
+        // Loop: Try from end of archive
+        while (pos > minPos) {
+            pos--;
+            channel.position(pos);
+            nidBuf.rewind();
+            channel.read(nidBuf);
+            int nid = nidBuf.array()[0];
+            // First indicator: Byte equals one of these header identifiers
+            if (nid == NID.kEncodedHeader || nid == NID.kHeader) {
+                try {
+                    // Try to initialize Archive structure from here
+                    final StartHeader startHeader = new StartHeader();
+                    startHeader.nextHeaderOffset = pos - previousDataSize;
+                    startHeader.nextHeaderSize = channel.size() - pos;
+                    Archive result = initializeArchive(startHeader, password, false);
+                    // Sanity check: There must be some data...
+                    if (result.packSizes != null && result.files.length > 0) {
+                        return result;
                     }
+                } catch (Exception ignore) {
+                    // Wrong guess...
                 }
             }
-            throw new IOException("Start header corrupt and unable to guess end header");
         }
+        throw new IOException("Start header corrupt and unable to guess end header");
     }
 
     private Archive initializeArchive(StartHeader startHeader, final byte[] password, boolean verifyCrc) throws IOException {
