@@ -19,7 +19,11 @@ package org.apache.commons.compress.archivers.sevenz;
 
 import static org.junit.Assert.*;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -395,6 +399,11 @@ public class SevenZFileTest extends AbstractTestCase {
             assertFalse(z.getEntries().iterator().hasNext());
             assertNull(z.getNextEntry());
         }
+    }
+
+    @Test
+    public void test7zUnarchiveWithDefectHeader() throws Exception {
+        test7zUnarchive(getFile("bla.noendheaderoffset.7z"), SevenZMethod.LZMA);
     }
 
     @Test

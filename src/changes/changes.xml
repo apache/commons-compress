@@ -65,6 +65,11 @@ The <action> type attribute can be add,update,fix,remove.
         examples package, its implementation was vulnerable to the
         ZipSlip attack.
       </action>
+      <action issue="COMPRESS-497" type="update" date="2019-10-12"
+              due-to="Stefan Schlott">
+        SevenZFile can now revover from a certain corruption that
+        seems to happen occasinally when split archives are created.
+      </action>
     </release>
     <release version="1.19" date="2019-08-27"
              description="Release 1.19

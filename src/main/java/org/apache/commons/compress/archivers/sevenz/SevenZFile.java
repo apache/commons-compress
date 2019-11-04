@@ -441,17 +441,86 @@ public class SevenZFile implements Closeable {
                     archiveVersionMajor, archiveVersionMinor));
         }
 
+        boolean headerLooksValid = false;  // See https://www.7-zip.org/recover.html - "There is no correct End Header at the end of archive"
         final long startHeaderCrc = 0xffffFFFFL & buf.getInt();
-        final StartHeader startHeader = readStartHeader(startHeaderCrc);
+        if (startHeaderCrc == 0) {
+            // This is an indication of a corrupt header - peek the next 20 bytes
+            long currentPosition = channel.position();
+            ByteBuffer peekBuf = ByteBuffer.allocate(20);
+            readFully(peekBuf);
+            channel.position(currentPosition);
+            // Header invalid if all data is 0
+            while (peekBuf.hasRemaining()) {
+                if (peekBuf.get()!=0) {
+                    headerLooksValid = true;
+                    break;
+                }
+            }
+        } else {
+            headerLooksValid = true;
+        }
+
+        if (headerLooksValid) {
+            final StartHeader startHeader = readStartHeader(startHeaderCrc);
+            return initializeArchive(startHeader, password, true);
+        } else {
+            // No valid header found - probably first file of multipart archive was removed too early. Scan for end header.
+            return tryToLocateEndHeader(password);
+        }
+    }
+
+    private Archive tryToLocateEndHeader(final byte[] password) throws IOException {
+        ByteBuffer nidBuf = ByteBuffer.allocate(1);
+        final long searchLimit = 1024 * 1024 * 1;
+        // Main header, plus bytes that readStartHeader would read
+        final long previousDataSize = channel.position() + 20;
+        final long minPos;
+        // Determine minimal position - can't start before current position
+        if (channel.position() + searchLimit > channel.size()) {
+            minPos = channel.position();
+        } else {
+            minPos = channel.size() - searchLimit;
+        }
+        long pos = channel.size() - 1;
+        // Loop: Try from end of archive
+        while (pos > minPos) {
+            pos--;
+            channel.position(pos);
+            nidBuf.rewind();
+            channel.read(nidBuf);
+            int nid = nidBuf.array()[0];
+            // First indicator: Byte equals one of these header identifiers
+            if (nid == NID.kEncodedHeader || nid == NID.kHeader) {
+                try {
+                    // Try to initialize Archive structure from here
+                    final StartHeader startHeader = new StartHeader();
+                    startHeader.nextHeaderOffset = pos - previousDataSize;
+                    startHeader.nextHeaderSize = channel.size() - pos;
+                    Archive result = initializeArchive(startHeader, password, false);
+                    // Sanity check: There must be some data...
+                    if (result.packSizes != null && result.files.length > 0) {
+                        return result;
+                    }
+                } catch (Exception ignore) {
+                    // Wrong guess...
+                }
+            }
+        }
+        throw new IOException("Start header corrupt and unable to guess end header");
+    }
+
+    private Archive initializeArchive(StartHeader startHeader, final byte[] password, boolean verifyCrc) throws IOException {
         assertFitsIntoInt("nextHeaderSize", startHeader.nextHeaderSize);
         final int nextHeaderSizeInt = (int) startHeader.nextHeaderSize;
         channel.position(SIGNATURE_HEADER_SIZE + startHeader.nextHeaderOffset);
-        buf = ByteBuffer.allocate(nextHeaderSizeInt).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buf = ByteBuffer.allocate(nextHeaderSizeInt).order(ByteOrder.LITTLE_ENDIAN);
         readFully(buf);
-        final CRC32 crc = new CRC32();
-        crc.update(buf.array());
-        if (startHeader.nextHeaderCrc != crc.getValue()) {
-            throw new IOException("NextHeader CRC mismatch");
+        if (verifyCrc) {
+            final CRC32 crc = new CRC32();
+            crc.update(buf.array());
+            if (startHeader.nextHeaderCrc != crc.getValue()) {
+                throw new IOException("NextHeader CRC mismatch");
+            }
         }
 
         Archive archive = new Archive();
