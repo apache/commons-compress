@@ -420,6 +420,16 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
 }
 ]]></source>
 
+        <h4><a name="Random-Access to 7z Archives"></a>Random-Access to 7z Archives</h4>
+
+        <p>Prior to Compress 1.20 7z archives could only be read
+        sequentially. The
+        <code>getInputStream(SevenZArchiveEntry)</code> method
+        introduced with Compress 1.20 now provides random access but
+        at least when the archive uses solid compression random access
+        will likely be significantly slower than sequential
+        access.</p>
+
       </subsection>
 
       <subsection name="ar">

@@ -58,17 +58,10 @@
           of changes see the <a href="changes-report.html">Changes
           Report</a>.</p>
 
-          <subsection name="What's new in 1.19?">
+          <subsection name="What's new in 1.20?">
             <ul>
-              <li><code>ParallelScatterZipCreator</code> now writes
-              entries in the same order they have been added to the
-              archive.</li>
-              <li><code>ZipArchiveInputStream</code> and
-              <code>ZipFile</code> are more forgiving when parsing
-              extra fields by default now.</li>
-              <li><code>TarArchiveInputStream</code> has a new lenient
-              mode that may allow it to read certain broken
-              archives.</li>
+              <li><code>SevenZFile</code> now supports random
+              access.</li>
             </ul>
           </subsection>
         </section>

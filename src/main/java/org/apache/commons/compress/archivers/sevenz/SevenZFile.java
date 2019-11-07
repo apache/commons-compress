@@ -1320,15 +1320,28 @@ public class SevenZFile implements Closeable {
         return deferredBlockStreams.get(0);
     }
 
+    /**
+     * Returns an InputStream for reading the contents of the given entry.
+     *
+     * <p>For archives using solid compression randomly accessing
+     * entries will be significantly slower than reading the archive
+     * sequentiallly.</p>
+     *
+     * @param entry the entry to get the stream for.
+     * @return a stream to read the entry from.
+     * @throws IOException if unable to create an input stream from the zipentry
+     * @since Compress 1.20
+     */
     public InputStream getInputStream(SevenZArchiveEntry entry) throws IOException {
         int entryIndex = -1;
-        for(int i = 0; i < this.archive.files.length;i++) {
-            if(entry == this.archive.files[i]) {
+        for (int i = 0; i < this.archive.files.length;i++) {
+            if (entry == this.archive.files[i]) {
                 entryIndex = i;
+                break;
             }
         }
 
-        if(entryIndex < 0) {
+        if (entryIndex < 0) {
             throw new IllegalArgumentException("Can not find " + entry.getName() + " in " + this.fileName);
         }
 

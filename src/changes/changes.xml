@@ -70,6 +70,10 @@ The <action> type attribute can be add,update,fix,remove.
         SevenZFile can now revover from a certain corruption that
         seems to happen occasinally when split archives are created.
       </action>
+      <action issue="COMPRESS-342" type="update" date="2019-11-07"
+              due-to="Peter Alfred Lee">
+        Added random access support to SevenZFile.
+      </action>
     </release>
     <release version="1.19" date="2019-08-27"
              description="Release 1.19
