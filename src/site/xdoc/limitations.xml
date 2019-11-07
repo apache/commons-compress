@@ -53,13 +53,13 @@
          archives, starting with 1.8 it will throw a
          <code>StreamingNotSupportedException</code> when reading from
          a 7z archive.</li>
-         <li>Encryption, solid compression and header compression and
+         <li>Encryption, solid compression and header compression
          are only supported when reading archives</li>
          <li>Commons Compress 1.12 and earlier didn't support writing
          LZMA.</li>
          <li>Several of the "methods" supported by 7z are not
          implemented in Compress.</li>
-         <li>No support for writing multi-volume archives Such
+         <li>No support for writing multi-volume archives. Such
          archives can be read by simply concatenating the parts, for
          example by using
          <code>MultiReadOnlySeekableByteChannel</code>.</li>
