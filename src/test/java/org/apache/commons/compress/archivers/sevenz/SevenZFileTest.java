@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -39,11 +40,16 @@ import org.apache.commons.compress.PasswordRequiredException;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.MultiReadOnlySeekableByteChannel;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class SevenZFileTest extends AbstractTestCase {
     private static final String TEST2_CONTENT = "<?xml version = '1.0'?>\r\n<!DOCTYPE"
         + " connections>\r\n<meinxml>\r\n\t<leer />\r\n</meinxml>\n";
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     // https://issues.apache.org/jira/browse/COMPRESS-320
     @Test
@@ -398,6 +404,157 @@ public class SevenZFileTest extends AbstractTestCase {
     @Test
     public void test7zUnarchiveWithDefectHeader() throws Exception {
         test7zUnarchive(getFile("bla.noendheaderoffset.7z"), SevenZMethod.LZMA);
+    }
+
+    @Test
+    public void extractSpecifiedFile() throws Exception {
+        try (SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-256.7z"))) {
+            final String testTxtContents = "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011";
+
+            for(SevenZArchiveEntry entry : sevenZFile.getEntries()) {
+                if(entry.getName().equals("commons-compress-1.7-src/src/test/resources/test.txt")) {
+                    final byte[] contents = new byte[(int) entry.getSize()];
+                    int off = 0;
+                    InputStream inputStream = sevenZFile.getInputStream(entry);
+                    while (off < contents.length) {
+                        final int bytesRead = inputStream.read(contents, off, contents.length - off);
+                        assert (bytesRead >= 0);
+                        off += bytesRead;
+                    }
+                    assertEquals(testTxtContents, new String(contents, "UTF-8"));
+                    break;
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testRandomAccessTogetherWithSequentialAccess() throws Exception {
+        try (SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-256.7z"))) {
+            final String testTxtContents = "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011";
+            final String filesTxtContents = "0xxxxxxxxx10xxxxxxxx20xxxxxxxx30xxxxxxxx40xxxxxxxx50xxxxxxxx60xxxxxxxx70xxxxxxxx80xxxxxxxx90xxxxxxxx100xxxxxxx110xxxxxxx120xxxxxxx130xxxxxxx -> 0yyyyyyyyy10yyyyyyyy20yyyyyyyy30yyyyyyyy40yyyyyyyy50yyyyyyyy60yyyyyyyy70yyyyyyyy80yyyyyyyy90yyyyyyyy100yyyyyyy110yyyyyyy120yyyyyyy130yyyyyyy\n";
+            int off;
+            byte[] contents;
+
+            // call getNextEntry and read before calling getInputStream
+            sevenZFile.getNextEntry();
+            SevenZArchiveEntry nextEntry = sevenZFile.getNextEntry();
+            contents = new byte[(int) nextEntry.getSize()];
+            off = 0;
+
+            assertEquals(SevenZMethod.LZMA2, nextEntry.getContentMethods().iterator().next().getMethod());
+
+            // just read them
+            while (off < contents.length) {
+                final int bytesRead = sevenZFile.read(contents, off, contents.length - off);
+                assert (bytesRead >= 0);
+                off += bytesRead;
+            }
+
+            sevenZFile.getNextEntry();
+            sevenZFile.getNextEntry();
+
+            for(SevenZArchiveEntry entry : sevenZFile.getEntries()) {
+                // commons-compress-1.7-src/src/test/resources/test.txt
+                if(entry.getName().equals("commons-compress-1.7-src/src/test/resources/longsymlink/files.txt")) {
+                    contents = new byte[(int) entry.getSize()];
+                    off = 0;
+                    InputStream inputStream = sevenZFile.getInputStream(entry);
+                    while (off < contents.length) {
+                        final int bytesRead = inputStream.read(contents, off, contents.length - off);
+                        assert (bytesRead >= 0);
+                        off += bytesRead;
+                    }
+                    assertEquals(SevenZMethod.LZMA2, entry.getContentMethods().iterator().next().getMethod());
+                    assertEquals(filesTxtContents, new String(contents, "UTF-8"));
+                    break;
+                }
+            }
+
+            // call getNextEntry after getInputStream
+            nextEntry = sevenZFile.getNextEntry();
+            while(!nextEntry.getName().equals("commons-compress-1.7-src/src/test/resources/test.txt")) {
+                nextEntry = sevenZFile.getNextEntry();
+            }
+
+            contents = new byte[(int) nextEntry.getSize()];
+            off = 0;
+            while (off < contents.length) {
+                final int bytesRead = sevenZFile.read(contents, off, contents.length - off);
+                assert (bytesRead >= 0);
+                off += bytesRead;
+            }
+            assertEquals(SevenZMethod.LZMA2, nextEntry.getContentMethods().iterator().next().getMethod());
+            assertEquals(testTxtContents, new String(contents, "UTF-8"));
+        }
+    }
+
+    @Test
+    public void testRandomAccessWhenJumpingBackwards() throws Exception {
+        try (SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-256.7z"))) {
+            final String testTxtContents = "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011\n" +
+                    "111111111111111111111111111000101011";
+
+            SevenZArchiveEntry entry;
+            SevenZArchiveEntry testTxtEntry = null;
+            while((entry = sevenZFile.getNextEntry()) != null ) {
+                if(entry.getName().equals("commons-compress-1.7-src/src/test/resources/test.txt")) {
+                    testTxtEntry = entry;
+                    break;
+                }
+            }
+
+            sevenZFile.getNextEntry();
+            sevenZFile.getNextEntry();
+            // skip all the entries and jump backwards
+            byte[] contents = new byte[(int) testTxtEntry.getSize()];
+            InputStream inputStream = sevenZFile.getInputStream(testTxtEntry);
+            int off = 0;
+            while (off < contents.length) {
+                final int bytesRead = inputStream.read(contents, off, contents.length - off);
+                assert (bytesRead >= 0);
+                off += bytesRead;
+            }
+            assertEquals(SevenZMethod.LZMA2, testTxtEntry.getContentMethods().iterator().next().getMethod());
+            assertEquals(testTxtContents, new String(contents, "UTF-8"));
+        }
+    }
+
+    @Test
+    public void extractNonExistSpecifiedFile() throws Exception {
+        try (SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-256.7z"))) {
+            SevenZFile anotherSevenZFile = new SevenZFile(getFile("bla.7z"));
+            for(SevenZArchiveEntry nonExistEntry : anotherSevenZFile.getEntries()) {
+                thrown.expect(IllegalArgumentException.class);
+                sevenZFile.getInputStream(nonExistEntry);
+            }
+        }
     }
 
     private void test7zUnarchive(final File f, final SevenZMethod m, final byte[] password) throws Exception {
