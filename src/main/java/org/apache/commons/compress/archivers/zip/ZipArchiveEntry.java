@@ -144,7 +144,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     private boolean isStreamContiguous = false;
     private NameSource nameSource = NameSource.NAME;
     private CommentSource commentSource = CommentSource.COMMENT;
-
+    private int diskNumberStart;
 
     /**
      * Creates a new zip entry with the specified name.
@@ -1078,6 +1078,14 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      */
     public void setCommentSource(CommentSource commentSource) {
         this.commentSource = commentSource;
+    }
+
+    public int getDiskNumberStart() {
+        return diskNumberStart;
+    }
+
+    public void setDiskNumberStart(int diskNumberStart) {
+        this.diskNumberStart = diskNumberStart;
     }
 
     private ZipExtraField[] copyOf(final ZipExtraField[] src, final int length) {

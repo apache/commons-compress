@@ -193,4 +193,19 @@ public class FileNameUtil {
         return fileName + defaultExtension;
     }
 
+    public static String getBaseName(String filename) {
+        if (filename == null) {
+            return null;
+        }
+
+        int lastSeparatorPosition = Math.max(filename.lastIndexOf('/'), filename.lastIndexOf('\\'));
+        String name = filename.substring(lastSeparatorPosition + 1);
+
+        int extensionPosition = name.lastIndexOf('.');
+        if(extensionPosition < 0) {
+            return name;
+        }
+
+        return name.substring(0, extensionPosition);
+    }
 }
