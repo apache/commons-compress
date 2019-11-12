@@ -1299,6 +1299,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                                            final EntryMetaData entryMetaData,
                                            final boolean needsZip64Extra) throws IOException {
         if(isSplitZip) {
+            // calculate the disk number for every central file header,
+            // this will be used in writing End Of Central Directory and Zip64 End Of Central Directory
             int currentSplitSegment = ((ZipSplitOutputStream)this.out).getCurrentSplitSegmentIndex();
             if(numberOfCDInDiskData.get(currentSplitSegment) == null) {
                 numberOfCDInDiskData.put(currentSplitSegment, 1);
@@ -1429,7 +1431,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * and {@link Zip64Mode #setUseZip64} is {@link Zip64Mode#Never}.
      */
     protected void writeCentralDirectoryEnd() throws IOException {
-        if(!hasUsedZip64) {
+        if(!hasUsedZip64 && isSplitZip) {
             ((ZipSplitOutputStream)this.out).prepareToWriteUnsplittableContent(eocdLength);
         }
 

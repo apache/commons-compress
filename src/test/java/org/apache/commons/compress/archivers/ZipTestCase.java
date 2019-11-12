@@ -647,6 +647,18 @@ public final class ZipTestCase extends AbstractTestCase {
         testInputStreamStatistics("COMPRESS-380/COMPRESS-380.zip", expected);
     }
 
+    @Test
+    public void buildSplitZipTest() throws IOException {
+        File directoryToZip = getFilesToZip();
+        File outputZipFile = new File(dir, "splitZip.zip");
+        long splitSize = 100 * 1024L; /* 100 KB */
+        final ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile, splitSize);
+
+        addFilesToZip(zipArchiveOutputStream, directoryToZip);
+        zipArchiveOutputStream.close();
+        // TODO: validate the created zip files when extracting split zip is merged into master
+    }
+
     private void testInputStreamStatistics(String fileName, Map<String, List<Long>> expectedStatistics)
         throws IOException, ArchiveException {
         final File input = getFile(fileName);
@@ -700,5 +712,57 @@ public final class ZipTestCase extends AbstractTestCase {
         final long t = stats.getUncompressedCount();
         final long b = stats.getCompressedCount();
         l.add(Arrays.asList(t, b));
+    }
+
+    private File getFilesToZip() throws IOException {
+        File originalZipFile = getFile("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip.zip");
+        ZipFile zipFile = new ZipFile(originalZipFile);
+        Enumeration<ZipArchiveEntry> zipEntries = zipFile.getEntries();
+        ZipArchiveEntry zipEntry;
+        File outputFile;
+        InputStream inputStream;
+        OutputStream outputStream;
+        byte[] buffer;
+        int readLen;
+
+        while (zipEntries.hasMoreElements()) {
+            zipEntry = zipEntries.nextElement();
+            if (zipEntry.isDirectory()) {
+                continue;
+            }
+
+            outputFile = new File(dir, zipEntry.getName());
+            if (!outputFile.getParentFile().exists()) {
+                outputFile.getParentFile().mkdirs();
+            }
+            outputFile = new File(dir, zipEntry.getName());
+
+            inputStream = zipFile.getInputStream(zipEntry);
+            outputStream = new FileOutputStream(outputFile);
+            buffer = new byte[(int)zipEntry.getSize()];
+            while((readLen = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, readLen);
+            }
+
+            inputStream.close();
+            outputStream.close();
+        }
+
+        return dir.listFiles()[0];
+    }
+
+    private void addFilesToZip(ZipArchiveOutputStream zipArchiveOutputStream, File fileToAdd) throws IOException {
+        if(fileToAdd.isDirectory()) {
+            for(File file : fileToAdd.listFiles()) {
+                addFilesToZip(zipArchiveOutputStream, file);
+            }
+        } else {
+            ZipArchiveEntry zipArchiveEntry = new ZipArchiveEntry(fileToAdd.getPath());
+            zipArchiveEntry.setMethod(ZipEntry.DEFLATED);
+
+            zipArchiveOutputStream.putArchiveEntry(zipArchiveEntry);
+            IOUtils.copy(new FileInputStream(fileToAdd), zipArchiveOutputStream);
+            zipArchiveOutputStream.closeArchiveEntry();
+        }
     }
 }
