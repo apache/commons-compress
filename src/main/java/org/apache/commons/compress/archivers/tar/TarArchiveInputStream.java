@@ -26,16 +26,14 @@ package org.apache.commons.compress.archivers.tar;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ArchiveUtils;
+import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
 
@@ -70,7 +68,12 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     /** An input stream to read from */
     private final InputStream is;
 
-    /** An input stream to read sparse file */
+    /** Input streams for reading sparse entries **/
+    private List<InputStream> sparseInputStreams;
+
+    /** the index of current input stream being read when reading sparse entries */
+    private int currentSparseInputStreamIndex;
+
     private InputStream sparseInputStream;
 
     /** The meta-data about the current entry */
@@ -86,7 +89,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     private Map<String, String> globalPaxHeaders = new HashMap<>();
 
     // the global sparse headers, this is only used in PAX Format 0.X
-    private List<TarArchiveStructSparse> globalSparseHeaders = new ArrayList<>();
+    private final List<TarArchiveStructSparse> globalSparseHeaders = new ArrayList<>();
 
     private final boolean lenient;
 
@@ -193,6 +196,13 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      */
     @Override
     public void close() throws IOException {
+        // Close all the input streams in sparseInputStreams
+        if(sparseInputStreams != null) {
+            for (InputStream inputStream : sparseInputStreams) {
+                inputStream.close();
+            }
+        }
+
         is.close();
     }
 
@@ -223,16 +233,10 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             return 0;
         }
 
-        // for sparse entries, there are actually currEntry.getRealSize() bytes to read
-        long entryActualSize = entrySize;
-        if (currEntry.isSparse()) {
-            entryActualSize = currEntry.getRealSize();
-        }
-
-        if (entryActualSize - entryOffset > Integer.MAX_VALUE) {
+        if (currEntry.getRealSize() - entryOffset > Integer.MAX_VALUE) {
             return Integer.MAX_VALUE;
         }
-        return (int) (entryActualSize - entryOffset);
+        return (int) (currEntry.getRealSize() - entryOffset);
     }
 
 
@@ -258,19 +262,45 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             return 0;
         }
 
-        long available;
+        long available = currEntry.getRealSize() - entryOffset;
         long skipped;
         if(!currEntry.isSparse()) {
-            available = entrySize - entryOffset;
             skipped = IOUtils.skip(is, Math.min(n, available));
         } else {
-            // for sparse entries, there are actually currEntry.getRealSize() bytes to read
-            available = currEntry.getRealSize() - entryOffset;
-            skipped = IOUtils.skip(sparseInputStream, Math.min(n, available));
+            skipped = skipSparse(n);
         }
         count(skipped);
         entryOffset += skipped;
         return skipped;
+    }
+
+    /**
+     * Skip n bytes from current input stream, if the current input stream doesn't have enough data to skip,
+     * jump to the next input stream and skip the rest bytes, keep doing this until total n bytes are skipped
+     * or the input streams are all skipped
+     *
+     * @param n bytes of data to skip
+     * @return actual bytes of data skipped
+     * @throws IOException
+     */
+    private long skipSparse(final long n) throws IOException {
+        if (sparseInputStreams.size() == 0) {
+            return is.skip(n);
+        }
+
+        long bytesSkipped = 0;
+        InputStream currentInputStream;
+
+        while (bytesSkipped < n && currentSparseInputStreamIndex < sparseInputStreams.size()) {
+            currentInputStream = sparseInputStreams.get(currentSparseInputStreamIndex);
+            bytesSkipped += currentInputStream.skip(n - bytesSkipped);
+
+            if (bytesSkipped < n) {
+                currentSparseInputStreamIndex++;
+            }
+        }
+
+        return bytesSkipped;
     }
 
     /**
@@ -536,8 +566,8 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         }
 
         // sparse headers are all done reading, we need to build
-        // a new input stream using these sparse headers
-        sparseInputStream = new TarArchiveSparseInputStream(sparseHeaders, is);
+        // sparse input streams using these sparse headers
+        buildSparseInputStreams();
     }
 
     /**
@@ -717,8 +747,8 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     }
 
     private void applyPaxHeadersToCurrentEntry(final Map<String, String> headers, final List<TarArchiveStructSparse> sparseHeaders) {
-        currEntry.updateEntryFromPaxHeaders(headers, sparseHeaders);
-
+        currEntry.updateEntryFromPaxHeaders(headers);
+        currEntry.setSparseHeaders(sparseHeaders);
     }
 
     /**
@@ -742,8 +772,8 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         }
 
         // sparse headers are all done reading, we need to build
-        // a new input stream using these sparse headers
-        sparseInputStream = new TarArchiveSparseInputStream(currEntry.getSparseHeaders(), is);
+        // sparse input streams using these sparse headers
+        buildSparseInputStreams();
     }
 
     private boolean isDirectory() {
@@ -816,19 +846,22 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             throw new IllegalStateException("No current tar entry");
         }
 
-        if(!currEntry.isSparse() && entryOffset >= entrySize) {
-            return -1;
-        }
-
-        // for sparse entries, there are actually currEntry.getRealSize() bytes to read
-        if(currEntry.isSparse() && entryOffset >= currEntry.getRealSize()) {
-            return -1;
+        if (!currEntry.isSparse()) {
+            if (entryOffset >= entrySize) {
+                return -1;
+            }
+        } else {
+            // for sparse entries, there are actually currEntry.getRealSize() bytes to read
+            if (entryOffset >= currEntry.getRealSize()) {
+                return -1;
+            }
         }
 
         numToRead = Math.min(numToRead, available());
 
-        if(currEntry.isSparse()) {
-            totalRead = sparseInputStream.read(buf, offset, numToRead);
+        if (currEntry.isSparse()) {
+            // for sparse entries, we need to read them in another way
+            totalRead = readSparse(buf, offset, numToRead);
         } else {
             totalRead = is.read(buf, offset, numToRead);
         }
@@ -844,6 +877,61 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         }
 
         return totalRead;
+    }
+
+    /**
+     * For sparse tar entries, there are many "holes"(consisting of all 0) in the file. Only the non-zero data is
+     * stored in tar files, and they are stored separately. The structure of non-zero data is introduced by the
+     * sparse headers using the offset, where a block of non-zero data starts, and numbytes, the length of the
+     * non-zero data block.
+     * When reading sparse entries, the actual data is read out with "holes" and non-zero data combined together
+     * according to the sparse headers.
+     *
+     * @param buf The buffer into which to place bytes read.
+     * @param offset The offset at which to place bytes read.
+     * @param numToRead The number of bytes to read.
+     * @return The number of bytes read, or -1 at EOF.
+     * @throws IOException on error
+     */
+    private int readSparse(final byte[] buf, final int offset, int numToRead) throws IOException {
+        // if there are no actual input streams, just read from the original input stream
+        if (sparseInputStreams.size() == 0) {
+            return is.read(buf, offset, numToRead);
+        }
+
+        if(currentSparseInputStreamIndex >= sparseInputStreams.size()) {
+            return -1;
+        }
+
+        InputStream currentInputStream = sparseInputStreams.get(currentSparseInputStreamIndex);
+        int readLen = currentInputStream.read(buf, offset, numToRead);
+
+        // if the current input stream is the last input stream,
+        // just return the number of bytes read from current input stream
+        if (currentSparseInputStreamIndex == sparseInputStreams.size() - 1) {
+            return readLen;
+        }
+
+        // if EOF of current input stream is meet, open a new input stream and recursively call read
+        if (readLen == -1) {
+            currentSparseInputStreamIndex++;
+            return readSparse(buf, offset, numToRead);
+        }
+
+        // if the rest data of current input stream is not long enough, open a new input stream
+        // and recursively call read
+        if (readLen < numToRead) {
+            currentSparseInputStreamIndex++;
+            int readLenOfNext = readSparse(buf, offset + readLen, numToRead - readLen);
+            if (readLenOfNext == -1) {
+                return readLen;
+            }
+
+            return readLen + readLenOfNext;
+        }
+
+        // if the rest data of current input stream is enough(which means readLen == len), just return readLen
+        return readLen;
     }
 
     /**
@@ -937,4 +1025,85 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                         signature, TarConstants.VERSION_OFFSET, TarConstants.VERSIONLEN);
     }
 
+    /**
+     * Build the input streams consisting of all-zero input streams and non-zero input streams.
+     * When reading from the non-zero input streams, the data is actually read from the original input stream.
+     * The size of each input stream is introduced by the sparse headers.
+     *
+     * NOTE : Some all-zero input streams and non-zero input streams have the size of 0. We DO NOT store the
+     *        0 size input streams because they are meaningless.
+     */
+    private void buildSparseInputStreams() throws IOException {
+        currentSparseInputStreamIndex = -1;
+        sparseInputStreams = new ArrayList<>();
+        InputStream zeroInputStream = new TarArchiveSparseZeroInputStream();
+
+        long offset = 0;
+        List<TarArchiveStructSparse> sparseHeaders = currEntry.getSparseHeaders();
+        // sort the sparse headers in case they are written in wrong order
+        if (sparseHeaders != null && sparseHeaders.size() > 1) {
+            final Comparator<TarArchiveStructSparse> sparseHeaderComparator = new Comparator<TarArchiveStructSparse>() {
+                @Override
+                public int compare(final TarArchiveStructSparse p, final TarArchiveStructSparse q) {
+                    Long pOffset = p.getOffset();
+                    Long qOffset = q.getOffset();
+                    return pOffset.compareTo(qOffset);
+                }
+            };
+            Collections.sort(sparseHeaders, sparseHeaderComparator);
+        }
+
+        for (TarArchiveStructSparse sparseHeader : sparseHeaders) {
+            if (sparseHeader.getOffset() == 0 && sparseHeader.getNumbytes() == 0) {
+                break;
+            }
+
+            if ((sparseHeader.getOffset() - offset) < 0) {
+                throw new IOException("Corrupted struct sparse detected");
+            }
+
+            // only store the input streams with non-zero size
+            if ((sparseHeader.getOffset() - offset) > 0) {
+                sparseInputStreams.add(new BoundedInputStream(zeroInputStream, sparseHeader.getOffset() - offset));
+            }
+
+            // only store the input streams with non-zero size
+            if (sparseHeader.getNumbytes() > 0) {
+                sparseInputStreams.add(new BoundedInputStream(is, sparseHeader.getNumbytes()));
+            }
+
+            offset = sparseHeader.getOffset() + sparseHeader.getNumbytes();
+        }
+
+        if (sparseInputStreams.size() > 0) {
+            currentSparseInputStreamIndex = 0;
+        }
+    }
+
+    /**
+     * This is an inputstream that always return 0,
+     * this is used when reading the "holes" of a sparse file
+     */
+    public class TarArchiveSparseZeroInputStream extends InputStream {
+        /**
+         * Just return 0
+         * @return
+         * @throws IOException
+         */
+        @Override
+        public int read() throws IOException {
+            return 0;
+        }
+
+        /**
+         * these's nothing need to do when skipping
+         *
+         * @param n bytes to skip
+         * @return bytes actually skipped
+         */
+        @Override
+        public long skip(final long n) {
+            return n;
+        }
+    }
 }

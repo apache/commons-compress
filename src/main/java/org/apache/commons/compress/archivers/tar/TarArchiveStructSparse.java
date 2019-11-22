@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.archivers.tar;
 
+import java.util.Objects;
+
 /**
  * This class represents struct sparse in a Tar archive.
  * <p>
@@ -37,6 +39,28 @@ public class TarArchiveStructSparse {
     public TarArchiveStructSparse(long offset, long numbytes) {
         this.offset = offset;
         this.numbytes = numbytes;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TarArchiveStructSparse that = (TarArchiveStructSparse) o;
+        return offset == that.offset &&
+                numbytes == that.numbytes;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(offset, numbytes);
+    }
+
+    @Override
+    public String toString() {
+        return "TarArchiveStructSparse{" +
+                "offset=" + offset +
+                ", numbytes=" + numbytes +
+                '}';
     }
 
     public long getOffset() {

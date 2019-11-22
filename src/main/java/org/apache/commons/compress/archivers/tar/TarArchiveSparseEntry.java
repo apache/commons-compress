@@ -19,6 +19,7 @@
 package org.apache.commons.compress.archivers.tar;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -56,6 +57,7 @@ public class TarArchiveSparseEntry implements TarConstants {
      */
     public TarArchiveSparseEntry(final byte[] headerBuf) throws IOException {
         int offset = 0;
+        sparseHeaders = new ArrayList<>();
         for(int i = 0; i < SPARSE_HEADERS_IN_EXTENSION_HEADER;i++) {
             TarArchiveStructSparse sparseHeader = TarUtils.parseSparse(headerBuf,
                     offset + i * (SPARSE_OFFSET_LEN + SPARSE_NUMBYTES_LEN));

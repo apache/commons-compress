@@ -381,4 +381,16 @@ public class TarUtilsTest {
         }
     }
 
+    @Test
+    public void testParseSparse() {
+        final long expectedOffset = 0100000;
+        final long expectedNumbytes = 0111000;
+        final byte [] buffer = new byte[] {
+                ' ', ' ', ' ', ' ', ' ', '0', '1', '0', '0', '0', '0', '0', // sparseOffset
+                ' ', ' ', ' ', ' ', ' ', '0', '1', '1', '1', '0', '0', '0'};
+        TarArchiveStructSparse sparse = TarUtils.parseSparse(buffer, 0);
+        assertEquals(sparse.getOffset(), expectedOffset);
+        assertEquals(sparse.getNumbytes(), expectedNumbytes);
+    }
+
 }

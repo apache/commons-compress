@@ -852,10 +852,14 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
 
     /**
      * Get this entry's real file size in case of a sparse file.
+     * If the file is not a sparse file, return size instead of realSize.
      *
-     * @return This entry's real file size.
+     * @return This entry's real file size, if the file is not a sparse file, return size instead of realSize.
      */
     public long getRealSize() {
+        if (!isSparse()) {
+            return size;
+        }
         return realSize;
     }
 
@@ -1077,16 +1081,13 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
     /**
      * Update the entry using a map of pax headers.
      * @param headers
-     * @param sparseHeaders for 0.0 PAX Format, the sparse headers may appear more than 1 time in headers map,
-*    *                      this means it can not be read from a map, therefore the sparse headers have already
-*    *                      been parsed to a list and was passed through parameter sparseHeaders
      * @since 1.15
      */
-    void updateEntryFromPaxHeaders(Map<String, String> headers, final List<TarArchiveStructSparse> sparseHeaders) {
+    void updateEntryFromPaxHeaders(Map<String, String> headers) {
         for (final Map.Entry<String, String> ent : headers.entrySet()) {
             final String key = ent.getKey();
             final String val = ent.getValue();
-            processPaxHeader(key, val, headers, sparseHeaders);
+            processPaxHeader(key, val, headers);
         }
     }
 
@@ -1101,10 +1102,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
         processPaxHeader(key,val,extraPaxHeaders);
     }
 
-    private void processPaxHeader(String key, String val, Map<String, String> headers) {
-        processPaxHeader(key, val, headers, null);
-    }
-
     /**
      * Process one pax header, using the supplied map as source for extra headers to be used when handling
      * entries for sparse files
@@ -1112,13 +1109,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * @param key  the header name.
      * @param val  the header value.
      * @param headers  map of headers used for dealing with sparse file.
-     * @param sparseHeaders  for 0.0 PAX Format, the sparse headers may appear more than 1 time in headers map,
-     *                       this means it can not be read from a map, therefore the sparse headers have already
-     *                       been parsed to a list and was passed through parameter sparseHeaders
      * @since 1.15
      */
-    private void processPaxHeader(String key, String val, Map<String, String> headers,
-                                  final List<TarArchiveStructSparse> sparseHeaders) {
+    private void processPaxHeader(String key, String val, Map<String, String> headers) {
     /*
      * The following headers are defined for Pax.
      * atime, ctime, charset: cannot use these without changing TarArchiveEntry fields
@@ -1172,7 +1165,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
                 break;
             case "GNU.sparse.size":
                 fillGNUSparse0xData(headers);
-                this.sparseHeaders = sparseHeaders;
                 break;
             case "GNU.sparse.realsize":
                 fillGNUSparse1xData(headers);
