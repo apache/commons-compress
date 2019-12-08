@@ -120,6 +120,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
     /** Count decompressed bytes for current entry */
     private long uncompressedCount = 0;
 
+    /** Whether the stream will try to skip the zip split signature(08074B50) at the beginning **/
+    private final boolean skipSplitSig;
+
     private static final int LFH_LEN = 30;
     /*
       local file header signature     WORD
@@ -213,12 +216,34 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
                                  final String encoding,
                                  final boolean useUnicodeExtraFields,
                                  final boolean allowStoredEntriesWithDataDescriptor) {
+        this(inputStream, encoding, useUnicodeExtraFields, allowStoredEntriesWithDataDescriptor, false);
+    }
+
+    /**
+     * Create an instance using the specified encoding
+     * @param inputStream the stream to wrap
+     * @param encoding the encoding to use for file names, use null
+     * for the platform's default encoding
+     * @param useUnicodeExtraFields whether to use InfoZIP Unicode
+     * Extra Fields (if present) to set the file names.
+     * @param allowStoredEntriesWithDataDescriptor whether the stream
+     * will try to read STORED entries that use a data descriptor
+     * @param skipSplitSig Whether the stream will try to skip the
+     * zip split signature(08074B50) at the beginning
+     * @since 1.20
+     */
+    public ZipArchiveInputStream(final InputStream inputStream,
+                                 final String encoding,
+                                 final boolean useUnicodeExtraFields,
+                                 final boolean allowStoredEntriesWithDataDescriptor,
+                                 final boolean skipSplitSig) {
         this.encoding = encoding;
         zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
         this.useUnicodeExtraFields = useUnicodeExtraFields;
         in = new PushbackInputStream(inputStream, buf.capacity());
         this.allowStoredEntriesWithDataDescriptor =
             allowStoredEntriesWithDataDescriptor;
+        this.skipSplitSig = skipSplitSig;
         // haven't read anything so far
         buf.limit(0);
     }
@@ -367,13 +392,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
     private void readFirstLocalFileHeader(final byte[] lfh) throws IOException {
         readFully(lfh);
         final ZipLong sig = new ZipLong(lfh);
-        if (sig.equals(ZipLong.DD_SIG)) {
-            throw new UnsupportedZipFeatureException(UnsupportedZipFeatureException.Feature.SPLITTING);
-        }
 
-        if (sig.equals(ZipLong.SINGLE_SEGMENT_SPLIT_MARKER)) {
-            // The archive is not really split as only one segment was
-            // needed in the end.  Just skip over the marker.
+        // the split zip signature(08074B50) should only be skipped when the skipSplitSig is set
+        if (sig.equals(ZipLong.SINGLE_SEGMENT_SPLIT_MARKER) || (skipSplitSig && sig.equals(ZipLong.DD_SIG))) {
+            // Just skip over the marker.
             final byte[] missedLfhBytes = new byte[4];
             readFully(missedLfhBytes);
             System.arraycopy(lfh, 4, lfh, 0, LFH_LEN - 4);

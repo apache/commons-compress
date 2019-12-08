@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress.compressors;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
@@ -193,4 +194,32 @@ public class FileNameUtil {
         return fileName + defaultExtension;
     }
 
+
+    public static String getExtension(String filename) {
+        if (filename == null) {
+            return null;
+        }
+
+        int extensionPosition = filename.lastIndexOf('.');
+        int lastSeparatorPosition = Math.max(filename.lastIndexOf('/'), filename.lastIndexOf('\\'));
+        if(lastSeparatorPosition > extensionPosition) {
+            return "";
+        }
+        return filename.substring(extensionPosition + 1);
+    }
+
+    public static String getBaseName(String filename) {
+        if (filename == null) {
+            return null;
+        }
+
+        String name = new File(filename).getName();
+
+        int extensionPosition = name.lastIndexOf('.');
+        if(extensionPosition < 0) {
+            return name;
+        }
+
+        return name.substring(0, extensionPosition);
+    }
 }

@@ -122,6 +122,23 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
         return globalPosition;
     }
 
+    /**
+     * set the position based on the given channel number and relative offset
+     *
+     * @param channelNumber  the channel number
+     * @param relativeOffset the relative offset in the corresponding channel
+     * @return global position of all channels as if they are a single channel
+     * @throws IOException
+     */
+    public synchronized SeekableByteChannel position(long channelNumber, long relativeOffset) throws IOException {
+        long globalPosition = relativeOffset;
+        for (int i = 0; i < channelNumber; i++) {
+            globalPosition += channels.get(i).size();
+        }
+
+        return position(globalPosition);
+    }
+
     @Override
     public long size() throws IOException {
         long acc = 0;
@@ -195,7 +212,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
      * @throws NullPointerException if channels is null
      * @return SeekableByteChannel that concatenates all provided channels
      */
-    public static SeekableByteChannel forSeekableByteChannels(SeekableByteChannel... channels) {
+    public static SeekableByteChannel forSeekableByteChannels(SeekableByteChannel... channels) throws IOException {
         if (Objects.requireNonNull(channels, "channels must not be null").length == 1) {
             return channels[0];
         }
