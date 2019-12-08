@@ -34,6 +34,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.channels.Channels;
+import java.nio.channels.SeekableByteChannel;
 import java.util.Arrays;
 import java.util.zip.ZipException;
 
@@ -593,6 +595,76 @@ public class ZipArchiveInputStreamTest {
             thrown.expect(ZipException.class);
             thrown.expectMessage("actual and claimed size don't match");
             byte[] data = IOUtils.toByteArray(archive);
+        }
+    }
+
+    @Test
+    public void testSplitZipCreatedByZip() throws IOException {
+        File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.zip");
+        SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
+        InputStream inputStream = Channels.newInputStream(channel);
+        ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, ZipEncodingHelper.UTF8, true, false, true);
+
+        File fileToCompare = getFile("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip.zip");
+        ZipArchiveInputStream inputStreamToCompare = new ZipArchiveInputStream(new FileInputStream(fileToCompare), ZipEncodingHelper.UTF8, true, false, true);
+
+        ArchiveEntry entry;
+        while((entry = splitInputStream.getNextEntry()) != null && inputStreamToCompare.getNextEntry() != null) {
+            if(entry.isDirectory()) {
+                continue;
+            }
+            Assert.assertTrue(shaded.org.apache.commons.io.IOUtils.contentEquals(splitInputStream, inputStreamToCompare));
+        }
+    }
+
+    @Test
+    public void testSplitZipCreatedByZipOfZip64() throws IOException {
+        File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip_zip64.zip");
+        SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
+        InputStream inputStream = Channels.newInputStream(channel);
+        ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, ZipEncodingHelper.UTF8, true, false, true);
+
+        File fileToCompare = getFile("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip_zip64.zip");
+        ZipArchiveInputStream inputStreamToCompare = new ZipArchiveInputStream(new FileInputStream(fileToCompare), ZipEncodingHelper.UTF8, true, false, true);
+
+        ArchiveEntry entry;
+        while((entry = splitInputStream.getNextEntry()) != null && inputStreamToCompare.getNextEntry() != null) {
+            if(entry.isDirectory()) {
+                continue;
+            }
+            Assert.assertTrue(shaded.org.apache.commons.io.IOUtils.contentEquals(splitInputStream, inputStreamToCompare));
+        }
+    }
+
+    @Test
+    public void testSplitZipCreatedByWinrar() throws IOException {
+        File lastFile = getFile("COMPRESS-477/split_zip_created_by_winrar/split_zip_created_by_winrar.zip");
+        SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
+        InputStream inputStream = Channels.newInputStream(channel);
+        ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, ZipEncodingHelper.UTF8, true, false, true);
+
+        File fileToCompare = getFile("COMPRESS-477/split_zip_created_by_winrar/zip_to_compare_created_by_winrar.zip");
+        ZipArchiveInputStream inputStreamToCompare = new ZipArchiveInputStream(new FileInputStream(fileToCompare), ZipEncodingHelper.UTF8, true, false, true);
+
+        ArchiveEntry entry;
+        while((entry = splitInputStream.getNextEntry()) != null && inputStreamToCompare.getNextEntry() != null) {
+            if(entry.isDirectory()) {
+                continue;
+            }
+            Assert.assertTrue(shaded.org.apache.commons.io.IOUtils.contentEquals(splitInputStream, inputStreamToCompare));
+        }
+    }
+
+    @Test
+    public void testSplitZipCreatedByZipThrowsException() throws IOException {
+        thrown.expect(EOFException.class);
+        File zipSplitFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
+        InputStream fileInputStream = new FileInputStream(zipSplitFile);
+        ZipArchiveInputStream inputStream = new ZipArchiveInputStream(fileInputStream, ZipEncodingHelper.UTF8, true, false, true);
+
+        ArchiveEntry entry = inputStream.getNextEntry();
+        while(entry != null){
+            entry = inputStream.getNextEntry();
         }
     }
 
