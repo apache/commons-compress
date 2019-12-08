@@ -228,8 +228,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
      * Extra Fields (if present) to set the file names.
      * @param allowStoredEntriesWithDataDescriptor whether the stream
      * will try to read STORED entries that use a data descriptor
-     * @param skipSplitSig Whether the stream will try to skip the
-     * zip split signature(08074B50) at the beginning
+     * @param skipSplitSig Whether the stream will try to skip the zip
+     * split signature(08074B50) at the beginning. You will need to
+     * set this to true if you want to read a split archive.
      * @since 1.20
      */
     public ZipArchiveInputStream(final InputStream inputStream,
@@ -393,8 +394,12 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
         readFully(lfh);
         final ZipLong sig = new ZipLong(lfh);
 
+        if (!skipSplitSig && sig.equals(ZipLong.DD_SIG)) {
+            throw new UnsupportedZipFeatureException(UnsupportedZipFeatureException.Feature.SPLITTING);
+        }
+
         // the split zip signature(08074B50) should only be skipped when the skipSplitSig is set
-        if (sig.equals(ZipLong.SINGLE_SEGMENT_SPLIT_MARKER) || (skipSplitSig && sig.equals(ZipLong.DD_SIG))) {
+        if (sig.equals(ZipLong.SINGLE_SEGMENT_SPLIT_MARKER) || sig.equals(ZipLong.DD_SIG)) {
             // Just skip over the marker.
             final byte[] missedLfhBytes = new byte[4];
             readFully(missedLfhBytes);

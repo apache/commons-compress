@@ -212,7 +212,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
      * @throws NullPointerException if channels is null
      * @return SeekableByteChannel that concatenates all provided channels
      */
-    public static SeekableByteChannel forSeekableByteChannels(SeekableByteChannel... channels) throws IOException {
+    public static SeekableByteChannel forSeekableByteChannels(SeekableByteChannel... channels) {
         if (Objects.requireNonNull(channels, "channels must not be null").length == 1) {
             return channels[0];
         }

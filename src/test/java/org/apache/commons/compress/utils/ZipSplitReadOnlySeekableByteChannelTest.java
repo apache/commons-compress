@@ -64,19 +64,19 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
     }
 
     @Test
-    public void forSeekableByteChannelsThrowsOnNullArg() throws IOException {
+    public void forOrderedSeekableByteChannelsThrowsOnNullArg() throws IOException {
         thrown.expect(NullPointerException.class);
-        ZipSplitReadOnlySeekableByteChannel.forSeekableByteChannels(null);
+        ZipSplitReadOnlySeekableByteChannel.forOrderedSeekableByteChannels(null);
     }
 
     @Test
-    public void forSeekableByteChannelsOfTwoParametersThrowsOnNullArg() throws IOException {
+    public void forOrderedSeekableByteChannelsOfTwoParametersThrowsOnNullArg() throws IOException {
         thrown.expect(NullPointerException.class);
-        ZipSplitReadOnlySeekableByteChannel.forSeekableByteChannels(null, null);
+        ZipSplitReadOnlySeekableByteChannel.forOrderedSeekableByteChannels(null, null);
     }
 
     @Test
-    public void forSeekableByteChannelsReturnCorrectClass() throws IOException {
+    public void forOrderedSeekableByteChannelsReturnCorrectClass() throws IOException {
         File file1 = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
         SeekableByteChannel firstChannel = Files.newByteChannel(file1.toPath(), StandardOpenOption.READ);
 
@@ -90,17 +90,17 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
         channels.add(firstChannel);
         channels.add(secondChannel);
 
-        SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.forSeekableByteChannels(lastChannel, channels);
+        SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.forOrderedSeekableByteChannels(lastChannel, channels);
         Assert.assertTrue(channel instanceof ZipSplitReadOnlySeekableByteChannel);
 
-        channel = ZipSplitReadOnlySeekableByteChannel.forSeekableByteChannels(firstChannel, secondChannel, lastChannel);
+        channel = ZipSplitReadOnlySeekableByteChannel.forOrderedSeekableByteChannels(firstChannel, secondChannel, lastChannel);
         Assert.assertTrue(channel instanceof ZipSplitReadOnlySeekableByteChannel);
     }
 
     @Test
-    public void forSeekableByteChannelsReturnsIdentityForSingleElement() throws IOException {
+    public void forOrderedSeekableByteChannelsReturnsIdentityForSingleElement() throws IOException {
         SeekableByteChannel emptyChannel = new SeekableInMemoryByteChannel(new byte[0]);
-        final SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.forSeekableByteChannels(emptyChannel);
+        final SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.forOrderedSeekableByteChannels(emptyChannel);
         Assert.assertSame(emptyChannel, channel);
     }
 

@@ -358,11 +358,7 @@ public class ZipFile implements Closeable {
                     final String encoding, final boolean useUnicodeExtraFields,
                     final boolean closeOnError, final boolean ignoreLocalFileHeader)
         throws IOException {
-        if(channel instanceof ZipSplitReadOnlySeekableByteChannel) {
-            isSplitZipArchive = true;
-        } else {
-            isSplitZipArchive = false;
-        }
+        isSplitZipArchive = (channel instanceof ZipSplitReadOnlySeekableByteChannel);
 
         this.archiveName = archiveName;
         this.encoding = encoding;
@@ -865,7 +861,7 @@ public class ZipFile implements Closeable {
                 ze.setLocalHeaderOffset(z64.getRelativeHeaderOffset().getLongValue());
             }
 
-            if(hasDiskStart) {
+            if (hasDiskStart) {
                 ze.setDiskNumberStart(z64.getDiskStartNumber().getValue());
             }
         }
@@ -1055,7 +1051,7 @@ public class ZipFile implements Closeable {
      */
     private void positionAtCentralDirectory64()
         throws IOException {
-        if(isSplitZipArchive) {
+        if (isSplitZipArchive) {
             wordBbuf.rewind();
             IOUtils.readFully(archive, wordBbuf);
             final long diskNumberOfEOCD = ZipLong.getValue(wordBuf);
@@ -1063,7 +1059,8 @@ public class ZipFile implements Closeable {
             dwordBbuf.rewind();
             IOUtils.readFully(archive, dwordBbuf);
             final long relativeOffsetOfEOCD = ZipEightByteInteger.getLongValue(dwordBuf);
-            ((ZipSplitReadOnlySeekableByteChannel)archive).position(diskNumberOfEOCD, relativeOffsetOfEOCD);
+            ((ZipSplitReadOnlySeekableByteChannel) archive)
+                .position(diskNumberOfEOCD, relativeOffsetOfEOCD);
         } else {
             skipBytes(ZIP64_EOCDL_LOCATOR_OFFSET
                     - WORD /* signature has already been read */);
@@ -1079,7 +1076,7 @@ public class ZipFile implements Closeable {
                                    + "directory locator is corrupt.");
         }
 
-        if(isSplitZipArchive) {
+        if (isSplitZipArchive) {
             skipBytes(ZIP64_EOCD_CFD_DISK_OFFSET
                     - WORD /* signature has already been read */);
             wordBbuf.rewind();
@@ -1091,7 +1088,8 @@ public class ZipFile implements Closeable {
             dwordBbuf.rewind();
             IOUtils.readFully(archive, dwordBbuf);
             final long relativeOffsetOfCFD = ZipEightByteInteger.getLongValue(dwordBuf);
-            ((ZipSplitReadOnlySeekableByteChannel)archive).position(diskNumberOfCFD, relativeOffsetOfCFD);
+            ((ZipSplitReadOnlySeekableByteChannel) archive)
+                .position(diskNumberOfCFD, relativeOffsetOfCFD);
         } else {
             skipBytes(ZIP64_EOCD_CFD_LOCATOR_OFFSET
                     - WORD /* signature has already been read */);
@@ -1110,7 +1108,7 @@ public class ZipFile implements Closeable {
      */
     private void positionAtCentralDirectory32()
         throws IOException {
-        if(isSplitZipArchive) {
+        if (isSplitZipArchive) {
             skipBytes(CFD_DISK_OFFSET);
             shortBbuf.rewind();
             IOUtils.readFully(archive, shortBbuf);
@@ -1121,7 +1119,8 @@ public class ZipFile implements Closeable {
             wordBbuf.rewind();
             IOUtils.readFully(archive, wordBbuf);
             final long relativeOffsetOfCFD = ZipLong.getValue(wordBuf);
-            ((ZipSplitReadOnlySeekableByteChannel)archive).position(diskNumberOfCFD, relativeOffsetOfCFD);
+            ((ZipSplitReadOnlySeekableByteChannel) archive)
+                .position(diskNumberOfCFD, relativeOffsetOfCFD);
         } else {
             skipBytes(CFD_LOCATOR_OFFSET);
             wordBbuf.rewind();
@@ -1261,8 +1260,9 @@ public class ZipFile implements Closeable {
 
     private int[] setDataOffset(ZipArchiveEntry ze) throws IOException {
         long offset = ze.getLocalHeaderOffset();
-        if(isSplitZipArchive) {
-            ((ZipSplitReadOnlySeekableByteChannel)archive).position(ze.getDiskNumberStart(), offset + LFH_OFFSET_FOR_FILENAME_LENGTH);
+        if (isSplitZipArchive) {
+            ((ZipSplitReadOnlySeekableByteChannel) archive)
+                .position(ze.getDiskNumberStart(), offset + LFH_OFFSET_FOR_FILENAME_LENGTH);
             // the offset should be updated to the global offset
             offset = archive.position() - LFH_OFFSET_FOR_FILENAME_LENGTH;
         } else {
@@ -1440,7 +1440,7 @@ public class ZipFile implements Closeable {
 
             // disk number is prior to relative offset
             final long diskNumberStartVal = ent1.getDiskNumberStart() - ent2.getDiskNumberStart();
-            if(diskNumberStartVal != 0) {
+            if (diskNumberStartVal != 0) {
                 return diskNumberStartVal < 0 ? -1 : +1;
             }
             final long val = (ent1.getLocalHeaderOffset()
