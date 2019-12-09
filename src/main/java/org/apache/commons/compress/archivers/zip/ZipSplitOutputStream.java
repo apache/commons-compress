@@ -17,10 +17,12 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.compressors.FileNameUtil;
+import org.apache.commons.compress.utils.FileNameUtils;
 
-import java.io.*;
-import java.nio.ByteBuffer;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class ZipSplitOutputStream extends OutputStream {
     private OutputStream outputStream;
@@ -142,7 +144,7 @@ public class ZipSplitOutputStream extends OutputStream {
             throw new IOException("This archive has already been finished");
         }
 
-        String zipFileBaseName = FileNameUtil.getBaseName(zipFile.getName());
+        String zipFileBaseName = FileNameUtils.getBaseName(zipFile.getName());
         File lastZipSplitSegmentFile = new File(zipFile.getParentFile(), zipFileBaseName + ".zip");
         outputStream.close();
         zipFile.renameTo(lastZipSplitSegmentFile);
@@ -210,7 +212,7 @@ public class ZipSplitOutputStream extends OutputStream {
      */
     private File createNewSplitSegmentFile(Integer zipSplitSegmentSuffixIndex) throws IOException {
         int newZipSplitSegmentSuffixIndex = zipSplitSegmentSuffixIndex == null ? (currentSplitSegmentIndex + 2) : zipSplitSegmentSuffixIndex;
-        String baseName = FileNameUtil.getBaseName(zipFile.getName());
+        String baseName = FileNameUtils.getBaseName(zipFile.getName());
         String extension = ".z";
         if (newZipSplitSegmentSuffixIndex <= 9) {
             extension += "0" + newZipSplitSegmentSuffixIndex;

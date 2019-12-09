@@ -193,19 +193,4 @@ public class FileNameUtil {
         // No custom suffix found, just append the default
         return fileName + defaultExtension;
     }
-
-    public static String getBaseName(String filename) {
-        if (filename == null) {
-            return null;
-        }
-
-        String name = new File(filename).getName();
-
-        int extensionPosition = name.lastIndexOf('.');
-        if(extensionPosition < 0) {
-            return name;
-        }
-
-        return name.substring(0, extensionPosition);
-    }
 }

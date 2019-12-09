@@ -1080,10 +1080,22 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         this.commentSource = commentSource;
     }
 
+    /**
+     * The number of the split segment this entry starts at.
+     *
+     * @return the number of the split segment this entry starts at.
+     * @since 1.20
+     */
     public int getDiskNumberStart() {
         return diskNumberStart;
     }
 
+    /**
+     * The number of the split segment this entry starts at.
+     *
+     * @param diskNumberStart the number of the split segment this entry starts at.
+     * @since 1.20
+     */
     public void setDiskNumberStart(int diskNumberStart) {
         this.diskNumberStart = diskNumberStart;
     }
