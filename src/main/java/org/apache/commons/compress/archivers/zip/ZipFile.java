@@ -862,7 +862,7 @@ public class ZipFile implements Closeable {
             }
 
             if (hasDiskStart) {
-                ze.setDiskNumberStart(z64.getDiskStartNumber().getIntValue());
+                ze.setDiskNumberStart(z64.getDiskStartNumber().getValue());
             }
         }
     }

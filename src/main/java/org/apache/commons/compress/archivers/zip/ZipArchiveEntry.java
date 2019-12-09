@@ -144,7 +144,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     private boolean isStreamContiguous = false;
     private NameSource nameSource = NameSource.NAME;
     private CommentSource commentSource = CommentSource.COMMENT;
-    private int diskNumberStart;
+    private long diskNumberStart;
 
     /**
      * Creates a new zip entry with the specified name.
@@ -1086,7 +1086,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * @return the number of the split segment this entry starts at.
      * @since 1.20
      */
-    public int getDiskNumberStart() {
+    public long getDiskNumberStart() {
         return diskNumberStart;
     }
 
@@ -1096,7 +1096,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * @param diskNumberStart the number of the split segment this entry starts at.
      * @since 1.20
      */
-    public void setDiskNumberStart(int diskNumberStart) {
+    public void setDiskNumberStart(long diskNumberStart) {
         this.diskNumberStart = diskNumberStart;
     }
 

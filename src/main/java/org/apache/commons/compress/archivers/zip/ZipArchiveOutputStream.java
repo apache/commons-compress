@@ -1367,7 +1367,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
         // disk number start
         if(isSplitZip) {
-            putShort(ze.getDiskNumberStart(), buf, CFH_DISK_NUMBER_OFFSET);
+            putShort((int) ze.getDiskNumberStart(), buf, CFH_DISK_NUMBER_OFFSET);
         } else {
             System.arraycopy(ZERO, 0, buf, CFH_DISK_NUMBER_OFFSET, SHORT);
         }

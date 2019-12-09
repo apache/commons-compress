@@ -27,6 +27,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.Channels;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -44,6 +47,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.archivers.zip.ZipMethod;
+import org.apache.commons.compress.archivers.zip.ZipSplitReadOnlySeekableByteChannel;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
@@ -647,16 +651,59 @@ public final class ZipTestCase extends AbstractTestCase {
         testInputStreamStatistics("COMPRESS-380/COMPRESS-380.zip", expected);
     }
 
-    @Test
-    public void buildSplitZipTest() throws IOException {
+    @Test(expected = IllegalArgumentException.class)
+    public void buildSplitZipWithTooSmallSizeThrowsException() throws IOException {
+        new ZipArchiveOutputStream(File.createTempFile("temp", "zip"), 64 * 1024 - 1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void buildSplitZipWithTooLargeSizeThrowsException() throws IOException {
+        new ZipArchiveOutputStream(File.createTempFile("temp", "zip"), 4294967295L + 1);
+    }
+
+    @Test(expected = IOException.class)
+    public void buildSplitZipWithSegmentAlreadyExistThrowsException() throws IOException {
         File directoryToZip = getFilesToZip();
         File outputZipFile = new File(dir, "splitZip.zip");
         long splitSize = 100 * 1024L; /* 100 KB */
         final ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile, splitSize);
 
+        // create a file that has the same name of one of the created split segments
+        File sameNameFile = new File(dir, "splitZip.z01");
+        sameNameFile.createNewFile();
+
         addFilesToZip(zipArchiveOutputStream, directoryToZip);
         zipArchiveOutputStream.close();
-        // TODO: validate the created zip files when extracting split zip is merged into master
+    }
+
+    @Test
+    public void buildSplitZipTest() throws IOException {
+        File directoryToZip = getFilesToZip();
+        createTestSplitZipSegments();
+
+        File lastFile = new File(dir, "splitZip.zip");
+        SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
+        InputStream inputStream = Channels.newInputStream(channel);
+        ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, StandardCharsets.UTF_8.toString(), true, false, true);
+
+        ArchiveEntry entry;
+        File fileToCompare;
+        InputStream inputStreamToCompare;
+        int filesNum = countNonDirectories(directoryToZip);
+        int filesCount = 0;
+        while((entry = splitInputStream.getNextEntry()) != null) {
+            if(entry.isDirectory()) {
+                continue;
+            }
+            // compare all files one by one
+            fileToCompare = new File(entry.getName());
+            inputStreamToCompare = new FileInputStream(fileToCompare);
+            Assert.assertTrue(shaded.org.apache.commons.io.IOUtils.contentEquals(splitInputStream, inputStreamToCompare));
+            inputStreamToCompare.close();
+            filesCount++;
+        }
+        // and the number of files should equal
+        assertEquals(filesCount, filesNum);
     }
 
     private void testInputStreamStatistics(String fileName, Map<String, List<Long>> expectedStatistics)
@@ -751,6 +798,17 @@ public final class ZipTestCase extends AbstractTestCase {
         return dir.listFiles()[0];
     }
 
+    private ZipArchiveOutputStream createTestSplitZipSegments() throws IOException {
+        File directoryToZip = getFilesToZip();
+        File outputZipFile = new File(dir, "splitZip.zip");
+        long splitSize = 100 * 1024L; /* 100 KB */
+        final ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile, splitSize);
+
+        addFilesToZip(zipArchiveOutputStream, directoryToZip);
+        zipArchiveOutputStream.close();
+        return zipArchiveOutputStream;
+    }
+
     private void addFilesToZip(ZipArchiveOutputStream zipArchiveOutputStream, File fileToAdd) throws IOException {
         if(fileToAdd.isDirectory()) {
             for(File file : fileToAdd.listFiles()) {
@@ -764,5 +822,18 @@ public final class ZipTestCase extends AbstractTestCase {
             IOUtils.copy(new FileInputStream(fileToAdd), zipArchiveOutputStream);
             zipArchiveOutputStream.closeArchiveEntry();
         }
+    }
+
+    private int countNonDirectories(File file) {
+        if(!file.isDirectory()) {
+            return 1;
+        }
+
+        int result = 0;
+        for (File fileInDirectory : file.listFiles()) {
+            result += countNonDirectories(fileInDirectory);
+        }
+
+        return result;
     }
 }
