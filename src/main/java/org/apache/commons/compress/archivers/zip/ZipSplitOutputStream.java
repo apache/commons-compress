@@ -24,7 +24,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class ZipSplitOutputStream extends OutputStream {
+/**
+ * Used internally by {@link ZipArchiveOutputStream} when creating a split archive.
+ *
+ * @since 1.20
+ */
+class ZipSplitOutputStream extends OutputStream {
     private OutputStream outputStream;
     private File zipFile;
     private final long splitSize;

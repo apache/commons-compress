@@ -61,7 +61,8 @@ import static org.apache.commons.compress.archivers.zip.ZipShort.putShort;
  *
  * <p>This class will try to use {@link
  * java.nio.channels.SeekableByteChannel} when it knows that the
- * output is going to go to a file.</p>
+ * output is going to go to a file and no split archive shall be
+ * created.</p>
  *
  * <p>If SeekableByteChannel cannot be used, this implementation will use
  * a Data Descriptor to store size and CRC information for {@link
@@ -279,7 +280,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Whether we are creating a split zip
      */
-    private boolean isSplitZip = false;
+    private final boolean isSplitZip;
 
     /**
      * Holds the number of Central Directories on each disk, this is used
@@ -296,6 +297,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         this.channel = null;
         def = new Deflater(level, true);
         streamCompressor = StreamCompressor.create(out, def);
+        isSplitZip = false;
     }
 
     /**
@@ -325,14 +327,36 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         out = o;
         channel = _channel;
         streamCompressor = _streamCompressor;
+        isSplitZip = false;
     }
 
+    /**
+     * Creates a split ZIP Archive.
+     *
+     * <p>The files making up the archive will use Z01, Z02,
+     * ... extensions and the last part of it will be the given {@code
+     * file}.</p>
+     *
+     * <p>Even though the stream writes to a file this stream will
+     * behave as if no random access was possible. This means the
+     * sizes of stored entries need to be known before the actual
+     * entry data is written.</p>
+     *
+     * @param file the file that will become the last part of the split archive
+     * @param zipSplitSize maximum size of a single part of the split
+     * archive created by this stream. Must be between 64kB and about
+     * 4GB.
+     *
+     * @throws IOException on error
+     * @throws IllegalArgumentException if zipSplitSize is not in the required range
+     * @since 1.20
+     */
     public ZipArchiveOutputStream(final File file, final long zipSplitSize) throws IOException {
         def = new Deflater(level, true);
         this.out = new ZipSplitOutputStream(file, zipSplitSize);
         streamCompressor = StreamCompressor.create(this.out, def);
-        isSplitZip = true;
         channel = null;
+        isSplitZip = true;
     }
 
     /**
@@ -352,6 +376,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         def = new Deflater(level, true);
         streamCompressor = StreamCompressor.create(channel, def);
         out = null;
+        isSplitZip = false;
     }
 
     /**
