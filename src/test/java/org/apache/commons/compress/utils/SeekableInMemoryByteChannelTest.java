@@ -155,15 +155,97 @@ public class SeekableInMemoryByteChannelTest {
 
     @Test
     public void shouldSetProperPositionOnTruncate() throws IOException {
-        //given
-        SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel(testData);
-        //when
-        c.position(testData.length);
-        c.truncate(4L);
-        //then
-        assertEquals(4L, c.position());
-        assertEquals(4L, c.size());
-        c.close();
+        // In absence of proper parametrised test cases :(
+        long[][] testCases = {
+                // { Position, NewSize, ExpectedPosition }
+
+                // Position == Size == NewSize
+                // - Size doesn?t change
+                // - Position doesn?t change
+                { 9L, 9L, 9L },
+
+                // NewSize < Position == Size :
+                // - Size changes to NewSize
+                // - Position changes to NewSize
+                { 4L, 9L, 4L },
+
+                // Position == Size < NewSize :
+                // - Size changes to NewSize and you get undefined data between
+                // - Position doesn?t change
+                { 9L, 12L, 9L },
+
+                // NewSize == Position < Size :
+                // - Size changes to NewSize
+                // - Position doesn?t change
+                { 4L, 4L, 4L },
+
+                // Size < Position == NewSize :
+                // - Size changes to NewSize and you get undefined data between
+                // - Position doesn?t change
+                { 12L, 12L, 12L },
+
+                // Position < Size == NewSize :
+                // - Size doesn?t change
+                // - Position doesn?t change
+                { 4L, 9L, 4L },
+
+                // NewSize == Size < Position :
+                // - Size doesn?t change
+                // - Position changes to NewSize
+                { 12L, 9L, 9L },
+
+
+                // NewSize < Position < Size :
+                // - Size changes to NewSize
+                // - Position changes to NewSize
+                { 6L, 4L, 4L },
+
+                // Position < NewSize < Size :
+                // - Size changes to NewSize
+                // - Position doesn?t change
+                { 4L, 6L, 4L },
+
+                // Position < Size < NewSize :
+                // - Size changes to NewSize and you get undefined data between
+                // - Position doesn?t change
+                { 4L, 12L, 4L },
+
+                // NewSize < Size < Position :
+                // - Size changes to NewSize
+                // - Position changes to NewSize
+                { 12L, 4L, 4L },
+
+                // Size < NewSize < Position :
+                // - Size changes to NewSize and you get undefined data between
+                // - Position changes to NewSize
+                { 12L, 10L, 10L },
+
+                // Size < Position < NewSize :
+                // - Size changes to NewSize and you get undefined data between
+                // - Position doesn?t change
+                { 10L, 12L, 10L }
+
+        };
+
+        for (long[] testCase : testCases) {
+            try {
+                long position = testCase[0];
+                long newSize = testCase[1];
+                long expectedPosition = testCase[2];
+
+                //given
+                try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel(testData)) {
+                    //when
+                    c.position(position);
+                    c.truncate(newSize);
+                    //then
+                    assertEquals(expectedPosition, c.position());
+                    assertEquals(newSize, c.size());
+                }
+            } catch (AssertionError e) {
+                throw new AssertionError("Failed at test case: " + Arrays.toString(testCase), e);
+            }
+        }
     }
 
     @Test

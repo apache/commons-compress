@@ -96,9 +96,7 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
 
     @Override
     public SeekableByteChannel truncate(long newSize) {
-        if (size > newSize) {
-            size = (int) newSize;
-        }
+        size = (int) newSize;
         repositionIfNecessary();
         return this;
     }
