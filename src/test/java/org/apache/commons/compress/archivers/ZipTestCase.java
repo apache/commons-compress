@@ -682,28 +682,31 @@ public final class ZipTestCase extends AbstractTestCase {
         createTestSplitZipSegments();
 
         File lastFile = new File(dir, "splitZip.zip");
-        SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
-        InputStream inputStream = Channels.newInputStream(channel);
-        ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, StandardCharsets.UTF_8.toString(), true, false, true);
+        try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
+            InputStream inputStream = Channels.newInputStream(channel);
+            ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream,
+                StandardCharsets.UTF_8.toString(), true, false, true)) {
 
-        ArchiveEntry entry;
-        File fileToCompare;
-        InputStream inputStreamToCompare;
-        int filesNum = countNonDirectories(directoryToZip);
-        int filesCount = 0;
-        while((entry = splitInputStream.getNextEntry()) != null) {
-            if(entry.isDirectory()) {
-                continue;
+            ArchiveEntry entry;
+            File fileToCompare;
+            InputStream inputStreamToCompare;
+            int filesNum = countNonDirectories(directoryToZip);
+            int filesCount = 0;
+            while ((entry = splitInputStream.getNextEntry()) != null) {
+                if (entry.isDirectory()) {
+                    continue;
+                }
+                // compare all files one by one
+                fileToCompare = new File(entry.getName());
+                inputStreamToCompare = new FileInputStream(fileToCompare);
+                Assert.assertTrue(
+                    shaded.org.apache.commons.io.IOUtils.contentEquals(splitInputStream, inputStreamToCompare));
+                inputStreamToCompare.close();
+                filesCount++;
             }
-            // compare all files one by one
-            fileToCompare = new File(entry.getName());
-            inputStreamToCompare = new FileInputStream(fileToCompare);
-            Assert.assertTrue(shaded.org.apache.commons.io.IOUtils.contentEquals(splitInputStream, inputStreamToCompare));
-            inputStreamToCompare.close();
-            filesCount++;
+            // and the number of files should equal
+            assertEquals(filesCount, filesNum);
         }
-        // and the number of files should equal
-        assertEquals(filesCount, filesNum);
     }
 
     private void testInputStreamStatistics(String fileName, Map<String, List<Long>> expectedStatistics)
