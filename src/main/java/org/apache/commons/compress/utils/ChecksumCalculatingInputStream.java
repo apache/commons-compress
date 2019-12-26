@@ -19,6 +19,7 @@ package org.apache.commons.compress.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.zip.Checksum;
 
 /**
@@ -30,18 +31,13 @@ public class ChecksumCalculatingInputStream extends InputStream {
     private final InputStream in;
     private final Checksum checksum;
 
-    public ChecksumCalculatingInputStream(final Checksum checksum, final InputStream in) {
+    public ChecksumCalculatingInputStream(final Checksum checksum, final InputStream inputStream) {
 
-        if ( checksum == null ){
-            throw new NullPointerException("Parameter checksum must not be null");
-        }
-
-        if ( in == null ){
-            throw new NullPointerException("Parameter in must not be null");
-        }
+        Objects.requireNonNull(checksum, "checksum");
+        Objects.requireNonNull(inputStream, "in");
 
         this.checksum = checksum;
-        this.in = in;
+        this.in = inputStream;
     }
 
     /**

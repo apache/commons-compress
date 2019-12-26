@@ -132,9 +132,8 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      */
     public static SeekableByteChannel forOrderedSeekableByteChannels(SeekableByteChannel lastSegmentChannel,
         Iterable<SeekableByteChannel> channels) throws IOException {
-        if (channels == null || lastSegmentChannel == null) {
-            throw new NullPointerException("channels must not be null");
-        }
+        Objects.requireNonNull(channels, "channels");
+        Objects.requireNonNull(lastSegmentChannel, "lastSegmentChannel");
 
         List<SeekableByteChannel> channelsList = new ArrayList<>();
         for (SeekableByteChannel channel : channels) {
@@ -213,9 +212,8 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * @throws NullPointerException if files or lastSegmentFile is null
      */
     public static SeekableByteChannel forFiles(File lastSegmentFile, Iterable<File> files) throws IOException {
-        if (files == null || lastSegmentFile == null) {
-            throw new NullPointerException("files must not be null");
-        }
+        Objects.requireNonNull(files, "files");
+        Objects.requireNonNull(lastSegmentFile, "lastSegmentFile");
 
         List<File> filesList = new ArrayList<>();
         for (File f : files) {

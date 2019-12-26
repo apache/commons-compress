@@ -19,6 +19,7 @@
 package org.apache.commons.compress.changes;
 
 import java.io.InputStream;
+import java.util.Objects;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 
@@ -47,9 +48,7 @@ class Change {
      * @param fileName the file name of the file to delete
      */
     Change(final String fileName, final int type) {
-        if(fileName == null) {
-            throw new NullPointerException();
-        }
+        Objects.requireNonNull(fileName, "fileName");
         this.targetFile = fileName;
         this.type = type;
         this.input = null;
@@ -60,15 +59,14 @@ class Change {
     /**
      * Construct a change which adds an entry.
      *
-     * @param pEntry the entry details
-     * @param pInput the InputStream for the entry data
+     * @param archiveEntry the entry details
+     * @param inputStream the InputStream for the entry data
      */
-    Change(final ArchiveEntry pEntry, final InputStream pInput, final boolean replace) {
-        if(pEntry == null || pInput == null) {
-            throw new NullPointerException();
-        }
-        this.entry = pEntry;
-        this.input = pInput;
+    Change(final ArchiveEntry archiveEntry, final InputStream inputStream, final boolean replace) {
+        Objects.requireNonNull(archiveEntry, "archiveEntry");
+        Objects.requireNonNull(inputStream, "inputStream");
+        this.entry = archiveEntry;
+        this.input = inputStream;
         type = TYPE_ADD;
         targetFile = null;
         this.replaceMode = replace;

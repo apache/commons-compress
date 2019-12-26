@@ -20,16 +20,14 @@ package org.apache.commons.compress.archivers.examples;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.Objects;
 
 final class CloseableConsumerAdapter implements Closeable {
     private final CloseableConsumer consumer;
     private Closeable closeable;
 
     CloseableConsumerAdapter(CloseableConsumer consumer) {
-        if (consumer == null) {
-            throw new NullPointerException("consumer must not be null");
-        }
-        this.consumer = consumer;
+        this.consumer = Objects.requireNonNull(consumer, "consumer");
     }
 
     <C extends Closeable> C track(C closeable) {
