@@ -55,6 +55,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public final class ZipTestCase extends AbstractTestCase {
+    
     /**
      * Archives 2 files and unarchives it again. If the file length of result
      * and source is the same, it looks like the operations have worked
@@ -67,49 +68,39 @@ public final class ZipTestCase extends AbstractTestCase {
         final File file1 = getFile("test1.xml");
         final File file2 = getFile("test2.xml");
 
-        final OutputStream out = new FileOutputStream(output);
-        ArchiveOutputStream os = null;
-        try {
-            os = new ArchiveStreamFactory()
-                .createArchiveOutputStream("zip", out);
-            os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
-            IOUtils.copy(new FileInputStream(file1), os);
-            os.closeArchiveEntry();
+        try (final OutputStream out = new FileOutputStream(output)) {
+            try (ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("zip", out)) {
+                os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
+                try (final FileInputStream input = new FileInputStream(file1)) {
+                    IOUtils.copy(input, os);
+                }
+                os.closeArchiveEntry();
 
-            os.putArchiveEntry(new ZipArchiveEntry("testdata/test2.xml"));
-            IOUtils.copy(new FileInputStream(file2), os);
-            os.closeArchiveEntry();
-        } finally {
-            if (os != null) {
-                os.close();
+                os.putArchiveEntry(new ZipArchiveEntry("testdata/test2.xml"));
+                try (final FileInputStream input = new FileInputStream(file2)) {
+                    IOUtils.copy(input, os);
+                }
+                os.closeArchiveEntry();
             }
         }
-        out.close();
 
         // Unarchive the same
         final List<File> results = new ArrayList<>();
 
-        final InputStream is = new FileInputStream(output);
-        ArchiveInputStream in = null;
-        try {
-            in = new ArchiveStreamFactory()
-                .createArchiveInputStream("zip", is);
-
-            ZipArchiveEntry entry = null;
-            while((entry = (ZipArchiveEntry)in.getNextEntry()) != null) {
-                final File outfile = new File(resultDir.getCanonicalPath() + "/result/" + entry.getName());
-                outfile.getParentFile().mkdirs();
-                try (OutputStream o = new FileOutputStream(outfile)) {
-                    IOUtils.copy(in, o);
+        try (final InputStream fileInputStream = new FileInputStream(output)) {
+            try (ArchiveInputStream archiveInputStream = new ArchiveStreamFactory().createArchiveInputStream("zip",
+                fileInputStream)) {
+                ZipArchiveEntry entry = null;
+                while ((entry = (ZipArchiveEntry) archiveInputStream.getNextEntry()) != null) {
+                    final File outfile = new File(resultDir.getCanonicalPath() + "/result/" + entry.getName());
+                    outfile.getParentFile().mkdirs();
+                    try (OutputStream o = new FileOutputStream(outfile)) {
+                        IOUtils.copy(archiveInputStream, o);
+                    }
+                    results.add(outfile);
                 }
-                results.add(outfile);
-            }
-        } finally {
-            if (in != null) {
-                in.close();
             }
         }
-        is.close();
 
         assertEquals(results.size(), 2);
         File result = results.get(0);
@@ -129,34 +120,33 @@ public final class ZipTestCase extends AbstractTestCase {
         final File file2 = getFile("test2.xml");
         final byte[] file1Contents = new byte[(int) file1.length()];
         final byte[] file2Contents = new byte[(int) file2.length()];
-        IOUtils.readFully(new FileInputStream(file1), file1Contents);
-        IOUtils.readFully(new FileInputStream(file2), file2Contents);
-
-        SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel();
-        try (ZipArchiveOutputStream os = new ZipArchiveOutputStream(channel)) {
-            os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
-            os.write(file1Contents);
-            os.closeArchiveEntry();
-
-            os.putArchiveEntry(new ZipArchiveEntry("testdata/test2.xml"));
-            os.write(file2Contents);
-            os.closeArchiveEntry();
-        }
-
-        // Unarchive the same
+        IOUtils.read(file1, file1Contents);
+        IOUtils.read(file2, file2Contents);
         final List<byte[]> results = new ArrayList<>();
 
-        try (ArchiveInputStream in = new ArchiveStreamFactory()
-             .createArchiveInputStream("zip", new ByteArrayInputStream(channel.array()))) {
+        try (SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel()) {
+            try (ZipArchiveOutputStream os = new ZipArchiveOutputStream(channel)) {
+                os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
+                os.write(file1Contents);
+                os.closeArchiveEntry();
 
-            ZipArchiveEntry entry;
-            while((entry = (ZipArchiveEntry)in.getNextEntry()) != null) {
-                byte[] result = new byte[(int) entry.getSize()];
-                IOUtils.readFully(in, result);
-                results.add(result);
+                os.putArchiveEntry(new ZipArchiveEntry("testdata/test2.xml"));
+                os.write(file2Contents);
+                os.closeArchiveEntry();
+            }
+
+            // Unarchive the same
+            try (ArchiveInputStream inputStream = new ArchiveStreamFactory().createArchiveInputStream("zip",
+                new ByteArrayInputStream(channel.array()))) {
+
+                ZipArchiveEntry entry;
+                while ((entry = (ZipArchiveEntry) inputStream.getNextEntry()) != null) {
+                    byte[] result = new byte[(int) entry.getSize()];
+                    IOUtils.readFully(inputStream, result);
+                    results.add(result);
+                }
             }
         }
-
         assertArrayEquals(results.get(0), file1Contents);
         assertArrayEquals(results.get(1), file2Contents);
     }
@@ -188,8 +178,8 @@ public final class ZipTestCase extends AbstractTestCase {
         final ArrayList<String> al = new ArrayList<>();
         al.add("test1.xml");
         al.add("test2.xml");
-        try (InputStream is = new FileInputStream(input)) {
-            checkArchiveContent(new ZipArchiveInputStream(is), al);
+        try (InputStream fis = new FileInputStream(input)) {
+            checkArchiveContent(new ZipArchiveInputStream(fis), al);
         }
     }
 
@@ -200,11 +190,11 @@ public final class ZipTestCase extends AbstractTestCase {
      */
     @Test
     public void testTokenizationCompressionMethod() throws IOException {
-        final ZipFile moby = new ZipFile(getFile("moby.zip"));
-        final ZipArchiveEntry entry = moby.getEntry("README");
-        assertEquals("method", ZipMethod.TOKENIZATION.getCode(), entry.getMethod());
-        assertFalse(moby.canReadEntryData(entry));
-        moby.close();
+        try (final ZipFile moby = new ZipFile(getFile("moby.zip"))) {
+            final ZipArchiveEntry entry = moby.getEntry("README");
+            assertEquals("method", ZipMethod.TOKENIZATION.getCode(), entry.getMethod());
+            assertFalse(moby.canReadEntryData(entry));
+        }
     }
 
     /**
@@ -248,10 +238,8 @@ public final class ZipTestCase extends AbstractTestCase {
         final List<String> results = new ArrayList<>();
         final List<ZipException> expectedExceptions = new ArrayList<>();
 
-        final InputStream is = new FileInputStream(input);
-        ArchiveInputStream in = null;
-        try {
-            in = new ArchiveStreamFactory().createArchiveInputStream("zip", is);
+        try (final InputStream fis = new FileInputStream(input);
+            ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("zip", fis)) {
 
             ZipArchiveEntry entry = null;
             while ((entry = (ZipArchiveEntry) in.getNextEntry()) != null) {
@@ -269,12 +257,7 @@ public final class ZipTestCase extends AbstractTestCase {
                 }
                 // nested stream must not be closed here
             }
-        } finally {
-            if (in != null) {
-                in.close();
-            }
         }
-        is.close();
 
         assertTrue(results.contains("NestedArchiv.zip"));
         assertTrue(results.contains("test1.xml"));
@@ -365,28 +348,28 @@ public final class ZipTestCase extends AbstractTestCase {
 
     @Test
     public void testCopyRawEntriesFromFile()
-            throws IOException {
+        throws IOException {
 
         final File[] tmp = createTempDirAndFile();
         final File reference = createReferenceFile(tmp[0], Zip64Mode.Never, "expected.");
 
-        final File a1 = File.createTempFile("src1.", ".zip", tmp[0]);
-        try (final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(a1)) {
+        final File file1 = File.createTempFile("src1.", ".zip", tmp[0]);
+        try (final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(file1)) {
             zos.setUseZip64(Zip64Mode.Never);
             createFirstEntry(zos).close();
         }
 
-        final File a2 = File.createTempFile("src2.", ".zip", tmp[0]);
-        try (final ZipArchiveOutputStream zos1 = new ZipArchiveOutputStream(a2)) {
+        final File file2 = File.createTempFile("src2.", ".zip", tmp[0]);
+        try (final ZipArchiveOutputStream zos1 = new ZipArchiveOutputStream(file2)) {
             zos1.setUseZip64(Zip64Mode.Never);
             createSecondEntry(zos1).close();
         }
 
-        try (final ZipFile zf1 = new ZipFile(a1); final ZipFile zf2 = new ZipFile(a2)) {
+        try (final ZipFile zipFile1 = new ZipFile(file1); final ZipFile zipFile2 = new ZipFile(file2)) {
             final File fileResult = File.createTempFile("file-actual.", ".zip", tmp[0]);
             try (final ZipArchiveOutputStream zos2 = new ZipArchiveOutputStream(fileResult)) {
-                zf1.copyRawEntries(zos2, allFilesPredicate);
-                zf2.copyRawEntries(zos2, allFilesPredicate);
+                zipFile1.copyRawEntries(zos2, allFilesPredicate);
+                zipFile2.copyRawEntries(zos2, allFilesPredicate);
             }
             // copyRawEntries does not add superfluous zip64 header like regular zip output stream
             // does when using Zip64Mode.AsNeeded so all the source material has to be Zip64Mode.Never,
@@ -406,17 +389,17 @@ public final class ZipTestCase extends AbstractTestCase {
             createFirstEntry(zos1);
         }
 
-        final File a1 = File.createTempFile("zip64src.", ".zip", tmp[0]);
-        try (final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(a1)) {
+        final File file1 = File.createTempFile("zip64src.", ".zip", tmp[0]);
+        try (final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(file1)) {
             zos.setUseZip64(Zip64Mode.Always);
             createFirstEntry(zos).close();
         }
 
         final File fileResult = File.createTempFile("file-actual.", ".zip", tmp[0]);
-        try (final ZipFile zf1 = new ZipFile(a1)) {
+        try (final ZipFile zipFile1 = new ZipFile(file1)) {
             try (final ZipArchiveOutputStream zos2 = new ZipArchiveOutputStream(fileResult)) {
                 zos2.setUseZip64(Zip64Mode.Always);
-                zf1.copyRawEntries(zos2, allFilesPredicate);
+                zipFile1.copyRawEntries(zos2, allFilesPredicate);
             }
             assertSameFileContents(reference, fileResult);
         }
@@ -427,8 +410,8 @@ public final class ZipTestCase extends AbstractTestCase {
 
         final File[] tmp = createTempDirAndFile();
 
-        final File a1 = File.createTempFile("unixModeBits.", ".zip", tmp[0]);
-        try (final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(a1)) {
+        final File file1 = File.createTempFile("unixModeBits.", ".zip", tmp[0]);
+        try (final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(file1)) {
 
             final ZipArchiveEntry archiveEntry = new ZipArchiveEntry("fred");
             archiveEntry.setUnixMode(0664);
@@ -436,7 +419,7 @@ public final class ZipTestCase extends AbstractTestCase {
             zos.addRawArchiveEntry(archiveEntry, new ByteArrayInputStream("fud".getBytes()));
         }
 
-        try (final ZipFile zf1 = new ZipFile(a1)) {
+        try (final ZipFile zf1 = new ZipFile(file1)) {
             final ZipArchiveEntry fred = zf1.getEntry("fred");
             assertEquals(0664, fred.getUnixMode());
         }
@@ -487,12 +470,11 @@ public final class ZipTestCase extends AbstractTestCase {
                 assertEquals(expectedElement.getExternalAttributes(), actualElement.getExternalAttributes());
                 assertEquals(expectedElement.getInternalAttributes(), actualElement.getInternalAttributes());
 
-                final InputStream actualIs = actual.getInputStream(actualElement);
-                final InputStream expectedIs = expected.getInputStream(expectedElement);
-                IOUtils.readFully(expectedIs, expectedBuf);
-                IOUtils.readFully(actualIs, actualBuf);
-                expectedIs.close();
-                actualIs.close();
+                try (final InputStream actualIs = actual.getInputStream(actualElement);
+                    final InputStream expectedIs = expected.getInputStream(expectedElement)) {
+                    IOUtils.readFully(expectedIs, expectedBuf);
+                    IOUtils.readFully(actualIs, actualBuf);
+                }
                 Assert.assertArrayEquals(expectedBuf, actualBuf); // Buffers are larger than payload. dont care
             }
 
@@ -666,14 +648,15 @@ public final class ZipTestCase extends AbstractTestCase {
         File directoryToZip = getFilesToZip();
         File outputZipFile = new File(dir, "splitZip.zip");
         long splitSize = 100 * 1024L; /* 100 KB */
-        final ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile, splitSize);
+        try (final ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile,
+            splitSize)) {
 
-        // create a file that has the same name of one of the created split segments
-        File sameNameFile = new File(dir, "splitZip.z01");
-        sameNameFile.createNewFile();
+            // create a file that has the same name of one of the created split segments
+            File sameNameFile = new File(dir, "splitZip.z01");
+            sameNameFile.createNewFile();
 
-        addFilesToZip(zipArchiveOutputStream, directoryToZip);
-        zipArchiveOutputStream.close();
+            addFilesToZip(zipArchiveOutputStream, directoryToZip);
+        }
     }
 
     @Test
@@ -688,8 +671,6 @@ public final class ZipTestCase extends AbstractTestCase {
                 StandardCharsets.UTF_8.toString(), true, false, true)) {
 
             ArchiveEntry entry;
-            File fileToCompare;
-            InputStream inputStreamToCompare;
             int filesNum = countNonDirectories(directoryToZip);
             int filesCount = 0;
             while ((entry = splitInputStream.getNextEntry()) != null) {
@@ -697,11 +678,11 @@ public final class ZipTestCase extends AbstractTestCase {
                     continue;
                 }
                 // compare all files one by one
-                fileToCompare = new File(entry.getName());
-                inputStreamToCompare = new FileInputStream(fileToCompare);
-                Assert.assertTrue(
-                    shaded.org.apache.commons.io.IOUtils.contentEquals(splitInputStream, inputStreamToCompare));
-                inputStreamToCompare.close();
+                File fileToCompare = new File(entry.getName());
+                try (InputStream inputStreamToCompare = new FileInputStream(fileToCompare)) {
+                    Assert.assertTrue(
+                        shaded.org.apache.commons.io.IOUtils.contentEquals(splitInputStream, inputStreamToCompare));
+                }
                 filesCount++;
             }
             // and the number of files should equal
@@ -766,55 +747,50 @@ public final class ZipTestCase extends AbstractTestCase {
 
     private File getFilesToZip() throws IOException {
         File originalZipFile = getFile("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip.zip");
-        ZipFile zipFile = new ZipFile(originalZipFile);
-        Enumeration<ZipArchiveEntry> zipEntries = zipFile.getEntries();
-        ZipArchiveEntry zipEntry;
-        File outputFile;
-        InputStream inputStream;
-        OutputStream outputStream;
-        byte[] buffer;
-        int readLen;
+        try (ZipFile zipFile = new ZipFile(originalZipFile)) {
+            Enumeration<ZipArchiveEntry> zipEntries = zipFile.getEntries();
+            ZipArchiveEntry zipEntry;
+            File outputFile;
+            byte[] buffer;
+            int readLen;
 
-        while (zipEntries.hasMoreElements()) {
-            zipEntry = zipEntries.nextElement();
-            if (zipEntry.isDirectory()) {
-                continue;
+            while (zipEntries.hasMoreElements()) {
+                zipEntry = zipEntries.nextElement();
+                if (zipEntry.isDirectory()) {
+                    continue;
+                }
+
+                outputFile = new File(dir, zipEntry.getName());
+                if (!outputFile.getParentFile().exists()) {
+                    outputFile.getParentFile().mkdirs();
+                }
+                outputFile = new File(dir, zipEntry.getName());
+
+                try (InputStream inputStream = zipFile.getInputStream(zipEntry);
+                    OutputStream outputStream = new FileOutputStream(outputFile)) {
+                    buffer = new byte[(int) zipEntry.getSize()];
+                    while ((readLen = inputStream.read(buffer)) > 0) {
+                        outputStream.write(buffer, 0, readLen);
+                    }
+                }
             }
-
-            outputFile = new File(dir, zipEntry.getName());
-            if (!outputFile.getParentFile().exists()) {
-                outputFile.getParentFile().mkdirs();
-            }
-            outputFile = new File(dir, zipEntry.getName());
-
-            inputStream = zipFile.getInputStream(zipEntry);
-            outputStream = new FileOutputStream(outputFile);
-            buffer = new byte[(int)zipEntry.getSize()];
-            while((readLen = inputStream.read(buffer)) > 0) {
-                outputStream.write(buffer, 0, readLen);
-            }
-
-            inputStream.close();
-            outputStream.close();
         }
-
         return dir.listFiles()[0];
     }
 
-    private ZipArchiveOutputStream createTestSplitZipSegments() throws IOException {
+    private void createTestSplitZipSegments() throws IOException {
         File directoryToZip = getFilesToZip();
         File outputZipFile = new File(dir, "splitZip.zip");
         long splitSize = 100 * 1024L; /* 100 KB */
-        final ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile, splitSize);
-
-        addFilesToZip(zipArchiveOutputStream, directoryToZip);
-        zipArchiveOutputStream.close();
-        return zipArchiveOutputStream;
+        try (final ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile,
+            splitSize)) {
+            addFilesToZip(zipArchiveOutputStream, directoryToZip);
+        }
     }
 
     private void addFilesToZip(ZipArchiveOutputStream zipArchiveOutputStream, File fileToAdd) throws IOException {
-        if(fileToAdd.isDirectory()) {
-            for(File file : fileToAdd.listFiles()) {
+        if (fileToAdd.isDirectory()) {
+            for (File file : fileToAdd.listFiles()) {
                 addFilesToZip(zipArchiveOutputStream, file);
             }
         } else {
@@ -822,7 +798,9 @@ public final class ZipTestCase extends AbstractTestCase {
             zipArchiveEntry.setMethod(ZipEntry.DEFLATED);
 
             zipArchiveOutputStream.putArchiveEntry(zipArchiveEntry);
-            IOUtils.copy(new FileInputStream(fileToAdd), zipArchiveOutputStream);
+            try (final FileInputStream input = new FileInputStream(fileToAdd)) {
+                IOUtils.copy(input, zipArchiveOutputStream);
+            }
             zipArchiveOutputStream.closeArchiveEntry();
         }
     }

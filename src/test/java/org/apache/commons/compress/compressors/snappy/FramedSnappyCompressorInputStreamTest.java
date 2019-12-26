@@ -40,10 +40,7 @@ public final class FramedSnappyCompressorInputStreamTest
     public void testMatches() throws IOException {
         assertFalse(FramedSnappyCompressorInputStream.matches(new byte[10], 10));
         final byte[] b = new byte[12];
-        final File input = getFile("bla.tar.sz");
-        try (FileInputStream in = new FileInputStream(input)) {
-            IOUtils.readFully(in, b);
-        }
+        IOUtils.read(getFile("bla.tar.sz"), b);
         assertFalse(FramedSnappyCompressorInputStream.matches(b, 9));
         assertTrue(FramedSnappyCompressorInputStream.matches(b, 10));
         assertTrue(FramedSnappyCompressorInputStream.matches(b, 12));

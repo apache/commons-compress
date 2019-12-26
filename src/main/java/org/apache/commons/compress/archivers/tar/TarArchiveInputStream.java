@@ -66,7 +66,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     private long entryOffset;
 
     /** An input stream to read from */
-    private final InputStream is;
+    private final InputStream inputStream;
 
     /** The meta-data about the current entry */
     private TarArchiveEntry currEntry;
@@ -170,7 +170,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      */
     public TarArchiveInputStream(final InputStream is, final int blockSize, final int recordSize,
                                  final String encoding, boolean lenient) {
-        this.is = is;
+        this.inputStream = is;
         this.hasHitEOF = false;
         this.encoding = encoding;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
@@ -185,7 +185,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      */
     @Override
     public void close() throws IOException {
-        is.close();
+        inputStream.close();
     }
 
     /**
@@ -244,7 +244,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         }
 
         final long available = entrySize - entryOffset;
-        final long skipped = IOUtils.skip(is, Math.min(n, available));
+        final long skipped = IOUtils.skip(inputStream, Math.min(n, available));
         count(skipped);
         entryOffset += skipped;
         return skipped;
@@ -372,7 +372,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         if (!isDirectory() && this.entrySize > 0 && this.entrySize % this.recordSize != 0) {
             final long numRecords = (this.entrySize / this.recordSize) + 1;
             final long padding = (numRecords * this.recordSize) - this.entrySize;
-            final long skipped = IOUtils.skip(is, padding);
+            final long skipped = IOUtils.skip(inputStream, padding);
             count(skipped);
         }
     }
@@ -456,7 +456,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
 
         final byte[] record = new byte[recordSize];
 
-        final int readNow = IOUtils.readFully(is, record);
+        final int readNow = IOUtils.readFully(inputStream, record);
         count(readNow);
         if (readNow != recordSize) {
             return null;
@@ -479,7 +479,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     // NOTE, using a Map here makes it impossible to ever support GNU
     // sparse files using the PAX Format 0.0, see
     // https://www.gnu.org/software/tar/manual/html_section/tar_92.html#SEC188
-    Map<String, String> parsePaxHeaders(final InputStream i)
+    Map<String, String> parsePaxHeaders(final InputStream inputStream)
         throws IOException {
         final Map<String, String> headers = new HashMap<>(globalPaxHeaders);
         // Format is "length keyword=value\n";
@@ -487,14 +487,14 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             int ch;
             int len = 0;
             int read = 0;
-            while((ch = i.read()) != -1) {
+            while((ch = inputStream.read()) != -1) {
                 read++;
                 if (ch == '\n') { // blank line in header
                     break;
                 } else if (ch == ' '){ // End of length string
                     // Get keyword
                     final ByteArrayOutputStream coll = new ByteArrayOutputStream();
-                    while((ch = i.read()) != -1) {
+                    while((ch = inputStream.read()) != -1) {
                         read++;
                         if (ch == '='){ // end of keyword
                             final String keyword = coll.toString(CharsetNames.UTF_8);
@@ -504,7 +504,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                                 headers.remove(keyword);
                             } else {
                                 final byte[] rest = new byte[restLen];
-                                final int got = IOUtils.readFully(i, rest);
+                                final int got = IOUtils.readFully(inputStream, rest);
                                 if (got != restLen) {
                                     throw new IOException("Failed to read "
                                                           + "Paxheader. Expected "
@@ -595,16 +595,16 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      */
     private void tryToConsumeSecondEOFRecord() throws IOException {
         boolean shouldReset = true;
-        final boolean marked = is.markSupported();
+        final boolean marked = inputStream.markSupported();
         if (marked) {
-            is.mark(recordSize);
+            inputStream.mark(recordSize);
         }
         try {
             shouldReset = !isEOFRecord(readRecord());
         } finally {
             if (shouldReset && marked) {
                 pushedBackBytes(recordSize);
-            	is.reset();
+            	inputStream.reset();
             }
         }
     }
@@ -639,7 +639,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
 
         numToRead = Math.min(numToRead, available());
 
-        totalRead = is.read(buf, offset, numToRead);
+        totalRead = inputStream.read(buf, offset, numToRead);
 
         if (totalRead == -1) {
             if (numToRead > 0) {
@@ -697,7 +697,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     private void consumeRemainderOfLastBlock() throws IOException {
         final long bytesReadOfLastBlock = getBytesRead() % blockSize;
         if (bytesReadOfLastBlock > 0) {
-            final long skipped = IOUtils.skip(is, blockSize - bytesReadOfLastBlock);
+            final long skipped = IOUtils.skip(inputStream, blockSize - bytesReadOfLastBlock);
             count(skipped);
         }
     }

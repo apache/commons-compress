@@ -70,7 +70,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
         }
     };
 
-    private final CountingInputStream in;
+    private final CountingInputStream inputStream;
     private final boolean decompressConcatenated;
 
     private boolean expectBlockChecksum;
@@ -112,7 +112,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
      * @throws IOException if reading fails
      */
     public FramedLZ4CompressorInputStream(InputStream in, boolean decompressConcatenated) throws IOException {
-        this.in = new CountingInputStream(in);
+        this.inputStream = new CountingInputStream(in);
         this.decompressConcatenated = decompressConcatenated;
         init(true);
     }
@@ -132,7 +132,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
                 currentBlock = null;
             }
         } finally {
-            in.close();
+            inputStream.close();
         }
     }
 
@@ -168,7 +168,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
      */
     @Override
     public long getCompressedCount() {
-        return in.getBytesRead();
+        return inputStream.getBytesRead();
     }
 
     private void init(boolean firstFrame) throws IOException {
@@ -181,7 +181,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
     private boolean readSignature(boolean firstFrame) throws IOException {
         String garbageMessage = firstFrame ? "Not a LZ4 frame stream" : "LZ4 frame stream followed by garbage";
         final byte[] b = new byte[4];
-        int read = IOUtils.readFully(in, b);
+        int read = IOUtils.readFully(inputStream, b);
         count(read);
         if (0 == read && !firstFrame) {
             // good LZ4 frame and nothing after it
@@ -231,7 +231,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
         contentHash.update(bdByte);
         if (expectContentSize) { // for now we don't care, contains the uncompressed size
             byte[] contentSize = new byte[8];
-            int skipped = IOUtils.readFully(in, contentSize);
+            int skipped = IOUtils.readFully(inputStream, contentSize);
             count(skipped);
             if (8 != skipped) {
                 throw new IOException("Premature end of stream while reading content size");
@@ -266,7 +266,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
             }
             return;
         }
-        InputStream capped = new BoundedInputStream(in, realLen);
+        InputStream capped = new BoundedInputStream(inputStream, realLen);
         if (expectBlockChecksum) {
             capped = new ChecksumCalculatingInputStream(blockHash, capped);
         }
@@ -303,7 +303,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
 
     private void verifyChecksum(XXHash32 hash, String kind) throws IOException {
         byte[] checksum = new byte[4];
-        int read = IOUtils.readFully(in, checksum);
+        int read = IOUtils.readFully(inputStream, checksum);
         count(read);
         if (4 != read) {
             throw new IOException("Premature end of stream while reading " + kind + " checksum");
@@ -315,7 +315,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
     }
 
     private int readOneByte() throws IOException {
-        final int b = in.read();
+        final int b = inputStream.read();
         if (b != -1) {
             count(1);
             return b & 0xFF;
@@ -363,12 +363,12 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
             if (len < 0) {
                 throw new IOException("Found illegal skippable frame with negative size");
             }
-            long skipped = IOUtils.skip(in, len);
+            long skipped = IOUtils.skip(inputStream, len);
             count(skipped);
             if (len != skipped) {
                 throw new IOException("Premature end of stream while skipping frame");
             }
-            read = IOUtils.readFully(in, b);
+            read = IOUtils.readFully(inputStream, b);
             count(read);
         }
         return read;

@@ -47,10 +47,9 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
         final File input = getFile("zstandard.testdata.zst");
         final File expected = getFile("zstandard.testdata");
         try (InputStream inputStream = new FileInputStream(input);
-            InputStream expectedStream = new FileInputStream(expected);
             ZstdCompressorInputStream zstdInputStream = new ZstdCompressorInputStream(inputStream)) {
             final byte[] b = new byte[97];
-            IOUtils.readFully(expectedStream, b);
+            IOUtils.read(expected, b);
             final ByteArrayOutputStream bos = new ByteArrayOutputStream();
             int readByte = -1;
             while((readByte = zstdInputStream.read()) != -1) {
