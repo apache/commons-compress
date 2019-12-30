@@ -107,7 +107,7 @@
           explicitly. For example it will completely fail if the
           stored entry is a ZIP archive itself.  Starting with Compress 1.19
           <code>ZipArchiveInputStream</code> will perform a few sanity
-          for STORED entries with data descriptors and throw an
+          checks for STORED entries with data descriptors and throw an
           exception if they fail.</p>
 
         <p>If possible, you should <strong>always</strong> prefer <code>ZipFile</code>
