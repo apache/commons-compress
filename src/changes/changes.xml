@@ -78,6 +78,10 @@ The <action> type attribute can be add,update,fix,remove.
               due-to="Peter Alfred Lee">
         Added support for split ZIP archives.
       </action>
+      <action issue="COMPRESS-124" type="update" date="2020-01-01"
+              due-to="Peter Alfred Lee">
+        Added support for reading sparse entries to the TAR package.
+      </action>
     </release>
     <release version="1.19" date="2019-08-27"
              description="Release 1.19

@@ -169,7 +169,9 @@
      </section>
      <section name="TAR">
        <ul>
-         <li>sparse files can neither be read nor written</li>
+         <li>sparse files could not be read in version prior to
+         Compress 1.20</li>
+         <li>sparse files can not be written</li>
          <li>only a subset of the GNU and POSIX extensions are
          supported</li>
          <li>In Compress 1.6 <code>TarArchiveInputStream</code> could

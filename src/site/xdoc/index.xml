@@ -63,6 +63,7 @@
               <li><code>SevenZFile</code> now supports random
               access.</li>
               <li>The zip package now supports split archives.</li>
+              <li>The tar package now supports reading sparse entries.</li>
             </ul>
           </subsection>
         </section>
