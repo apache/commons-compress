@@ -133,22 +133,10 @@ public class SparseFilesTest extends AbstractTestCase {
         }
 
         final File file = getFile("oldgnu_sparse.tar");
-        InputStream sparseFileInputStream = null;
-        TarArchiveInputStream tin = null;
-        try {
-            sparseFileInputStream = extractTarAndGetInputStream(file, "sparsefile");
-            tin = new TarArchiveInputStream(new FileInputStream(file));
+        try (InputStream sparseFileInputStream = extractTarAndGetInputStream(file, "sparsefile");
+             TarArchiveInputStream tin = new TarArchiveInputStream(new FileInputStream(file))) {
             tin.getNextTarEntry();
-
             Assert.assertTrue(IOUtils.contentEquals(tin, sparseFileInputStream));
-        } finally {
-            if (sparseFileInputStream != null) {
-                sparseFileInputStream.close();
-            }
-
-            if (tin != null) {
-                tin.close();
-            }
         }
     }
 
@@ -159,11 +147,8 @@ public class SparseFilesTest extends AbstractTestCase {
         }
 
         final File file = getFile("oldgnu_extended_sparse.tar");
-        InputStream sparseFileInputStream = null;
-        TarArchiveInputStream tin = null;
-        try {
-            sparseFileInputStream = extractTarAndGetInputStream(file, "sparse6");
-            tin = new TarArchiveInputStream(new FileInputStream(file));
+        try (InputStream sparseFileInputStream = extractTarAndGetInputStream(file, "sparse6");
+             TarArchiveInputStream tin = new TarArchiveInputStream(new FileInputStream(file))) {
             final TarArchiveEntry ae = tin.getNextTarEntry();
 
             Assert.assertTrue(IOUtils.contentEquals(tin, sparseFileInputStream));
@@ -191,14 +176,6 @@ public class SparseFilesTest extends AbstractTestCase {
 
             assertEquals(51200, sparseHeaders.get(6).getOffset());
             assertEquals(0, sparseHeaders.get(6).getNumbytes());
-        } finally {
-            if (sparseFileInputStream != null) {
-                sparseFileInputStream.close();
-            }
-
-            if (tin != null) {
-                tin.close();
-            }
         }
     }
 

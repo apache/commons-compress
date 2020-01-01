@@ -754,6 +754,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
     /**
      * Set this entry's sparse headers
      * @param sparseHeaders The new sparse headers
+     * @since 1.20
      */
     public void setSparseHeaders(List<TarArchiveStructSparse> sparseHeaders) {
         this.sparseHeaders = sparseHeaders;
@@ -763,6 +764,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * Get this entry's sparse headers
      *
      * @return This entry's sparse headers
+     * @since 1.20
      */
     public List<TarArchiveStructSparse> getSparseHeaders() {
         return sparseHeaders;
@@ -772,6 +774,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * Get if this entry is a sparse file with 1.X PAX Format or not
      *
      * @return True if this entry is a sparse file with 1.X PAX Format
+     * @since 1.20
      */
     public boolean isPaxGNU1XSparse() {
         return paxGNU1XSparse;
@@ -852,7 +855,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
 
     /**
      * Get this entry's real file size in case of a sparse file.
-     * If the file is not a sparse file, return size instead of realSize.
+     * <p>If the file is not a sparse file, return size instead of realSize.</p>
      *
      * @return This entry's real file size, if the file is not a sparse file, return size instead of realSize.
      */

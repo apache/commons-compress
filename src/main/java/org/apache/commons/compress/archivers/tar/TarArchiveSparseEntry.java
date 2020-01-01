@@ -76,6 +76,9 @@ public class TarArchiveSparseEntry implements TarConstants {
         return isExtended;
     }
 
+    /**
+     * @since 1.20
+     */
     public List<TarArchiveStructSparse> getSparseHeaders() {
         return sparseHeaders;
     }

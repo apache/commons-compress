@@ -30,6 +30,7 @@ import java.util.Objects;
  * char numbytes[12]; // offset 12
  * };
  * </pre>
+ * @since 1.20
  */
 public class TarArchiveStructSparse {
     private long offset;

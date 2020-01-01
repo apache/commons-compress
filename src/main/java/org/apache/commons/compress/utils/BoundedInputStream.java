@@ -74,6 +74,9 @@ public class BoundedInputStream extends InputStream {
         // stream is controlled externally
     }
 
+    /**
+     * @since 1.20
+     */
     @Override
     public long skip(final long n) throws IOException {
         long bytesToSkip = Math.min(bytesRemaining, n);
