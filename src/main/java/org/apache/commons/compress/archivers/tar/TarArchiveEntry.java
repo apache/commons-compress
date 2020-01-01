@@ -20,11 +20,14 @@ package org.apache.commons.compress.archivers.tar;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.utils.ArchiveUtils;
@@ -200,6 +203,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
     /** The entry's minor device number. */
     private int devMinor = 0;
 
+    /** The sparse headers in tar */
+    private List<TarArchiveStructSparse> sparseHeaders;
+
     /** If an extension sparse header follows. */
     private boolean isExtended;
 
@@ -208,6 +214,10 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
 
     /** is this entry a GNU sparse entry using one of the PAX formats? */
     private boolean paxGNUSparse;
+
+    /** is this entry a GNU sparse entry using 1.X PAX formats?
+     *  the sparse headers of 1.x PAX Format is stored in file data block */
+    private boolean paxGNU1XSparse = false;
 
     /** is this entry a star sparse entry using the PAX header? */
     private boolean starSparse;
@@ -742,6 +752,32 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
     }
 
     /**
+     * Set this entry's sparse headers
+     * @param sparseHeaders The new sparse headers
+     */
+    public void setSparseHeaders(List<TarArchiveStructSparse> sparseHeaders) {
+        this.sparseHeaders = sparseHeaders;
+    }
+
+    /**
+     * Get this entry's sparse headers
+     *
+     * @return This entry's sparse headers
+     */
+    public List<TarArchiveStructSparse> getSparseHeaders() {
+        return sparseHeaders;
+    }
+
+    /**
+     * Get if this entry is a sparse file with 1.X PAX Format or not
+     *
+     * @return True if this entry is a sparse file with 1.X PAX Format
+     */
+    public boolean isPaxGNU1XSparse() {
+        return paxGNU1XSparse;
+    }
+
+    /**
      * Set this entry's file size.
      *
      * @param size This entry's new file size.
@@ -816,10 +852,14 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
 
     /**
      * Get this entry's real file size in case of a sparse file.
+     * If the file is not a sparse file, return size instead of realSize.
      *
-     * @return This entry's real file size.
+     * @return This entry's real file size, if the file is not a sparse file, return size instead of realSize.
      */
     public long getRealSize() {
+        if (!isSparse()) {
+            return size;
+        }
         return realSize;
     }
 
@@ -1341,6 +1381,16 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
             offset += OFFSETLEN_GNU;
             offset += LONGNAMESLEN_GNU;
             offset += PAD2LEN_GNU;
+            sparseHeaders = new ArrayList<>();
+            for (int i = 0; i < SPARSE_HEADERS_IN_OLDGNU_HEADER; i++) {
+                TarArchiveStructSparse sparseHeader = TarUtils.parseSparse(header,
+                        offset + i * (SPARSE_OFFSET_LEN + SPARSE_NUMBYTES_LEN));
+
+                // some sparse headers are empty, we need to skip these sparse headers
+                if(sparseHeader.getOffset() > 0 || sparseHeader.getNumbytes() > 0) {
+                    sparseHeaders.add(sparseHeader);
+                }
+            }
             offset += SPARSELEN_GNU;
             isExtended = TarUtils.parseBoolean(header, offset);
             offset += ISEXTENDEDLEN_GNU;
@@ -1461,6 +1511,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
 
     void fillGNUSparse1xData(final Map<String, String> headers) {
         paxGNUSparse = true;
+        paxGNU1XSparse = true;
         realSize = Integer.parseInt(headers.get("GNU.sparse.realsize"));
         name = headers.get("GNU.sparse.name");
     }
