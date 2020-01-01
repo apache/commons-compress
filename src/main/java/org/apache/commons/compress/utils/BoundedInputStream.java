@@ -73,4 +73,13 @@ public class BoundedInputStream extends InputStream {
         // there isn't anything to close in this stream and the nested
         // stream is controlled externally
     }
+
+    @Override
+    public long skip(final long n) throws IOException {
+        long bytesToSkip = Math.min(bytesRemaining, n);
+        long bytesSkipped = in.skip(bytesToSkip);
+        bytesRemaining -= bytesSkipped;
+
+        return bytesSkipped;
+    }
 }

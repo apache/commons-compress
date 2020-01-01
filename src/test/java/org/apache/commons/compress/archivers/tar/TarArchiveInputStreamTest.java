@@ -54,7 +54,7 @@ public class TarArchiveInputStreamTest {
         final TarArchiveInputStream tais = new TarArchiveInputStream(is);
         final Map<String, String> headers = tais
             .parsePaxHeaders(new ByteArrayInputStream("30 atime=1321711775.972059463\n"
-                                                      .getBytes(CharsetNames.UTF_8)));
+                                                      .getBytes(CharsetNames.UTF_8)), null);
         assertEquals(1, headers.size());
         assertEquals("1321711775.972059463", headers.get("atime"));
         tais.close();
@@ -66,7 +66,7 @@ public class TarArchiveInputStreamTest {
         final TarArchiveInputStream tais = new TarArchiveInputStream(is);
         final Map<String, String> headers = tais
             .parsePaxHeaders(new ByteArrayInputStream("11 foo=bar\n11 foo=baz\n"
-                                                      .getBytes(CharsetNames.UTF_8)));
+                                                      .getBytes(CharsetNames.UTF_8)), null);
         assertEquals(1, headers.size());
         assertEquals("baz", headers.get("foo"));
         tais.close();
@@ -78,7 +78,7 @@ public class TarArchiveInputStreamTest {
         final TarArchiveInputStream tais = new TarArchiveInputStream(is);
         final Map<String, String> headers = tais
             .parsePaxHeaders(new ByteArrayInputStream("11 foo=bar\n7 foo=\n"
-                                                      .getBytes(CharsetNames.UTF_8)));
+                                                      .getBytes(CharsetNames.UTF_8)), null);
         assertEquals(0, headers.size());
         tais.close();
     }
@@ -89,7 +89,7 @@ public class TarArchiveInputStreamTest {
         final TarArchiveInputStream tais = new TarArchiveInputStream(is);
         final Map<String, String> headers = tais
             .parsePaxHeaders(new ByteArrayInputStream("28 comment=line1\nline2\nand3\n"
-                                                      .getBytes(CharsetNames.UTF_8)));
+                                                      .getBytes(CharsetNames.UTF_8)), null);
         assertEquals(1, headers.size());
         assertEquals("line1\nline2\nand3", headers.get("comment"));
         tais.close();
@@ -103,7 +103,7 @@ public class TarArchiveInputStreamTest {
         final InputStream is = new ByteArrayInputStream(new byte[1]);
         final TarArchiveInputStream tais = new TarArchiveInputStream(is);
         final Map<String, String> headers = tais
-            .parsePaxHeaders(new ByteArrayInputStream(line.getBytes(CharsetNames.UTF_8)));
+            .parsePaxHeaders(new ByteArrayInputStream(line.getBytes(CharsetNames.UTF_8)), null);
         assertEquals(1, headers.size());
         assertEquals(ae, headers.get("path"));
         tais.close();
