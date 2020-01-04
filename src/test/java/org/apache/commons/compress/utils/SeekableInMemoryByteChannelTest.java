@@ -211,8 +211,8 @@ public class SeekableInMemoryByteChannelTest {
      * <q>If the stream is already closed then invoking this method has no effect.</q>
      */
     @Test
-    public void closeIsIdempotent() {
-        try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel()) {
+    public void closeIsIdempotent() throws Exception {
+        try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.close();
             assertFalse(c.isOpen());
             c.close();
@@ -228,7 +228,7 @@ public class SeekableInMemoryByteChannelTest {
     @Test(expected = ClosedChannelException.class)
     @Ignore("we deliberately violate the spec")
     public void throwsClosedChannelExceptionWhenPositionIsReadOnClosedChannel() throws Exception {
-        try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel()) {
+        try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.close();
             c.position();
         }
@@ -242,7 +242,7 @@ public class SeekableInMemoryByteChannelTest {
     @Test(expected = ClosedChannelException.class)
     @Ignore("we deliberately violate the spec")
     public void throwsClosedChannelExceptionWhenSizeIsReadOnClosedChannel() throws Exception {
-        try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel()) {
+        try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.close();
             c.size();
         }
@@ -255,7 +255,7 @@ public class SeekableInMemoryByteChannelTest {
      */
     @Test(expected = ClosedChannelException.class)
     public void throwsClosedChannelExceptionWhenPositionIsSetOnClosedChannel() throws Exception {
-        try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel()) {
+        try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.close();
             c.position(0);
         }
@@ -268,7 +268,7 @@ public class SeekableInMemoryByteChannelTest {
      */
     @Test
     public void readingFromAPositionAfterEndReturnsEOF() throws Exception {
-        try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel()) {
+        try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.position(2);
             assertEquals(2, c.position());
             ByteBuffer readBuffer = ByteBuffer.allocate(5);
@@ -283,7 +283,7 @@ public class SeekableInMemoryByteChannelTest {
      * unspecified.</q>
      */
     public void writingToAPositionAfterEndGrowsChannel() throws Exception {
-        try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel()) {
+        try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.position(2);
             assertEquals(2, c.position());
             ByteBuffer inData = ByteBuffer.wrap(testData);
@@ -302,7 +302,7 @@ public class SeekableInMemoryByteChannelTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void throwsIllegalArgumentExceptionWhenPositionIsSetToANegativeValue() throws Exception {
-        try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel()) {
+        try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.position(-1);
         }
     }
@@ -314,7 +314,7 @@ public class SeekableInMemoryByteChannelTest {
      */
     @Test
     public void truncateToCurrentSizeDoesntChangeAnything() throws Exception {
-        try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel(testData)) {
+        try (SeekableByteChannel c = new SeekableInMemoryByteChannel(testData)) {
             assertEquals(testData.length, c.size());
             c.truncate(testData.length);
             assertEquals(testData.length, c.size());
@@ -329,7 +329,7 @@ public class SeekableInMemoryByteChannelTest {
      */
     @Test
     public void truncateToBiggerSizeDoesntChangeAnything() throws Exception {
-        try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel(testData)) {
+        try (SeekableByteChannel c = new SeekableInMemoryByteChannel(testData)) {
             assertEquals(testData.length, c.size());
             c.truncate(testData.length + 1);
             assertEquals(testData.length, c.size());
@@ -344,7 +344,7 @@ public class SeekableInMemoryByteChannelTest {
      */
     @Test
     public void truncateDoesntChangeSmallPosition() throws Exception {
-        try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel(testData)) {
+        try (SeekableByteChannel c = new SeekableInMemoryByteChannel(testData)) {
             c.position(1);
             c.truncate(testData.length - 1);
             assertEquals(testData.length - 1, c.size());
@@ -357,7 +357,7 @@ public class SeekableInMemoryByteChannelTest {
      */
     @Test
     public void truncateMovesPositionWhenShrinkingBeyondPosition() throws Exception {
-        try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel(testData)) {
+        try (SeekableByteChannel c = new SeekableInMemoryByteChannel(testData)) {
             c.position(4);
             c.truncate(3);
             assertEquals(3, c.size());
@@ -370,7 +370,7 @@ public class SeekableInMemoryByteChannelTest {
      */
     @Test
     public void truncateMovesPositionWhenNotResizingButPositionBiggerThanSize() throws Exception {
-        try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel(testData)) {
+        try (SeekableByteChannel c = new SeekableInMemoryByteChannel(testData)) {
             c.position(2 * testData.length);
             c.truncate(testData.length);
             assertEquals(testData.length, c.size());
@@ -383,7 +383,7 @@ public class SeekableInMemoryByteChannelTest {
      */
     @Test
     public void truncateMovesPositionWhenNewSizeIsBiggerThanSizeAndPositionIsEvenBigger() throws Exception {
-        try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel(testData)) {
+        try (SeekableByteChannel c = new SeekableInMemoryByteChannel(testData)) {
             c.position(2 * testData.length);
             c.truncate(testData.length + 1);
             assertEquals(testData.length, c.size());
@@ -396,7 +396,7 @@ public class SeekableInMemoryByteChannelTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void throwsIllegalArgumentExceptionWhenTruncatingToANegativeSize() throws Exception {
-        try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel()) {
+        try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.truncate(-1);
         }
     }
@@ -407,7 +407,7 @@ public class SeekableInMemoryByteChannelTest {
     @Test(expected = ClosedChannelException.class)
     @Ignore("we deliberately violate the spec")
     public void throwsClosedChannelExceptionWhenTruncateIsCalledOnClosedChannel() throws Exception {
-        try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel()) {
+        try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.close();
             c.truncate(0);
         }
