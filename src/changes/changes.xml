@@ -82,6 +82,10 @@ The <action> type attribute can be add,update,fix,remove.
               due-to="Peter Alfred Lee">
         Added support for reading sparse entries to the TAR package.
       </action>
+      <action issue="COMPRESS-499" type="fix" date="2020-01-04">
+        SeekableInMemoryByteChannel's truncate didn't set position
+        according to the spec in an edge case.
+      </action>
     </release>
     <release version="1.19" date="2019-08-27"
              description="Release 1.19
