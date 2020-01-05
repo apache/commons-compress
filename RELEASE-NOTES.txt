@@ -114,6 +114,9 @@ o The 7zip tools provide a default name for archive entries
 Release 1.18
 ------------
 
+This release changes the OSGi Manifest entry Bundle-SymbolicName from
+org.apache.commons.compress to org.apache.commons.commons-compress.
+
 New features:
 o It is now possible to specify the arguments of zstd-jni's
   ZstdOutputStream constructors via Commons Compress as well.

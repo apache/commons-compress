@@ -214,7 +214,12 @@ when they are read via ZipArchiveInputStream or ZipFile.
       </action>
     </release>
     <release version="1.18" date="2018-08-16"
-             description="Release 1.18">
+             description="Release 1.18
+----------------------------------------
+
+This release changes the OSGi Manifest entry Bundle-SymbolicName from
+org.apache.commons.compress to org.apache.commons.commons-compress.
+">
       <action type="fix" date="2018-06-15" due-to="DidierLoiseau">
         The example Expander class has been vulnerable to a path
         traversal in the edge case that happens when the target
