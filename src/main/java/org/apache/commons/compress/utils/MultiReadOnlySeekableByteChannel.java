@@ -117,6 +117,13 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
         return true;
     }
 
+    /**
+     * Returns this channel's position.
+     *
+     * <p>This method violates the contract of {@link SeekableByteChannel#position()} as it will not throw any exception
+     * when invoked on a closed channel. Instead it will return the position the channel had when close has been
+     * called.</p>
+     */
     @Override
     public long position() {
         return globalPosition;
@@ -131,6 +138,9 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
      * @throws IOException
      */
     public synchronized SeekableByteChannel position(long channelNumber, long relativeOffset) throws IOException {
+        if (!isOpen()) {
+            throw new ClosedChannelException();
+        }
         long globalPosition = relativeOffset;
         for (int i = 0; i < channelNumber; i++) {
             globalPosition += channels.get(i).size();
@@ -141,6 +151,9 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
 
     @Override
     public long size() throws IOException {
+        if (!isOpen()) {
+            throw new ClosedChannelException();
+        }
         long acc = 0;
         for (SeekableByteChannel ch : channels) {
             acc += ch.size();

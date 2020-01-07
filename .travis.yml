@@ -38,8 +38,8 @@ matrix:
       jdk: openjdk12
     - dist: trusty
       jdk: openjdk13
-    - dist: trusty
-      jdk: openjdk-ea
+#    - dist: trusty
+#      jdk: openjdk-ea
 
 cache:
   directories:

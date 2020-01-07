@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -291,4 +292,96 @@ public class MultiReadOnlySeekableByteChannelTest {
             return this;
         }
     }
+
+    // Contract Tests added in response to https://issues.apache.org/jira/browse/COMPRESS-499
+
+    private SeekableByteChannel testChannel() {
+        return MultiReadOnlySeekableByteChannel
+            .forSeekableByteChannels(makeEmpty(), makeEmpty());
+    }
+
+    // https://docs.oracle.com/javase/7/docs/api/java/io/Closeable.html#close()
+
+    /*
+     * <q>If the stream is already closed then invoking this method has no effect.</q>
+     */
+    @Test
+    public void closeIsIdempotent() throws Exception {
+        try (SeekableByteChannel c = testChannel()) {
+            c.close();
+            Assert.assertFalse(c.isOpen());
+            c.close();
+            Assert.assertFalse(c.isOpen());
+        }
+    }
+
+    // https://docs.oracle.com/javase/7/docs/api/java/nio/channels/SeekableByteChannel.html#position()
+
+    /*
+     * <q>ClosedChannelException - If this channel is closed</q>
+     */
+    @Test
+    @Ignore("we deliberately violate the spec")
+    public void throwsClosedChannelExceptionWhenPositionIsReadOnClosedChannel() throws Exception {
+        thrown.expect(ClosedChannelException.class);
+        try (SeekableByteChannel c = testChannel()) {
+            c.close();
+            c.position();
+        }
+    }
+
+    // https://docs.oracle.com/javase/7/docs/api/java/nio/channels/SeekableByteChannel.html#size()
+
+    /*
+     * <q>ClosedChannelException - If this channel is closed</q>
+     */
+    @Test
+    public void throwsClosedChannelExceptionWhenSizeIsReadOnClosedChannel() throws Exception {
+        thrown.expect(ClosedChannelException.class);
+        try (SeekableByteChannel c = testChannel()) {
+            c.close();
+            c.size();
+        }
+    }
+
+    // https://docs.oracle.com/javase/7/docs/api/java/nio/channels/SeekableByteChannel.html#position(long)
+
+    /*
+     * <q>ClosedChannelException - If this channel is closed</q>
+     */
+    @Test
+    public void throwsClosedChannelExceptionWhenPositionIsSetOnClosedChannel() throws Exception {
+        thrown.expect(ClosedChannelException.class);
+        try (SeekableByteChannel c = testChannel()) {
+            c.close();
+            c.position(0);
+        }
+    }
+
+    /*
+     * <q>Setting the position to a value that is greater than the current size is legal but does not change the size of
+     * the entity. A later attempt to read bytes at such a position will immediately return an end-of-file
+     * indication</q>
+     */
+    @Test
+    public void readingFromAPositionAfterEndReturnsEOF() throws Exception {
+        try (SeekableByteChannel c = testChannel()) {
+            c.position(2);
+            Assert.assertEquals(2, c.position());
+            ByteBuffer readBuffer = ByteBuffer.allocate(5);
+            Assert.assertEquals(-1, c.read(readBuffer));
+        }
+    }
+
+    /*
+     * <q>IllegalArgumentException - If the new position is negative</q>
+     */
+    @Test
+    public void throwsIllegalArgumentExceptionWhenPositionIsSetToANegativeValue() throws Exception {
+        thrown.expect(IllegalArgumentException.class);
+        try (SeekableByteChannel c = testChannel()) {
+            c.position(-1);
+        }
+    }
+
 }
