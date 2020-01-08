@@ -671,7 +671,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * GNU.sparse.map
      *    Map of non-null data chunks. It is a string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
      *
-     * @param i                 inputstream to read keys and values
+     * @param inputStream   inputstream to read keys and values
      * @param sparseHeaders used in PAX Format 0.0 &amp; 0.1, as it may appear multi times,
      *                      the sparse headers need to be stored in an array, not a map
      * @return
@@ -680,7 +680,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     Map<String, String> parsePaxHeaders(final InputStream inputStream, List<TarArchiveStructSparse> sparseHeaders)
         throws IOException {
         final Map<String, String> headers = new HashMap<>(globalPaxHeaders);
-        TarArchiveStructSparse sparseHeader = null;
+        Long offset = null;
         // Format is "length keyword=value\n";
         while(true) { // get length
             int ch;
@@ -718,18 +718,18 @@ public class TarArchiveInputStream extends ArchiveInputStream {
 
                                 // for 0.0 PAX Headers
                                 if(keyword.equals("GNU.sparse.offset")) {
-                                    sparseHeader = new TarArchiveStructSparse(Long.parseLong(value), 0);
-                                    sparseHeaders.add(sparseHeader);
+                                    offset = Long.parseLong(value);
                                 }
 
                                 // for 0.0 PAX Headers
                                 if(keyword.equals("GNU.sparse.numbytes")) {
-                                    if(sparseHeader == null) {
+                                    if(offset == null) {
                                         throw new IOException("Failed to read Paxheader." +
                                                 "GNU.sparse.offset is expected before GNU.sparse.numbytes show up.");
                                     }
 
-                                    sparseHeader.setNumbytes(Long.parseLong(value));
+                                    Long numbytes = Long.parseLong(value);
+                                    sparseHeaders.add(new TarArchiveStructSparse(offset, numbytes));
                                 }
                             }
                             break;

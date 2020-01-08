@@ -68,15 +68,7 @@ public class TarArchiveStructSparse {
         return offset;
     }
 
-    public void setOffset(long offset) {
-        this.offset = offset;
-    }
-
     public long getNumbytes() {
         return numbytes;
-    }
-
-    public void setNumbytes(long numbytes) {
-        this.numbytes = numbytes;
     }
 }
