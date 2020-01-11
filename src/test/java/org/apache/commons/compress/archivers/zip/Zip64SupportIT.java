@@ -362,6 +362,10 @@ public class Zip64SupportIT {
         return write3EntriesCreatingBigArchive(Zip64Mode.AsNeeded);
     }
 
+    private static ZipOutputTest write3EntriesCreatingBigArchive(final Zip64Mode mode) {
+        return write3EntriesCreatingBigArchive(mode, false);
+    }
+
     /*
      * Individual sizes don't require ZIP64 but the offset of the
      * third entry is bigger than 0xFFFFFFFF so a ZIP64 extended
@@ -370,7 +374,7 @@ public class Zip64SupportIT {
      * Creates a temporary archive of approx 5GB in size
      */
     private static ZipOutputTest
-        write3EntriesCreatingBigArchive(final Zip64Mode mode) {
+        write3EntriesCreatingBigArchive(final Zip64Mode mode, final boolean isSplitArchive) {
         return new ZipOutputTest() {
             @Override
             public void test(final File f, final ZipArchiveOutputStream zos)
@@ -386,7 +390,7 @@ public class Zip64SupportIT {
                     a.skipBytes(2 * 47 /* CD entry of file with
                                           file name length 1 and no
                                           extra data */
-                                    + 2 * (mode == Zip64Mode.Always ? 28 : 0)
+                                    + 2 * (mode == Zip64Mode.Always ? 32 : 0)
                                 /* ZIP64 extra fields if mode is Always */
                     );
 
@@ -427,11 +431,11 @@ public class Zip64SupportIT {
                             // file name length
                             1, 0,
                             // extra field length
-                            (byte) (mode == Zip64Mode.Always? 28 : 12), 0,
+                            (byte) (mode == Zip64Mode.Always? 32 : 12), 0,
                             // comment length
                             0, 0,
                             // disk number
-                            0, 0,
+                            (byte) (isSplitArchive? 0xFF : 0), (byte) (isSplitArchive? 0xFF : 0),
                             // attributes
                             0, 0,
                             0, 0, 0, 0,
@@ -448,7 +452,7 @@ public class Zip64SupportIT {
                                 // Header-ID
                                 1, 0,
                                 // size
-                                24, 0,
+                                28, 0,
                                 // Original Size
                                 1, 0, 0, 0, 0, 0, 0, 0,
                             }, extra);
@@ -645,7 +649,7 @@ public class Zip64SupportIT {
                             // file name length
                             1, 0,
                             // extra field length
-                            (byte) (mode == Zip64Mode.Always? 28 : 20), 0,
+                            (byte) (mode == Zip64Mode.Always? 32 : 20), 0,
                             // comment length
                             0, 0,
                             // disk number
@@ -673,7 +677,7 @@ public class Zip64SupportIT {
                             // Header-ID
                             1, 0,
                             // size of extra
-                            (byte) (mode == Zip64Mode.Always? 24 : 16), 0,
+                            (byte) (mode == Zip64Mode.Always? 28 : 16), 0,
                             // original size
                             0, (byte) 0xF2, 5, (byte) 0x2A,
                             1, 0, 0, 0,
@@ -899,7 +903,7 @@ public class Zip64SupportIT {
                             // file name length
                             1, 0,
                             // extra field length
-                            (byte) (mode == Zip64Mode.Always? 28 : 20), 0,
+                            (byte) (mode == Zip64Mode.Always? 32 : 20), 0,
                             // comment length
                             0, 0,
                             // disk number
@@ -927,7 +931,7 @@ public class Zip64SupportIT {
                             // Header-ID
                             1, 0,
                             // size of extra
-                            (byte) (mode == Zip64Mode.Always? 24 : 16), 0,
+                            (byte) (mode == Zip64Mode.Always? 28 : 16), 0,
                             // original size
                             0, (byte) 0xF2, 5, (byte) 0x2A,
                             1, 0, 0, 0,
@@ -1153,7 +1157,7 @@ public class Zip64SupportIT {
                             // file name length
                             1, 0,
                             // extra field length
-                            (byte) (mode == Zip64Mode.Always? 28 : 20), 0,
+                            (byte) (mode == Zip64Mode.Always? 32 : 20), 0,
                             // comment length
                             0, 0,
                             // disk number
@@ -1181,7 +1185,7 @@ public class Zip64SupportIT {
                             // Header-ID
                             1, 0,
                             // size of extra
-                            (byte) (mode == Zip64Mode.Always? 24 : 16), 0,
+                            (byte) (mode == Zip64Mode.Always? 28 : 16), 0,
                             // original size
                             0, (byte) 0xF2, 5, (byte) 0x2A,
                             1, 0, 0, 0,
@@ -1594,7 +1598,7 @@ public class Zip64SupportIT {
                             // file name length
                             1, 0,
                             // extra field length
-                            28, 0,
+                            32, 0,
                             // comment length
                             0, 0,
                             // disk number
@@ -1614,7 +1618,7 @@ public class Zip64SupportIT {
                             // Header-ID
                             1, 0,
                             // size of extra
-                            24, 0,
+                            28, 0,
                             // original size
                             (byte) 0x40, (byte) 0x42, (byte) 0x0F, 0,
                             0, 0, 0, 0,
@@ -1935,7 +1939,7 @@ public class Zip64SupportIT {
                             // file name length
                             1, 0,
                             // extra field length
-                            28, 0,
+                            32, 0,
                             // comment length
                             0, 0,
                             // disk number
@@ -1954,7 +1958,7 @@ public class Zip64SupportIT {
                             // Header-ID
                             1, 0,
                             // size of extra
-                            24, 0,
+                            28, 0,
                             // original size
                             (byte) 0x40, (byte) 0x42, (byte) 0x0F, 0,
                             0, 0, 0, 0,
@@ -2294,7 +2298,7 @@ public class Zip64SupportIT {
                             // file name length
                             1, 0,
                             // extra field length
-                            28, 0,
+                            32, 0,
                             // comment length
                             0, 0,
                             // disk number
@@ -2313,7 +2317,7 @@ public class Zip64SupportIT {
                             // Header-ID
                             1, 0,
                             // size of extra
-                            24, 0,
+                            28, 0,
                             // original size
                             (byte) 0x40, (byte) 0x42, (byte) 0x0F, 0,
                             0, 0, 0, 0,
@@ -2398,19 +2402,56 @@ public class Zip64SupportIT {
                              true);
     }
 
+    @Test
+    public void write3EntriesCreatingManySplitArchiveFileModeNever()
+            throws Throwable {
+        withTemporaryArchive("write3EntriesCreatingManySplitArchiveFileModeNever",
+                write3EntriesCreatingBigArchiveModeNever,
+                true, 65536L);
+    }
+
+    @Test
+    public void write3EntriesCreatingManySplitArchiveFileModeAlways()
+            throws Throwable {
+        // about 76,293 zip split segments will be created
+        withTemporaryArchive("write3EntriesCreatingManySplitArchiveFileModeAlways",
+                write3EntriesCreatingBigArchive(Zip64Mode.Always, true),
+                true, 65536L);
+    }
+
     static interface ZipOutputTest {
         void test(File f, ZipArchiveOutputStream zos) throws IOException;
     }
 
     private static void withTemporaryArchive(final String testName,
                                              final ZipOutputTest test,
-                                             final boolean useRandomAccessFile)
+                                             final boolean useRandomAccessFile) throws Throwable {
+        withTemporaryArchive(testName, test, useRandomAccessFile, null);
+    }
+
+    private static void withTemporaryArchive(final String testName,
+                                             final ZipOutputTest test,
+                                             final boolean useRandomAccessFile,
+                                             final Long splitSize)
         throws Throwable {
-        final File f = getTempFile(testName);
+        File f = getTempFile(testName);
+        File dir = null;
+        if (splitSize != null) {
+            dir = File.createTempFile("commons-compress-" + testName, "");
+            dir.delete();
+            dir.mkdir();
+            dir.deleteOnExit();
+
+            f = new File(dir, "commons-compress-" + testName + ".zip");
+        }
         BufferedOutputStream os = null;
-        final ZipArchiveOutputStream zos = useRandomAccessFile
+        ZipArchiveOutputStream zos = useRandomAccessFile
             ? new ZipArchiveOutputStream(f)
             : new ZipArchiveOutputStream(os = new BufferedOutputStream(new FileOutputStream(f)));
+        if (splitSize != null) {
+            zos = new ZipArchiveOutputStream(f, splitSize);
+        }
+
         try {
             test.test(f, zos);
         } catch (final IOException ex) {
@@ -2421,6 +2462,12 @@ public class Zip64SupportIT {
         } finally {
             try {
                 zos.destroy();
+                if (dir != null) {
+                    for (File file : dir.listFiles()) {
+                        file.delete();
+                    }
+                    dir.delete();
+                }
             } finally {
                 if (os != null) {
                     os.close();
