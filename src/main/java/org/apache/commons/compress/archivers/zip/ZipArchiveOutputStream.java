@@ -1297,6 +1297,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                 || ze.getCompressedSize() >= ZIP64_MAGIC
                 || ze.getSize() >= ZIP64_MAGIC
                 || entryMetaData.offset >= ZIP64_MAGIC
+                || ze.getDiskNumberStart() >= ZIP64_MAGIC_SHORT
                 || zip64Mode == Zip64Mode.Always;
 
         if (needsZip64Extra && zip64Mode == Zip64Mode.Never) {
@@ -1392,7 +1393,11 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
         // disk number start
         if(isSplitZip) {
-            putShort((int) ze.getDiskNumberStart(), buf, CFH_DISK_NUMBER_OFFSET);
+            if (ze.getDiskNumberStart() >= ZIP64_MAGIC_SHORT || zip64Mode == Zip64Mode.Always) {
+                putShort(ZIP64_MAGIC_SHORT, buf, CFH_DISK_NUMBER_OFFSET);
+            } else {
+                putShort((int) ze.getDiskNumberStart(), buf, CFH_DISK_NUMBER_OFFSET);
+            }
         } else {
             System.arraycopy(ZERO, 0, buf, CFH_DISK_NUMBER_OFFSET, SHORT);
         }
@@ -1444,6 +1449,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             if (lfhOffset >= ZIP64_MAGIC || zip64Mode == Zip64Mode.Always) {
                 z64.setRelativeHeaderOffset(new ZipEightByteInteger(lfhOffset));
             }
+            if (ze.getDiskNumberStart() >= ZIP64_MAGIC_SHORT || zip64Mode == Zip64Mode.Always) {
+                z64.setDiskStartNumber(new ZipLong(ze.getDiskNumberStart()));
+            }
             ze.setExtra();
         }
     }
@@ -1460,6 +1468,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             ((ZipSplitOutputStream)this.out).prepareToWriteUnsplittableContent(eocdLength);
         }
 
+        validateIfZip64IsNeededInEOCD();
+
         writeCounted(EOCD_SIG);
 
         // number of this disk
@@ -1474,15 +1484,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
         // number of entries
         final int numberOfEntries = entries.size();
-        if (numberOfEntries > ZIP64_MAGIC_SHORT
-            && zip64Mode == Zip64Mode.Never) {
-            throw new Zip64RequiredException(Zip64RequiredException
-                                             .TOO_MANY_ENTRIES_MESSAGE);
-        }
-        if (cdOffset > ZIP64_MAGIC && zip64Mode == Zip64Mode.Never) {
-            throw new Zip64RequiredException(Zip64RequiredException
-                                             .ARCHIVE_TOO_BIG_MESSAGE);
-        }
 
         // total number of entries in the central directory on this disk
         int numOfEntriesOnThisDisk = isSplitZip
@@ -1509,6 +1510,54 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
+     * If the Zip64 mode is set to never, then all the data in End Of Central Directory
+     * should not exceed their limits.
+     * @throws Zip64RequiredException if Zip64 is actually needed
+     */
+    private void validateIfZip64IsNeededInEOCD() throws Zip64RequiredException {
+        // exception will only be thrown if the Zip64 mode is never while Zip64 is actually needed
+        if (zip64Mode != Zip64Mode.Never) {
+            return;
+        }
+
+        long numberOfThisDisk = 0;
+        if (isSplitZip) {
+            numberOfThisDisk = ((ZipSplitOutputStream)this.out).getCurrentSplitSegmentIndex();
+        }
+        if (numberOfThisDisk >= ZIP64_MAGIC_SHORT) {
+            throw new Zip64RequiredException(Zip64RequiredException
+                    .NUMBER_OF_THIS_DISK_TOO_BIG_MESSAGE);
+        }
+
+        if (cdDiskNumberStart >= ZIP64_MAGIC_SHORT) {
+            throw new Zip64RequiredException(Zip64RequiredException
+                    .NUMBER_OF_THE_DISK_OF_CENTRAL_DIRECTORY_TOO_BIG_MESSAGE);
+        }
+
+        final int numOfEntriesOnThisDisk = numberOfCDInDiskData.get(numberOfThisDisk) == null ? 0 : numberOfCDInDiskData.get(numberOfThisDisk);
+        if (numOfEntriesOnThisDisk >= ZIP64_MAGIC_SHORT) {
+            throw new Zip64RequiredException(Zip64RequiredException
+                    .TOO_MANY_ENTRIES_ON_THIS_DISK_MESSAGE);
+        }
+
+        // number of entries
+        if (entries.size() >= ZIP64_MAGIC_SHORT) {
+            throw new Zip64RequiredException(Zip64RequiredException
+                    .TOO_MANY_ENTRIES_MESSAGE);
+        }
+
+        if (cdLength >= ZIP64_MAGIC) {
+            throw new Zip64RequiredException(Zip64RequiredException
+                    .SIZE_OF_CENTRAL_DIRECTORY_TOO_BIG_MESSAGE);
+        }
+
+        if (cdOffset >= ZIP64_MAGIC) {
+            throw new Zip64RequiredException(Zip64RequiredException
+                    .ARCHIVE_TOO_BIG_MESSAGE);
+        }
+    }
+
+    /**
      * Writes the &quot;ZIP64 End of central dir record&quot; and
      * &quot;ZIP64 End of central dir locator&quot;.
      * @throws IOException on error
@@ -1519,9 +1568,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             return;
         }
 
-        if (!hasUsedZip64
-            && (cdOffset >= ZIP64_MAGIC || cdLength >= ZIP64_MAGIC
-                || entries.size() >= ZIP64_MAGIC_SHORT)) {
+        if (!hasUsedZip64 && shouldUseZip64EOCD()) {
             // actually "will use"
             hasUsedZip64 = true;
         }
@@ -1614,6 +1661,28 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         } else {
             writeOut(ONE);
         }
+    }
+
+    /**
+     * 4.4.1.4  If one of the fields in the end of central directory
+     * record is too small to hold required data, the field SHOULD be
+     * set to -1 (0xFFFF or 0xFFFFFFFF) and the ZIP64 format record
+     * SHOULD be created.
+     * @return true if zip64 End Of Central Directory is needed
+     */
+    private boolean shouldUseZip64EOCD() {
+        int numberOfThisDisk = 0;
+        if(isSplitZip) {
+            numberOfThisDisk = ((ZipSplitOutputStream)this.out).getCurrentSplitSegmentIndex();
+        }
+        int numOfEntriesOnThisDisk = numberOfCDInDiskData.get(numberOfThisDisk) == null ? 0 : numberOfCDInDiskData.get(numberOfThisDisk);
+        return numberOfThisDisk >= ZIP64_MAGIC_SHORT            /* number of this disk */
+                || cdDiskNumberStart >= ZIP64_MAGIC_SHORT       /* number of the disk with the start of the central directory */
+                || numOfEntriesOnThisDisk >= ZIP64_MAGIC_SHORT  /* total number of entries in the central directory on this disk */
+                || entries.size() >= ZIP64_MAGIC_SHORT          /* total number of entries in the central directory */
+                || cdLength >= ZIP64_MAGIC                      /* size of the central directory */
+                || cdOffset >= ZIP64_MAGIC;                     /* offset of start of central directory with respect to
+                                                                the starting disk number */
     }
 
     /**
