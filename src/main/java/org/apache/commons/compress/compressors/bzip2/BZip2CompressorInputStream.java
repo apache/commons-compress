@@ -494,7 +494,10 @@ public class BZip2CompressorInputStream extends CompressorInputStream
         final int alphaSize = this.nInUse + 2;
         /* Now the selectors */
         final int nGroups = bsR(bin, 3);
-        int nSelectors = bsR(bin, 15);
+        final int selectors = bsR(bin, 15);
+        if (selectors < 0) {
+            throw new IOException("Corrupted input, nSelectors value negative");
+        }
         checkBounds(alphaSize, MAX_ALPHA_SIZE + 1, "alphaSize");
         checkBounds(nGroups, N_GROUPS + 1, "nGroups");
 
@@ -502,17 +505,16 @@ public class BZip2CompressorInputStream extends CompressorInputStream
         // See https://gnu.wildebeest.org/blog/mjw/2019/08/02/bzip2-and-the-cve-that-wasnt/
         // and https://sourceware.org/ml/bzip2-devel/2019-q3/msg00007.html
 
-        for (int i = 0; i < nSelectors; i++) {
+        for (int i = 0; i < selectors; i++) {
             int j = 0;
             while (bsGetBit(bin)) {
                 j++;
             }
-            if (i < MAX_SELECTORS)
+            if (i < MAX_SELECTORS) {
                 selectorMtf[i] = (byte) j;
+            }
         }
-        if (nSelectors > MAX_SELECTORS) {
-            nSelectors = MAX_SELECTORS;
-        }
+        final int nSelectors = selectors > MAX_SELECTORS ? MAX_SELECTORS : selectors;
 
         /* Undo the MTF values for the selectors. */
         for (int v = nGroups; --v >= 0;) {
