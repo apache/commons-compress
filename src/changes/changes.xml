@@ -86,6 +86,15 @@ The <action> type attribute can be add,update,fix,remove.
         SeekableInMemoryByteChannel's truncate didn't set position
         according to the spec in an edge case.
       </action>
+      <action type="fix" due-to="Joseph Allemandou" date="2020-01-21">
+        BZip2CompressorInputStream now incorporates a similar patch as
+        the one that fixed CVE-2019-12900 in libbzip2.
+
+        Commons Compress has not been vulnerable to this CVE as it
+        would have rejected a file with too many selectors. With this
+        patch Commons Compress will be able to read certain archives
+        that would have caused errors in Compress 1.19.
+      </action>
     </release>
     <release version="1.19" date="2019-08-27"
              description="Release 1.19
