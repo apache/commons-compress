@@ -35,6 +35,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.nio.file.Files;
 import java.util.Enumeration;
 import java.util.Random;
 import java.util.zip.ZipEntry;
@@ -2437,9 +2438,7 @@ public class Zip64SupportIT {
         File f = getTempFile(testName);
         File dir = null;
         if (splitSize != null) {
-            dir = File.createTempFile("commons-compress-" + testName, "");
-            dir.delete();
-            dir.mkdir();
+            dir = Files.createTempDirectory("commons-compress-" + testName).toFile();
             dir.deleteOnExit();
 
             f = new File(dir, "commons-compress-" + testName + ".zip");
@@ -2462,17 +2461,17 @@ public class Zip64SupportIT {
         } finally {
             try {
                 zos.destroy();
-                if (dir != null) {
-                    for (File file : dir.listFiles()) {
-                        file.delete();
-                    }
-                    dir.delete();
-                }
             } finally {
-                if (os != null) {
-                    os.close();
+                try {
+                    if (os != null) {
+                        os.close();
+                    }
+                    AbstractTestCase.tryHardToDelete(f);
+                } finally {
+                    if (dir != null) {
+                        AbstractTestCase.rmdir(dir);
+                    }
                 }
-                AbstractTestCase.tryHardToDelete(f);
             }
         }
     }
