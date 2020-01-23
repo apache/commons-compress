@@ -46,7 +46,8 @@ public class MultiReadOnlySeekableByteChannelTest {
     @Test
     public void constructorThrowsOnNullArg() {
         thrown.expect(NullPointerException.class);
-        new MultiReadOnlySeekableByteChannel(null);
+        List nullList = null;
+        new MultiReadOnlySeekableByteChannel(nullList);
     }
 
     @Test

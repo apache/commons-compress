@@ -45,8 +45,13 @@ import java.util.Objects;
 public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
 
     private final List<SeekableByteChannel> channels;
+    private SeekableByteChannel currentChannel;
+    private final List<File> files;
     private long globalPosition;
     private int currentChannelIdx;
+    private final int channelsSize;
+    private final boolean openChannelOnNeed;
+    private final int OPEN_CHANNEL_ON_NEED_FILES_NUM_THRESHOLD = 100;
 
     /**
      * Concatenates the given channels.
@@ -55,8 +60,49 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
      * @throws NullPointerException if channels is null
      */
     public MultiReadOnlySeekableByteChannel(List<SeekableByteChannel> channels) {
+        this.openChannelOnNeed = false;
+        this.channelsSize = channels.size();
         this.channels = Collections.unmodifiableList(new ArrayList<>(
             Objects.requireNonNull(channels, "channels must not be null")));
+        this.files = null;
+    }
+
+    /**
+     * Concatenates the given files.
+     * If the number of files is greater than the
+     * OPEN_CHANNEL_ON_NEED_FILES_NUM_THRESHOLD, the files will
+     * ONLY be used when it's NEEDED to be read. In this case,
+     * we do not use channels to store all the channels, as
+     * they are opened one by one. Instead, we store all the files
+     * and only open one of them when it's actually needed.
+     *
+     * @param files the files to concatenate
+     * @throws NullPointerException if files is null
+     * @throws IOException if failed opening the file
+     */
+    public MultiReadOnlySeekableByteChannel(File... files) throws IOException {
+        // check if files is null
+        Objects.requireNonNull(files, "files must not be null");
+        channelsSize = files.length;
+        if (files.length > OPEN_CHANNEL_ON_NEED_FILES_NUM_THRESHOLD) {
+            // If the number of files is too large, we should open channels when actually needed.
+            // In this case, we do not use channels to store all the channels, as they are opened one by one.
+            // Instead, we store all the files and only open one of them when it's actually needed
+            openChannelOnNeed = true;
+            this.files = new ArrayList<>();
+            this.files.addAll(Arrays.asList(files));
+            this.channels = null;
+            currentChannelIdx = 0;
+            currentChannel = Files.newByteChannel(this.files.get(currentChannelIdx).toPath(), StandardOpenOption.READ);
+        } else {
+            openChannelOnNeed = false;
+            this.files = null;
+            List<SeekableByteChannel> channels = new ArrayList<>();
+            for (File f : files) {
+                channels.add(Files.newByteChannel(f.toPath(), StandardOpenOption.READ));
+            }
+            this.channels = channels;
+        }
     }
 
     @Override
@@ -69,17 +115,33 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
         }
 
         int totalBytesRead = 0;
-        while (dst.hasRemaining() && currentChannelIdx < channels.size()) {
-            final SeekableByteChannel currentChannel = channels.get(currentChannelIdx);
+        while (dst.hasRemaining() && currentChannelIdx < channelsSize) {
+            final SeekableByteChannel currentChannel = getCurrentChannel();
             final int newBytesRead = currentChannel.read(dst);
             if (newBytesRead == -1) {
                 // EOF for this channel -- advance to next channel idx
                 currentChannelIdx += 1;
+                if (openChannelOnNeed) {
+                    // close current channel and open another channel
+                    this.currentChannel.close();
+                    this.currentChannel = null;
+                    if (currentChannelIdx < channelsSize) {
+                        this.currentChannel = Files.newByteChannel(this.files.get(currentChannelIdx).toPath(), StandardOpenOption.READ);
+                    }
+                }
                 continue;
             }
             if (currentChannel.position() >= currentChannel.size()) {
                 // we are at the end of the current channel
                 currentChannelIdx++;
+                if (openChannelOnNeed) {
+                    // close current channel and open another channel
+                    this.currentChannel.close();
+                    this.currentChannel = null;
+                    if (currentChannelIdx < channelsSize) {
+                        this.currentChannel = Files.newByteChannel(this.files.get(currentChannelIdx).toPath(), StandardOpenOption.READ);
+                    }
+                }
             }
             totalBytesRead += newBytesRead;
         }
@@ -93,6 +155,23 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
     @Override
     public void close() throws IOException {
         IOException first = null;
+
+        if (openChannelOnNeed) {
+            try {
+                getCurrentChannel().close();
+            } catch (IOException ex) {
+                if (first == null) {
+                    first = ex;
+                }
+            }
+
+            if (first != null) {
+                throw new IOException("failed to close wrapped channel", first);
+            }
+
+            return;
+        }
+
         for (SeekableByteChannel ch : channels) {
             try {
                 ch.close();
@@ -109,6 +188,13 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
 
     @Override
     public boolean isOpen() {
+        if (openChannelOnNeed) {
+            if (!getCurrentChannel().isOpen()) {
+                return false;
+            }
+            return true;
+        }
+
         for (SeekableByteChannel ch : channels) {
             if (!ch.isOpen()) {
                 return false;
@@ -143,7 +229,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
         }
         long globalPosition = relativeOffset;
         for (int i = 0; i < channelNumber; i++) {
-            globalPosition += channels.get(i).size();
+            globalPosition += openChannelOnNeed ? files.get(i).length() : channels.get(i).size();
         }
 
         return position(globalPosition);
@@ -155,8 +241,8 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
             throw new ClosedChannelException();
         }
         long acc = 0;
-        for (SeekableByteChannel ch : channels) {
-            acc += ch.size();
+        for (int i = 0;i < channelsSize;i++) {
+            acc += openChannelOnNeed ? files.get(i).length() : channels.get(i).size();
         }
         return acc;
     }
@@ -189,6 +275,35 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
         globalPosition = newPosition;
 
         long pos = newPosition;
+
+        if (openChannelOnNeed) {
+            long currentChannelNewPos = 0;
+            for (int i = 0;i < channelsSize;i++) {
+                final long size = this.files.get(i).length();
+                if (pos <= size) {
+                    // This channel is where we want to be
+                    currentChannelIdx = i;
+                    currentChannelNewPos = pos;
+                    pos -= size;
+                    break;
+                }
+
+                pos -= size;
+            }
+
+            // if the newPosition is greater than all the files size,
+            // then we should open the last file and position to
+            // the end of it
+            if (pos > 0) {
+                currentChannelIdx = channelsSize - 1;
+                currentChannelNewPos = this.files.get(currentChannelIdx).length();
+            }
+
+            // close the old channel and open the new channel
+            currentChannel.close();
+            currentChannel = Files.newByteChannel(this.files.get(currentChannelIdx).toPath(), StandardOpenOption.READ);
+            currentChannel.position(currentChannelNewPos);
+        }
 
         for (int i = 0; i < channels.size(); i++) {
             final SeekableByteChannel currentChannel = channels.get(i);
@@ -241,14 +356,20 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
      * @return SeekableByteChannel that concatenates all provided files
      */
     public static SeekableByteChannel forFiles(File... files) throws IOException {
-        List<SeekableByteChannel> channels = new ArrayList<>();
-        for (File f : Objects.requireNonNull(files, "files must not be null")) {
-            channels.add(Files.newByteChannel(f.toPath(), StandardOpenOption.READ));
+        Objects.requireNonNull(files, "files must not be null");
+
+        if (files.length == 1) {
+            return Files.newByteChannel(files[0].toPath(), StandardOpenOption.READ);
         }
-        if (channels.size() == 1) {
-            return channels.get(0);
-        }
-        return new MultiReadOnlySeekableByteChannel(channels);
+
+        return new MultiReadOnlySeekableByteChannel(files);
     }
 
+    private SeekableByteChannel getCurrentChannel() {
+        if (!openChannelOnNeed) {
+            return channels.get(currentChannelIdx);
+        }
+
+        return currentChannel;
+    }
 }

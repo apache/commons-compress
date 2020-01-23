@@ -42,7 +42,8 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
     @Test
     public void constructorThrowsOnNullArg() throws IOException {
         thrown.expect(NullPointerException.class);
-        new ZipSplitReadOnlySeekableByteChannel(null);
+        List nullList = null;
+        new ZipSplitReadOnlySeekableByteChannel(nullList);
     }
 
     @Test

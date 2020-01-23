@@ -53,7 +53,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * Concatenates the given channels.
      *
      * <p>The channels should be add in ascending order, e.g. z01,
-     * z02, ... z99, zip please note that the .zip file is the last
+     * z02, ... z99, zip. Please note that the .zip file is the last
      * segment and should be added as the last one in the channels</p>
      *
      * @param channels the channels to concatenate
@@ -66,7 +66,29 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
         super(channels);
 
         // the first split zip segment should begin with zip split signature
-        assertSplitSignature(channels);
+        assertSplitSignature(channels.get(0));
+    }
+
+    /**
+     * Concatenates the given files.
+     *
+     * <p>The files should be add in ascending order, e.g. z01,
+     * z02, ... z99, zip. Please note that the .zip file is the last
+     * segment and should be added as the last one in the channels</p>
+     *
+     * @param files the files to concatenate
+     * @throws NullPointerException if channels is null
+     * @throws IOException if the first channel doesn't seem to hold
+     * the beginning of a split archive
+     */
+    public ZipSplitReadOnlySeekableByteChannel(File... files)
+            throws IOException {
+        super(files);
+
+        // the first split zip segment should begin with zip split signature
+        SeekableByteChannel firstChannel = Files.newByteChannel(files[0].toPath(), StandardOpenOption.READ);
+        assertSplitSignature(firstChannel);
+        firstChannel.close();
     }
 
     /**
@@ -84,24 +106,23 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * <p>
      * the first 4 bytes of the first zip split segment should be the zip split signature(0x08074B50)
      *
-     * @param channels channels to be valided
+     * @param firstChannel channels to be valided
      * @throws IOException
      */
-    private void assertSplitSignature(final List<SeekableByteChannel> channels)
+    private void assertSplitSignature(final SeekableByteChannel firstChannel)
         throws IOException {
-        SeekableByteChannel channel = channels.get(0);
         // the zip split file signature is at the beginning of the first split segment
-        channel.position(0L);
+        firstChannel.position(0L);
 
         zipSplitSignatureByteBuffer.rewind();
-        channel.read(zipSplitSignatureByteBuffer);
+        firstChannel.read(zipSplitSignatureByteBuffer);
         final ZipLong signature = new ZipLong(zipSplitSignatureByteBuffer.array());
         if (!signature.equals(ZipLong.DD_SIG)) {
-            channel.position(0L);
+            firstChannel.position(0L);
             throw new IOException("The first zip split segment does not begin with split zip file signature");
         }
 
-        channel.position(0L);
+        firstChannel.position(0L);
     }
 
     /**
@@ -190,14 +211,11 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * the beginning of a split archive
      */
     public static SeekableByteChannel forFiles(File... files) throws IOException {
-        List<SeekableByteChannel> channels = new ArrayList<>();
-        for (File f : Objects.requireNonNull(files, "files must not be null")) {
-            channels.add(Files.newByteChannel(f.toPath(), StandardOpenOption.READ));
+        Objects.requireNonNull(files, "files must not be null");
+        if (files.length == 1) {
+            return Files.newByteChannel(files[0].toPath(), StandardOpenOption.READ);
         }
-        if (channels.size() == 1) {
-            return channels.get(0);
-        }
-        return new ZipSplitReadOnlySeekableByteChannel(channels);
+        return new ZipSplitReadOnlySeekableByteChannel(files);
     }
 
     /**

@@ -35,12 +35,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.nio.channels.Channels;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.util.Enumeration;
 import java.util.Random;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.junit.Test;
 
 public class Zip64SupportIT {
@@ -480,6 +483,24 @@ public class Zip64SupportIT {
                     assertArrayEquals("LFH signature", new byte[] {
                             (byte) 0x50, (byte) 0x4b, 3, 4,
                     }, sig);
+                }
+
+                if (isSplitArchive) {
+                    // read the split segments
+                    SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(f);
+                    InputStream inputStream = Channels.newInputStream(channel);
+                    ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, ZipEncodingHelper.UTF8, true, false, true);
+
+                    ArchiveEntry entry;
+                    entry = splitInputStream.getNextEntry();
+                    assertEquals(FIVE_BILLION/2, entry.getSize());
+
+                    entry = splitInputStream.getNextEntry();
+                    assertEquals(FIVE_BILLION/2, entry.getSize());
+
+                    entry = splitInputStream.getNextEntry();
+                    entry.getSize();
+                    assertEquals(42, splitInputStream.read());
                 }
             }
         };
