@@ -79,8 +79,6 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     /** the index of current input stream being read when reading sparse entries */
     private int currentSparseInputStreamIndex;
 
-    private InputStream sparseInputStream;
-
     /** The meta-data about the current entry */
     private TarArchiveEntry currEntry;
 
@@ -564,7 +562,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         applyPaxHeadersToCurrentEntry(headers, sparseHeaders);
 
         // for 1.0 PAX Format, the sparse map is stored in the file data block
-        if(currEntry.isPaxGNU1XSparse()) {
+        if (currEntry.isPaxGNU1XSparse()) {
             sparseHeaders = parsePAX1XSparseHeaders();
             currEntry.setSparseHeaders(sparseHeaders);
         }
@@ -1038,10 +1036,8 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     private void buildSparseInputStreams() throws IOException {
         currentSparseInputStreamIndex = -1;
         sparseInputStreams = new ArrayList<>();
-        InputStream zeroInputStream = new TarArchiveSparseZeroInputStream();
 
-        long offset = 0;
-        List<TarArchiveStructSparse> sparseHeaders = currEntry.getSparseHeaders();
+        final List<TarArchiveStructSparse> sparseHeaders = currEntry.getSparseHeaders();
         // sort the sparse headers in case they are written in wrong order
         if (sparseHeaders != null && sparseHeaders.size() > 1) {
             final Comparator<TarArchiveStructSparse> sparseHeaderComparator = new Comparator<TarArchiveStructSparse>() {
@@ -1055,26 +1051,30 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             Collections.sort(sparseHeaders, sparseHeaderComparator);
         }
 
-        for (TarArchiveStructSparse sparseHeader : sparseHeaders) {
-            if (sparseHeader.getOffset() == 0 && sparseHeader.getNumbytes() == 0) {
-                break;
-            }
+        if (sparseHeaders != null) {
+            final InputStream zeroInputStream = new TarArchiveSparseZeroInputStream();
+            long offset = 0;
+            for (TarArchiveStructSparse sparseHeader : sparseHeaders) {
+                if (sparseHeader.getOffset() == 0 && sparseHeader.getNumbytes() == 0) {
+                    break;
+                }
 
-            if ((sparseHeader.getOffset() - offset) < 0) {
-                throw new IOException("Corrupted struct sparse detected");
-            }
+                if ((sparseHeader.getOffset() - offset) < 0) {
+                    throw new IOException("Corrupted struct sparse detected");
+                }
 
-            // only store the input streams with non-zero size
-            if ((sparseHeader.getOffset() - offset) > 0) {
-                sparseInputStreams.add(new BoundedInputStream(zeroInputStream, sparseHeader.getOffset() - offset));
-            }
+                // only store the input streams with non-zero size
+                if ((sparseHeader.getOffset() - offset) > 0) {
+                    sparseInputStreams.add(new BoundedInputStream(zeroInputStream, sparseHeader.getOffset() - offset));
+                }
 
-            // only store the input streams with non-zero size
-            if (sparseHeader.getNumbytes() > 0) {
-                sparseInputStreams.add(new BoundedInputStream(inputStream, sparseHeader.getNumbytes()));
-            }
+                // only store the input streams with non-zero size
+                if (sparseHeader.getNumbytes() > 0) {
+                    sparseInputStreams.add(new BoundedInputStream(inputStream, sparseHeader.getNumbytes()));
+                }
 
-            offset = sparseHeader.getOffset() + sparseHeader.getNumbytes();
+                offset = sparseHeader.getOffset() + sparseHeader.getNumbytes();
+            }
         }
 
         if (sparseInputStreams.size() > 0) {
@@ -1086,7 +1086,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * This is an inputstream that always return 0,
      * this is used when reading the "holes" of a sparse file
      */
-    public class TarArchiveSparseZeroInputStream extends InputStream {
+    private static class TarArchiveSparseZeroInputStream extends InputStream {
         /**
          * Just return 0
          * @return

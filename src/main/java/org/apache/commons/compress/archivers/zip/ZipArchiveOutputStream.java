@@ -1520,7 +1520,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             return;
         }
 
-        long numberOfThisDisk = 0;
+        int numberOfThisDisk = 0;
         if (isSplitZip) {
             numberOfThisDisk = ((ZipSplitOutputStream)this.out).getCurrentSplitSegmentIndex();
         }
@@ -1534,7 +1534,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                     .NUMBER_OF_THE_DISK_OF_CENTRAL_DIRECTORY_TOO_BIG_MESSAGE);
         }
 
-        final int numOfEntriesOnThisDisk = numberOfCDInDiskData.get(numberOfThisDisk) == null ? 0 : numberOfCDInDiskData.get(numberOfThisDisk);
+        final int numOfEntriesOnThisDisk = numberOfCDInDiskData.get(numberOfThisDisk) == null
+            ? 0 : numberOfCDInDiskData.get(numberOfThisDisk);
         if (numOfEntriesOnThisDisk >= ZIP64_MAGIC_SHORT) {
             throw new Zip64RequiredException(Zip64RequiredException
                     .TOO_MANY_ENTRIES_ON_THIS_DISK_MESSAGE);
@@ -1607,7 +1608,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         writeOut(ZipShort.getBytes(ZIP64_MIN_VERSION));
 
         // number of this disk
-        long numberOfThisDisk = 0;
+        int numberOfThisDisk = 0;
         if (isSplitZip) {
             numberOfThisDisk = ((ZipSplitOutputStream)this.out).getCurrentSplitSegmentIndex();
         }

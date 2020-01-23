@@ -19,8 +19,6 @@ package org.apache.commons.compress.archivers.sevenz;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
 
 public class CLI {
 
