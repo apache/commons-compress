@@ -32,10 +32,9 @@ import java.util.Objects;
  * </pre>
  * @since 1.20
  */
-public class TarArchiveStructSparse {
-    private long offset;
-
-    private long numbytes;
+public final class TarArchiveStructSparse {
+    private final long offset;
+    private final long numbytes;
 
     public TarArchiveStructSparse(long offset, long numbytes) {
         this.offset = offset;
@@ -72,15 +71,7 @@ public class TarArchiveStructSparse {
         return offset;
     }
 
-    public void setOffset(long offset) {
-        this.offset = offset;
-    }
-
     public long getNumbytes() {
         return numbytes;
-    }
-
-    public void setNumbytes(long numbytes) {
-        this.numbytes = numbytes;
     }
 }
