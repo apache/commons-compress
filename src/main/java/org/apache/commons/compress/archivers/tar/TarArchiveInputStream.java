@@ -321,7 +321,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @param markLimit The limit to mark.
      */
     @Override
-    public void mark(final int markLimit) {
+    public synchronized void mark(final int markLimit) {
     }
 
     /**

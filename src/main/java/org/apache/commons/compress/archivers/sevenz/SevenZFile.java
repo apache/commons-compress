@@ -126,7 +126,7 @@ public class SevenZFile implements Closeable {
      * @since 1.19
      */
     public SevenZFile(final File fileName, final char[] password, SevenZFileOptions options) throws IOException {
-        this(Files.newByteChannel(fileName.toPath(), EnumSet.of(StandardOpenOption.READ)),
+        this(Files.newByteChannel(fileName.toPath(), EnumSet.of(StandardOpenOption.READ)), // NOSONAR
                 fileName.getAbsolutePath(), utf16Decode(password), true, options);
     }
 
@@ -851,7 +851,7 @@ public class SevenZFile implements Closeable {
             // would need to keep looping as above:
             while (moreAlternativeMethods) {
                 throw new IOException("Alternative methods are unsupported, please report. " +
-                        "The reference implementation doesn't support them either.");
+                    "The reference implementation doesn't support them either."); // NOSONAR
             }
         }
         folder.coders = coders;

@@ -536,7 +536,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
         // calculate the length of end of central directory, as it may be used in writeZip64CentralDirectory
         final ByteBuffer commentData = this.zipEncoding.encode(comment);
-        final long commentLength = commentData.limit() - commentData.position();
+        final long commentLength = (long) commentData.limit() - commentData.position();
         eocdLength = WORD /* length of EOCD_SIG */
                 + SHORT /* number of this disk */
                 + SHORT /* disk number of start of central directory */

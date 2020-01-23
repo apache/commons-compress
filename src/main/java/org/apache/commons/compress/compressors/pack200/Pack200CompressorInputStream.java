@@ -221,7 +221,7 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     }
 
     @Override
-    public void mark(final int limit) {
+    public synchronized void mark(final int limit) {
         try {
             streamBridge.getInput().mark(limit);
         } catch (final IOException ex) {
@@ -230,7 +230,7 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     }
 
     @Override
-    public void reset() throws IOException {
+    public synchronized void reset() throws IOException {
         streamBridge.getInput().reset();
     }
 
