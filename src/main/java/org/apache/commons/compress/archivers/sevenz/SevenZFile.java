@@ -850,8 +850,8 @@ public class SevenZFile implements Closeable {
             }
             // would need to keep looping as above:
             while (moreAlternativeMethods) {
-                throw new IOException("Alternative methods are unsupported, please report. " +
-                    "The reference implementation doesn't support them either."); // NOSONAR
+                throw new IOException("Alternative methods are unsupported, please report. " + // NOSONAR
+                    "The reference implementation doesn't support them either.");
             }
         }
         folder.coders = coders;
