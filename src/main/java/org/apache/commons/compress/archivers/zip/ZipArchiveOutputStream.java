@@ -536,7 +536,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
         // calculate the length of end of central directory, as it may be used in writeZip64CentralDirectory
         final ByteBuffer commentData = this.zipEncoding.encode(comment);
-        final int commentLength = commentData.limit() - commentData.position();
+        final long commentLength = commentData.limit() - commentData.position();
         eocdLength = WORD /* length of EOCD_SIG */
                 + SHORT /* number of this disk */
                 + SHORT /* disk number of start of central directory */
@@ -1637,12 +1637,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         if(isSplitZip) {
             // based on the zip specification, the End Of Central Directory record and
             // the Zip64 End Of Central Directory locator record must be on the same segment
-            long zip64EOCDLOCLength = WORD  /* length of ZIP64_EOCD_LOC_SIG */
+            final int zip64EOCDLOCLength = WORD  /* length of ZIP64_EOCD_LOC_SIG */
                     + WORD  /* disk number of ZIP64_EOCD_SIG */
                     + DWORD /* offset of ZIP64_EOCD_SIG */
                     + WORD  /* total number of disks */;
 
-            long unsplittableContentSize = zip64EOCDLOCLength + eocdLength;
+            final long unsplittableContentSize = zip64EOCDLOCLength + eocdLength;
             ((ZipSplitOutputStream)this.out).prepareToWriteUnsplittableContent(unsplittableContentSize);
         }
 
@@ -1657,7 +1657,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         if(isSplitZip) {
             // the Zip64 End Of Central Directory Locator and the End Of Central Directory must be
             // in the same split disk, it means they must be located in the last disk
-            long totalNumberOfDisks = ((ZipSplitOutputStream)this.out).getCurrentSplitSegmentIndex() + 1;
+            final int totalNumberOfDisks = ((ZipSplitOutputStream)this.out).getCurrentSplitSegmentIndex() + 1;
             writeOut(ZipLong.getBytes(totalNumberOfDisks));
         } else {
             writeOut(ONE);

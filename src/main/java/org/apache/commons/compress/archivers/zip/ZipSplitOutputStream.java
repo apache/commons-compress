@@ -176,15 +176,13 @@ class ZipSplitOutputStream extends OutputStream {
 
         newFile = createNewSplitSegmentFile(null);
 
-
-        OutputStream newFileOutputStream = new FileOutputStream(newFile);
         outputStream.close();
-        outputStream = newFileOutputStream;
+        outputStream = new FileOutputStream(newFile);
         currentSplitSegmentBytesWritten = 0;
         zipFile = newFile;
         currentSplitSegmentIndex++;
 
-        return newFileOutputStream;
+        return outputStream;
     }
 
     /**

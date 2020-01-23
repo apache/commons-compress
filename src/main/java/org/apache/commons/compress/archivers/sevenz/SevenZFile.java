@@ -471,7 +471,7 @@ public class SevenZFile implements Closeable {
 
     private Archive tryToLocateEndHeader(final byte[] password) throws IOException {
         ByteBuffer nidBuf = ByteBuffer.allocate(1);
-        final long searchLimit = 1024 * 1024 * 1;
+        final long searchLimit = 1024l * 1024 * 1;
         // Main header, plus bytes that readStartHeader would read
         final long previousDataSize = channel.position() + 20;
         final long minPos;

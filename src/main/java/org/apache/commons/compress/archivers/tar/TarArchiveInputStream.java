@@ -1059,7 +1059,8 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         }
 
         if (sparseHeaders != null) {
-            final InputStream zeroInputStream = new TarArchiveSparseZeroInputStream();
+            // Stream doesn't need to be closed at all as it doesn't use any resources
+            final InputStream zeroInputStream = new TarArchiveSparseZeroInputStream(); //NOSONAR
             long offset = 0;
             for (TarArchiveStructSparse sparseHeader : sparseHeaders) {
                 if (sparseHeader.getOffset() == 0 && sparseHeader.getNumbytes() == 0) {
