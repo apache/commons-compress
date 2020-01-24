@@ -601,57 +601,66 @@ public class ZipArchiveInputStreamTest {
     @Test
     public void testSplitZipCreatedByZip() throws IOException {
         File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.zip");
-        SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
-        InputStream inputStream = Channels.newInputStream(channel);
-        ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, ZipEncodingHelper.UTF8, true, false, true);
+        try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
+             InputStream inputStream = Channels.newInputStream(channel);
+             ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, ZipEncodingHelper.UTF8, true, false, true)) {
 
-        File fileToCompare = getFile("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip.zip");
-        ZipArchiveInputStream inputStreamToCompare = new ZipArchiveInputStream(new FileInputStream(fileToCompare), ZipEncodingHelper.UTF8, true, false, true);
+            File fileToCompare = getFile("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip.zip");
+            try (ZipArchiveInputStream inputStreamToCompare = new ZipArchiveInputStream(new FileInputStream(fileToCompare), ZipEncodingHelper.UTF8, true, false, true)) {
 
-        ArchiveEntry entry;
-        while((entry = splitInputStream.getNextEntry()) != null && inputStreamToCompare.getNextEntry() != null) {
-            if(entry.isDirectory()) {
-                continue;
+                ArchiveEntry entry;
+                while((entry = splitInputStream.getNextEntry()) != null && inputStreamToCompare.getNextEntry() != null) {
+                    if(entry.isDirectory()) {
+                        continue;
+                    }
+                    assertArrayEquals(IOUtils.toByteArray(splitInputStream),
+                         IOUtils.toByteArray(inputStreamToCompare));
+                }
             }
-            Assert.assertTrue(shaded.org.apache.commons.io.IOUtils.contentEquals(splitInputStream, inputStreamToCompare));
         }
     }
 
     @Test
     public void testSplitZipCreatedByZipOfZip64() throws IOException {
         File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip_zip64.zip");
-        SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
-        InputStream inputStream = Channels.newInputStream(channel);
-        ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, ZipEncodingHelper.UTF8, true, false, true);
+        try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
+             InputStream inputStream = Channels.newInputStream(channel);
+             ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, ZipEncodingHelper.UTF8, true, false, true)) {
 
-        File fileToCompare = getFile("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip_zip64.zip");
-        ZipArchiveInputStream inputStreamToCompare = new ZipArchiveInputStream(new FileInputStream(fileToCompare), ZipEncodingHelper.UTF8, true, false, true);
+            File fileToCompare = getFile("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip_zip64.zip");
+            try (ZipArchiveInputStream inputStreamToCompare = new ZipArchiveInputStream(new FileInputStream(fileToCompare), ZipEncodingHelper.UTF8, true, false, true)) {
 
-        ArchiveEntry entry;
-        while((entry = splitInputStream.getNextEntry()) != null && inputStreamToCompare.getNextEntry() != null) {
-            if(entry.isDirectory()) {
-                continue;
+                ArchiveEntry entry;
+                while((entry = splitInputStream.getNextEntry()) != null && inputStreamToCompare.getNextEntry() != null) {
+                    if(entry.isDirectory()) {
+                        continue;
+                    }
+                    assertArrayEquals(IOUtils.toByteArray(splitInputStream),
+                        IOUtils.toByteArray(inputStreamToCompare));
+                }
             }
-            Assert.assertTrue(shaded.org.apache.commons.io.IOUtils.contentEquals(splitInputStream, inputStreamToCompare));
         }
     }
 
     @Test
     public void testSplitZipCreatedByWinrar() throws IOException {
         File lastFile = getFile("COMPRESS-477/split_zip_created_by_winrar/split_zip_created_by_winrar.zip");
-        SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
-        InputStream inputStream = Channels.newInputStream(channel);
-        ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, ZipEncodingHelper.UTF8, true, false, true);
+        try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
+             InputStream inputStream = Channels.newInputStream(channel);
+             ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, ZipEncodingHelper.UTF8, true, false, true)) {
 
-        File fileToCompare = getFile("COMPRESS-477/split_zip_created_by_winrar/zip_to_compare_created_by_winrar.zip");
-        ZipArchiveInputStream inputStreamToCompare = new ZipArchiveInputStream(new FileInputStream(fileToCompare), ZipEncodingHelper.UTF8, true, false, true);
+            File fileToCompare = getFile("COMPRESS-477/split_zip_created_by_winrar/zip_to_compare_created_by_winrar.zip");
+            try (ZipArchiveInputStream inputStreamToCompare = new ZipArchiveInputStream(new FileInputStream(fileToCompare), ZipEncodingHelper.UTF8, true, false, true)) {
 
-        ArchiveEntry entry;
-        while((entry = splitInputStream.getNextEntry()) != null && inputStreamToCompare.getNextEntry() != null) {
-            if(entry.isDirectory()) {
-                continue;
+                ArchiveEntry entry;
+                while((entry = splitInputStream.getNextEntry()) != null && inputStreamToCompare.getNextEntry() != null) {
+                    if(entry.isDirectory()) {
+                        continue;
+                    }
+                    assertArrayEquals(IOUtils.toByteArray(splitInputStream),
+                        IOUtils.toByteArray(inputStreamToCompare));
+                }
             }
-            Assert.assertTrue(shaded.org.apache.commons.io.IOUtils.contentEquals(splitInputStream, inputStreamToCompare));
         }
     }
 

@@ -680,8 +680,8 @@ public final class ZipTestCase extends AbstractTestCase {
                 // compare all files one by one
                 File fileToCompare = new File(entry.getName());
                 try (InputStream inputStreamToCompare = new FileInputStream(fileToCompare)) {
-                    Assert.assertTrue(
-                        shaded.org.apache.commons.io.IOUtils.contentEquals(splitInputStream, inputStreamToCompare));
+                    assertArrayEquals(IOUtils.toByteArray(splitInputStream),
+                        IOUtils.toByteArray(inputStreamToCompare));
                 }
                 filesCount++;
             }
