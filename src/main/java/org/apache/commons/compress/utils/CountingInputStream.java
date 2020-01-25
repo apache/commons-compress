@@ -42,10 +42,12 @@ public class CountingInputStream extends FilterInputStream {
         }
         return r;
     }
+
     @Override
     public int read(final byte[] b) throws IOException {
         return read(b, 0, b.length);
     }
+
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
         if (len == 0) {
@@ -57,6 +59,7 @@ public class CountingInputStream extends FilterInputStream {
         }
         return r;
     }
+
     /**
      * Increments the counter of already read bytes.
      * Doesn't increment if the EOF has been hit (read == -1)
