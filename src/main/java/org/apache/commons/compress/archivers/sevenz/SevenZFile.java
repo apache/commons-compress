@@ -140,6 +140,7 @@ public class SevenZFile implements Closeable {
      * @throws IOException if reading the archive fails
      * @deprecated use the char[]-arg version for the password instead
      */
+    @Deprecated
     public SevenZFile(final File fileName, final byte[] password) throws IOException {
         this(Files.newByteChannel(fileName.toPath(), EnumSet.of(StandardOpenOption.READ)),
                 fileName.getAbsolutePath(), password, true, SevenZFileOptions.DEFAULT);
@@ -298,6 +299,7 @@ public class SevenZFile implements Closeable {
      * @since 1.13
      * @deprecated use the char[]-arg version for the password instead
      */
+    @Deprecated
     public SevenZFile(final SeekableByteChannel channel,
                       final byte[] password) throws IOException {
         this(channel, DEFAULT_FILE_NAME, password);
@@ -319,6 +321,7 @@ public class SevenZFile implements Closeable {
      * @since 1.13
      * @deprecated use the char[]-arg version for the password instead
      */
+    @Deprecated
     public SevenZFile(final SeekableByteChannel channel, String fileName,
                       final byte[] password) throws IOException {
         this(channel, fileName, password, false, SevenZFileOptions.DEFAULT);
