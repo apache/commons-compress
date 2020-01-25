@@ -77,7 +77,7 @@ public class TarArchiveSparseEntry implements TarConstants {
     }
 
     /**
-     * Obatains information about the configuration for the sparse entry.
+     * Obtains information about the configuration for the sparse entry.
      * @since 1.20
      * @return information about the configuration for the sparse entry.
      */
