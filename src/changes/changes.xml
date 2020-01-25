@@ -67,8 +67,8 @@ The <action> type attribute can be add,update,fix,remove.
       </action>
       <action issue="COMPRESS-497" type="update" date="2019-10-12"
               due-to="Stefan Schlott">
-        SevenZFile can now revover from a certain corruption that
-        seems to happen occasinally when split archives are created.
+        SevenZFile can now recover from a certain corruption that
+        seems to happen occasionally when split archives are created.
       </action>
       <action issue="COMPRESS-342" type="update" date="2019-11-07"
               due-to="Peter Alfred Lee">
