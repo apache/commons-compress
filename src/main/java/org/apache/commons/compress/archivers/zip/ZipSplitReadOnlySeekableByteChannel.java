@@ -112,6 +112,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      *                 and theses channels should be added in correct order (e.g. .z01, .z02... .z99, .zip)
      * @return SeekableByteChannel that concatenates all provided channels
      * @throws NullPointerException if channels is null
+     * @throws IOException if reading channels fails
      */
     public static SeekableByteChannel forOrderedSeekableByteChannels(SeekableByteChannel... channels) throws IOException {
         if (Objects.requireNonNull(channels, "channels must not be null").length == 1) {

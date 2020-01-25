@@ -135,7 +135,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
      * @param channelNumber  the channel number
      * @param relativeOffset the relative offset in the corresponding channel
      * @return global position of all channels as if they are a single channel
-     * @throws IOException
+     * @throws IOException if positioning fails
      */
     public synchronized SeekableByteChannel position(long channelNumber, long relativeOffset) throws IOException {
         if (!isOpen()) {
