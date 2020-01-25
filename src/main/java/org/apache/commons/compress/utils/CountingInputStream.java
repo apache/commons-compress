@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Stream that tracks the number of bytes read.
+ * Input stream that tracks the number of bytes read.
  * @since 1.3
  * @NotThreadSafe
  */
