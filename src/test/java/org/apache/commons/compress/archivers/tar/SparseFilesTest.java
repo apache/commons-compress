@@ -236,14 +236,14 @@ public class SparseFilesTest extends AbstractTestCase {
         Runtime runtime = Runtime.getRuntime();
         Process process = runtime.exec("tar -xf " + tarFile.getPath() + " -C " + resultDir.getPath());
         // wait until the extract finishes
-        process.waitFor();
+        assertEquals(0, process.waitFor());
 
         for (File file : resultDir.listFiles()) {
-            if(file.getName().equals(sparseFileName)) {
+            if (file.getName().equals(sparseFileName)) {
                 return new FileInputStream(file);
             }
         }
-
+        fail("didn't find " + sparseFileName + " after extracting " + tarFile);
         return null;
     }
 }
