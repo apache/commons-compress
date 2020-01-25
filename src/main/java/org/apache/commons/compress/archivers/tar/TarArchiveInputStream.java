@@ -669,7 +669,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * GNU.sparse.map
      *    Map of non-null data chunks. It is a string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
      *
-     * @param i                 inputstream to read keys and values
+     * @param inputstream inputstream to read keys and values
      * @param sparseHeaders used in PAX Format 0.0 &amp; 0.1, as it may appear multi times,
      *                      the sparse headers need to be stored in an array, not a map
      * @return
