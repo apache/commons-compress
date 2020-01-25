@@ -56,14 +56,14 @@ public class SevenZFileTest extends AbstractTestCase {
     public void testRandomlySkippingEntries() throws Exception {
         // Read sequential reference.
         final Map<String, byte[]> entriesByName = new HashMap<>();
-        SevenZFile archive = new SevenZFile(getFile("COMPRESS-320/Copy.7z"));
-        SevenZArchiveEntry entry;
-        while ((entry = archive.getNextEntry()) != null) {
-            if (entry.hasStream()) {
-                entriesByName.put(entry.getName(), readFully(archive));
+        try (SevenZFile archive = new SevenZFile(getFile("COMPRESS-320/Copy.7z"))) {
+            SevenZArchiveEntry entry;
+            while ((entry = archive.getNextEntry()) != null) {
+                if (entry.hasStream()) {
+                    entriesByName.put(entry.getName(), readFully(archive));
+                }
             }
         }
-        archive.close();
 
         final String[] variants = {
             "BZip2-solid.7z",
@@ -81,26 +81,27 @@ public class SevenZFileTest extends AbstractTestCase {
             // "PPMd.7z",
         };
 
-        // TODO: use randomizedtesting for predictable, but different, randomness.
+        // TODO: use randomized testing for predictable, but different, randomness.
         final Random rnd = new Random(0xdeadbeef);
         for (final String fileName : variants) {
-            archive = new SevenZFile(getFile("COMPRESS-320/" + fileName));
+            try (SevenZFile archive = new SevenZFile(getFile("COMPRESS-320/" + fileName))) {
 
-            while ((entry = archive.getNextEntry()) != null) {
-                // Sometimes skip reading entries.
-                if (rnd.nextBoolean()) {
-                    continue;
+                SevenZArchiveEntry entry;
+                while ((entry = archive.getNextEntry()) != null) {
+                    // Sometimes skip reading entries.
+                    if (rnd.nextBoolean()) {
+                        continue;
+                    }
+
+                    if (entry.hasStream()) {
+                        assertTrue(entriesByName.containsKey(entry.getName()));
+                        final byte[] content = readFully(archive);
+                        assertTrue("Content mismatch on: " + fileName + "!" + entry.getName(),
+                            Arrays.equals(content, entriesByName.get(entry.getName())));
+                    }
                 }
 
-                if (entry.hasStream()) {
-                    assertTrue(entriesByName.containsKey(entry.getName()));
-                    final byte [] content = readFully(archive);
-                    assertTrue("Content mismatch on: " + fileName + "!" + entry.getName(),
-                               Arrays.equals(content, entriesByName.get(entry.getName())));
-                }
             }
-
-            archive.close();
         }
     }
 
@@ -534,23 +535,24 @@ public class SevenZFileTest extends AbstractTestCase {
             sevenZFile.getNextEntry();
             // skip all the entries and jump backwards
             byte[] contents = new byte[(int) testTxtEntry.getSize()];
-            InputStream inputStream = sevenZFile.getInputStream(testTxtEntry);
-            int off = 0;
-            while (off < contents.length) {
-                final int bytesRead = inputStream.read(contents, off, contents.length - off);
-                assert (bytesRead >= 0);
-                off += bytesRead;
+            try (InputStream inputStream = sevenZFile.getInputStream(testTxtEntry)) {
+                int off = 0;
+                while (off < contents.length) {
+                    final int bytesRead = inputStream.read(contents, off, contents.length - off);
+                    assert (bytesRead >= 0);
+                    off += bytesRead;
+                }
+                assertEquals(SevenZMethod.LZMA2, testTxtEntry.getContentMethods().iterator().next().getMethod());
+                assertEquals(testTxtContents, new String(contents, "UTF-8"));
             }
-            assertEquals(SevenZMethod.LZMA2, testTxtEntry.getContentMethods().iterator().next().getMethod());
-            assertEquals(testTxtContents, new String(contents, "UTF-8"));
         }
     }
 
     @Test
     public void extractNonExistSpecifiedFile() throws Exception {
-        try (SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-256.7z"))) {
-            SevenZFile anotherSevenZFile = new SevenZFile(getFile("bla.7z"));
-            for(SevenZArchiveEntry nonExistEntry : anotherSevenZFile.getEntries()) {
+        try (SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-256.7z"));
+            SevenZFile anotherSevenZFile = new SevenZFile(getFile("bla.7z"))) {
+            for (SevenZArchiveEntry nonExistEntry : anotherSevenZFile.getEntries()) {
                 thrown.expect(IllegalArgumentException.class);
                 sevenZFile.getInputStream(nonExistEntry);
             }
