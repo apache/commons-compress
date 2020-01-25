@@ -126,12 +126,17 @@ public class SparseFilesTest extends AbstractTestCase {
             return;
         }
 
+        try {
         final File file = getFile("oldgnu_sparse.tar");
         try (InputStream sparseFileInputStream = extractTarAndGetInputStream(file, "sparsefile");
              TarArchiveInputStream tin = new TarArchiveInputStream(new FileInputStream(file))) {
             tin.getNextTarEntry();
             assertArrayEquals(IOUtils.toByteArray(tin),
                 IOUtils.toByteArray(sparseFileInputStream));
+        }
+        } catch (RuntimeException | IOException ex) {
+            ex.printStackTrace();
+            throw ex;
         }
     }
 
