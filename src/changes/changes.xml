@@ -95,6 +95,9 @@ The <action> type attribute can be add,update,fix,remove.
         patch Commons Compress will be able to read certain archives
         that would have caused errors in Compress 1.19.
       </action>
+      <action type="update" date="2020-01-25">
+        Update JUnit from 4.12 to 4.13.
+      </action>
     </release>
     <release version="1.19" date="2019-08-27"
              description="Release 1.19
