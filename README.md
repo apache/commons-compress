@@ -46,7 +46,7 @@ Apache Commons Compress
 [![Build Status](https://travis-ci.org/apache/commons-compress.svg)](https://travis-ci.org/apache/commons-compress)
 [![Coverage Status](https://coveralls.io/repos/apache/commons-compress/badge.svg)](https://coveralls.io/r/apache/commons-compress)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-compress/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-compress/)
-[![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-compress/1.19.svg)](https://javadoc.io/doc/org.apache.commons/commons-compress/1.19)
+[![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-compress/1.20.svg)](https://javadoc.io/doc/org.apache.commons/commons-compress/1.20)
 
 Apache Commons Compress software defines an API for working with
 compression and archive formats.  These include: bzip2, gzip, pack200,
@@ -70,7 +70,7 @@ Alternatively you can pull it from the central Maven repositories:
 <dependency>
   <groupId>org.apache.commons</groupId>
   <artifactId>commons-compress</artifactId>
-  <version>1.19</version>
+  <version>1.20</version>
 </dependency>
 ```
 

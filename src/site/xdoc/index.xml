@@ -52,7 +52,7 @@
         </section>
 
         <section name="Status">
-          <p>The current release is 1.19 and requires Java 7.</p>
+          <p>The current release is 1.20 and requires Java 7.</p>
 
           <p>Below we highlight some new features, for a full list
           of changes see the <a href="changes-report.html">Changes
@@ -88,14 +88,14 @@
             licensed <a href="https://github.com/google/brotli">Google
             Brotli decoder</a>. Zstandard support is provided by the BSD
             licensed <a href="https://github.com/luben/zstd-jni">Zstd-jni</a>.
-            As of Commons Compress 1.19 support for the DEFLATE64, Z and Brotli
+            As of Commons Compress 1.20 support for the DEFLATE64, Z and Brotli
             formats is read-only.</p>
 
           <p>The ar, arj, cpio, dump, tar, 7z and zip formats are supported as
             archivers where the <a href="zip.html">zip</a>
             implementation provides capabilities that go beyond the
             features found in java.util.zip.  As of Commons Compress
-            1.19 support for the dump and arj formats is
+            1.20 support for the dump and arj formats is
             read-only - 7z can read most compressed and encrypted
             archives but only write unencrypted ones.  LZMA(2) support
             in 7z requires <a href="https://tukaani.org/xz/java.html">XZ for
