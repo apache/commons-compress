@@ -672,7 +672,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @param inputstream inputstream to read keys and values
      * @param sparseHeaders used in PAX Format 0.0 &amp; 0.1, as it may appear multi times,
      *                      the sparse headers need to be stored in an array, not a map
-     * @return the parsed PAX header
+     * @return map of PAX headers values found inside of the current (local or global) PAX headers tar entry.
      * @throws IOException
      */
     Map<String, String> parsePaxHeaders(final InputStream inputStream, List<TarArchiveStructSparse> sparseHeaders)
