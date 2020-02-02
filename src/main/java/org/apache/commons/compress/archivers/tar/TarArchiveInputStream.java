@@ -720,7 +720,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                                         // previous GNU.sparse.offset header but but no numBytes
                                         sparseHeaders.add(new TarArchiveStructSparse(offset, 0));
                                     }
-                                    offset = new Long(value);
+                                    offset = Long.valueOf(value);
                                 }
 
                                 // for 0.0 PAX Headers
