@@ -46,6 +46,8 @@ public class OsgiITest {
     public Option[] config() {
         return new Option[] {
             systemProperty("pax.exam.osgi.unresolved.fail").value("true"),
+            systemProperty("org.ops4j.pax.url.mvn.useFallbackRepositories").value("false"),
+            systemProperty("org.ops4j.pax.url.mvn.repositories").value("https://repo.maven.apache.org/maven2"),
             mavenBundle().groupId("org.apache.felix").artifactId("org.apache.felix.scr")
                 .version("2.0.14"),
             mavenBundle().groupId("org.apache.felix").artifactId("org.apache.felix.configadmin")
