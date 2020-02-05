@@ -19,11 +19,12 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.utils.CountingInputStream;
-import org.apache.commons.compress.utils.InputStreamStatistics;
-
 import java.io.IOException;
 import java.io.InputStream;
+
+import org.apache.commons.compress.utils.CloseShieldFilterInputStream;
+import org.apache.commons.compress.utils.CountingInputStream;
+import org.apache.commons.compress.utils.InputStreamStatistics;
 
 /**
  * The implode compression method was added to PKZIP 1.01 released in 1989.
@@ -97,12 +98,8 @@ class ExplodingInputStream extends InputStream implements InputStreamStatistics 
      */
     private void init() throws IOException {
         if (bits == null) {
-            try (CountingInputStream i = new CountingInputStream(in) {
-                    @Override
-                    public void close() {
-                        // we do not want to close in
-                    }
-                }) {
+            // we do not want to close in
+            try (CountingInputStream i = new CountingInputStream(new CloseShieldFilterInputStream(in))) {
                 if (numberOfTrees == 3) {
                     literalTree = BinaryTree.decode(i, 256);
                 }

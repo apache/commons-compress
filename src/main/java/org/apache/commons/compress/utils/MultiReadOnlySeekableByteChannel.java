@@ -51,7 +51,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
     private int currentChannelIdx;
     private final int channelsSize;
     private final boolean openChannelOnNeed;
-    private final int OPEN_CHANNEL_ON_NEED_FILES_NUM_THRESHOLD = 100;
+    private final int OPEN_CHANNEL_ON_NEED_FILES_NUM_THRESHOLD = 20;
 
     /**
      * Concatenates the given channels.
@@ -221,7 +221,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
      * @param channelNumber  the channel number
      * @param relativeOffset the relative offset in the corresponding channel
      * @return global position of all channels as if they are a single channel
-     * @throws IOException
+     * @throws IOException if positioning fails
      */
     public synchronized SeekableByteChannel position(long channelNumber, long relativeOffset) throws IOException {
         if (!isOpen()) {

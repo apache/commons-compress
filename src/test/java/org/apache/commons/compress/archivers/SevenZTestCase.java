@@ -44,6 +44,7 @@ public class SevenZTestCase extends AbstractTestCase {
         file2 = getFile("test2.xml");
     }
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();

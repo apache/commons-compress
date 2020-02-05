@@ -536,7 +536,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
         // calculate the length of end of central directory, as it may be used in writeZip64CentralDirectory
         final ByteBuffer commentData = this.zipEncoding.encode(comment);
-        final int commentLength = commentData.limit() - commentData.position();
+        final long commentLength = (long) commentData.limit() - commentData.position();
         eocdLength = WORD /* length of EOCD_SIG */
                 + SHORT /* number of this disk */
                 + SHORT /* disk number of start of central directory */
@@ -1520,7 +1520,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             return;
         }
 
-        long numberOfThisDisk = 0;
+        int numberOfThisDisk = 0;
         if (isSplitZip) {
             numberOfThisDisk = ((ZipSplitOutputStream)this.out).getCurrentSplitSegmentIndex();
         }
@@ -1534,7 +1534,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                     .NUMBER_OF_THE_DISK_OF_CENTRAL_DIRECTORY_TOO_BIG_MESSAGE);
         }
 
-        final int numOfEntriesOnThisDisk = numberOfCDInDiskData.get(numberOfThisDisk) == null ? 0 : numberOfCDInDiskData.get(numberOfThisDisk);
+        final int numOfEntriesOnThisDisk = numberOfCDInDiskData.get(numberOfThisDisk) == null
+            ? 0 : numberOfCDInDiskData.get(numberOfThisDisk);
         if (numOfEntriesOnThisDisk >= ZIP64_MAGIC_SHORT) {
             throw new Zip64RequiredException(Zip64RequiredException
                     .TOO_MANY_ENTRIES_ON_THIS_DISK_MESSAGE);
@@ -1607,7 +1608,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         writeOut(ZipShort.getBytes(ZIP64_MIN_VERSION));
 
         // number of this disk
-        long numberOfThisDisk = 0;
+        int numberOfThisDisk = 0;
         if (isSplitZip) {
             numberOfThisDisk = ((ZipSplitOutputStream)this.out).getCurrentSplitSegmentIndex();
         }
@@ -1636,12 +1637,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         if(isSplitZip) {
             // based on the zip specification, the End Of Central Directory record and
             // the Zip64 End Of Central Directory locator record must be on the same segment
-            long zip64EOCDLOCLength = WORD  /* length of ZIP64_EOCD_LOC_SIG */
+            final int zip64EOCDLOCLength = WORD  /* length of ZIP64_EOCD_LOC_SIG */
                     + WORD  /* disk number of ZIP64_EOCD_SIG */
                     + DWORD /* offset of ZIP64_EOCD_SIG */
                     + WORD  /* total number of disks */;
 
-            long unsplittableContentSize = zip64EOCDLOCLength + eocdLength;
+            final long unsplittableContentSize = zip64EOCDLOCLength + eocdLength;
             ((ZipSplitOutputStream)this.out).prepareToWriteUnsplittableContent(unsplittableContentSize);
         }
 
@@ -1656,7 +1657,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         if(isSplitZip) {
             // the Zip64 End Of Central Directory Locator and the End Of Central Directory must be
             // in the same split disk, it means they must be located in the last disk
-            long totalNumberOfDisks = ((ZipSplitOutputStream)this.out).getCurrentSplitSegmentIndex() + 1;
+            final int totalNumberOfDisks = ((ZipSplitOutputStream)this.out).getCurrentSplitSegmentIndex() + 1;
             writeOut(ZipLong.getBytes(totalNumberOfDisks));
         } else {
             writeOut(ONE);

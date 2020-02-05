@@ -45,7 +45,7 @@ The <action> type attribute can be add,update,fix,remove.
     <release version="1.20" date="not released, yet"
              description="Release 1.20">
       <action issue="COMPRESS-493" type="update" date="2019-08-27">
-        Update optional library com.github.luben:zstd-jni from 1.4.0-1 to 1.4.3-1.
+        Update optional library com.github.luben:zstd-jni from 1.4.0-1 to 1.4.4-7.
       </action>
       <action type="update" date="2019-08-27">
         Update tests from org.apache.felix:org.apache.felix.framework 6.0.2 to 6.0.3.
@@ -67,8 +67,8 @@ The <action> type attribute can be add,update,fix,remove.
       </action>
       <action issue="COMPRESS-497" type="update" date="2019-10-12"
               due-to="Stefan Schlott">
-        SevenZFile can now revover from a certain corruption that
-        seems to happen occasinally when split archives are created.
+        SevenZFile can now recover from a certain corruption that
+        seems to happen occasionally when split archives are created.
       </action>
       <action issue="COMPRESS-342" type="update" date="2019-11-07"
               due-to="Peter Alfred Lee">
@@ -94,6 +94,9 @@ The <action> type attribute can be add,update,fix,remove.
         would have rejected a file with too many selectors. With this
         patch Commons Compress will be able to read certain archives
         that would have caused errors in Compress 1.19.
+      </action>
+      <action type="update" date="2020-01-25">
+        Update JUnit from 4.12 to 4.13.
       </action>
     </release>
     <release version="1.19" date="2019-08-27"

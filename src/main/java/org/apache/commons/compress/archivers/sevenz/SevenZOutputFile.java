@@ -309,7 +309,8 @@ public class SevenZOutputFile implements Closeable {
             throw new IllegalStateException("No current 7z entry");
         }
 
-        OutputStream out = new OutputStreamWrapper();
+        // doesn't need to be closed, just wraps the instance field channel
+        OutputStream out = new OutputStreamWrapper(); // NOSONAR
         final ArrayList<CountingOutputStream> moreStreams = new ArrayList<>();
         boolean first = true;
         for (final SevenZMethodConfiguration m : getContentMethods(files.get(files.size() - 1))) {

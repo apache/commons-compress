@@ -126,7 +126,7 @@ public class SevenZFile implements Closeable {
      * @since 1.19
      */
     public SevenZFile(final File fileName, final char[] password, SevenZFileOptions options) throws IOException {
-        this(Files.newByteChannel(fileName.toPath(), EnumSet.of(StandardOpenOption.READ)),
+        this(Files.newByteChannel(fileName.toPath(), EnumSet.of(StandardOpenOption.READ)), // NOSONAR
                 fileName.getAbsolutePath(), utf16Decode(password), true, options);
     }
 
@@ -140,6 +140,7 @@ public class SevenZFile implements Closeable {
      * @throws IOException if reading the archive fails
      * @deprecated use the char[]-arg version for the password instead
      */
+    @Deprecated
     public SevenZFile(final File fileName, final byte[] password) throws IOException {
         this(Files.newByteChannel(fileName.toPath(), EnumSet.of(StandardOpenOption.READ)),
                 fileName.getAbsolutePath(), password, true, SevenZFileOptions.DEFAULT);
@@ -298,6 +299,7 @@ public class SevenZFile implements Closeable {
      * @since 1.13
      * @deprecated use the char[]-arg version for the password instead
      */
+    @Deprecated
     public SevenZFile(final SeekableByteChannel channel,
                       final byte[] password) throws IOException {
         this(channel, DEFAULT_FILE_NAME, password);
@@ -319,6 +321,7 @@ public class SevenZFile implements Closeable {
      * @since 1.13
      * @deprecated use the char[]-arg version for the password instead
      */
+    @Deprecated
     public SevenZFile(final SeekableByteChannel channel, String fileName,
                       final byte[] password) throws IOException {
         this(channel, fileName, password, false, SevenZFileOptions.DEFAULT);
@@ -471,7 +474,7 @@ public class SevenZFile implements Closeable {
 
     private Archive tryToLocateEndHeader(final byte[] password) throws IOException {
         ByteBuffer nidBuf = ByteBuffer.allocate(1);
-        final long searchLimit = 1024 * 1024 * 1;
+        final long searchLimit = 1024l * 1024 * 1;
         // Main header, plus bytes that readStartHeader would read
         final long previousDataSize = channel.position() + 20;
         final long minPos;
@@ -850,8 +853,8 @@ public class SevenZFile implements Closeable {
             }
             // would need to keep looping as above:
             while (moreAlternativeMethods) {
-                throw new IOException("Alternative methods are unsupported, please report. " +
-                        "The reference implementation doesn't support them either.");
+                throw new IOException("Alternative methods are unsupported, please report. " + // NOSONAR
+                    "The reference implementation doesn't support them either.");
             }
         }
         folder.coders = coders;

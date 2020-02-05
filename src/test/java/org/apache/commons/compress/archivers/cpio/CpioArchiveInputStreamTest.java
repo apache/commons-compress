@@ -36,50 +36,49 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
         expected.append("<empty/>./test2.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>\n");
 
-
-        final CpioArchiveInputStream in = new CpioArchiveInputStream(new FileInputStream(getFile("bla.cpio")));
-        CpioArchiveEntry entry;
-
         final StringBuilder result = new StringBuilder();
-        while ((entry = (CpioArchiveEntry) in.getNextEntry()) != null) {
-            result.append(entry.getName());
-            int tmp;
-            while ((tmp = in.read()) != -1) {
-                result.append((char) tmp);
+        try (final CpioArchiveInputStream in = new CpioArchiveInputStream(new FileInputStream(getFile("bla.cpio")))) {
+            CpioArchiveEntry entry;
+
+            while ((entry = (CpioArchiveEntry) in.getNextEntry()) != null) {
+                result.append(entry.getName());
+                int tmp;
+                while ((tmp = in.read()) != -1) {
+                    result.append((char) tmp);
+                }
             }
         }
-        in.close();
         assertEquals(result.toString(), expected.toString());
     }
 
     @Test
     public void testCpioUnarchiveCreatedByRedlineRpm() throws Exception {
-        final CpioArchiveInputStream in =
-            new CpioArchiveInputStream(new FileInputStream(getFile("redline.cpio")));
-        CpioArchiveEntry entry= null;
-
         int count = 0;
-        while ((entry = (CpioArchiveEntry) in.getNextEntry()) != null) {
-            count++;
-            assertNotNull(entry);
+        try (final CpioArchiveInputStream in = new CpioArchiveInputStream(
+            new FileInputStream(getFile("redline.cpio")))) {
+            CpioArchiveEntry entry = null;
+
+            while ((entry = (CpioArchiveEntry) in.getNextEntry()) != null) {
+                count++;
+                assertNotNull(entry);
+            }
         }
-        in.close();
 
         assertEquals(count, 1);
     }
 
     @Test
     public void testCpioUnarchiveMultibyteCharName() throws Exception {
-        final CpioArchiveInputStream in =
-            new CpioArchiveInputStream(new FileInputStream(getFile("COMPRESS-459.cpio")), "UTF-8");
-        CpioArchiveEntry entry= null;
-
         int count = 0;
-        while ((entry = (CpioArchiveEntry) in.getNextEntry()) != null) {
-            count++;
-            assertNotNull(entry);
+        try (final CpioArchiveInputStream in = new CpioArchiveInputStream(
+            new FileInputStream(getFile("COMPRESS-459.cpio")), "UTF-8")) {
+            CpioArchiveEntry entry = null;
+
+            while ((entry = (CpioArchiveEntry) in.getNextEntry()) != null) {
+                count++;
+                assertNotNull(entry);
+            }
         }
-        in.close();
 
         assertEquals(2, count);
     }

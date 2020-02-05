@@ -306,6 +306,9 @@ public class TarUtils {
     /**
      * Parses the content of a PAX 1.0 sparse block.
      * @since 1.20
+     * @param buffer The buffer from which to parse.
+     * @param offset The offset into the buffer from which to parse.
+     * @return a parsed sparse struct
      */
     public static TarArchiveStructSparse parseSparse(final byte[] buffer, final int offset) {
         long sparseOffset = parseOctalOrBinary(buffer, offset, SPARSE_OFFSET_LEN);

@@ -79,8 +79,6 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     /** the index of current input stream being read when reading sparse entries */
     private int currentSparseInputStreamIndex;
 
-    private InputStream sparseInputStream;
-
     /** The meta-data about the current entry */
     private TarArchiveEntry currEntry;
 
@@ -323,7 +321,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @param markLimit The limit to mark.
      */
     @Override
-    public void mark(final int markLimit) {
+    public synchronized void mark(final int markLimit) {
     }
 
     /**
@@ -564,7 +562,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         applyPaxHeadersToCurrentEntry(headers, sparseHeaders);
 
         // for 1.0 PAX Format, the sparse map is stored in the file data block
-        if(currEntry.isPaxGNU1XSparse()) {
+        if (currEntry.isPaxGNU1XSparse()) {
             sparseHeaders = parsePAX1XSparseHeaders();
             currEntry.setSparseHeaders(sparseHeaders);
         }
@@ -671,16 +669,16 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * GNU.sparse.map
      *    Map of non-null data chunks. It is a string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
      *
-     * @param i                 inputstream to read keys and values
+     * @param inputstream inputstream to read keys and values
      * @param sparseHeaders used in PAX Format 0.0 &amp; 0.1, as it may appear multi times,
      *                      the sparse headers need to be stored in an array, not a map
-     * @return
+     * @return map of PAX headers values found inside of the current (local or global) PAX headers tar entry.
      * @throws IOException
      */
     Map<String, String> parsePaxHeaders(final InputStream inputStream, List<TarArchiveStructSparse> sparseHeaders)
         throws IOException {
         final Map<String, String> headers = new HashMap<>(globalPaxHeaders);
-        TarArchiveStructSparse sparseHeader = null;
+        Long offset = null;
         // Format is "length keyword=value\n";
         while(true) { // get length
             int ch;
@@ -717,19 +715,22 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                                 headers.put(keyword, value);
 
                                 // for 0.0 PAX Headers
-                                if(keyword.equals("GNU.sparse.offset")) {
-                                    sparseHeader = new TarArchiveStructSparse(Long.parseLong(value), 0);
-                                    sparseHeaders.add(sparseHeader);
+                                if (keyword.equals("GNU.sparse.offset")) {
+                                    if (offset != null) {
+                                        // previous GNU.sparse.offset header but but no numBytes
+                                        sparseHeaders.add(new TarArchiveStructSparse(offset, 0));
+                                    }
+                                    offset = Long.valueOf(value);
                                 }
 
                                 // for 0.0 PAX Headers
-                                if(keyword.equals("GNU.sparse.numbytes")) {
-                                    if(sparseHeader == null) {
+                                if (keyword.equals("GNU.sparse.numbytes")) {
+                                    if (offset == null) {
                                         throw new IOException("Failed to read Paxheader." +
-                                                "GNU.sparse.offset is expected before GNU.sparse.numbytes show up.");
+                                                "GNU.sparse.offset is expected before GNU.sparse.numbytes shows up.");
                                     }
-
-                                    sparseHeader.setNumbytes(Long.parseLong(value));
+                                    sparseHeaders.add(new TarArchiveStructSparse(offset, Long.parseLong(value)));
+                                    offset = null;
                                 }
                             }
                             break;
@@ -744,6 +745,10 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             if (ch == -1){ // EOF
                 break;
             }
+        }
+        if (offset != null) {
+            // offset but no numBytes
+            sparseHeaders.add(new TarArchiveStructSparse(offset, 0));
         }
         return headers;
     }
@@ -1038,10 +1043,8 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     private void buildSparseInputStreams() throws IOException {
         currentSparseInputStreamIndex = -1;
         sparseInputStreams = new ArrayList<>();
-        InputStream zeroInputStream = new TarArchiveSparseZeroInputStream();
 
-        long offset = 0;
-        List<TarArchiveStructSparse> sparseHeaders = currEntry.getSparseHeaders();
+        final List<TarArchiveStructSparse> sparseHeaders = currEntry.getSparseHeaders();
         // sort the sparse headers in case they are written in wrong order
         if (sparseHeaders != null && sparseHeaders.size() > 1) {
             final Comparator<TarArchiveStructSparse> sparseHeaderComparator = new Comparator<TarArchiveStructSparse>() {
@@ -1055,26 +1058,31 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             Collections.sort(sparseHeaders, sparseHeaderComparator);
         }
 
-        for (TarArchiveStructSparse sparseHeader : sparseHeaders) {
-            if (sparseHeader.getOffset() == 0 && sparseHeader.getNumbytes() == 0) {
-                break;
-            }
+        if (sparseHeaders != null) {
+            // Stream doesn't need to be closed at all as it doesn't use any resources
+            final InputStream zeroInputStream = new TarArchiveSparseZeroInputStream(); //NOSONAR
+            long offset = 0;
+            for (TarArchiveStructSparse sparseHeader : sparseHeaders) {
+                if (sparseHeader.getOffset() == 0 && sparseHeader.getNumbytes() == 0) {
+                    break;
+                }
 
-            if ((sparseHeader.getOffset() - offset) < 0) {
-                throw new IOException("Corrupted struct sparse detected");
-            }
+                if ((sparseHeader.getOffset() - offset) < 0) {
+                    throw new IOException("Corrupted struct sparse detected");
+                }
 
-            // only store the input streams with non-zero size
-            if ((sparseHeader.getOffset() - offset) > 0) {
-                sparseInputStreams.add(new BoundedInputStream(zeroInputStream, sparseHeader.getOffset() - offset));
-            }
+                // only store the input streams with non-zero size
+                if ((sparseHeader.getOffset() - offset) > 0) {
+                    sparseInputStreams.add(new BoundedInputStream(zeroInputStream, sparseHeader.getOffset() - offset));
+                }
 
-            // only store the input streams with non-zero size
-            if (sparseHeader.getNumbytes() > 0) {
-                sparseInputStreams.add(new BoundedInputStream(inputStream, sparseHeader.getNumbytes()));
-            }
+                // only store the input streams with non-zero size
+                if (sparseHeader.getNumbytes() > 0) {
+                    sparseInputStreams.add(new BoundedInputStream(inputStream, sparseHeader.getNumbytes()));
+                }
 
-            offset = sparseHeader.getOffset() + sparseHeader.getNumbytes();
+                offset = sparseHeader.getOffset() + sparseHeader.getNumbytes();
+            }
         }
 
         if (sparseInputStreams.size() > 0) {
@@ -1086,7 +1094,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * This is an inputstream that always return 0,
      * this is used when reading the "holes" of a sparse file
      */
-    public class TarArchiveSparseZeroInputStream extends InputStream {
+    private static class TarArchiveSparseZeroInputStream extends InputStream {
         /**
          * Just return 0
          * @return

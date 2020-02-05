@@ -46,8 +46,8 @@ class ZipSplitOutputStream extends OutputStream {
      * Minimum segment size = 64K
      * Maximum PKSFX segment size = 2,147,483,647 bytes
      */
-    private final long ZIP_SEGMENT_MIN_SIZE = 64 * 1024L;
-    private final long ZIP_SEGMENT_MAX_SIZE = 4294967295L;
+    private final static long ZIP_SEGMENT_MIN_SIZE = 64 * 1024L;
+    private final static long ZIP_SEGMENT_MAX_SIZE = 4294967295L;
 
     /**
      * Create a split zip. If the zip file is smaller than the split size,
@@ -152,7 +152,9 @@ class ZipSplitOutputStream extends OutputStream {
         String zipFileBaseName = FileNameUtils.getBaseName(zipFile.getName());
         File lastZipSplitSegmentFile = new File(zipFile.getParentFile(), zipFileBaseName + ".zip");
         outputStream.close();
-        zipFile.renameTo(lastZipSplitSegmentFile);
+        if (!zipFile.renameTo(lastZipSplitSegmentFile)) {
+            throw new IOException("Failed to rename " + zipFile + " to " + lastZipSplitSegmentFile);
+        }
         finished = true;
     }
 
@@ -167,20 +169,20 @@ class ZipSplitOutputStream extends OutputStream {
         if (currentSplitSegmentIndex == 0) {
             outputStream.close();
             newFile = createNewSplitSegmentFile(1);
-            zipFile.renameTo(newFile);
+            if (!zipFile.renameTo(newFile)) {
+                throw new IOException("Failed to rename " + zipFile + " to " + newFile);
+            }
         }
 
         newFile = createNewSplitSegmentFile(null);
 
-
-        OutputStream newFileOutputStream = new FileOutputStream(newFile);
         outputStream.close();
-        outputStream = newFileOutputStream;
+        outputStream = new FileOutputStream(newFile);
         currentSplitSegmentBytesWritten = 0;
         zipFile = newFile;
         currentSplitSegmentIndex++;
 
-        return newFileOutputStream;
+        return outputStream;
     }
 
     /**

@@ -206,10 +206,12 @@ public class Archiver {
     public void create(final ArchiveOutputStream target, File directory)
         throws IOException, ArchiveException {
         create(directory, new ArchiveEntryCreator() {
+            @Override
             public ArchiveEntry create(File f, String entryName) throws IOException {
                 return target.createArchiveEntry(f, entryName);
             }
         }, new ArchiveEntryConsumer() {
+            @Override
             public void accept(File source, ArchiveEntry e) throws IOException {
                 target.putArchiveEntry(e);
                 if (!e.isDirectory()) {
@@ -220,6 +222,7 @@ public class Archiver {
                 target.closeArchiveEntry();
             }
         }, new Finisher() {
+            @Override
             public void finish() throws IOException {
                 target.finish();
             }
@@ -236,10 +239,12 @@ public class Archiver {
      */
     public void create(final SevenZOutputFile target, File directory) throws IOException {
         create(directory, new ArchiveEntryCreator() {
+            @Override
             public ArchiveEntry create(File f, String entryName) throws IOException {
                 return target.createArchiveEntry(f, entryName);
             }
         }, new ArchiveEntryConsumer() {
+            @Override
             public void accept(File source, ArchiveEntry e) throws IOException {
                 target.putArchiveEntry(e);
                 if (!e.isDirectory()) {
@@ -256,6 +261,7 @@ public class Archiver {
                 target.closeArchiveEntry();
             }
         }, new Finisher() {
+            @Override
             public void finish() throws IOException {
                 target.finish();
             }
