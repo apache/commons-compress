@@ -24,7 +24,7 @@
   </parent>
 
   <artifactId>commons-compress</artifactId>
-  <version>1.20-SNAPSHOT</version>
+  <version>1.21-SNAPSHOT</version>
   <name>Apache Commons Compress</name>
   <url>https://commons.apache.org/proper/commons-compress/</url>
   <!-- The description is not indented to make it look better in the release notes -->
@@ -50,7 +50,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <commons.release.version>${project.version}</commons.release.version>
     <commons.rc.version>RC1</commons.rc.version>
     <!-- old version used by japicmp -->
-    <commons.bc.version>1.19</commons.bc.version>
+    <commons.bc.version>1.20</commons.bc.version>
     <powermock.version>1.7.4</powermock.version>
     <commons.pmd-plugin.version>3.12.0</commons.pmd-plugin.version>
 
