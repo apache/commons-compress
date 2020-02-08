@@ -145,7 +145,8 @@
               compressor stream and inside 7z archives - this requires
               XZ for Java 1.6.</li>
             </ul>
-            <subsection name="What's new in 1.12?">
+          </subsection>
+          <subsection name="What's new in 1.12?">
             <ul>
               <li>Added support for the Snappy dialect used in iWork archives.</li>
               <li><code>SevenZFile</code> throws an
