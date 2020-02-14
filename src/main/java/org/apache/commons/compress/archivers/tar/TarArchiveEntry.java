@@ -696,9 +696,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
     }
 
     /**
-     * Set this entry's modification time.
+     * Get this entry's modification time.
      *
-     * @return time This entry's new modification time.
+     * @return This entry's modification time.
      */
     public Date getModTime() {
         return new Date(modTime * MILLIS_PER_SECOND);
