@@ -405,7 +405,7 @@ public class SevenZFile implements Closeable {
         if (entry.getName() == null && options.getUseDefaultNameForUnnamedEntries()) {
             entry.setName(getDefaultName());
         }
-        buildDecodingStream(currentEntryIndex);
+        buildDecodingStream(currentEntryIndex, false);
         uncompressedBytesReadFromCurrentEntry = compressedBytesReadFromCurrentEntry = 0;
         return entry;
     }
@@ -1148,7 +1148,19 @@ public class SevenZFile implements Closeable {
         archive.streamMap = streamMap;
     }
 
-    private void buildDecodingStream(int entryIndex) throws IOException {
+    /**
+     * Build the decoding stream for the entry to be read.
+     * This method may be called from a random access(getInputStream) or
+     * sequential access(getNextEntry).
+     * If this method is called from a random access, some entries may
+     * need to be skipped(we put them to the deferredBlockStreams and
+     * skip them when actually needed to improve the performance)
+     *
+     * @param entryIndex     the index of the entry to be read
+     * @param isRandomAccess is this called in a random access
+     * @throws IOException if there are exceptions when reading the file
+     */
+    private void buildDecodingStream(int entryIndex, boolean isRandomAccess) throws IOException {
         if (archive.streamMap == null) {
             throw new IOException("Archive doesn't contain stream information to read entries");
         }
@@ -1161,10 +1173,6 @@ public class SevenZFile implements Closeable {
         }
         final SevenZArchiveEntry file = archive.files[entryIndex];
         boolean isInSameFolder = false;
-        final Folder folder = archive.folders[folderIndex];
-        final int firstPackStreamIndex = archive.streamMap.folderFirstPackStreamIndex[folderIndex];
-        final long folderOffset = SIGNATURE_HEADER_SIZE + archive.packPos +
-                archive.streamMap.packStreamOffsets[firstPackStreamIndex];
         if (currentFolderIndex == folderIndex) {
             // (COMPRESS-320).
             // The current entry is within the same (potentially opened) folder. The
@@ -1177,54 +1185,27 @@ public class SevenZFile implements Closeable {
             // if this is called in a random access, then the content methods of previous entry may be null
             // the content methods should be set to methods of the first entry as it must not be null,
             // and the content methods would only be set if the content methods was not set
-            if(currentEntryIndex != entryIndex && file.getContentMethods() == null) {
+            if(isRandomAccess && file.getContentMethods() == null) {
                 int folderFirstFileIndex = archive.streamMap.folderFirstFileIndex[folderIndex];
                 SevenZArchiveEntry folderFirstFile = archive.files[folderFirstFileIndex];
                 file.setContentMethods(folderFirstFile.getContentMethods());
             }
             isInSameFolder = true;
         } else {
-            // We're opening a new folder. Discard any queued streams/ folder stream.
             currentFolderIndex = folderIndex;
-            deferredBlockStreams.clear();
-            if (currentFolderInputStream != null) {
-                currentFolderInputStream.close();
-                currentFolderInputStream = null;
-            }
-
-            currentFolderInputStream = buildDecoderStack(folder, folderOffset, firstPackStreamIndex, file);
+            // We're opening a new folder. Discard any queued streams/ folder stream.
+            reopenFolderInputStream(folderIndex, file);
         }
 
-        // if this mothod is called in a random access, then some entries need to be skipped,
-        // if the entry of entryIndex is in the same folder of the currentFolderIndex,
-        // then the entries between (currentEntryIndex + 1) and (entryIndex - 1) need to be skipped,
-        // otherwise it's a new folder, and the entries between firstFileInFolderIndex and (entryIndex - 1) need to be skipped
-        if(currentEntryIndex != entryIndex) {
-            int filesToSkipStartIndex = archive.streamMap.folderFirstFileIndex[folderIndex];
-            if(isInSameFolder) {
-                if(currentEntryIndex < entryIndex) {
-                    // the entries between filesToSkipStartIndex and currentEntryIndex had already been skipped
-                    filesToSkipStartIndex = currentEntryIndex + 1;
-                } else {
-                    // the entry is in the same folder of current entry, but it has already been read before, we need to reset
-                    // the position of the currentFolderInputStream to the beginning of folder, and then skip the files
-                    // from the start entry of the folder again
-                    deferredBlockStreams.clear();
-                    channel.position(folderOffset);
-                }
-            }
+        boolean hasEntriesBeenSkipped = skipEntriesWhenNeeded(entryIndex, isRandomAccess, isInSameFolder, folderIndex);
 
-            for(int i = filesToSkipStartIndex;i < entryIndex;i++) {
-                SevenZArchiveEntry fileToSkip = archive.files[i];
-                InputStream fileStreamToSkip = new BoundedInputStream(currentFolderInputStream, fileToSkip.getSize());
-                if (fileToSkip.getHasCrc()) {
-                    fileStreamToSkip = new CRC32VerifyingInputStream(fileStreamToSkip, fileToSkip.getSize(), fileToSkip.getCrcValue());
-                }
-                deferredBlockStreams.add(fileStreamToSkip);
-
-                // set the content methods as well, it equals to file.getContentMethods() because they are in same folder
-                fileToSkip.setContentMethods(file.getContentMethods());
-            }
+        if (isRandomAccess && currentEntryIndex == entryIndex && !hasEntriesBeenSkipped) {
+            // we don't need to add another entry to the deferredBlockStreams when :
+            // 1. If this method is called in a random access and the entry index
+            // to be read equals to the current entry index, the input stream
+            // has already been put in the deferredBlockStreams
+            // 2. If this entry has not been read(which means no entries are skipped)
+            return;
         }
 
         InputStream fileStream = new BoundedInputStream(currentFolderInputStream, file.getSize());
@@ -1233,6 +1214,113 @@ public class SevenZFile implements Closeable {
         }
 
         deferredBlockStreams.add(fileStream);
+    }
+
+    /**
+     * Discard any queued streams/ folder stream, and reopen the current folder input stream.
+     *
+     * @param folderIndex the index of the folder to reopen
+     * @param file        the 7z entry to read
+     * @throws IOException if exceptions occur when reading the 7z file
+     */
+    private void reopenFolderInputStream(int folderIndex, SevenZArchiveEntry file) throws IOException {
+        deferredBlockStreams.clear();
+        if (currentFolderInputStream != null) {
+            currentFolderInputStream.close();
+            currentFolderInputStream = null;
+        }
+        final Folder folder = archive.folders[folderIndex];
+        final int firstPackStreamIndex = archive.streamMap.folderFirstPackStreamIndex[folderIndex];
+        final long folderOffset = SIGNATURE_HEADER_SIZE + archive.packPos +
+                archive.streamMap.packStreamOffsets[firstPackStreamIndex];
+
+        currentFolderInputStream = buildDecoderStack(folder, folderOffset, firstPackStreamIndex, file);
+    }
+
+    /**
+     * Skip all the entries if needed.
+     * Entries need to be skipped when:
+     * <p>
+     * 1. it's a random access
+     * 2. one of these 2 condition is meet :
+     * <p>
+     * 2.1 currentEntryIndex != entryIndex : this means there are some entries
+     * to be skipped(currentEntryIndex < entryIndex) or the entry has already
+     * been read(currentEntryIndex > entryIndex)
+     * <p>
+     * 2.2 currentEntryIndex == entryIndex && !hasCurrentEntryBeenRead:
+     * if the entry to be read is the current entry, but some data of it has
+     * been read before, then we need to reopen the stream of the folder and
+     * skip all the entries before the current entries
+     *
+     * @param entryIndex     the entry to be read
+     * @param isRandomAccess is this a random access
+     * @param isInSameFolder are the entry to be read and the current entry in the same folder
+     * @param folderIndex    the index of the folder which contains the entry
+     * @return true if there are entries actually skipped
+     * @throws IOException there are exceptions when skipping entries
+     * @since 1.21
+     */
+    private boolean skipEntriesWhenNeeded(int entryIndex, boolean isRandomAccess,
+                                          boolean isInSameFolder, int folderIndex) throws IOException {
+        // entries will only need to be skipped if it's a random access
+        if (!isRandomAccess) {
+            return false;
+        }
+
+        final SevenZArchiveEntry file = archive.files[entryIndex];
+        boolean isNeedToSkipEntries;
+        boolean hasCurrentEntryBeenRead = false;
+        if (currentEntryIndex != entryIndex) {
+            // this means there are some entries to be skipped(currentEntryIndex < entryIndex)
+            // or the entry has already been read(currentEntryIndex > entryIndex)
+            isNeedToSkipEntries = true;
+        } else {
+            if (deferredBlockStreams.size() > 0) {
+                CRC32VerifyingInputStream currentEntryInputStream = (CRC32VerifyingInputStream) deferredBlockStreams.get(deferredBlockStreams.size() - 1);
+                hasCurrentEntryBeenRead = currentEntryInputStream.getBytesRemaining() != archive.files[currentEntryIndex].getSize();
+            }
+
+            // if the entry to be read is the current entry, but some data of it has
+            // been read before, then we need to reopen the stream of the folder and
+            // skip all the entries before the current entries
+            isNeedToSkipEntries = hasCurrentEntryBeenRead;
+        }
+
+        if (!isNeedToSkipEntries) {
+            return false;
+        }
+
+        // 1. if currentEntryIndex < entryIndex :
+        // this means there are some entries to be skipped(currentEntryIndex < entryIndex)
+        // 2. if currentEntryIndex > entryIndex || (currentEntryIndex == entryIndex && hasCurrentEntryBeenRead) :
+        // this means the entry has already been read before, and we need to reopen the
+        // stream of the folder and skip all the entries before the current entries
+        int filesToSkipStartIndex = archive.streamMap.folderFirstFileIndex[currentFolderIndex];
+        if (isInSameFolder) {
+            if (currentEntryIndex < entryIndex) {
+                // the entries between filesToSkipStartIndex and currentEntryIndex had already been skipped
+                filesToSkipStartIndex = currentEntryIndex + 1;
+            } else {
+                // the entry is in the same folder of current entry, but it has already been read before, we need to reset
+                // the position of the currentFolderInputStream to the beginning of folder, and then skip the files
+                // from the start entry of the folder again
+                reopenFolderInputStream(folderIndex, file);
+            }
+        }
+
+        for (int i = filesToSkipStartIndex; i < entryIndex; i++) {
+            SevenZArchiveEntry fileToSkip = archive.files[i];
+            InputStream fileStreamToSkip = new BoundedInputStream(currentFolderInputStream, fileToSkip.getSize());
+            if (fileToSkip.getHasCrc()) {
+                fileStreamToSkip = new CRC32VerifyingInputStream(fileStreamToSkip, fileToSkip.getSize(), fileToSkip.getCrcValue());
+            }
+            deferredBlockStreams.add(fileStreamToSkip);
+
+            // set the content methods as well, it equals to file.getContentMethods() because they are in same folder
+            fileToSkip.setContentMethods(file.getContentMethods());
+        }
+        return isNeedToSkipEntries;
     }
 
     private InputStream buildDecoderStack(final Folder folder, final long folderOffset,
@@ -1348,7 +1436,7 @@ public class SevenZFile implements Closeable {
             throw new IllegalArgumentException("Can not find " + entry.getName() + " in " + this.fileName);
         }
 
-        buildDecodingStream(entryIndex);
+        buildDecodingStream(entryIndex, true);
         currentEntryIndex = entryIndex;
         currentFolderIndex = archive.streamMap.fileFolderIndex[entryIndex];
         return getCurrentStream();
