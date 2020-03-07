@@ -367,4 +367,13 @@ public class ZipArchiveEntryTest {
         x.parseFromLocalFileData(unparseable, 0, unparseable.length);
         return new ZipExtraField[] { a, u, x };
     }
+
+    @Test
+    public void testZipArchiveClone() throws Exception {
+        try (ZipFile zf = new ZipFile(getFile("COMPRESS-479.zip"))) {
+            ZipArchiveEntry ze = zf.getEntry("%U20AC_for_Dollar.txt");
+            ZipArchiveEntry clonedZe = (ZipArchiveEntry) ze.clone();
+            assertTrue(ze.equals(clonedZe));
+        }
+    }
 }

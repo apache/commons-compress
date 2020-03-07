@@ -220,6 +220,11 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <id>chtompki</id>
       <email>chtompki at apache.org</email>
     </developer>
+    <developer>
+      <name>Peter Alfred lee</name>
+      <id>Peter Lee</id>
+      <email>peteralfredlee at gmail.com</email>
+    </developer>
   </developers>
 
   <contributors>
