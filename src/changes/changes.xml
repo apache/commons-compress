@@ -44,6 +44,12 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.21" date="not released, yet"
              description="Release 1.21">
+      <action type="update" date="2020-03-07"
+              due-to="Peter Alfred Lee">
+        Made sure ZstdCompressorOutputStream no longer used
+        deprecated ZstOutputStream constructors.
+        Github Pull Request #94.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20">
