@@ -226,5 +226,37 @@ public class ZipUtilTest {
 
     }
 
+    @Test
+    public void testFromDosTime() {
+        ZipLong testDosTime = new ZipLong(1 << 21);
+        final Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, 1980);
+        cal.set(Calendar.MONTH, 0);
+        cal.set(Calendar.DATE, 0);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        Date testDate = ZipUtil.fromDosTime(testDosTime);
+        assertEquals(testDate.getTime(), cal.getTime().getTime());
 
+        testDosTime = ZipUtil.toDosTime(time);
+        testDate = ZipUtil.fromDosTime(testDosTime);
+        // the minimal time unit for dos time is 2 seconds
+        assertEquals(testDate.getTime() / 2000, (time.getTime() / 2000));
+    }
+
+    @Test(expected = UnsupportedZipFeatureException.class)
+    public void testUnsupportedMethod() throws Exception {
+        ZipArchiveEntry ze = new ZipArchiveEntry();
+        ze.setMethod(ZipMethod.EXPANDING_LEVEL_1.getCode());
+        ZipUtil.checkRequestedFeatures(ze);
+    }
+
+    @Test(expected = UnsupportedZipFeatureException.class)
+    public void testUnknownMethod() throws Exception {
+        ZipArchiveEntry ze = new ZipArchiveEntry();
+        ze.setMethod(100);
+        ZipUtil.checkRequestedFeatures(ze);
+    }
 }

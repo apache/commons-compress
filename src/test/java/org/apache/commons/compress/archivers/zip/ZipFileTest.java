@@ -37,11 +37,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.CRC32;
+import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.utils.IOUtils;
@@ -148,6 +150,18 @@ public class ZipFileTest {
         assertEntryName(l, 20, "ZipLong");
         assertEntryName(l, 21, "ZipShort");
         assertEntryName(l, 22, "ZipUtil");
+    }
+
+    @Test
+    public void testPhysicalOrderOfSpecificFile() throws Exception {
+        readOrderTest();
+        String entryName = "src/main/java/org/apache/commons/compress/archivers/zip/ZipExtraField.java";
+        Iterable<ZipArchiveEntry> entries = zf.getEntriesInPhysicalOrder(entryName);
+        Iterator<ZipArchiveEntry> iter = entries.iterator();
+        ZipArchiveEntry entry = iter.next();
+
+        assertEquals(entryName, entry.getName());
+        assertFalse(iter.hasNext());
     }
 
     @Test
@@ -735,6 +749,18 @@ public class ZipFileTest {
         ZipArchiveEntry zipEntry = zf.getEntry("commons-compress/src/main/java/org/apache/commons/compress/archivers/zip/ZipArchiveInputStream.java");
         File fileToCompare = getFile("COMPRESS-477/split_zip_created_by_winrar/file_to_compare_1");
         assertFileEqualsToEntry(fileToCompare, zipEntry, zf);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetLevelTooSmallForZipArchiveOutputStream() throws Exception {
+        final ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(new ByteArrayOutputStream());
+        outputStream.setLevel(Deflater.DEFAULT_COMPRESSION - 1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetLevelTooBigForZipArchiveOutputStream() throws Exception {
+        final ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(new ByteArrayOutputStream());
+        outputStream.setLevel(Deflater.BEST_COMPRESSION + 1);
     }
 
     private void multiByteReadConsistentlyReturnsMinusOneAtEof(File file) throws Exception {
