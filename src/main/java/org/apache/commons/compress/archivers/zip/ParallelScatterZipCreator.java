@@ -59,6 +59,7 @@ public class ParallelScatterZipCreator {
     private final long startedAt = System.currentTimeMillis();
     private long compressionDoneAt = 0;
     private long scatterDoneAt;
+    private final int compressionLevel;
 
     private static class DefaultBackingStoreSupplier implements ScatterGatherBackingStoreSupplier {
         final AtomicInteger storeNum = new AtomicInteger(0);
@@ -74,7 +75,7 @@ public class ParallelScatterZipCreator {
             throws IOException {
         final ScatterGatherBackingStore bs = scatterGatherBackingStoreSupplier.get();
         // lifecycle is bound to the ScatterZipOutputStream returned
-        final StreamCompressor sc = StreamCompressor.create(Deflater.DEFAULT_COMPRESSION, bs); //NOSONAR
+        final StreamCompressor sc = StreamCompressor.create(compressionLevel, bs); //NOSONAR
         return new ScatterZipOutputStream(bs, sc);
     }
 
@@ -118,8 +119,30 @@ public class ParallelScatterZipCreator {
      */
     public ParallelScatterZipCreator(final ExecutorService executorService,
                                      final ScatterGatherBackingStoreSupplier backingStoreSupplier) {
+        this(executorService, backingStoreSupplier, Deflater.DEFAULT_COMPRESSION);
+    }
+
+    /**
+     * Create a ParallelScatterZipCreator
+     *
+     * @param executorService      The executorService to use. For technical reasons, this will be shut down
+     *                             by this class.
+     * @param backingStoreSupplier The supplier of backing store which shall be used
+     * @param compressionLevel     The compression level used in compression, this value should be
+     *                             -1(default level) or between 0~9.
+     * @throws IllegalArgumentException if the compression level is illegal
+     */
+    public ParallelScatterZipCreator(final ExecutorService executorService,
+                                     final ScatterGatherBackingStoreSupplier backingStoreSupplier,
+                                     final int compressionLevel) throws IllegalArgumentException {
+        if ((compressionLevel < Deflater.NO_COMPRESSION || compressionLevel > Deflater.BEST_COMPRESSION)
+                && compressionLevel != Deflater.DEFAULT_COMPRESSION) {
+            throw new IllegalArgumentException("Compression level is expected between -1~9");
+        }
+
         this.backingStoreSupplier = backingStoreSupplier;
         es = executorService;
+        this.compressionLevel = compressionLevel;
     }
 
     /**
