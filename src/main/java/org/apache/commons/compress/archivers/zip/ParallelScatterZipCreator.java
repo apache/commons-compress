@@ -131,6 +131,7 @@ public class ParallelScatterZipCreator {
      * @param compressionLevel     The compression level used in compression, this value should be
      *                             -1(default level) or between 0~9.
      * @throws IllegalArgumentException if the compression level is illegal
+     * @since 1.21
      */
     public ParallelScatterZipCreator(final ExecutorService executorService,
                                      final ScatterGatherBackingStoreSupplier backingStoreSupplier,
