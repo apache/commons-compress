@@ -1197,9 +1197,13 @@ public class SevenZFile implements Closeable {
             reopenFolderInputStream(folderIndex, file);
         }
 
-        boolean hasEntriesBeenSkipped = skipEntriesWhenNeeded(entryIndex, isRandomAccess, isInSameFolder, folderIndex);
+        boolean haveSkippedEntries = false;
+        if (isRandomAccess) {
+            // entries will only need to be skipped if it's a random access
+            haveSkippedEntries = skipEntriesWhenNeeded(entryIndex, isInSameFolder, folderIndex);
+        }
 
-        if (isRandomAccess && currentEntryIndex == entryIndex && !hasEntriesBeenSkipped) {
+        if (isRandomAccess && currentEntryIndex == entryIndex && !haveSkippedEntries) {
             // we don't need to add another entry to the deferredBlockStreams when :
             // 1. If this method is called in a random access and the entry index
             // to be read equals to the current entry index, the input stream
@@ -1254,22 +1258,15 @@ public class SevenZFile implements Closeable {
      * skip all the entries before the current entries
      *
      * @param entryIndex     the entry to be read
-     * @param isRandomAccess is this a random access
      * @param isInSameFolder are the entry to be read and the current entry in the same folder
      * @param folderIndex    the index of the folder which contains the entry
      * @return true if there are entries actually skipped
      * @throws IOException there are exceptions when skipping entries
      * @since 1.21
      */
-    private boolean skipEntriesWhenNeeded(int entryIndex, boolean isRandomAccess,
-                                          boolean isInSameFolder, int folderIndex) throws IOException {
-        // entries will only need to be skipped if it's a random access
-        if (!isRandomAccess) {
-            return false;
-        }
-
+    private boolean skipEntriesWhenNeeded(int entryIndex, boolean isInSameFolder, int folderIndex) throws IOException {
         final SevenZArchiveEntry file = archive.files[entryIndex];
-        boolean isNeedToSkipEntries;
+        final boolean isNeedToSkipEntries;
         boolean hasCurrentEntryBeenRead = false;
         if (currentEntryIndex != entryIndex) {
             // this means there are some entries to be skipped(currentEntryIndex < entryIndex)
@@ -1320,7 +1317,7 @@ public class SevenZFile implements Closeable {
             // set the content methods as well, it equals to file.getContentMethods() because they are in same folder
             fileToSkip.setContentMethods(file.getContentMethods());
         }
-        return isNeedToSkipEntries;
+        return true;
     }
 
     private InputStream buildDecoderStack(final Folder folder, final long folderOffset,
