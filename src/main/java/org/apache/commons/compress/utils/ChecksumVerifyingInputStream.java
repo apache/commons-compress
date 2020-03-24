@@ -109,4 +109,8 @@ public class ChecksumVerifyingInputStream extends InputStream {
     public void close() throws IOException {
         in.close();
     }
+
+    public long getBytesRemaining() {
+        return bytesRemaining;
+    }
 }
