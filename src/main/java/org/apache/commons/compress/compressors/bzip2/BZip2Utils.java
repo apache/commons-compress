@@ -79,7 +79,7 @@ public abstract class BZip2Utils {
     /**
      * Maps the given file name to the name that the file should have after
      * compression with bzip2. Currently this method simply appends the suffix
-     * ".bz2" to the file name based on the standard behaviour of the "bzip2"
+     * ".bz2" to the file name based on the standard behavior of the "bzip2"
      * program, but a future version may implement a more complex mapping if
      * a new widely used naming pattern emerges.
      *
