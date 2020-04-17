@@ -50,6 +50,16 @@ The <action> type attribute can be add,update,fix,remove.
         deprecated ZstOutputStream constructors.
         Github Pull Request #94.
       </action>
+      <action issue="COMPRESS-504" type="update" date="2020-03-16">
+        Make compression level of ParallelScatterZipCreator
+        configurable via a new constructor.
+      </action>
+      <action issue="COMPRESS-505" type="fix" date="2020-03-24">
+        Fix bugs in random access of 7z. Problems may happen
+        in a mixture use of random access and sequential access
+        of 7z.
+        Github Pull Request #95.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20">
