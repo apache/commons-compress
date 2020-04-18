@@ -1179,8 +1179,9 @@ public class SevenZFile implements Closeable {
             // previous stream has to be fully decoded before we can start reading
             // but don't do it eagerly -- if the user skips over the entire folder nothing
             // is effectively decompressed.
-
-            file.setContentMethods(archive.files[entryIndex - 1].getContentMethods());
+            if (entryIndex > 0) {
+                file.setContentMethods(archive.files[entryIndex - 1].getContentMethods());
+            }
 
             // if this is called in a random access, then the content methods of previous entry may be null
             // the content methods should be set to methods of the first entry as it must not be null,

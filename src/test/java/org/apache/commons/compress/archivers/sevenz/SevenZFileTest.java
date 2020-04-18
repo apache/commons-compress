@@ -673,6 +673,17 @@ public class SevenZFileTest extends AbstractTestCase {
         }
     }
 
+    @Test
+    public void retrieveInputStreamForAllEntriesMultipleTimes() throws IOException {
+        try (SevenZFile sevenZFile = new SevenZFile(getFile("bla.7z"))) {
+            for (SevenZArchiveEntry entry : sevenZFile.getEntries()) {
+                byte[] firstRead = IOUtils.toByteArray(sevenZFile.getInputStream(entry));
+                byte[] secondRead = IOUtils.toByteArray(sevenZFile.getInputStream(entry));
+                assertArrayEquals(firstRead, secondRead);
+            }
+        }
+    }
+
     private void test7zUnarchive(final File f, final SevenZMethod m, final byte[] password) throws Exception {
         try (SevenZFile sevenZFile = new SevenZFile(f, password)) {
             test7zUnarchive(sevenZFile, m);
