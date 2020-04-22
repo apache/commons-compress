@@ -110,6 +110,10 @@ public class ChecksumVerifyingInputStream extends InputStream {
         in.close();
     }
 
+    /**
+     * @return bytes remaining to read
+     * @since 1.21
+     */
     public long getBytesRemaining() {
         return bytesRemaining;
     }

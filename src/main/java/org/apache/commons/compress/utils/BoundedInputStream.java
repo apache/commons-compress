@@ -85,4 +85,12 @@ public class BoundedInputStream extends InputStream {
 
         return bytesSkipped;
     }
+
+    /**
+     * @return bytes remaining to read
+     * @since 1.21
+     */
+    public long getBytesRemaining() {
+        return bytesRemaining;
+    }
 }

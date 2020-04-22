@@ -24,7 +24,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -676,6 +678,28 @@ public class SevenZFileTest extends AbstractTestCase {
     @Test
     public void retrieveInputStreamForAllEntriesMultipleTimes() throws IOException {
         try (SevenZFile sevenZFile = new SevenZFile(getFile("bla.7z"))) {
+            for (SevenZArchiveEntry entry : sevenZFile.getEntries()) {
+                byte[] firstRead = IOUtils.toByteArray(sevenZFile.getInputStream(entry));
+                byte[] secondRead = IOUtils.toByteArray(sevenZFile.getInputStream(entry));
+                assertArrayEquals(firstRead, secondRead);
+            }
+        }
+    }
+
+    @Test
+    public void retrieveInputStreamForAllEntriesWithoutCRCMultipleTimes() throws IOException {
+        try (final SevenZOutputFile out = new SevenZOutputFile(new File(dir, "test.7z"))) {
+            final Path inputFile = Files.createTempFile("SevenZTestTemp", "");
+
+            SevenZArchiveEntry entry = out.createArchiveEntry(inputFile.toFile(), "test.txt");
+            out.putArchiveEntry(entry);
+            out.write("Test".getBytes(StandardCharsets.UTF_8));
+            out.closeArchiveEntry();
+
+            Files.deleteIfExists(inputFile);
+        }
+
+        try (SevenZFile sevenZFile = new SevenZFile(new File(dir, "test.7z"))) {
             for (SevenZArchiveEntry entry : sevenZFile.getEntries()) {
                 byte[] firstRead = IOUtils.toByteArray(sevenZFile.getInputStream(entry));
                 byte[] secondRead = IOUtils.toByteArray(sevenZFile.getInputStream(entry));

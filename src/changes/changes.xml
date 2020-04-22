@@ -62,7 +62,7 @@ The <action> type attribute can be add,update,fix,remove.
       </action>
       <action issue="COMPRESS-510" type="fix" date="2020-04-18">
         Fix bugs in random access of 7z. Exceptions are thrown
-        when reading the first entry multiable times by random
+        when reading the first entry multiple times by random
         access.
       </action>
     </release>

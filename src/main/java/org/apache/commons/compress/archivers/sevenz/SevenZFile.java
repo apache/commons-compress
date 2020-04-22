@@ -1267,25 +1267,9 @@ public class SevenZFile implements Closeable {
      */
     private boolean skipEntriesWhenNeeded(int entryIndex, boolean isInSameFolder, int folderIndex) throws IOException {
         final SevenZArchiveEntry file = archive.files[entryIndex];
-        final boolean isNeedToSkipEntries;
-        boolean hasCurrentEntryBeenRead = false;
-        if (currentEntryIndex != entryIndex) {
-            // this means there are some entries to be skipped(currentEntryIndex < entryIndex)
-            // or the entry has already been read(currentEntryIndex > entryIndex)
-            isNeedToSkipEntries = true;
-        } else {
-            if (deferredBlockStreams.size() > 0) {
-                CRC32VerifyingInputStream currentEntryInputStream = (CRC32VerifyingInputStream) deferredBlockStreams.get(deferredBlockStreams.size() - 1);
-                hasCurrentEntryBeenRead = currentEntryInputStream.getBytesRemaining() != archive.files[currentEntryIndex].getSize();
-            }
-
-            // if the entry to be read is the current entry, but some data of it has
-            // been read before, then we need to reopen the stream of the folder and
-            // skip all the entries before the current entries
-            isNeedToSkipEntries = hasCurrentEntryBeenRead;
-        }
-
-        if (!isNeedToSkipEntries) {
+        // if the entry to be read is the current entry, and the entry has not
+        // been read yet, then there's nothing we need to do
+        if (currentEntryIndex == entryIndex && !hasCurrentEntryBeenRead()) {
             return false;
         }
 
@@ -1319,6 +1303,31 @@ public class SevenZFile implements Closeable {
             fileToSkip.setContentMethods(file.getContentMethods());
         }
         return true;
+    }
+
+    /**
+     * Find out if any data of current entry has been read or not.
+     * This is achieved by comparing the bytes remaining to read
+     * and the size of the file.
+     *
+     * @return true if any data of current entry has been read
+     * @since 1.21
+     */
+    private boolean hasCurrentEntryBeenRead() {
+        boolean hasCurrentEntryBeenRead = false;
+        if (deferredBlockStreams.size() > 0) {
+            InputStream currentEntryInputStream = deferredBlockStreams.get(deferredBlockStreams.size() - 1);
+            // get the bytes remaining to read, and compare it with the size of
+            // the file to figure out if the file has been read
+            if (currentEntryInputStream instanceof CRC32VerifyingInputStream) {
+                hasCurrentEntryBeenRead = ((CRC32VerifyingInputStream) currentEntryInputStream).getBytesRemaining() != archive.files[currentEntryIndex].getSize();
+            }
+
+            if (currentEntryInputStream instanceof BoundedInputStream) {
+                hasCurrentEntryBeenRead = ((BoundedInputStream) currentEntryInputStream).getBytesRemaining() != archive.files[currentEntryIndex].getSize();
+            }
+        }
+        return hasCurrentEntryBeenRead;
     }
 
     private InputStream buildDecoderStack(final Folder folder, final long folderOffset,
