@@ -200,6 +200,13 @@ public class TarArchiveEntryTest implements TarConstants {
         assertEquals("C:/foo.txt", t.getName());
     }
 
+    @Test
+    public void getFileFromNonFileEntry() {
+        TarArchiveEntry entry = new TarArchiveEntry("test.txt");
+        assertNull(entry.getFile());
+        assertNull(entry.getPath());
+    }
+
     private void assertGnuMagic(final TarArchiveEntry t) {
         assertEquals(MAGIC_GNU + VERSION_GNU_SPACE, readMagic(t));
     }
