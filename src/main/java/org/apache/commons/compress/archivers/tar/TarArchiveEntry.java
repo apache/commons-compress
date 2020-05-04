@@ -448,8 +448,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
                 this.userName = posixFileAttributes.owner().getName();
                 this.groupName = posixFileAttributes.group().getName();
                 if (availableAttributeViews.contains("unix")) {
-                    this.userId = (long) Files.getAttribute(file, "unix:uid");
-                    this.groupId = (long) Files.getAttribute(file, "unix:gid");
+                    this.userId = ((Number) Files.getAttribute(file, "unix:uid")).longValue();
+                    this.groupId = ((Number) Files.getAttribute(file, "unix:gid")).longValue();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
