@@ -23,6 +23,10 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.DosFileAttributes;
+import java.nio.file.attribute.FileTime;
+import java.nio.file.attribute.PosixFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -31,6 +35,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -433,12 +438,41 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
             this.name = normalizedName;
         }
 
-        try {
-            this.modTime = Files.getLastModifiedTime(file).to(TimeUnit.SECONDS);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         this.userName = "";
+
+        Set<String> availableAttributeViews = file.getFileSystem().supportedFileAttributeViews();
+        if (availableAttributeViews.contains("posix")) {
+            try {
+                final PosixFileAttributes posixFileAttributes = Files.readAttributes(file, PosixFileAttributes.class);
+                setModTime(posixFileAttributes.lastModifiedTime());
+                this.userName = posixFileAttributes.owner().getName();
+                this.groupName = posixFileAttributes.group().getName();
+                if (availableAttributeViews.contains("unix")) {
+                    this.userId = (long) Files.getAttribute(file, "unix:uid");
+                    this.groupId = (long) Files.getAttribute(file, "unix:gid");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else if (availableAttributeViews.contains("dos")) {
+            try {
+                final DosFileAttributes dosFileAttributes = Files.readAttributes(file, DosFileAttributes.class);
+                setModTime(dosFileAttributes.lastModifiedTime());
+
+                this.userName = Files.getOwner(file).getName();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                final BasicFileAttributes basicFileAttributes = Files.readAttributes(file, BasicFileAttributes.class);
+                setModTime(basicFileAttributes.lastModifiedTime());
+
+                this.userName = Files.getOwner(file).getName();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         preserveAbsolutePath = false;
     }
 
@@ -742,6 +776,15 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      */
     public void setModTime(final Date time) {
         modTime = time.getTime() / MILLIS_PER_SECOND;
+    }
+
+    /**
+     * Set this entry's modification time.
+     *
+     * @param time This entry's new modification time.
+     */
+    public void setModTime(final FileTime time) {
+        modTime = time.to(TimeUnit.SECONDS);
     }
 
     /**
