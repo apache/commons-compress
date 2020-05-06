@@ -18,9 +18,6 @@
 
 package org.apache.commons.compress.archivers.tar;
 
-import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.apache.commons.compress.AbstractTestCase.mkdir;
-import static org.apache.commons.compress.AbstractTestCase.rmdir;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -28,6 +25,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -41,12 +39,15 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.zip.GZIPInputStream;
 
+import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Test;
 
-public class TarArchiveInputStreamTest {
+public class TarArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void readSimplePaxHeader() throws Exception {
@@ -370,6 +371,56 @@ public class TarArchiveInputStreamTest {
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read(buf));
             assertEquals(-1, archive.read(buf));
+        }
+    }
+
+    @Test
+    public void testDirectoryWithLongNameEndsWithSlash() throws IOException, ArchiveException {
+        final String rootPath = dir.getAbsolutePath();
+        final String dirDirectory = "COMPRESS-509";
+        final int count = 100;
+        File root = new File(rootPath + "/" + dirDirectory);
+        root.mkdirs();
+        for (int i = 1; i < count; i++) {
+            // -----------------------
+            // create empty dirs with incremental length
+            // -----------------------
+            String subDir = "";
+            for (int j = 0; j < i; j++) {
+                subDir += "a";
+            }
+            File dir = new File(rootPath + "/" + dirDirectory, "/" + subDir);
+            dir.mkdir();
+
+            // -----------------------
+            // tar these dirs
+            // -----------------------
+            String fileName = "/" + dirDirectory + "/" + subDir;
+            File tarF = new File(rootPath + "/tar" + i + ".tar");
+            FileOutputStream dest = new FileOutputStream(tarF);
+            TarArchiveOutputStream out = new TarArchiveOutputStream(new BufferedOutputStream(dest));
+            out.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_STAR);
+            out.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
+
+            File file = new File(rootPath, fileName);
+            TarArchiveEntry entry = new TarArchiveEntry(file);
+            entry.setName(fileName);
+            out.putArchiveEntry(entry);
+            out.closeArchiveEntry();
+            out.flush();
+            out.close();
+
+            // -----------------------
+            // untar these tars
+            // -----------------------
+            InputStream is = new FileInputStream(tarF);
+            TarArchiveInputStream debInputStream = (TarArchiveInputStream) new ArchiveStreamFactory()
+                    .createArchiveInputStream("tar", is);
+            TarArchiveEntry outEntry;
+            while ((outEntry = (TarArchiveEntry) debInputStream.getNextEntry()) != null) {
+                assertTrue(outEntry.getName().endsWith("/"));
+            }
+            debInputStream.close();
         }
     }
 

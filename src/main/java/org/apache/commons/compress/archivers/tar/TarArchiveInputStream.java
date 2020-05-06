@@ -393,7 +393,13 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                 // entry
                 return null;
             }
-            currEntry.setName(zipEncoding.decode(longNameData));
+
+            // COMPRESS-509 : the name of directories should end with '/'
+            String name = zipEncoding.decode(longNameData);
+            if (currEntry.isDirectory() && !name.endsWith("/")) {
+                name += "/";
+            }
+            currEntry.setName(name);
         }
 
         if (currEntry.isGlobalPaxHeader()){ // Process Global Pax headers
