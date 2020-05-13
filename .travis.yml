@@ -39,8 +39,11 @@ matrix:
       jdk: openjdk13
     - dist: trusty
       jdk: openjdk14
-#    - dist: trusty
-#      jdk: openjdk-ea
+    - dist: trusty
+      jdk: openjdk-ea
+  allow_failures:
+    - jdk: openjdk14
+    - jdk: openjdk-ea
 
 cache:
   directories:
