@@ -37,6 +37,7 @@
          exception with a message like "Illegal seek" we recommend you
          wrap your stream in a <code>SkipShieldingInputStream</code>
          from our utils package before passing it to Compress.</li>
+         <li>Commons Compress cannot be built on JDK 14 or newer.</li>
        </ul>
      </section>
 
@@ -162,8 +163,8 @@
        <ul>
          <li>Pack200 support in Commons Comppress relies on the
          <code>Pack200</code> class of the Java classlib. Java 14
-         removed support and this Pack200 will not work at all when
-         runnin gon Java 14 or later.</li>
+         removed support and thus Pack200 will not work at all when
+         running on Java 14 or later.</li>
        </ul>
      </section>
      <section name="SNAPPY">
