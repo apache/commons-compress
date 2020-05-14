@@ -17,7 +17,9 @@
 # Building Apache Commons Compress
 
 In order to build Commons Compress a JDK implementation 1.7 or higher
-and Apache Maven 3.x are required.
+and Apache Maven 3.x are required. **Note that Commons Compress
+currently doesn't build on JDK 14+, we will address this before
+releasing Compress 1.21**.
 
 To install the jars into your local Maven repository simply run
 

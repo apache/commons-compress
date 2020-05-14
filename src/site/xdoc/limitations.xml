@@ -159,7 +159,12 @@
        </ul>
      </section>
      <section name="PACK200">
-       <p>We are not aware of any problems.</p>
+       <ul>
+         <li>Pack200 support in Commons Comppress relies on the
+         <code>Pack200</code> class of the Java classlib. Java 14
+         removed support and this Pack200 will not work at all when
+         runnin gon Java 14 or later.</li>
+       </ul>
      </section>
      <section name="SNAPPY">
        <ul>

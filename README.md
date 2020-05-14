@@ -48,6 +48,9 @@ Apache Commons Compress
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-compress/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-compress/)
 [![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-compress/1.20.svg)](https://javadoc.io/doc/org.apache.commons/commons-compress/1.20)
 
+**Note: Commons Compress currently doesn't build on JDK 14+, we will
+address this before releasing Compress 1.21**.
+
 Apache Commons Compress software defines an API for working with
 compression and archive formats.  These include: bzip2, gzip, pack200,
 lzma, xz, Snappy, traditional Unix Compress, DEFLATE, DEFLATE64, LZ4,
