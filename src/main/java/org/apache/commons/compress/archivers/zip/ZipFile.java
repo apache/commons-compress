@@ -358,27 +358,33 @@ public class ZipFile implements Closeable {
                     final String encoding, final boolean useUnicodeExtraFields,
                     final boolean closeOnError, final boolean ignoreLocalFileHeader)
         throws IOException {
-        isSplitZipArchive = (channel instanceof ZipSplitReadOnlySeekableByteChannel);
-
-        this.archiveName = archiveName;
-        this.encoding = encoding;
-        this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
-        this.useUnicodeExtraFields = useUnicodeExtraFields;
-        archive = channel;
-        boolean success = false;
         try {
-            final Map<ZipArchiveEntry, NameAndComment> entriesWithoutUTF8Flag =
-                populateFromCentralDirectory();
-            if (!ignoreLocalFileHeader) {
-                resolveLocalFileHeaderData(entriesWithoutUTF8Flag);
+            isSplitZipArchive = (channel instanceof ZipSplitReadOnlySeekableByteChannel);
+
+            this.archiveName = archiveName;
+            this.encoding = encoding;
+            this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
+            this.useUnicodeExtraFields = useUnicodeExtraFields;
+            archive = channel;
+            boolean success = false;
+            try {
+                final Map<ZipArchiveEntry, NameAndComment> entriesWithoutUTF8Flag =
+                        populateFromCentralDirectory();
+                if (!ignoreLocalFileHeader) {
+                    resolveLocalFileHeaderData(entriesWithoutUTF8Flag);
+                }
+                fillNameMap();
+                success = true;
+            } finally {
+                closed = !success;
+                if (!success && closeOnError) {
+                    IOUtils.closeQuietly(archive);
+                }
             }
-            fillNameMap();
-            success = true;
-        } finally {
-            closed = !success;
-            if (!success && closeOnError) {
-                IOUtils.closeQuietly(archive);
-            }
+        }
+        catch (IOException e)
+        {
+            throw new IOException(e.getMessage() + " error on archive " + archiveName, e.getCause());
         }
     }
 
