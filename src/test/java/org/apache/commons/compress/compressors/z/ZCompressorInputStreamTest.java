@@ -26,13 +26,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.SequenceInputStream;
-import java.util.Enumeration;
+import java.util.Collections;
 import org.apache.commons.compress.utils.IOUtils;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.mockito.Mockito.mock;
-import static org.powermock.api.mockito.PowerMockito.doReturn;
-
 
 /**
  * Unit tests for class {@link ZCompressorInputStream}.
@@ -45,23 +42,8 @@ public class ZCompressorInputStreamTest {
 
     @Test(expected = IOException.class)
     public void testFailsToCreateZCompressorInputStreamAndThrowsIOException() throws IOException {
-        boolean java9 = false;
-        try {
-            Class.forName("java.lang.module.ModuleDescriptor");
-            java9 = true;
-        } catch (Exception ex) {
-            // not Java9
-        }
-        org.junit.Assume.assumeFalse("can't use PowerMock with Java9", java9);
-
-        Enumeration<SequenceInputStream> enumeration = (Enumeration<SequenceInputStream>) mock(Enumeration.class);
-        SequenceInputStream sequenceInputStream = new SequenceInputStream(enumeration);
-        ZCompressorInputStream zCompressorInputStream = null;
-
-        doReturn(false).when(enumeration).hasMoreElements();
-
-        zCompressorInputStream = new ZCompressorInputStream(sequenceInputStream);
-
+        SequenceInputStream sequenceInputStream = new SequenceInputStream(Collections.<InputStream>emptyEnumeration());
+        ZCompressorInputStream zCompressorInputStream = new ZCompressorInputStream(sequenceInputStream);
     }
 
     @Test

@@ -51,7 +51,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <commons.rc.version>RC1</commons.rc.version>
     <!-- old version used by japicmp -->
     <commons.bc.version>1.20</commons.bc.version>
-    <powermock.version>1.7.4</powermock.version>
+    <mockito.version>1.10.19</mockito.version>
     <commons.pmd-plugin.version>3.12.0</commons.pmd-plugin.version>
 
     <commons.manifestlocation>${project.build.outputDirectory}/META-INF</commons.manifestlocation>
@@ -110,15 +110,9 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-module-junit4</artifactId>
-      <version>${powermock.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-api-mockito</artifactId>
-      <version>${powermock.version}</version>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
       <scope>test</scope>
     </dependency>
 
