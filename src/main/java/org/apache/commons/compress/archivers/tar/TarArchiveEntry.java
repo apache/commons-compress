@@ -376,9 +376,10 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * directory.</p>
      *
      * @param file The file that the entry represents.
+     * @throws IOException if an I/O error occurs
      * @since 1.21
      */
-    public TarArchiveEntry(final Path file) {
+    public TarArchiveEntry(final Path file) throws IOException {
         this(file, file.toString());
     }
 
@@ -396,7 +397,22 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * @param fileName the name to be used for the entry.
      */
     public TarArchiveEntry(final File file, final String fileName) {
-        this(file.toPath(), fileName);
+        final String normalizedName = normalizeFileName(fileName, false);
+        this.file = file.toPath();
+
+        try {
+            readFileMode(this.file, normalizedName);
+        } catch (IOException e) {
+            // Ignore for backwards compatibility
+        }
+
+        this.userName = "";
+        try {
+            readOsSpecificProperties(this.file);
+        } catch (IOException e) {
+            // Ignore for backwards compatibility
+        }
+        preserveAbsolutePath = false;
     }
 
     /**
@@ -409,14 +425,45 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * The name will end in a slash if the {@code file} represents a
      * directory.</p>
      *
-     * @param file The file that the entry represents.
+     * @param file     The file that the entry represents.
      * @param fileName the name to be used for the entry.
+     * @throws IOException if an I/O error occurs
      * @since 1.21
      */
-    public TarArchiveEntry(final Path file, final String fileName) {
+    public TarArchiveEntry(final Path file, final String fileName) throws IOException {
         final String normalizedName = normalizeFileName(fileName, false);
         this.file = file;
 
+        readFileMode(file, normalizedName);
+
+        this.userName = "";
+        readOsSpecificProperties(file);
+        preserveAbsolutePath = false;
+    }
+
+    private void readOsSpecificProperties(final Path file) throws IOException {
+        Set<String> availableAttributeViews = file.getFileSystem().supportedFileAttributeViews();
+        if (availableAttributeViews.contains("posix")) {
+            final PosixFileAttributes posixFileAttributes = Files.readAttributes(file, PosixFileAttributes.class);
+            setModTime(posixFileAttributes.lastModifiedTime());
+            this.userName = posixFileAttributes.owner().getName();
+            this.groupName = posixFileAttributes.group().getName();
+            if (availableAttributeViews.contains("unix")) {
+                this.userId = ((Number) Files.getAttribute(file, "unix:uid")).longValue();
+                this.groupId = ((Number) Files.getAttribute(file, "unix:gid")).longValue();
+            }
+        } else if (availableAttributeViews.contains("dos")) {
+            final DosFileAttributes dosFileAttributes = Files.readAttributes(file, DosFileAttributes.class);
+            setModTime(dosFileAttributes.lastModifiedTime());
+            this.userName = Files.getOwner(file).getName();
+        } else {
+            final BasicFileAttributes basicFileAttributes = Files.readAttributes(file, BasicFileAttributes.class);
+            setModTime(basicFileAttributes.lastModifiedTime());
+            this.userName = Files.getOwner(file).getName();
+        }
+    }
+
+    private void readFileMode(Path file, String normalizedName) throws IOException {
         if (Files.isDirectory(file)) {
             this.mode = DEFAULT_DIR_MODE;
             this.linkFlag = LF_DIR;
@@ -430,50 +477,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
         } else {
             this.mode = DEFAULT_FILE_MODE;
             this.linkFlag = LF_NORMAL;
-            try {
-                this.size = Files.size(file);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
             this.name = normalizedName;
+            this.size = Files.size(file);
         }
-
-        this.userName = "";
-
-        Set<String> availableAttributeViews = file.getFileSystem().supportedFileAttributeViews();
-        if (availableAttributeViews.contains("posix")) {
-            try {
-                final PosixFileAttributes posixFileAttributes = Files.readAttributes(file, PosixFileAttributes.class);
-                setModTime(posixFileAttributes.lastModifiedTime());
-                this.userName = posixFileAttributes.owner().getName();
-                this.groupName = posixFileAttributes.group().getName();
-                if (availableAttributeViews.contains("unix")) {
-                    this.userId = ((Number) Files.getAttribute(file, "unix:uid")).longValue();
-                    this.groupId = ((Number) Files.getAttribute(file, "unix:gid")).longValue();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else if (availableAttributeViews.contains("dos")) {
-            try {
-                final DosFileAttributes dosFileAttributes = Files.readAttributes(file, DosFileAttributes.class);
-                setModTime(dosFileAttributes.lastModifiedTime());
-
-                this.userName = Files.getOwner(file).getName();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            try {
-                final BasicFileAttributes basicFileAttributes = Files.readAttributes(file, BasicFileAttributes.class);
-                setModTime(basicFileAttributes.lastModifiedTime());
-
-                this.userName = Files.getOwner(file).getName();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        preserveAbsolutePath = false;
     }
 
     /**
