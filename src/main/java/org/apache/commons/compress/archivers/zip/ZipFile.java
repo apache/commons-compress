@@ -384,7 +384,7 @@ public class ZipFile implements Closeable {
         }
         catch (IOException e)
         {
-            throw new IOException(e.getMessage() + " error on archive " + archiveName, e.getCause());
+            throw new IOException("Error on ZipFile " + archiveName + e.getMessage(), e.getCause());
         }
     }
 
