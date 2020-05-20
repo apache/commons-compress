@@ -357,7 +357,7 @@ public class ZipFile implements Closeable {
     private ZipFile(final SeekableByteChannel channel, final String archiveName,
                     final String encoding, final boolean useUnicodeExtraFields,
                     final boolean closeOnError, final boolean ignoreLocalFileHeader)
-            throws IOException {
+        throws IOException {
         isSplitZipArchive = (channel instanceof ZipSplitReadOnlySeekableByteChannel);
 
         this.archiveName = archiveName;
@@ -368,7 +368,7 @@ public class ZipFile implements Closeable {
         boolean success = false;
         try {
             final Map<ZipArchiveEntry, NameAndComment> entriesWithoutUTF8Flag =
-                    populateFromCentralDirectory();
+                populateFromCentralDirectory();
             if (!ignoreLocalFileHeader) {
                 resolveLocalFileHeaderData(entriesWithoutUTF8Flag);
             }
