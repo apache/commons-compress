@@ -357,34 +357,30 @@ public class ZipFile implements Closeable {
     private ZipFile(final SeekableByteChannel channel, final String archiveName,
                     final String encoding, final boolean useUnicodeExtraFields,
                     final boolean closeOnError, final boolean ignoreLocalFileHeader)
-        throws IOException {
-        try {
-            isSplitZipArchive = (channel instanceof ZipSplitReadOnlySeekableByteChannel);
+            throws IOException {
+        isSplitZipArchive = (channel instanceof ZipSplitReadOnlySeekableByteChannel);
 
-            this.archiveName = archiveName;
-            this.encoding = encoding;
-            this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
-            this.useUnicodeExtraFields = useUnicodeExtraFields;
-            archive = channel;
-            boolean success = false;
-            try {
-                final Map<ZipArchiveEntry, NameAndComment> entriesWithoutUTF8Flag =
-                        populateFromCentralDirectory();
-                if (!ignoreLocalFileHeader) {
-                    resolveLocalFileHeaderData(entriesWithoutUTF8Flag);
-                }
-                fillNameMap();
-                success = true;
-            } finally {
-                closed = !success;
-                if (!success && closeOnError) {
-                    IOUtils.closeQuietly(archive);
-                }
+        this.archiveName = archiveName;
+        this.encoding = encoding;
+        this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
+        this.useUnicodeExtraFields = useUnicodeExtraFields;
+        archive = channel;
+        boolean success = false;
+        try {
+            final Map<ZipArchiveEntry, NameAndComment> entriesWithoutUTF8Flag =
+                    populateFromCentralDirectory();
+            if (!ignoreLocalFileHeader) {
+                resolveLocalFileHeaderData(entriesWithoutUTF8Flag);
             }
-        }
-        catch (IOException e)
-        {
-            throw new IOException("Error on ZipFile " + archiveName + e.getMessage(), e.getCause());
+            fillNameMap();
+            success = true;
+        } catch (IOException e) {
+            throw new IOException("Error on ZipFile " + archiveName + e.getMessage(), e);
+        } finally {
+            closed = !success;
+            if (!success && closeOnError) {
+                IOUtils.closeQuietly(archive);
+            }
         }
     }
 
