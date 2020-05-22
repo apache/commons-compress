@@ -374,6 +374,8 @@ public class ZipFile implements Closeable {
             }
             fillNameMap();
             success = true;
+        } catch (IOException e) {
+            throw new IOException("Error on ZipFile " + archiveName, e);
         } finally {
             closed = !success;
             if (!success && closeOnError) {
