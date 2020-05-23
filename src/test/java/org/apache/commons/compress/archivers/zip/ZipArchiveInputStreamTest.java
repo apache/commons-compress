@@ -700,7 +700,7 @@ public class ZipArchiveInputStreamTest {
     /**
      * @see https://issues.apache.org/jira/browse/COMPRESS-523
      */
-    public void throwsIfZip64ExtraCouldNotBeUnderstoodY() throws Exception {
+    public void throwsIfThereIsNoEocd() throws Exception {
         thrown.expect(IOException.class);
         thrown.expectMessage("Truncated ZIP file");
         fuzzingTest(new int[] {
