@@ -40,6 +40,8 @@ import java.util.Arrays;
 import java.util.zip.ZipException;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -677,6 +679,23 @@ public class ZipArchiveInputStreamTest {
         }
     }
 
+    @Test
+    /**
+     * @see https://issues.apache.org/jira/browse/COMPRESS-518
+     */
+    public void throwsIfZip64ExtraCouldNotBeUnderstood() throws Exception {
+        thrown.expect(ZipException.class);
+        fuzzingTest(new int[] {
+            0x50, 0x4b, 0x03, 0x04, 0x2e, 0x00, 0x00, 0x00, 0x0c, 0x00,
+            0x84, 0xb6, 0xba, 0x46, 0x72, 0xb6, 0xfe, 0x77, 0x63, 0x00,
+            0x00, 0x00, 0x6b, 0x00, 0x00, 0x00, 0x03, 0x00, 0x1c, 0x00,
+            0x62, 0x62, 0x62, 0x01, 0x00, 0x09, 0x00, 0x03, 0xe7, 0xce,
+            0x64, 0x55, 0xf3, 0xce, 0x64, 0x55, 0x75, 0x78, 0x0b, 0x00,
+            0x01, 0x04, 0x5c, 0xf9, 0x01, 0x00, 0x04, 0x88, 0x13, 0x00,
+            0x00
+        });
+    }
+
     private static byte[] readEntry(ZipArchiveInputStream zip, ZipArchiveEntry zae) throws IOException {
         final int len = (int)zae.getSize();
         final byte[] buff = new byte[len];
@@ -698,6 +717,19 @@ public class ZipArchiveInputStreamTest {
             } while (--entryNo > 0);
             assertEquals(entry, ze.getName());
             assertEquals(expected, ze.getNameSource());
+        }
+    }
+
+    private void fuzzingTest(final int[] bytes) throws Exception {
+        final int len = bytes.length;
+        final byte[] input = new byte[len];
+        for (int i = 0; i < len; i++) {
+            input[i] = (byte) bytes[i];
+        }
+        try (ArchiveInputStream ais = new ArchiveStreamFactory()
+             .createArchiveInputStream("zip", new ByteArrayInputStream(input))) {
+            ais.getNextEntry();
+            IOUtils.toByteArray(ais);
         }
     }
 }

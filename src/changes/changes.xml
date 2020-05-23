@@ -76,6 +76,11 @@ The <action> type attribute can be add,update,fix,remove.
       <action issue="COMPRESS-517" type="fix" date="2020-05-23">
         Improved parsing of X5455_ExtendedTimestamp ZIP extra field.
       </action>
+      <action issue="COMPRESS-518" type="fix" date="2020-05-23">
+        ZipArchiveInputStream and ZipFile will now throw an
+        IOException rather than a RuntimeException if the zip64 extra
+        field of an enty could not be parsed.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20">

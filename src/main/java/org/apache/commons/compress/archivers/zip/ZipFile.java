@@ -833,9 +833,13 @@ public class ZipFile implements Closeable {
      */
     private void setSizesAndOffsetFromZip64Extra(final ZipArchiveEntry ze)
         throws IOException {
-        final Zip64ExtendedInformationExtraField z64 =
-            (Zip64ExtendedInformationExtraField)
+        final ZipExtraField extra =
             ze.getExtraField(Zip64ExtendedInformationExtraField.HEADER_ID);
+        if (extra != null && !(extra instanceof Zip64ExtendedInformationExtraField)) {
+            throw new ZipException("archive contains unparseable zip64 extra field");
+        }
+        final Zip64ExtendedInformationExtraField z64 =
+            (Zip64ExtendedInformationExtraField) extra;
         if (z64 != null) {
             final boolean hasUncompressedSize = ze.getSize() == ZIP64_MAGIC;
             final boolean hasCompressedSize = ze.getCompressedSize() == ZIP64_MAGIC;

@@ -1135,11 +1135,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
     private byte[] createLocalFileHeader(final ZipArchiveEntry ze, final ByteBuffer name, final boolean encodable,
                                          final boolean phased, long archiveOffset) {
-        ResourceAlignmentExtraField oldAlignmentEx =
-            (ResourceAlignmentExtraField) ze.getExtraField(ResourceAlignmentExtraField.ID);
-        if (oldAlignmentEx != null) {
+        ZipExtraField oldEx = ze.getExtraField(ResourceAlignmentExtraField.ID);
+        if (oldEx != null) {
             ze.removeExtraField(ResourceAlignmentExtraField.ID);
         }
+        ResourceAlignmentExtraField oldAlignmentEx =
+            oldEx instanceof ResourceAlignmentExtraField ? (ResourceAlignmentExtraField) oldEx : null;
 
         int alignment = ze.getAlignment();
         if (alignment <= 0 && oldAlignmentEx != null) {
@@ -1768,10 +1769,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             entry.causedUseOfZip64 = !hasUsedZip64;
         }
         hasUsedZip64 = true;
-        Zip64ExtendedInformationExtraField z64 =
-            (Zip64ExtendedInformationExtraField)
-            ze.getExtraField(Zip64ExtendedInformationExtraField
-                             .HEADER_ID);
+        ZipExtraField extra = ze.getExtraField(Zip64ExtendedInformationExtraField.HEADER_ID);
+        Zip64ExtendedInformationExtraField z64 = extra instanceof Zip64ExtendedInformationExtraField
+            ? (Zip64ExtendedInformationExtraField) extra : null;
         if (z64 == null) {
             /*
               System.err.println("Adding z64 for " + ze.getName()
@@ -1797,7 +1797,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private boolean hasZip64Extra(final ZipArchiveEntry ze) {
         return ze.getExtraField(Zip64ExtendedInformationExtraField
                                 .HEADER_ID)
-            != null;
+            instanceof Zip64ExtendedInformationExtraField;
     }
 
     /**

@@ -413,10 +413,14 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
      * information from it if sizes are 0xFFFFFFFF and the entry
      * doesn't use a data descriptor.
      */
-    private void processZip64Extra(final ZipLong size, final ZipLong cSize) {
-        final Zip64ExtendedInformationExtraField z64 =
-            (Zip64ExtendedInformationExtraField)
+    private void processZip64Extra(final ZipLong size, final ZipLong cSize) throws ZipException {
+        final ZipExtraField extra =
             current.entry.getExtraField(Zip64ExtendedInformationExtraField.HEADER_ID);
+        if (extra != null && !(extra instanceof Zip64ExtendedInformationExtraField)) {
+            throw new ZipException("archive contains unparseable zip64 extra field");
+        }
+        final Zip64ExtendedInformationExtraField z64 =
+            (Zip64ExtendedInformationExtraField) extra;
         current.usesZip64 = z64 != null;
         if (!current.hasDataDescriptor) {
             if (z64 != null // same as current.usesZip64 but avoids NPE warning
