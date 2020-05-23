@@ -1055,19 +1055,28 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
         // skip over central directory. One LFH has been read too much
         // already.  The calculation discounts file names and extra
         // data so it will be too short.
-        realSkip((long) entriesRead * CFH_LEN - LFH_LEN);
-        findEocdRecord();
-        realSkip((long) ZipFile.MIN_EOCD_SIZE - WORD /* signature */ - SHORT /* comment len */);
-        readFully(shortBuf);
-        // file comment
-        realSkip(ZipShort.getValue(shortBuf));
+        if (entriesRead > 0) {
+            realSkip((long) entriesRead * CFH_LEN - LFH_LEN);
+            boolean foundEocd = findEocdRecord();
+            if (foundEocd) {
+                realSkip((long) ZipFile.MIN_EOCD_SIZE - WORD /* signature */ - SHORT /* comment len */);
+                readFully(shortBuf);
+                // file comment
+                final int commentLen = ZipShort.getValue(shortBuf);
+                if (commentLen >= 0) {
+                    realSkip(commentLen);
+                    return;
+                }
+            }
+        }
+        throw new IOException("Truncated ZIP file");
     }
 
     /**
      * Reads forward until the signature of the &quot;End of central
      * directory&quot; record is found.
      */
-    private void findEocdRecord() throws IOException {
+    private boolean findEocdRecord() throws IOException {
         int currentByte = -1;
         boolean skipReadCall = false;
         while (skipReadCall || (currentByte = readOneByte()) > -1) {
@@ -1092,12 +1101,14 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
                 continue;
             }
             currentByte = readOneByte();
-            if (currentByte == -1
-                || currentByte == ZipArchiveOutputStream.EOCD_SIG[3]) {
+            if (currentByte == -1) {
                 break;
+            } else if (currentByte == ZipArchiveOutputStream.EOCD_SIG[3]) {
+                return true;
             }
             skipReadCall = isFirstByteOfEocdSig(currentByte);
         }
+        return false;
     }
 
     /**

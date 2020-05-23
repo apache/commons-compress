@@ -696,6 +696,20 @@ public class ZipArchiveInputStreamTest {
         });
     }
 
+    @Test
+    /**
+     * @see https://issues.apache.org/jira/browse/COMPRESS-523
+     */
+    public void throwsIfZip64ExtraCouldNotBeUnderstoodY() throws Exception {
+        thrown.expect(IOException.class);
+        thrown.expectMessage("Truncated ZIP file");
+        fuzzingTest(new int[] {
+            0x50, 0x4b, 0x01, 0x02, 0x14, 0x00, 0x14, 0x00, 0x08, 0x00,
+            0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x43, 0xbe, 0x00, 0x00,
+            0x00, 0xb7, 0xe8, 0x07, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00
+        });
+    }
+
     private static byte[] readEntry(ZipArchiveInputStream zip, ZipArchiveEntry zae) throws IOException {
         final int len = (int)zae.getSize();
         final byte[] buff = new byte[len];

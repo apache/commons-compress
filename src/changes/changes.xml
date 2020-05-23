@@ -81,6 +81,9 @@ The <action> type attribute can be add,update,fix,remove.
         IOException rather than a RuntimeException if the zip64 extra
         field of an enty could not be parsed.
       </action>
+      <action issue="COMPRESS-523" type="fix" date="2020-05-23">
+        Improved detection of corrupt ZIP archives in ZipArchiveInputStream.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20">
