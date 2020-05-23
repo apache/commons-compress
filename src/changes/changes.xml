@@ -73,6 +73,9 @@ The <action> type attribute can be add,update,fix,remove.
         throw the expected IOException rather than obscure
         RuntimeExceptions.
       </action>
+      <action issue="COMPRESS-517" type="fix" date="2020-05-23">
+        Improved parsing of X5455_ExtendedTimestamp ZIP extra field.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20">

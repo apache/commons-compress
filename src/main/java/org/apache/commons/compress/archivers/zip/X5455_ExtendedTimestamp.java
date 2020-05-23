@@ -227,14 +227,20 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
         if (bit0_modifyTimePresent && offset + 4 <= len) {
             modifyTime = new ZipLong(data, offset);
             offset += 4;
+        } else {
+            bit0_modifyTimePresent = false;
         }
         if (bit1_accessTimePresent && offset + 4 <= len) {
             accessTime = new ZipLong(data, offset);
             offset += 4;
+        } else {
+            bit1_accessTimePresent = false;
         }
         if (bit2_createTimePresent && offset + 4 <= len) {
             createTime = new ZipLong(data, offset);
             offset += 4; // NOSONAR - assignment as documentation
+        } else {
+            bit2_createTimePresent = false;
         }
     }
 

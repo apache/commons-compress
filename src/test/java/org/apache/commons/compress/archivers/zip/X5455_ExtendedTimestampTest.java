@@ -39,6 +39,7 @@ import static org.apache.commons.compress.AbstractTestCase.rmdir;
 import static org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp.ACCESS_TIME_BIT;
 import static org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp.CREATE_TIME_BIT;
 import static org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp.MODIFY_TIME_BIT;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -470,6 +471,15 @@ public class X5455_ExtendedTimestampTest {
         xf.setCreateJavaTime(null);
         assertFalse(xf.isBit2_createTimePresent());
         assertEquals(0, xf.getFlags());
+    }
+
+    @Test
+    public void resetsFlagsWhenLocalFileArrayIsTooShort() throws Exception {
+        final byte[] local = new byte[] {
+            7
+        }; // claims all three time values would be present, but they are not
+        xf.parseFromLocalFileData(local, 0, 1);
+        assertArrayEquals(new byte[1], xf.getLocalFileDataData());
     }
 
     private void parseReparse(
