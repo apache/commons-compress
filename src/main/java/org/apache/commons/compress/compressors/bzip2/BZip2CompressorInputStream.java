@@ -659,6 +659,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
                     checkBounds(tmp, MAX_ALPHA_SIZE, "zvec");
                     nextSym = perm_zt[tmp];
                 }
+                checkBounds(s, this.data.ll8.length, "s");
 
                 final int yy0 = yy[0];
                 checkBounds(yy0, 256, "yy");
