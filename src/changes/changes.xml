@@ -65,7 +65,7 @@ The <action> type attribute can be add,update,fix,remove.
         when reading the first entry multiple times by random
         access.
       </action>
-      <action issue="COMPRESS-520" type="fix" date="2020-05-23">
+      <action issue="COMPRESS-520" type="fix" date="2020-05-23" due-to="Robin Schimpf">
         Removed the PowerMock dependency.
       </action>
       <action issue="COMPRESS-516" type="fix" date="2020-05-23">
