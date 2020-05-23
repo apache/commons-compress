@@ -904,7 +904,7 @@ public class ZipFileTest {
         String tempLineInFile2;
         for(int i = 0;i < linesOfFile1.size();i++) {
             tempLineInFile1 = linesOfFile1.get(i).replaceAll("\r\n", "\n");
-            tempLineInFile2 = linesOfFile1.get(i).replaceAll("\r\n", "\n");
+            tempLineInFile2 = linesOfFile2.get(i).replaceAll("\r\n", "\n");
             Assert.assertEquals(tempLineInFile1, tempLineInFile2);
         }
     }
