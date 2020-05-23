@@ -1614,7 +1614,7 @@ public class SevenZFile implements Closeable {
     }
 
     private static void assertFitsIntoInt(String what, long value) throws IOException {
-        if (value > Integer.MAX_VALUE) {
+        if (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE) {
             throw new IOException("Cannot handle " + what + " " + value);
         }
     }
