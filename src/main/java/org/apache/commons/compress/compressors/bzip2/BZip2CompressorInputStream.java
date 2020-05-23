@@ -667,6 +667,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
 
                 final int from = ++lastShadow;
                 lastShadow += s;
+                checkBounds(lastShadow, this.data.ll8.length, "lastShadow");
                 Arrays.fill(ll8, from, lastShadow + 1, ch);
 
                 if (lastShadow >= limitLast) {
