@@ -81,7 +81,11 @@ public class Deflate64CompressorInputStream extends CompressorInputStream implem
         }
         int read = -1;
         if (decoder != null) {
-            read = decoder.decode(b, off, len);
+            try {
+                read = decoder.decode(b, off, len);
+            } catch (IllegalStateException ex) {
+                throw new IOException("Invalid Defalt64 input", ex);
+            }
             compressedBytesRead = decoder.getBytesRead();
             count(read);
             if (read == -1) {

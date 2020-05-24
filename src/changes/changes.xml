@@ -85,6 +85,12 @@ The <action> type attribute can be add,update,fix,remove.
       <action issue="COMPRESS-523" type="fix" date="2020-05-23">
         Improved detection of corrupt ZIP archives in ZipArchiveInputStream.
       </action>
+      <action issue="COMPRESS-521" type="fix" date="2020-05-24">
+        Added improved checks to detect corrupted deflate64 streams and
+        throw the expected IOException rather than obscure
+        RuntimeExceptions.
+        See also COMPRESS-522 and COMPRESS-525.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20">
