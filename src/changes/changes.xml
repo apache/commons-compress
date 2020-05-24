@@ -91,6 +91,11 @@ The <action> type attribute can be add,update,fix,remove.
         RuntimeExceptions.
         See also COMPRESS-522, COMPRESS-525, COMPRESS-526, and COMPRESS-527.
       </action>
+      <action issue="COMPRESS-515" type="fix" date="2020-05-22">
+        Add the archive name in the exception in the constructor of
+        ZipFIle to make it a more specific exception.
+        Github Pull Request #102.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20">
