@@ -358,6 +358,11 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * name will end in a slash if the {@code file} represents a
      * directory.</p>
      *
+     * <p>Note: Since 1.21 this internally uses the same code as the
+     * TarArchiveEntry constructors with a {@link Path} as parameter.
+     * But all thrown exceptions are ignored. If handling those
+     * exceptions is needed consider switching to the path constructors.</p>
+     *
      * @param file The file that the entry represents.
      */
     public TarArchiveEntry(final File file) {
@@ -393,6 +398,11 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * The name will end in a slash if the {@code file} represents a
      * directory.</p>
      *
+     * <p>Note: Since 1.21 this internally uses the same code as the
+     * TarArchiveEntry constructors with a {@link Path} as parameter.
+     * But all thrown exceptions are ignored. If handling those
+     * exceptions is needed consider switching to the path constructors.</p>
+     *
      * @param file The file that the entry represents.
      * @param fileName the name to be used for the entry.
      */
@@ -403,14 +413,20 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
         try {
             readFileMode(this.file, normalizedName);
         } catch (IOException e) {
-            // Ignore for backwards compatibility
+            // Ignore exceptions from NIO for backwards compatibility
+            // Fallback to get size of file if it's no directory to the old file api
+            if (!file.isDirectory()) {
+                this.size = file.length();
+            }
         }
 
         this.userName = "";
         try {
             readOsSpecificProperties(this.file);
         } catch (IOException e) {
-            // Ignore for backwards compatibility
+            // Ignore exceptions from NIO for backwards compatibility
+            // Fallback to get the last modified date of the file from the old file api
+            this.modTime = file.lastModified() / MILLIS_PER_SECOND;
         }
         preserveAbsolutePath = false;
     }
@@ -788,6 +804,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * Set this entry's modification time.
      *
      * @param time This entry's new modification time.
+     * @since 1.21
      */
     public void setModTime(final FileTime time) {
         modTime = time.to(TimeUnit.SECONDS);
@@ -840,6 +857,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * File} or {@code Path} but not for entries read from an archive.</p>
      *
      * @return This entry's file or null if the entry was not created from a file.
+     * @since 1.21
      */
     public Path getPath() {
         return file;
