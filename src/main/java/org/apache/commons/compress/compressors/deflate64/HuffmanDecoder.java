@@ -462,6 +462,9 @@ class HuffmanDecoder implements Closeable {
                 for (int p = len - 1; p >= 0; p--) {
                     int bit = lit & (1 << p);
                     node = bit == 0 ? node.left() : node.right();
+                    if (node == null) {
+                        throw new IllegalStateException("node doesn't exist in Huffman tree");
+                    }
                 }
                 node.leaf(i);
                 literalCodes[len - 1]++;
@@ -475,6 +478,10 @@ class HuffmanDecoder implements Closeable {
         int[] blCount = new int[65];
 
         for (int aLitTable : litTable) {
+            if (aLitTable < 0 || aLitTable > 64) {
+                throw new IllegalArgumentException("Invalid code " + aLitTable
+                    + " in literal table");
+            }
             max = Math.max(max, aLitTable);
             blCount[aLitTable]++;
         }
