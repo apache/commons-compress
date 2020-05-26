@@ -745,6 +745,12 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                     }
                     break; // Processed single header
                 }
+
+                // COMPRESS-530 : skip non-number chars
+                if (ch < '0' || ch > '9') {
+                    continue;
+                }
+
                 len *= 10;
                 len += ch - '0';
             }
