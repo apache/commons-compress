@@ -425,6 +425,15 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
     }
 
     @Test(expected = IOException.class)
+    public void testParseTarWithNonNumberPaxHeaders() throws IOException {
+        try (FileInputStream in = new FileInputStream(getFile("COMPRESS-529.tar"));
+             TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
+            archive.getNextEntry();
+            IOUtils.toByteArray(archive);
+        }
+    }
+
+    @Test(expected = IOException.class)
     public void testParseTarWithSpecialPaxHeaders() throws IOException {
         try (FileInputStream in = new FileInputStream(getFile("COMPRESS-530.tar"));
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {

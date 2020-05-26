@@ -1063,12 +1063,14 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
     /**
      * add a PAX header to this entry. If the header corresponds to an existing field in the entry,
      * that field will be set; otherwise the header will be added to the extraPaxHeaders Map
+     *
      * @param name  The full name of the header to set.
      * @param value value of header.
+     * @throws IOException if error occurs when parsing pax header
      * @since 1.15
      */
-    public void addPaxHeader(String name,String value) {
-         processPaxHeader(name,value);
+    public void addPaxHeader(String name, String value) throws IOException {
+        processPaxHeader(name, value);
     }
 
     /**
@@ -1083,10 +1085,12 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
 
     /**
      * Update the entry using a map of pax headers.
+     *
      * @param headers
+     * @throws IOException if error occurs when parsing pax header
      * @since 1.15
      */
-    void updateEntryFromPaxHeaders(Map<String, String> headers) {
+    void updateEntryFromPaxHeaders(Map<String, String> headers) throws IOException {
         for (final Map.Entry<String, String> ent : headers.entrySet()) {
             final String key = ent.getKey();
             final String val = ent.getValue();
@@ -1097,11 +1101,13 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
     /**
      * process one pax header, using the entries extraPaxHeaders map as source for extra headers
      * used when handling entries for sparse files.
+     *
      * @param key
      * @param val
+     * @throws IOException if error occurs when parsing pax header
      * @since 1.15
      */
-    private void processPaxHeader(String key, String val) {
+    private void processPaxHeader(String key, String val) throws IOException {
         processPaxHeader(key,val,extraPaxHeaders);
     }
 
@@ -1109,12 +1115,13 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * Process one pax header, using the supplied map as source for extra headers to be used when handling
      * entries for sparse files
      *
-     * @param key  the header name.
-     * @param val  the header value.
-     * @param headers  map of headers used for dealing with sparse file.
+     * @param key     the header name.
+     * @param val     the header value.
+     * @param headers map of headers used for dealing with sparse file.
+     * @throws IOException if error occurs when parsing pax header
      * @since 1.15
      */
-    private void processPaxHeader(String key, String val, Map<String, String> headers) {
+    private void processPaxHeader(String key, String val, Map<String, String> headers) throws IOException {
     /*
      * The following headers are defined for Pax.
      * atime, ctime, charset: cannot use these without changing TarArchiveEntry fields
@@ -1135,50 +1142,54 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      *
      * If called from addExtraPaxHeader, these additional headers must be already present .
      */
-        switch (key) {
-            case "path":
-                setName(val);
-                break;
-            case "linkpath":
-                setLinkName(val);
-                break;
-            case "gid":
-                setGroupId(Long.parseLong(val));
-                break;
-            case "gname":
-                setGroupName(val);
-                break;
-            case "uid":
-                setUserId(Long.parseLong(val));
-                break;
-            case "uname":
-                setUserName(val);
-                break;
-            case "size":
-                setSize(Long.parseLong(val));
-                break;
-            case "mtime":
-                setModTime((long) (Double.parseDouble(val) * 1000));
-                break;
-            case "SCHILY.devminor":
-                setDevMinor(Integer.parseInt(val));
-                break;
-            case "SCHILY.devmajor":
-                setDevMajor(Integer.parseInt(val));
-                break;
-            case "GNU.sparse.size":
-                fillGNUSparse0xData(headers);
-                break;
-            case "GNU.sparse.realsize":
-                fillGNUSparse1xData(headers);
-                break;
-            case "SCHILY.filetype":
-                if ("sparse".equals(val)) {
-                    fillStarSparseData(headers);
-                }
-                break;
-            default:
-                extraPaxHeaders.put(key,val);
+        try {
+            switch (key) {
+                case "path":
+                    setName(val);
+                    break;
+                case "linkpath":
+                    setLinkName(val);
+                    break;
+                case "gid":
+                    setGroupId(Long.parseLong(val));
+                    break;
+                case "gname":
+                    setGroupName(val);
+                    break;
+                case "uid":
+                    setUserId(Long.parseLong(val));
+                    break;
+                case "uname":
+                    setUserName(val);
+                    break;
+                case "size":
+                    setSize(Long.parseLong(val));
+                    break;
+                case "mtime":
+                    setModTime((long) (Double.parseDouble(val) * 1000));
+                    break;
+                case "SCHILY.devminor":
+                    setDevMinor(Integer.parseInt(val));
+                    break;
+                case "SCHILY.devmajor":
+                    setDevMajor(Integer.parseInt(val));
+                    break;
+                case "GNU.sparse.size":
+                    fillGNUSparse0xData(headers);
+                    break;
+                case "GNU.sparse.realsize":
+                    fillGNUSparse1xData(headers);
+                    break;
+                case "SCHILY.filetype":
+                    if ("sparse".equals(val)) {
+                        fillStarSparseData(headers);
+                    }
+                    break;
+                default:
+                    extraPaxHeaders.put(key, val);
+            }
+        } catch (NumberFormatException e) {
+            throw new IOException("Error occurs when parsing " + key + " in pax header : " + val + " is not a number", e);
         }
     }
 

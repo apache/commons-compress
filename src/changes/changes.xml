@@ -96,6 +96,10 @@ The <action> type attribute can be add,update,fix,remove.
         ZipFIle to make it a more specific exception.
         Github Pull Request #102.
       </action>
+      <action issue="COMPRESS-529" type="fix" date="2020-05-26">
+        Throws IOException with more specific info when parsing a
+        non-number value while parsing pax headers.
+      </action>
       <action issue="COMPRESS-530" type="fix" date="2020-05-26">
         Skip non-number chars while parsing pax headers.
       </action>
