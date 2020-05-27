@@ -765,8 +765,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         return headers;
     }
 
-    private void applyPaxHeadersToCurrentEntry(final Map<String, String> headers,
-                                               final List<TarArchiveStructSparse> sparseHeaders) throws IOException {
+    private void applyPaxHeadersToCurrentEntry(final Map<String, String> headers, final List<TarArchiveStructSparse> sparseHeaders) {
         currEntry.updateEntryFromPaxHeaders(headers);
         currEntry.setSparseHeaders(sparseHeaders);
     }
