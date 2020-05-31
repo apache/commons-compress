@@ -748,7 +748,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
 
                 // COMPRESS-530 : throw if we encounter a non-number while reading length
                 if (ch < '0' || ch > '9') {
-                    throw new IOException("Failed to read Paxheader. Encounter a non-number while reading length");
+                    throw new IOException("Failed to read Paxheader. Encountered a non-number while reading length");
                 }
 
                 len *= 10;
