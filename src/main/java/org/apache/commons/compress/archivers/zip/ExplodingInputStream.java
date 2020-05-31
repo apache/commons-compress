@@ -116,7 +116,11 @@ class ExplodingInputStream extends InputStream implements InputStreamStatistics 
     @Override
     public int read() throws IOException {
         if (!buffer.available()) {
-            fillBuffer();
+            try {
+                fillBuffer();
+            } catch (IllegalArgumentException ex) {
+                throw new IOException("bad IMPLODE stream", ex);
+            }
         }
 
         final int ret = buffer.get();

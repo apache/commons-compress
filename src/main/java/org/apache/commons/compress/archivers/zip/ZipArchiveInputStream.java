@@ -359,10 +359,14 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
                     current.in = new UnshrinkingInputStream(bis);
                     break;
                 case IMPLODING:
-                    current.in = new ExplodingInputStream(
-                        current.entry.getGeneralPurposeBit().getSlidingDictionarySize(),
-                        current.entry.getGeneralPurposeBit().getNumberOfShannonFanoTrees(),
-                        bis);
+                    try {
+                        current.in = new ExplodingInputStream(
+                            current.entry.getGeneralPurposeBit().getSlidingDictionarySize(),
+                            current.entry.getGeneralPurposeBit().getNumberOfShannonFanoTrees(),
+                            bis);
+                    } catch (IllegalArgumentException ex) {
+                        throw new IOException("bad IMPLODE data", ex);
+                    }
                     break;
                 case BZIP2:
                     current.in = new BZip2CompressorInputStream(bis);

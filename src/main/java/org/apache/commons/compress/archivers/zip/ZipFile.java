@@ -577,8 +577,12 @@ public class ZipFile implements Closeable {
             case UNSHRINKING:
                 return new UnshrinkingInputStream(is);
             case IMPLODING:
-                return new ExplodingInputStream(ze.getGeneralPurposeBit().getSlidingDictionarySize(),
-                        ze.getGeneralPurposeBit().getNumberOfShannonFanoTrees(), is);
+                try {
+                    return new ExplodingInputStream(ze.getGeneralPurposeBit().getSlidingDictionarySize(),
+                            ze.getGeneralPurposeBit().getNumberOfShannonFanoTrees(), is);
+                } catch (IllegalArgumentException ex) {
+                    throw new IOException("bad IMPLODE data", ex);
+                }
             case DEFLATED:
                 final Inflater inflater = new Inflater(true);
                 // Inflater with nowrap=true has this odd contract for a zero padding
