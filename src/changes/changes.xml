@@ -99,6 +99,10 @@ The <action> type attribute can be add,update,fix,remove.
       <action issue="COMPRESS-530" type="fix" date="2020-05-26">
         Throw IOException when it encounters a non-number while parsing pax header.
       </action>
+      <action issue="COMPRESS-531" type="fix" date="2020-05-31">
+        Throw IOException when a a tar archive contains a PAX header
+        without any normal entry follwoing it.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20">

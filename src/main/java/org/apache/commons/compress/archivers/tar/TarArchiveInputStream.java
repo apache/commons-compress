@@ -565,6 +565,9 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             sparseHeaders = parsePAX01SparseHeaders(headers.get("GNU.sparse.map"));
         }
         getNextEntry(); // Get the actual file entry
+        if (currEntry == null) {
+            throw new IOException("premature end of tar archive. Didn't find any entry after PAX header.");
+        }
         applyPaxHeadersToCurrentEntry(headers, sparseHeaders);
 
         // for 1.0 PAX Format, the sparse map is stored in the file data block
