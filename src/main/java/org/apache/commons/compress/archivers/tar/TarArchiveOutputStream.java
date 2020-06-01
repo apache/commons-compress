@@ -654,6 +654,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * @param paxHeaderName name of the pax header to write
      * @param linkType type of the GNU entry to write
      * @param fieldName the name of the field
+     * @throws IllegalArgumentException if the {@link TarArchiveOutputStream#longFileMode} equals
+     *                                  {@link TarArchiveOutputStream#LONGFILE_ERROR} and the file
+     *                                  name is too long
      * @return whether a pax header has been written.
      */
     private boolean handleLongName(final TarArchiveEntry entry, final String name,
@@ -680,7 +683,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 write(0); // NUL terminator
                 closeArchiveEntry();
             } else if (longFileMode != LONGFILE_TRUNCATE) {
-                throw new RuntimeException(fieldName + " '" + name //NOSONAR
+                throw new IllegalArgumentException(fieldName + " '" + name //NOSONAR
                     + "' is too long ( > "
                     + TarConstants.NAMELEN + " bytes)");
             }

@@ -1112,6 +1112,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * @param key  the header name.
      * @param val  the header value.
      * @param headers  map of headers used for dealing with sparse file.
+     * @throws NumberFormatException  if encountered errors when parsing the numbers
      * @since 1.15
      */
     private void processPaxHeader(String key, String val, Map<String, String> headers) {

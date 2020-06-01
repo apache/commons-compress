@@ -406,10 +406,14 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             readGlobalPaxHeaders();
         }
 
-        if (currEntry.isPaxHeader()){ // Process Pax headers
-            paxHeaders();
-        } else if (!globalPaxHeaders.isEmpty()) {
-            applyPaxHeadersToCurrentEntry(globalPaxHeaders, globalSparseHeaders);
+        try {
+            if (currEntry.isPaxHeader()){ // Process Pax headers
+                paxHeaders();
+            } else if (!globalPaxHeaders.isEmpty()) {
+                applyPaxHeadersToCurrentEntry(globalPaxHeaders, globalSparseHeaders);
+            }
+        } catch (NumberFormatException e) {
+            throw new IOException("Error detected parsing the pax header", e);
         }
 
         if (currEntry.isOldGNUSparse()){ // Process sparse files

@@ -108,6 +108,14 @@ The <action> type attribute can be add,update,fix,remove.
         throw the expected IOException rather than obscure
         RuntimeExceptions.
       </action>
+      <action issue="COMPRESS-529" type="fix" date="2020-06-01">
+        Throw expected IOException instead of NumberFormatException if
+        it encounters non-numbers when parsing pax headers for tarball.
+
+        Throw IllegalArgumentException instead of RuntimeExceptions if
+        the file name is longer than 100 bytes with the longFileMode
+        of LONGFILE_ERROR, and address this in java docs.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20">

@@ -433,6 +433,14 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
         }
     }
 
+    @Test(expected = IOException.class)
+    public void testParseTarWithNonNumberPaxHeaders() throws IOException {
+        try (FileInputStream in = new FileInputStream(getFile("COMPRESS-529.tar"));
+             TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
+            archive.getNextEntry();
+        }
+    }
+
     private TarArchiveInputStream getTestStream(final String name) {
         return new TarArchiveInputStream(
                 TarArchiveInputStreamTest.class.getResourceAsStream(name));

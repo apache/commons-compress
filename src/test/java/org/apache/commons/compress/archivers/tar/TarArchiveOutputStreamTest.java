@@ -777,6 +777,16 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         tarIn.close();
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testWriteLongFileNameThrowsException() throws Exception {
+        final String n = "01234567890123456789012345678901234567890123456789"
+                + "01234567890123456789012345678901234567890123456789"
+                + "01234567890123456789012345678901234567890123456789";
+        final TarArchiveEntry t = new TarArchiveEntry(n);
+        final TarArchiveOutputStream tos = new TarArchiveOutputStream(new ByteArrayOutputStream(), "ASCII");
+        tos.putArchiveEntry(t);
+    }
+
     private static byte[] createTarArchiveContainingOneDirectory(final String fname,
         final Date modificationDate) throws IOException {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
