@@ -335,6 +335,12 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * @param archiveEntry The TarEntry to be written to the archive.
      * @throws IOException on error
      * @throws ClassCastException if archiveEntry is not an instance of TarArchiveEntry
+     * @throws IllegalArgumentException if the {@link TarArchiveOutputStream#longFileMode} equals
+     *                                  {@link TarArchiveOutputStream#LONGFILE_ERROR} and the file
+     *                                  name is too long
+     * @throws IllegalArgumentException if the {@link TarArchiveOutputStream#bigNumberMode} equals
+     *         {@link TarArchiveOutputStream#BIGNUMBER_ERROR} and one of the numeric values
+     *         exceeds the limits of a traditional tar header.
      */
     @Override
     public void putArchiveEntry(final ArchiveEntry archiveEntry) throws IOException {
@@ -633,7 +639,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     private void failForBigNumber(final String field, final long value, final long maxValue,
         final String additionalMsg) {
         if (value < 0 || value > maxValue) {
-            throw new RuntimeException(field + " '" + value //NOSONAR
+            throw new IllegalArgumentException(field + " '" + value //NOSONAR
                 + "' is too big ( > "
                 + maxValue + " )." + additionalMsg);
         }

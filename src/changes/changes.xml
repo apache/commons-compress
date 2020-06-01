@@ -115,6 +115,11 @@ The <action> type attribute can be add,update,fix,remove.
         Throw IllegalArgumentException instead of RuntimeExceptions if
         the file name is longer than 100 bytes with the longFileMode
         of LONGFILE_ERROR, and address this in java docs.
+
+        Throw IllegalArgumentException instead of RuntimeExceptions if
+        the any of the numeric values of an entry exceeds the limits
+        of a traditional tar header while bigNumberMode is
+        BIGNUMBER_ERROR, and address this in java docs.
       </action>
     </release>
     <release version="1.20" date="2020-02-08"

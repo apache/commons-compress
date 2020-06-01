@@ -95,6 +95,15 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         }
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testBigNumberErrorMode() throws Exception {
+        final TarArchiveEntry t = new TarArchiveEntry("foo");
+        t.setSize(0100000000000L);
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
+        tos.putArchiveEntry(t);
+    }
+
     @Test
     public void testBigNumberStarMode() throws Exception {
         final TarArchiveEntry t = new TarArchiveEntry("foo");
