@@ -101,7 +101,7 @@ The <action> type attribute can be add,update,fix,remove.
       </action>
       <action issue="COMPRESS-531" type="fix" date="2020-05-31">
         Throw IOException when a a tar archive contains a PAX header
-        without any normal entry follwoing it.
+        without any normal entry following it.
       </action>
       <action issue="COMPRESS-532" type="fix" date="2020-05-31">
         Added improved checks to detect corrupted IMPLODED streams and
