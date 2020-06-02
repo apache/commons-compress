@@ -30,7 +30,6 @@ import java.io.InputStream;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
-import org.apache.commons.compress.compressors.zstandard.ZstdCompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -68,23 +67,23 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
     @Test
     public void testCanTurnOffCaching() {
         try {
-            ZstdUtils.setCacheZstdAvailability(false);
+            ZstdUtils.setCacheZstdAvailablity(false);
             assertEquals(ZstdUtils.CachedAvailability.DONT_CACHE, ZstdUtils.getCachedZstdAvailability());
             assertTrue(ZstdUtils.isZstdCompressionAvailable());
         } finally {
-            ZstdUtils.setCacheZstdAvailability(true);
+            ZstdUtils.setCacheZstdAvailablity(true);
         }
     }
 
     @Test
     public void testTurningOnCachingReEvaluatesAvailability() {
         try {
-            ZstdUtils.setCacheZstdAvailability(false);
+            ZstdUtils.setCacheZstdAvailablity(false);
             assertEquals(ZstdUtils.CachedAvailability.DONT_CACHE, ZstdUtils.getCachedZstdAvailability());
-            ZstdUtils.setCacheZstdAvailability(true);
+            ZstdUtils.setCacheZstdAvailablity(true);
             assertEquals(ZstdUtils.CachedAvailability.CACHED_AVAILABLE, ZstdUtils.getCachedZstdAvailability());
         } finally {
-            ZstdUtils.setCacheZstdAvailability(true);
+            ZstdUtils.setCacheZstdAvailablity(true);
         }
     }
 

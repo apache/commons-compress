@@ -85,23 +85,23 @@ public class LZMAUtilsTestCase {
     @Test
     public void testCanTurnOffCaching() {
         try {
-            LZMAUtils.setCacheLZMAAvailability(false);
+            LZMAUtils.setCacheLZMAAvailablity(false);
             assertEquals(LZMAUtils.CachedAvailability.DONT_CACHE, LZMAUtils.getCachedLZMAAvailability());
             assertTrue(LZMAUtils.isLZMACompressionAvailable());
         } finally {
-            LZMAUtils.setCacheLZMAAvailability(true);
+            LZMAUtils.setCacheLZMAAvailablity(true);
         }
     }
 
     @Test
     public void testTurningOnCachingReEvaluatesAvailability() {
         try {
-            LZMAUtils.setCacheLZMAAvailability(false);
+            LZMAUtils.setCacheLZMAAvailablity(false);
             assertEquals(LZMAUtils.CachedAvailability.DONT_CACHE, LZMAUtils.getCachedLZMAAvailability());
-            LZMAUtils.setCacheLZMAAvailability(true);
+            LZMAUtils.setCacheLZMAAvailablity(true);
             assertEquals(LZMAUtils.CachedAvailability.CACHED_AVAILABLE, LZMAUtils.getCachedLZMAAvailability());
         } finally {
-            LZMAUtils.setCacheLZMAAvailability(true);
+            LZMAUtils.setCacheLZMAAvailablity(true);
         }
     }
 

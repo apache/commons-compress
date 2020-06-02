@@ -89,23 +89,23 @@ public class XZUtilsTestCase {
     @Test
     public void testCanTurnOffCaching() {
         try {
-            XZUtils.setCacheXZAvailability(false);
+            XZUtils.setCacheXZAvailablity(false);
             assertEquals(XZUtils.CachedAvailability.DONT_CACHE, XZUtils.getCachedXZAvailability());
             assertTrue(XZUtils.isXZCompressionAvailable());
         } finally {
-            XZUtils.setCacheXZAvailability(true);
+            XZUtils.setCacheXZAvailablity(true);
         }
     }
 
     @Test
     public void testTurningOnCachingReEvaluatesAvailability() {
         try {
-            XZUtils.setCacheXZAvailability(false);
+            XZUtils.setCacheXZAvailablity(false);
             assertEquals(XZUtils.CachedAvailability.DONT_CACHE, XZUtils.getCachedXZAvailability());
-            XZUtils.setCacheXZAvailability(true);
+            XZUtils.setCacheXZAvailablity(true);
             assertEquals(XZUtils.CachedAvailability.CACHED_AVAILABLE, XZUtils.getCachedXZAvailability());
         } finally {
-            XZUtils.setCacheXZAvailability(true);
+            XZUtils.setCacheXZAvailablity(true);
         }
     }
 

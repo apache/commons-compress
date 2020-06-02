@@ -66,23 +66,23 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
     @Test
     public void testCanTurnOffCaching() {
         try {
-            BrotliUtils.setCacheBrotliAvailability(false);
+            BrotliUtils.setCacheBrotliAvailablity(false);
             assertEquals(BrotliUtils.CachedAvailability.DONT_CACHE, BrotliUtils.getCachedBrotliAvailability());
             assertTrue(BrotliUtils.isBrotliCompressionAvailable());
         } finally {
-            BrotliUtils.setCacheBrotliAvailability(true);
+            BrotliUtils.setCacheBrotliAvailablity(true);
         }
     }
 
     @Test
     public void testTurningOnCachingReEvaluatesAvailability() {
         try {
-            BrotliUtils.setCacheBrotliAvailability(false);
+            BrotliUtils.setCacheBrotliAvailablity(false);
             assertEquals(BrotliUtils.CachedAvailability.DONT_CACHE, BrotliUtils.getCachedBrotliAvailability());
-            BrotliUtils.setCacheBrotliAvailability(true);
+            BrotliUtils.setCacheBrotliAvailablity(true);
             assertEquals(BrotliUtils.CachedAvailability.CACHED_AVAILABLE, BrotliUtils.getCachedBrotliAvailability());
         } finally {
-            BrotliUtils.setCacheBrotliAvailability(true);
+            BrotliUtils.setCacheBrotliAvailablity(true);
         }
     }
 

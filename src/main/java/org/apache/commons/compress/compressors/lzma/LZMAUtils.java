@@ -53,7 +53,7 @@ public class LZMAUtils {
         try {
             Class.forName("org.osgi.framework.BundleEvent");
         } catch (final Exception ex) { // NOSONAR
-            setCacheLZMAAvailability(true);
+            setCacheLZMAAvailablity(true);
         }
     }
 
@@ -146,7 +146,7 @@ public class LZMAUtils {
      * <p>This defaults to {@code false} in an OSGi environment and {@code true} otherwise.</p>
      * @param doCache whether to cache the result
      */
-    public static void setCacheLZMAAvailability(final boolean doCache) {
+    public static void setCacheLZMAAvailablity(final boolean doCache) {
         if (!doCache) {
             cachedLZMAAvailability = CachedAvailability.DONT_CACHE;
         } else if (cachedLZMAAvailability == CachedAvailability.DONT_CACHE) {
