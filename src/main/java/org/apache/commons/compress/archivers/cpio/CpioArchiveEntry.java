@@ -149,7 +149,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     // Header description fields - should be same throughout an archive
 
     /**
-     * See constructor documenation for possible values.
+     * See {@link #CpioArchiveEntry(short)} for possible values.
      */
     private final short fileFormat;
 

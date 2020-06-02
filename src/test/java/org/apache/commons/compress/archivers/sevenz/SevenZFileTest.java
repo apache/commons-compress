@@ -380,7 +380,7 @@ public class SevenZFileTest extends AbstractTestCase {
     }
 
     /**
-     * @see https://issues.apache.org/jira/browse/COMPRESS-492
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-492">COMPRESS-492</a>
      */
     @Test
     public void handlesEmptyArchiveWithFilesInfo() throws Exception {
@@ -394,7 +394,7 @@ public class SevenZFileTest extends AbstractTestCase {
     }
 
     /**
-     * @see https://issues.apache.org/jira/browse/COMPRESS-492
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-492">COMPRESS-492</a>
      */
     @Test
     public void handlesEmptyArchiveWithoutFilesInfo() throws Exception {

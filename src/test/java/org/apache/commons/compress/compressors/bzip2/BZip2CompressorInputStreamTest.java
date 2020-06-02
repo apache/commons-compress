@@ -100,7 +100,7 @@ public class BZip2CompressorInputStreamTest {
     }
 
     /**
-     * @see https://issues.apache.org/jira/browse/COMPRESS-516
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-516">COMPRESS-516</a>
      */
     @Test(expected = IOException.class)
     public void shouldThrowIOExceptionInsteadOfRuntimeExceptionCOMPRESS516() throws Exception {
@@ -125,7 +125,7 @@ public class BZip2CompressorInputStreamTest {
     }
 
     /**
-     * @see https://issues.apache.org/jira/browse/COMPRESS-519
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-519">COMPRESS-519</a>
      */
     @Test(expected = IOException.class)
     public void shouldThrowIOExceptionInsteadOfRuntimeExceptionCOMPRESS519() throws Exception {

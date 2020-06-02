@@ -320,7 +320,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
         this.storedBlockCRC = bsGetInt(bin);
         this.blockRandomised = bsR(bin, 1) == 1;
 
-        /**
+        /*
          * Allocate data here instead in constructor, so we do not allocate
          * it if the input file is empty.
          */

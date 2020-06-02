@@ -203,7 +203,8 @@ public abstract class AbstractTestCase {
      * Add an entry to the archive, and keep track of the names in archiveList.
      *
      * @param out
-     * @param file1
+     * @param filename
+     * @param infile
      * @throws IOException
      * @throws FileNotFoundException
      */

@@ -679,10 +679,10 @@ public class ZipArchiveInputStreamTest {
         }
     }
 
-    @Test
     /**
-     * @see https://issues.apache.org/jira/browse/COMPRESS-518
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-518">COMPRESS-518</a>
      */
+    @Test
     public void throwsIfZip64ExtraCouldNotBeUnderstood() throws Exception {
         thrown.expect(ZipException.class);
         fuzzingTest(new int[] {
@@ -696,10 +696,10 @@ public class ZipArchiveInputStreamTest {
         });
     }
 
-    @Test
     /**
-     * @see https://issues.apache.org/jira/browse/COMPRESS-523
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-523">COMPRESS-523</a>
      */
+    @Test
     public void throwsIfThereIsNoEocd() throws Exception {
         thrown.expect(IOException.class);
         thrown.expectMessage("Truncated ZIP file");

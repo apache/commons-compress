@@ -180,7 +180,7 @@ public class Deflate64CompressorInputStreamTest {
     }
 
     /**
-     * @see https://issues.apache.org/jira/browse/COMPRESS-521
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-521">COMPRESS-521</a>
      */
     @Test(expected = IOException.class)
     public void shouldThrowIOExceptionInsteadOfRuntimeExceptionCOMPRESS521() throws Exception {
@@ -196,7 +196,7 @@ public class Deflate64CompressorInputStreamTest {
     }
 
     /**
-     * @see https://issues.apache.org/jira/browse/COMPRESS-522
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-522">COMPRESS-522</a>
      */
     @Test(expected = IOException.class)
     public void shouldThrowIOExceptionInsteadOfRuntimeExceptionCOMPRESS522() throws Exception {
@@ -209,7 +209,7 @@ public class Deflate64CompressorInputStreamTest {
     }
 
     /**
-     * @see https://issues.apache.org/jira/browse/COMPRESS-525
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-525">COMPRESS-525</a>
      */
     @Test(expected = IOException.class)
     public void shouldThrowIOExceptionInsteadOfRuntimeExceptionCOMPRESS525() throws Exception {
@@ -234,7 +234,7 @@ public class Deflate64CompressorInputStreamTest {
     }
 
     /**
-     * @see https://issues.apache.org/jira/browse/COMPRESS-526
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-526">COMPRESS-526</a>
      */
     @Test(expected = IOException.class)
     public void shouldThrowIOExceptionInsteadOfRuntimeExceptionCOMPRESS526() throws Exception {
@@ -261,7 +261,7 @@ public class Deflate64CompressorInputStreamTest {
     }
 
     /**
-     * @see https://issues.apache.org/jira/browse/COMPRESS-527
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-527">COMPRESS-527</a>
      */
     @Test(expected = IOException.class)
     public void shouldThrowIOExceptionInsteadOfRuntimeExceptionCOMPRESS527() throws Exception {
