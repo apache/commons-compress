@@ -50,7 +50,7 @@ public class ZstdUtils {
         try {
             Class.forName("org.osgi.framework.BundleEvent");
         } catch (final Exception ex) { // NOSONAR
-            setCacheZstdAvailablity(true);
+            setCacheZstdAvailability(true);
         }
     }
 
@@ -85,7 +85,7 @@ public class ZstdUtils {
      * <p>This defaults to {@code false} in an OSGi environment and {@code true} otherwise.</p>
      * @param doCache whether to cache the result
      */
-    public static void setCacheZstdAvailablity(final boolean doCache) {
+    public static void setCacheZstdAvailability(final boolean doCache) {
         if (!doCache) {
             cachedZstdAvailability = CachedAvailability.DONT_CACHE;
         } else if (cachedZstdAvailability == CachedAvailability.DONT_CACHE) {

@@ -144,7 +144,7 @@ public class ZipFile implements Closeable {
     private volatile boolean closed = true;
 
     /**
-     * Whether the zip archive is a splite zip archive
+     * Whether the zip archive is a split zip archive
      */
     private final boolean isSplitZipArchive;
 

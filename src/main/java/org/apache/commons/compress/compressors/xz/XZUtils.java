@@ -57,7 +57,7 @@ public class XZUtils {
         try {
             Class.forName("org.osgi.framework.BundleEvent");
         } catch (final Exception ex) { // NOSONAR
-            setCacheXZAvailablity(true);
+            setCacheXZAvailability(true);
         }
     }
 
@@ -163,7 +163,7 @@ public class XZUtils {
      * @param doCache whether to cache the result
      * @since 1.9
      */
-    public static void setCacheXZAvailablity(final boolean doCache) {
+    public static void setCacheXZAvailability(final boolean doCache) {
         if (!doCache) {
             cachedXZAvailability = CachedAvailability.DONT_CACHE;
         } else if (cachedXZAvailability == CachedAvailability.DONT_CACHE) {

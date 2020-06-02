@@ -65,7 +65,7 @@ public interface CpioConstants {
     int S_IFMT   = 0170000;
 
  // http://www.opengroup.org/onlinepubs/9699919799/basedefs/cpio.h.html
- // has a list of the C_xxx constatnts
+ // has a list of the C_xxx constants
 
     /** Defines a socket */
     int C_ISSOCK = 0140000;

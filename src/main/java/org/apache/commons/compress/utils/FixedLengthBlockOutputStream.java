@@ -28,7 +28,7 @@ import java.nio.channels.WritableByteChannel;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * This class supports writing to an Outputstream or WritableByteChannel in fixed length blocks.
+ * This class supports writing to an OutputStream or WritableByteChannel in fixed length blocks.
  * <p>It can be be used to support output to devices such as tape drives that require output in this
  * format. If the final block does not have enough content to fill an entire block, the output will
  * be padded to a full block size.</p>

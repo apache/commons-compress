@@ -68,23 +68,23 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
     @Test
     public void testCanTurnOffCaching() {
         try {
-            ZstdUtils.setCacheZstdAvailablity(false);
+            ZstdUtils.setCacheZstdAvailability(false);
             assertEquals(ZstdUtils.CachedAvailability.DONT_CACHE, ZstdUtils.getCachedZstdAvailability());
             assertTrue(ZstdUtils.isZstdCompressionAvailable());
         } finally {
-            ZstdUtils.setCacheZstdAvailablity(true);
+            ZstdUtils.setCacheZstdAvailability(true);
         }
     }
 
     @Test
     public void testTurningOnCachingReEvaluatesAvailability() {
         try {
-            ZstdUtils.setCacheZstdAvailablity(false);
+            ZstdUtils.setCacheZstdAvailability(false);
             assertEquals(ZstdUtils.CachedAvailability.DONT_CACHE, ZstdUtils.getCachedZstdAvailability());
-            ZstdUtils.setCacheZstdAvailablity(true);
+            ZstdUtils.setCacheZstdAvailability(true);
             assertEquals(ZstdUtils.CachedAvailability.CACHED_AVAILABLE, ZstdUtils.getCachedZstdAvailability());
         } finally {
-            ZstdUtils.setCacheZstdAvailablity(true);
+            ZstdUtils.setCacheZstdAvailability(true);
         }
     }
 

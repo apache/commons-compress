@@ -36,7 +36,7 @@ public class BrotliUtils {
         try {
             Class.forName("org.osgi.framework.BundleEvent");
         } catch (final Exception ex) { // NOSONAR
-            setCacheBrotliAvailablity(true);
+            setCacheBrotliAvailability(true);
         }
     }
 
@@ -72,7 +72,7 @@ public class BrotliUtils {
      * <p>This defaults to {@code false} in an OSGi environment and {@code true} otherwise.</p>
      * @param doCache whether to cache the result
      */
-    public static void setCacheBrotliAvailablity(final boolean doCache) {
+    public static void setCacheBrotliAvailability(final boolean doCache) {
         if (!doCache) {
             cachedBrotliAvailability = CachedAvailability.DONT_CACHE;
         } else if (cachedBrotliAvailability == CachedAvailability.DONT_CACHE) {

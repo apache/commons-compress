@@ -53,7 +53,7 @@ public class ZipEncodingTest {
     }
 
     @Test
-    public void testGetNonexistentEncodng() throws IOException {
+    public void testGetNonexistentEncoding() throws IOException {
         ZipEncoding ze = ZipEncodingHelper.getZipEncoding("I-am-a-banana");
         assertNotNull(ze);
         if (ze instanceof CharsetAccessor) {

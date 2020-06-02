@@ -736,16 +736,16 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     private boolean isZip64Required(final ZipArchiveEntry entry1, final Zip64Mode requestedMode) {
-        return requestedMode == Zip64Mode.Always || isTooLageForZip32(entry1);
+        return requestedMode == Zip64Mode.Always || isTooLargeForZip32(entry1);
     }
 
-    private boolean isTooLageForZip32(final ZipArchiveEntry zipArchiveEntry){
+    private boolean isTooLargeForZip32(final ZipArchiveEntry zipArchiveEntry){
         return zipArchiveEntry.getSize() >= ZIP64_MAGIC || zipArchiveEntry.getCompressedSize() >= ZIP64_MAGIC;
     }
 
     /**
      * When using random access output, write the local file header
-     * and potentiall the ZIP64 extra containing the correct CRC and
+     * and potentially the ZIP64 extra containing the correct CRC and
      * compressed/uncompressed sizes.
      */
     private void rewriteSizesAndCrc(final boolean actuallyNeedsZip64)
@@ -912,7 +912,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Whether to addd a Zip64 extended information extra field to the
+     * Whether to add a Zip64 extended information extra field to the
      * local file header.
      *
      * <p>Returns true if</p>

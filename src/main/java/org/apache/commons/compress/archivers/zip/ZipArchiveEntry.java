@@ -856,7 +856,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     public int hashCode() {
         // this method has severe consequences on performance. We cannot rely
         // on the super.hashCode() method since super.getName() always return
-        // the empty string in the current implemention (there's no setter)
+        // the empty string in the current implementation (there's no setter)
         // so it is basically draining the performance of a hashmap lookup
         final String n = getName();
         return (n == null ? "" : n).hashCode();
@@ -1109,7 +1109,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     /**
      * How to try to parse the extra fields.
      *
-     * <p>Configures the bahvior for:</p>
+     * <p>Configures the behavior for:</p>
      * <ul>
      *   <li>What shall happen if the extra field content doesn't
      *   follow the recommended pattern of two-byte id followed by a

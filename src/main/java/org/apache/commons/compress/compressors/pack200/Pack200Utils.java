@@ -44,7 +44,7 @@ public class Pack200Utils {
      * <p>As stated in <a
      * href="https://download.oracle.com/javase/1.5.0/docs/api/java/util/jar/Pack200.Packer.html">Pack200.Packer's</a>
      * javadocs applying a Pack200 compression to a JAR archive will
-     * in general make its sigantures invalid.  In order to prepare a
+     * in general make its signatures invalid.  In order to prepare a
      * JAR for signing it should be "normalized" by packing and
      * unpacking it.  This is what this method does.</p>
      *
@@ -66,7 +66,7 @@ public class Pack200Utils {
      * <p>As stated in <a
      * href="https://download.oracle.com/javase/1.5.0/docs/api/java/util/jar/Pack200.Packer.html">Pack200.Packer's</a>
      * javadocs applying a Pack200 compression to a JAR archive will
-     * in general make its sigantures invalid.  In order to prepare a
+     * in general make its signatures invalid.  In order to prepare a
      * JAR for signing it should be "normalized" by packing and
      * unpacking it.  This is what this method does.</p>
      *
@@ -86,7 +86,7 @@ public class Pack200Utils {
      * <p>As stated in <a
      * href="https://download.oracle.com/javase/1.5.0/docs/api/java/util/jar/Pack200.Packer.html">Pack200.Packer's</a>
      * javadocs applying a Pack200 compression to a JAR archive will
-     * in general make its sigantures invalid.  In order to prepare a
+     * in general make its signatures invalid.  In order to prepare a
      * JAR for signing it should be "normalized" by packing and
      * unpacking it.  This is what this method does.</p>
      *
@@ -111,7 +111,7 @@ public class Pack200Utils {
      * <p>As stated in <a
      * href="https://download.oracle.com/javase/1.5.0/docs/api/java/util/jar/Pack200.Packer.html">Pack200.Packer's</a>
      * javadocs applying a Pack200 compression to a JAR archive will
-     * in general make its sigantures invalid.  In order to prepare a
+     * in general make its signatures invalid.  In order to prepare a
      * JAR for signing it should be "normalized" by packing and
      * unpacking it.  This is what this method does.</p>
      *

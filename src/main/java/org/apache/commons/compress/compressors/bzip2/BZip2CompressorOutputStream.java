@@ -469,7 +469,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     }
 
     /**
-     * Overriden to warn about an unclosed stream.
+     * Overridden to warn about an unclosed stream.
      */
     @Override
     protected void finalize() throws Throwable {
@@ -520,7 +520,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
 
     /**
      * Writes magic bytes like BZ on the first position of the stream
-     * and bytes indiciating the file-format, which is
+     * and bytes indicating the file-format, which is
      * huffmanised, followed by a digit indicating blockSize100k.
      * @throws IOException if the magic bytes could not been written
      */

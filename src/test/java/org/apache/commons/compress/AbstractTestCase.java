@@ -138,7 +138,7 @@ public abstract class AbstractTestCase {
 
     /**
      * Creates an archive of textbased files in several directories. The
-     * archivername is the factory identifier for the archiver, for example zip,
+     * archivename is the factory identifier for the archiver, for example zip,
      * tar, cpio, jar, ar. The archive is created as a temp file.
      *
      * The archive contains the following files:

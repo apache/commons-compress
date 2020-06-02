@@ -100,7 +100,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
 
     /**
      * Constructs a new BZip2CompressorInputStream which decompresses bytes
-     * read from the specified stream. This doesn't suppprt decompressing
+     * read from the specified stream. This doesn't support decompressing
      * concatenated .bz2 files.
      *
      * @param in the InputStream from which this object should be created
@@ -944,7 +944,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
          * Initializes the {@link #tt} array.
          *
          * This method is called when the required length of the array is known.
-         * I don't initialize it at construction time to avoid unneccessary
+         * I don't initialize it at construction time to avoid unnecessary
          * memory allocation when compressing small files.
          */
         int[] initTT(final int length) {

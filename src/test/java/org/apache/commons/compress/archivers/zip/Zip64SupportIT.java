@@ -761,7 +761,7 @@ public class Zip64SupportIT {
                              true);
     }
 
-    @Test public void writeBigStoredEntryUnnownSizeToFile() throws Throwable {
+    @Test public void writeBigStoredEntryUnknownSizeToFile() throws Throwable {
         withTemporaryArchive("writeBigStoredEntryUnknownSizeToFile",
                              writeBigStoredEntry(false),
                              true);
@@ -780,7 +780,7 @@ public class Zip64SupportIT {
                              true);
     }
 
-    @Test public void writeBigStoredEntryUnnownSizeToFileModeAlways()
+    @Test public void writeBigStoredEntryUnknownSizeToFileModeAlways()
         throws Throwable {
         withTemporaryArchive("writeBigStoredEntryUnknownSizeToFileModeAlways",
                              writeBigStoredEntry(false, Zip64Mode.Always),
@@ -828,7 +828,7 @@ public class Zip64SupportIT {
                              true);
     }
 
-    @Test public void writeBigStoredEntryUnnownSizeToFileModeNever()
+    @Test public void writeBigStoredEntryUnknownSizeToFileModeNever()
         throws Throwable {
         withTemporaryArchive("writeBigStoredEntryUnknownSizeToFileModeNever",
                              writeBigStoredEntryModeNever(false),
@@ -1511,7 +1511,7 @@ public class Zip64SupportIT {
                              true);
     }
 
-    @Test public void writeSmallStoredEntryUnnownSizeToFile() throws Throwable {
+    @Test public void writeSmallStoredEntryUnknownSizeToFile() throws Throwable {
         withTemporaryArchive("writeSmallStoredEntryUnknownSizeToFile",
                              writeSmallStoredEntry(false),
                              true);
@@ -1530,7 +1530,7 @@ public class Zip64SupportIT {
                              true);
     }
 
-    @Test public void writeSmallStoredEntryUnnownSizeToFileModeNever()
+    @Test public void writeSmallStoredEntryUnknownSizeToFileModeNever()
         throws Throwable {
         withTemporaryArchive("writeSmallStoredEntryUnknownSizeToFileModeNever",
                              writeSmallStoredEntry(false, Zip64Mode.Never),
@@ -1698,7 +1698,7 @@ public class Zip64SupportIT {
                              true);
     }
 
-    @Test public void writeSmallStoredEntryUnnownSizeToFileModeAlways()
+    @Test public void writeSmallStoredEntryUnknownSizeToFileModeAlways()
         throws Throwable {
         withTemporaryArchive("writeSmallStoredEntryUnknownSizeToFileModeAlways",
                              writeSmallStoredEntryModeAlways(false),

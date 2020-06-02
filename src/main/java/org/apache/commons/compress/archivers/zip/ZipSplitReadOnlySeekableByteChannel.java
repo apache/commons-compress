@@ -85,7 +85,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * <p>
      * the first 4 bytes of the first zip split segment should be the zip split signature(0x08074B50)
      *
-     * @param channels channels to be valided
+     * @param channels channels to be validated
      * @throws IOException
      */
     private void assertSplitSignature(final List<SeekableByteChannel> channels)

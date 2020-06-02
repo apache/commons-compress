@@ -68,7 +68,7 @@ public final class Parameters {
         }
 
         /**
-         * Sets the mininal length of a back-reference.
+         * Sets the minimal length of a back-reference.
          *
          * <p>Ensures <code>maxBackReferenceLength</code> is not
          * smaller than <code>minBackReferenceLength</code>.
@@ -79,7 +79,7 @@ public final class Parameters {
          * org.apache.commons.compress.compressors.snappy.SnappyCompressorOutputStream#createParameterBuilder}.</p>
          *
          * @param minBackReferenceLength the minimal length of a back-reference found. A
-         * true minimum of 3 is hard-coded inside of this implemention
+         * true minimum of 3 is hard-coded inside of this implementation
          * but bigger lengths can be configured.
          * @throws IllegalArgumentException if <code>windowSize</code>
          * is smaller than <code>minBackReferenceLength</code>.
