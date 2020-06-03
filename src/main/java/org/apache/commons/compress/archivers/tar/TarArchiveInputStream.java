@@ -26,6 +26,7 @@ package org.apache.commons.compress.archivers.tar;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -724,7 +725,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                                 }
                                 // Drop trailing NL
                                 final String value = new String(rest, 0,
-                                                          restLen - 1, CharsetNames.UTF_8);
+                                                          restLen - 1, StandardCharsets.UTF_8);
                                 headers.put(keyword, value);
 
                                 // for 0.0 PAX Headers

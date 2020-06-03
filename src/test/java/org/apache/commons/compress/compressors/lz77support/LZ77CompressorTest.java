@@ -19,6 +19,7 @@
 package org.apache.commons.compress.compressors.lz77support;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,34 +34,30 @@ public class LZ77CompressorTest {
     private static final byte[] BLA, SAM, ONE_TO_TEN;
 
     static {
-        try {
-            /*
-             * Example from "An Explanation of the Deflate Algorithm" by "Antaeus Feldspar".
-             * @see "http://zlib.net/feldspar.html"
-             */
-            BLA = "Blah blah blah blah blah!".getBytes("ASCII");
+        /*
+         * Example from "An Explanation of the Deflate Algorithm" by "Antaeus Feldspar".
+         * @see "http://zlib.net/feldspar.html"
+         */
+        BLA = "Blah blah blah blah blah!".getBytes(StandardCharsets.US_ASCII);
 
-            /*
-             * Example from Wikipedia article about LZSS.
-             * Note the example uses indices instead of offsets.
-             * @see "https://en.wikipedia.org/wiki/Lempel%E2%80%93Ziv%E2%80%93Storer%E2%80%93Szymanski"
-             */
-            SAM = ("I am Sam\n"
-                   + "\n"
-                   + "Sam I am\n"
-                   + "\n"
-                   + "That Sam-I-am!\n"
-                   + "That Sam-I-am!\n"
-                   + "I do not like\n"
-                   + "that Sam-I-am!\n"
-                   + "\n"
-                   + "Do you like green eggs and ham?\n"
-                   + "\n"
-                   + "I do not like them, Sam-I-am.\n"
-                   + "I do not like green eggs and ham.").getBytes("ASCII");
-        } catch (IOException ex) {
-            throw new RuntimeException("ASCII not supported");
-        }
+        /*
+         * Example from Wikipedia article about LZSS.
+         * Note the example uses indices instead of offsets.
+         * @see "https://en.wikipedia.org/wiki/Lempel%E2%80%93Ziv%E2%80%93Storer%E2%80%93Szymanski"
+         */
+        SAM = ("I am Sam\n"
+               + "\n"
+               + "Sam I am\n"
+               + "\n"
+               + "That Sam-I-am!\n"
+               + "That Sam-I-am!\n"
+               + "I do not like\n"
+               + "that Sam-I-am!\n"
+               + "\n"
+               + "Do you like green eggs and ham?\n"
+               + "\n"
+               + "I do not like them, Sam-I-am.\n"
+               + "I do not like green eggs and ham.").getBytes(StandardCharsets.US_ASCII);
         ONE_TO_TEN = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     }
 
@@ -312,7 +309,7 @@ public class LZ77CompressorTest {
 
     private static final void assertLiteralBlock(String expectedContent, LZ77Compressor.Block block)
         throws IOException {
-        assertLiteralBlock(expectedContent.getBytes("ASCII"), block);
+        assertLiteralBlock(expectedContent.getBytes(StandardCharsets.US_ASCII), block);
     }
 
     private static final void assertLiteralBlock(byte[] expectedContent, LZ77Compressor.Block block) {

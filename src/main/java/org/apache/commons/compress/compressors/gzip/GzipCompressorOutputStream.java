@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.CRC32;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
@@ -111,12 +112,12 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
         out.write(buffer.array());
 
         if (filename != null) {
-            out.write(filename.getBytes(CharsetNames.ISO_8859_1));
+            out.write(filename.getBytes(StandardCharsets.ISO_8859_1));
             out.write(0);
         }
 
         if (comment != null) {
-            out.write(comment.getBytes(CharsetNames.ISO_8859_1));
+            out.write(comment.getBytes(StandardCharsets.ISO_8859_1));
             out.write(0);
         }
     }

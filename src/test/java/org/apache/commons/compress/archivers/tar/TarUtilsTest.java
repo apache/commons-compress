@@ -28,6 +28,8 @@ import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.junit.Test;
 
+import java.nio.charset.StandardCharsets;
+
 public class TarUtilsTest {
 
 
@@ -58,7 +60,7 @@ public class TarUtilsTest {
         final long MAX_OCTAL  = 077777777777L; // Allowed 11 digits
         final long MAX_OCTAL_OVERFLOW  = 0777777777777L; // in fact 12 for some implementations
         final String maxOctal = "777777777777"; // Maximum valid octal
-        buffer = maxOctal.getBytes(CharsetNames.UTF_8);
+        buffer = maxOctal.getBytes(StandardCharsets.UTF_8);
         value = TarUtils.parseOctal(buffer,0, buffer.length);
         assertEquals(MAX_OCTAL_OVERFLOW, value);
         buffer[buffer.length - 1] = ' ';
@@ -93,19 +95,19 @@ public class TarUtilsTest {
             fail("Expected IllegalArgumentException - should be at least 2 bytes long");
         } catch (final IllegalArgumentException expected) {
         }
-        buffer = "abcdef ".getBytes(CharsetNames.UTF_8); // Invalid input
+        buffer = "abcdef ".getBytes(StandardCharsets.UTF_8); // Invalid input
         try {
             TarUtils.parseOctal(buffer,0, buffer.length);
             fail("Expected IllegalArgumentException");
         } catch (final IllegalArgumentException expected) {
         }
-        buffer = " 0 07 ".getBytes(CharsetNames.UTF_8); // Invalid - embedded space
+        buffer = " 0 07 ".getBytes(StandardCharsets.UTF_8); // Invalid - embedded space
         try {
             TarUtils.parseOctal(buffer,0, buffer.length);
             fail("Expected IllegalArgumentException - embedded space");
         } catch (final IllegalArgumentException expected) {
         }
-        buffer = " 0\00007 ".getBytes(CharsetNames.UTF_8); // Invalid - embedded NUL
+        buffer = " 0\00007 ".getBytes(StandardCharsets.UTF_8); // Invalid - embedded NUL
         try {
             TarUtils.parseOctal(buffer,0, buffer.length);
             fail("Expected IllegalArgumentException - embedded NUL");
@@ -188,14 +190,14 @@ public class TarUtilsTest {
     public void testNegative() throws Exception {
         final byte [] buffer = new byte[22];
         TarUtils.formatUnsignedOctalString(-1, buffer, 0, buffer.length);
-        assertEquals("1777777777777777777777", new String(buffer, CharsetNames.UTF_8));
+        assertEquals("1777777777777777777777", new String(buffer, StandardCharsets.UTF_8));
     }
 
     @Test
     public void testOverflow() throws Exception {
         final byte [] buffer = new byte[8-1]; // a lot of the numbers have 8-byte buffers (nul term)
         TarUtils.formatUnsignedOctalString(07777777L, buffer, 0, buffer.length);
-        assertEquals("7777777", new String(buffer, CharsetNames.UTF_8));
+        assertEquals("7777777", new String(buffer, StandardCharsets.UTF_8));
         try {
             TarUtils.formatUnsignedOctalString(017777777L, buffer, 0, buffer.length);
             fail("Should have cause IllegalArgumentException");

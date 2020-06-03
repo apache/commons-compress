@@ -20,6 +20,7 @@ package org.apache.commons.compress.compressors;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
@@ -59,7 +60,7 @@ public class CompressorStreamFactoryRoundtripTest {
         final CompressorOutputStream compressorOutputStream = factory.createCompressorOutputStream(compressorName,
                 compressedOs);
         final String fixture = "The quick brown fox jumps over the lazy dog";
-        compressorOutputStream.write(fixture.getBytes("UTF-8"));
+        compressorOutputStream.write(fixture.getBytes(StandardCharsets.UTF_8));
         compressorOutputStream.flush();
         compressorOutputStream.close();
         final ByteArrayInputStream is = new ByteArrayInputStream(compressedOs.toByteArray());

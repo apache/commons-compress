@@ -982,7 +982,7 @@ public class SevenZFile implements Closeable {
                     int nextName = 0;
                     for (int i = 0; i < names.length; i += 2) {
                         if (names[i] == 0 && names[i+1] == 0) {
-                            files[nextFile++].setName(new String(names, nextName, i-nextName, CharsetNames.UTF_16LE));
+                            files[nextFile++].setName(new String(names, nextName, i-nextName, StandardCharsets.UTF_16LE));
                             nextName = i + 2;
                         }
                     }
