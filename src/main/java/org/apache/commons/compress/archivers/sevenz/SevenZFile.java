@@ -1423,7 +1423,7 @@ public class SevenZFile implements Closeable {
      *
      * <p>For archives using solid compression randomly accessing
      * entries will be significantly slower than reading the archive
-     * sequentiallly.</p>
+     * sequentially.</p>
      *
      * @param entry the entry to get the stream for.
      * @return a stream to read the entry from.

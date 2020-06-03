@@ -55,7 +55,7 @@ public class ZipArchiveEntryRequest {
     }
 
     /**
-     * The paylaod that will be added to this zip entry
+     * The payload that will be added to this zip entry
      * @return The input stream.
      */
     public InputStream getPayloadStream() {
@@ -73,7 +73,7 @@ public class ZipArchiveEntryRequest {
 
     /**
      * Gets the underlying entry. Do not use this methods from threads that did not create the instance itself !
-     * @return the zipeArchiveEntry that is basis for this request
+     * @return the zipArchiveEntry that is basis for this request
      */
     ZipArchiveEntry getZipArchiveEntry() {
         return zipArchiveEntry;

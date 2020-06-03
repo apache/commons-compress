@@ -66,7 +66,7 @@ import java.util.Objects;
  *
  *  <dt><code>minBackReferenceLength</code></dt>
  *  <dd>Minimal length of a back-reference found. A true minimum of 3 is
- *  hard-coded inside of this implemention but bigger lengths can be
+ *  hard-coded inside of this implementation but bigger lengths can be
  *  configured.</dd>
  *
  *  <dt><code>maxBackReferenceLength</code></dt>

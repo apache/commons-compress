@@ -40,7 +40,7 @@ public class SevenZFileOptions {
      *
      * <ul>
      *   <li>no memory limit</li>
-     *   <li>don't modifiy the name of unnamed entries</li>
+     *   <li>don't modify the name of unnamed entries</li>
      * </ul>
      */
     public static final SevenZFileOptions DEFAULT = new SevenZFileOptions(DEFAUL_MEMORY_LIMIT_IN_KB,

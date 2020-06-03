@@ -54,7 +54,7 @@ public interface ExtraFieldParsingBehavior extends UnparseableExtraFieldBehavior
      * file header. If this is false then the data is part if the
      * central directory header extra data.
      * @return the filled field. Usually this is the same as {@code
-     * field} but it oculd be a replacement extra field as well. Must
+     * field} but it could be a replacement extra field as well. Must
      * not be {@code null}.
      * @throws ZipException if an error occurs
      */

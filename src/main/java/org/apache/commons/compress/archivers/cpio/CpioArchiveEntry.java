@@ -26,7 +26,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 
 /**
  * A cpio archive consists of a sequence of files. There are several types of
- * headers defided in two categories of new and old format. The headers are
+ * headers defined in two categories of new and old format. The headers are
  * recognized by magic numbers:
  *
  * <ul>
@@ -149,7 +149,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     // Header description fields - should be same throughout an archive
 
     /**
-     * See constructor documenation for possible values.
+     * See {@link #CpioArchiveEntry(short)} for possible values.
      */
     private final short fileFormat;
 

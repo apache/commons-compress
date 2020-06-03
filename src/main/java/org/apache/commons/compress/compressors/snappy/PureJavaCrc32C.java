@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Some portions of this file Copyright (c) 2004-2006 Intel Corportation
+ * Some portions of this file Copyright (c) 2004-2006 Intel Corporation
  * and licensed under the BSD license.
  */
 package org.apache.commons.compress.compressors.snappy;

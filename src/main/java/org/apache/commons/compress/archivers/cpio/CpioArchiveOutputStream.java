@@ -73,7 +73,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     private boolean finished;
 
     /**
-     * See {@link CpioArchiveEntry#setFormat(short)} for possible values.
+     * See {@link CpioArchiveEntry#CpioArchiveEntry(short)} for possible values.
      */
     private final short entryFormat;
 

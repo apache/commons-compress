@@ -384,7 +384,7 @@ public class X5455_ExtendedTimestampTest {
          */
         final byte[] NULL_FLAGS = {0};
         final byte[] AC_CENTRAL = {2}; // central data only contains the AC flag and no actual data
-        final byte[] CR_CENTRAL = {4}; // central data only dontains the CR flag and no actual data
+        final byte[] CR_CENTRAL = {4}; // central data only contains the CR flag and no actual data
 
         final byte[] MOD_ZERO = {1, 0, 0, 0, 0};
         final byte[] MOD_MAX = {1, -1, -1, -1, 0x7f};

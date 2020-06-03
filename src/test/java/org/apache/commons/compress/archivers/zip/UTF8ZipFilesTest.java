@@ -240,7 +240,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
     }
 
     /**
-     * @see https://issues.apache.org/jira/browse/COMPRESS-479
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-479">COMPRESS-479</a>
      */
     @Test
     public void streamSkipsOverUnicodeExtraFieldWithUnsupportedVersion() throws IOException {
@@ -253,7 +253,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
     }
 
     /**
-     * @see https://issues.apache.org/jira/browse/COMPRESS-479
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-479">COMPRESS-479</a>
      */
     @Test
     public void zipFileSkipsOverUnicodeExtraFieldWithUnsupportedVersion() throws IOException {

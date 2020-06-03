@@ -41,7 +41,7 @@ class Folder {
     /// The CRC, if present.
     long crc;
     /// The number of unpack substreams, product of the number of
-    /// output streams and the nuber of non-empty files in this
+    /// output streams and the number of non-empty files in this
     /// folder.
     int numUnpackSubStreams;
 

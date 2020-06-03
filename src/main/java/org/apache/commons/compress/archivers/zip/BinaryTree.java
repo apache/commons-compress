@@ -130,7 +130,7 @@ class BinaryTree {
             throw new EOFException();
         }
 
-        /** The maximum bit length for a value (16 or lower) */
+        /* The maximum bit length for a value (16 or lower) */
         int maxLength = 0;
 
         final int[] originalBitLengths = new int[totalNumberOfValues];

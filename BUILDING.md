@@ -38,7 +38,7 @@ runs tests for tar archives and requires more than 8GiB of disk space.
     mvn test -Prun-zipit
 
 runs tests for zip archives that require up to 20 GiB of disk
-space. In addition the tests will run for a long time (more then ten
+space. In addition the tests will run for a long time (more than ten
 minutes, maybe even longer depending on your hardware) and heavily
 load the CPU at times.
 

@@ -217,7 +217,7 @@ public class ArchiveUtils {
      *
      * @param buffer1 the first buffer
      * @param buffer2 the second buffer
-     * @param ignoreTrailingNulls whether to ignore tariling nulls
+     * @param ignoreTrailingNulls whether to ignore trailing nulls
      * @return {@code true} if buffer1 and buffer2 have same contents
      */
     public static boolean isEqual(final byte[] buffer1, final byte[] buffer2, final boolean ignoreTrailingNulls){

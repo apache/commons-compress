@@ -32,7 +32,7 @@ import java.io.InputStream;
  * instead. Skipping is potentially much faster than reading so we do
  * want to invoke {@code skip} when possible. We provide this class so
  * you can wrap your own {@link InputStream} in it if you encounter
- * problems with {@code skip} throwing an excpetion.</p>
+ * problems with {@code skip} throwing an exception.</p>
  *
  * @since 1.17
  */

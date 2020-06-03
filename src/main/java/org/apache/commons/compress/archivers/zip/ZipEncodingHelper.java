@@ -44,7 +44,7 @@ public abstract class ZipEncodingHelper {
      * As a special case, if the character set is UTF-8, the nio encoder will be configured  replace malformed and
      * unmappable characters with '?'. This matches existing behavior from the older fallback encoder.
      * <p>
-     *     If the requested characer set cannot be found, the platform default will
+     *     If the requested character set cannot be found, the platform default will
      *     be used instead.
      * </p>
      * @param name The name of the zip encoding. Specify {@code null} for
