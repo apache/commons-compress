@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -494,7 +495,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 + 3 /* blank, equals and newline */
                 + 2 /* guess 9 < actual length < 100 */;
             String line = len + " " + key + "=" + value + "\n";
-            int actualLength = line.getBytes(CharsetNames.UTF_8).length;
+            int actualLength = line.getBytes(StandardCharsets.UTF_8).length;
             while (len != actualLength) {
                 // Adjust for cases where length < 10 or > 100
                 // or where UTF-8 encoding isn't a single octet
@@ -503,11 +504,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 // first pass so we'd need a second.
                 len = actualLength;
                 line = len + " " + key + "=" + value + "\n";
-                actualLength = line.getBytes(CharsetNames.UTF_8).length;
+                actualLength = line.getBytes(StandardCharsets.UTF_8).length;
             }
             w.write(line);
         }
-        return w.toString().getBytes(CharsetNames.UTF_8);
+        return w.toString().getBytes(StandardCharsets.UTF_8);
     }
 
     private String stripTo7Bits(final String name) {

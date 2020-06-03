@@ -26,6 +26,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import static org.apache.commons.compress.utils.CharsetNames.UTF_8;
@@ -35,7 +36,7 @@ import static org.junit.Assert.assertFalse;
 
 public class SeekableInMemoryByteChannelTest {
 
-    private final byte[] testData = "Some data".getBytes(Charset.forName(UTF_8));
+    private final byte[] testData = "Some data".getBytes(StandardCharsets.UTF_8);
 
     @Test
     public void shouldReadContentsProperly() throws IOException {
@@ -75,7 +76,7 @@ public class SeekableInMemoryByteChannelTest {
         int readCount = c.read(readBuffer);
         //then
         assertEquals(4L, readCount);
-        assertEquals("data", new String(readBuffer.array(), Charset.forName(UTF_8)));
+        assertEquals("data", new String(readBuffer.array(), StandardCharsets.UTF_8));
         assertEquals(testData.length, c.position());
         c.close();
     }
@@ -153,7 +154,7 @@ public class SeekableInMemoryByteChannelTest {
         c.truncate(4);
         //then
         byte[] bytes = Arrays.copyOf(c.array(), (int) c.size());
-        assertEquals("Some", new String(bytes, Charset.forName(UTF_8)));
+        assertEquals("Some", new String(bytes, StandardCharsets.UTF_8));
         c.close();
     }
 

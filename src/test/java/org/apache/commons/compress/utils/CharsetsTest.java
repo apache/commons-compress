@@ -18,6 +18,7 @@
 package org.apache.commons.compress.utils;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Assert;
 
@@ -35,6 +36,7 @@ public class CharsetsTest {
         Assert.assertEquals(Charset.defaultCharset(), Charsets.toCharset((Charset) null));
         Assert.assertEquals(Charset.defaultCharset(), Charsets.toCharset(Charset.defaultCharset()));
         Assert.assertEquals(Charset.forName("UTF-8"), Charsets.toCharset(Charset.forName("UTF-8")));
+        Assert.assertEquals(Charset.forName("UTF-8"), StandardCharsets.UTF_8);
     }
 
 }

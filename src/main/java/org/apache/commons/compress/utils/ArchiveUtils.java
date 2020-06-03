@@ -19,6 +19,7 @@
 package org.apache.commons.compress.utils;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -72,12 +73,7 @@ public class ArchiveUtils {
     public static boolean matchAsciiBuffer(
             final String expected, final byte[] buffer, final int offset, final int length){
         byte[] buffer1;
-        try {
-            buffer1 = expected.getBytes(CharsetNames.US_ASCII);
-        } catch (final UnsupportedEncodingException e) {
-            // Should not happen
-            throw new RuntimeException(e); //NOSONAR
-        }
+        buffer1 = expected.getBytes(StandardCharsets.US_ASCII);
         return isEqual(buffer1, 0, buffer1.length, buffer, offset, length, false);
     }
 
@@ -100,12 +96,7 @@ public class ArchiveUtils {
      * @return the bytes
      */
     public static byte[] toAsciiBytes(final String inputString){
-        try {
-            return inputString.getBytes(CharsetNames.US_ASCII);
-        } catch (final UnsupportedEncodingException e) {
-            // Should never happen
-            throw new RuntimeException(e); //NOSONAR
-        }
+        return inputString.getBytes(StandardCharsets.US_ASCII);
     }
 
     /**
@@ -115,12 +106,7 @@ public class ArchiveUtils {
      * @return the bytes, interpreted as an Ascii string
      */
     public static String toAsciiString(final byte[] inputBytes){
-        try {
-            return new String(inputBytes, CharsetNames.US_ASCII);
-        } catch (final UnsupportedEncodingException e) {
-            // Should never happen
-            throw new RuntimeException(e); //NOSONAR
-        }
+        return new String(inputBytes, StandardCharsets.US_ASCII);
     }
 
     /**
@@ -132,12 +118,7 @@ public class ArchiveUtils {
      * @return the bytes, interpreted as an Ascii string
      */
     public static String toAsciiString(final byte[] inputBytes, final int offset, final int length){
-        try {
-            return new String(inputBytes, offset, length, CharsetNames.US_ASCII);
-        } catch (final UnsupportedEncodingException e) {
-            // Should never happen
-            throw new RuntimeException(e); //NOSONAR
-        }
+        return new String(inputBytes, offset, length, StandardCharsets.US_ASCII);
     }
 
     /**

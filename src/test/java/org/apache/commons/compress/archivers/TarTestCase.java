@@ -30,6 +30,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -64,7 +65,7 @@ public final class TarTestCase extends AbstractTestCase {
     @Test
     public void testTarArchiveLongNameCreation() throws Exception {
         final String name = "testdata/12345678901234567890123456789012345678901234567890123456789012345678901234567890123456.xml";
-        final byte[] bytes = name.getBytes(CharsetNames.UTF_8);
+        final byte[] bytes = name.getBytes(StandardCharsets.UTF_8);
         assertEquals(bytes.length, 99);
 
         final File output = new File(dir, "bla.tar");
