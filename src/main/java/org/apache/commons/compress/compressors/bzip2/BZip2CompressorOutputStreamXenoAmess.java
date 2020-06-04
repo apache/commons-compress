@@ -125,8 +125,9 @@ import java.io.OutputStream;
  */
 public class BZip2CompressorOutputStreamXenoAmess extends CompressorOutputStream
         implements BZip2Constants {
-    public static final int SEG = 15;
-
+    public static final int SEG = 0B1111;
+    public static final int PIN8 = 0B1111_1111;
+    public static final int PIN16 = 0B1111_1111_1111_1111;
     /**
      * The minimum supported blocksize {@code  == 1}.
      */
@@ -1026,6 +1027,7 @@ public class BZip2CompressorOutputStreamXenoAmess extends CompressorOutputStream
             bsBuffShadow <<= 8;
             bsLiveShadow -= 8;
         }
+
         for (int i = 0; i < 16; i++) {
             if (inUseShort[i] != 0) {
                 int tmp = Integer.reverse(inUseShort[i]) >>> 16;
@@ -1070,20 +1072,33 @@ public class BZip2CompressorOutputStreamXenoAmess extends CompressorOutputStream
         int bsBuffShadow = this.bsBuff;
 
         for (int i = 0; i < nSelectors; i++) {
-            for (int j = 0, hj = selectorMtf[i] & 0xff; j < hj; j++) {
+            final int hj = selectorMtf[i] & 0xff;
+            final int hj16 = hj - 16;
+            int j = 0;
+            for (; j < hj16; j += 16) {
                 // inlined: bsW(1, 1);
-                while (bsLiveShadow >= 8) {
-                    outShadow.write(bsBuffShadow >> 24);
-                    bsBuffShadow <<= 8;
-                    bsLiveShadow -= 8;
-                }
+                bsBuffShadow |= PIN16 << (32 - bsLiveShadow - 1);
+
+                outShadow.write(bsBuffShadow >> 24); // write 8-bit
+                outShadow.write(bsBuffShadow >> 16); // write 8-bit
+                bsBuffShadow <<= 16;
+            }
+
+            if (j < hj - 8) {
+                bsBuffShadow |= PIN8 << (32 - bsLiveShadow - 1);
+
+                outShadow.write(bsBuffShadow >> 24); // write 8-bit
+                bsBuffShadow <<= 8;
+                j += 8;
+            }
+
+            for (; j < hj; j++) {
                 bsBuffShadow |= 1 << (32 - bsLiveShadow - 1);
                 bsLiveShadow++;
             }
 
-            // inlined: bsW(1, 0);
-            while (bsLiveShadow >= 8) {
-                outShadow.write(bsBuffShadow >> 24);
+            if (bsLiveShadow >= 8) {
+                outShadow.write(bsBuffShadow >> 24); // write 8-bit
                 bsBuffShadow <<= 8;
                 bsLiveShadow -= 8;
             }
