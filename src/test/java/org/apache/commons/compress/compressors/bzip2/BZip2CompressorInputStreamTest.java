@@ -197,5 +197,14 @@ public class BZip2CompressorInputStreamTest {
 //        System.out.println(Arrays.toString(DATA2));
 //        System.out.println("DATA2");
         assertArrayEquals(DATA1, DATA3);
+
+        final ByteArrayOutputStream out4 = new ByteArrayOutputStream();
+        final BZip2CompressorOutputStreamXenoAmessInBoolean2 bz2out4 = new BZip2CompressorOutputStreamXenoAmessInBoolean2(out4);
+        bz2out4.write(TEXT.getBytes(), 0, TEXT.getBytes().length);
+        bz2out4.close();
+        byte[] DATA4 = out4.toByteArray();
+//        System.out.println(Arrays.toString(DATA2));
+//        System.out.println("DATA2");
+        assertArrayEquals(DATA1, DATA4);
     }
 }
