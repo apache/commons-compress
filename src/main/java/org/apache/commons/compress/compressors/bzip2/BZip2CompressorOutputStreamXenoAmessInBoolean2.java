@@ -698,11 +698,9 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean2 extends CompressorOu
     }
 
     private void bsFinishedWithStream() throws IOException {
-        while (this.bsLive > 0) {
-            final int ch = this.bsBuff >>> 24;
-            this.out.write(ch); // write 8-bit
-            this.bsBuff <<= 8;
-            this.bsLive -= 8;
+        need32();
+        if (this.bsLive > 0) {
+            write8();
         }
     }
 
@@ -972,9 +970,7 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean2 extends CompressorOu
         final int[] inUseInt = new int[16];
 
         need32();
-        final OutputStream outShadow = this.out;
-        int bsLiveShadow = this.bsLive;
-        int bsBuffShadow = this.bsBuff;
+
         for (int i = 16; --i >= 0; ) {
             final int i16 = i * 16;
             for (int j = 16; --j >= 0; ) {
@@ -983,25 +979,17 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean2 extends CompressorOu
                 }
             }
             if (inUse16[i] = (inUseInt[i] != 0)) {
-                bsBuffShadow |= 1 << (32 - bsLiveShadow - 1 - i);
+                push_n(i + 1, 1);
             }
         }
 
-        outShadow.write(bsBuffShadow >>> 24); // write 8-bit
-        outShadow.write(bsBuffShadow >>> 16); // write 8-bit
-        bsBuffShadow <<= 16;
+        write16_n();
 
         for (int i = 0; i < 16; i++) {
             if (inUse16[i]) {
-                bsBuffShadow |= inUseInt[i] << (32 - bsLiveShadow - 16);
-                outShadow.write(bsBuffShadow >>> 24); // write 8-bit
-                outShadow.write(bsBuffShadow >>> 16); // write 8-bit
-                bsBuffShadow <<= 16;
+                push16(inUseInt[i]);
             }
         }
-
-        this.bsBuff = bsBuffShadow;
-        this.bsLive = bsLiveShadow;
     }
 
 
@@ -1416,8 +1404,12 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean2 extends CompressorOu
         this.bsBuff <<= 32;
     }
 
-    private void push(final int n, final int v) throws IOException {
+    private void push_n(final int n, final int v) throws IOException {
         this.bsBuff |= (v << (32 - this.bsLive - n));
+    }
+
+    private void push(final int n, final int v) throws IOException {
+        push_n(n, v);
         this.bsLive += n;
     }
 
@@ -1443,8 +1435,6 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean2 extends CompressorOu
         this.bsBuff |= (v3 << (32 - this.bsLive - 24));
         write24_n();
     }
-
-
 
     private void push24(final int v) throws IOException {
         this.bsBuff |= (v << (32 - this.bsLive - 24));
