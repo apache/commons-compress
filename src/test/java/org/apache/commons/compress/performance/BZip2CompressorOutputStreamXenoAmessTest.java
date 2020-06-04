@@ -40,8 +40,8 @@ import java.util.concurrent.TimeUnit;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @State(Scope.Thread)
-@Warmup(iterations = 5, time = 1000, timeUnit = TimeUnit.MILLISECONDS)
-@Measurement(iterations = 5, time = 1000, timeUnit = TimeUnit.MILLISECONDS)
+@Warmup(iterations = 5, time = 10000, timeUnit = TimeUnit.MILLISECONDS)
+@Measurement(iterations = 5, time = 10000, timeUnit = TimeUnit.MILLISECONDS)
 public class BZip2CompressorOutputStreamXenoAmessTest {
 
     private static final String TEXT = "root:x:0:0:root:/root:/bin/bash\nbin:x:1:1:bin:/bin:\ndaemon:x:2:2:daemon" +
