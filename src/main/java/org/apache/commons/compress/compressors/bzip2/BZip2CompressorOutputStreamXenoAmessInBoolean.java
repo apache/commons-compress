@@ -1359,7 +1359,30 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean extends CompressorOut
     }
 
     private void moveToFrontCodeAndSend() throws IOException {
-        bsW(24, this.data.origPtr);
+        final OutputStream outShadow = this.out;
+        int bsLiveShadow = this.bsLive;
+        int bsBuffShadow = this.bsBuff;
+
+        if (bsLiveShadow >= 24) {
+            outShadow.write(bsBuffShadow >> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >> 16); // write 8-bit
+            outShadow.write(bsBuffShadow >> 8); // write 8-bit
+            bsBuffShadow <<= 24;
+            bsLiveShadow -= 24;
+        } else if (bsLiveShadow >= 16) {
+            outShadow.write(bsBuffShadow >> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >> 16); // write 8-bit
+            bsBuffShadow <<= 16;
+            bsLiveShadow -= 16;
+        } else if (bsLiveShadow >= 8) {
+            outShadow.write(bsBuffShadow >> 24); // write 8-bit
+            bsBuffShadow <<= 8;
+            bsLiveShadow -= 8;
+        }
+        bsBuffShadow |= (this.data.origPtr << (32 - bsLiveShadow - 24));
+        bsLiveShadow += 24;
+        this.bsBuff = bsBuffShadow;
+        this.bsLive = bsLiveShadow;
         generateMTFValues();
         sendMTFValues();
     }
