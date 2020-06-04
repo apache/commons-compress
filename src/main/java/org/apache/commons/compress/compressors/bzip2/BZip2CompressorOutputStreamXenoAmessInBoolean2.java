@@ -997,21 +997,16 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean2 extends CompressorOu
             throws IOException {
         final byte[] selectorMtf = this.data.selectorMtf;
         need24();
+
+        push_n(3, nGroups);
+        push_n(18, nSelectors);
+        write16_n();
+        this.bsLive += 2;
+        need8();
+
         final OutputStream outShadow = this.out;
         int bsLiveShadow = this.bsLive;
         int bsBuffShadow = this.bsBuff;
-
-        bsBuffShadow |= (nGroups << (32 - bsLiveShadow - 3));
-        bsBuffShadow |= (nSelectors << (32 - bsLiveShadow - 18));
-        outShadow.write(bsBuffShadow >>> 24); // write 8-bit
-        outShadow.write(bsBuffShadow >>> 16); // write 8-bit
-        if (bsLiveShadow >= 6) {
-            outShadow.write(bsBuffShadow >>> 8); // write 8-bit
-            bsBuffShadow <<= 8;
-            bsLiveShadow -= 8;
-        }
-        bsBuffShadow <<= 16;
-        bsLiveShadow += 2;
 
         for (int i = 0; i < nSelectors; i++) {
             final int hj = selectorMtf[i] & 0xff;
