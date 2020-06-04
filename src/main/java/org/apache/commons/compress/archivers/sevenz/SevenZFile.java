@@ -42,7 +42,6 @@ import java.util.zip.CRC32;
 
 import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.CRC32VerifyingInputStream;
-import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 

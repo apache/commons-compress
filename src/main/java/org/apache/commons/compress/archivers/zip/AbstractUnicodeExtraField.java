@@ -18,12 +18,9 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.CRC32;
 import java.util.zip.ZipException;
-
-import org.apache.commons.compress.utils.CharsetNames;
 
 /**
  * A common base class for Unicode extra information extra fields.

@@ -29,7 +29,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.compress.compressors.CompressorOutputStream;
-import org.apache.commons.compress.utils.CharsetNames;
 
 /**
  * Compressed output stream using the gzip format. This implementation improves
