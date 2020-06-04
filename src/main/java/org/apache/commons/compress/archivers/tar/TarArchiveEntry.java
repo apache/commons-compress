@@ -294,7 +294,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
         this.name = name;
         this.mode = isDir ? DEFAULT_DIR_MODE : DEFAULT_FILE_MODE;
         this.linkFlag = isDir ? LF_DIR : LF_NORMAL;
-        this.modTime = new Date().getTime() / MILLIS_PER_SECOND;
+        this.modTime = System.currentTimeMillis() / MILLIS_PER_SECOND;
         this.userName = "";
     }
 
