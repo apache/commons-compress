@@ -1115,14 +1115,39 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean extends CompressorOut
 
     private void sendMTFValues5(final int nGroups, final int nSelectors)
             throws IOException {
-        bsW(3, nGroups);
-        bsW(15, nSelectors);
-
         final OutputStream outShadow = this.out;
-        final byte[] selectorMtf = this.data.selectorMtf;
-
         int bsLiveShadow = this.bsLive;
         int bsBuffShadow = this.bsBuff;
+        final byte[] selectorMtf = this.data.selectorMtf;
+
+        if (bsLiveShadow >= 24) {
+            outShadow.write(bsBuffShadow >> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >> 16); // write 8-bit
+            outShadow.write(bsBuffShadow >> 8); // write 8-bit
+            bsBuffShadow <<= 24;
+            bsLiveShadow -= 24;
+        } else if (bsLiveShadow >= 16) {
+            outShadow.write(bsBuffShadow >> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >> 16); // write 8-bit
+            bsBuffShadow <<= 16;
+            bsLiveShadow -= 16;
+        } else if (bsLiveShadow >= 8) {
+            outShadow.write(bsBuffShadow >> 24); // write 8-bit
+            bsBuffShadow <<= 8;
+            bsLiveShadow -= 8;
+        }
+
+        bsBuffShadow |= (nGroups << (32 - bsLiveShadow - 3));
+        bsBuffShadow |= (nSelectors << (32 - bsLiveShadow - 18));
+        outShadow.write(bsBuffShadow >> 24); // write 8-bit
+        outShadow.write(bsBuffShadow >> 16); // write 8-bit
+        if (bsLiveShadow >= 6) {
+            outShadow.write(bsBuffShadow >> 8); // write 8-bit
+            bsBuffShadow <<= 8;
+            bsLiveShadow -= 8;
+        }
+        bsBuffShadow <<= 16;
+        bsLiveShadow += 2;
 
         for (int i = 0; i < nSelectors; i++) {
             final int hj = selectorMtf[i] & 0xff;
