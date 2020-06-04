@@ -253,7 +253,7 @@ class HuffmanDecoder implements Closeable {
         }
     }
 
-    private class InitialState extends DecoderState {
+    private static class InitialState extends DecoderState {
         @Override
         HuffmanState state() {
             return INITIAL;
