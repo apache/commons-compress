@@ -22,7 +22,7 @@ import java.util.BitSet;
 
 /**
  * Encapsulates the Burrows-Wheeler sorting algorithm needed by {@link
- * BZip2CompressorOutputStreamXenoAmess}.
+ * BZip2CompressorOutputStreamXenoAmessInShort}.
  *
  * <p>This class is based on a Java port of Julian Seward's
  * blocksort.c in his libbzip2</p>
@@ -146,11 +146,11 @@ class BlockSortXenoAmess {
      */
     private final char[] quadrant;
 
-    BlockSortXenoAmess(final BZip2CompressorOutputStreamXenoAmess.Data data) {
+    BlockSortXenoAmess(final BZip2CompressorOutputStreamXenoAmessInShort.Data data) {
         this.quadrant = data.sfmap;
     }
 
-    void blockSort(final BZip2CompressorOutputStreamXenoAmess.Data data, final int last) {
+    void blockSort(final BZip2CompressorOutputStreamXenoAmessInShort.Data data, final int last) {
         this.workLimit = WORK_FACTOR * last;
         this.workDone = 0;
         this.firstAttempt = true;
@@ -182,7 +182,7 @@ class BlockSortXenoAmess {
      * code, in particular deal with the fact that block starts at
      * offset 1 (in libbzip2 1.0.6 it starts at 0).
      */
-    final void fallbackSort(final BZip2CompressorOutputStreamXenoAmess.Data data,
+    final void fallbackSort(final BZip2CompressorOutputStreamXenoAmessInShort.Data data,
                             final int last) {
         data.block[0] = data.block[last + 1];
         fallbackSort(data.fmap, data.block, last + 1);
@@ -593,7 +593,7 @@ class BlockSortXenoAmess {
      * JIT compiler of the vm.
      * </p>
      */
-    private boolean mainSimpleSort(final BZip2CompressorOutputStreamXenoAmess.Data dataShadow,
+    private boolean mainSimpleSort(final BZip2CompressorOutputStreamXenoAmessInShort.Data dataShadow,
                                    final int lo, final int hi, final int d,
                                    final int lastShadow) {
         final int bigN = hi - lo + 1;
@@ -803,7 +803,7 @@ class BlockSortXenoAmess {
     /**
      * Method "mainQSort3", file "blocksort.c", BZip2 1.0.2
      */
-    private void mainQSort3(final BZip2CompressorOutputStreamXenoAmess.Data dataShadow,
+    private void mainQSort3(final BZip2CompressorOutputStreamXenoAmessInShort.Data dataShadow,
                             final int loSt, final int hiSt, final int dSt,
                             final int last) {
         final int[] stack_ll = this.stack_ll;
@@ -911,7 +911,7 @@ class BlockSortXenoAmess {
     private static final int SETMASK = (1 << 21);
     private static final int CLEARMASK = (~SETMASK);
 
-    final void mainSort(final BZip2CompressorOutputStreamXenoAmess.Data dataShadow,
+    final void mainSort(final BZip2CompressorOutputStreamXenoAmessInShort.Data dataShadow,
                         final int lastShadow) {
         final int[] runningOrder = this.mainSort_runningOrder;
         final int[] copy = this.mainSort_copy;

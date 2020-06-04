@@ -30,7 +30,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.junit.Assert.assertArrayEquals;
@@ -182,12 +181,21 @@ public class BZip2CompressorInputStreamTest {
 //        System.out.println(Arrays.toString(DATA1));
 
         final ByteArrayOutputStream out2 = new ByteArrayOutputStream();
-        final BZip2CompressorOutputStreamXenoAmess bz2out2 = new BZip2CompressorOutputStreamXenoAmess(out2);
+        final BZip2CompressorOutputStreamXenoAmessInShort bz2out2 = new BZip2CompressorOutputStreamXenoAmessInShort(out2);
         bz2out2.write(TEXT.getBytes(), 0, TEXT.getBytes().length);
         bz2out2.close();
         byte[] DATA2 = out2.toByteArray();
 //        System.out.println(Arrays.toString(DATA2));
 //        System.out.println("DATA2");
         assertArrayEquals(DATA1, DATA2);
+
+        final ByteArrayOutputStream out3 = new ByteArrayOutputStream();
+        final BZip2CompressorOutputStreamXenoAmessInBoolean bz2out3 = new BZip2CompressorOutputStreamXenoAmessInBoolean(out3);
+        bz2out3.write(TEXT.getBytes(), 0, TEXT.getBytes().length);
+        bz2out3.close();
+        byte[] DATA3 = out3.toByteArray();
+//        System.out.println(Arrays.toString(DATA2));
+//        System.out.println("DATA2");
+        assertArrayEquals(DATA1, DATA3);
     }
 }

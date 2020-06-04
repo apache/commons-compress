@@ -18,7 +18,8 @@ package org.apache.commons.compress.performance;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStreamBreak;
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStreamXenoAmess;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStreamXenoAmessInBoolean;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStreamXenoAmessInShort;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Measurement;
@@ -38,8 +39,8 @@ import java.util.concurrent.TimeUnit;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @State(Scope.Thread)
-@Warmup(iterations = 5, time = 1000, timeUnit = TimeUnit.MILLISECONDS)
-@Measurement(iterations = 5, time = 1000, timeUnit = TimeUnit.MILLISECONDS)
+@Warmup(iterations = 5, time = 10000, timeUnit = TimeUnit.MILLISECONDS)
+@Measurement(iterations = 5, time = 10000, timeUnit = TimeUnit.MILLISECONDS)
 public class BZip2CompressorOutputStreamXenoAmessTest {
 
     private static final String TEXT = "root:x:0:0:root:/root:/bin/bash\nbin:x:1:1:bin:/bin:\ndaemon:x:2:2:daemon" +
@@ -69,9 +70,19 @@ public class BZip2CompressorOutputStreamXenoAmessTest {
     }
 
     @Benchmark
-    public void testXenoAmess() throws IOException {
+    public void testXenoAmessShort() throws IOException {
         final ByteArrayOutputStream out2 = new ByteArrayOutputStream();
-        final BZip2CompressorOutputStreamXenoAmess bz2out2 = new BZip2CompressorOutputStreamXenoAmess(out2);
+        final BZip2CompressorOutputStreamXenoAmessInShort bz2out2 =
+                new BZip2CompressorOutputStreamXenoAmessInShort(out2);
+        bz2out2.write(TEXT.getBytes(), 0, TEXT.getBytes().length);
+        bz2out2.close();
+    }
+
+    @Benchmark
+    public void testXenoAmessBoolean() throws IOException {
+        final ByteArrayOutputStream out2 = new ByteArrayOutputStream();
+        final BZip2CompressorOutputStreamXenoAmessInBoolean bz2out2 =
+                new BZip2CompressorOutputStreamXenoAmessInBoolean(out2);
         bz2out2.write(TEXT.getBytes(), 0, TEXT.getBytes().length);
         bz2out2.close();
     }

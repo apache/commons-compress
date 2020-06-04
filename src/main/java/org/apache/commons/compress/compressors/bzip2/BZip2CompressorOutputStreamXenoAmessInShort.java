@@ -123,7 +123,7 @@ import java.io.OutputStream;
  * </p>
  * @NotThreadSafe
  */
-public class BZip2CompressorOutputStreamXenoAmess extends CompressorOutputStream
+public class BZip2CompressorOutputStreamXenoAmessInShort extends CompressorOutputStream
         implements BZip2Constants {
     private static final int SEG = 0B1111;
     private static final int PIN8 = 0B1111_1111;
@@ -359,7 +359,7 @@ public class BZip2CompressorOutputStreamXenoAmess extends CompressorOutputStream
      * @throws NullPointerException
      *             if <code>out == null</code>.
      */
-    public BZip2CompressorOutputStreamXenoAmess(final OutputStream out)
+    public BZip2CompressorOutputStreamXenoAmessInShort(final OutputStream out)
             throws IOException {
         this(out, MAX_BLOCKSIZE);
     }
@@ -382,7 +382,7 @@ public class BZip2CompressorOutputStreamXenoAmess extends CompressorOutputStream
      * @see #MIN_BLOCKSIZE
      * @see #MAX_BLOCKSIZE
      */
-    public BZip2CompressorOutputStreamXenoAmess(final OutputStream out, final int blockSize) throws IOException {
+    public BZip2CompressorOutputStreamXenoAmessInShort(final OutputStream out, final int blockSize) throws IOException {
         if (blockSize < 1) {
             throw new IllegalArgumentException("blockSize(" + blockSize + ") < 1");
         }
