@@ -1250,14 +1250,9 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean extends CompressorOut
                         bsBuffShadow <<= 8;
                         curr += 4; /* 10 */
                     }
-
-                    while (curr < lti) {
-                        bsBuffShadow |= 2 << (32 - bsLiveShadow - 2);
-                        bsLiveShadow += 2;
-
-                        curr++; /* 10 */
-                    }
-
+                    final int tmp = (lti - curr) << 1;
+                    bsBuffShadow |= ((((1 << tmp) - 1) / 3) << 1) << (32 - bsLiveShadow - tmp);
+                    bsLiveShadow += tmp;
                 } else if (curr > lti) {
                     final int lti8 = lti + 8;
                     while (curr > lti8) {
@@ -1275,14 +1270,9 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean extends CompressorOut
                         bsBuffShadow <<= 8;
                         curr -= 4; /* 11 */
                     }
-
-                    while (curr > lti) {
-                        // inlined: bsW(2, 2);
-                        bsBuffShadow |= 3 << (32 - bsLiveShadow - 2);
-                        bsLiveShadow += 2;
-
-                        curr--; /* 11 */
-                    }
+                    final int tmp = (curr - lti) << 1;
+                    bsBuffShadow |= (((1 << tmp) - 1) << (32 - bsLiveShadow - tmp));
+                    bsLiveShadow += tmp;
                 }
                 curr = lti;
                 // bsBuffShadow |= 0 << (32 - bsLiveShadow - 1);
@@ -1293,7 +1283,7 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean extends CompressorOut
                     outShadow.write(bsBuffShadow >>> 16); // write 8-bit
                     bsBuffShadow <<= 16;
                     bsLiveShadow -= 16;
-                }else if(bsLiveShadow >= 8){
+                } else if (bsLiveShadow >= 8) {
                     outShadow.write(bsBuffShadow >>> 24); // write 8-bit
                     bsBuffShadow <<= 8;
                     bsLiveShadow -= 8;
