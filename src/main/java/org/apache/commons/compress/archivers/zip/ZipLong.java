@@ -184,7 +184,7 @@ public final class ZipLong implements Cloneable, Serializable {
      */
     @Override
     public boolean equals(final Object o) {
-        if (o == null || !(o instanceof ZipLong)) {
+        if (!(o instanceof ZipLong)) {
             return false;
         }
         return value == ((ZipLong) o).getValue();
