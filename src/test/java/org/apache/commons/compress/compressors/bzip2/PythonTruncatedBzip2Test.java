@@ -113,7 +113,7 @@ public class PythonTruncatedBzip2Test {
     // Does not check parameters, so may fail if they are incompatible
     private static byte[] copyOfRange(final byte[] original, final int from, final int to) {
         final int length = to - from;
-        final byte buff[] = new byte[length];
+        final byte[] buff = new byte[length];
         System.arraycopy(original, from, buff, 0, length);
         return buff;
     }

@@ -260,16 +260,16 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
     private int hashSize;
 
     // encryption data
-    private byte ivData[];
-    private byte erdData[];
+    private byte[] ivData;
+    private byte[] erdData;
 
     // encryption key
-    private byte recipientKeyHash[];
-    private byte keyBlob[];
+    private byte[] recipientKeyHash;
+    private byte[] keyBlob;
 
     // password verification data
-    private byte vData[];
-    private byte vCRC32[];
+    private byte[] vData;
+    private byte[] vCRC32;
 
     /**
      * Get record count.

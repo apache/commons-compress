@@ -500,7 +500,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
 
     private void pad(final int count) throws IOException{
         if (count > 0){
-            final byte buff[] = new byte[count];
+            final byte[] buff = new byte[count];
             out.write(buff);
             count(count);
         }
@@ -508,7 +508,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
 
     private void writeBinaryLong(final long number, final int length,
             final boolean swapHalfWord) throws IOException {
-        final byte tmp[] = CpioUtil.long2byteArray(number, length, swapHalfWord);
+        final byte[] tmp = CpioUtil.long2byteArray(number, length, swapHalfWord);
         out.write(tmp);
         count(tmp.length);
     }
