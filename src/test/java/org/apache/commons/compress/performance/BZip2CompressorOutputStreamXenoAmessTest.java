@@ -19,6 +19,7 @@ package org.apache.commons.compress.performance;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStreamBreak;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStreamXenoAmessInBoolean;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStreamXenoAmessInBoolean2;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStreamXenoAmessInShort;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -39,8 +40,8 @@ import java.util.concurrent.TimeUnit;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @State(Scope.Thread)
-@Warmup(iterations = 5, time = 10000, timeUnit = TimeUnit.MILLISECONDS)
-@Measurement(iterations = 5, time = 10000, timeUnit = TimeUnit.MILLISECONDS)
+@Warmup(iterations = 5, time = 1000, timeUnit = TimeUnit.MILLISECONDS)
+@Measurement(iterations = 5, time = 1000, timeUnit = TimeUnit.MILLISECONDS)
 public class BZip2CompressorOutputStreamXenoAmessTest {
 
     private static final String TEXT = "root:x:0:0:root:/root:/bin/bash\nbin:x:1:1:bin:/bin:\ndaemon:x:2:2:daemon" +
@@ -52,6 +53,8 @@ public class BZip2CompressorOutputStreamXenoAmessTest {
             "/postfix:\nniemeyer:x:500:500::/home/niemeyer:/bin/bash\npostgres:x:101:102:PostgreSQL " +
             "Server:/var/lib/pgsql:/bin/bash\nmysql:x:102:103:MySQL " +
             "server:/var/lib/mysql:/bin/bash\nwww:x:103:104::/var/www:/bin/false\n";
+
+    private static final String TEXT2 = generate();
 
     @Benchmark
     public void testOld() throws IOException {
@@ -85,6 +88,66 @@ public class BZip2CompressorOutputStreamXenoAmessTest {
                 new BZip2CompressorOutputStreamXenoAmessInBoolean(out2);
         bz2out2.write(TEXT.getBytes(), 0, TEXT.getBytes().length);
         bz2out2.close();
+    }
+
+    @Benchmark
+    public void testXenoAmessBoolean2() throws IOException {
+        final ByteArrayOutputStream out2 = new ByteArrayOutputStream();
+        final BZip2CompressorOutputStreamXenoAmessInBoolean2 bz2out2 =
+                new BZip2CompressorOutputStreamXenoAmessInBoolean2(out2);
+        bz2out2.write(TEXT.getBytes(), 0, TEXT.getBytes().length);
+        bz2out2.close();
+    }
+
+    @Benchmark
+    public void testOld_large() throws IOException {
+        final ByteArrayOutputStream out1 = new ByteArrayOutputStream();
+        final BZip2CompressorOutputStream bz2out1 = new BZip2CompressorOutputStream(out1);
+        bz2out1.write(TEXT2.getBytes(), 0, TEXT2.getBytes().length);
+        bz2out1.close();
+    }
+
+    @Benchmark
+    public void testOldWithBreak_large() throws IOException {
+        final ByteArrayOutputStream out1 = new ByteArrayOutputStream();
+        final BZip2CompressorOutputStreamBreak bz2out1 = new BZip2CompressorOutputStreamBreak(out1);
+        bz2out1.write(TEXT2.getBytes(), 0, TEXT2.getBytes().length);
+        bz2out1.close();
+    }
+
+    @Benchmark
+    public void testXenoAmessShort_large() throws IOException {
+        final ByteArrayOutputStream out2 = new ByteArrayOutputStream();
+        final BZip2CompressorOutputStreamXenoAmessInShort bz2out2 =
+                new BZip2CompressorOutputStreamXenoAmessInShort(out2);
+        bz2out2.write(TEXT2.getBytes(), 0, TEXT2.getBytes().length);
+        bz2out2.close();
+    }
+
+    @Benchmark
+    public void testXenoAmessBoolean_large() throws IOException {
+        final ByteArrayOutputStream out2 = new ByteArrayOutputStream();
+        final BZip2CompressorOutputStreamXenoAmessInBoolean bz2out2 =
+                new BZip2CompressorOutputStreamXenoAmessInBoolean(out2);
+        bz2out2.write(TEXT2.getBytes(), 0, TEXT2.getBytes().length);
+        bz2out2.close();
+    }
+
+    @Benchmark
+    public void testXenoAmessBoolean2_large() throws IOException {
+        final ByteArrayOutputStream out2 = new ByteArrayOutputStream();
+        final BZip2CompressorOutputStreamXenoAmessInBoolean2 bz2out2 =
+                new BZip2CompressorOutputStreamXenoAmessInBoolean2(out2);
+        bz2out2.write(TEXT2.getBytes(), 0, TEXT2.getBytes().length);
+        bz2out2.close();
+    }
+
+    private static String generate() {
+        StringBuilder stringBuilder = new StringBuilder("abCDe");
+        for (int i = 0; i < 20; i++) {
+            stringBuilder.append(stringBuilder);
+        }
+        return stringBuilder.toString();
     }
 
 }

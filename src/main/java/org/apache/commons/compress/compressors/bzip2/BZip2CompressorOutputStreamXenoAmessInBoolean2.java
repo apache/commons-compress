@@ -1004,134 +1004,67 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean2 extends CompressorOu
         this.bsLive += 2;
         need8();
 
-        final OutputStream outShadow = this.out;
-        int bsLiveShadow = this.bsLive;
-        int bsBuffShadow = this.bsBuff;
-
         for (int i = 0; i < nSelectors; i++) {
             final int hj = selectorMtf[i] & 0xff;
             final int hj16 = hj - 16;
             int j = 0;
             for (; j < hj16; j += 16) {
-                // inlined: bsW(1, 1);
-                bsBuffShadow |= PIN16 << (32 - bsLiveShadow - 1);
-
-                outShadow.write(bsBuffShadow >>> 24); // write 8-bit
-                outShadow.write(bsBuffShadow >>> 16); // write 8-bit
-                bsBuffShadow <<= 16;
+                push_n(1, PIN16);
+                write16_n();
             }
-
-            if (j < hj - 8) {
-                bsBuffShadow |= PIN8 << (32 - bsLiveShadow - 1);
-
-                outShadow.write(bsBuffShadow >>> 24); // write 8-bit
-                bsBuffShadow <<= 8;
-                j += 8;
-            }
-
-            for (; j < hj; j++) {
-                bsBuffShadow |= 1 << (32 - bsLiveShadow - 1);
-                bsLiveShadow++;
-            }
-
-            if (bsLiveShadow >= 8) {
-                outShadow.write(bsBuffShadow >>> 24); // write 8-bit
-                bsBuffShadow <<= 8;
-                bsLiveShadow -= 8;
-            }
-            // bsBuffShadow |= 0 << (32 - bsLiveShadow - 1);
-            bsLiveShadow++;
+            final int tmp = hj - j;
+            push(tmp, (1 << tmp) - 1);
+            this.bsLive++;
+            need16();
         }
-
-        this.bsBuff = bsBuffShadow;
-        this.bsLive = bsLiveShadow;
     }
 
     private void sendMTFValues6(final int nGroups, final int alphaSize)
             throws IOException {
         final byte[][] len = this.data.sendMTFValues_len;
         need32();
-        final OutputStream outShadow = this.out;
-        int bsLiveShadow = this.bsLive;
-        int bsBuffShadow = this.bsBuff;
-
         for (int t = 0; t < nGroups; t++) {
             final byte[] len_t = len[t];
             int curr = len_t[0] & 0xff;
-
-            bsBuffShadow |= curr << (32 - bsLiveShadow - 5);
-            bsLiveShadow += 5;
-
+            push(5, curr);
             for (int i = 0; i < alphaSize; i++) {
                 final int lti = len_t[i] & 0xff;
                 if (curr < lti) {
                     final int lti8 = lti - 8;
                     while (curr < lti8) {
-                        bsBuffShadow |= PIN16_10 << (32 - bsLiveShadow - 2);
-
-                        outShadow.write(bsBuffShadow >>> 24); // write 8-bit
-                        outShadow.write(bsBuffShadow >>> 16); // write 8-bit
-                        bsBuffShadow <<= 16;
+                        push_n(16, PIN16_10);
+                        write16_n();
                         curr += 8; /* 10 */
                     }
-
                     if (curr < lti - 4) {
-                        bsBuffShadow |= PIN8_10 << (32 - bsLiveShadow - 2);
-
-                        outShadow.write(bsBuffShadow >>> 24); // write 8-bit
-                        bsBuffShadow <<= 8;
+                        push_n(8, PIN8_10);
+                        write8_n();
                         curr += 4; /* 10 */
                     }
-
-                    while (curr < lti) {
-                        bsBuffShadow |= 2 << (32 - bsLiveShadow - 2);
-                        bsLiveShadow += 2;
-
-                        curr++; /* 10 */
-                    }
-
+                    final int tmp = (lti - curr) << 1;
+                    push(tmp, (((1 << tmp) - 1) / 3) << 1);
                 } else if (curr > lti) {
                     final int lti8 = lti + 8;
-
                     while (curr > lti8) {
-                        bsBuffShadow |= PIN16_11 << (32 - bsLiveShadow - 2);
-
-                        outShadow.write(bsBuffShadow >>> 24); // write 8-bit
-                        outShadow.write(bsBuffShadow >>> 16); // write 8-bit
-                        bsBuffShadow <<= 16;
+                        push_n(16, PIN16_11);
+                        write16_n();
                         curr -= 8; /* 11 */
                     }
-
                     if (curr > lti + 4) {
-                        bsBuffShadow |= PIN8 << (32 - bsLiveShadow - 2);
-
-                        outShadow.write(bsBuffShadow >>> 24); // write 8-bit
-                        bsBuffShadow <<= 8;
+                        push_n(8, PIN8_11);
+                        write8_n();
                         curr -= 4; /* 11 */
                     }
-
-                    while (curr > lti) {
-                        // inlined: bsW(2, 2);
-                        bsBuffShadow |= 3 << (32 - bsLiveShadow - 2);
-                        bsLiveShadow += 2;
-
-                        curr--; /* 11 */
-                    }
+                    final int tmp = (curr - lti) << 1;
+                    push(tmp, (1 << tmp) - 1);
                 }
-
+                curr = lti;
                 // bsBuffShadow |= 0 << (32 - bsLiveShadow - 1);
-                bsLiveShadow++;
+                this.bsLive++;
                 // inlined: bsW(1, 0);
-                if (bsLiveShadow >= 16) {
-                    outShadow.write(bsBuffShadow >>> 24); // write 8-bit
-                    outShadow.write(bsBuffShadow >>> 16); // write 8-bit
-                    bsBuffShadow <<= 16;
-                    bsLiveShadow -= 16;
-                }
+                need16();
             }
         }
-        this.bsBuff = bsBuffShadow;
-        this.bsLive = bsLiveShadow;
         need16();
     }
 
@@ -1266,7 +1199,7 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean2 extends CompressorOu
                         }
 
                         if (zPend >= 2) {
-                            zPend = (zPend - 2) >>> 1;
+                            zPend = (zPend - 2) >> 1;
                         } else {
                             break;
                         }
@@ -1293,7 +1226,7 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean2 extends CompressorOu
                 }
 
                 if (zPend >= 2) {
-                    zPend = (zPend - 2) >>> 1;
+                    zPend = (zPend - 2) >> 1;
                 } else {
                     break;
                 }

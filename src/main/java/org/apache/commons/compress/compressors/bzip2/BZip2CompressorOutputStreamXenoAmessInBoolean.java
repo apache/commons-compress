@@ -697,12 +697,41 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean extends CompressorOut
     }
 
     private void bsFinishedWithStream() throws IOException {
-        while (this.bsLive > 0) {
-            final int ch = this.bsBuff >> 24;
-            this.out.write(ch); // write 8-bit
-            this.bsBuff <<= 8;
-            this.bsLive -= 8;
+        final OutputStream outShadow = this.out;
+        int bsLiveShadow = this.bsLive;
+        int bsBuffShadow = this.bsBuff;
+
+        if (bsLiveShadow >= 32) {
+            outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 16); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 8); // write 8-bit
+            outShadow.write(bsBuffShadow); // write 8-bit
+            bsBuffShadow <<= 32;
+            bsLiveShadow -= 32;
+        } else if (bsLiveShadow >= 24) {
+            outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 16); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 8); // write 8-bit
+            bsBuffShadow <<= 24;
+            bsLiveShadow -= 24;
+        } else if (bsLiveShadow >= 16) {
+            outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 16); // write 8-bit
+            bsBuffShadow <<= 16;
+            bsLiveShadow -= 16;
+        } else if (bsLiveShadow >= 8) {
+            outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+            bsBuffShadow <<= 8;
+            bsLiveShadow -= 8;
         }
+        if (bsLiveShadow > 0) {
+            this.out.write(bsBuffShadow >>> 24); // write 8-bit
+            bsBuffShadow <<= 8;
+            bsLiveShadow -= 8;
+        }
+
+        this.bsBuff = bsBuffShadow;
+        this.bsLive = bsLiveShadow;
     }
 
     private void bsW(final int n, final int v) throws IOException {
@@ -711,25 +740,25 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean extends CompressorOut
         int bsBuffShadow = this.bsBuff;
 
         if (bsLiveShadow >= 32) {
-            outShadow.write(bsBuffShadow >> 24); // write 8-bit
-            outShadow.write(bsBuffShadow >> 16); // write 8-bit
-            outShadow.write(bsBuffShadow >> 8); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 16); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 8); // write 8-bit
             outShadow.write(bsBuffShadow); // write 8-bit
             bsBuffShadow <<= 32;
             bsLiveShadow -= 32;
         } else if (bsLiveShadow >= 24) {
-            outShadow.write(bsBuffShadow >> 24); // write 8-bit
-            outShadow.write(bsBuffShadow >> 16); // write 8-bit
-            outShadow.write(bsBuffShadow >> 8); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 16); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 8); // write 8-bit
             bsBuffShadow <<= 24;
             bsLiveShadow -= 24;
         } else if (bsLiveShadow >= 16) {
-            outShadow.write(bsBuffShadow >> 24); // write 8-bit
-            outShadow.write(bsBuffShadow >> 16); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 16); // write 8-bit
             bsBuffShadow <<= 16;
             bsLiveShadow -= 16;
         } else if (bsLiveShadow >= 8) {
-            outShadow.write(bsBuffShadow >> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 24); // write 8-bit
             bsBuffShadow <<= 8;
             bsLiveShadow -= 8;
         }
@@ -743,12 +772,12 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean extends CompressorOut
         int bsLiveShadow = this.bsLive;
         int bsBuffShadow = this.bsBuff;
         if (bsLiveShadow >= 8) {
-            outShadow.write(bsBuffShadow >> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 24); // write 8-bit
             bsBuffShadow <<= 8;
             bsLiveShadow -= 8;
         }
         bsBuffShadow |= (c << (32 - bsLiveShadow - 8));
-        outShadow.write(bsBuffShadow >> 24); // write 8-bit
+        outShadow.write(bsBuffShadow >>> 24); // write 8-bit
         bsBuffShadow <<= 8;
         this.bsBuff = bsBuffShadow;
         this.bsLive = bsLiveShadow;
@@ -759,25 +788,25 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean extends CompressorOut
         int bsLiveShadow = this.bsLive;
         int bsBuffShadow = this.bsBuff;
         if (bsLiveShadow >= 16) {
-            outShadow.write(bsBuffShadow >> 24); // write 8-bit
-            outShadow.write(bsBuffShadow >> 16); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 16); // write 8-bit
             bsBuffShadow <<= 16;
             bsLiveShadow -= 16;
         } else if (bsLiveShadow >= 8) {
-            outShadow.write(bsBuffShadow >> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 24); // write 8-bit
             bsBuffShadow <<= 8;
             bsLiveShadow -= 8;
         }
         bsBuffShadow |= (((u >> 24) & 0xff) << (32 - bsLiveShadow - 8));
         bsBuffShadow |= (((u >> 16) & 0xff) << (32 - bsLiveShadow - 16));
-        outShadow.write(bsBuffShadow >> 24); // write 8-bit
-        outShadow.write(bsBuffShadow >> 16); // write 8-bit
+        outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+        outShadow.write(bsBuffShadow >>> 16); // write 8-bit
         bsBuffShadow <<= 16;
 
         bsBuffShadow |= (((u >> 8) & 0xff) << (32 - bsLiveShadow - 8));
         bsBuffShadow |= ((u & 0xff) << (32 - bsLiveShadow - 16));
-        outShadow.write(bsBuffShadow >> 24); // write 8-bit
-        outShadow.write(bsBuffShadow >> 16); // write 8-bit
+        outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+        outShadow.write(bsBuffShadow >>> 16); // write 8-bit
         bsBuffShadow <<= 16;
 
         this.bsBuff = bsBuffShadow;
@@ -1041,6 +1070,30 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean extends CompressorOut
         final boolean[] inUse16 = this.data.sentMTFValues4_inUse16;
         final int[] inUseInt = new int[16];
 
+        if (bsLiveShadow >= 32) {
+            outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 16); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 8); // write 8-bit
+            outShadow.write(bsBuffShadow); // write 8-bit
+            bsBuffShadow <<= 32;
+            bsLiveShadow -= 32;
+        } else if (bsLiveShadow >= 24) {
+            outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 16); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 8); // write 8-bit
+            bsBuffShadow <<= 24;
+            bsLiveShadow -= 24;
+        } else if (bsLiveShadow >= 16) {
+            outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 16); // write 8-bit
+            bsBuffShadow <<= 16;
+            bsLiveShadow -= 16;
+        } else if (bsLiveShadow >= 8) {
+            outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+            bsBuffShadow <<= 8;
+            bsLiveShadow -= 8;
+        }
+
         for (int i = 16; --i >= 0; ) {
             final int i16 = i * 16;
             for (int j = 16; --j >= 0; ) {
@@ -1048,62 +1101,20 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean extends CompressorOut
                     inUseInt[i] |= (1 << (15 ^ j));
                 }
             }
-            inUse16[i] = inUseInt[i] != 0;
+            if (inUse16[i] = (inUseInt[i] != 0)) {
+                bsBuffShadow |= (1 << (32 - bsLiveShadow - 1 - i));
+            }
         }
 
-        if (bsLiveShadow >= 32) {
-            outShadow.write(bsBuffShadow >> 24); // write 8-bit
-            outShadow.write(bsBuffShadow >> 16); // write 8-bit
-            outShadow.write(bsBuffShadow >> 8); // write 8-bit
-            outShadow.write(bsBuffShadow); // write 8-bit
-            bsBuffShadow <<= 32;
-            bsLiveShadow -= 32;
-        } else if (bsLiveShadow >= 24) {
-            outShadow.write(bsBuffShadow >> 24); // write 8-bit
-            outShadow.write(bsBuffShadow >> 16); // write 8-bit
-            outShadow.write(bsBuffShadow >> 8); // write 8-bit
-            bsBuffShadow <<= 24;
-            bsLiveShadow -= 24;
-        } else if (bsLiveShadow >= 16) {
-            outShadow.write(bsBuffShadow >> 24); // write 8-bit
-            outShadow.write(bsBuffShadow >> 16); // write 8-bit
-            bsBuffShadow <<= 16;
-            bsLiveShadow -= 16;
-        } else if (bsLiveShadow >= 8) {
-            outShadow.write(bsBuffShadow >> 24); // write 8-bit
-            bsBuffShadow <<= 8;
-            bsLiveShadow -= 8;
-        }
-
-        bsBuffShadow |= ((inUse16[0] ? 1 : 0) << (32 - bsLiveShadow - 1));
-        bsBuffShadow |= ((inUse16[1] ? 1 : 0) << (32 - bsLiveShadow - 2));
-        bsBuffShadow |= ((inUse16[2] ? 1 : 0) << (32 - bsLiveShadow - 3));
-        bsBuffShadow |= ((inUse16[3] ? 1 : 0) << (32 - bsLiveShadow - 4));
-
-        bsBuffShadow |= ((inUse16[4] ? 1 : 0) << (32 - bsLiveShadow - 5));
-        bsBuffShadow |= ((inUse16[5] ? 1 : 0) << (32 - bsLiveShadow - 6));
-        bsBuffShadow |= ((inUse16[6] ? 1 : 0) << (32 - bsLiveShadow - 7));
-        bsBuffShadow |= ((inUse16[7] ? 1 : 0) << (32 - bsLiveShadow - 8));
-
-        bsBuffShadow |= ((inUse16[8] ? 1 : 0) << (32 - bsLiveShadow - 9));
-        bsBuffShadow |= ((inUse16[9] ? 1 : 0) << (32 - bsLiveShadow - 10));
-        bsBuffShadow |= ((inUse16[10] ? 1 : 0) << (32 - bsLiveShadow - 11));
-        bsBuffShadow |= ((inUse16[11] ? 1 : 0) << (32 - bsLiveShadow - 12));
-
-        bsBuffShadow |= ((inUse16[12] ? 1 : 0) << (32 - bsLiveShadow - 13));
-        bsBuffShadow |= ((inUse16[13] ? 1 : 0) << (32 - bsLiveShadow - 14));
-        bsBuffShadow |= ((inUse16[14] ? 1 : 0) << (32 - bsLiveShadow - 15));
-        bsBuffShadow |= ((inUse16[15] ? 1 : 0) << (32 - bsLiveShadow - 16));
-
-        outShadow.write(bsBuffShadow >> 24); // write 8-bit
-        outShadow.write(bsBuffShadow >> 16); // write 8-bit
+        outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+        outShadow.write(bsBuffShadow >>> 16); // write 8-bit
         bsBuffShadow <<= 16;
 
         for (int i = 0; i < 16; i++) {
             if (inUse16[i]) {
                 bsBuffShadow |= inUseInt[i] << (32 - bsLiveShadow - 16);
-                outShadow.write(bsBuffShadow >> 24); // write 8-bit
-                outShadow.write(bsBuffShadow >> 16); // write 8-bit
+                outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+                outShadow.write(bsBuffShadow >>> 16); // write 8-bit
                 bsBuffShadow <<= 16;
             }
         }
@@ -1121,28 +1132,28 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean extends CompressorOut
         final byte[] selectorMtf = this.data.selectorMtf;
 
         if (bsLiveShadow >= 24) {
-            outShadow.write(bsBuffShadow >> 24); // write 8-bit
-            outShadow.write(bsBuffShadow >> 16); // write 8-bit
-            outShadow.write(bsBuffShadow >> 8); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 16); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 8); // write 8-bit
             bsBuffShadow <<= 24;
             bsLiveShadow -= 24;
         } else if (bsLiveShadow >= 16) {
-            outShadow.write(bsBuffShadow >> 24); // write 8-bit
-            outShadow.write(bsBuffShadow >> 16); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 16); // write 8-bit
             bsBuffShadow <<= 16;
             bsLiveShadow -= 16;
         } else if (bsLiveShadow >= 8) {
-            outShadow.write(bsBuffShadow >> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 24); // write 8-bit
             bsBuffShadow <<= 8;
             bsLiveShadow -= 8;
         }
 
         bsBuffShadow |= (nGroups << (32 - bsLiveShadow - 3));
         bsBuffShadow |= (nSelectors << (32 - bsLiveShadow - 18));
-        outShadow.write(bsBuffShadow >> 24); // write 8-bit
-        outShadow.write(bsBuffShadow >> 16); // write 8-bit
+        outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+        outShadow.write(bsBuffShadow >>> 16); // write 8-bit
         if (bsLiveShadow >= 6) {
-            outShadow.write(bsBuffShadow >> 8); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 8); // write 8-bit
             bsBuffShadow <<= 8;
             bsLiveShadow -= 8;
         }
@@ -1157,31 +1168,24 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean extends CompressorOut
                 // inlined: bsW(1, 1);
                 bsBuffShadow |= PIN16 << (32 - bsLiveShadow - 1);
 
-                outShadow.write(bsBuffShadow >> 24); // write 8-bit
-                outShadow.write(bsBuffShadow >> 16); // write 8-bit
+                outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+                outShadow.write(bsBuffShadow >>> 16); // write 8-bit
                 bsBuffShadow <<= 16;
             }
+            final int tmp = hj - j;
+            bsBuffShadow |= ((1 << tmp) - 1) << (32 - bsLiveShadow - tmp);
+            bsLiveShadow += tmp + 1;
 
-            if (j < hj - 8) {
-                bsBuffShadow |= PIN8 << (32 - bsLiveShadow - 1);
-
-                outShadow.write(bsBuffShadow >> 24); // write 8-bit
-                bsBuffShadow <<= 8;
-                j += 8;
-            }
-
-            for (; j < hj; j++) {
-                bsBuffShadow |= 1 << (32 - bsLiveShadow - 1);
-                bsLiveShadow++;
-            }
-
-            if (bsLiveShadow >= 8) {
-                outShadow.write(bsBuffShadow >> 24); // write 8-bit
+            if (bsLiveShadow >= 16) {
+                outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+                outShadow.write(bsBuffShadow >>> 16); // write 8-bit
+                bsBuffShadow <<= 16;
+                bsLiveShadow -= 16;
+            } else if (bsLiveShadow >= 8) {
+                outShadow.write(bsBuffShadow >>> 24); // write 8-bit
                 bsBuffShadow <<= 8;
                 bsLiveShadow -= 8;
             }
-            // bsBuffShadow |= 0 << (32 - bsLiveShadow - 1);
-            bsLiveShadow++;
         }
 
         this.bsBuff = bsBuffShadow;
@@ -1197,25 +1201,25 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean extends CompressorOut
         int bsBuffShadow = this.bsBuff;
 
         if (bsLiveShadow >= 32) {
-            outShadow.write(bsBuffShadow >> 24); // write 8-bit
-            outShadow.write(bsBuffShadow >> 16); // write 8-bit
-            outShadow.write(bsBuffShadow >> 8); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 16); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 8); // write 8-bit
             outShadow.write(bsBuffShadow); // write 8-bit
             bsBuffShadow <<= 32;
             bsLiveShadow -= 32;
         } else if (bsLiveShadow >= 24) {
-            outShadow.write(bsBuffShadow >> 24); // write 8-bit
-            outShadow.write(bsBuffShadow >> 16); // write 8-bit
-            outShadow.write(bsBuffShadow >> 8); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 16); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 8); // write 8-bit
             bsBuffShadow <<= 24;
             bsLiveShadow -= 24;
         } else if (bsLiveShadow >= 16) {
-            outShadow.write(bsBuffShadow >> 24); // write 8-bit
-            outShadow.write(bsBuffShadow >> 16); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 16); // write 8-bit
             bsBuffShadow <<= 16;
             bsLiveShadow -= 16;
         } else if (bsLiveShadow >= 8) {
-            outShadow.write(bsBuffShadow >> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 24); // write 8-bit
             bsBuffShadow <<= 8;
             bsLiveShadow -= 8;
         }
@@ -1239,7 +1243,6 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean extends CompressorOut
                         bsBuffShadow <<= 16;
                         curr += 8; /* 10 */
                     }
-
                     if (curr < lti - 4) {
                         bsBuffShadow |= PIN8_10 << (32 - bsLiveShadow - 2);
 
@@ -1257,7 +1260,6 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean extends CompressorOut
 
                 } else if (curr > lti) {
                     final int lti8 = lti + 8;
-
                     while (curr > lti8) {
                         bsBuffShadow |= PIN16_11 << (32 - bsLiveShadow - 2);
 
@@ -1266,7 +1268,6 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean extends CompressorOut
                         bsBuffShadow <<= 16;
                         curr -= 8; /* 11 */
                     }
-
                     if (curr > lti + 4) {
                         bsBuffShadow |= PIN8 << (32 - bsLiveShadow - 2);
 
@@ -1288,21 +1289,25 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean extends CompressorOut
                 bsLiveShadow++;
                 // inlined: bsW(1, 0);
                 if (bsLiveShadow >= 16) {
-                    outShadow.write(bsBuffShadow >> 24); // write 8-bit
-                    outShadow.write(bsBuffShadow >> 16); // write 8-bit
+                    outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+                    outShadow.write(bsBuffShadow >>> 16); // write 8-bit
                     bsBuffShadow <<= 16;
                     bsLiveShadow -= 16;
+                }else if(bsLiveShadow >= 8){
+                    outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+                    bsBuffShadow <<= 8;
+                    bsLiveShadow -= 8;
                 }
             }
         }
         if (bsLiveShadow >= 16) {
-            outShadow.write(bsBuffShadow >> 24); // write 8-bit
-            outShadow.write(bsBuffShadow >> 16); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 16); // write 8-bit
             bsBuffShadow <<= 16;
             bsLiveShadow -= 16;
         }
         if (bsLiveShadow >= 8) {
-            outShadow.write(bsBuffShadow >> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 24); // write 8-bit
             bsBuffShadow <<= 8;
             bsLiveShadow -= 8;
         }
@@ -1339,7 +1344,7 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean extends CompressorOut
                 // code_selCtr[sfmap_i]);
                 //
                 while (bsLiveShadow >= 8) {
-                    outShadow.write(bsBuffShadow >> 24);
+                    outShadow.write(bsBuffShadow >>> 24);
                     bsBuffShadow <<= 8;
                     bsLiveShadow -= 8;
                 }
@@ -1364,18 +1369,18 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean extends CompressorOut
         int bsBuffShadow = this.bsBuff;
 
         if (bsLiveShadow >= 24) {
-            outShadow.write(bsBuffShadow >> 24); // write 8-bit
-            outShadow.write(bsBuffShadow >> 16); // write 8-bit
-            outShadow.write(bsBuffShadow >> 8); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 16); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 8); // write 8-bit
             bsBuffShadow <<= 24;
             bsLiveShadow -= 24;
         } else if (bsLiveShadow >= 16) {
-            outShadow.write(bsBuffShadow >> 24); // write 8-bit
-            outShadow.write(bsBuffShadow >> 16); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 16); // write 8-bit
             bsBuffShadow <<= 16;
             bsLiveShadow -= 16;
         } else if (bsLiveShadow >= 8) {
-            outShadow.write(bsBuffShadow >> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >>> 24); // write 8-bit
             bsBuffShadow <<= 8;
             bsLiveShadow -= 8;
         }
