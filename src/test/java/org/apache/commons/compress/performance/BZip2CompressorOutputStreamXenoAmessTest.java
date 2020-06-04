@@ -17,7 +17,7 @@
 package org.apache.commons.compress.performance;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStreamBreak;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStreamNonBreak;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStreamXenoAmessInBoolean;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStreamXenoAmessInBoolean2;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStreamXenoAmessInShort;
@@ -40,8 +40,8 @@ import java.util.concurrent.TimeUnit;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @State(Scope.Thread)
-@Warmup(iterations = 5, time = 10000, timeUnit = TimeUnit.MILLISECONDS)
-@Measurement(iterations = 5, time = 10000, timeUnit = TimeUnit.MILLISECONDS)
+@Warmup(iterations = 5, time = 1000, timeUnit = TimeUnit.MILLISECONDS)
+@Measurement(iterations = 5, time = 1000, timeUnit = TimeUnit.MILLISECONDS)
 public class BZip2CompressorOutputStreamXenoAmessTest {
 
     private static final String TEXT = "root:x:0:0:root:/root:/bin/bash\nbin:x:1:1:bin:/bin:\ndaemon:x:2:2:daemon" +
@@ -65,9 +65,9 @@ public class BZip2CompressorOutputStreamXenoAmessTest {
     }
 
     @Benchmark
-    public void testOldWithBreak() throws IOException {
+    public void testOldWithNonBreak() throws IOException {
         final ByteArrayOutputStream out1 = new ByteArrayOutputStream();
-        final BZip2CompressorOutputStreamBreak bz2out1 = new BZip2CompressorOutputStreamBreak(out1);
+        final BZip2CompressorOutputStreamNonBreak bz2out1 = new BZip2CompressorOutputStreamNonBreak(out1);
         bz2out1.write(TEXT.getBytes(), 0, TEXT.getBytes().length);
         bz2out1.close();
     }
@@ -108,9 +108,9 @@ public class BZip2CompressorOutputStreamXenoAmessTest {
     }
 
     @Benchmark
-    public void testOldWithBreak_large() throws IOException {
+    public void testOldWithNonBreak_large() throws IOException {
         final ByteArrayOutputStream out1 = new ByteArrayOutputStream();
-        final BZip2CompressorOutputStreamBreak bz2out1 = new BZip2CompressorOutputStreamBreak(out1);
+        final BZip2CompressorOutputStreamNonBreak bz2out1 = new BZip2CompressorOutputStreamNonBreak(out1);
         bz2out1.write(TEXT2.getBytes(), 0, TEXT2.getBytes().length);
         bz2out1.close();
     }

@@ -975,6 +975,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
             for (int j = 16; --j >= 0;) {
                 if (inUse[i16 + j]) {
                     inUse16[i] = true;
+                    break;
                 }
             }
         }

@@ -123,7 +123,7 @@ import java.io.OutputStream;
  * </p>
  * @NotThreadSafe
  */
-public class BZip2CompressorOutputStreamBreak extends CompressorOutputStream
+public class BZip2CompressorOutputStreamNonBreak extends CompressorOutputStream
     implements BZip2Constants {
 
     /**
@@ -353,7 +353,7 @@ public class BZip2CompressorOutputStreamBreak extends CompressorOutputStream
      * @throws NullPointerException
      *             if <code>out == null</code>.
      */
-    public BZip2CompressorOutputStreamBreak(final OutputStream out)
+    public BZip2CompressorOutputStreamNonBreak(final OutputStream out)
         throws IOException {
         this(out, MAX_BLOCKSIZE);
     }
@@ -376,7 +376,7 @@ public class BZip2CompressorOutputStreamBreak extends CompressorOutputStream
      * @see #MIN_BLOCKSIZE
      * @see #MAX_BLOCKSIZE
      */
-    public BZip2CompressorOutputStreamBreak(final OutputStream out, final int blockSize) throws IOException {
+    public BZip2CompressorOutputStreamNonBreak(final OutputStream out, final int blockSize) throws IOException {
         if (blockSize < 1) {
             throw new IllegalArgumentException("blockSize(" + blockSize + ") < 1");
         }
