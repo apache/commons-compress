@@ -1201,14 +1201,7 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean2 extends CompressorOu
 
     private void moveToFrontCodeAndSend() throws IOException {
         need24();
-        int bsLiveShadow = this.bsLive;
-        int bsBuffShadow = this.bsBuff;
-
-        bsBuffShadow |= (this.data.origPtr << (32 - bsLiveShadow - 24));
-        bsLiveShadow += 24;
-
-        this.bsBuff = bsBuffShadow;
-        this.bsLive = bsLiveShadow;
+        push24(this.data.origPtr);
         generateMTFValues();
         sendMTFValues();
     }
@@ -1439,8 +1432,22 @@ public class BZip2CompressorOutputStreamXenoAmessInBoolean2 extends CompressorOu
         write16_n();
     }
 
-//    private void push16(final int v) throws IOException {
-//        this.bsBuff |= (v << (32 - this.bsLive - 16));
-//        write16_n();
-//    }
+    private void push16(final int v) throws IOException {
+        this.bsBuff |= (v << (32 - this.bsLive - 16));
+        write16_n();
+    }
+
+    private void push24(final int v1, final int v2, final int v3) throws IOException {
+        this.bsBuff |= (v1 << (32 - this.bsLive - 8));
+        this.bsBuff |= (v2 << (32 - this.bsLive - 16));
+        this.bsBuff |= (v3 << (32 - this.bsLive - 24));
+        write24_n();
+    }
+
+
+
+    private void push24(final int v) throws IOException {
+        this.bsBuff |= (v << (32 - this.bsLive - 24));
+        write24_n();
+    }
 }
