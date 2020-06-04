@@ -705,7 +705,25 @@ public class BZip2CompressorOutputStreamXenoAmess extends CompressorOutputStream
         int bsLiveShadow = this.bsLive;
         int bsBuffShadow = this.bsBuff;
 
-        while (bsLiveShadow >= 8) {
+        if (bsLiveShadow >= 32) {
+            outShadow.write(bsBuffShadow >> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >> 16); // write 8-bit
+            outShadow.write(bsBuffShadow >> 8); // write 8-bit
+            outShadow.write(bsBuffShadow); // write 8-bit
+            bsBuffShadow <<= 32;
+            bsLiveShadow -= 32;
+        } else if (bsLiveShadow >= 24) {
+            outShadow.write(bsBuffShadow >> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >> 16); // write 8-bit
+            outShadow.write(bsBuffShadow >> 8); // write 8-bit
+            bsBuffShadow <<= 24;
+            bsLiveShadow -= 24;
+        } else if (bsLiveShadow >= 16) {
+            outShadow.write(bsBuffShadow >> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >> 16); // write 8-bit
+            bsBuffShadow <<= 16;
+            bsLiveShadow -= 16;
+        } else if (bsLiveShadow >= 8) {
             outShadow.write(bsBuffShadow >> 24); // write 8-bit
             bsBuffShadow <<= 8;
             bsLiveShadow -= 8;
@@ -985,7 +1003,25 @@ public class BZip2CompressorOutputStreamXenoAmess extends CompressorOutputStream
         int bsLiveShadow = this.bsLive;
         int bsBuffShadow = this.bsBuff;
 
-        while (bsLiveShadow >= 8) {
+        if (bsLiveShadow >= 32) {
+            outShadow.write(bsBuffShadow >> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >> 16); // write 8-bit
+            outShadow.write(bsBuffShadow >> 8); // write 8-bit
+            outShadow.write(bsBuffShadow); // write 8-bit
+            bsBuffShadow <<= 32;
+            bsLiveShadow -= 32;
+        } else if (bsLiveShadow >= 24) {
+            outShadow.write(bsBuffShadow >> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >> 16); // write 8-bit
+            outShadow.write(bsBuffShadow >> 8); // write 8-bit
+            bsBuffShadow <<= 24;
+            bsLiveShadow -= 24;
+        } else if (bsLiveShadow >= 16) {
+            outShadow.write(bsBuffShadow >> 24); // write 8-bit
+            outShadow.write(bsBuffShadow >> 16); // write 8-bit
+            bsBuffShadow <<= 16;
+            bsLiveShadow -= 16;
+        } else if (bsLiveShadow >= 8) {
             outShadow.write(bsBuffShadow >> 24); // write 8-bit
             bsBuffShadow <<= 8;
             bsLiveShadow -= 8;
