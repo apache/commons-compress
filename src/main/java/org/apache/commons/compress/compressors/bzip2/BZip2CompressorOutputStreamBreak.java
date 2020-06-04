@@ -18,10 +18,10 @@
  */
 package org.apache.commons.compress.compressors.bzip2;
 
+import org.apache.commons.compress.compressors.CompressorOutputStream;
+
 import java.io.IOException;
 import java.io.OutputStream;
-
-import org.apache.commons.compress.compressors.CompressorOutputStream;
 
 /**
  * An output stream that compresses into the BZip2 format into another stream.
@@ -123,7 +123,7 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
  * </p>
  * @NotThreadSafe
  */
-public class BZip2CompressorOutputStream extends CompressorOutputStream
+public class BZip2CompressorOutputStreamBreak extends CompressorOutputStream
     implements BZip2Constants {
 
     /**
@@ -140,7 +140,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     private static final int LESSER_ICOST = 0;
 
     private static void hbMakeCodeLengths(final byte[] len, final int[] freq,
-                                          final Data dat, final int alphaSize,
+                                          final BZip2CompressorOutputStream.Data dat, final int alphaSize,
                                           final int maxLen) {
         /*
          * Nodes and heap entries run from 1. Entry 0 for both the heap and
@@ -319,7 +319,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     /**
      * All memory intensive stuff.
      */
-    private Data data;
+    private BZip2CompressorOutputStream.Data data;
     private BlockSort blockSorter;
 
     private OutputStream out;
@@ -353,7 +353,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
      * @throws NullPointerException
      *             if <code>out == null</code>.
      */
-    public BZip2CompressorOutputStream(final OutputStream out)
+    public BZip2CompressorOutputStreamBreak(final OutputStream out)
         throws IOException {
         this(out, MAX_BLOCKSIZE);
     }
@@ -376,7 +376,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
      * @see #MIN_BLOCKSIZE
      * @see #MAX_BLOCKSIZE
      */
-    public BZip2CompressorOutputStream(final OutputStream out, final int blockSize) throws IOException {
+    public BZip2CompressorOutputStreamBreak(final OutputStream out, final int blockSize) throws IOException {
         if (blockSize < 1) {
             throw new IllegalArgumentException("blockSize(" + blockSize + ") < 1");
         }
@@ -419,7 +419,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
 
         if (lastShadow < this.allowableBlockSize) {
             final int currentCharShadow = this.currentChar;
-            final Data dataShadow = this.data;
+            final BZip2CompressorOutputStream.Data dataShadow = this.data;
             dataShadow.inUse[currentCharShadow] = true;
             final byte ch = (byte) currentCharShadow;
 
@@ -528,7 +528,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         bsPutUByte('B');
         bsPutUByte('Z');
 
-        this.data = new Data(this.blockSize100k);
+        this.data = new BZip2CompressorOutputStream.Data(this.blockSize100k);
         this.blockSorter = new BlockSort(this.data);
 
         // huffmanised magic bytes
@@ -796,7 +796,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     }
 
     private int sendMTFValues1(final int nGroups, final int alphaSize) {
-        final Data dataShadow = this.data;
+        final BZip2CompressorOutputStream.Data dataShadow = this.data;
         final int[][] rfreq = dataShadow.sendMTFValues_rfreq;
         final int[] fave = dataShadow.sendMTFValues_fave;
         final short[] cost = dataShadow.sendMTFValues_cost;
@@ -916,7 +916,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     private void sendMTFValues2(final int nGroups, final int nSelectors) {
         // assert (nGroups < 8) : nGroups;
 
-        final Data dataShadow = this.data;
+        final BZip2CompressorOutputStream.Data dataShadow = this.data;
         final byte[] pos = dataShadow.sendMTFValues2_pos;
 
         for (int i = nGroups; --i >= 0;) {
@@ -1111,7 +1111,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     }
 
     private void sendMTFValues7() throws IOException {
-        final Data dataShadow = this.data;
+        final BZip2CompressorOutputStream.Data dataShadow = this.data;
         final byte[][] len = dataShadow.sendMTFValues_len;
         final int[][] code = dataShadow.sendMTFValues_code;
         final OutputStream outShadow = this.out;
@@ -1176,7 +1176,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
      */
     private void generateMTFValues() {
         final int lastShadow = this.last;
-        final Data dataShadow = this.data;
+        final BZip2CompressorOutputStream.Data dataShadow = this.data;
         final boolean[] inUse = dataShadow.inUse;
         final byte[] block = dataShadow.block;
         final int[] fmap = dataShadow.fmap;
@@ -1276,63 +1276,4 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         mtfFreq[eob]++;
         this.nMTF = wr + 1;
     }
-
-    static final class Data {
-
-        // with blockSize 900k
-        /* maps unsigned byte => "does it occur in block" */
-        final boolean[] inUse = new boolean[256]; // 256 byte
-        final byte[] unseqToSeq = new byte[256]; // 256 byte
-        final int[] mtfFreq = new int[MAX_ALPHA_SIZE]; // 1032 byte
-        final byte[] selector = new byte[MAX_SELECTORS]; // 18002 byte
-        final byte[] selectorMtf = new byte[MAX_SELECTORS]; // 18002 byte
-
-        final byte[] generateMTFValues_yy = new byte[256]; // 256 byte
-        final byte[][] sendMTFValues_len = new byte[N_GROUPS][MAX_ALPHA_SIZE]; // 1548
-        // byte
-        final int[][] sendMTFValues_rfreq = new int[N_GROUPS][MAX_ALPHA_SIZE]; // 6192
-        // byte
-        final int[] sendMTFValues_fave = new int[N_GROUPS]; // 24 byte
-        final short[] sendMTFValues_cost = new short[N_GROUPS]; // 12 byte
-        final int[][] sendMTFValues_code = new int[N_GROUPS][MAX_ALPHA_SIZE]; // 6192
-        // byte
-        final byte[] sendMTFValues2_pos = new byte[N_GROUPS]; // 6 byte
-        final boolean[] sentMTFValues4_inUse16 = new boolean[16]; // 16 byte
-
-        final int[] heap = new int[MAX_ALPHA_SIZE + 2]; // 1040 byte
-        final int[] weight = new int[MAX_ALPHA_SIZE * 2]; // 2064 byte
-        final int[] parent = new int[MAX_ALPHA_SIZE * 2]; // 2064 byte
-
-        // ------------
-        // 333408 byte
-
-        /* holds the RLEd block of original data starting at index 1.
-         * After sorting the last byte added to the buffer is at index
-         * 0. */
-        final byte[] block; // 900021 byte
-        /* maps index in Burrows-Wheeler transformed block => index of
-         * byte in original block */
-        final int[] fmap; // 3600000 byte
-        final char[] sfmap; // 3600000 byte
-        // ------------
-        // 8433529 byte
-        // ============
-
-        /**
-         * Index of original line in Burrows-Wheeler table.
-         *
-         * <p>This is the index in fmap that points to the last byte
-         * of the original data.</p>
-         */
-        int origPtr;
-
-        Data(final int blockSize100k) {
-            final int n = blockSize100k * BZip2Constants.BASEBLOCKSIZE;
-            this.block = new byte[(n + 1 + NUM_OVERSHOOT_BYTES)];
-            this.fmap = new int[n];
-            this.sfmap = new char[2 * n];
-        }
-
-    }
-
 }

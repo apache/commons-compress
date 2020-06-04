@@ -18,10 +18,10 @@
  */
 package org.apache.commons.compress.compressors.bzip2;
 
+import org.apache.commons.compress.compressors.CompressorOutputStream;
+
 import java.io.IOException;
 import java.io.OutputStream;
-
-import org.apache.commons.compress.compressors.CompressorOutputStream;
 
 /**
  * An output stream that compresses into the BZip2 format into another stream.
@@ -123,8 +123,9 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
  * </p>
  * @NotThreadSafe
  */
-public class BZip2CompressorOutputStream extends CompressorOutputStream
-    implements BZip2Constants {
+public class BZip2CompressorOutputStreamXenoAmess extends CompressorOutputStream
+        implements BZip2Constants {
+    public static final int SEG = 15;
 
     /**
      * The minimum supported blocksize {@code  == 1}.
@@ -150,11 +151,11 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         final int[] weight = dat.weight;
         final int[] parent = dat.parent;
 
-        for (int i = alphaSize; --i >= 0;) {
+        for (int i = alphaSize; --i >= 0; ) {
             weight[i + 1] = (freq[i] == 0 ? 1 : freq[i]) << 8;
         }
 
-        for (boolean tooLong = true; tooLong;) {
+        for (boolean tooLong = true; tooLong; ) {
             tooLong = false;
 
             int nNodes = alphaSize;
@@ -194,7 +195,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                     }
 
                     if ((yy < nHeap)
-                        && (weight[heap[yy + 1]] < weight[heap[yy]])) {
+                            && (weight[heap[yy + 1]] < weight[heap[yy]])) {
                         yy++;
                     }
 
@@ -224,7 +225,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                     }
 
                     if ((yy < nHeap)
-                        && (weight[heap[yy + 1]] < weight[heap[yy]])) {
+                            && (weight[heap[yy + 1]] < weight[heap[yy]])) {
                         yy++;
                     }
 
@@ -243,11 +244,11 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                 final int weight_n1 = weight[n1];
                 final int weight_n2 = weight[n2];
                 weight[nNodes] = ((weight_n1 & 0xffffff00)
-                                  + (weight_n2 & 0xffffff00))
-                    | (1 + (((weight_n1 & 0x000000ff)
-                             > (weight_n2 & 0x000000ff))
-                            ? (weight_n1 & 0x000000ff)
-                            : (weight_n2 & 0x000000ff)));
+                        + (weight_n2 & 0xffffff00))
+                        | (1 + (((weight_n1 & 0x000000ff)
+                        > (weight_n2 & 0x000000ff))
+                        ? (weight_n1 & 0x000000ff)
+                        : (weight_n2 & 0x000000ff)));
 
                 parent[nNodes] = -1;
                 nHeap++;
@@ -269,7 +270,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                 int j = 0;
                 int k = i;
 
-                for (int parent_k; (parent_k = parent[k]) >= 0;) {
+                for (int parent_k; (parent_k = parent[k]) >= 0; ) {
                     k = parent_k;
                     j++;
                 }
@@ -320,7 +321,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
      * All memory intensive stuff.
      */
     private Data data;
-    private BlockSort blockSorter;
+    private BlockSortXenoAmess blockSorter;
 
     private OutputStream out;
     private volatile boolean closed;
@@ -339,7 +340,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
      */
     public static int chooseBlockSize(final long inputLength) {
         return (inputLength > 0) ? (int) Math
-            .min((inputLength / 132000) + 1, 9) : MAX_BLOCKSIZE;
+                .min((inputLength / 132000) + 1, 9) : MAX_BLOCKSIZE;
     }
 
     /**
@@ -353,8 +354,8 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
      * @throws NullPointerException
      *             if <code>out == null</code>.
      */
-    public BZip2CompressorOutputStream(final OutputStream out)
-        throws IOException {
+    public BZip2CompressorOutputStreamXenoAmess(final OutputStream out)
+            throws IOException {
         this(out, MAX_BLOCKSIZE);
     }
 
@@ -376,7 +377,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
      * @see #MIN_BLOCKSIZE
      * @see #MAX_BLOCKSIZE
      */
-    public BZip2CompressorOutputStream(final OutputStream out, final int blockSize) throws IOException {
+    public BZip2CompressorOutputStreamXenoAmess(final OutputStream out, final int blockSize) throws IOException {
         if (blockSize < 1) {
             throw new IllegalArgumentException("blockSize(" + blockSize + ") < 1");
         }
@@ -420,44 +421,48 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         if (lastShadow < this.allowableBlockSize) {
             final int currentCharShadow = this.currentChar;
             final Data dataShadow = this.data;
-            dataShadow.inUse[currentCharShadow] = true;
+//            dataShadow.inUse[currentCharShadow] = true;
+            dataShadow.inUseShort[currentCharShadow >>> 4] |= (1 << (currentCharShadow & SEG));
+//            homemadeAssert(currentCharShadow);
             final byte ch = (byte) currentCharShadow;
 
             int runLengthShadow = this.runLength;
             this.crc.updateCRC(currentCharShadow, runLengthShadow);
 
             switch (runLengthShadow) {
-            case 1:
-                dataShadow.block[lastShadow + 2] = ch;
-                this.last = lastShadow + 1;
+                case 1:
+                    dataShadow.block[lastShadow + 2] = ch;
+                    this.last = lastShadow + 1;
+                    break;
+
+                case 2:
+                    dataShadow.block[lastShadow + 2] = ch;
+                    dataShadow.block[lastShadow + 3] = ch;
+                    this.last = lastShadow + 2;
+                    break;
+
+                case 3: {
+                    final byte[] block = dataShadow.block;
+                    block[lastShadow + 2] = ch;
+                    block[lastShadow + 3] = ch;
+                    block[lastShadow + 4] = ch;
+                    this.last = lastShadow + 3;
+                }
                 break;
 
-            case 2:
-                dataShadow.block[lastShadow + 2] = ch;
-                dataShadow.block[lastShadow + 3] = ch;
-                this.last = lastShadow + 2;
-                break;
-
-            case 3: {
-                final byte[] block = dataShadow.block;
-                block[lastShadow + 2] = ch;
-                block[lastShadow + 3] = ch;
-                block[lastShadow + 4] = ch;
-                this.last = lastShadow + 3;
-            }
-                break;
-
-            default: {
-                runLengthShadow -= 4;
-                dataShadow.inUse[runLengthShadow] = true;
-                final byte[] block = dataShadow.block;
-                block[lastShadow + 2] = ch;
-                block[lastShadow + 3] = ch;
-                block[lastShadow + 4] = ch;
-                block[lastShadow + 5] = ch;
-                block[lastShadow + 6] = (byte) runLengthShadow;
-                this.last = lastShadow + 5;
-            }
+                default: {
+                    runLengthShadow -= 4;
+//                    dataShadow.inUse[runLengthShadow] = true;
+                    dataShadow.inUseShort[runLengthShadow >>> 4] |= (1 << (runLengthShadow & SEG));
+//                    homemadeAssert(runLengthShadow);
+                    final byte[] block = dataShadow.block;
+                    block[lastShadow + 2] = ch;
+                    block[lastShadow + 3] = ch;
+                    block[lastShadow + 4] = ch;
+                    block[lastShadow + 5] = ch;
+                    block[lastShadow + 6] = (byte) runLengthShadow;
+                    this.last = lastShadow + 5;
+                }
                 break;
 
             }
@@ -529,7 +534,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         bsPutUByte('Z');
 
         this.data = new Data(this.blockSize100k);
-        this.blockSorter = new BlockSort(this.data);
+        this.blockSorter = new BlockSortXenoAmess(this.data);
 
         // huffmanised magic bytes
         bsPutUByte('h');
@@ -545,11 +550,15 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         this.last = -1;
         // ch = 0;
 
-        final boolean[] inUse = this.data.inUse;
-        for (int i = 256; --i >= 0;) {
-            inUse[i] = false;
-        }
+//        final boolean[] inUse = this.data.inUse;
+//        for (int i = 256; --i >= 0; ) {
+//            inUse[i] = false;
+//        }
 
+        final short[] inUseShort = this.data.inUseShort;
+        for (int i = 0; i < 16; i++) {
+            inUseShort[i] = 0;
+        }
     }
 
     private void endBlock() throws IOException {
@@ -621,7 +630,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
 
     @Override
     public void write(final byte[] buf, int offs, final int len)
-        throws IOException {
+            throws IOException {
         if (offs < 0) {
             throw new IndexOutOfBoundsException("offs(" + offs + ") < 0.");
         }
@@ -630,14 +639,14 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         }
         if (offs + len > buf.length) {
             throw new IndexOutOfBoundsException("offs(" + offs + ") + len("
-                                                + len + ") > buf.length("
-                                                + buf.length + ").");
+                    + len + ") > buf.length("
+                    + buf.length + ").");
         }
         if (closed) {
             throw new IOException("Stream closed");
         }
 
-        for (final int hi = offs + len; offs < hi;) {
+        for (final int hi = offs + len; offs < hi; ) {
             write0(buf[offs++]);
         }
     }
@@ -721,9 +730,9 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         final byte[][] len = this.data.sendMTFValues_len;
         final int alphaSize = this.nInUse + 2;
 
-        for (int t = N_GROUPS; --t >= 0;) {
+        for (int t = N_GROUPS; --t >= 0; ) {
             final byte[] len_t = len[t];
-            for (int v = alphaSize; --v >= 0;) {
+            for (int v = alphaSize; --v >= 0; ) {
                 len_t[v] = GREATER_ICOST;
             }
         }
@@ -731,7 +740,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         /* Decide how many coding tables to use */
         // assert (this.nMTF > 0) : this.nMTF;
         final int nGroups = (this.nMTF < 200) ? 2 : (this.nMTF < 600) ? 3
-            : (this.nMTF < 1200) ? 4 : (this.nMTF < 2400) ? 5 : 6;
+                : (this.nMTF < 1200) ? 4 : (this.nMTF < 2400) ? 5 : 6;
 
         /* Generate an initial set of coding tables */
         sendMTFValues0(nGroups, alphaSize);
@@ -772,17 +781,17 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
             int ge = gs - 1;
             int aFreq = 0;
 
-            for (final int a = alphaSize - 1; (aFreq < tFreq) && (ge < a);) {
+            for (final int a = alphaSize - 1; (aFreq < tFreq) && (ge < a); ) {
                 aFreq += mtfFreq[++ge];
             }
 
             if ((ge > gs) && (nPart != nGroups) && (nPart != 1)
-                && (((nGroups - nPart) & 1) != 0)) {
+                    && (((nGroups - nPart) & 1) != 0)) {
                 aFreq -= mtfFreq[ge--];
             }
 
             final byte[] len_np = len[nPart - 1];
-            for (int v = alphaSize; --v >= 0;) {
+            for (int v = alphaSize; --v >= 0; ) {
                 if ((v >= gs) && (v <= ge)) {
                     len_np[v] = LESSER_ICOST;
                 } else {
@@ -814,17 +823,17 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         int nSelectors = 0;
 
         for (int iter = 0; iter < N_ITERS; iter++) {
-            for (int t = nGroups; --t >= 0;) {
+            for (int t = nGroups; --t >= 0; ) {
                 fave[t] = 0;
                 final int[] rfreqt = rfreq[t];
-                for (int i = alphaSize; --i >= 0;) {
+                for (int i = alphaSize; --i >= 0; ) {
                     rfreqt[i] = 0;
                 }
             }
 
             nSelectors = 0;
 
-            for (int gs = 0; gs < this.nMTF;) {
+            for (int gs = 0; gs < this.nMTF; ) {
                 /* Set group start & end marks. */
 
                 /*
@@ -862,13 +871,13 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                     cost[5] = cost5;
 
                 } else {
-                    for (int t = nGroups; --t >= 0;) {
+                    for (int t = nGroups; --t >= 0; ) {
                         cost[t] = 0;
                     }
 
                     for (int i = gs; i <= ge; i++) {
                         final int icv = sfmap[i];
-                        for (int t = nGroups; --t >= 0;) {
+                        for (int t = nGroups; --t >= 0; ) {
                             cost[t] += len[t][icv] & 0xff;
                         }
                     }
@@ -879,7 +888,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                  * record its identity in the selector table.
                  */
                 int bt = -1;
-                for (int t = nGroups, bc = 999999999; --t >= 0;) {
+                for (int t = nGroups, bc = 999999999; --t >= 0; ) {
                     final int cost_t = cost[t];
                     if (cost_t < bc) {
                         bc = cost_t;
@@ -919,7 +928,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         final Data dataShadow = this.data;
         final byte[] pos = dataShadow.sendMTFValues2_pos;
 
-        for (int i = nGroups; --i >= 0;) {
+        for (int i = nGroups; --i >= 0; ) {
             pos[i] = (byte) i;
         }
 
@@ -948,7 +957,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
             int minLen = 32;
             int maxLen = 0;
             final byte[] len_t = len[t];
-            for (int i = alphaSize; --i >= 0;) {
+            for (int i = alphaSize; --i >= 0; ) {
                 final int l = len_t[i] & 0xff;
                 if (l > maxLen) {
                     maxLen = l;
@@ -966,42 +975,45 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     }
 
     private void sendMTFValues4() throws IOException {
-        final boolean[] inUse = this.data.inUse;
-        final boolean[] inUse16 = this.data.sentMTFValues4_inUse16;
-
-        for (int i = 16; --i >= 0;) {
-            inUse16[i] = false;
-            final int i16 = i * 16;
-            for (int j = 16; --j >= 0;) {
-                if (inUse[i16 + j]) {
-                    inUse16[i] = true;
-                }
-            }
-        }
-
+//        final boolean[] inUse = this.data.inUse;
+        final short[] inUseShort = this.data.inUseShort;
         for (int i = 0; i < 16; i++) {
-            bsW(1, inUse16[i] ? 1 : 0);
+            bsW(1, (inUseShort[i] != 0) ? 1 : 0);
         }
 
         final OutputStream outShadow = this.out;
         int bsLiveShadow = this.bsLive;
         int bsBuffShadow = this.bsBuff;
 
+        while (bsLiveShadow >= 8) {
+            outShadow.write(bsBuffShadow >> 24); // write 8-bit
+            bsBuffShadow <<= 8;
+            bsLiveShadow -= 8;
+        }
         for (int i = 0; i < 16; i++) {
-            if (inUse16[i]) {
-                final int i16 = i * 16;
-                for (int j = 0; j < 16; j++) {
-                    // inlined: bsW(1, inUse[i16 + j] ? 1 : 0);
-                    while (bsLiveShadow >= 8) {
-                        outShadow.write(bsBuffShadow >> 24); // write 8-bit
-                        bsBuffShadow <<= 8;
-                        bsLiveShadow -= 8;
-                    }
-                    if (inUse[i16 + j]) {
-                        bsBuffShadow |= 1 << (32 - bsLiveShadow - 1);
-                    }
-                    bsLiveShadow++;
-                }
+            if (inUseShort[i] != 0) {
+                int tmp = Integer.reverse(inUseShort[i]) >>> 16;
+                bsBuffShadow |= tmp << (32 - bsLiveShadow - 16);
+                outShadow.write(bsBuffShadow >> 24); // write 8-bit
+                outShadow.write(bsBuffShadow >> 16); // write 8-bit
+                bsBuffShadow <<= 16;
+//                for (int j = 0; j < 16; j++) {
+////                    homemadeAssert(i16 + j);
+//                    if ((inUseShort[i] & (1 << j)) != 0) {
+//                        bsBuffShadow |= 1 << (32 - bsLiveShadow - 1);
+//                    }
+////                    bsBuffShadow |= (inUseShort[i] & (1 << j)) << (32 - bsLiveShadow - 1 - j);
+//                    bsLiveShadow++;
+//                }
+//
+//                for (int j = 0; j < 16; j++) {
+////                    homemadeAssert(i16 + j);
+//                    if ((inUseShort[i] & (1 << j)) != 0) {
+//                        bsBuffShadow |= 1 << (32 - bsLiveShadow - 1);
+//                    }
+////                    bsBuffShadow |= (inUseShort[i] & (1 << j)) << (32 - bsLiveShadow - 1 - j);
+//                    bsLiveShadow++;
+//                }
             }
         }
 
@@ -1009,8 +1021,9 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         this.bsLive = bsLiveShadow;
     }
 
+
     private void sendMTFValues5(final int nGroups, final int nSelectors)
-        throws IOException {
+            throws IOException {
         bsW(3, nGroups);
         bsW(15, nSelectors);
 
@@ -1047,7 +1060,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     }
 
     private void sendMTFValues6(final int nGroups, final int alphaSize)
-        throws IOException {
+            throws IOException {
         final byte[][] len = this.data.sendMTFValues_len;
         final OutputStream outShadow = this.out;
 
@@ -1124,7 +1137,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         int bsLiveShadow = this.bsLive;
         int bsBuffShadow = this.bsBuff;
 
-        for (int gs = 0; gs < nMTFShadow;) {
+        for (int gs = 0; gs < nMTFShadow; ) {
             final int ge = Math.min(gs + G_SIZE - 1, nMTFShadow - 1);
             final int selector_selCtr = selector[selCtr] & 0xff;
             final int[] code_selCtr = code[selector_selCtr];
@@ -1177,7 +1190,8 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     private void generateMTFValues() {
         final int lastShadow = this.last;
         final Data dataShadow = this.data;
-        final boolean[] inUse = dataShadow.inUse;
+//        final boolean[] inUse = dataShadow.inUse;
+        final short[] inUseShort = dataShadow.inUseShort;
         final byte[] block = dataShadow.block;
         final int[] fmap = dataShadow.fmap;
         final char[] sfmap = dataShadow.sfmap;
@@ -1188,7 +1202,8 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         // make maps
         int nInUseShadow = 0;
         for (int i = 0; i < 256; i++) {
-            if (inUse[i]) {
+//            homemadeAssert(i);
+            if ((inUseShort[i >> 4] & (1 << (i & SEG))) != 0) {
                 unseqToSeq[i] = (byte) nInUseShadow;
                 nInUseShadow++;
             }
@@ -1201,7 +1216,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
             mtfFreq[i] = 0;
         }
 
-        for (int i = nInUseShadow; --i >= 0;) {
+        for (int i = nInUseShadow; --i >= 0; ) {
             yy[i] = (byte) i;
         }
 
@@ -1281,7 +1296,9 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
 
         // with blockSize 900k
         /* maps unsigned byte => "does it occur in block" */
-        final boolean[] inUse = new boolean[256]; // 256 byte
+//        final boolean[] inUse = new boolean[256]; // 256 byte
+        final short[] inUseShort = new short[16];
+
         final byte[] unseqToSeq = new byte[256]; // 256 byte
         final int[] mtfFreq = new int[MAX_ALPHA_SIZE]; // 1032 byte
         final byte[] selector = new byte[MAX_SELECTORS]; // 18002 byte
@@ -1297,7 +1314,6 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         final int[][] sendMTFValues_code = new int[N_GROUPS][MAX_ALPHA_SIZE]; // 6192
         // byte
         final byte[] sendMTFValues2_pos = new byte[N_GROUPS]; // 6 byte
-        final boolean[] sentMTFValues4_inUse16 = new boolean[16]; // 16 byte
 
         final int[] heap = new int[MAX_ALPHA_SIZE + 2]; // 1040 byte
         final int[] weight = new int[MAX_ALPHA_SIZE * 2]; // 2064 byte
@@ -1335,4 +1351,20 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
 
     }
 
+//    private void homemadeAssert(int index) {
+//        boolean b1 = data.inUse[index];
+//        boolean b2 = (data.inUseShort[index >> 4] & (1 << (index & SEG))) != 0;
+//        if (b1 != b2) {
+//            System.out.println("index : " + index);
+//            System.out.println("short b : " + b2);
+//            System.out.println("data.inUse[index >> 4] : " + data.inUseShort[index >> 4]);
+//            System.out.println("(1 << (index & SEG)) : " + (1 << (index & SEG)));
+//            System.out.println("boolean b : " + b1);
+//            System.out.println("short array : ");
+//            System.out.println(Arrays.toString(data.inUseShort));
+//            System.out.println("boolean array : ");
+//            System.out.println(Arrays.toString(data.inUse));
+//            throw new Error();
+//        }
+//    }
 }
