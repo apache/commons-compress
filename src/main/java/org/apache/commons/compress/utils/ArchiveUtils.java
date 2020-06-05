@@ -18,7 +18,6 @@
 
 package org.apache.commons.compress.utils;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
