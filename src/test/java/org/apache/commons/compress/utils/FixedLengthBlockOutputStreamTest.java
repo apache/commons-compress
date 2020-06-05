@@ -65,7 +65,7 @@ public class FixedLengthBlockOutputStreamTest {
         MockWritableByteChannel mock = new MockWritableByteChannel(blockSize, false);
         ByteArrayOutputStream bos = mock.bos;
         String text = "hello world avengers";
-        byte msg[] = text.getBytes();
+        byte[] msg = text.getBytes();
         int len = msg.length;
         try (FixedLengthBlockOutputStream out = new FixedLengthBlockOutputStream(mock, blockSize)) {
             for (int i = 0; i < len; i++) {
@@ -92,7 +92,7 @@ public class FixedLengthBlockOutputStreamTest {
         int blockSize = 13;
         MockWritableByteChannel mock = new MockWritableByteChannel(blockSize, false);
         String testString = "hello world";
-        byte msg[] = testString.getBytes();
+        byte[] msg = testString.getBytes();
         int reps = 17;
 
         try (FixedLengthBlockOutputStream out = new FixedLengthBlockOutputStream(mock, blockSize)) {
@@ -228,7 +228,7 @@ public class FixedLengthBlockOutputStreamTest {
         MockWritableByteChannel mock = new MockWritableByteChannel(blockSize, false);
 
         ByteArrayOutputStream bos = mock.bos;
-        byte msg[] = text.getBytes();
+        byte[] msg = text.getBytes();
         ByteBuffer buf = getByteBuffer(msg);
         try (FixedLengthBlockOutputStream out = new FixedLengthBlockOutputStream(mock, blockSize)) {
             out.write(buf);

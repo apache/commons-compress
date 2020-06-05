@@ -50,7 +50,7 @@ class CpioUtil {
 
         long ret = 0;
         int pos = 0;
-        final byte tmp_number[] = new byte[number.length];
+        final byte[] tmp_number = new byte[number.length];
         System.arraycopy(number, 0, tmp_number, 0, number.length);
 
         if (!swapHalfWord) {

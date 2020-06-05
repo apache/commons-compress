@@ -881,7 +881,7 @@ public class SevenZFile implements Closeable {
         }
         final long numPackedStreams = totalInStreams - numBindPairs;
         assertFitsIntoInt("numPackedStreams", numPackedStreams);
-        final long packedStreams[] = new long[(int)numPackedStreams];
+        final long[] packedStreams = new long[(int)numPackedStreams];
         if (numPackedStreams == 1) {
             int i;
             for (i = 0; i < (int)totalInStreams; i++) {
