@@ -31,6 +31,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -77,6 +78,10 @@ public abstract class AbstractTestCase {
             throw new IOException(ex);
         }
         return new File(uri);
+    }
+
+    public static Path getPath(final String path) throws IOException {
+        return getFile(path).toPath();
     }
 
     @After

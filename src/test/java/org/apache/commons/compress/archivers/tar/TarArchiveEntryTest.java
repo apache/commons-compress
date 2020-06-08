@@ -18,6 +18,8 @@
 
 package org.apache.commons.compress.archivers.tar;
 
+import static org.apache.commons.compress.AbstractTestCase.getFile;
+import static org.apache.commons.compress.AbstractTestCase.getPath;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -196,6 +198,45 @@ public class TarArchiveEntryTest implements TarConstants {
         assertEquals("C:/foo.txt", t.getName());
         t = new TarArchiveEntry(ROOT + "foo.txt", LF_GNUTYPE_LONGNAME, true);
         assertEquals("C:/foo.txt", t.getName());
+    }
+
+    @Test
+    public void getFileFromNonFileEntry() {
+        TarArchiveEntry entry = new TarArchiveEntry("test.txt");
+        assertNull(entry.getFile());
+        assertNull(entry.getPath());
+    }
+
+    @Test
+    public void testLinuxFileInformationFromFile() throws IOException {
+        assumeTrue("Information is only available on linux", OS.equals("linux"));
+        TarArchiveEntry entry = new TarArchiveEntry(getFile("test1.xml"));
+        assertNotEquals(0, entry.getLongUserId());
+        assertNotEquals(0, entry.getLongGroupId());
+        assertNotEquals("", entry.getUserName());
+    }
+
+    @Test
+    public void testLinuxFileInformationFromPath() throws IOException {
+        assumeTrue("Information is only available on linux", OS.equals("linux"));
+        TarArchiveEntry entry = new TarArchiveEntry(getPath("test1.xml"));
+        assertNotEquals(0, entry.getLongUserId());
+        assertNotEquals(0, entry.getLongGroupId());
+        assertNotEquals("", entry.getUserName());
+    }
+
+    @Test
+    public void testWindowsFileInformationFromFile() throws IOException {
+        assumeTrue("Information should only be checked on Windows", OS.startsWith("windows"));
+        TarArchiveEntry entry = new TarArchiveEntry(getFile("test1.xml"));
+        assertNotEquals("", entry.getUserName());
+    }
+
+    @Test
+    public void testWindowsFileInformationFromPath() throws IOException {
+        assumeTrue("Information should only be checked on Windows", OS.startsWith("windows"));
+        TarArchiveEntry entry = new TarArchiveEntry(getPath("test1.xml"));
+        assertNotEquals("", entry.getUserName());
     }
 
     private void assertGnuMagic(final TarArchiveEntry t) {
