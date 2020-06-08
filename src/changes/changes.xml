@@ -121,6 +121,12 @@ The <action> type attribute can be add,update,fix,remove.
         of a traditional tar header while bigNumberMode is
         BIGNUMBER_ERROR, and address this in java docs.
       </action>
+      <action issue="COMPRESS-404" type="update" date="2020-06-08" due-to="theobisproject">
+        Update the class of variable file in TarArchiveEntry from
+        java.io.File to java.nio.file.Path. Corresponding constructors
+        and methods are also modified/added.
+        Github Pull Request #97.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20">
