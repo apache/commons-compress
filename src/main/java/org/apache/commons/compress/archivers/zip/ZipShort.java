@@ -129,7 +129,7 @@ public final class ZipShort implements Cloneable, Serializable {
      */
     @Override
     public boolean equals(final Object o) {
-        if (o == null || !(o instanceof ZipShort)) {
+        if (!(o instanceof ZipShort)) {
             return false;
         }
         return value == ((ZipShort) o).getValue();
