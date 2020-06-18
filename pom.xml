@@ -27,6 +27,7 @@
   <version>1.19-SNAPSHOT</version>
   <name>Apache Commons Compress</name>
   <url>https://commons.apache.org/proper/commons-compress/</url>
+  <inceptionYear>2002</inceptionYear> <!-- from NOTICE file -->
   <!-- The description is not indented to make it look better in the release notes -->
   <description>
 Apache Commons Compress software defines an API for working with
