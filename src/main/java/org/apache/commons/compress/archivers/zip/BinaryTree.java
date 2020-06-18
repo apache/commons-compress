@@ -113,24 +113,24 @@ class BinaryTree {
     /**
      * Decodes the packed binary tree from the specified stream.
      */
-    static BinaryTree decode(final InputStream in, final int totalNumberOfValues) throws IOException {
+    static BinaryTree decode(final InputStream inputStream, final int totalNumberOfValues) throws IOException {
         if (totalNumberOfValues < 0) {
             throw new IllegalArgumentException("totalNumberOfValues must be bigger than 0, is "
                 + totalNumberOfValues);
         }
         // the first byte contains the size of the structure minus one
-        final int size = in.read() + 1;
+        final int size = inputStream.read() + 1;
         if (size == 0) {
             throw new IOException("Cannot read the size of the encoded tree, unexpected end of stream");
         }
 
         final byte[] encodedTree = new byte[size];
-        final int read = IOUtils.readFully(in, encodedTree);
+        final int read = IOUtils.readFully(inputStream, encodedTree);
         if (read != size) {
             throw new EOFException();
         }
 
-        /** The maximum bit length for a value (16 or lower) */
+        /* The maximum bit length for a value (16 or lower) */
         int maxLength = 0;
 
         final int[] originalBitLengths = new int[totalNumberOfValues];

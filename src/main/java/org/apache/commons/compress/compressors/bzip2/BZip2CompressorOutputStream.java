@@ -52,59 +52,60 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
  * &lt;code&gt;65k + (5 * blocksize)&lt;/code&gt;.
  * </pre>
  *
- * <table width="100%" border="1" summary="Memory usage by blocksize">
+ * <table style="width:100%" border="1">
+ * <caption>Memory usage by blocksize</caption>
  * <tr>
  * <th colspan="3">Memory usage by blocksize</th>
  * </tr>
  * <tr>
- * <th align="right">Blocksize</th> <th align="right">Compression<br>
- * memory usage</th> <th align="right">Decompression<br>
+ * <th style="text-align: right">Blocksize</th> <th style="text-align: right">Compression<br>
+ * memory usage</th> <th style="text-align: right">Decompression<br>
  * memory usage</th>
  * </tr>
  * <tr>
- * <td align="right">100k</td>
- * <td align="right">1300k</td>
- * <td align="right">565k</td>
+ * <td style="text-align: right">100k</td>
+ * <td style="text-align: right">1300k</td>
+ * <td style="text-align: right">565k</td>
  * </tr>
  * <tr>
- * <td align="right">200k</td>
- * <td align="right">2200k</td>
- * <td align="right">1065k</td>
+ * <td style="text-align: right">200k</td>
+ * <td style="text-align: right">2200k</td>
+ * <td style="text-align: right">1065k</td>
  * </tr>
  * <tr>
- * <td align="right">300k</td>
- * <td align="right">3100k</td>
- * <td align="right">1565k</td>
+ * <td style="text-align: right">300k</td>
+ * <td style="text-align: right">3100k</td>
+ * <td style="text-align: right">1565k</td>
  * </tr>
  * <tr>
- * <td align="right">400k</td>
- * <td align="right">4000k</td>
- * <td align="right">2065k</td>
+ * <td style="text-align: right">400k</td>
+ * <td style="text-align: right">4000k</td>
+ * <td style="text-align: right">2065k</td>
  * </tr>
  * <tr>
- * <td align="right">500k</td>
- * <td align="right">4900k</td>
- * <td align="right">2565k</td>
+ * <td style="text-align: right">500k</td>
+ * <td style="text-align: right">4900k</td>
+ * <td style="text-align: right">2565k</td>
  * </tr>
  * <tr>
- * <td align="right">600k</td>
- * <td align="right">5800k</td>
- * <td align="right">3065k</td>
+ * <td style="text-align: right">600k</td>
+ * <td style="text-align: right">5800k</td>
+ * <td style="text-align: right">3065k</td>
  * </tr>
  * <tr>
- * <td align="right">700k</td>
- * <td align="right">6700k</td>
- * <td align="right">3565k</td>
+ * <td style="text-align: right">700k</td>
+ * <td style="text-align: right">6700k</td>
+ * <td style="text-align: right">3565k</td>
  * </tr>
  * <tr>
- * <td align="right">800k</td>
- * <td align="right">7600k</td>
- * <td align="right">4065k</td>
+ * <td style="text-align: right">800k</td>
+ * <td style="text-align: right">7600k</td>
+ * <td style="text-align: right">4065k</td>
  * </tr>
  * <tr>
- * <td align="right">900k</td>
- * <td align="right">8500k</td>
- * <td align="right">4565k</td>
+ * <td style="text-align: right">900k</td>
+ * <td style="text-align: right">8500k</td>
+ * <td style="text-align: right">4565k</td>
  * </tr>
  * </table>
  *
@@ -468,7 +469,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     }
 
     /**
-     * Overriden to warn about an unclosed stream.
+     * Overridden to warn about an unclosed stream.
      */
     @Override
     protected void finalize() throws Throwable {
@@ -519,7 +520,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
 
     /**
      * Writes magic bytes like BZ on the first position of the stream
-     * and bytes indiciating the file-format, which is
+     * and bytes indicating the file-format, which is
      * huffmanised, followed by a digit indicating blockSize100k.
      * @throws IOException if the magic bytes could not been written
      */
@@ -974,6 +975,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
             for (int j = 16; --j >= 0;) {
                 if (inUse[i16 + j]) {
                     inUse16[i] = true;
+                    break;
                 }
             }
         }

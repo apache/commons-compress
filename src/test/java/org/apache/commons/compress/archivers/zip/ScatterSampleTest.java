@@ -52,22 +52,23 @@ public class ScatterSampleTest {
         };
 
         scatterSample.addEntry(archiveEntry, supp);
-        final ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(result);
-        scatterSample.writeTo(zipArchiveOutputStream);
-        zipArchiveOutputStream.close();
+        try (final ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(result)) {
+            scatterSample.writeTo(zipArchiveOutputStream);
+        }
     }
 
     private void checkFile(final File result) throws IOException {
-        final ZipFile zf = new ZipFile(result);
-        final ZipArchiveEntry archiveEntry1 = zf.getEntries().nextElement();
-        assertEquals( "test1.xml", archiveEntry1.getName());
-        final InputStream inputStream = zf.getInputStream(archiveEntry1);
-        final byte[] b = new byte[6];
-        final int i = IOUtils.readFully(inputStream, b);
-        assertEquals(5, i);
-        assertEquals('H', b[0]);
-        assertEquals('o', b[4]);
-        zf.close();
+        try (final ZipFile zipFile = new ZipFile(result)) {
+            final ZipArchiveEntry archiveEntry1 = zipFile.getEntries().nextElement();
+            assertEquals("test1.xml", archiveEntry1.getName());
+            try (final InputStream inputStream = zipFile.getInputStream(archiveEntry1)) {
+                final byte[] b = new byte[6];
+                final int i = IOUtils.readFully(inputStream, b);
+                assertEquals(5, i);
+                assertEquals('H', b[0]);
+                assertEquals('o', b[4]);
+            }
+        }
         result.delete();
     }
 }

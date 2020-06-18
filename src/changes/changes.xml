@@ -42,8 +42,165 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Compress Release Notes</title>
   </properties>
   <body>
-    <release version="1.19" date="not released, yet"
-             description="Release 1.19">
+    <release version="1.21" date="not released, yet"
+             description="Release 1.21">
+      <action type="update" date="2020-03-07"
+              due-to="Peter Alfred Lee">
+        Made sure ZstdCompressorOutputStream no longer used
+        deprecated ZstOutputStream constructors.
+        Github Pull Request #94.
+      </action>
+      <action issue="COMPRESS-504" type="update" date="2020-03-16">
+        Make compression level of ParallelScatterZipCreator
+        configurable via a new constructor.
+      </action>
+      <action issue="COMPRESS-505" type="fix" date="2020-03-24">
+        Fix bugs in random access of 7z. Problems may happen
+        in a mixture use of random access and sequential access
+        of 7z.
+        Github Pull Request #95.
+      </action>
+      <action issue="COMPRESS-510" type="fix" date="2020-04-18">
+        Fix bugs in random access of 7z. Exceptions are thrown
+        when reading the first entry multiple times by random
+        access.
+      </action>
+      <action issue="COMPRESS-520" type="fix" date="2020-05-23" due-to="Robin Schimpf">
+        Removed the PowerMock dependency.
+      </action>
+      <action issue="COMPRESS-516" type="fix" date="2020-05-23">
+        Added improved checks to detect corrupted bzip2 streams and
+        throw the expected IOException rather than obscure
+        RuntimeExceptions.
+        See also COMPRESS-519.
+      </action>
+      <action issue="COMPRESS-517" type="fix" date="2020-05-23">
+        Improved parsing of X5455_ExtendedTimestamp ZIP extra field.
+      </action>
+      <action issue="COMPRESS-518" type="fix" date="2020-05-23">
+        ZipArchiveInputStream and ZipFile will now throw an
+        IOException rather than a RuntimeException if the zip64 extra
+        field of an enty could not be parsed.
+      </action>
+      <action issue="COMPRESS-523" type="fix" date="2020-05-23">
+        Improved detection of corrupt ZIP archives in ZipArchiveInputStream.
+      </action>
+      <action issue="COMPRESS-521" type="fix" date="2020-05-24">
+        Added improved checks to detect corrupted deflate64 streams and
+        throw the expected IOException rather than obscure
+        RuntimeExceptions.
+        See also COMPRESS-522, COMPRESS-525, COMPRESS-526, and COMPRESS-527.
+      </action>
+      <action issue="COMPRESS-515" type="fix" date="2020-05-22" due-to="ian-lavallee">
+        Add the archive name in the exception in the constructor of
+        ZipFIle to make it a more specific exception.
+        Github Pull Request #102.
+      </action>
+      <action issue="COMPRESS-530" type="fix" date="2020-05-26">
+        Throw IOException when it encounters a non-number while parsing pax header.
+      </action>
+      <action issue="COMPRESS-531" type="fix" date="2020-05-31">
+        Throw IOException when a a tar archive contains a PAX header
+        without any normal entry following it.
+      </action>
+      <action issue="COMPRESS-532" type="fix" date="2020-05-31">
+        Added improved checks to detect corrupted IMPLODED streams and
+        throw the expected IOException rather than obscure
+        RuntimeExceptions.
+      </action>
+      <action issue="COMPRESS-529" type="fix" date="2020-06-01">
+        Throw expected IOException instead of NumberFormatException if
+        it encounters non-numbers when parsing pax headers for tarball.
+
+        Throw IllegalArgumentException instead of RuntimeExceptions if
+        the file name is longer than 100 bytes with the longFileMode
+        of LONGFILE_ERROR, and address this in java docs.
+
+        Throw IllegalArgumentException instead of RuntimeExceptions if
+        the any of the numeric values of an entry exceeds the limits
+        of a traditional tar header while bigNumberMode is
+        BIGNUMBER_ERROR, and address this in java docs.
+      </action>
+      <action issue="COMPRESS-404" type="update" date="2020-06-08" due-to="theobisproject">
+        Update the class of variable file in TarArchiveEntry from
+        java.io.File to java.nio.file.Path. Corresponding constructors
+        and methods are also modified/added.
+        Github Pull Request #97.
+      </action>
+    </release>
+    <release version="1.20" date="2020-02-08"
+             description="Release 1.20">
+      <action issue="COMPRESS-493" type="update" date="2019-08-27">
+        Update optional library com.github.luben:zstd-jni from 1.4.0-1 to 1.4.4-7.
+      </action>
+      <action type="update" date="2019-08-27">
+        Update tests from org.apache.felix:org.apache.felix.framework 6.0.2 to 6.0.3.
+      </action>
+      <action issue="COMPRESS-492" type="fix" date="2019-08-28">
+        SevenZFile could throw NullPointerException rather than
+        IOException for certain archives. In addition it now handles
+        certain empty archives more gracefully.
+      </action>
+      <action issue="COMPRESS-491" type="fix" date="2019-09-01">
+        Deflate64CompressorInputStream.read would return 0 for some
+        inputs in violation of the InputStream.read contract.
+      </action>
+      <action issue="COMPRESS-495" type="remove" date="2019-10-12">
+        Removed the extraction code from the example CLI class inside
+        of the SevenZ package. Not only is it superseeded by the
+        examples package, its implementation was vulnerable to the
+        ZipSlip attack.
+      </action>
+      <action issue="COMPRESS-497" type="update" date="2019-10-12"
+              due-to="Stefan Schlott">
+        SevenZFile can now recover from a certain corruption that
+        seems to happen occasionally when split archives are created.
+      </action>
+      <action issue="COMPRESS-342" type="update" date="2019-11-07"
+              due-to="Peter Alfred Lee">
+        Added random access support to SevenZFile.
+      </action>
+      <action issue="COMPRESS-477" type="update" date="2019-12-15"
+              due-to="Peter Alfred Lee">
+        Added support for split ZIP archives.
+      </action>
+      <action issue="COMPRESS-124" type="update" date="2020-01-01"
+              due-to="Peter Alfred Lee">
+        Added support for reading sparse entries to the TAR package.
+      </action>
+      <action issue="COMPRESS-499" type="fix" date="2020-01-04">
+        SeekableInMemoryByteChannel's truncate didn't set position
+        according to the spec in an edge case.
+      </action>
+      <action type="fix" due-to="Joseph Allemandou" date="2020-01-21">
+        BZip2CompressorInputStream now incorporates a similar patch as
+        the one that fixed CVE-2019-12900 in libbzip2.
+
+        Commons Compress has not been vulnerable to this CVE as it
+        would have rejected a file with too many selectors. With this
+        patch Commons Compress will be able to read certain archives
+        that would have caused errors in Compress 1.19.
+      </action>
+      <action type="update" date="2020-01-25">
+        Update JUnit from 4.12 to 4.13.
+      </action>
+    </release>
+    <release version="1.19" date="2019-08-27"
+             description="Release 1.19
+----------------------------------------
+
+ZipArchiveInputStream and ZipFile will no longer throw an exception if
+an extra field generally understood by Commons Compress is malformed
+but rather turn them into UnrecognizedExtraField instances.
+You can influence the way extra fields are parsed in more detail by
+using the new getExtraFields(ExtraFieldParsingBehavior) method of
+ZipArchiveEntry now.
+
+Some of the ZIP extra fields related to strong encryption will now
+throw ZipExceptions rather than ArrayIndexOutOfBoundsExceptions in
+certain cases when used directly. There is no practical difference
+when they are read via ZipArchiveInputStream or ZipFile.
+">
       <action type="fix" date="2018-09-07">
         ZipArchiveInputStream could forget the compression level has
         changed under certain circumstances.
@@ -103,9 +260,64 @@ The <action> type attribute can be add,update,fix,remove.
         give the calling code a chance to deal with those wrapper
         resources.
       </action>
+      <action type="update" date="2019-08-16" issue="COMPRESS-479">
+        ZipArchiveInputStream and ZipFile no longer assume Commons
+        Compress would understand extra fields better than the writer
+        of the archive and silently turn extra fields that Commons
+        Compress should understand into UnrecognizedExtraFields if
+        parsing said fields fails.
+        It is now possible to take more control over the extra field
+        parsing process with a new overload of
+        ZipArchiveEntry#getExtraFields.
+      </action>
+      <action type="fix" date="2019-08-18" issue="COMPRESS-482">
+        ZipArchiveInputStream failed to read stored entries with a
+        data descriptor if the data descriptor didn't use the
+        signature invented by InfoZIP.
+      </action>
+      <action type="update" date="2019-08-18" issue="COMPRESS-483">
+        ZipArchiveInputStream will now throw an exception if reading a
+        stored entry with a data descriptor and the data descriptor
+        doesn't match what it has actually read.
+
+        The most common case for a situation like this is a stored ZIP
+        archive inside of the archive ZipArchiveInputStream currently
+        reads. In such a case ZipArchiveInputStream would happily
+        extract the contained archive and stop once the central
+        directory of the inner archive has been hit. This is a case
+        where ZipArchiveInputStream simply can not be used and only
+        ZipFile is able to read the archive.
+
+        The only other explanation is a broken archive. So the
+        exception prevents users from thinking they had successfully
+        read the contents of the archive.
+      </action>
+      <action type="add" date="2019-08-18" issue="COMPRESS-231"
+              due-to="Tim Underwood">
+        Added a MultiReadOnlySeekableByteChannel class
+        that can be used to concatenate the parts of a multi volume 7z
+        archive so that SevenZFile can read them.
+      </action>
+      <action type="update" date="2019-08-20" issue="COMPRESS-478">
+        The 7zip tools provide a default name for archive entries
+        without name; SevenZFile returns a null name for such
+        entries. A new method getDefaultName has been added to derive
+        the same name the 7zip tools would use and an option has been
+        added that sets SevenZArchiveEntry's name to the default name
+        if it is not contained inside the archive.
+      </action>
+      <action type="fix" date="2019-08-20">
+        NioZipEncoding#encode could enter an infinite loop for certain
+        inputs.
+      </action>
     </release>
     <release version="1.18" date="2018-08-16"
-             description="Release 1.18">
+             description="Release 1.18
+----------------------------------------
+
+This release changes the OSGi Manifest entry Bundle-SymbolicName from
+org.apache.commons.compress to org.apache.commons.commons-compress.
+">
       <action type="fix" date="2018-06-15" due-to="DidierLoiseau">
         The example Expander class has been vulnerable to a path
         traversal in the edge case that happens when the target

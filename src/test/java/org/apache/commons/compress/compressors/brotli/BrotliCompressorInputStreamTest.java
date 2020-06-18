@@ -45,13 +45,12 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
         final File input = getFile("brotli.testdata.compressed");
         final File expected = getFile("brotli.testdata.uncompressed");
         try (InputStream inputStream = new FileInputStream(input);
-                InputStream expectedStream = new FileInputStream(expected);
-                BrotliCompressorInputStream brotliInputStream = new BrotliCompressorInputStream(inputStream)) {
+            BrotliCompressorInputStream brotliInputStream = new BrotliCompressorInputStream(inputStream)) {
             final byte[] b = new byte[20];
-            IOUtils.readFully(expectedStream, b);
+            IOUtils.read(expected, b);
             final ByteArrayOutputStream bos = new ByteArrayOutputStream();
             int readByte = -1;
-            while((readByte = brotliInputStream.read()) != -1) {
+            while ((readByte = brotliInputStream.read()) != -1) {
                 bos.write(readByte);
             }
             Assert.assertArrayEquals(b, bos.toByteArray());

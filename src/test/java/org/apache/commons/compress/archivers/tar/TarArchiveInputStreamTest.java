@@ -18,9 +18,6 @@
 
 package org.apache.commons.compress.archivers.tar;
 
-import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.apache.commons.compress.AbstractTestCase.mkdir;
-import static org.apache.commons.compress.AbstractTestCase.rmdir;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -28,6 +25,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -35,18 +33,22 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.zip.GZIPInputStream;
 
+import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Test;
 
-public class TarArchiveInputStreamTest {
+public class TarArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void readSimplePaxHeader() throws Exception {
@@ -54,7 +56,7 @@ public class TarArchiveInputStreamTest {
         final TarArchiveInputStream tais = new TarArchiveInputStream(is);
         final Map<String, String> headers = tais
             .parsePaxHeaders(new ByteArrayInputStream("30 atime=1321711775.972059463\n"
-                                                      .getBytes(CharsetNames.UTF_8)));
+                                                      .getBytes(StandardCharsets.UTF_8)), null);
         assertEquals(1, headers.size());
         assertEquals("1321711775.972059463", headers.get("atime"));
         tais.close();
@@ -66,7 +68,7 @@ public class TarArchiveInputStreamTest {
         final TarArchiveInputStream tais = new TarArchiveInputStream(is);
         final Map<String, String> headers = tais
             .parsePaxHeaders(new ByteArrayInputStream("11 foo=bar\n11 foo=baz\n"
-                                                      .getBytes(CharsetNames.UTF_8)));
+                                                      .getBytes(StandardCharsets.UTF_8)), null);
         assertEquals(1, headers.size());
         assertEquals("baz", headers.get("foo"));
         tais.close();
@@ -78,7 +80,7 @@ public class TarArchiveInputStreamTest {
         final TarArchiveInputStream tais = new TarArchiveInputStream(is);
         final Map<String, String> headers = tais
             .parsePaxHeaders(new ByteArrayInputStream("11 foo=bar\n7 foo=\n"
-                                                      .getBytes(CharsetNames.UTF_8)));
+                                                      .getBytes(StandardCharsets.UTF_8)), null);
         assertEquals(0, headers.size());
         tais.close();
     }
@@ -89,7 +91,7 @@ public class TarArchiveInputStreamTest {
         final TarArchiveInputStream tais = new TarArchiveInputStream(is);
         final Map<String, String> headers = tais
             .parsePaxHeaders(new ByteArrayInputStream("28 comment=line1\nline2\nand3\n"
-                                                      .getBytes(CharsetNames.UTF_8)));
+                                                      .getBytes(StandardCharsets.UTF_8)), null);
         assertEquals(1, headers.size());
         assertEquals("line1\nline2\nand3", headers.get("comment"));
         tais.close();
@@ -99,11 +101,11 @@ public class TarArchiveInputStreamTest {
     public void readNonAsciiPaxHeader() throws Exception {
         final String ae = "\u00e4";
         final String line = "11 path="+ ae + "\n";
-        assertEquals(11, line.getBytes(CharsetNames.UTF_8).length);
+        assertEquals(11, line.getBytes(StandardCharsets.UTF_8).length);
         final InputStream is = new ByteArrayInputStream(new byte[1]);
         final TarArchiveInputStream tais = new TarArchiveInputStream(is);
         final Map<String, String> headers = tais
-            .parsePaxHeaders(new ByteArrayInputStream(line.getBytes(CharsetNames.UTF_8)));
+            .parsePaxHeaders(new ByteArrayInputStream(line.getBytes(StandardCharsets.UTF_8)), null);
         assertEquals(1, headers.size());
         assertEquals(ae, headers.get("path"));
         tais.close();
@@ -370,6 +372,73 @@ public class TarArchiveInputStreamTest {
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read(buf));
             assertEquals(-1, archive.read(buf));
+        }
+    }
+
+    @Test
+    public void testDirectoryWithLongNameEndsWithSlash() throws IOException, ArchiveException {
+        final String rootPath = dir.getAbsolutePath();
+        final String dirDirectory = "COMPRESS-509";
+        final int count = 100;
+        File root = new File(rootPath + "/" + dirDirectory);
+        root.mkdirs();
+        for (int i = 1; i < count; i++) {
+            // -----------------------
+            // create empty dirs with incremental length
+            // -----------------------
+            String subDir = "";
+            for (int j = 0; j < i; j++) {
+                subDir += "a";
+            }
+            File dir = new File(rootPath + "/" + dirDirectory, "/" + subDir);
+            dir.mkdir();
+
+            // -----------------------
+            // tar these dirs
+            // -----------------------
+            String fileName = "/" + dirDirectory + "/" + subDir;
+            File tarF = new File(rootPath + "/tar" + i + ".tar");
+            FileOutputStream dest = new FileOutputStream(tarF);
+            TarArchiveOutputStream out = new TarArchiveOutputStream(new BufferedOutputStream(dest));
+            out.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_STAR);
+            out.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
+
+            File file = new File(rootPath, fileName);
+            TarArchiveEntry entry = new TarArchiveEntry(file);
+            entry.setName(fileName);
+            out.putArchiveEntry(entry);
+            out.closeArchiveEntry();
+            out.flush();
+            out.close();
+
+            // -----------------------
+            // untar these tars
+            // -----------------------
+            InputStream is = new FileInputStream(tarF);
+            TarArchiveInputStream debInputStream = (TarArchiveInputStream) new ArchiveStreamFactory()
+                    .createArchiveInputStream("tar", is);
+            TarArchiveEntry outEntry;
+            while ((outEntry = (TarArchiveEntry) debInputStream.getNextEntry()) != null) {
+                assertTrue(outEntry.getName().endsWith("/"));
+            }
+            debInputStream.close();
+        }
+    }
+
+    @Test(expected = IOException.class)
+    public void testParseTarWithSpecialPaxHeaders() throws IOException {
+        try (FileInputStream in = new FileInputStream(getFile("COMPRESS-530.tar"));
+             TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
+            archive.getNextEntry();
+            IOUtils.toByteArray(archive);
+        }
+    }
+
+    @Test(expected = IOException.class)
+    public void testParseTarWithNonNumberPaxHeaders() throws IOException {
+        try (FileInputStream in = new FileInputStream(getFile("COMPRESS-529.tar"));
+             TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
+            archive.getNextEntry();
         }
     }
 

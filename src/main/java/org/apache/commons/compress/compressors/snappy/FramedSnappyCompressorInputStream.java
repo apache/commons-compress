@@ -65,7 +65,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
     private final CountingInputStream countingStream;
 
     /** The underlying stream to read compressed data from */
-    private final PushbackInputStream in;
+    private final PushbackInputStream inputStream;
 
     /** The dialect to expect */
     private final FramedSnappyDialect dialect;
@@ -131,7 +131,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
             throw new IllegalArgumentException("blockSize must be bigger than 0");
         }
         countingStream = new CountingInputStream(in);
-        this.in = new PushbackInputStream(countingStream, 1);
+        this.inputStream = new PushbackInputStream(countingStream, 1);
         this.blockSize = blockSize;
         this.dialect = dialect;
         if (dialect.hasStreamIdentifier()) {
@@ -154,13 +154,16 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
                 currentCompressedChunk = null;
             }
         } finally {
-            in.close();
+            inputStream.close();
         }
     }
 
     /** {@inheritDoc} */
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
+        if (len == 0) {
+            return 0;
+        }
         int read = readOnce(b, off, len);
         if (read == -1) {
             readNextBlock();
@@ -177,7 +180,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
     public int available() throws IOException {
         if (inUncompressedChunk) {
             return Math.min(uncompressedBytesRemaining,
-                            in.available());
+                            inputStream.available());
         } else if (currentCompressedChunk != null) {
             return currentCompressedChunk.available();
         }
@@ -206,7 +209,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
             if (amount == 0) {
                 return -1;
             }
-            read = in.read(b, off, amount);
+            read = inputStream.read(b, off, amount);
             if (read != -1) {
                 uncompressedBytesRemaining -= read;
                 count(read);
@@ -234,7 +237,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
         if (type == -1) {
             endReached = true;
         } else if (type == STREAM_IDENTIFIER_TYPE) {
-            in.unread(type);
+            inputStream.unread(type);
             unreadBytes++;
             pushedBackBytes(1);
             readStreamIdentifier();
@@ -266,7 +269,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
                 expectedChecksum = -1;
             }
             currentCompressedChunk =
-                new SnappyCompressorInputStream(new BoundedInputStream(in, size), blockSize);
+                new SnappyCompressorInputStream(new BoundedInputStream(inputStream, size), blockSize);
             // constructor reads uncompressed size
             count(currentCompressedChunk.getBytesRead());
         } else {
@@ -278,7 +281,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
 
     private long readCrc() throws IOException {
         final byte[] b = new byte[4];
-        final int read = IOUtils.readFully(in, b);
+        final int read = IOUtils.readFully(inputStream, b);
         count(read);
         if (read != 4) {
             throw new IOException("Premature end of stream");
@@ -303,7 +306,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
         if (size < 0) {
             throw new IOException("Found illegal chunk with negative size");
         }
-        final long read = IOUtils.skip(in, size);
+        final long read = IOUtils.skip(inputStream, size);
         count(read);
         if (read != size) {
             throw new IOException("Premature end of stream");
@@ -312,7 +315,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
 
     private void readStreamIdentifier() throws IOException {
         final byte[] b = new byte[10];
-        final int read = IOUtils.readFully(in, b);
+        final int read = IOUtils.readFully(inputStream, b);
         count(read);
         if (10 != read || !matches(b, 10)) {
             throw new IOException("Not a framed Snappy stream");
@@ -320,7 +323,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
     }
 
     private int readOneByte() throws IOException {
-        final int b = in.read();
+        final int b = inputStream.read();
         if (b != -1) {
             count(1);
             return b & 0xFF;

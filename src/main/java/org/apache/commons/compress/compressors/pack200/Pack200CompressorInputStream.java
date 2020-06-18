@@ -20,7 +20,6 @@
 package org.apache.commons.compress.compressors.pack200;
 
 import java.io.File;
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -28,6 +27,7 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Pack200;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
+import org.apache.commons.compress.utils.CloseShieldFilterInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 
 /**
@@ -178,13 +178,9 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
                 u.properties().putAll(props);
             }
             if (f == null) {
-                u.unpack(new FilterInputStream(in) {
-                    @Override
-                    public void close() {
-                        // unpack would close this stream but we
-                        // want to give the user code more control
-                    }
-                }, jarOut);
+                // unpack would close this stream but we
+                // want to give the user code more control
+                u.unpack(new CloseShieldFilterInputStream(in), jarOut);
             } else {
                 u.unpack(f, jarOut);
             }
@@ -221,7 +217,7 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     }
 
     @Override
-    public void mark(final int limit) {
+    public synchronized void mark(final int limit) {
         try {
             streamBridge.getInput().mark(limit);
         } catch (final IOException ex) {
@@ -230,7 +226,7 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     }
 
     @Override
-    public void reset() throws IOException {
+    public synchronized void reset() throws IOException {
         streamBridge.getInput().reset();
     }
 

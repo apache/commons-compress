@@ -18,11 +18,9 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.CRC32;
 import java.util.zip.ZipException;
-
-import org.apache.commons.compress.utils.CharsetNames;
 
 /**
  * A common base class for Unicode extra information extra fields.
@@ -45,7 +43,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
      * file.
      * @param off The offset of the encoded file name or comment in
      * <code>bytes</code>.
-     * @param len The length of the encoded file name or commentin
+     * @param len The length of the encoded file name or comment in
      * <code>bytes</code>.
      */
     protected AbstractUnicodeExtraField(final String text, final byte[] bytes, final int off, final int len) {
@@ -53,11 +51,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
         crc32.update(bytes, off, len);
         nameCRC32 = crc32.getValue();
 
-        try {
-            unicodeName = text.getBytes(CharsetNames.UTF_8);
-        } catch (final UnsupportedEncodingException e) {
-            throw new RuntimeException("FATAL: UTF-8 encoding not supported.", e); //NOSONAR
-        }
+        unicodeName = text.getBytes(StandardCharsets.UTF_8);
     }
 
     /**

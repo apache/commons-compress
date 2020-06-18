@@ -39,6 +39,7 @@ import static org.apache.commons.compress.AbstractTestCase.rmdir;
 import static org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp.ACCESS_TIME_BIT;
 import static org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp.CREATE_TIME_BIT;
 import static org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp.MODIFY_TIME_BIT;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -383,7 +384,7 @@ public class X5455_ExtendedTimestampTest {
          */
         final byte[] NULL_FLAGS = {0};
         final byte[] AC_CENTRAL = {2}; // central data only contains the AC flag and no actual data
-        final byte[] CR_CENTRAL = {4}; // central data only dontains the CR flag and no actual data
+        final byte[] CR_CENTRAL = {4}; // central data only contains the CR flag and no actual data
 
         final byte[] MOD_ZERO = {1, 0, 0, 0, 0};
         final byte[] MOD_MAX = {1, -1, -1, -1, 0x7f};
@@ -470,6 +471,15 @@ public class X5455_ExtendedTimestampTest {
         xf.setCreateJavaTime(null);
         assertFalse(xf.isBit2_createTimePresent());
         assertEquals(0, xf.getFlags());
+    }
+
+    @Test
+    public void resetsFlagsWhenLocalFileArrayIsTooShort() throws Exception {
+        final byte[] local = new byte[] {
+            7
+        }; // claims all three time values would be present, but they are not
+        xf.parseFromLocalFileData(local, 0, 1);
+        assertArrayEquals(new byte[1], xf.getLocalFileDataData());
     }
 
     private void parseReparse(

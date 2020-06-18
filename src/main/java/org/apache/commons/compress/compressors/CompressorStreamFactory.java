@@ -455,7 +455,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     /**
      * Try to detect the type of compressor stream.
      *
-     * @param in input stream
+     * @param inputStream input stream
      * @return type of compressor stream detected
      * @throws CompressorException if no compressor stream type was detected
      *                             or if something else went wrong
@@ -463,21 +463,21 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      *
      * @since 1.14
      */
-    public static String detect(final InputStream in) throws CompressorException {
-        if (in == null) {
+    public static String detect(final InputStream inputStream) throws CompressorException {
+        if (inputStream == null) {
             throw new IllegalArgumentException("Stream must not be null.");
         }
 
-        if (!in.markSupported()) {
+        if (!inputStream.markSupported()) {
             throw new IllegalArgumentException("Mark is not supported.");
         }
 
         final byte[] signature = new byte[12];
-        in.mark(signature.length);
+        inputStream.mark(signature.length);
         int signatureLength = -1;
         try {
-            signatureLength = IOUtils.readFully(in, signature);
-            in.reset();
+            signatureLength = IOUtils.readFully(inputStream, signature);
+            inputStream.reset();
         } catch (IOException e) {
             throw new CompressorException("IOException while reading signature.", e);
         }

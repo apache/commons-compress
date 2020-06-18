@@ -147,7 +147,7 @@ public final class ZipLong implements Cloneable, Serializable {
      * @param buf the output buffer
      * @param  offset
      *         The offset within the output buffer of the first byte to be written.
-     *         must be non-negative and no larger than <tt>buf.length-4</tt>
+     *         must be non-negative and no larger than {@code buf.length-4}
      */
 
     public static void putLong(final long value, final byte[] buf, int offset) {
@@ -184,7 +184,7 @@ public final class ZipLong implements Cloneable, Serializable {
      */
     @Override
     public boolean equals(final Object o) {
-        if (o == null || !(o instanceof ZipLong)) {
+        if (!(o instanceof ZipLong)) {
             return false;
         }
         return value == ((ZipLong) o).getValue();

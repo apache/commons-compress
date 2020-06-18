@@ -64,7 +64,7 @@ public class ZstdCompressorInputStream extends CompressorInputStream
     }
 
     @Override
-    public void mark(final int readlimit) {
+    public synchronized void mark(final int readlimit) {
         decIS.mark(readlimit);
     }
 
@@ -82,6 +82,9 @@ public class ZstdCompressorInputStream extends CompressorInputStream
 
     @Override
     public int read(final byte[] buf, final int off, final int len) throws IOException {
+        if (len == 0) {
+            return 0;
+        }
         final int ret = decIS.read(buf, off, len);
         count(ret);
         return ret;
@@ -93,7 +96,7 @@ public class ZstdCompressorInputStream extends CompressorInputStream
     }
 
     @Override
-    public void reset() throws IOException {
+    public synchronized void reset() throws IOException {
         decIS.reset();
     }
 

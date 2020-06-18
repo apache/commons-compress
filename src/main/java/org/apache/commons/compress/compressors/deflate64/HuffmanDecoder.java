@@ -149,7 +149,10 @@ class HuffmanDecoder implements Closeable {
                     throw new IllegalStateException("Unsupported compression: " + mode);
                 }
             } else {
-                return state.read(b, off, len);
+                int r = state.read(b, off, len);
+                if (r != 0) {
+                    return r;
+                }
             }
         }
         return -1;
@@ -214,6 +217,9 @@ class HuffmanDecoder implements Closeable {
 
         @Override
         int read(byte[] b, int off, int len) throws IOException {
+            if (len == 0) {
+                return 0;
+            }
             // as len is an int and (blockLength - read) is >= 0 the min must fit into an int as well
             int max = (int) Math.min(blockLength - read, len);
             int readSoFar = 0;
@@ -247,7 +253,7 @@ class HuffmanDecoder implements Closeable {
         }
     }
 
-    private class InitialState extends DecoderState {
+    private static class InitialState extends DecoderState {
         @Override
         HuffmanState state() {
             return INITIAL;
@@ -255,6 +261,9 @@ class HuffmanDecoder implements Closeable {
 
         @Override
         int read(byte[] b, int off, int len) throws IOException {
+            if (len == 0) {
+                return 0;
+            }
             throw new IllegalStateException("Cannot read in this state");
         }
 
@@ -292,6 +301,9 @@ class HuffmanDecoder implements Closeable {
 
         @Override
         int read(byte[] b, int off, int len) throws IOException {
+            if (len == 0) {
+                return 0;
+            }
             return decodeNext(b, off, len);
         }
 
@@ -450,6 +462,9 @@ class HuffmanDecoder implements Closeable {
                 for (int p = len - 1; p >= 0; p--) {
                     int bit = lit & (1 << p);
                     node = bit == 0 ? node.left() : node.right();
+                    if (node == null) {
+                        throw new IllegalStateException("node doesn't exist in Huffman tree");
+                    }
                 }
                 node.leaf(i);
                 literalCodes[len - 1]++;
@@ -463,6 +478,10 @@ class HuffmanDecoder implements Closeable {
         int[] blCount = new int[65];
 
         for (int aLitTable : litTable) {
+            if (aLitTable < 0 || aLitTable > 64) {
+                throw new IllegalArgumentException("Invalid code " + aLitTable
+                    + " in literal table");
+            }
             max = Math.max(max, aLitTable);
             blCount[aLitTable]++;
         }

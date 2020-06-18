@@ -105,7 +105,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
             final int read = IOUtils.readFully(input, realized);
             trackReadBytes(read);
             if (read != expected.length) {
-                throw new IOException("Failed to read header. Occured at byte: " + getBytesRead());
+                throw new IOException("Failed to read header. Occurred at byte: " + getBytesRead());
             }
             if (!Arrays.equals(expected, realized)) {
                 throw new IOException("Invalid header " + ArchiveUtils.toAsciiString(realized));
@@ -137,10 +137,10 @@ public class ArArchiveInputStream extends ArchiveInputStream {
             final int read = IOUtils.readFully(input, realized);
             trackReadBytes(read);
             if (read != expected.length) {
-                throw new IOException("Failed to read entry trailer. Occured at byte: " + getBytesRead());
+                throw new IOException("Failed to read entry trailer. Occurred at byte: " + getBytesRead());
             }
             if (!Arrays.equals(expected, realized)) {
-                throw new IOException("Invalid entry trailer. not read the content? Occured at byte: " + getBytesRead());
+                throw new IOException("Invalid entry trailer. not read the content? Occurred at byte: " + getBytesRead());
             }
         }
 
@@ -257,6 +257,9 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      */
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
+        if (len == 0) {
+            return 0;
+        }
         if (currentEntry == null) {
             throw new IllegalStateException("No current ar entry");
         }

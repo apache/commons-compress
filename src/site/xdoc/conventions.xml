@@ -30,7 +30,7 @@
       <section name="Multithreading">
             <p>
             Commons Compress does not aim to be threadsafe at the moment. But the developers
-            agreed to document multithreading behaviour in the javadocs.
+            agreed to document multithreading behavior in the javadocs.
             </p>
             <p>
             We use some of the annotations from 

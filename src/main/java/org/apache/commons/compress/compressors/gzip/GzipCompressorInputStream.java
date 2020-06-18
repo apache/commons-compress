@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.BufferedInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
@@ -32,7 +33,6 @@ import java.util.zip.CRC32;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
-import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.CountingInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
@@ -239,13 +239,13 @@ public class GzipCompressorInputStream extends CompressorInputStream
         // Original file name
         if ((flg & FNAME) != 0) {
             parameters.setFilename(new String(readToNull(inData),
-                                              CharsetNames.ISO_8859_1));
+                    StandardCharsets.ISO_8859_1));
         }
 
         // Comment
         if ((flg & FCOMMENT) != 0) {
             parameters.setComment(new String(readToNull(inData),
-                                             CharsetNames.ISO_8859_1));
+                    StandardCharsets.ISO_8859_1));
         }
 
         // Header "CRC16" which is actually a truncated CRC32 (which isn't
@@ -286,6 +286,9 @@ public class GzipCompressorInputStream extends CompressorInputStream
      */
     @Override
     public int read(final byte[] b, int off, int len) throws IOException {
+        if (len == 0) {
+            return 0;
+        }
         if (endReached) {
             return -1;
         }
@@ -322,9 +325,6 @@ public class GzipCompressorInputStream extends CompressorInputStream
             if (inf.finished()) {
                 // We may have read too many bytes. Rewind the read
                 // position to match the actual amount used.
-                //
-                // NOTE: The "if" is there just in case. Since we used
-                // in.mark earlier, it should always skip enough.
                 in.reset();
 
                 final int skipAmount = bufUsed - inf.getRemaining();

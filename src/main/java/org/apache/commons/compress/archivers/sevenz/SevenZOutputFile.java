@@ -27,6 +27,7 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.SeekableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
@@ -309,7 +310,8 @@ public class SevenZOutputFile implements Closeable {
             throw new IllegalStateException("No current 7z entry");
         }
 
-        OutputStream out = new OutputStreamWrapper();
+        // doesn't need to be closed, just wraps the instance field channel
+        OutputStream out = new OutputStreamWrapper(); // NOSONAR
         final ArrayList<CountingOutputStream> moreStreams = new ArrayList<>();
         boolean first = true;
         for (final SevenZMethodConfiguration m : getContentMethods(files.get(files.size() - 1))) {
@@ -572,7 +574,7 @@ public class SevenZOutputFile implements Closeable {
         final DataOutputStream out = new DataOutputStream(baos);
         out.write(0);
         for (final SevenZArchiveEntry entry : files) {
-            out.write(entry.getName().getBytes("UTF-16LE"));
+            out.write(entry.getName().getBytes(StandardCharsets.UTF_16LE));
             out.writeShort(0);
         }
         out.flush();

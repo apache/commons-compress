@@ -75,7 +75,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
 
     private boolean entryEOF = false;
 
-    private final byte tmpbuf[] = new byte[4096];
+    private final byte[] tmpbuf = new byte[4096];
 
     private long crc = 0;
 
@@ -261,7 +261,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
                     this.entry = readOldAsciiEntry();
                     break;
                 default:
-                    throw new IOException("Unknown magic [" + magicString + "]. Occured at byte: " + getBytesRead());
+                    throw new IOException("Unknown magic [" + magicString + "]. Occurred at byte: " + getBytesRead());
             }
         }
 
@@ -318,7 +318,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
             this.entryEOF = true;
             if (this.entry.getFormat() == FORMAT_NEW_CRC
                 && this.crc != this.entry.getChksum()) {
-                throw new IOException("CRC Error. Occured at byte: "
+                throw new IOException("CRC Error. Occurred at byte: "
                                       + getBytesRead());
             }
             return -1; // EOF for this entry
@@ -355,14 +355,14 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
 
     private long readBinaryLong(final int length, final boolean swapHalfWord)
             throws IOException {
-        final byte tmp[] = new byte[length];
+        final byte[] tmp = new byte[length];
         readFully(tmp, 0, tmp.length);
         return CpioUtil.byteArray2long(tmp, swapHalfWord);
     }
 
     private long readAsciiLong(final int length, final int radix)
             throws IOException {
-        final byte tmpBuffer[] = new byte[length];
+        final byte[] tmpBuffer = new byte[length];
         readFully(tmpBuffer, 0, tmpBuffer.length);
         return Long.parseLong(ArchiveUtils.toAsciiString(tmpBuffer), radix);
     }
@@ -403,7 +403,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         if (CpioUtil.fileType(mode) == 0 && !name.equals(CPIO_TRAILER)){
             throw new IOException("Mode 0 only allowed in the trailer. Found entry name: "
                                   + ArchiveUtils.sanitize(name)
-                                  + " Occured at byte: " + getBytesRead());
+                                  + " Occurred at byte: " + getBytesRead());
         }
         skip(ret.getHeaderPadCount(namesize - 1));
 
@@ -437,7 +437,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         if (CpioUtil.fileType(mode) == 0 && !name.equals(CPIO_TRAILER)){
             throw new IOException("Mode 0 only allowed in the trailer. Found entry: "
                                   + ArchiveUtils.sanitize(name)
-                                  + " Occured at byte: " + getBytesRead());
+                                  + " Occurred at byte: " + getBytesRead());
         }
 
         return ret;
@@ -471,7 +471,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         if (CpioUtil.fileType(mode) == 0 && !name.equals(CPIO_TRAILER)){
             throw new IOException("Mode 0 only allowed in the trailer. Found entry: "
                                   + ArchiveUtils.sanitize(name)
-                                  + "Occured at byte: " + getBytesRead());
+                                  + "Occurred at byte: " + getBytesRead());
         }
         skip(ret.getHeaderPadCount(namesize - 1));
 
@@ -480,7 +480,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
 
     private String readCString(final int length) throws IOException {
         // don't include trailing NUL in file name to decode
-        final byte tmpBuffer[] = new byte[length - 1];
+        final byte[] tmpBuffer = new byte[length - 1];
         readFully(tmpBuffer, 0, tmpBuffer.length);
         if (this.in.read() == -1) {
             throw new EOFException();

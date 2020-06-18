@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-sudo: false
 language: java
 
 matrix:
@@ -39,7 +38,12 @@ matrix:
     - dist: trusty
       jdk: openjdk13
     - dist: trusty
+      jdk: openjdk14
+    - dist: trusty
       jdk: openjdk-ea
+  allow_failures:
+    - jdk: openjdk14
+    - jdk: openjdk-ea
 
 cache:
   directories:

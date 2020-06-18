@@ -37,6 +37,7 @@
          exception with a message like "Illegal seek" we recommend you
          wrap your stream in a <code>SkipShieldingInputStream</code>
          from our utils package before passing it to Compress.</li>
+         <li>Commons Compress cannot be built on JDK 14 or newer.</li>
        </ul>
      </section>
 
@@ -53,13 +54,16 @@
          archives, starting with 1.8 it will throw a
          <code>StreamingNotSupportedException</code> when reading from
          a 7z archive.</li>
-         <li>Encryption, solid compression and header compression and
+         <li>Encryption, solid compression and header compression
          are only supported when reading archives</li>
          <li>Commons Compress 1.12 and earlier didn't support writing
          LZMA.</li>
          <li>Several of the "methods" supported by 7z are not
          implemented in Compress.</li>
-         <li>No support for multi-volume archives</li>
+         <li>No support for writing multi-volume archives. Such
+         archives can be read by simply concatenating the parts, for
+         example by using
+         <code>MultiReadOnlySeekableByteChannel</code>.</li>
          <li>Support for some BCJ filters and the DELTA filter has
          been added with Compress 1.8.  Because of a known bug in
          version 1.4 of the <a
@@ -156,7 +160,12 @@
        </ul>
      </section>
      <section name="PACK200">
-       <p>We are not aware of any problems.</p>
+       <ul>
+         <li>Pack200 support in Commons Comppress relies on the
+         <code>Pack200</code> class of the Java classlib. Java 14
+         removed support and thus Pack200 will not work at all when
+         running on Java 14 or later.</li>
+       </ul>
      </section>
      <section name="SNAPPY">
        <ul>
@@ -166,7 +175,9 @@
      </section>
      <section name="TAR">
        <ul>
-         <li>sparse files can neither be read nor written</li>
+         <li>sparse files could not be read in version prior to
+         Compress 1.20</li>
+         <li>sparse files can not be written</li>
          <li>only a subset of the GNU and POSIX extensions are
          supported</li>
          <li>In Compress 1.6 <code>TarArchiveInputStream</code> could
@@ -201,7 +212,13 @@
          <li>only a subset of compression methods are supported,
          including the most common STORED and DEFLATEd.  IMPLODE,
          SHRINK, DEFLATE64 and BZIP2 support is read-only.</li>
-         <li>no support for encryption or multi-volume archives</li>
+         <li>no support for encryption</li>
+         <li> or multi-volume archives prior to Compress 1.20</li>
+         <li>It is currently not possible to write split archives with
+         more than 64k segments. When creating split archives with more
+         than 100 segments you will need to adjust the file names as
+         <code>ZipArchiveOutputStream</code> assumes extensions will be
+         three characters long.</li>
          <li>In versions prior to Compress 1.6
          <code>ZipArchiveEntries</code> read from an archive will
          contain non-zero millisecond values when using Java 8 or later rather

@@ -18,7 +18,11 @@
  */
 package org.apache.commons.compress.archivers;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,6 +30,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -60,7 +65,7 @@ public final class TarTestCase extends AbstractTestCase {
     @Test
     public void testTarArchiveLongNameCreation() throws Exception {
         final String name = "testdata/12345678901234567890123456789012345678901234567890123456789012345678901234567890123456.xml";
-        final byte[] bytes = name.getBytes(CharsetNames.UTF_8);
+        final byte[] bytes = name.getBytes(StandardCharsets.UTF_8);
         assertEquals(bytes.length, 99);
 
         final File output = new File(dir, "bla.tar");

@@ -97,17 +97,18 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
                 }
             };
 
-            ArArchiveInputStream archiveInputStream = new ArArchiveInputStream(simpleInputStream);
-            ArArchiveEntry entry1 = archiveInputStream.getNextArEntry();
-            assertThat(entry1, not(nullValue()));
-            assertThat(entry1.getName(), equalTo("test1.xml"));
-            assertThat(entry1.getLength(), equalTo(610L));
+            try (ArArchiveInputStream archiveInputStream = new ArArchiveInputStream(simpleInputStream)) {
+                ArArchiveEntry entry1 = archiveInputStream.getNextArEntry();
+                assertThat(entry1, not(nullValue()));
+                assertThat(entry1.getName(), equalTo("test1.xml"));
+                assertThat(entry1.getLength(), equalTo(610L));
 
-            ArArchiveEntry entry2 = archiveInputStream.getNextArEntry();
-            assertThat(entry2.getName(), equalTo("test2.xml"));
-            assertThat(entry2.getLength(), equalTo(82L));
+                ArArchiveEntry entry2 = archiveInputStream.getNextArEntry();
+                assertThat(entry2.getName(), equalTo("test2.xml"));
+                assertThat(entry2.getLength(), equalTo(82L));
 
-            assertThat(archiveInputStream.getNextArEntry(), nullValue());
+                assertThat(archiveInputStream.getNextArEntry(), nullValue());
+            }
         }
     }
 

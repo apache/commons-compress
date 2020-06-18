@@ -48,7 +48,8 @@ class TempFileCachingStreamBridge extends StreamBridge {
                 try {
                     super.close();
                 } finally {
-                    f.delete();
+                    // if this fails the only thing we can do is to rely on deleteOnExit
+                    f.delete(); // NOSONAR
                 }
             }
         };

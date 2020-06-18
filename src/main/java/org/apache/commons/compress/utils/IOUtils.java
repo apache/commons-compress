@@ -21,6 +21,8 @@ package org.apache.commons.compress.utils;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -127,6 +129,25 @@ public final class IOUtils {
     }
 
     /**
+     * Reads as much from the file as possible to fill the given array.
+     *
+     * <p>This method may invoke read repeatedly to fill the array and
+     * only read less bytes than the length of the array if the end of
+     * the stream has been reached.</p>
+     *
+     * @param file file to read
+     * @param array buffer to fill
+     * @return the number of bytes actually read
+     * @throws IOException on error
+     * @since 1.20
+     */
+    public static int read(final File file, final byte[] array) throws IOException {
+        try (FileInputStream inputStream = new FileInputStream(file)) {
+            return readFully(inputStream, array, 0, array.length);
+        }
+    }
+
+    /**
      * Reads as much from input as possible to fill the given array.
      *
      * <p>This method may invoke read repeatedly to fill the array and
@@ -134,12 +155,12 @@ public final class IOUtils {
      * the stream has been reached.</p>
      *
      * @param input stream to read from
-     * @param b buffer to fill
+     * @param array buffer to fill
      * @return the number of bytes actually read
      * @throws IOException on error
      */
-    public static int readFully(final InputStream input, final byte[] b) throws IOException {
-        return readFully(input, b, 0, b.length);
+    public static int readFully(final InputStream input, final byte[] array) throws IOException {
+        return readFully(input, array, 0, array.length);
     }
 
     /**
@@ -151,21 +172,21 @@ public final class IOUtils {
      * the stream has been reached.</p>
      *
      * @param input stream to read from
-     * @param b buffer to fill
+     * @param array buffer to fill
      * @param offset offset into the buffer to start filling at
      * @param len of bytes to read
      * @return the number of bytes actually read
      * @throws IOException
      *             if an I/O error has occurred
      */
-    public static int readFully(final InputStream input, final byte[] b, final int offset, final int len)
+    public static int readFully(final InputStream input, final byte[] array, final int offset, final int len)
         throws IOException {
-        if (len < 0 || offset < 0 || len + offset > b.length) {
+        if (len < 0 || offset < 0 || len + offset > array.length) {
             throw new IndexOutOfBoundsException();
         }
         int count = 0, x = 0;
         while (count != len) {
-            x = input.read(b, offset + count, len - count);
+            x = input.read(array, offset + count, len - count);
             if (x == -1) {
                 break;
             }

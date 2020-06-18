@@ -345,6 +345,9 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
 
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
+        if (len == 0) {
+            return 0;
+        }
         if (currentLocalFileHeader == null) {
             throw new IllegalStateException("No current arj entry");
         }

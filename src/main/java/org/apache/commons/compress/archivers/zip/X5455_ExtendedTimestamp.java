@@ -30,7 +30,7 @@ import java.util.zip.ZipException;
  * integers representing seconds since UNIX epoch (Jan 1st, 1970, UTC).
  * This field improves on zip's default timestamp granularity, since it
  * allows one to store additional timestamps, and, in addition, the timestamps
- * are stored using per-second granularity (zip's default behaviour can only store
+ * are stored using per-second granularity (zip's default behavior can only store
  * timestamps to the nearest <em>even</em> second).
  * </p><p>
  * Unfortunately, 32 (signed) bits can only store dates up to the year 2037,
@@ -46,7 +46,7 @@ import java.util.zip.ZipException;
  * most recent time file/directory was opened
  * (e.g., read from disk).  Many people disable
  * their operating systems from updating this value
- * using the NOATIME mount option to optimize disk behaviour,
+ * using the NOATIME mount option to optimize disk behavior,
  * and thus it's not always reliable.  In those cases
  * it's always equal to modifyTime.
  * </li>
@@ -227,14 +227,20 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
         if (bit0_modifyTimePresent && offset + 4 <= len) {
             modifyTime = new ZipLong(data, offset);
             offset += 4;
+        } else {
+            bit0_modifyTimePresent = false;
         }
         if (bit1_accessTimePresent && offset + 4 <= len) {
             accessTime = new ZipLong(data, offset);
             offset += 4;
+        } else {
+            bit1_accessTimePresent = false;
         }
         if (bit2_createTimePresent && offset + 4 <= len) {
             createTime = new ZipLong(data, offset);
             offset += 4; // NOSONAR - assignment as documentation
+        } else {
+            bit2_createTimePresent = false;
         }
     }
 

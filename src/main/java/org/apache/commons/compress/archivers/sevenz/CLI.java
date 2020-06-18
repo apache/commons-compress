@@ -19,8 +19,6 @@ package org.apache.commons.compress.archivers.sevenz;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
 
 public class CLI {
 
@@ -63,44 +61,6 @@ public class CLI {
                 }
                 return sb.toString();
             }
-        },
-        EXTRACT("Extracting") {
-            private final byte[] buf = new byte[8192];
-            @Override
-            public void takeAction(final SevenZFile archive, final SevenZArchiveEntry entry)
-                throws IOException {
-                final File outFile = new File(entry.getName());
-                if (entry.isDirectory()) {
-                    if (!outFile.isDirectory() && !outFile.mkdirs()) {
-                        throw new IOException("Cannot create directory " + outFile);
-                    }
-                    System.out.println("created directory " + outFile);
-                    return;
-                }
-
-                System.out.println("extracting to " + outFile);
-                final File parent = outFile.getParentFile();
-                if (parent != null && !parent.exists() && !parent.mkdirs()) {
-                    throw new IOException("Cannot create " + parent);
-                }
-                try (final OutputStream fos = Files.newOutputStream(outFile.toPath())) {
-                    final long total = entry.getSize();
-                    long off = 0;
-                    while (off < total) {
-                        final int toRead = (int) Math.min(total - off, buf.length);
-                        final int bytesRead = archive.read(buf, 0, toRead);
-                        if (bytesRead < 1) {
-                            throw new IOException("Reached end of entry "
-                                                  + entry.getName()
-                                                  + " after " + off
-                                                  + " bytes, expected "
-                                                  + total);
-                        }
-                        off += bytesRead;
-                        fos.write(buf, 0, bytesRead);
-                    }
-                }
-            }
         };
 
         private final String message;
@@ -134,7 +94,7 @@ public class CLI {
     }
 
     private static void usage() {
-        System.out.println("Parameters: archive-name [list|extract]");
+        System.out.println("Parameters: archive-name [list]");
     }
 
     private static Mode grabMode(final String[] args) {

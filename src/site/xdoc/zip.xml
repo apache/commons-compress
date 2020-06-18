@@ -104,9 +104,13 @@
           entries <code>ZipArchiveInputStream</code> can try to read
           ahead until it finds the next entry, but this approach is
           not safe and has to be enabled by a constructor argument
-          explicitly.</p>
+          explicitly. For example it will completely fail if the
+          stored entry is a ZIP archive itself.  Starting with Compress 1.19
+          <code>ZipArchiveInputStream</code> will perform a few sanity
+          checks for STORED entries with data descriptors and throw an
+          exception if they fail.</p>
 
-        <p>If possible, you should always prefer <code>ZipFile</code>
+        <p>If possible, you should <strong>always</strong> prefer <code>ZipFile</code>
           over <code>ZipArchiveInputStream</code>.</p>
 
         <p><code>ZipFile</code> requires a
@@ -118,10 +122,19 @@
       </subsection>
 
       <subsection name="ZipArchiveOutputStream" id="ZipArchiveOutputStream">
-        <p><code>ZipArchiveOutputStream</code> has three constructors,
-        one of them uses a <code>File</code> argument, one a
+        <p><code>ZipArchiveOutputStream</code> has four constructors,
+        two of them uses a <code>File</code> argument, one a
         <code>SeekableByteChannel</code> and the last uses an
-        <code>OutputStream</code>.  The <code>File</code> version will
+        <code>OutputStream</code>.</p>
+
+        <p>The constructor accepting a <code>File</code> and a size is
+        used exclusively for creating a split ZIP archive and is
+        described in th next section. For the remainder of this
+        section this constructor is equivalent to the one using the
+        <code>OutputStream</code> argument and thus it is not possible
+        to add uncompressed entries of unknown size.</p>
+
+        <p>Of the remaining three constructors the <code>File</code> version will
         try to use <code>SeekableByteChannel</code> and fall back to
         using a <code>FileOutputStream</code> internally if that
         fails.</p>
@@ -143,6 +156,44 @@
 
       </subsection>
 
+      <subsection name="Multi Volume Archives">
+        <p>The ZIP format knows so called split and spanned
+        archives. Spanned archives cross several removable media and
+        are not supported by Commons Compress.</p>
+
+        <p>Split archives consist of multiple files that reside in the
+        same directory with the same base name (the file name without
+        the file extension). The last file of the the archive has the
+        extension <code>zip</code> the remaining files conventionally
+        use extensions <code>z01</code>, <code>z02</code> and so
+        on. Support for splitted archives has been added with Compress
+        1.20.</p>
+
+        <p>If you want to create a split ZIP archive you use the
+        constructor of <code>ZipArchiveOutputStream</code> that
+        accepts a <code>File</code> argument and a size. The size
+        determines the maximum size of a split segment - the size must
+        be between 64kB and 4GB. While creating the archive, this will
+        create several files fillowing the naming convention described
+        above. The name of the <code>File</code> argument used inside
+        of the constructor must use the extension
+        <code>zip</code>.</p>
+
+        <p>It is currently not possible to write split archives with
+        more than 64k segments. When creating split archives with more
+        than 100 segments you will need to adjust the file names as
+        <code>ZipArchiveOutputStream</code> assumes extensions will be
+        three characters long.</p>
+
+        <p>If you want to read a split archive you must create a
+        <code>ZipSplitReadOnlySeekableByteChannel</code> from the
+        parts. Both <code>ZipFile</code> and
+        <code>ZipArchiveInputStream</code> support reading streams of
+        this type, in the case of <code>ZipArchiveInputStream</code>
+        you need to use a constructor where you can set
+        <code>skipSplitSig</code> to true.</p>
+      </subsection>
+
       <subsection name="Extra Fields">
 
         <p>Inside a ZIP archive, additional data can be attached to
@@ -152,7 +203,7 @@
 
         <p>Actually the extra data is supposed to be more structured
           than that and Compress' ZIP package provides access to the
-          structured data as <code>ExtraField</code> instances.  Only
+          structured data as <code>ZipExtraField</code> instances.  Only
           a subset of all defined extra field formats is supported by
           the package, any other extra field will be stored
           as <code>UnrecognizedExtraField</code>.</p>
@@ -163,6 +214,15 @@
           exception.  Starting with version 1.1 these extra fields
           will now be read
           as <code>UnparseableExtraFieldData</code>.</p>
+
+        <p>Prior to version 1.19 of this library trying to read an
+          archive with extra fields that Compress expects to
+          understand but that used a different content than expected
+          would cause Compress to throw an exception.  Starting with
+          version 1.19 these extra fields will now be read as
+          <code>UnrecognizedExtraField</code>. Using
+          <code>ZipArchiveEntry.getExtraFields(ExtraFieldParsingBehavior)</code>
+          you have a more fine grained control over the parser.</p>
 
       </subsection>
 

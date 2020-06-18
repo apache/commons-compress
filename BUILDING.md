@@ -17,7 +17,9 @@
 # Building Apache Commons Compress
 
 In order to build Commons Compress a JDK implementation 1.7 or higher
-and Apache Maven 3.x are required.
+and Apache Maven 3.x are required. **Note that Commons Compress
+currently doesn't build on JDK 14+, we will address this before
+releasing Compress 1.21**.
 
 To install the jars into your local Maven repository simply run
 
@@ -36,7 +38,7 @@ runs tests for tar archives and requires more than 8GiB of disk space.
     mvn test -Prun-zipit
 
 runs tests for zip archives that require up to 20 GiB of disk
-space. In addition the tests will run for a long time (more then ten
+space. In addition the tests will run for a long time (more than ten
 minutes, maybe even longer depending on your hardware) and heavily
 load the CPU at times.
 

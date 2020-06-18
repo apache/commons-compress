@@ -52,8 +52,22 @@ class BoundedSeekableByteChannelInputStream extends InputStream {
         return -1;
     }
 
+    /**
+     * Reads up to len bytes of data from the input stream into an array of bytes.
+     *
+     * <p>An attempt is made to read as many as len bytes, but a
+     * smaller number may be read. The number of bytes actually read
+     * is returned as an integer.</p>
+     *
+     * <p>This implementation may return 0 if the underlying {@link
+     * SeekableByteChannel} is non-blocking and currently hasn't got
+     * any bytes available.</p>
+     */
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
+        if (len == 0) {
+            return 0;
+        }
         if (bytesRemaining <= 0) {
             return -1;
         }

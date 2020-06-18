@@ -50,9 +50,29 @@
         list</a>.</p>
 
         <p>If you have encountered an unlisted security vulnerability
-        or other unexpected behaviour that has security impact, or if
+        or other unexpected behavior that has security impact, or if
         the descriptions here are incomplete, please report them
         privately to the Apache Security Team. Thank you.</p>
+
+        <subsection name="Fixed in Apache Commons Compress 1.19">
+          <p><b>Low: Denial of Service</b> <a
+          href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-12402">CVE-2019-12402</a></p>
+
+          <p>The file name encoding algorithm used internally in Apache Commons
+          Compress can get into an infinite loop when faced with specially
+          crafted inputs. This can lead to a denial of service attack if an
+          attacker can choose the file names inside of an archive created by
+          Compress.</p>
+
+          <p>This was fixed in revision <a
+          href="https://gitbox.apache.org/repos/asf?p=commons-compress.git;a=commitdiff;h=4ad5d80a6272e007f64a6ac66829ca189a8093b9;hp=16a0c84e84b93cc8c107b7ff3080bd11317ab581">4ad5d80a</a>.</p>
+
+          <p>This was first reported to the Commons Security Team on 22 August
+          2019 and made public on 27 August 2019.</p>
+
+          <p>Affects: 1.15 - 1.18</p>
+
+        </subsection>
 
         <subsection name="Fixed in Apache Commons Compress 1.18">
           <p><b>Low: Denial of Service</b> <a

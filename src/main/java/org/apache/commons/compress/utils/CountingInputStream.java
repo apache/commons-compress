@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Stream that tracks the number of bytes read.
+ * Input stream that tracks the number of bytes read.
  * @since 1.3
  * @NotThreadSafe
  */
@@ -42,18 +42,24 @@ public class CountingInputStream extends FilterInputStream {
         }
         return r;
     }
+
     @Override
     public int read(final byte[] b) throws IOException {
         return read(b, 0, b.length);
     }
+
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
+        if (len == 0) {
+            return 0;
+        }
         final int r = in.read(b, off, len);
         if (r >= 0) {
             count(r);
         }
         return r;
     }
+
     /**
      * Increments the counter of already read bytes.
      * Doesn't increment if the EOF has been hit (read == -1)

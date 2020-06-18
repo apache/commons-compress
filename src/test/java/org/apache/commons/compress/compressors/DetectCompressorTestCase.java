@@ -253,7 +253,7 @@ public final class DetectCompressorTestCase {
     }
 
     @Test
-    public void testMutiples() throws Exception {
+    public void testMultiples() throws Exception {
         for(int i=0; i <tests.length; i++) {
             final TestData test = tests[i];
             final CompressorStreamFactory fac = test.factory;

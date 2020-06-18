@@ -82,7 +82,7 @@ class NioZipEncoding implements ZipEncoding, CharsetAccessor {
         CharBuffer tmp = null;
         ByteBuffer out = ByteBuffer.allocate(estimateInitialBufferSize(enc, cb.remaining()));
 
-        while (cb.remaining() > 0) {
+        while (cb.hasRemaining()) {
             final CoderResult res = enc.encode(cb, out, false);
 
             if (res.isUnmappable() || res.isMalformed()) {
@@ -112,6 +112,9 @@ class NioZipEncoding implements ZipEncoding, CharsetAccessor {
             } else if (res.isOverflow()) {
                 int increment = estimateIncrementalEncodingSize(enc, cb.remaining());
                 out = ZipEncodingHelper.growBufferBy(out, increment);
+
+            } else if (res.isUnderflow() || res.isError()) {
+                break;
             }
         }
         // tell the encoder we are done

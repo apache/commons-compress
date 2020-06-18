@@ -72,6 +72,9 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
 
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
+        if (len == 0) {
+            return 0;
+        }
         int bytesRead = readFromStack(b, off, len);
         while (len - bytesRead > 0) {
             final int result = decompressNextSymbol();

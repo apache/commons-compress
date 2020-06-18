@@ -51,6 +51,9 @@ public class BoundedInputStream extends InputStream {
 
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
+        if (len == 0) {
+            return 0;
+        }
         if (bytesRemaining == 0) {
             return -1;
         }
@@ -69,5 +72,25 @@ public class BoundedInputStream extends InputStream {
     public void close() {
         // there isn't anything to close in this stream and the nested
         // stream is controlled externally
+    }
+
+    /**
+     * @since 1.20
+     */
+    @Override
+    public long skip(final long n) throws IOException {
+        long bytesToSkip = Math.min(bytesRemaining, n);
+        long bytesSkipped = in.skip(bytesToSkip);
+        bytesRemaining -= bytesSkipped;
+
+        return bytesSkipped;
+    }
+
+    /**
+     * @return bytes remaining to read
+     * @since 1.21
+     */
+    public long getBytesRemaining() {
+        return bytesRemaining;
     }
 }

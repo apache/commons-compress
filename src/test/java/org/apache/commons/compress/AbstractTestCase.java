@@ -31,6 +31,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -77,6 +78,10 @@ public abstract class AbstractTestCase {
             throw new IOException(ex);
         }
         return new File(uri);
+    }
+
+    public static Path getPath(final String path) throws IOException {
+        return getFile(path).toPath();
     }
 
     @After
@@ -138,7 +143,7 @@ public abstract class AbstractTestCase {
 
     /**
      * Creates an archive of textbased files in several directories. The
-     * archivername is the factory identifier for the archiver, for example zip,
+     * archivename is the factory identifier for the archiver, for example zip,
      * tar, cpio, jar, ar. The archive is created as a temp file.
      *
      * The archive contains the following files:
@@ -203,7 +208,8 @@ public abstract class AbstractTestCase {
      * Add an entry to the archive, and keep track of the names in archiveList.
      *
      * @param out
-     * @param file1
+     * @param filename
+     * @param infile
      * @throws IOException
      * @throws FileNotFoundException
      */

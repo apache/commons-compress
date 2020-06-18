@@ -212,7 +212,7 @@ public final class ZipEightByteInteger implements Serializable {
      */
     @Override
     public boolean equals(final Object o) {
-        if (o == null || !(o instanceof ZipEightByteInteger)) {
+        if (!(o instanceof ZipEightByteInteger)) {
             return false;
         }
         return value.equals(((ZipEightByteInteger) o).getValue());

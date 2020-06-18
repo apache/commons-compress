@@ -143,6 +143,11 @@ public class ZipFile implements Closeable {
      */
     private volatile boolean closed = true;
 
+    /**
+     * Whether the zip archive is a split zip archive
+     */
+    private final boolean isSplitZipArchive;
+
     // cached buffers - must only be used locally in the class (COMPRESS-172 - reduce garbage collection)
     private final byte[] dwordBuf = new byte[DWORD];
     private final byte[] wordBuf = new byte[WORD];
@@ -151,6 +156,7 @@ public class ZipFile implements Closeable {
     private final ByteBuffer dwordBbuf = ByteBuffer.wrap(dwordBuf);
     private final ByteBuffer wordBbuf = ByteBuffer.wrap(wordBuf);
     private final ByteBuffer cfhBbuf = ByteBuffer.wrap(cfhBuf);
+    private final ByteBuffer shortBbuf = ByteBuffer.wrap(shortBuf);
 
     /**
      * Opens the given file for reading, assuming "UTF8" for file names.
@@ -352,6 +358,8 @@ public class ZipFile implements Closeable {
                     final String encoding, final boolean useUnicodeExtraFields,
                     final boolean closeOnError, final boolean ignoreLocalFileHeader)
         throws IOException {
+        isSplitZipArchive = (channel instanceof ZipSplitReadOnlySeekableByteChannel);
+
         this.archiveName = archiveName;
         this.encoding = encoding;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
@@ -366,6 +374,8 @@ public class ZipFile implements Closeable {
             }
             fillNameMap();
             success = true;
+        } catch (IOException e) {
+            throw new IOException("Error on ZipFile " + archiveName, e);
         } finally {
             closed = !success;
             if (!success && closeOnError) {
@@ -567,8 +577,12 @@ public class ZipFile implements Closeable {
             case UNSHRINKING:
                 return new UnshrinkingInputStream(is);
             case IMPLODING:
-                return new ExplodingInputStream(ze.getGeneralPurposeBit().getSlidingDictionarySize(),
-                        ze.getGeneralPurposeBit().getNumberOfShannonFanoTrees(), is);
+                try {
+                    return new ExplodingInputStream(ze.getGeneralPurposeBit().getSlidingDictionarySize(),
+                            ze.getGeneralPurposeBit().getNumberOfShannonFanoTrees(), is);
+                } catch (IllegalArgumentException ex) {
+                    throw new IOException("bad IMPLODE data", ex);
+                }
             case DEFLATED:
                 final Inflater inflater = new Inflater(true);
                 // Inflater with nowrap=true has this odd contract for a zero padding
@@ -774,7 +788,7 @@ public class ZipFile implements Closeable {
         final int commentLen = ZipShort.getValue(cfhBuf, off);
         off += SHORT;
 
-        final int diskStart = ZipShort.getValue(cfhBuf, off);
+        ze.setDiskNumberStart(ZipShort.getValue(cfhBuf, off));
         off += SHORT;
 
         ze.setInternalAttributes(ZipShort.getValue(cfhBuf, off));
@@ -796,7 +810,7 @@ public class ZipFile implements Closeable {
         IOUtils.readFully(archive, ByteBuffer.wrap(cdExtraData));
         ze.setCentralDirectoryExtra(cdExtraData);
 
-        setSizesAndOffsetFromZip64Extra(ze, diskStart);
+        setSizesAndOffsetFromZip64Extra(ze);
 
         final byte[] comment = new byte[commentLen];
         IOUtils.readFully(archive, ByteBuffer.wrap(comment));
@@ -821,21 +835,25 @@ public class ZipFile implements Closeable {
      * even if they are never used - and here a field with only one
      * size would be invalid.</p>
      */
-    private void setSizesAndOffsetFromZip64Extra(final ZipArchiveEntry ze,
-                                                 final int diskStart)
+    private void setSizesAndOffsetFromZip64Extra(final ZipArchiveEntry ze)
         throws IOException {
-        final Zip64ExtendedInformationExtraField z64 =
-            (Zip64ExtendedInformationExtraField)
+        final ZipExtraField extra =
             ze.getExtraField(Zip64ExtendedInformationExtraField.HEADER_ID);
+        if (extra != null && !(extra instanceof Zip64ExtendedInformationExtraField)) {
+            throw new ZipException("archive contains unparseable zip64 extra field");
+        }
+        final Zip64ExtendedInformationExtraField z64 =
+            (Zip64ExtendedInformationExtraField) extra;
         if (z64 != null) {
             final boolean hasUncompressedSize = ze.getSize() == ZIP64_MAGIC;
             final boolean hasCompressedSize = ze.getCompressedSize() == ZIP64_MAGIC;
             final boolean hasRelativeHeaderOffset =
                 ze.getLocalHeaderOffset() == ZIP64_MAGIC;
+            final boolean hasDiskStart = ze.getDiskNumberStart() == ZIP64_MAGIC_SHORT;
             z64.reparseCentralDirectoryData(hasUncompressedSize,
                                             hasCompressedSize,
                                             hasRelativeHeaderOffset,
-                                            diskStart == ZIP64_MAGIC_SHORT);
+                                            hasDiskStart);
 
             if (hasUncompressedSize) {
                 ze.setSize(z64.getSize().getLongValue());
@@ -851,6 +869,10 @@ public class ZipFile implements Closeable {
 
             if (hasRelativeHeaderOffset) {
                 ze.setLocalHeaderOffset(z64.getRelativeHeaderOffset().getLongValue());
+            }
+
+            if (hasDiskStart) {
+                ze.setDiskNumberStart(z64.getDiskStartNumber().getValue());
             }
         }
     }
@@ -898,6 +920,29 @@ public class ZipFile implements Closeable {
         /* total number of entries in      */
         /* the central dir                 */ + SHORT
         /* size of the central directory   */ + WORD;
+
+    /**
+     * Offset of the field that holds the disk number of the first
+     * central directory entry inside the "End of central directory
+     * record" relative to the start of the "End of central directory
+     * record".
+     */
+    private static final int CFD_DISK_OFFSET =
+            /* end of central dir signature    */ WORD
+            /* number of this disk             */ + SHORT;
+
+    /**
+     * Offset of the field that holds the location of the first
+     * central directory entry inside the "End of central directory
+     * record" relative to the "number of the disk with the start
+     * of the central directory".
+     */
+    private static final int CFD_LOCATOR_RELATIVE_OFFSET =
+            /* total number of entries in      */
+            /* the central dir on this disk    */ + SHORT
+            /* total number of entries in      */
+            /* the central dir                 */ + SHORT
+            /* size of the central directory   */ + WORD;
 
     /**
      * Length of the "Zip64 end of central directory locator" - which
@@ -948,6 +993,34 @@ public class ZipFile implements Closeable {
         /* size of the central directory   */ + DWORD;
 
     /**
+     * Offset of the field that holds the disk number of the first
+     * central directory entry inside the "Zip64 end of central
+     * directory record" relative to the start of the "Zip64 end of
+     * central directory record".
+     */
+    private static final int ZIP64_EOCD_CFD_DISK_OFFSET =
+            /* zip64 end of central dir        */
+            /* signature                       */ WORD
+            /* size of zip64 end of central    */
+            /* directory record                */ + DWORD
+            /* version made by                 */ + SHORT
+            /* version needed to extract       */ + SHORT
+            /* number of this disk             */ + WORD;
+
+    /**
+     * Offset of the field that holds the location of the first
+     * central directory entry inside the "Zip64 end of central
+     * directory record" relative to the "number of the disk
+     * with the start of the central directory".
+     */
+    private static final int ZIP64_EOCD_CFD_LOCATOR_RELATIVE_OFFSET =
+            /* total number of entries in the  */
+            /* central directory on this disk  */ DWORD
+            /* total number of entries in the  */
+            /* central directory               */ + DWORD
+            /* size of the central directory   */ + DWORD;
+
+    /**
      * Searches for either the &quot;Zip64 end of central directory
      * locator&quot; or the &quot;End of central dir record&quot;, parses
      * it and positions the stream at the first central directory
@@ -988,22 +1061,52 @@ public class ZipFile implements Closeable {
      */
     private void positionAtCentralDirectory64()
         throws IOException {
-        skipBytes(ZIP64_EOCDL_LOCATOR_OFFSET
-                  - WORD /* signature has already been read */);
-        dwordBbuf.rewind();
-        IOUtils.readFully(archive, dwordBbuf);
-        archive.position(ZipEightByteInteger.getLongValue(dwordBuf));
+        if (isSplitZipArchive) {
+            wordBbuf.rewind();
+            IOUtils.readFully(archive, wordBbuf);
+            final long diskNumberOfEOCD = ZipLong.getValue(wordBuf);
+
+            dwordBbuf.rewind();
+            IOUtils.readFully(archive, dwordBbuf);
+            final long relativeOffsetOfEOCD = ZipEightByteInteger.getLongValue(dwordBuf);
+            ((ZipSplitReadOnlySeekableByteChannel) archive)
+                .position(diskNumberOfEOCD, relativeOffsetOfEOCD);
+        } else {
+            skipBytes(ZIP64_EOCDL_LOCATOR_OFFSET
+                    - WORD /* signature has already been read */);
+            dwordBbuf.rewind();
+            IOUtils.readFully(archive, dwordBbuf);
+            archive.position(ZipEightByteInteger.getLongValue(dwordBuf));
+        }
+
         wordBbuf.rewind();
         IOUtils.readFully(archive, wordBbuf);
         if (!Arrays.equals(wordBuf, ZipArchiveOutputStream.ZIP64_EOCD_SIG)) {
             throw new ZipException("Archive's ZIP64 end of central "
                                    + "directory locator is corrupt.");
         }
-        skipBytes(ZIP64_EOCD_CFD_LOCATOR_OFFSET
-                  - WORD /* signature has already been read */);
-        dwordBbuf.rewind();
-        IOUtils.readFully(archive, dwordBbuf);
-        archive.position(ZipEightByteInteger.getLongValue(dwordBuf));
+
+        if (isSplitZipArchive) {
+            skipBytes(ZIP64_EOCD_CFD_DISK_OFFSET
+                    - WORD /* signature has already been read */);
+            wordBbuf.rewind();
+            IOUtils.readFully(archive, wordBbuf);
+            final long diskNumberOfCFD = ZipLong.getValue(wordBuf);
+
+            skipBytes(ZIP64_EOCD_CFD_LOCATOR_RELATIVE_OFFSET);
+
+            dwordBbuf.rewind();
+            IOUtils.readFully(archive, dwordBbuf);
+            final long relativeOffsetOfCFD = ZipEightByteInteger.getLongValue(dwordBuf);
+            ((ZipSplitReadOnlySeekableByteChannel) archive)
+                .position(diskNumberOfCFD, relativeOffsetOfCFD);
+        } else {
+            skipBytes(ZIP64_EOCD_CFD_LOCATOR_OFFSET
+                    - WORD /* signature has already been read */);
+            dwordBbuf.rewind();
+            IOUtils.readFully(archive, dwordBbuf);
+            archive.position(ZipEightByteInteger.getLongValue(dwordBuf));
+        }
     }
 
     /**
@@ -1015,10 +1118,25 @@ public class ZipFile implements Closeable {
      */
     private void positionAtCentralDirectory32()
         throws IOException {
-        skipBytes(CFD_LOCATOR_OFFSET);
-        wordBbuf.rewind();
-        IOUtils.readFully(archive, wordBbuf);
-        archive.position(ZipLong.getValue(wordBuf));
+        if (isSplitZipArchive) {
+            skipBytes(CFD_DISK_OFFSET);
+            shortBbuf.rewind();
+            IOUtils.readFully(archive, shortBbuf);
+            final int diskNumberOfCFD = ZipShort.getValue(shortBuf);
+
+            skipBytes(CFD_LOCATOR_RELATIVE_OFFSET);
+
+            wordBbuf.rewind();
+            IOUtils.readFully(archive, wordBbuf);
+            final long relativeOffsetOfCFD = ZipLong.getValue(wordBuf);
+            ((ZipSplitReadOnlySeekableByteChannel) archive)
+                .position(diskNumberOfCFD, relativeOffsetOfCFD);
+        } else {
+            skipBytes(CFD_LOCATOR_OFFSET);
+            wordBbuf.rewind();
+            IOUtils.readFully(archive, wordBbuf);
+            archive.position(ZipLong.getValue(wordBuf));
+        }
     }
 
     /**
@@ -1151,8 +1269,15 @@ public class ZipFile implements Closeable {
     }
 
     private int[] setDataOffset(ZipArchiveEntry ze) throws IOException {
-        final long offset = ze.getLocalHeaderOffset();
-        archive.position(offset + LFH_OFFSET_FOR_FILENAME_LENGTH);
+        long offset = ze.getLocalHeaderOffset();
+        if (isSplitZipArchive) {
+            ((ZipSplitReadOnlySeekableByteChannel) archive)
+                .position(ze.getDiskNumberStart(), offset + LFH_OFFSET_FOR_FILENAME_LENGTH);
+            // the offset should be updated to the global offset
+            offset = archive.position() - LFH_OFFSET_FOR_FILENAME_LENGTH;
+        } else {
+            archive.position(offset + LFH_OFFSET_FOR_FILENAME_LENGTH);
+        }
         wordBbuf.rewind();
         IOUtils.readFully(archive, wordBbuf);
         wordBbuf.flip();
@@ -1322,6 +1447,12 @@ public class ZipFile implements Closeable {
             if (ent2 == null) {
                 return -1;
             }
+
+            // disk number is prior to relative offset
+            final long diskNumberStartVal = ent1.getDiskNumberStart() - ent2.getDiskNumberStart();
+            if (diskNumberStartVal != 0) {
+                return diskNumberStartVal < 0 ? -1 : +1;
+            }
             final long val = (ent1.getLocalHeaderOffset()
                         - ent2.getLocalHeaderOffset());
             return val == 0 ? 0 : val < 0 ? -1 : +1;
@@ -1350,7 +1481,9 @@ public class ZipFile implements Closeable {
                 return getLocalHeaderOffset()
                         == otherEntry.getLocalHeaderOffset()
                     && super.getDataOffset()
-                        == otherEntry.getDataOffset();
+                        == otherEntry.getDataOffset()
+                    && super.getDiskNumberStart()
+                        == otherEntry.getDiskNumberStart();
             }
             return false;
         }

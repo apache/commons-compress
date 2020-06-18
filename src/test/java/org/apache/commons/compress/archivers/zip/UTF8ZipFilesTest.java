@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.zip.CRC32;
 
@@ -240,7 +241,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
     }
 
     /**
-     * @see https://issues.apache.org/jira/browse/COMPRESS-479
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-479">COMPRESS-479</a>
      */
     @Test
     public void streamSkipsOverUnicodeExtraFieldWithUnsupportedVersion() throws IOException {
@@ -253,7 +254,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
     }
 
     /**
-     * @see https://issues.apache.org/jira/browse/COMPRESS-479
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-479">COMPRESS-479</a>
      */
     @Test
     public void zipFileSkipsOverUnicodeExtraFieldWithUnsupportedVersion() throws IOException {
@@ -310,7 +311,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
             }
 
             zos.putArchiveEntry(ze);
-            zos.write("Hello, world!".getBytes(CharsetNames.US_ASCII));
+            zos.write("Hello, world!".getBytes(StandardCharsets.US_ASCII));
             zos.closeArchiveEntry();
 
             ze = new ZipArchiveEntry(EURO_FOR_DOLLAR_TXT);
@@ -327,7 +328,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
             }
 
             zos.putArchiveEntry(ze);
-            zos.write("Give me your money!".getBytes(CharsetNames.US_ASCII));
+            zos.write("Give me your money!".getBytes(StandardCharsets.US_ASCII));
             zos.closeArchiveEntry();
 
             ze = new ZipArchiveEntry(ASCII_TXT);
@@ -345,7 +346,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
             }
 
             zos.putArchiveEntry(ze);
-            zos.write("ascii".getBytes(CharsetNames.US_ASCII));
+            zos.write("ascii".getBytes(StandardCharsets.US_ASCII));
             zos.closeArchiveEntry();
 
             zos.finish();
@@ -405,7 +406,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
 
             assertEquals(crc.getValue(), ucpf.getNameCRC32());
             assertEquals(expectedName, new String(ucpf.getUnicodeName(),
-                                                  CharsetNames.UTF_8));
+                    StandardCharsets.UTF_8));
         }
     }
 

@@ -18,14 +18,16 @@
  */
 package org.apache.commons.compress.archivers.tar;
 
-import static org.apache.commons.compress.archivers.tar.TarConstants.CHKSUMLEN;
-import static org.apache.commons.compress.archivers.tar.TarConstants.CHKSUM_OFFSET;
-
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
+
+import static org.apache.commons.compress.archivers.tar.TarConstants.CHKSUMLEN;
+import static org.apache.commons.compress.archivers.tar.TarConstants.CHKSUM_OFFSET;
+import static org.apache.commons.compress.archivers.tar.TarConstants.SPARSE_NUMBYTES_LEN;
+import static org.apache.commons.compress.archivers.tar.TarConstants.SPARSE_OFFSET_LEN;
 
 /**
  * This class provides static utility methods to work with byte streams.
@@ -299,6 +301,20 @@ public class TarUtils {
             return encoding.decode(b);
         }
         return "";
+    }
+
+    /**
+     * Parses the content of a PAX 1.0 sparse block.
+     * @since 1.20
+     * @param buffer The buffer from which to parse.
+     * @param offset The offset into the buffer from which to parse.
+     * @return a parsed sparse struct
+     */
+    public static TarArchiveStructSparse parseSparse(final byte[] buffer, final int offset) {
+        long sparseOffset = parseOctalOrBinary(buffer, offset, SPARSE_OFFSET_LEN);
+        long sparseNumbytes = parseOctalOrBinary(buffer, offset + SPARSE_OFFSET_LEN, SPARSE_NUMBYTES_LEN);
+
+        return new TarArchiveStructSparse(sparseOffset, sparseNumbytes);
     }
 
     /**

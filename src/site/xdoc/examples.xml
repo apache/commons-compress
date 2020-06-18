@@ -163,7 +163,7 @@ CompressorInputStream input = new CompressorStreamFactory()
         <p>Assuming you want to extract an archive to a target
         directory you'd call <code>getNextEntry</code>, verify the
         entry can be read, construct a sane file name from the entry's
-        name, create a <codee>File</codee> and write all contents to
+        name, create a <code>File</code> and write all contents to
         it - here <code>IOUtils.copy</code> may come handy. You do so
         for every entry until <code>getNextEntry</code> returns
         <code>null</code>.</p>
@@ -304,7 +304,10 @@ try (OutputStream fo = Files.newOutputStream(Paths.get("my.tar.gz"));
         Deflate are supported - in addition to those reading supports
         AES-256/SHA-256 and DEFLATE64.</p>
 
-        <p>Multipart archives are not supported at all.</p>
+        <p>Writing multipart archives is not supported at
+        all. Multipart archives can be read by concatenating the parts
+        for example by using
+        <code>MultiReadOnlySeekableByteChannel</code>.</p>
 
         <p>7z archives can use multiple compression and encryption
         methods as well as filters combined as a pipeline of methods
@@ -338,6 +341,14 @@ try (OutputStream fo = Files.newOutputStream(Paths.get("my.tar.gz"));
         class
         <code>org.apache.commons.compress.utils.SeekableInMemoryByteChannel</code>
         allows you to read from or write to an in-memory archive.</p>
+
+        <p>Some 7z archives don't contain any names for the archive
+        entries. The native 7zip tools derive a default name from the
+        name of the archive itself for such entries. Starting with
+        Compress 1.19 <code>SevenZFile</code> has an option to mimic
+        this behavior, but by default unnanmed archive entries will
+        return <code>null</code> from
+        <code>SevenZArchiveEntry#getName</code>.</p>
 
         <p>Adding an entry to a 7z archive:</p>
 <source><![CDATA[
@@ -408,6 +419,16 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
     sevenZFile.read(content, offset, content.length - offset);
 }
 ]]></source>
+
+        <h4><a name="Random-Access to 7z Archives"></a>Random-Access to 7z Archives</h4>
+
+        <p>Prior to Compress 1.20 7z archives could only be read
+        sequentially. The
+        <code>getInputStream(SevenZArchiveEntry)</code> method
+        introduced with Compress 1.20 now provides random access but
+        at least when the archive uses solid compression random access
+        will likely be significantly slower than sequential
+        access.</p>
 
       </subsection>
 

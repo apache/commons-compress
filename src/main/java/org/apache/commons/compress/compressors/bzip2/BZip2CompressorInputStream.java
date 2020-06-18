@@ -100,7 +100,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
 
     /**
      * Constructs a new BZip2CompressorInputStream which decompresses bytes
-     * read from the specified stream. This doesn't suppprt decompressing
+     * read from the specified stream. This doesn't support decompressing
      * concatenated .bz2 files.
      *
      * @param in the InputStream from which this object should be created
@@ -320,7 +320,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
         this.storedBlockCRC = bsGetInt(bin);
         this.blockRandomised = bsR(bin, 1) == 1;
 
-        /**
+        /*
          * Allocate data here instead in constructor, so we do not allocate
          * it if the input file is empty.
          */
@@ -494,18 +494,27 @@ public class BZip2CompressorInputStream extends CompressorInputStream
         final int alphaSize = this.nInUse + 2;
         /* Now the selectors */
         final int nGroups = bsR(bin, 3);
-        final int nSelectors = bsR(bin, 15);
+        final int selectors = bsR(bin, 15);
+        if (selectors < 0) {
+            throw new IOException("Corrupted input, nSelectors value negative");
+        }
         checkBounds(alphaSize, MAX_ALPHA_SIZE + 1, "alphaSize");
         checkBounds(nGroups, N_GROUPS + 1, "nGroups");
-        checkBounds(nSelectors, MAX_SELECTORS + 1, "nSelectors");
 
-        for (int i = 0; i < nSelectors; i++) {
+        // Don't fail on nSelectors overflowing boundaries but discard the values in overflow
+        // See https://gnu.wildebeest.org/blog/mjw/2019/08/02/bzip2-and-the-cve-that-wasnt/
+        // and https://sourceware.org/ml/bzip2-devel/2019-q3/msg00007.html
+
+        for (int i = 0; i < selectors; i++) {
             int j = 0;
             while (bsGetBit(bin)) {
                 j++;
             }
-            selectorMtf[i] = (byte) j;
+            if (i < MAX_SELECTORS) {
+                selectorMtf[i] = (byte) j;
+            }
         }
+        final int nSelectors = selectors > MAX_SELECTORS ? MAX_SELECTORS : selectors;
 
         /* Undo the MTF values for the selectors. */
         for (int v = nGroups; --v >= 0;) {
@@ -650,6 +659,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
                     checkBounds(tmp, MAX_ALPHA_SIZE, "zvec");
                     nextSym = perm_zt[tmp];
                 }
+                checkBounds(s, this.data.ll8.length, "s");
 
                 final int yy0 = yy[0];
                 checkBounds(yy0, 256, "yy");
@@ -658,6 +668,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
 
                 final int from = ++lastShadow;
                 lastShadow += s;
+                checkBounds(lastShadow, this.data.ll8.length, "lastShadow");
                 Arrays.fill(ll8, from, lastShadow + 1, ch);
 
                 if (lastShadow >= limitLast) {
@@ -933,7 +944,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
          * Initializes the {@link #tt} array.
          *
          * This method is called when the required length of the array is known.
-         * I don't initialize it at construction time to avoid unneccessary
+         * I don't initialize it at construction time to avoid unnecessary
          * memory allocation when compressing small files.
          */
         int[] initTT(final int length) {

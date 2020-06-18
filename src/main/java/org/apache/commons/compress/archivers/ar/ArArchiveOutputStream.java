@@ -21,6 +21,7 @@ package org.apache.commons.compress.archivers.ar;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
@@ -123,7 +124,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     }
 
     private long write( final String data ) throws IOException {
-        final byte[] bytes = data.getBytes("ascii");
+        final byte[] bytes = data.getBytes(StandardCharsets.US_ASCII);
         write(bytes);
         return bytes.length;
     }

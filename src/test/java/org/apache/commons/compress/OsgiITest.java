@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress;
 
+import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.bundle;
 import static org.ops4j.pax.exam.CoreOptions.composite;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
@@ -28,14 +29,25 @@ import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+
+import javax.inject.Inject;
 
 @RunWith(PaxExam.class)
 public class OsgiITest {
+
+    private static final String EXPECTED_BUNDLE_NAME = "org.apache.commons.commons-compress";
+
+    @Inject
+    private BundleContext ctx;
 
     @Configuration
     public Option[] config() {
         return new Option[] {
             systemProperty("pax.exam.osgi.unresolved.fail").value("true"),
+            systemProperty("org.ops4j.pax.url.mvn.useFallbackRepositories").value("false"),
+            systemProperty("org.ops4j.pax.url.mvn.repositories").value("https://repo.maven.apache.org/maven2"),
             mavenBundle().groupId("org.apache.felix").artifactId("org.apache.felix.scr")
                 .version("2.0.14"),
             mavenBundle().groupId("org.apache.felix").artifactId("org.apache.felix.configadmin")
@@ -51,5 +63,18 @@ public class OsgiITest {
 
     @Test
     public void loadBundle() {
+        final StringBuilder bundles = new StringBuilder();
+        boolean foundCompressBundle = false, first = true;
+        for (final Bundle b : ctx.getBundles()) {
+            final String symbolicName = b.getSymbolicName();
+            foundCompressBundle |= EXPECTED_BUNDLE_NAME.equals(symbolicName);
+            if (!first) {
+                bundles.append(", ");
+            }
+            first = false;
+            bundles.append(symbolicName);
+        }
+        assertTrue("Expected to find bundle " + EXPECTED_BUNDLE_NAME + " in " + bundles,
+            foundCompressBundle);
     }
 }

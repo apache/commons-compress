@@ -186,6 +186,30 @@ public interface TarConstants {
     int    REALSIZELEN_GNU = 12;
 
     /**
+     * The length of offset in struct sparse
+     * @since 1.20
+     */
+    int    SPARSE_OFFSET_LEN = 12;
+
+    /**
+     * The length of numbytes in struct sparse
+     * @since 1.20
+     */
+    int    SPARSE_NUMBYTES_LEN = 12;
+
+    /**
+     *  The number of sparse headers in an old GNU header
+     * @since 1.20
+     */
+    int    SPARSE_HEADERS_IN_OLDGNU_HEADER = 4;
+
+    /**
+     *  The number of sparse headers in an extension header
+     * @since 1.20
+     */
+    int    SPARSE_HEADERS_IN_EXTENSION_HEADER = 21;
+
+    /**
      * The sum of the length of all sparse headers in a sparse header buffer.
      *
      */

@@ -20,6 +20,7 @@ package org.apache.commons.compress.compressors.lz77support;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Helper class for compression algorithms that use the ideas of LZ77.
@@ -65,7 +66,7 @@ import java.util.Arrays;
  *
  *  <dt><code>minBackReferenceLength</code></dt>
  *  <dd>Minimal length of a back-reference found. A true minimum of 3 is
- *  hard-coded inside of this implemention but bigger lengths can be
+ *  hard-coded inside of this implementation but bigger lengths can be
  *  configured.</dd>
  *
  *  <dt><code>maxBackReferenceLength</code></dt>
@@ -255,12 +256,9 @@ public class LZ77Compressor {
      * @throws NullPointerException if either parameter is <code>null</code>
      */
     public LZ77Compressor(Parameters params, Callback callback) {
-        if (params == null) {
-            throw new NullPointerException("params must not be null");
-        }
-        if (callback == null) {
-            throw new NullPointerException("callback must not be null");
-        }
+        Objects.requireNonNull(params, "params");
+        Objects.requireNonNull(callback, "callback");
+        
         this.params = params;
         this.callback = callback;
 

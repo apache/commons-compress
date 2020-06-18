@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <!--
 
    Licensed to the Apache Software Foundation (ASF) under one or more
@@ -17,6 +18,9 @@
    limitations under the License.
 
 -->
+  <head>
+    <title>dump package</title>
+  </head>
   <body>
     <p>This package provides stream classes for reading archives
       using the Unix DUMP format. This format is similar to (and 
@@ -39,16 +43,16 @@
     <p>Like any 30+-year-old application there are a number of variants.
       For pragmatic reasons we will only support archives with the
       'new' tape header and inode formats. Other restrictions:
+    </p>
 
-      <ul>
+    <ul>
       <li>We only support ZLIB compression. The format
         also permits LZO and BZLIB compression.</li>
       <li>Sparse files will have the holes filled.</li>
       <li>MacOS finder and resource streams are ignored.</li>
       <li>Extended attributes are not currently provided.</li>
       <li>SELinux labels are not currently provided.</li>
-      </ul>
-    </p>
+    </ul>
 
     <p>As of Apache Commons Compress 1.3 support for the dump format is
       read-only.</p>

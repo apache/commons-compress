@@ -33,29 +33,28 @@ import org.junit.Test;
 
 public class SevenZNativeHeapTest extends AbstractTestCase {
 
-
     @Test
     public void testEndDeflaterOnCloseStream() throws Exception {
-        Coders.DeflateDecoder deflateDecoder = new DeflateDecoder();
-
-        final DeflateDecoderOutputStream outputStream =
-            (DeflateDecoderOutputStream) deflateDecoder.encode(new ByteArrayOutputStream(), 9);
-        DelegatingDeflater delegatingDeflater = new DelegatingDeflater(outputStream.deflater);
-        outputStream.deflater = delegatingDeflater;
-        outputStream.close();
+        final Coders.DeflateDecoder deflateDecoder = new DeflateDecoder();
+        final DelegatingDeflater delegatingDeflater;
+        try (final DeflateDecoderOutputStream outputStream = (DeflateDecoderOutputStream) deflateDecoder
+            .encode(new ByteArrayOutputStream(), 9)) {
+            delegatingDeflater = new DelegatingDeflater(outputStream.deflater);
+            outputStream.deflater = delegatingDeflater;
+        }
         assertTrue(delegatingDeflater.isEnded.get());
 
     }
 
     @Test
     public void testEndInflaterOnCloseStream() throws Exception {
-        Coders.DeflateDecoder deflateDecoder = new DeflateDecoder();
-        final DeflateDecoderInputStream inputStream =
-                (DeflateDecoderInputStream) deflateDecoder
-                        .decode("dummy", new ByteArrayInputStream(new byte[0]), 0, null, null, Integer.MAX_VALUE);
-        DelegatingInflater delegatingInflater = new DelegatingInflater(inputStream.inflater);
-        inputStream.inflater = delegatingInflater;
-        inputStream.close();
+        final Coders.DeflateDecoder deflateDecoder = new DeflateDecoder();
+        final DelegatingInflater delegatingInflater;
+        try (final DeflateDecoderInputStream inputStream = (DeflateDecoderInputStream) deflateDecoder.decode("dummy",
+            new ByteArrayInputStream(new byte[0]), 0, null, null, Integer.MAX_VALUE)) {
+            delegatingInflater = new DelegatingInflater(inputStream.inflater);
+            inputStream.inflater = delegatingInflater;
+        }
 
         assertTrue(delegatingInflater.isEnded.get());
     }

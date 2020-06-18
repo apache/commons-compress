@@ -120,6 +120,9 @@ class TapeInputStream extends FilterInputStream {
      */
     @Override
     public int read(final byte[] b, int off, final int len) throws IOException {
+        if (len == 0) {
+            return 0;
+        }
         if ((len % RECORD_SIZE) != 0) {
             throw new IllegalArgumentException(
                 "All reads must be multiple of record size (" + RECORD_SIZE +

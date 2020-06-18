@@ -26,7 +26,12 @@ package org.apache.commons.compress.archivers.tar;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -34,6 +39,7 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ArchiveUtils;
+import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
 
@@ -66,7 +72,13 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     private long entryOffset;
 
     /** An input stream to read from */
-    private final InputStream is;
+    private final InputStream inputStream;
+
+    /** Input streams for reading sparse entries **/
+    private List<InputStream> sparseInputStreams;
+
+    /** the index of current input stream being read when reading sparse entries */
+    private int currentSparseInputStreamIndex;
 
     /** The meta-data about the current entry */
     private TarArchiveEntry currEntry;
@@ -79,6 +91,9 @@ public class TarArchiveInputStream extends ArchiveInputStream {
 
     // the global PAX header
     private Map<String, String> globalPaxHeaders = new HashMap<>();
+
+    // the global sparse headers, this is only used in PAX Format 0.X
+    private final List<TarArchiveStructSparse> globalSparseHeaders = new ArrayList<>();
 
     private final boolean lenient;
 
@@ -170,7 +185,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      */
     public TarArchiveInputStream(final InputStream is, final int blockSize, final int recordSize,
                                  final String encoding, boolean lenient) {
-        this.is = is;
+        this.inputStream = is;
         this.hasHitEOF = false;
         this.encoding = encoding;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
@@ -185,7 +200,14 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      */
     @Override
     public void close() throws IOException {
-        is.close();
+        // Close all the input streams in sparseInputStreams
+        if(sparseInputStreams != null) {
+            for (InputStream inputStream : sparseInputStreams) {
+                inputStream.close();
+            }
+        }
+
+        inputStream.close();
     }
 
     /**
@@ -214,10 +236,11 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         if (isDirectory()) {
             return 0;
         }
-        if (entrySize - entryOffset > Integer.MAX_VALUE) {
+
+        if (currEntry.getRealSize() - entryOffset > Integer.MAX_VALUE) {
             return Integer.MAX_VALUE;
         }
-        return (int) (entrySize - entryOffset);
+        return (int) (currEntry.getRealSize() - entryOffset);
     }
 
 
@@ -243,11 +266,44 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             return 0;
         }
 
-        final long available = entrySize - entryOffset;
-        final long skipped = IOUtils.skip(is, Math.min(n, available));
+        final long available = currEntry.getRealSize() - entryOffset;
+        final long skipped;
+        if (!currEntry.isSparse()) {
+            skipped = IOUtils.skip(inputStream, Math.min(n, available));
+        } else {
+            skipped = skipSparse(Math.min(n, available));
+        }
         count(skipped);
         entryOffset += skipped;
         return skipped;
+    }
+
+    /**
+     * Skip n bytes from current input stream, if the current input stream doesn't have enough data to skip,
+     * jump to the next input stream and skip the rest bytes, keep doing this until total n bytes are skipped
+     * or the input streams are all skipped
+     *
+     * @param n bytes of data to skip
+     * @return actual bytes of data skipped
+     * @throws IOException
+     */
+    private long skipSparse(final long n) throws IOException {
+        if (sparseInputStreams == null || sparseInputStreams.size() == 0) {
+            return inputStream.skip(n);
+        }
+
+        long bytesSkipped = 0;
+
+        while (bytesSkipped < n && currentSparseInputStreamIndex < sparseInputStreams.size()) {
+            final InputStream  currentInputStream = sparseInputStreams.get(currentSparseInputStreamIndex);
+            bytesSkipped += currentInputStream.skip(n - bytesSkipped);
+
+            if (bytesSkipped < n) {
+                currentSparseInputStreamIndex++;
+            }
+        }
+
+        return bytesSkipped;
     }
 
     /**
@@ -266,7 +322,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @param markLimit The limit to mark.
      */
     @Override
-    public void mark(final int markLimit) {
+    public synchronized void mark(final int markLimit) {
     }
 
     /**
@@ -338,17 +394,27 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                 // entry
                 return null;
             }
-            currEntry.setName(zipEncoding.decode(longNameData));
+
+            // COMPRESS-509 : the name of directories should end with '/'
+            String name = zipEncoding.decode(longNameData);
+            if (currEntry.isDirectory() && !name.endsWith("/")) {
+                name += "/";
+            }
+            currEntry.setName(name);
         }
 
         if (currEntry.isGlobalPaxHeader()){ // Process Global Pax headers
             readGlobalPaxHeaders();
         }
 
-        if (currEntry.isPaxHeader()){ // Process Pax headers
-            paxHeaders();
-        } else if (!globalPaxHeaders.isEmpty()) {
-            applyPaxHeadersToCurrentEntry(globalPaxHeaders);
+        try {
+            if (currEntry.isPaxHeader()){ // Process Pax headers
+                paxHeaders();
+            } else if (!globalPaxHeaders.isEmpty()) {
+                applyPaxHeadersToCurrentEntry(globalPaxHeaders, globalSparseHeaders);
+            }
+        } catch (NumberFormatException e) {
+            throw new IOException("Error detected parsing the pax header", e);
         }
 
         if (currEntry.isOldGNUSparse()){ // Process sparse files
@@ -372,7 +438,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         if (!isDirectory() && this.entrySize > 0 && this.entrySize % this.recordSize != 0) {
             final long numRecords = (this.entrySize / this.recordSize) + 1;
             final long padding = (numRecords * this.recordSize) - this.entrySize;
-            final long skipped = IOUtils.skip(is, padding);
+            final long skipped = IOUtils.skip(inputStream, padding);
             count(skipped);
         }
     }
@@ -456,7 +522,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
 
         final byte[] record = new byte[recordSize];
 
-        final int readNow = IOUtils.readFully(is, record);
+        final int readNow = IOUtils.readFully(inputStream, record);
         count(readNow);
         if (readNow != recordSize) {
             return null;
@@ -466,35 +532,180 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     }
 
     private void readGlobalPaxHeaders() throws IOException {
-        globalPaxHeaders = parsePaxHeaders(this);
+        globalPaxHeaders = parsePaxHeaders(this, globalSparseHeaders);
         getNextEntry(); // Get the actual file entry
     }
 
+    /**
+     * For PAX Format 0.0, the sparse headers(GNU.sparse.offset and GNU.sparse.numbytes)
+     * may appear multi times, and they look like:
+     *
+     * GNU.sparse.size=size
+     * GNU.sparse.numblocks=numblocks
+     * repeat numblocks times
+     *   GNU.sparse.offset=offset
+     *   GNU.sparse.numbytes=numbytes
+     * end repeat
+     *
+     *
+     * For PAX Format 0.1, the sparse headers are stored in a single variable : GNU.sparse.map
+     *
+     * GNU.sparse.map
+     *    Map of non-null data chunks. It is a string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
+     *
+     *
+     * For PAX Format 1.X:
+     * The sparse map itself is stored in the file data block, preceding the actual file data.
+     * It consists of a series of decimal numbers delimited by newlines. The map is padded with nulls to the nearest block boundary.
+     * The first number gives the number of entries in the map. Following are map entries, each one consisting of two numbers
+     * giving the offset and size of the data block it describes.
+     * @throws IOException
+     */
     private void paxHeaders() throws IOException{
-        final Map<String, String> headers = parsePaxHeaders(this);
+        List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
+        final Map<String, String> headers = parsePaxHeaders(this, sparseHeaders);
+
+        // for 0.1 PAX Headers
+        if (headers.containsKey("GNU.sparse.map")) {
+            sparseHeaders = parsePAX01SparseHeaders(headers.get("GNU.sparse.map"));
+        }
         getNextEntry(); // Get the actual file entry
-        applyPaxHeadersToCurrentEntry(headers);
+        if (currEntry == null) {
+            throw new IOException("premature end of tar archive. Didn't find any entry after PAX header.");
+        }
+        applyPaxHeadersToCurrentEntry(headers, sparseHeaders);
+
+        // for 1.0 PAX Format, the sparse map is stored in the file data block
+        if (currEntry.isPaxGNU1XSparse()) {
+            sparseHeaders = parsePAX1XSparseHeaders();
+            currEntry.setSparseHeaders(sparseHeaders);
+        }
+
+        // sparse headers are all done reading, we need to build
+        // sparse input streams using these sparse headers
+        buildSparseInputStreams();
     }
 
-    // NOTE, using a Map here makes it impossible to ever support GNU
-    // sparse files using the PAX Format 0.0, see
-    // https://www.gnu.org/software/tar/manual/html_section/tar_92.html#SEC188
-    Map<String, String> parsePaxHeaders(final InputStream i)
+    /**
+     * For PAX Format 0.1, the sparse headers are stored in a single variable : GNU.sparse.map
+     * GNU.sparse.map
+     *    Map of non-null data chunks. It is a string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
+     *
+     * @param sparseMap the sparse map string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
+     * @return sparse headers parsed from sparse map
+     * @throws IOException
+     */
+    private List<TarArchiveStructSparse> parsePAX01SparseHeaders(String sparseMap) throws IOException {
+        List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
+        String[] sparseHeaderStrings = sparseMap.split(",");
+
+        for (int i = 0; i < sparseHeaderStrings.length;i += 2) {
+            long sparseOffset = Long.parseLong(sparseHeaderStrings[i]);
+            long sparseNumbytes = Long.parseLong(sparseHeaderStrings[i + 1]);
+            sparseHeaders.add(new TarArchiveStructSparse(sparseOffset, sparseNumbytes));
+        }
+
+        return sparseHeaders;
+    }
+
+    /**
+     * For PAX Format 1.X:
+     * The sparse map itself is stored in the file data block, preceding the actual file data.
+     * It consists of a series of decimal numbers delimited by newlines. The map is padded with nulls to the nearest block boundary.
+     * The first number gives the number of entries in the map. Following are map entries, each one consisting of two numbers
+     * giving the offset and size of the data block it describes.
+     * @return sparse headers
+     * @throws IOException
+     */
+    private List<TarArchiveStructSparse> parsePAX1XSparseHeaders() throws IOException {
+        // for 1.X PAX Headers
+        List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
+        long bytesRead = 0;
+
+        long[] readResult = readLineOfNumberForPax1X(inputStream);
+        long sparseHeadersCount = readResult[0];
+        bytesRead += readResult[1];
+        while (sparseHeadersCount-- > 0) {
+            readResult = readLineOfNumberForPax1X(inputStream);
+            long sparseOffset = readResult[0];
+            bytesRead += readResult[1];
+
+            readResult = readLineOfNumberForPax1X(inputStream);
+            long sparseNumbytes = readResult[0];
+            bytesRead += readResult[1];
+            sparseHeaders.add(new TarArchiveStructSparse(sparseOffset, sparseNumbytes));
+        }
+
+        // skip the rest of this record data
+        long bytesToSkip = recordSize - bytesRead % recordSize;
+        IOUtils.skip(inputStream, bytesToSkip);
+        return sparseHeaders;
+    }
+
+    /**
+     * For 1.X PAX Format, the sparse headers are stored in the file data block, preceding the actual file data.
+     * It consists of a series of decimal numbers delimited by newlines.
+     *
+     * @param inputStream the input stream of the tar file
+     * @return the decimal number delimited by '\n', and the bytes read from input stream
+     * @throws IOException
+     */
+    private long[] readLineOfNumberForPax1X(InputStream inputStream) throws IOException {
+        int number;
+        long result = 0;
+        long bytesRead = 0;
+
+        while((number = inputStream.read()) != '\n') {
+            bytesRead += 1;
+            if(number == -1) {
+                throw new IOException("Unexpected EOF when reading parse information of 1.X PAX format");
+            }
+            result = result * 10 + (number - '0');
+        }
+        bytesRead += 1;
+
+        return new long[] {result, bytesRead};
+    }
+
+    /**
+     * For PAX Format 0.0, the sparse headers(GNU.sparse.offset and GNU.sparse.numbytes)
+     * may appear multi times, and they look like:
+     *
+     * GNU.sparse.size=size
+     * GNU.sparse.numblocks=numblocks
+     * repeat numblocks times
+     *   GNU.sparse.offset=offset
+     *   GNU.sparse.numbytes=numbytes
+     * end repeat
+     *
+     * For PAX Format 0.1, the sparse headers are stored in a single variable : GNU.sparse.map
+     *
+     * GNU.sparse.map
+     *    Map of non-null data chunks. It is a string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
+     *
+     * @param inputStream inputStream to read keys and values
+     * @param sparseHeaders used in PAX Format 0.0 &amp; 0.1, as it may appear multi times,
+     *                      the sparse headers need to be stored in an array, not a map
+     * @return map of PAX headers values found inside of the current (local or global) PAX headers tar entry.
+     * @throws IOException
+     */
+    Map<String, String> parsePaxHeaders(final InputStream inputStream, List<TarArchiveStructSparse> sparseHeaders)
         throws IOException {
         final Map<String, String> headers = new HashMap<>(globalPaxHeaders);
+        Long offset = null;
         // Format is "length keyword=value\n";
-        while(true){ // get length
+        while(true) { // get length
             int ch;
             int len = 0;
             int read = 0;
-            while((ch = i.read()) != -1) {
+            while((ch = inputStream.read()) != -1) {
                 read++;
                 if (ch == '\n') { // blank line in header
                     break;
                 } else if (ch == ' '){ // End of length string
                     // Get keyword
                     final ByteArrayOutputStream coll = new ByteArrayOutputStream();
-                    while((ch = i.read()) != -1) {
+                    while((ch = inputStream.read()) != -1) {
                         read++;
                         if (ch == '='){ // end of keyword
                             final String keyword = coll.toString(CharsetNames.UTF_8);
@@ -504,7 +715,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                                 headers.remove(keyword);
                             } else {
                                 final byte[] rest = new byte[restLen];
-                                final int got = IOUtils.readFully(i, rest);
+                                final int got = IOUtils.readFully(inputStream, rest);
                                 if (got != restLen) {
                                     throw new IOException("Failed to read "
                                                           + "Paxheader. Expected "
@@ -514,8 +725,27 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                                 }
                                 // Drop trailing NL
                                 final String value = new String(rest, 0,
-                                                          restLen - 1, CharsetNames.UTF_8);
+                                                          restLen - 1, StandardCharsets.UTF_8);
                                 headers.put(keyword, value);
+
+                                // for 0.0 PAX Headers
+                                if (keyword.equals("GNU.sparse.offset")) {
+                                    if (offset != null) {
+                                        // previous GNU.sparse.offset header but but no numBytes
+                                        sparseHeaders.add(new TarArchiveStructSparse(offset, 0));
+                                    }
+                                    offset = Long.valueOf(value);
+                                }
+
+                                // for 0.0 PAX Headers
+                                if (keyword.equals("GNU.sparse.numbytes")) {
+                                    if (offset == null) {
+                                        throw new IOException("Failed to read Paxheader." +
+                                                "GNU.sparse.offset is expected before GNU.sparse.numbytes shows up.");
+                                    }
+                                    sparseHeaders.add(new TarArchiveStructSparse(offset, Long.parseLong(value)));
+                                    offset = null;
+                                }
                             }
                             break;
                         }
@@ -523,6 +753,12 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                     }
                     break; // Processed single header
                 }
+
+                // COMPRESS-530 : throw if we encounter a non-number while reading length
+                if (ch < '0' || ch > '9') {
+                    throw new IOException("Failed to read Paxheader. Encountered a non-number while reading length");
+                }
+
                 len *= 10;
                 len += ch - '0';
             }
@@ -530,12 +766,16 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                 break;
             }
         }
+        if (offset != null) {
+            // offset but no numBytes
+            sparseHeaders.add(new TarArchiveStructSparse(offset, 0));
+        }
         return headers;
     }
 
-    private void applyPaxHeadersToCurrentEntry(final Map<String, String> headers) {
+    private void applyPaxHeadersToCurrentEntry(final Map<String, String> headers, final List<TarArchiveStructSparse> sparseHeaders) {
         currEntry.updateEntryFromPaxHeaders(headers);
-
+        currEntry.setSparseHeaders(sparseHeaders);
     }
 
     /**
@@ -543,14 +783,8 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * including any additional sparse entries following the current entry.
      *
      * @throws IOException on error
-     *
-     * @todo Sparse files get not yet really processed.
      */
     private void readOldGNUSparse() throws IOException {
-        /* we do not really process sparse files yet
-        sparses = new ArrayList();
-        sparses.addAll(currEntry.getSparses());
-        */
         if (currEntry.isExtended()) {
             TarArchiveSparseEntry entry;
             do {
@@ -560,11 +794,13 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                     break;
                 }
                 entry = new TarArchiveSparseEntry(headerBuf);
-                /* we do not really process sparse files yet
-                sparses.addAll(entry.getSparses());
-                */
+                currEntry.getSparseHeaders().addAll(entry.getSparseHeaders());
             } while (entry.isExtended());
         }
+
+        // sparse headers are all done reading, we need to build
+        // sparse input streams using these sparse headers
+        buildSparseInputStreams();
     }
 
     private boolean isDirectory() {
@@ -595,16 +831,16 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      */
     private void tryToConsumeSecondEOFRecord() throws IOException {
         boolean shouldReset = true;
-        final boolean marked = is.markSupported();
+        final boolean marked = inputStream.markSupported();
         if (marked) {
-            is.mark(recordSize);
+            inputStream.mark(recordSize);
         }
         try {
             shouldReset = !isEOFRecord(readRecord());
         } finally {
             if (shouldReset && marked) {
                 pushedBackBytes(recordSize);
-            	is.reset();
+            	inputStream.reset();
             }
         }
     }
@@ -624,9 +860,12 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      */
     @Override
     public int read(final byte[] buf, final int offset, int numToRead) throws IOException {
+        if (numToRead == 0) {
+            return 0;
+        }
     	int totalRead = 0;
 
-        if (isAtEOF() || isDirectory() || entryOffset >= entrySize) {
+        if (isAtEOF() || isDirectory()) {
             return -1;
         }
 
@@ -634,9 +873,25 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             throw new IllegalStateException("No current tar entry");
         }
 
+        if (!currEntry.isSparse()) {
+            if (entryOffset >= entrySize) {
+                return -1;
+            }
+        } else {
+            // for sparse entries, there are actually currEntry.getRealSize() bytes to read
+            if (entryOffset >= currEntry.getRealSize()) {
+                return -1;
+            }
+        }
+
         numToRead = Math.min(numToRead, available());
 
-        totalRead = is.read(buf, offset, numToRead);
+        if (currEntry.isSparse()) {
+            // for sparse entries, we need to read them in another way
+            totalRead = readSparse(buf, offset, numToRead);
+        } else {
+            totalRead = inputStream.read(buf, offset, numToRead);
+        }
 
         if (totalRead == -1) {
             if (numToRead > 0) {
@@ -649,6 +904,61 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         }
 
         return totalRead;
+    }
+
+    /**
+     * For sparse tar entries, there are many "holes"(consisting of all 0) in the file. Only the non-zero data is
+     * stored in tar files, and they are stored separately. The structure of non-zero data is introduced by the
+     * sparse headers using the offset, where a block of non-zero data starts, and numbytes, the length of the
+     * non-zero data block.
+     * When reading sparse entries, the actual data is read out with "holes" and non-zero data combined together
+     * according to the sparse headers.
+     *
+     * @param buf The buffer into which to place bytes read.
+     * @param offset The offset at which to place bytes read.
+     * @param numToRead The number of bytes to read.
+     * @return The number of bytes read, or -1 at EOF.
+     * @throws IOException on error
+     */
+    private int readSparse(final byte[] buf, final int offset, int numToRead) throws IOException {
+        // if there are no actual input streams, just read from the original input stream
+        if (sparseInputStreams == null || sparseInputStreams.size() == 0) {
+            return inputStream.read(buf, offset, numToRead);
+        }
+
+        if(currentSparseInputStreamIndex >= sparseInputStreams.size()) {
+            return -1;
+        }
+
+        InputStream currentInputStream = sparseInputStreams.get(currentSparseInputStreamIndex);
+        int readLen = currentInputStream.read(buf, offset, numToRead);
+
+        // if the current input stream is the last input stream,
+        // just return the number of bytes read from current input stream
+        if (currentSparseInputStreamIndex == sparseInputStreams.size() - 1) {
+            return readLen;
+        }
+
+        // if EOF of current input stream is meet, open a new input stream and recursively call read
+        if (readLen == -1) {
+            currentSparseInputStreamIndex++;
+            return readSparse(buf, offset, numToRead);
+        }
+
+        // if the rest data of current input stream is not long enough, open a new input stream
+        // and recursively call read
+        if (readLen < numToRead) {
+            currentSparseInputStreamIndex++;
+            int readLenOfNext = readSparse(buf, offset + readLen, numToRead - readLen);
+            if (readLenOfNext == -1) {
+                return readLen;
+            }
+
+            return readLen + readLenOfNext;
+        }
+
+        // if the rest data of current input stream is enough(which means readLen == len), just return readLen
+        return readLen;
     }
 
     /**
@@ -694,7 +1004,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     private void consumeRemainderOfLastBlock() throws IOException {
         final long bytesReadOfLastBlock = getBytesRead() % blockSize;
         if (bytesReadOfLastBlock > 0) {
-            final long skipped = IOUtils.skip(is, blockSize - bytesReadOfLastBlock);
+            final long skipped = IOUtils.skip(inputStream, blockSize - bytesReadOfLastBlock);
             count(skipped);
         }
     }
@@ -742,4 +1052,88 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                         signature, TarConstants.VERSION_OFFSET, TarConstants.VERSIONLEN);
     }
 
+    /**
+     * Build the input streams consisting of all-zero input streams and non-zero input streams.
+     * When reading from the non-zero input streams, the data is actually read from the original input stream.
+     * The size of each input stream is introduced by the sparse headers.
+     *
+     * NOTE : Some all-zero input streams and non-zero input streams have the size of 0. We DO NOT store the
+     *        0 size input streams because they are meaningless.
+     */
+    private void buildSparseInputStreams() throws IOException {
+        currentSparseInputStreamIndex = -1;
+        sparseInputStreams = new ArrayList<>();
+
+        final List<TarArchiveStructSparse> sparseHeaders = currEntry.getSparseHeaders();
+        // sort the sparse headers in case they are written in wrong order
+        if (sparseHeaders != null && sparseHeaders.size() > 1) {
+            final Comparator<TarArchiveStructSparse> sparseHeaderComparator = new Comparator<TarArchiveStructSparse>() {
+                @Override
+                public int compare(final TarArchiveStructSparse p, final TarArchiveStructSparse q) {
+                    Long pOffset = p.getOffset();
+                    Long qOffset = q.getOffset();
+                    return pOffset.compareTo(qOffset);
+                }
+            };
+            Collections.sort(sparseHeaders, sparseHeaderComparator);
+        }
+
+        if (sparseHeaders != null) {
+            // Stream doesn't need to be closed at all as it doesn't use any resources
+            final InputStream zeroInputStream = new TarArchiveSparseZeroInputStream(); //NOSONAR
+            long offset = 0;
+            for (TarArchiveStructSparse sparseHeader : sparseHeaders) {
+                if (sparseHeader.getOffset() == 0 && sparseHeader.getNumbytes() == 0) {
+                    break;
+                }
+
+                if ((sparseHeader.getOffset() - offset) < 0) {
+                    throw new IOException("Corrupted struct sparse detected");
+                }
+
+                // only store the input streams with non-zero size
+                if ((sparseHeader.getOffset() - offset) > 0) {
+                    sparseInputStreams.add(new BoundedInputStream(zeroInputStream, sparseHeader.getOffset() - offset));
+                }
+
+                // only store the input streams with non-zero size
+                if (sparseHeader.getNumbytes() > 0) {
+                    sparseInputStreams.add(new BoundedInputStream(inputStream, sparseHeader.getNumbytes()));
+                }
+
+                offset = sparseHeader.getOffset() + sparseHeader.getNumbytes();
+            }
+        }
+
+        if (sparseInputStreams.size() > 0) {
+            currentSparseInputStreamIndex = 0;
+        }
+    }
+
+    /**
+     * This is an inputstream that always return 0,
+     * this is used when reading the "holes" of a sparse file
+     */
+    private static class TarArchiveSparseZeroInputStream extends InputStream {
+        /**
+         * Just return 0
+         * @return
+         * @throws IOException
+         */
+        @Override
+        public int read() throws IOException {
+            return 0;
+        }
+
+        /**
+         * these's nothing need to do when skipping
+         *
+         * @param n bytes to skip
+         * @return bytes actually skipped
+         */
+        @Override
+        public long skip(final long n) {
+            return n;
+        }
+    }
 }

@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Calendar;
 import java.util.Date;
@@ -44,7 +45,6 @@ import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
-import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -95,6 +95,15 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         }
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testBigNumberErrorMode() throws Exception {
+        final TarArchiveEntry t = new TarArchiveEntry("foo");
+        t.setSize(0100000000000L);
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
+        tos.putArchiveEntry(t);
+    }
+
     @Test
     public void testBigNumberStarMode() throws Exception {
         final TarArchiveEntry t = new TarArchiveEntry("foo");
@@ -138,7 +147,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
                     + TarConstants.MODELEN
                     + TarConstants.UIDLEN
                     + TarConstants.GIDLEN, 12,
-                CharsetNames.UTF_8));
+                    StandardCharsets.UTF_8));
         final TarArchiveInputStream tin =
             new TarArchiveInputStream(new ByteArrayInputStream(data));
         final TarArchiveEntry e = tin.getNextTarEntry();
@@ -159,8 +168,8 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
                 + TarConstants.MODELEN
                 + TarConstants.UIDLEN
                 + TarConstants.GIDLEN, 12,
-                CharsetNames.UTF_8));
-        assertEquals("6 a=b\n", new String(data, 512, 6, CharsetNames.UTF_8));
+                    StandardCharsets.UTF_8));
+        assertEquals("6 a=b\n", new String(data, 512, 6, StandardCharsets.UTF_8));
     }
 
     @Test
@@ -176,10 +185,10 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
                 + TarConstants.MODELEN
                 + TarConstants.UIDLEN
                 + TarConstants.GIDLEN, 12,
-                CharsetNames.UTF_8));
+                    StandardCharsets.UTF_8));
         assertEquals("99 a=0123456789012345678901234567890123456789"
             + "01234567890123456789012345678901234567890123456789"
-            + "012\n", new String(data, 512, 99, CharsetNames.UTF_8));
+            + "012\n", new String(data, 512, 99, StandardCharsets.UTF_8));
     }
 
     @Test
@@ -195,10 +204,10 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
                 + TarConstants.MODELEN
                 + TarConstants.UIDLEN
                 + TarConstants.GIDLEN, 12,
-                CharsetNames.UTF_8));
+                    StandardCharsets.UTF_8));
         assertEquals("101 a=0123456789012345678901234567890123456789"
             + "01234567890123456789012345678901234567890123456789"
-            + "0123\n", new String(data, 512, 101, CharsetNames.UTF_8));
+            + "0123\n", new String(data, 512, 101, StandardCharsets.UTF_8));
     }
 
     private byte[] writePaxHeader(final Map<String, String> m) throws Exception {
@@ -233,7 +242,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         tos.closeArchiveEntry();
         final byte[] data = bos.toByteArray();
         assertEquals("160 path=" + n + "\n",
-            new String(data, 512, 160, CharsetNames.UTF_8));
+            new String(data, 512, 160, StandardCharsets.UTF_8));
         final TarArchiveInputStream tin =
             new TarArchiveInputStream(new ByteArrayInputStream(data));
         final TarArchiveEntry e = tin.getNextTarEntry();
@@ -292,7 +301,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
                     + TarConstants.UIDLEN
                     + TarConstants.GIDLEN
                     + TarConstants.SIZELEN, 12,
-                CharsetNames.UTF_8));
+                    StandardCharsets.UTF_8));
         final TarArchiveInputStream tin =
             new TarArchiveInputStream(new ByteArrayInputStream(data));
         final TarArchiveEntry e = tin.getNextTarEntry();
@@ -335,7 +344,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         tos.close();
         final byte[] data = bos.toByteArray();
         assertEquals("11 path=" + n + "\n",
-            new String(data, 512, 11, CharsetNames.UTF_8));
+            new String(data, 512, 11, StandardCharsets.UTF_8));
         final TarArchiveInputStream tin =
             new TarArchiveInputStream(new ByteArrayInputStream(data));
         final TarArchiveEntry e = tin.getNextTarEntry();
@@ -358,7 +367,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         tos.close();
         final byte[] data = bos.toByteArray();
         assertEquals("15 linkpath=" + n + "\n",
-            new String(data, 512, 15, CharsetNames.UTF_8));
+            new String(data, 512, 15, StandardCharsets.UTF_8));
         final TarArchiveInputStream tin =
             new TarArchiveInputStream(new ByteArrayInputStream(data));
         final TarArchiveEntry e = tin.getNextTarEntry();
@@ -775,6 +784,16 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         assertEquals(modificationDate.getTime() / 1000,
             nextEntry.getLastModifiedDate().getTime() / 1000);
         tarIn.close();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWriteLongFileNameThrowsException() throws Exception {
+        final String n = "01234567890123456789012345678901234567890123456789"
+                + "01234567890123456789012345678901234567890123456789"
+                + "01234567890123456789012345678901234567890123456789";
+        final TarArchiveEntry t = new TarArchiveEntry(n);
+        final TarArchiveOutputStream tos = new TarArchiveOutputStream(new ByteArrayOutputStream(), "ASCII");
+        tos.putArchiveEntry(t);
     }
 
     private static byte[] createTarArchiveContainingOneDirectory(final String fname,

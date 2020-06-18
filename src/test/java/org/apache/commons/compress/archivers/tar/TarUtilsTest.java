@@ -28,6 +28,8 @@ import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.junit.Test;
 
+import java.nio.charset.StandardCharsets;
+
 public class TarUtilsTest {
 
 
@@ -58,7 +60,7 @@ public class TarUtilsTest {
         final long MAX_OCTAL  = 077777777777L; // Allowed 11 digits
         final long MAX_OCTAL_OVERFLOW  = 0777777777777L; // in fact 12 for some implementations
         final String maxOctal = "777777777777"; // Maximum valid octal
-        buffer = maxOctal.getBytes(CharsetNames.UTF_8);
+        buffer = maxOctal.getBytes(StandardCharsets.UTF_8);
         value = TarUtils.parseOctal(buffer,0, buffer.length);
         assertEquals(MAX_OCTAL_OVERFLOW, value);
         buffer[buffer.length - 1] = ' ';
@@ -93,19 +95,19 @@ public class TarUtilsTest {
             fail("Expected IllegalArgumentException - should be at least 2 bytes long");
         } catch (final IllegalArgumentException expected) {
         }
-        buffer = "abcdef ".getBytes(CharsetNames.UTF_8); // Invalid input
+        buffer = "abcdef ".getBytes(StandardCharsets.UTF_8); // Invalid input
         try {
             TarUtils.parseOctal(buffer,0, buffer.length);
             fail("Expected IllegalArgumentException");
         } catch (final IllegalArgumentException expected) {
         }
-        buffer = " 0 07 ".getBytes(CharsetNames.UTF_8); // Invalid - embedded space
+        buffer = " 0 07 ".getBytes(StandardCharsets.UTF_8); // Invalid - embedded space
         try {
             TarUtils.parseOctal(buffer,0, buffer.length);
             fail("Expected IllegalArgumentException - embedded space");
         } catch (final IllegalArgumentException expected) {
         }
-        buffer = " 0\00007 ".getBytes(CharsetNames.UTF_8); // Invalid - embedded NUL
+        buffer = " 0\00007 ".getBytes(StandardCharsets.UTF_8); // Invalid - embedded NUL
         try {
             TarUtils.parseOctal(buffer,0, buffer.length);
             fail("Expected IllegalArgumentException - embedded NUL");
@@ -188,14 +190,14 @@ public class TarUtilsTest {
     public void testNegative() throws Exception {
         final byte [] buffer = new byte[22];
         TarUtils.formatUnsignedOctalString(-1, buffer, 0, buffer.length);
-        assertEquals("1777777777777777777777", new String(buffer, CharsetNames.UTF_8));
+        assertEquals("1777777777777777777777", new String(buffer, StandardCharsets.UTF_8));
     }
 
     @Test
     public void testOverflow() throws Exception {
         final byte [] buffer = new byte[8-1]; // a lot of the numbers have 8-byte buffers (nul term)
         TarUtils.formatUnsignedOctalString(07777777L, buffer, 0, buffer.length);
-        assertEquals("7777777", new String(buffer, CharsetNames.UTF_8));
+        assertEquals("7777777", new String(buffer, StandardCharsets.UTF_8));
         try {
             TarUtils.formatUnsignedOctalString(017777777L, buffer, 0, buffer.length);
             fail("Should have cause IllegalArgumentException");
@@ -216,13 +218,13 @@ public class TarUtilsTest {
         // COMPRESS-114
         final ZipEncoding enc = ZipEncodingHelper.getZipEncoding(CharsetNames.ISO_8859_1);
         final String s = "0302-0601-3\u00b1\u00b1\u00b1F06\u00b1W220\u00b1ZB\u00b1LALALA\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1CAN\u00b1\u00b1DC\u00b1\u00b1\u00b104\u00b1060302\u00b1MOE.model";
-        final byte buff[] = new byte[100];
+        final byte[] buff = new byte[100];
         final int len = TarUtils.formatNameBytes(s, buff, 0, buff.length, enc);
         assertEquals(s, TarUtils.parseName(buff, 0, len, enc));
     }
 
     private void checkName(final String string) {
-        final byte buff[] = new byte[100];
+        final byte[] buff = new byte[100];
         final int len = TarUtils.formatNameBytes(string, buff, 0, buff.length);
         assertEquals(string, TarUtils.parseName(buff, 0, len));
     }
@@ -379,6 +381,18 @@ public class TarUtilsTest {
         } catch (IllegalArgumentException e) {
             assertEquals("Value 9223372036854775807 is too large for 8 byte field.", e.getMessage());
         }
+    }
+
+    @Test
+    public void testParseSparse() {
+        final long expectedOffset = 0100000;
+        final long expectedNumbytes = 0111000;
+        final byte [] buffer = new byte[] {
+                ' ', ' ', ' ', ' ', ' ', '0', '1', '0', '0', '0', '0', '0', // sparseOffset
+                ' ', ' ', ' ', ' ', ' ', '0', '1', '1', '1', '0', '0', '0'};
+        TarArchiveStructSparse sparse = TarUtils.parseSparse(buffer, 0);
+        assertEquals(sparse.getOffset(), expectedOffset);
+        assertEquals(sparse.getNumbytes(), expectedNumbytes);
     }
 
 }

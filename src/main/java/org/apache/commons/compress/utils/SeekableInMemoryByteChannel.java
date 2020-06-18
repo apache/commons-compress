@@ -28,9 +28,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * A {@link SeekableByteChannel} implementation that wraps a byte[].
  *
- * <p>When this channel is used for writing an internal buffer grows to accommodate
- * incoming data. A natural size limit is the value of {@link Integer#MAX_VALUE}.
- * Internal buffer can be accessed via {@link SeekableInMemoryByteChannel#array()}.</p>
+ * <p>When this channel is used for writing an internal buffer grows to accommodate incoming data. The natural size
+ * limit is the value of {@link Integer#MAX_VALUE} and it is not possible to {@link #position(long) set the position} or
+ * {@link #truncate truncate} to a value bigger than that.  Internal buffer can be accessed via {@link
+ * SeekableInMemoryByteChannel#array()}.</p>
  *
  * @since 1.13
  * @NotThreadSafe
@@ -74,6 +75,13 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
         this(new byte[size]);
     }
 
+    /**
+     * Returns this channel's position.
+     *
+     * <p>This method violates the contract of {@link SeekableByteChannel#position()} as it will not throw any exception
+     * when invoked on a closed channel. Instead it will return the position the channel had when close has been
+     * called.</p>
+     */
     @Override
     public long position() {
         return position;
@@ -89,24 +97,40 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
         return this;
     }
 
+    /**
+     * Returns the current size of entity to which this channel is connected.
+     *
+     * <p>This method violates the contract of {@link SeekableByteChannel#size} as it will not throw any exception when
+     * invoked on a closed channel. Instead it will return the size the channel had when close has been called.</p>
+     */
     @Override
     public long size() {
         return size;
     }
 
+    /**
+     * Truncates the entity, to which this channel is connected, to the given size.
+     *
+     * <p>This method violates the contract of {@link SeekableByteChannel#truncate} as it will not throw any exception when
+     * invoked on a closed channel.</p>
+     */
     @Override
     public SeekableByteChannel truncate(long newSize) {
+        if (newSize < 0L || newSize > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("Size has to be in range 0.. " + Integer.MAX_VALUE);
+        }
         if (size > newSize) {
             size = (int) newSize;
         }
-        repositionIfNecessary();
+        if (position > newSize) {
+            position = (int) newSize;
+        }
         return this;
     }
 
     @Override
     public int read(ByteBuffer buf) throws IOException {
         ensureOpen();
-        repositionIfNecessary();
         int wanted = buf.remaining();
         int possible = size - position;
         if (possible <= 0) {
@@ -183,12 +207,6 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
     private void ensureOpen() throws ClosedChannelException {
         if (!isOpen()) {
             throw new ClosedChannelException();
-        }
-    }
-
-    private void repositionIfNecessary() {
-        if (position > size) {
-            position = size;
         }
     }
 

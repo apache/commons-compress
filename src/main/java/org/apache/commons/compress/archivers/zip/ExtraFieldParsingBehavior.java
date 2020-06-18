@@ -32,7 +32,7 @@ public interface ExtraFieldParsingBehavior extends UnparseableExtraFieldBehavior
      * ExtraFieldUtils#createExtraField}.</p>
      *
      * @param headerId the id for the extra field
-     * @return an instance of ZipExtraField, must not be null
+     * @return an instance of ZipExtraField, must not be {@code null}
      * @throws ZipException if an error occurs
      * @throws InstantiationException if unable to instantiate the class
      * @throws IllegalAccessException if not allowed to instantiate the class
@@ -54,7 +54,8 @@ public interface ExtraFieldParsingBehavior extends UnparseableExtraFieldBehavior
      * file header. If this is false then the data is part if the
      * central directory header extra data.
      * @return the filled field. Usually this is the same as {@code
-     * field} but it oculd be a replacement extra field as well
+     * field} but it could be a replacement extra field as well. Must
+     * not be {@code null}.
      * @throws ZipException if an error occurs
      */
     ZipExtraField fill(ZipExtraField field, byte[] data, int off, int len, boolean local)

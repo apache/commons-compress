@@ -20,6 +20,7 @@ package org.apache.commons.compress.archivers.zip;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.ZipException;
 
@@ -152,7 +153,7 @@ public class ExtraFieldUtils {
      * @since 1.1
      */
     public static ZipExtraField[] parse(final byte[] data, final boolean local,
-                                        final UnparseableExtraFieldBehavior onUnparseableData)
+                                        final UnparseableExtraField onUnparseableData)
         throws ZipException {
         return parse(data, local, new ExtraFieldParsingBehavior() {
             @Override
@@ -179,21 +180,16 @@ public class ExtraFieldUtils {
      * Split the array into ExtraFields and populate them with the
      * given data.
      * @param data an array of bytes
+     * @param parsingBehavior controls parsing of extra fields.
      * @param local whether data originates from the local file data
      * or the central directory
-     * @param onUnparseableData what to do if the extra field data
-     * cannot be parsed.
-     * @param onParseError what to do if the field's key is recognized
-     * but our implementation class fails to handle it. If the key and
-     * length cannot be parsed at all {@code onUnparseableData} will
-     * determine the behavior.
      * @return an array of ExtraFields
      * @throws ZipException on error
      *
      * @since 1.19
      */
     public static ZipExtraField[] parse(final byte[] data, final boolean local,
-                                        final ExtraFieldParsingBehavior parsingbehavior)
+                                        final ExtraFieldParsingBehavior parsingBehavior)
         throws ZipException {
         final List<ZipExtraField> v = new ArrayList<>();
         int start = 0;
@@ -202,7 +198,7 @@ public class ExtraFieldUtils {
             final ZipShort headerId = new ZipShort(data, start);
             final int length = new ZipShort(data, start + 2).getValue();
             if (start + WORD + length > data.length) {
-                ZipExtraField field = parsingbehavior.onUnparseableExtraField(data, start, data.length - start,
+                ZipExtraField field = parsingBehavior.onUnparseableExtraField(data, start, data.length - start,
                     local, length);
                 if (field != null) {
                     v.add(field);
@@ -213,8 +209,10 @@ public class ExtraFieldUtils {
                 break LOOP;
             }
             try {
-                ZipExtraField ze = parsingbehavior.createExtraField(headerId);
-                v.add(parsingbehavior.fill(ze, data, start + WORD, length, local));
+                ZipExtraField ze = Objects.requireNonNull(parsingBehavior.createExtraField(headerId),
+                    "createExtraField must not return null");
+                v.add(Objects.requireNonNull(parsingBehavior.fill(ze, data, start + WORD, length, local),
+                    "fill must not return null"));
                 start += length + WORD;
             } catch (final InstantiationException | IllegalAccessException ie) {
                 throw (ZipException) new ZipException(ie.getMessage()).initCause(ie);
@@ -306,6 +304,16 @@ public class ExtraFieldUtils {
      * Fills in the extra field data into the given instance.
      *
      * <p>Calls {@link ZipExtraField#parseFromCentralDirectoryData} or {@link ZipExtraField#parseFromLocalFileData} internally and wraps any {@link ArrayIndexOutOfBoundsException} thrown into a {@link ZipException}.</p>
+     *
+     * @param ze the extra field instance to fill
+     * @param data the array of extra field data
+     * @param off offset into data where this field's data starts
+     * @param len the length of this field's data
+     * @param local whether the extra field data stems from the local
+     * file header. If this is false then the data is part if the
+     * central directory header extra data.
+     * @return the filled field, will never be {@code null}
+     * @throws ZipException if an error occurs
      *
      * @since 1.19
      */

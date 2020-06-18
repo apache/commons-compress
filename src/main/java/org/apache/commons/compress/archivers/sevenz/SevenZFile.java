@@ -42,7 +42,6 @@ import java.util.zip.CRC32;
 
 import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.CRC32VerifyingInputStream;
-import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 
@@ -72,11 +71,18 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
  * contents can be read, but the use of
  * encryption isn't plausibly deniable.
  *
+ * <p>Multi volume archives can be read by concatenating the parts in
+ * correct order - either manually or by using {link
+ * org.apache.commons.compress.utils.MultiReadOnlySeekableByteChannel}
+ * for example.</p>
+ *
  * @NotThreadSafe
  * @since 1.6
  */
 public class SevenZFile implements Closeable {
     static final int SIGNATURE_HEADER_SIZE = 32;
+
+    private static final String DEFAULT_FILE_NAME = "unknown archive";
 
     private final String fileName;
     private SeekableByteChannel channel;
@@ -85,7 +91,7 @@ public class SevenZFile implements Closeable {
     private int currentFolderIndex = -1;
     private InputStream currentFolderInputStream = null;
     private byte[] password;
-    private int maxMemoryLimitInKb;
+    private final SevenZFileOptions options;
 
     private long compressedBytesReadFromCurrentEntry;
     private long uncompressedBytesReadFromCurrentEntry;
@@ -106,22 +112,21 @@ public class SevenZFile implements Closeable {
      * @since 1.17
      */
     public SevenZFile(final File fileName, final char[] password) throws IOException {
-        this(fileName, password, Integer.MAX_VALUE);
+        this(fileName, password, SevenZFileOptions.DEFAULT);
     }
 
     /**
-     * Reads a file as 7z archive with memory limitation
+     * Reads a file as 7z archive with additional options.
      *
      * @param fileName the file to read
      * @param password optional password if the archive is encrypted
-     * @param maxMemoryLimitInKb limit of the maximum amount of memory to use for extraction. Not all codecs will honor
-     *                           this setting. Currently only lzma and lzma2 are supported.
-     * @throws IOException if reading the archive fails or the memory limit is too small
+     * @param options the options to apply
+     * @throws IOException if reading the archive fails or the memory limit (if set) is too small
      * @since 1.19
      */
-    public SevenZFile(final File fileName, final char[] password, final int maxMemoryLimitInKb) throws IOException {
-        this(Files.newByteChannel(fileName.toPath(), EnumSet.of(StandardOpenOption.READ)),
-                fileName.getAbsolutePath(), utf16Decode(password), true, maxMemoryLimitInKb);
+    public SevenZFile(final File fileName, final char[] password, SevenZFileOptions options) throws IOException {
+        this(Files.newByteChannel(fileName.toPath(), EnumSet.of(StandardOpenOption.READ)), // NOSONAR
+                fileName.getAbsolutePath(), utf16Decode(password), true, options);
     }
 
     /**
@@ -134,26 +139,10 @@ public class SevenZFile implements Closeable {
      * @throws IOException if reading the archive fails
      * @deprecated use the char[]-arg version for the password instead
      */
+    @Deprecated
     public SevenZFile(final File fileName, final byte[] password) throws IOException {
-        this(fileName, password, Integer.MAX_VALUE);
-    }
-
-    /**
-     * Reads a file as 7z archive with memory limitation
-     *
-     * @param fileName the file to read
-     * @param password optional password if the archive is encrypted -
-     * the byte array is supposed to be the UTF16-LE encoded
-     * representation of the password.
-     * @param maxMemoryLimitInKb limit of the maximum amount of memory to use for extraction. Not all codecs will honor
-     *                           this setting. Currently only lzma and lzma2 are supported.
-     * @throws IOException if reading the archive fails or the memory limit is too small
-     * @deprecated use the char[]-arg version for the password instead
-     * @since 1.19
-     */
-    public SevenZFile(final File fileName, final byte[] password, final int maxMemoryLimitInKb) throws IOException {
-        this(Files.newByteChannel(fileName.toPath(), EnumSet.of(StandardOpenOption.READ)), fileName.getAbsolutePath(),
-                password, true, maxMemoryLimitInKb);
+        this(Files.newByteChannel(fileName.toPath(), EnumSet.of(StandardOpenOption.READ)),
+                fileName.getAbsolutePath(), password, true, SevenZFileOptions.DEFAULT);
     }
 
     /**
@@ -168,24 +157,23 @@ public class SevenZFile implements Closeable {
      * @since 1.13
      */
     public SevenZFile(final SeekableByteChannel channel) throws IOException {
-        this(channel, Integer.MAX_VALUE);
+        this(channel, SevenZFileOptions.DEFAULT);
     }
 
     /**
-     * Reads a SeekableByteChannel as 7z archive with memory limitation
+     * Reads a SeekableByteChannel as 7z archive with addtional options.
      *
      * <p>{@link
      * org.apache.commons.compress.utils.SeekableInMemoryByteChannel}
      * allows you to read from an in-memory archive.</p>
      *
      * @param channel the channel to read
-     * @param maxMemoryLimitInKb limit of the maximum amount of memory to use for extraction. Not all codecs will honor
-     *                           this setting. Currently only lzma and lzma2 are supported.
-     * @throws IOException if reading the archive fails or the memory limit is too small
+     * @param options the options to apply
+     * @throws IOException if reading the archive fails or the memory limit (if set) is too small
      * @since 1.19
      */
-    public SevenZFile(final SeekableByteChannel channel, final int maxMemoryLimitInKb) throws IOException {
-        this(channel, "unknown archive", (char[]) null, maxMemoryLimitInKb);
+    public SevenZFile(final SeekableByteChannel channel, SevenZFileOptions options) throws IOException {
+        this(channel, DEFAULT_FILE_NAME, (char[]) null, options);
     }
 
     /**
@@ -202,11 +190,11 @@ public class SevenZFile implements Closeable {
      */
     public SevenZFile(final SeekableByteChannel channel,
                       final char[] password) throws IOException {
-        this(channel, password, Integer.MAX_VALUE);
+        this(channel, password, SevenZFileOptions.DEFAULT);
     }
 
     /**
-     * Reads a SeekableByteChannel as 7z archive with memory limitation
+     * Reads a SeekableByteChannel as 7z archive with additional options.
      *
      * <p>{@link
      * org.apache.commons.compress.utils.SeekableInMemoryByteChannel}
@@ -214,14 +202,13 @@ public class SevenZFile implements Closeable {
      *
      * @param channel the channel to read
      * @param password optional password if the archive is encrypted
-     * @param maxMemoryLimitInKb limit of the maximum amount of memory to use for extraction. Not all codecs will honor
-     *                           this setting. Currently only lzma and lzma2 are supported.
-     * @throws IOException if reading the archive fails or the memory limit is too small
+     * @param options the options to apply
+     * @throws IOException if reading the archive fails or the memory limit (if set) is too small
      * @since 1.19
      */
-    public SevenZFile(final SeekableByteChannel channel, final char[] password, final int maxMemoryLimitInKb)
+    public SevenZFile(final SeekableByteChannel channel, final char[] password, final SevenZFileOptions options)
             throws IOException {
-        this(channel, "unknown archive", utf16Decode(password), maxMemoryLimitInKb);
+        this(channel, DEFAULT_FILE_NAME, password, options);
     }
 
     /**
@@ -239,11 +226,11 @@ public class SevenZFile implements Closeable {
      */
     public SevenZFile(final SeekableByteChannel channel, String fileName,
                       final char[] password) throws IOException {
-        this(channel, fileName, password, Integer.MAX_VALUE);
+        this(channel, fileName, password, SevenZFileOptions.DEFAULT);
     }
 
     /**
-     * Reads a SeekableByteChannel as 7z archive with memory limitation
+     * Reads a SeekableByteChannel as 7z archive with addtional options.
      *
      * <p>{@link
      * org.apache.commons.compress.utils.SeekableInMemoryByteChannel}
@@ -252,14 +239,13 @@ public class SevenZFile implements Closeable {
      * @param channel the channel to read
      * @param fileName name of the archive - only used for error reporting
      * @param password optional password if the archive is encrypted
-     * @param maxMemoryLimitInKb limit of the maximum amount of memory to use for extraction. Not all codecs will honor
-     *                           this setting. Currently only lzma and lzma2 are supported.
-     * @throws IOException if reading the archive fails or the memory limit is too small
+     * @param options the options to apply
+     * @throws IOException if reading the archive fails or the memory limit (if set) is too small
      * @since 1.19
      */
     public SevenZFile(final SeekableByteChannel channel, String fileName, final char[] password,
-            final int maxMemoryLimitInKb) throws IOException {
-        this(channel, fileName, utf16Decode(password), false, maxMemoryLimitInKb);
+            final SevenZFileOptions options) throws IOException {
+        this(channel, fileName, utf16Decode(password), false, options);
     }
 
     /**
@@ -276,11 +262,11 @@ public class SevenZFile implements Closeable {
      */
     public SevenZFile(final SeekableByteChannel channel, String fileName)
         throws IOException {
-        this(channel, fileName, Integer.MAX_VALUE);
+        this(channel, fileName, SevenZFileOptions.DEFAULT);
     }
 
     /**
-     * Reads a SeekableByteChannel as 7z archive with memory limitation
+     * Reads a SeekableByteChannel as 7z archive with additional options.
      *
      * <p>{@link
      * org.apache.commons.compress.utils.SeekableInMemoryByteChannel}
@@ -288,14 +274,13 @@ public class SevenZFile implements Closeable {
      *
      * @param channel the channel to read
      * @param fileName name of the archive - only used for error reporting
-     * @param maxMemoryLimitInKb limit of the maximum amount of memory to use for extraction. Not all codecs will honor
-     *                           this setting. Currently only lzma and lzma2 are supported.
-     * @throws IOException if reading the archive fails or the memory limit is too small
+     * @param options the options to apply
+     * @throws IOException if reading the archive fails or the memory limit (if set) is too small
      * @since 1.19
      */
-    public SevenZFile(final SeekableByteChannel channel, String fileName, final int maxMemoryLimitInKb)
+    public SevenZFile(final SeekableByteChannel channel, String fileName, final SevenZFileOptions options)
             throws IOException {
-        this(channel, fileName, null, false, maxMemoryLimitInKb);
+        this(channel, fileName, null, false, options);
     }
 
     /**
@@ -313,31 +298,10 @@ public class SevenZFile implements Closeable {
      * @since 1.13
      * @deprecated use the char[]-arg version for the password instead
      */
+    @Deprecated
     public SevenZFile(final SeekableByteChannel channel,
                       final byte[] password) throws IOException {
-        this(channel, "unknown archive", password);
-    }
-
-    /**
-     * Reads a SeekableByteChannel as 7z archive with memory limitation
-     *
-     * <p>{@link
-     * org.apache.commons.compress.utils.SeekableInMemoryByteChannel}
-     * allows you to read from an in-memory archive.</p>
-     *
-     * @param channel the channel to read
-     * @param password optional password if the archive is encrypted -
-     * the byte array is supposed to be the UTF16-LE encoded
-     * representation of the password.
-     * @param maxMemoryLimitInKb limit of the maximum amount of memory to use for extraction. Not all codecs will honor
-     *                           this setting. Currently only lzma and lzma2 are supported.
-     * @throws IOException if reading the archive fails or the memory limit is too small
-     * @since 1.19
-     * @deprecated use the char[]-arg version for the password instead
-     */
-    public SevenZFile(final SeekableByteChannel channel, final byte[] password, final int maxMemoryLimitInKb)
-            throws IOException {
-        this(channel, "unknown archive", password, maxMemoryLimitInKb);
+        this(channel, DEFAULT_FILE_NAME, password);
     }
 
     /**
@@ -356,40 +320,18 @@ public class SevenZFile implements Closeable {
      * @since 1.13
      * @deprecated use the char[]-arg version for the password instead
      */
+    @Deprecated
     public SevenZFile(final SeekableByteChannel channel, String fileName,
                       final byte[] password) throws IOException {
-        this(channel, fileName, password, false, Integer.MAX_VALUE);
-    }
-
-    /**
-     * Reads a SeekableByteChannel as 7z archive with memory limitation
-     *
-     * <p>{@link
-     * org.apache.commons.compress.utils.SeekableInMemoryByteChannel}
-     * allows you to read from an in-memory archive.</p>
-     *
-     * @param channel the channel to read
-     * @param fileName name of the archive - only used for error reporting
-     * @param password optional password if the archive is encrypted -
-     * the byte array is supposed to be the UTF16-LE encoded
-     * representation of the password.
-     * @param maxMemoryLimitInKb limit of the maximum amount of memory to use for extraction. Not all codecs will honor
-     *                           this setting. Currently only lzma and lzma2 are supported.
-     * @throws IOException if reading the archive fails or the memory limit is too small
-     * @since 1.19
-     * @deprecated use the char[]-arg version for the password instead
-     */
-    public SevenZFile(final SeekableByteChannel channel, String fileName, final byte[] password,
-            final int maxMemoryLimitInKb) throws IOException {
-        this(channel, fileName, password, false, maxMemoryLimitInKb);
+        this(channel, fileName, password, false, SevenZFileOptions.DEFAULT);
     }
 
     private SevenZFile(final SeekableByteChannel channel, String filename,
-                       final byte[] password, boolean closeOnError, final int maxMemoryLimitInKb) throws IOException {
+                       final byte[] password, boolean closeOnError, SevenZFileOptions options) throws IOException {
         boolean succeeded = false;
         this.channel = channel;
         this.fileName = filename;
-        this.maxMemoryLimitInKb = maxMemoryLimitInKb;
+        this.options = options;
         try {
             archive = readHeaders(password);
             if (password != null) {
@@ -412,20 +354,19 @@ public class SevenZFile implements Closeable {
      * @throws IOException if reading the archive fails
      */
     public SevenZFile(final File fileName) throws IOException {
-        this(fileName, Integer.MAX_VALUE);
+        this(fileName, SevenZFileOptions.DEFAULT);
     }
 
     /**
      * Reads a file as unencrypted 7z archive
      *
      * @param fileName the file to read
-     * @param maxMemoryLimitInKb limit of the maximum amount of memory to use for extraction. Not all codecs will honor
-     *                           this setting. Currently only lzma and lzma2 are supported.
-     * @throws IOException if reading the archive fails or the memory limit is too small
+     * @param options the options to apply
+     * @throws IOException if reading the archive fails or the memory limit (if set) is too small
      * @since 1.19
      */
-    public SevenZFile(final File fileName, final int maxMemoryLimitInKb) throws IOException {
-        this(fileName, (char[]) null, maxMemoryLimitInKb);
+    public SevenZFile(final File fileName, final SevenZFileOptions options) throws IOException {
+        this(fileName, (char[]) null, options);
     }
 
     /**
@@ -460,7 +401,10 @@ public class SevenZFile implements Closeable {
         }
         ++currentEntryIndex;
         final SevenZArchiveEntry entry = archive.files[currentEntryIndex];
-        buildDecodingStream();
+        if (entry.getName() == null && options.getUseDefaultNameForUnnamedEntries()) {
+            entry.setName(getDefaultName());
+        }
+        buildDecodingStream(currentEntryIndex, false);
         uncompressedBytesReadFromCurrentEntry = compressedBytesReadFromCurrentEntry = 0;
         return entry;
     }
@@ -499,17 +443,86 @@ public class SevenZFile implements Closeable {
                     archiveVersionMajor, archiveVersionMinor));
         }
 
+        boolean headerLooksValid = false;  // See https://www.7-zip.org/recover.html - "There is no correct End Header at the end of archive"
         final long startHeaderCrc = 0xffffFFFFL & buf.getInt();
-        final StartHeader startHeader = readStartHeader(startHeaderCrc);
+        if (startHeaderCrc == 0) {
+            // This is an indication of a corrupt header - peek the next 20 bytes
+            long currentPosition = channel.position();
+            ByteBuffer peekBuf = ByteBuffer.allocate(20);
+            readFully(peekBuf);
+            channel.position(currentPosition);
+            // Header invalid if all data is 0
+            while (peekBuf.hasRemaining()) {
+                if (peekBuf.get()!=0) {
+                    headerLooksValid = true;
+                    break;
+                }
+            }
+        } else {
+            headerLooksValid = true;
+        }
+
+        if (headerLooksValid) {
+            final StartHeader startHeader = readStartHeader(startHeaderCrc);
+            return initializeArchive(startHeader, password, true);
+        } else {
+            // No valid header found - probably first file of multipart archive was removed too early. Scan for end header.
+            return tryToLocateEndHeader(password);
+        }
+    }
+
+    private Archive tryToLocateEndHeader(final byte[] password) throws IOException {
+        ByteBuffer nidBuf = ByteBuffer.allocate(1);
+        final long searchLimit = 1024l * 1024 * 1;
+        // Main header, plus bytes that readStartHeader would read
+        final long previousDataSize = channel.position() + 20;
+        final long minPos;
+        // Determine minimal position - can't start before current position
+        if (channel.position() + searchLimit > channel.size()) {
+            minPos = channel.position();
+        } else {
+            minPos = channel.size() - searchLimit;
+        }
+        long pos = channel.size() - 1;
+        // Loop: Try from end of archive
+        while (pos > minPos) {
+            pos--;
+            channel.position(pos);
+            nidBuf.rewind();
+            channel.read(nidBuf);
+            int nid = nidBuf.array()[0];
+            // First indicator: Byte equals one of these header identifiers
+            if (nid == NID.kEncodedHeader || nid == NID.kHeader) {
+                try {
+                    // Try to initialize Archive structure from here
+                    final StartHeader startHeader = new StartHeader();
+                    startHeader.nextHeaderOffset = pos - previousDataSize;
+                    startHeader.nextHeaderSize = channel.size() - pos;
+                    Archive result = initializeArchive(startHeader, password, false);
+                    // Sanity check: There must be some data...
+                    if (result.packSizes != null && result.files.length > 0) {
+                        return result;
+                    }
+                } catch (Exception ignore) {
+                    // Wrong guess...
+                }
+            }
+        }
+        throw new IOException("Start header corrupt and unable to guess end header");
+    }
+
+    private Archive initializeArchive(StartHeader startHeader, final byte[] password, boolean verifyCrc) throws IOException {
         assertFitsIntoInt("nextHeaderSize", startHeader.nextHeaderSize);
         final int nextHeaderSizeInt = (int) startHeader.nextHeaderSize;
         channel.position(SIGNATURE_HEADER_SIZE + startHeader.nextHeaderOffset);
-        buf = ByteBuffer.allocate(nextHeaderSizeInt).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buf = ByteBuffer.allocate(nextHeaderSizeInt).order(ByteOrder.LITTLE_ENDIAN);
         readFully(buf);
-        final CRC32 crc = new CRC32();
-        crc.update(buf.array());
-        if (startHeader.nextHeaderCrc != crc.getValue()) {
-            throw new IOException("NextHeader CRC mismatch");
+        if (verifyCrc) {
+            final CRC32 crc = new CRC32();
+            crc.update(buf.array());
+            if (startHeader.nextHeaderCrc != crc.getValue()) {
+                throw new IOException("NextHeader CRC mismatch");
+            }
         }
 
         Archive archive = new Archive();
@@ -599,7 +612,7 @@ public class SevenZFile implements Closeable {
                 throw new IOException("Multi input/output stream coders are not yet supported");
             }
             inputStreamStack = Coders.addDecoder(fileName, inputStreamStack, //NOSONAR
-                    folder.getUnpackSizeForCoder(coder), coder, password, maxMemoryLimitInKb);
+                    folder.getUnpackSizeForCoder(coder), coder, password, options.getMaxMemoryLimitInKb());
         }
         if (folder.hasCrc) {
             inputStreamStack = new CRC32VerifyingInputStream(inputStreamStack,
@@ -839,8 +852,8 @@ public class SevenZFile implements Closeable {
             }
             // would need to keep looping as above:
             while (moreAlternativeMethods) {
-                throw new IOException("Alternative methods are unsupported, please report. " +
-                        "The reference implementation doesn't support them either.");
+                throw new IOException("Alternative methods are unsupported, please report. " + // NOSONAR
+                    "The reference implementation doesn't support them either.");
             }
         }
         folder.coders = coders;
@@ -867,7 +880,7 @@ public class SevenZFile implements Closeable {
         }
         final long numPackedStreams = totalInStreams - numBindPairs;
         assertFitsIntoInt("numPackedStreams", numPackedStreams);
-        final long packedStreams[] = new long[(int)numPackedStreams];
+        final long[] packedStreams = new long[(int)numPackedStreams];
         if (numPackedStreams == 1) {
             int i;
             for (i = 0; i < (int)totalInStreams; i++) {
@@ -968,7 +981,7 @@ public class SevenZFile implements Closeable {
                     int nextName = 0;
                     for (int i = 0; i < names.length; i += 2) {
                         if (names[i] == 0 && names[i+1] == 0) {
-                            files[nextFile++].setName(new String(names, nextName, i-nextName, CharsetNames.UTF_16LE));
+                            files[nextFile++].setName(new String(names, nextName, i-nextName, StandardCharsets.UTF_16LE));
                             nextName = i + 2;
                         }
                     }
@@ -1060,6 +1073,9 @@ public class SevenZFile implements Closeable {
         for (int i = 0; i < files.length; i++) {
             files[i].setHasStream(isEmptyStream == null || !isEmptyStream.get(i));
             if (files[i].hasStream()) {
+                if (archive.subStreamsInfo == null) {
+                    throw new IOException("Archive contains file with streams but no subStreamsInfo");
+                }
                 files[i].setDirectory(false);
                 files[i].setAntiItem(false);
                 files[i].setHasCrc(archive.subStreamsInfo.hasCrc.get(nonEmptyFileCounter));
@@ -1131,37 +1147,69 @@ public class SevenZFile implements Closeable {
         archive.streamMap = streamMap;
     }
 
-    private void buildDecodingStream() throws IOException {
-        final int folderIndex = archive.streamMap.fileFolderIndex[currentEntryIndex];
+    /**
+     * Build the decoding stream for the entry to be read.
+     * This method may be called from a random access(getInputStream) or
+     * sequential access(getNextEntry).
+     * If this method is called from a random access, some entries may
+     * need to be skipped(we put them to the deferredBlockStreams and
+     * skip them when actually needed to improve the performance)
+     *
+     * @param entryIndex     the index of the entry to be read
+     * @param isRandomAccess is this called in a random access
+     * @throws IOException if there are exceptions when reading the file
+     */
+    private void buildDecodingStream(int entryIndex, boolean isRandomAccess) throws IOException {
+        if (archive.streamMap == null) {
+            throw new IOException("Archive doesn't contain stream information to read entries");
+        }
+        final int folderIndex = archive.streamMap.fileFolderIndex[entryIndex];
         if (folderIndex < 0) {
             deferredBlockStreams.clear();
             // TODO: previously it'd return an empty stream?
             // new BoundedInputStream(new ByteArrayInputStream(new byte[0]), 0);
             return;
         }
-        final SevenZArchiveEntry file = archive.files[currentEntryIndex];
+        final SevenZArchiveEntry file = archive.files[entryIndex];
+        boolean isInSameFolder = false;
         if (currentFolderIndex == folderIndex) {
             // (COMPRESS-320).
             // The current entry is within the same (potentially opened) folder. The
             // previous stream has to be fully decoded before we can start reading
             // but don't do it eagerly -- if the user skips over the entire folder nothing
             // is effectively decompressed.
-
-            file.setContentMethods(archive.files[currentEntryIndex - 1].getContentMethods());
-        } else {
-            // We're opening a new folder. Discard any queued streams/ folder stream.
-            currentFolderIndex = folderIndex;
-            deferredBlockStreams.clear();
-            if (currentFolderInputStream != null) {
-                currentFolderInputStream.close();
-                currentFolderInputStream = null;
+            if (entryIndex > 0) {
+                file.setContentMethods(archive.files[entryIndex - 1].getContentMethods());
             }
 
-            final Folder folder = archive.folders[folderIndex];
-            final int firstPackStreamIndex = archive.streamMap.folderFirstPackStreamIndex[folderIndex];
-            final long folderOffset = SIGNATURE_HEADER_SIZE + archive.packPos +
-                    archive.streamMap.packStreamOffsets[firstPackStreamIndex];
-            currentFolderInputStream = buildDecoderStack(folder, folderOffset, firstPackStreamIndex, file);
+            // if this is called in a random access, then the content methods of previous entry may be null
+            // the content methods should be set to methods of the first entry as it must not be null,
+            // and the content methods would only be set if the content methods was not set
+            if(isRandomAccess && file.getContentMethods() == null) {
+                int folderFirstFileIndex = archive.streamMap.folderFirstFileIndex[folderIndex];
+                SevenZArchiveEntry folderFirstFile = archive.files[folderFirstFileIndex];
+                file.setContentMethods(folderFirstFile.getContentMethods());
+            }
+            isInSameFolder = true;
+        } else {
+            currentFolderIndex = folderIndex;
+            // We're opening a new folder. Discard any queued streams/ folder stream.
+            reopenFolderInputStream(folderIndex, file);
+        }
+
+        boolean haveSkippedEntries = false;
+        if (isRandomAccess) {
+            // entries will only need to be skipped if it's a random access
+            haveSkippedEntries = skipEntriesWhenNeeded(entryIndex, isInSameFolder, folderIndex);
+        }
+
+        if (isRandomAccess && currentEntryIndex == entryIndex && !haveSkippedEntries) {
+            // we don't need to add another entry to the deferredBlockStreams when :
+            // 1. If this method is called in a random access and the entry index
+            // to be read equals to the current entry index, the input stream
+            // has already been put in the deferredBlockStreams
+            // 2. If this entry has not been read(which means no entries are skipped)
+            return;
         }
 
         InputStream fileStream = new BoundedInputStream(currentFolderInputStream, file.getSize());
@@ -1170,6 +1218,115 @@ public class SevenZFile implements Closeable {
         }
 
         deferredBlockStreams.add(fileStream);
+    }
+
+    /**
+     * Discard any queued streams/ folder stream, and reopen the current folder input stream.
+     *
+     * @param folderIndex the index of the folder to reopen
+     * @param file        the 7z entry to read
+     * @throws IOException if exceptions occur when reading the 7z file
+     */
+    private void reopenFolderInputStream(int folderIndex, SevenZArchiveEntry file) throws IOException {
+        deferredBlockStreams.clear();
+        if (currentFolderInputStream != null) {
+            currentFolderInputStream.close();
+            currentFolderInputStream = null;
+        }
+        final Folder folder = archive.folders[folderIndex];
+        final int firstPackStreamIndex = archive.streamMap.folderFirstPackStreamIndex[folderIndex];
+        final long folderOffset = SIGNATURE_HEADER_SIZE + archive.packPos +
+                archive.streamMap.packStreamOffsets[firstPackStreamIndex];
+
+        currentFolderInputStream = buildDecoderStack(folder, folderOffset, firstPackStreamIndex, file);
+    }
+
+    /**
+     * Skip all the entries if needed.
+     * Entries need to be skipped when:
+     * <p>
+     * 1. it's a random access
+     * 2. one of these 2 condition is meet :
+     * <p>
+     * 2.1 currentEntryIndex != entryIndex : this means there are some entries
+     * to be skipped(currentEntryIndex < entryIndex) or the entry has already
+     * been read(currentEntryIndex > entryIndex)
+     * <p>
+     * 2.2 currentEntryIndex == entryIndex && !hasCurrentEntryBeenRead:
+     * if the entry to be read is the current entry, but some data of it has
+     * been read before, then we need to reopen the stream of the folder and
+     * skip all the entries before the current entries
+     *
+     * @param entryIndex     the entry to be read
+     * @param isInSameFolder are the entry to be read and the current entry in the same folder
+     * @param folderIndex    the index of the folder which contains the entry
+     * @return true if there are entries actually skipped
+     * @throws IOException there are exceptions when skipping entries
+     * @since 1.21
+     */
+    private boolean skipEntriesWhenNeeded(int entryIndex, boolean isInSameFolder, int folderIndex) throws IOException {
+        final SevenZArchiveEntry file = archive.files[entryIndex];
+        // if the entry to be read is the current entry, and the entry has not
+        // been read yet, then there's nothing we need to do
+        if (currentEntryIndex == entryIndex && !hasCurrentEntryBeenRead()) {
+            return false;
+        }
+
+        // 1. if currentEntryIndex < entryIndex :
+        // this means there are some entries to be skipped(currentEntryIndex < entryIndex)
+        // 2. if currentEntryIndex > entryIndex || (currentEntryIndex == entryIndex && hasCurrentEntryBeenRead) :
+        // this means the entry has already been read before, and we need to reopen the
+        // stream of the folder and skip all the entries before the current entries
+        int filesToSkipStartIndex = archive.streamMap.folderFirstFileIndex[currentFolderIndex];
+        if (isInSameFolder) {
+            if (currentEntryIndex < entryIndex) {
+                // the entries between filesToSkipStartIndex and currentEntryIndex had already been skipped
+                filesToSkipStartIndex = currentEntryIndex + 1;
+            } else {
+                // the entry is in the same folder of current entry, but it has already been read before, we need to reset
+                // the position of the currentFolderInputStream to the beginning of folder, and then skip the files
+                // from the start entry of the folder again
+                reopenFolderInputStream(folderIndex, file);
+            }
+        }
+
+        for (int i = filesToSkipStartIndex; i < entryIndex; i++) {
+            SevenZArchiveEntry fileToSkip = archive.files[i];
+            InputStream fileStreamToSkip = new BoundedInputStream(currentFolderInputStream, fileToSkip.getSize());
+            if (fileToSkip.getHasCrc()) {
+                fileStreamToSkip = new CRC32VerifyingInputStream(fileStreamToSkip, fileToSkip.getSize(), fileToSkip.getCrcValue());
+            }
+            deferredBlockStreams.add(fileStreamToSkip);
+
+            // set the content methods as well, it equals to file.getContentMethods() because they are in same folder
+            fileToSkip.setContentMethods(file.getContentMethods());
+        }
+        return true;
+    }
+
+    /**
+     * Find out if any data of current entry has been read or not.
+     * This is achieved by comparing the bytes remaining to read
+     * and the size of the file.
+     *
+     * @return true if any data of current entry has been read
+     * @since 1.21
+     */
+    private boolean hasCurrentEntryBeenRead() {
+        boolean hasCurrentEntryBeenRead = false;
+        if (deferredBlockStreams.size() > 0) {
+            InputStream currentEntryInputStream = deferredBlockStreams.get(deferredBlockStreams.size() - 1);
+            // get the bytes remaining to read, and compare it with the size of
+            // the file to figure out if the file has been read
+            if (currentEntryInputStream instanceof CRC32VerifyingInputStream) {
+                hasCurrentEntryBeenRead = ((CRC32VerifyingInputStream) currentEntryInputStream).getBytesRemaining() != archive.files[currentEntryIndex].getSize();
+            }
+
+            if (currentEntryInputStream instanceof BoundedInputStream) {
+                hasCurrentEntryBeenRead = ((BoundedInputStream) currentEntryInputStream).getBytesRemaining() != archive.files[currentEntryIndex].getSize();
+            }
+        }
+        return hasCurrentEntryBeenRead;
     }
 
     private InputStream buildDecoderStack(final Folder folder, final long folderOffset,
@@ -1192,6 +1349,9 @@ public class SevenZFile implements Closeable {
             }
             @Override
             public int read(final byte[] b, final int off, final int len) throws IOException {
+                if (len == 0) {
+                    return 0;
+                }
                 final int r = in.read(b, off, len);
                 if (r >= 0) {
                     count(r);
@@ -1209,7 +1369,7 @@ public class SevenZFile implements Closeable {
             }
             final SevenZMethod method = SevenZMethod.byId(coder.decompressionMethodId);
             inputStreamStack = Coders.addDecoder(fileName, inputStreamStack,
-                    folder.getUnpackSizeForCoder(coder), coder, password, maxMemoryLimitInKb);
+                    folder.getUnpackSizeForCoder(coder), coder, password, options.getMaxMemoryLimitInKb());
             methods.addFirst(new SevenZMethodConfiguration(method,
                      Coders.findByMethod(method).getOptionsFromCoder(coder, inputStreamStack)));
         }
@@ -1258,6 +1418,37 @@ public class SevenZFile implements Closeable {
     }
 
     /**
+     * Returns an InputStream for reading the contents of the given entry.
+     *
+     * <p>For archives using solid compression randomly accessing
+     * entries will be significantly slower than reading the archive
+     * sequentially.</p>
+     *
+     * @param entry the entry to get the stream for.
+     * @return a stream to read the entry from.
+     * @throws IOException if unable to create an input stream from the zipentry
+     * @since Compress 1.20
+     */
+    public InputStream getInputStream(SevenZArchiveEntry entry) throws IOException {
+        int entryIndex = -1;
+        for (int i = 0; i < this.archive.files.length;i++) {
+            if (entry == this.archive.files[i]) {
+                entryIndex = i;
+                break;
+            }
+        }
+
+        if (entryIndex < 0) {
+            throw new IllegalArgumentException("Can not find " + entry.getName() + " in " + this.fileName);
+        }
+
+        buildDecodingStream(entryIndex, true);
+        currentEntryIndex = entryIndex;
+        currentFolderIndex = archive.streamMap.fileFolderIndex[entryIndex];
+        return getCurrentStream();
+    }
+
+    /**
      * Reads data into an array of bytes.
      *
      * @param b the array to write data to
@@ -1280,6 +1471,9 @@ public class SevenZFile implements Closeable {
      *             if an I/O error has occurred
      */
     public int read(final byte[] b, final int off, final int len) throws IOException {
+        if (len == 0) {
+            return 0;
+        }
         int cnt = getCurrentStream().read(b, off, len);
         if (cnt > 0) {
             uncompressedBytesReadFromCurrentEntry += cnt;
@@ -1373,6 +1567,36 @@ public class SevenZFile implements Closeable {
       return archive.toString();
     }
 
+    /**
+     * Derives a default file name from the archive name - if known.
+     *
+     * <p>This implements the same heuristics the 7z tools use. In
+     * 7z's case if an archive contains entries without a name -
+     * i.e. {@link SevenZArchiveEntry#getName} returns {@code null} -
+     * then its command line and GUI tools will use this default name
+     * when extracting the entries.</p>
+     *
+     * @return null if the name of the archive is unknown. Otherwise
+     * if the name of the archive has got any extension, it is
+     * stripped and the remainder returned. Finally if the name of the
+     * archive hasn't got any extension then a {@code ~} character is
+     * appended to the archive name.
+     *
+     * @since 1.19
+     */
+    public String getDefaultName() {
+        if (DEFAULT_FILE_NAME.equals(fileName) || fileName == null) {
+            return null;
+        }
+
+        final String lastSegment = new File(fileName).getName();
+        final int dotPos = lastSegment.lastIndexOf(".");
+        if (dotPos > 0) { // if the file starts with a dot then this is not an extension
+            return lastSegment.substring(0, dotPos);
+        }
+        return lastSegment + "~";
+    }
+
     private static final CharsetEncoder PASSWORD_ENCODER = StandardCharsets.UTF_16LE.newEncoder();
 
     private static byte[] utf16Decode(char[] chars) throws IOException {
@@ -1389,8 +1613,8 @@ public class SevenZFile implements Closeable {
     }
 
     private static void assertFitsIntoInt(String what, long value) throws IOException {
-        if (value > Integer.MAX_VALUE) {
-            throw new IOException("Cannot handle " + what + value);
+        if (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE) {
+            throw new IOException("Cannot handle " + what + " " + value);
         }
     }
 }

@@ -192,5 +192,4 @@ public class FileNameUtil {
         // No custom suffix found, just append the default
         return fileName + defaultExtension;
     }
-
 }

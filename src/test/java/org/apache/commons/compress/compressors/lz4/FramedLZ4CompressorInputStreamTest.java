@@ -46,10 +46,7 @@ public final class FramedLZ4CompressorInputStreamTest
     public void testMatches() throws IOException {
         assertFalse(FramedLZ4CompressorInputStream.matches(new byte[10], 4));
         final byte[] b = new byte[12];
-        final File input = getFile("bla.tar.lz4");
-        try (FileInputStream in = new FileInputStream(input)) {
-            IOUtils.readFully(in, b);
-        }
+        IOUtils.read(getFile("bla.tar.lz4"), b);
         assertFalse(FramedLZ4CompressorInputStream.matches(b, 3));
         assertTrue(FramedLZ4CompressorInputStream.matches(b, 4));
         assertTrue(FramedLZ4CompressorInputStream.matches(b, 5));

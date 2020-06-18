@@ -299,12 +299,81 @@ public class ZipArchiveEntryTest {
     @Test
     public void reparsingUnicodeExtraWithUnsupportedversionThrowsInStrictMode()
         throws Exception {
-        thrown.expect(ZipException.class);
-        thrown.expectMessage("Unsupported version [116] for UniCode path extra data.");
         try (ZipFile zf = new ZipFile(getFile("COMPRESS-479.zip"))) {
             ZipArchiveEntry ze = zf.getEntry("%U20AC_for_Dollar.txt");
+            thrown.expect(ZipException.class);
+            thrown.expectMessage("Unsupported version [116] for UniCode path extra data.");
             ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.STRICT_FOR_KNOW_EXTRA_FIELDS);
         }
     }
 
+    @Test
+    public void bestEffortIncludesUnparseableExtraData() throws Exception {
+        ZipExtraField[] extraFields = parsingModeBehaviorTestData();
+        ZipArchiveEntry ze = new ZipArchiveEntry("foo");
+        ze.setExtraFields(extraFields);
+        ZipExtraField[] read = ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.BEST_EFFORT);
+        assertEquals(extraFields.length, read.length);
+    }
+
+    @Test
+    public void onlyParseableLenientExcludesUnparseableExtraData() throws Exception {
+        ZipExtraField[] extraFields = parsingModeBehaviorTestData();
+        ZipArchiveEntry ze = new ZipArchiveEntry("foo");
+        ze.setExtraFields(extraFields);
+        ZipExtraField[] read = ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.ONLY_PARSEABLE_LENIENT);
+        assertEquals(extraFields.length, read.length + 1);
+    }
+
+    @Test
+    public void strictForKnowExtraFieldsIncludesUnparseableExtraData() throws Exception {
+        ZipExtraField[] extraFields = parsingModeBehaviorTestData();
+        ZipArchiveEntry ze = new ZipArchiveEntry("foo");
+        ze.setExtraFields(extraFields);
+        ZipExtraField[] read = ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.STRICT_FOR_KNOW_EXTRA_FIELDS);
+        assertEquals(extraFields.length, read.length);
+    }
+
+    @Test
+    public void onlyParseableStrictExcludesUnparseableExtraData() throws Exception {
+        ZipExtraField[] extraFields = parsingModeBehaviorTestData();
+        ZipArchiveEntry ze = new ZipArchiveEntry("foo");
+        ze.setExtraFields(extraFields);
+        ZipExtraField[] read = ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.ONLY_PARSEABLE_STRICT);
+        assertEquals(extraFields.length, read.length + 1);
+    }
+
+    @Test
+    public void draconicThrowsOnUnparseableExtraData() throws Exception {
+        ZipExtraField[] extraFields = parsingModeBehaviorTestData();
+        ZipArchiveEntry ze = new ZipArchiveEntry("foo");
+        ze.setExtraFields(extraFields);
+        thrown.expect(ZipException.class);
+        thrown.expectMessage("Bad extra field starting at");
+        ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.DRACONIC);
+    }
+
+    private ZipExtraField[] parsingModeBehaviorTestData() {
+        final AsiExtraField a = new AsiExtraField();
+        a.setDirectory(true);
+        a.setMode(0755);
+        final UnrecognizedExtraField u = new UnrecognizedExtraField();
+        u.setHeaderId(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
+        u.setLocalFileDataData(new byte[0]);
+        final UnparseableExtraFieldData x = new UnparseableExtraFieldData();
+        byte[] unparseable = new byte[] {
+            0, 0, (byte) 0xff, (byte) 0xff, 0, 0, 0
+        };
+        x.parseFromLocalFileData(unparseable, 0, unparseable.length);
+        return new ZipExtraField[] { a, u, x };
+    }
+
+    @Test
+    public void testZipArchiveClone() throws Exception {
+        try (ZipFile zf = new ZipFile(getFile("COMPRESS-479.zip"))) {
+            ZipArchiveEntry ze = zf.getEntry("%U20AC_for_Dollar.txt");
+            ZipArchiveEntry clonedZe = (ZipArchiveEntry) ze.clone();
+            assertTrue(ze.equals(clonedZe));
+        }
+    }
 }
