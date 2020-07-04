@@ -127,6 +127,10 @@ The <action> type attribute can be add,update,fix,remove.
         and methods are also modified/added.
         Github Pull Request #97.
       </action>
+      <action issue="COMPRESS-539" type="update" date="2020-07-04" due-to="Robin Schimpf">
+        Update the IOUtils.skip to the latest implementation of Commons
+        IO, and reuse the record buffer in TarArchiveInputStream.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20">

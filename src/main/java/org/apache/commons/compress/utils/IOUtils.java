@@ -40,7 +40,7 @@ public final class IOUtils {
 
     // This buffer does not need to be synchronised because it is write only; the contents are ignored
     // Does not affect Immutability
-    private static final byte[] SKIP_BUF = new byte[SKIP_BUF_SIZE];
+    private static byte[] SKIP_BUF;
 
     /** Private constructor to prevent instantiation of this utility class. */
     private IOUtils(){
@@ -95,37 +95,39 @@ public final class IOUtils {
      * Skips the given number of bytes by repeatedly invoking skip on
      * the given input stream if necessary.
      *
-     * <p>In a case where the stream's skip() method returns 0 before
-     * the requested number of bytes has been skip this implementation
-     * will fall back to using the read() method.</p>
-     *
      * <p>This method will only skip less than the requested number of
      * bytes if the end of the input stream has been reached.</p>
+     * <p>
+     * This method is copied from Apache Commons IO with commit ID
+     * of 401d17349e7ec52d8fa866c35efd24103f332c29
      *
-     * @param input stream to skip bytes in
+     * @param input     stream to skip bytes in
      * @param numToSkip the number of bytes to skip
      * @return the number of bytes actually skipped
      * @throws IOException on error
      */
     public static long skip(final InputStream input, long numToSkip) throws IOException {
-        final long available = numToSkip;
-        while (numToSkip > 0) {
-            final long skipped = input.skip(numToSkip);
-            if (skipped == 0) {
+        if (numToSkip < 0) {
+            throw new IllegalArgumentException("Skip count must be non-negative, actual: " + numToSkip);
+        }
+        /*
+         * N.B. no need to synchronize this because: - we don't care if the buffer is created multiple times (the data
+         * is ignored) - we always use the same size buffer, so if it it is recreated it will still be OK (if the buffer
+         * size were variable, we would need to synch. to ensure some other thread did not create a smaller one)
+         */
+        if (SKIP_BUF == null) {
+            SKIP_BUF = new byte[SKIP_BUF_SIZE];
+        }
+        long remain = numToSkip;
+        while (remain > 0) {
+            // See https://issues.apache.org/jira/browse/IO-203 for why we use read() rather than delegating to skip()
+            final long n = input.read(SKIP_BUF, 0, (int) Math.min(remain, SKIP_BUF_SIZE));
+            if (n < 0) { // EOF
                 break;
             }
-            numToSkip -= skipped;
+            remain -= n;
         }
-
-        while (numToSkip > 0) {
-            final int read = readFully(input, SKIP_BUF, 0,
-                                 (int) Math.min(numToSkip, SKIP_BUF_SIZE));
-            if (read < 1) {
-                break;
-            }
-            numToSkip -= read;
-        }
-        return available - numToSkip;
+        return numToSkip - remain;
     }
 
     /**

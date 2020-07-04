@@ -59,6 +59,9 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     /** The size the TAR header */
     private final int recordSize;
 
+    /** The buffer to store the TAR header **/
+    private final byte[] recordBuffer;
+
     /** The size of a block */
     private final int blockSize;
 
@@ -190,6 +193,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         this.encoding = encoding;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
         this.recordSize = recordSize;
+        this.recordBuffer = new byte[recordSize];
         this.blockSize = blockSize;
         this.lenient = lenient;
     }
@@ -519,16 +523,13 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @throws IOException on error
      */
     protected byte[] readRecord() throws IOException {
-
-        final byte[] record = new byte[recordSize];
-
-        final int readNow = IOUtils.readFully(inputStream, record);
+        final int readNow = IOUtils.readFully(inputStream, recordBuffer);
         count(readNow);
         if (readNow != recordSize) {
             return null;
         }
 
-        return record;
+        return recordBuffer;
     }
 
     private void readGlobalPaxHeaders() throws IOException {
