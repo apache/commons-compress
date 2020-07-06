@@ -87,7 +87,7 @@ public class ArjArchiveEntry implements ArchiveEntry {
      * machine in timezone UTC this method will return midnight
      * regardless of timezone if the archive has been created on a
      * non-Unix system and a time taking the current timezone into
-     * account if the archive has beeen created on Unix.</p>
+     * account if the archive has been created on Unix.</p>
      *
      * @return the last modified date
      */

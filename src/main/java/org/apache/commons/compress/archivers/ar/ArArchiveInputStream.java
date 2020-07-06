@@ -41,7 +41,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
     private boolean closed;
 
     /*
-     * If getNextEnxtry has been called, the entry metadata is stored in
+     * If getNextEntry has been called, the entry metadata is stored in
      * currentEntry.
      */
     private ArArchiveEntry currentEntry = null;

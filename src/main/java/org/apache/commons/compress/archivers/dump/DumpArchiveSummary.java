@@ -278,8 +278,8 @@ public class DumpArchiveSummary {
     }
 
     /**
-     * Does this volume cotain extended attributes.
-     * @return true if volume cotains extended attributes.
+     * Does this volume contain extended attributes.
+     * @return true if volume contains extended attributes.
      */
     public boolean isExtendedAttributes() {
         return (flags & 0x8000) == 0x8000;
