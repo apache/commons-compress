@@ -45,6 +45,8 @@ import java.util.zip.ZipException;
 import org.apache.commons.compress.archivers.EntryStreamOffsets;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInputStream;
+import org.apache.commons.compress.utils.BoundedNIOInputStream;
+import org.apache.commons.compress.utils.BoundedSeekableByteChannelInputStream;
 import org.apache.commons.compress.utils.CountingInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
@@ -1314,81 +1316,10 @@ public class ZipFile implements Closeable {
      * Creates new BoundedInputStream, according to implementation of
      * underlying archive channel.
      */
-    private BoundedInputStream createBoundedInputStream(final long start, final long remaining) {
+    private BoundedNIOInputStream createBoundedInputStream(final long start, final long remaining) {
         return archive instanceof FileChannel ?
             new BoundedFileChannelInputStream(start, remaining) :
-            new BoundedInputStream(start, remaining);
-    }
-
-    /**
-     * InputStream that delegates requests to the underlying
-     * SeekableByteChannel, making sure that only bytes from a certain
-     * range can be read.
-     */
-    private class BoundedInputStream extends InputStream {
-        private ByteBuffer singleByteBuffer;
-        private final long end;
-        private long loc;
-
-        BoundedInputStream(final long start, final long remaining) {
-            this.end = start+remaining;
-            if (this.end < start) {
-                // check for potential vulnerability due to overflow
-                throw new IllegalArgumentException("Invalid length of stream at offset="+start+", length="+remaining);
-            }
-            loc = start;
-        }
-
-        @Override
-        public synchronized int read() throws IOException {
-            if (loc >= end) {
-                return -1;
-            }
-            if (singleByteBuffer == null) {
-                singleByteBuffer = ByteBuffer.allocate(1);
-            }
-            else {
-                singleByteBuffer.rewind();
-            }
-            final int read = read(loc, singleByteBuffer);
-            if (read < 0) {
-                return read;
-            }
-            loc++;
-            return singleByteBuffer.get() & 0xff;
-        }
-
-        @Override
-        public synchronized int read(final byte[] b, final int off, int len) throws IOException {
-            if (len <= 0) {
-                return 0;
-            }
-
-            if (len > end-loc) {
-                if (loc >= end) {
-                    return -1;
-                }
-                len = (int)(end-loc);
-            }
-
-            final ByteBuffer buf;
-            buf = ByteBuffer.wrap(b, off, len);
-            final int ret = read(loc, buf);
-            if (ret > 0) {
-                loc += ret;
-            }
-            return ret;
-        }
-
-        protected int read(final long pos, final ByteBuffer buf) throws IOException {
-            final int read;
-            synchronized (archive) {
-                archive.position(pos);
-                read = archive.read(buf);
-            }
-            buf.flip();
-            return read;
-        }
+            new BoundedSeekableByteChannelInputStream(start, remaining, archive);
     }
 
     /**
@@ -1397,12 +1328,12 @@ public class ZipFile implements Closeable {
      * file channel and therefore performs significantly faster in
      * concurrent environment.
      */
-    private class BoundedFileChannelInputStream extends BoundedInputStream {
+    private class BoundedFileChannelInputStream extends BoundedNIOInputStream {
         private final FileChannel archive;
 
         BoundedFileChannelInputStream(final long start, final long remaining) {
             super(start, remaining);
-            archive = (FileChannel)ZipFile.this.archive;
+            archive = (FileChannel) ZipFile.this.archive;
         }
 
         @Override
