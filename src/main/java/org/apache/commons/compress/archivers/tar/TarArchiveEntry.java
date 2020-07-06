@@ -256,6 +256,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
     /** Convert millis to seconds */
     public static final int MILLIS_PER_SECOND = 1000;
 
+    private long dataPosition = -1;
 
     /**
      * Construct an empty entry and prepares the header values.
@@ -551,6 +552,23 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
         throws IOException {
         this(false);
         parseTarHeader(headerBuf, encoding, false, lenient);
+    }
+
+    /**
+     * Construct an entry from an archive's header bytes for random access tar. File is set to null.
+     * @param headerBuf The header bytes from a tar archive entry.
+     * @param encoding encoding to use for file names
+     * @param lenient when set to true illegal values for group/userid, mode, device numbers and timestamp will be
+     * ignored and the fields set to {@link #UNKNOWN}. When set to false such illegal fields cause an exception instead.
+     * @param dataPosition Position of the entry data in the random access file
+     * @since 1.21
+     * @throws IllegalArgumentException if any of the numeric fields have an invalid format
+     * @throws IOException on error
+     */
+    public TarArchiveEntry(final byte[] headerBuf, final ZipEncoding encoding, final boolean lenient,
+            final long dataPosition) throws IOException {
+        this(headerBuf, encoding, lenient);
+        this.dataPosition = dataPosition;
     }
 
     /**
@@ -1182,6 +1200,25 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      */
     public boolean isSparse() {
         return isGNUSparse() || isStarSparse();
+    }
+
+    /**
+     * Data position of the archive entry in a random access tar
+     * @return position of the data in the tar file. If the entry is created from a stream and therefore the data
+     * position is unknown this will return -1.
+     * @since 1.21
+     */
+    public long getDataPosition() {
+        return dataPosition;
+    }
+
+    /**
+     * Set the position of the data for the tar entry.
+     * @param dataPosition the position of the data in the tar
+     * @since 1.21
+     */
+    public void setDataPosition(final long dataPosition) {
+        this.dataPosition = dataPosition;
     }
 
     /**

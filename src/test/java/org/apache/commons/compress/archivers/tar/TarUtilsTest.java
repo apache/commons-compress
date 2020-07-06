@@ -18,17 +18,24 @@
 
 package org.apache.commons.compress.archivers.tar;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.CharsetNames;
+import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Test;
 
-import java.nio.charset.StandardCharsets;
+import static org.apache.commons.compress.AbstractTestCase.getFile;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class TarUtilsTest {
 
@@ -393,6 +400,60 @@ public class TarUtilsTest {
         final TarArchiveStructSparse sparse = TarUtils.parseSparse(buffer, 0);
         assertEquals(sparse.getOffset(), expectedOffset);
         assertEquals(sparse.getNumbytes(), expectedNumbytes);
+    }
+
+    @Test
+    public void readSimplePaxHeader() throws Exception {
+        final Map<String, String> headers = TarUtils.parsePaxHeaders(
+                new ByteArrayInputStream("30 atime=1321711775.972059463\n".getBytes(StandardCharsets.UTF_8)),
+                null, new HashMap<String, String>());
+        assertEquals(1, headers.size());
+        assertEquals("1321711775.972059463", headers.get("atime"));
+    }
+
+    @Test
+    public void secondEntryWinsWhenPaxHeaderContainsDuplicateKey() throws Exception {
+        final Map<String, String> headers = TarUtils.parsePaxHeaders(new ByteArrayInputStream("11 foo=bar\n11 foo=baz\n"
+                        .getBytes(StandardCharsets.UTF_8)), null, new HashMap<String, String>());
+        assertEquals(1, headers.size());
+        assertEquals("baz", headers.get("foo"));
+    }
+
+    @Test
+    public void paxHeaderEntryWithEmptyValueRemovesKey() throws Exception {
+        final Map<String, String> headers = TarUtils
+                .parsePaxHeaders(new ByteArrayInputStream("11 foo=bar\n7 foo=\n"
+                        .getBytes(StandardCharsets.UTF_8)), null, new HashMap<String, String>());
+        assertEquals(0, headers.size());
+    }
+
+    @Test
+    public void readPaxHeaderWithEmbeddedNewline() throws Exception {
+        final Map<String, String> headers = TarUtils
+                .parsePaxHeaders(new ByteArrayInputStream("28 comment=line1\nline2\nand3\n"
+                        .getBytes(StandardCharsets.UTF_8)), null, new HashMap<String, String>());
+        assertEquals(1, headers.size());
+        assertEquals("line1\nline2\nand3", headers.get("comment"));
+    }
+
+    @Test
+    public void readNonAsciiPaxHeader() throws Exception {
+        final String ae = "\u00e4";
+        final String line = "11 path="+ ae + "\n";
+        assertEquals(11, line.getBytes(StandardCharsets.UTF_8).length);
+        final Map<String, String> headers = TarUtils
+                .parsePaxHeaders(new ByteArrayInputStream(line.getBytes(StandardCharsets.UTF_8)), null, new HashMap<String, String>());
+        assertEquals(1, headers.size());
+        assertEquals(ae, headers.get("path"));
+    }
+
+    @Test(expected = IOException.class)
+    public void testParseTarWithSpecialPaxHeaders() throws IOException {
+        try (FileInputStream in = new FileInputStream(getFile("COMPRESS-530.tar"));
+             TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
+            archive.getNextEntry();
+            IOUtils.toByteArray(archive);
+        }
     }
 
 }

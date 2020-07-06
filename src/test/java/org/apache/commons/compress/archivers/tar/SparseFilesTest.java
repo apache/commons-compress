@@ -28,15 +28,18 @@ import static org.junit.Assume.assumeTrue;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.Assume;
 import org.junit.Test;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
-
 
 public class SparseFilesTest extends AbstractTestCase {
 
@@ -68,6 +71,32 @@ public class SparseFilesTest extends AbstractTestCase {
     }
 
     @Test
+    public void testTarFileOldGNU() throws Throwable {
+        final File file = getFile("oldgnu_sparse.tar");
+        try (final TarFile tarFile = new TarFile(file)) {
+            TarArchiveEntry ae = tarFile.getEntries().get(0);
+            assertEquals("sparsefile", ae.getName());
+            assertTrue(ae.isOldGNUSparse());
+            assertTrue(ae.isGNUSparse());
+            assertFalse(ae.isPaxGNUSparse());
+            // TODO: Is this something which should be supported in the random access implementation. Is this even needed in the current stream implementation as it supports sparse entries now?
+            //assertFalse(tin.canReadEntryData(ae));
+
+            List<TarArchiveStructSparse> sparseHeaders = ae.getSparseHeaders();
+            assertEquals(3, sparseHeaders.size());
+
+            assertEquals(0, sparseHeaders.get(0).getOffset());
+            assertEquals(2048, sparseHeaders.get(0).getNumbytes());
+
+            assertEquals(1050624L, sparseHeaders.get(1).getOffset());
+            assertEquals(2560, sparseHeaders.get(1).getNumbytes());
+
+            assertEquals(3101184L, sparseHeaders.get(2).getOffset());
+            assertEquals(0, sparseHeaders.get(2).getNumbytes());
+        }
+    }
+
+    @Test
     public void testPaxGNU() throws Throwable {
         final File file = getFile("pax_gnu_sparse.tar");
         try (TarArchiveInputStream tin = new TarArchiveInputStream(new FileInputStream(file))) {
@@ -75,6 +104,38 @@ public class SparseFilesTest extends AbstractTestCase {
             assertPaxGNUEntry(tin, "0.1");
             assertPaxGNUEntry(tin, "1.0");
         }
+    }
+
+    @Test
+    public void testTarFilePaxGNU() throws IOException {
+        final File file = getFile("pax_gnu_sparse.tar");
+        try (final TarFile tarFile = new TarFile(file)) {
+            List<TarArchiveEntry> entries = tarFile.getEntries();
+            assertPaxGNUEntry(entries.get(0), "0.0");
+            assertPaxGNUEntry(entries.get(1), "0.1");
+            assertPaxGNUEntry(entries.get(2), "1.0");
+        }
+    }
+
+    private void assertPaxGNUEntry(final TarArchiveEntry entry, final String suffix) {
+        assertEquals("sparsefile-" + suffix, entry.getName());
+        assertTrue(entry.isGNUSparse());
+        assertTrue(entry.isPaxGNUSparse());
+        assertFalse(entry.isOldGNUSparse());
+        // TODO: Is this something which should be supported in the random access implementation. Is this even needed in the current stream implementation as it supports sparse entries now?
+        //assertFalse(tin.canReadEntryData(entry));
+
+        List<TarArchiveStructSparse> sparseHeaders = entry.getSparseHeaders();
+        assertEquals(3, sparseHeaders.size());
+
+        assertEquals(0, sparseHeaders.get(0).getOffset());
+        assertEquals(2048, sparseHeaders.get(0).getNumbytes());
+
+        assertEquals(1050624L, sparseHeaders.get(1).getOffset());
+        assertEquals(2560, sparseHeaders.get(1).getNumbytes());
+
+        assertEquals(3101184L, sparseHeaders.get(2).getOffset());
+        assertEquals(0, sparseHeaders.get(2).getNumbytes());
     }
 
     @Test
@@ -118,6 +179,47 @@ public class SparseFilesTest extends AbstractTestCase {
     }
 
     @Test
+    public void testTarFileExtractSparseTarsOnWindows() throws IOException {
+        Assume.assumeTrue("Only run test on Windows", isOnWindows);
+
+        final File oldGNUSparseTar = getFile("oldgnu_sparse.tar");
+        final File paxGNUSparseTar = getFile("pax_gnu_sparse.tar");
+        try (TarFile paxGnu = new TarFile(paxGNUSparseTar)) {
+            List<TarArchiveEntry> entries = paxGnu.getEntries();
+
+            // compare between old GNU and PAX 0.0
+            TarArchiveEntry paxGnuEntry = entries.get(0);
+            try (TarFile oldGnu = new TarFile(oldGNUSparseTar)) {
+                TarArchiveEntry oldGnuEntry = oldGnu.getEntries().get(0);
+                try (InputStream old = oldGnu.getInputStream(oldGnuEntry);
+                     InputStream pax = paxGnu.getInputStream(paxGnuEntry)) {
+                    assertArrayEquals(IOUtils.toByteArray(old), IOUtils.toByteArray(pax));
+                }
+            }
+
+            // compare between old GNU and PAX 0.1
+            paxGnuEntry = entries.get(1);
+            try (TarFile oldGnu = new TarFile(oldGNUSparseTar)) {
+                TarArchiveEntry oldGnuEntry = oldGnu.getEntries().get(0);
+                try (InputStream old = oldGnu.getInputStream(oldGnuEntry);
+                     InputStream pax = paxGnu.getInputStream(paxGnuEntry)) {
+                    assertArrayEquals(IOUtils.toByteArray(old), IOUtils.toByteArray(pax));
+                }
+            }
+
+            // compare between old GNU and PAX 1.0
+            paxGnuEntry = entries.get(2);
+            try (TarFile oldGnu = new TarFile(oldGNUSparseTar)) {
+                TarArchiveEntry oldGnuEntry = oldGnu.getEntries().get(0);
+                try (InputStream old = oldGnu.getInputStream(oldGnuEntry);
+                     InputStream pax = paxGnu.getInputStream(paxGnuEntry)) {
+                    assertArrayEquals(IOUtils.toByteArray(old), IOUtils.toByteArray(pax));
+                }
+            }
+        }
+    }
+
+    @Test
     public void testExtractOldGNU() throws IOException, InterruptedException {
         assumeFalse("This test should be ignored on Windows", isOnWindows);
 
@@ -137,6 +239,20 @@ public class SparseFilesTest extends AbstractTestCase {
     }
 
     @Test
+    public void testTarFileExtractOldGNU() throws IOException, InterruptedException {
+        Assume.assumeFalse("Don't run test on Windows", isOnWindows);
+
+        File file = getFile("oldgnu_sparse.tar");
+        try (final InputStream sparseFileInputStream = extractTarAndGetInputStream(file, "sparsefile");
+             final TarFile tarFile = new TarFile(file)) {
+            TarArchiveEntry entry = tarFile.getEntries().get(0);
+            try (InputStream tarInput = tarFile.getInputStream(entry)) {
+                assertArrayEquals(IOUtils.toByteArray(tarInput), IOUtils.toByteArray(sparseFileInputStream));
+            }
+        }
+    }
+
+    @Test
     public void testExtractExtendedOldGNU() throws IOException, InterruptedException {
         assumeFalse("This test should be ignored on Windows", isOnWindows);
 
@@ -150,6 +266,45 @@ public class SparseFilesTest extends AbstractTestCase {
                 IOUtils.toByteArray(sparseFileInputStream));
 
             final List<TarArchiveStructSparse> sparseHeaders = ae.getSparseHeaders();
+            assertEquals(7, sparseHeaders.size());
+
+            assertEquals(0, sparseHeaders.get(0).getOffset());
+            assertEquals(1024, sparseHeaders.get(0).getNumbytes());
+
+            assertEquals(10240, sparseHeaders.get(1).getOffset());
+            assertEquals(1024, sparseHeaders.get(1).getNumbytes());
+
+            assertEquals(16384, sparseHeaders.get(2).getOffset());
+            assertEquals(1024, sparseHeaders.get(2).getNumbytes());
+
+            assertEquals(24576, sparseHeaders.get(3).getOffset());
+            assertEquals(1024, sparseHeaders.get(3).getNumbytes());
+
+            assertEquals(29696, sparseHeaders.get(4).getOffset());
+            assertEquals(1024, sparseHeaders.get(4).getNumbytes());
+
+            assertEquals(36864, sparseHeaders.get(5).getOffset());
+            assertEquals(1024, sparseHeaders.get(5).getNumbytes());
+
+            assertEquals(51200, sparseHeaders.get(6).getOffset());
+            assertEquals(0, sparseHeaders.get(6).getNumbytes());
+        }
+    }
+
+    @Test
+    public void testTarFileExtractExtendedOldGNU() throws IOException, InterruptedException {
+        Assume.assumeFalse("Don't run test on Windows", isOnWindows);
+
+        final File file = getFile("oldgnu_extended_sparse.tar");
+        try (InputStream sparseFileInputStream = extractTarAndGetInputStream(file, "sparse6");
+             TarFile tarFile = new TarFile(file)) {
+            TarArchiveEntry ae = tarFile.getEntries().get(0);
+
+            try (InputStream tarInput = tarFile.getInputStream(ae)) {
+                assertArrayEquals(IOUtils.toByteArray(tarInput), IOUtils.toByteArray(sparseFileInputStream));
+            }
+
+            List<TarArchiveStructSparse> sparseHeaders = ae.getSparseHeaders();
             assertEquals(7, sparseHeaders.size());
 
             assertEquals(0, sparseHeaders.get(0).getOffset());
@@ -207,6 +362,46 @@ public class SparseFilesTest extends AbstractTestCase {
                 assertArrayEquals(IOUtils.toByteArray(tin),
                         IOUtils.toByteArray(sparseFileInputStream));
             }
+        }
+    }
+
+    @Test
+    public void testTarFileExtractPaxGNU() throws IOException, InterruptedException {
+        Assume.assumeFalse("Don't run test on Windows", isOnWindows);
+
+        final File file = getFile("pax_gnu_sparse.tar");
+        try (final TarFile paxGnu = new TarFile(file)) {
+            List<TarArchiveEntry> entries = paxGnu.getEntries();
+
+            TarArchiveEntry entry = entries.get(0);
+            try (InputStream sparseFileInputStream = extractTarAndGetInputStream(file, "sparsefile-0.0");
+                 InputStream paxInput = paxGnu.getInputStream(entry)) {
+                assertArrayEquals(IOUtils.toByteArray(paxInput), IOUtils.toByteArray(sparseFileInputStream));
+            }
+
+            // TODO : it's wired that I can only get a 0 size sparsefile-0.1 on my Ubuntu 16.04
+            //        using "tar -xf pax_gnu_sparse.tar"
+            entry = entries.get(1);
+            try (InputStream sparseFileInputStream = extractTarAndGetInputStream(file, "sparsefile-0.0");
+                 InputStream paxInput = paxGnu.getInputStream(entry)) {
+                assertArrayEquals(IOUtils.toByteArray(paxInput), IOUtils.toByteArray(sparseFileInputStream));
+            }
+
+            entry = entries.get(2);
+            try (InputStream sparseFileInputStream = extractTarAndGetInputStream(file, "sparsefile-1.0");
+                 InputStream paxInput = paxGnu.getInputStream(entry)) {
+                assertArrayEquals(IOUtils.toByteArray(paxInput), IOUtils.toByteArray(sparseFileInputStream));
+            }
+        }
+    }
+
+    @Test
+    public void compareTarArchiveInputStreamWithTarFile() throws IOException {
+        Path file = getPath("oldgnu_sparse.tar");
+        try (TarArchiveInputStream tarIn = new TarArchiveInputStream(new BufferedInputStream(Files.newInputStream(file)));
+             TarFile tarFile = new TarFile(file)) {
+            TarArchiveEntry tarInEntry = tarIn.getNextTarEntry();
+            assertArrayEquals(IOUtils.toByteArray(tarIn), IOUtils.toByteArray(tarFile.getInputStream(tarFile.getEntries().get(0))));
         }
     }
 
