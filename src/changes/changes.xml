@@ -130,6 +130,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action issue="COMPRESS-539" type="update" date="2020-07-04" due-to="Robin Schimpf">
         Reuse the record buffer in TarArchiveInputStream.
       </action>
+      <action type="update" date="2020-07-23" due-to="Dependabot" dev="ggregory">
+        Update GitHub actions/checkout from v1 to v2.3.1 #114.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20">
