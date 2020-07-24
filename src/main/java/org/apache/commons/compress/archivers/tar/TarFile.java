@@ -233,7 +233,7 @@ public class TarFile implements Closeable {
 
         if (currEntry != null) {
             // Skip to the end of the entry
-            archive.position(currEntry.getDataPosition() + currEntry.getSize());
+            archive.position(currEntry.getDataOffset() + currEntry.getSize());
 
             skipRecordPadding();
         }
@@ -315,7 +315,7 @@ public class TarFile implements Closeable {
                 }
                 entry = new TarArchiveSparseEntry(headerBuf.array());
                 currEntry.getSparseHeaders().addAll(entry.getSparseHeaders());
-                currEntry.setDataPosition(currEntry.getDataPosition() + recordSize);
+                currEntry.setDataOffset(currEntry.getDataOffset() + recordSize);
             } while (entry.isExtended());
         }
 
@@ -373,7 +373,7 @@ public class TarFile implements Closeable {
                 // only store the input streams with non-zero size
                 if (sparseHeader.getNumbytes() > 0) {
                     long start =
-                            currEntry.getDataPosition() + sparseHeader.getOffset() - numberOfZeroBytesInSparseEntry;
+                            currEntry.getDataOffset() + sparseHeader.getOffset() - numberOfZeroBytesInSparseEntry;
                     streams.add(new BoundedSeekableByteChannelInputStream(start, sparseHeader.getNumbytes(), archive));
                 }
 
@@ -443,7 +443,7 @@ public class TarFile implements Closeable {
             }
             currEntry.setSparseHeaders(sparseHeaders);
             // data of the entry is after the pax gnu entry. So we need to update the data position once again
-            currEntry.setDataPosition(currEntry.getDataPosition() + recordSize);
+            currEntry.setDataOffset(currEntry.getDataOffset() + recordSize);
         }
 
         // sparse headers are all done reading, we need to build
@@ -620,7 +620,7 @@ public class TarFile implements Closeable {
         private int currentSparseInputStreamIndex;
 
         BoundedTarEntryInputStream(final TarArchiveEntry entry, final SeekableByteChannel channel) {
-            super(entry.getDataPosition(), entry.isSparse() ? entry.getRealSize() : entry.getSize());
+            super(entry.getDataOffset(), entry.isSparse() ? entry.getRealSize() : entry.getSize());
             this.entry = entry;
             this.channel = channel;
         }
@@ -660,7 +660,7 @@ public class TarFile implements Closeable {
             // if there are no actual input streams, just read from the original archive
             final List<InputStream> entrySparseInputStreams = sparseInputStreams.get(entry.getName());
             if (entrySparseInputStreams == null || entrySparseInputStreams.isEmpty()) {
-                return readArchive(entry.getDataPosition() + pos, buf);
+                return readArchive(entry.getDataOffset() + pos, buf);
             }
 
             if (currentSparseInputStreamIndex >= entrySparseInputStreams.size()) {
