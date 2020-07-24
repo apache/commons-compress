@@ -660,7 +660,7 @@ public class TarUtils {
      * @return map of PAX headers values found inside of the current (local or global) PAX headers tar entry.
      * @throws IOException
      */
-    public static Map<String, String> parsePaxHeaders(final InputStream inputStream, final List<TarArchiveStructSparse> sparseHeaders, final Map<String, String> globalPaxHeaders)
+    protected static Map<String, String> parsePaxHeaders(final InputStream inputStream, final List<TarArchiveStructSparse> sparseHeaders, final Map<String, String> globalPaxHeaders)
             throws IOException {
         final Map<String, String> headers = new HashMap<>(globalPaxHeaders);
         Long offset = null;
@@ -752,7 +752,7 @@ public class TarUtils {
      * @param sparseMap the sparse map string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
      * @return sparse headers parsed from sparse map
      */
-    public static List<TarArchiveStructSparse> parsePAX01SparseHeaders(String sparseMap) {
+    protected static List<TarArchiveStructSparse> parsePAX01SparseHeaders(String sparseMap) {
         List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
         String[] sparseHeaderStrings = sparseMap.split(",");
 
@@ -776,7 +776,7 @@ public class TarUtils {
      * @return sparse headers
      * @throws IOException
      */
-    public static List<TarArchiveStructSparse> parsePAX1XSparseHeaders(final InputStream inputStream, final int recordSize) throws IOException {
+    protected static List<TarArchiveStructSparse> parsePAX1XSparseHeaders(final InputStream inputStream, final int recordSize) throws IOException {
         // for 1.X PAX Headers
         List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
         long bytesRead = 0;
