@@ -40,6 +40,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.EntryStreamOffsets;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
@@ -158,8 +159,7 @@ import org.apache.commons.compress.utils.IOUtils;
  * @NotThreadSafe
  */
 
-public class TarArchiveEntry implements ArchiveEntry, TarConstants {
-
+public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamOffsets {
     private static final TarArchiveEntry[] EMPTY_TAR_ARCHIVE_ENTRIES = new TarArchiveEntry[0];
 
     /**
@@ -256,7 +256,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
     /** Convert millis to seconds */
     public static final int MILLIS_PER_SECOND = 1000;
 
-    private long dataPosition = -1;
+    private long dataOffset = EntryStreamOffsets.OFFSET_UNKNOWN;
 
     /**
      * Construct an empty entry and prepares the header values.
@@ -560,15 +560,15 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * @param encoding encoding to use for file names
      * @param lenient when set to true illegal values for group/userid, mode, device numbers and timestamp will be
      * ignored and the fields set to {@link #UNKNOWN}. When set to false such illegal fields cause an exception instead.
-     * @param dataPosition Position of the entry data in the random access file
+     * @param dataOffset Position of the entry data in the random access file
      * @since 1.21
      * @throws IllegalArgumentException if any of the numeric fields have an invalid format
      * @throws IOException on error
      */
     public TarArchiveEntry(final byte[] headerBuf, final ZipEncoding encoding, final boolean lenient,
-            final long dataPosition) throws IOException {
+            final long dataOffset) throws IOException {
         this(headerBuf, encoding, lenient);
-        this.dataPosition = dataPosition;
+        this.dataOffset = dataOffset;
     }
 
     /**
@@ -1203,22 +1203,30 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
     }
 
     /**
-     * Data position of the archive entry in a random access tar
-     * @return position of the data in the tar file. If the entry is created from a stream and therefore the data
-     * position is unknown this will return -1.
+     * {@inheritDoc}
      * @since 1.21
      */
-    public long getDataPosition() {
-        return dataPosition;
+    @Override
+    public long getDataOffset() {
+        return dataOffset;
     }
 
     /**
-     * Set the position of the data for the tar entry.
-     * @param dataPosition the position of the data in the tar
+     * Set the offset of the data for the tar entry.
+     * @param dataOffset the position of the data in the tar
      * @since 1.21
      */
-    public void setDataPosition(final long dataPosition) {
-        this.dataPosition = dataPosition;
+    public void setDataOffset(final long dataOffset) {
+        this.dataOffset = dataOffset;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @since 1.21
+     */
+    @Override
+    public boolean isStreamContiguous() {
+        return true;
     }
 
     /**
