@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.EnumSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.zip.CRC32;
 
 import org.apache.commons.compress.utils.BoundedInputStream;
@@ -934,10 +935,7 @@ public class SevenZFile implements Closeable {
     private void readFilesInfo(final ByteBuffer header, final Archive archive) throws IOException {
         final long numFiles = readUint64(header);
         assertFitsIntoInt("numFiles", numFiles);
-        final SevenZArchiveEntry[] files = new SevenZArchiveEntry[(int)numFiles];
-        for (int i = 0; i < files.length; i++) {
-            files[i] = new SevenZArchiveEntry();
-        }
+        final SevenZArchiveEntry[] files = new SevenZArchiveEntry[(int) numFiles];
         BitSet isEmptyStream = null;
         BitSet isEmptyFile = null;
         BitSet isAnti = null;
@@ -981,8 +979,13 @@ public class SevenZFile implements Closeable {
                     int nextName = 0;
                     for (int i = 0; i < names.length; i += 2) {
                         if (names[i] == 0 && names[i+1] == 0) {
-                            files[nextFile++].setName(new String(names, nextName, i-nextName, StandardCharsets.UTF_16LE));
+                            String fName = new String(names, nextName, i - nextName, StandardCharsets.UTF_16LE);
+                            if (files[nextFile] == null) {
+                                files[nextFile] = new SevenZArchiveEntry();
+                            }
+                            files[nextFile].setName(fName);
                             nextName = i + 2;
+                            nextFile++;
                         }
                     }
                     if (nextName != names.length || nextFile != files.length) {
@@ -997,6 +1000,9 @@ public class SevenZFile implements Closeable {
                         throw new IOException("Unimplemented");
                     }
                     for (int i = 0; i < files.length; i++) {
+                        if (files[i] == null) {
+                            files[i] = new SevenZArchiveEntry();
+                        }
                         files[i].setHasCreationDate(timesDefined.get(i));
                         if (files[i].getHasCreationDate()) {
                             files[i].setCreationDate(header.getLong());
@@ -1011,6 +1017,9 @@ public class SevenZFile implements Closeable {
                         throw new IOException("Unimplemented");
                     }
                     for (int i = 0; i < files.length; i++) {
+                        if (files[i] == null) {
+                            files[i] = new SevenZArchiveEntry();
+                        }
                         files[i].setHasAccessDate(timesDefined.get(i));
                         if (files[i].getHasAccessDate()) {
                             files[i].setAccessDate(header.getLong());
@@ -1025,6 +1034,9 @@ public class SevenZFile implements Closeable {
                         throw new IOException("Unimplemented");
                     }
                     for (int i = 0; i < files.length; i++) {
+                        if (files[i] == null) {
+                            files[i] = new SevenZArchiveEntry();
+                        }
                         files[i].setHasLastModifiedDate(timesDefined.get(i));
                         if (files[i].getHasLastModifiedDate()) {
                             files[i].setLastModifiedDate(header.getLong());
@@ -1039,6 +1051,9 @@ public class SevenZFile implements Closeable {
                         throw new IOException("Unimplemented");
                     }
                     for (int i = 0; i < files.length; i++) {
+                        if (files[i] == null) {
+                            files[i] = new SevenZArchiveEntry();
+                        }
                         files[i].setHasWindowsAttributes(attributesDefined.get(i));
                         if (files[i].getHasWindowsAttributes()) {
                             files[i].setWindowsAttributes(header.getInt());
@@ -1071,6 +1086,9 @@ public class SevenZFile implements Closeable {
         int nonEmptyFileCounter = 0;
         int emptyFileCounter = 0;
         for (int i = 0; i < files.length; i++) {
+            if (files[i] == null) {
+                continue;
+            }
             files[i].setHasStream(isEmptyStream == null || !isEmptyStream.get(i));
             if (files[i].hasStream()) {
                 if (archive.subStreamsInfo == null) {
@@ -1090,7 +1108,13 @@ public class SevenZFile implements Closeable {
                 ++emptyFileCounter;
             }
         }
-        archive.files = files;
+        List<SevenZArchiveEntry> entries = new ArrayList<>();
+        for (SevenZArchiveEntry e : files) {
+            if (e != null) {
+                entries.add(e);
+            }
+        }
+        archive.files = entries.toArray(new SevenZArchiveEntry[0]);
         calculateStreamMap(archive);
     }
 
