@@ -56,4 +56,4 @@ install: true
 # and running all tests twice.
 
 script:
-   - ./mvnw clean apache-rat:check test jacoco:report coveralls:report -Ptravis-jacoco
+   - ./mvnw -V clean apache-rat:check test jacoco:report coveralls:report -Ptravis-jacoco --no-transfer-progress
