@@ -268,9 +268,9 @@ public class ArArchiveInputStream extends ArchiveInputStream {
             return -1;
         }
         final int toRead = (int) Math.min(len, entryEnd - offset);
-        final int ret = this.input.read(b, off, toRead);
-        trackReadBytes(ret);
-        return ret;
+        final int read = this.input.read(b, off, toRead);
+        trackReadBytes(read);
+        return read;
     }
 
     /**

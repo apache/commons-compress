@@ -48,14 +48,14 @@ class BitStream extends BitInputStream {
     /**
      * Returns the integer value formed by the n next bits (up to 8 bits).
      *
-     * @param n the number of bits read (up to 8)
-     * @return The value formed by the n bits, or -1 if the end of the stream has been reached
+     * @param count the number of bits read (up to 8)
+     * @return The value formed by the count bits, or -1 if the end of the stream has been reached
      */
-    long nextBits(final int n) throws IOException {
-        if (n < 0 || n > 8) {
-            throw new IOException("Trying to read " + n + " bits, at most 8 are allowed");
+    long nextBits(final int count) throws IOException {
+        if (count < 0 || count > 8) {
+            throw new IOException("Trying to read " + count + " bits, at most 8 are allowed");
         }
-        return readBits(n);
+        return readBits(count);
     }
 
     int nextByte() throws IOException {

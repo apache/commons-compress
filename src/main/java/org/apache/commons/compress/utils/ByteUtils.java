@@ -71,16 +71,16 @@ public final class ByteUtils {
     /**
      * Reads the given byte array as a little endian long.
      * @param bytes the byte array to convert
-     * @param off the offset into the array that starts the value
+     * @param offset the offset into the array that starts the value
      * @param length the number of bytes representing the value
      * @return the number read
      * @throws IllegalArgumentException if len is bigger than eight
      */
-    public static long fromLittleEndian(byte[] bytes, final int off, final int length) {
+    public static long fromLittleEndian(byte[] bytes, final int offset, final int length) {
         checkReadLength(length);
         long l = 0;
         for (int i = 0; i < length; i++) {
-            l |= (bytes[off + i] & 0xffL) << (8 * i);
+            l |= (bytes[offset + i] & 0xffL) << (8 * i);
         }
         return l;
     }
@@ -159,13 +159,13 @@ public final class ByteUtils {
      * sequence of the given length starting at the given offset.
      * @param b the array to write into
      * @param value the value to insert
-     * @param off the offset into the array that receives the first byte
+     * @param offset the offset into the array that receives the first byte
      * @param length the number of bytes to use to represent the value
      */
-    public static void toLittleEndian(final byte[] b, final long value, final int off, final int length) {
+    public static void toLittleEndian(final byte[] b, final long value, final int offset, final int length) {
         long num = value;
         for (int i = 0; i < length; i++) {
-            b[off + i] = (byte) (num & 0xff);
+            b[offset + i] = (byte) (num & 0xff);
             num >>= 8;
         }
     }
