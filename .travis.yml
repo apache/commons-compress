@@ -22,21 +22,11 @@ matrix:
     - dist: trusty
       jdk: openjdk8
     - dist: xenial
-      jdk: openjdk10
-    - dist: xenial
       jdk: openjdk11
     - dist: trusty
       jdk: oraclejdk8
     - dist: trusty
-      jdk: oraclejdk9
-    - dist: trusty
       jdk: oraclejdk11
-    - dist: trusty
-      jdk: oraclejdk12
-    - dist: trusty
-      jdk: openjdk12
-    - dist: trusty
-      jdk: openjdk13
     - dist: trusty
       jdk: openjdk14
     - dist: trusty
