@@ -31,6 +31,7 @@ import java.nio.ByteOrder;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -167,17 +168,18 @@ public class SevenZOutputFile implements Closeable {
      *
      * @param inputPath path to create an entry from
      * @param entryName the name to use
+     * @param options options indicating how symbolic links are handled.
      * @return the ArchiveEntry set up with details from the file
      *
      * @throws IOException on error
      * @since 1.21
      */
     public SevenZArchiveEntry createArchiveEntry(final Path inputPath,
-            final String entryName) throws IOException {
+        final String entryName, LinkOption... options) throws IOException {
         final SevenZArchiveEntry entry = new SevenZArchiveEntry();
-        entry.setDirectory(Files.isDirectory(inputPath));
+        entry.setDirectory(Files.isDirectory(inputPath, options));
         entry.setName(entryName);
-        entry.setLastModifiedDate(new Date(Files.getLastModifiedTime(inputPath).toMillis()));
+        entry.setLastModifiedDate(new Date(Files.getLastModifiedTime(inputPath, options).toMillis()));
         return entry;
     }
 
