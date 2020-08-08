@@ -258,7 +258,7 @@ public class LZ77Compressor {
     public LZ77Compressor(final Parameters params, final Callback callback) {
         Objects.requireNonNull(params, "params");
         Objects.requireNonNull(callback, "callback");
-        
+
         this.params = params;
         this.callback = callback;
 

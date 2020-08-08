@@ -227,7 +227,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         }
         return new ArArchiveEntry(inputFile, entryName);
     }
-    
+
     /**
      * {@inheritDoc}
      *

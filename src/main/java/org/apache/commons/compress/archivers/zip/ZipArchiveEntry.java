@@ -245,7 +245,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * @param entryName name of the entry.
      * @param options options indicating how symbolic links are handled.
      * @throws IOException if an I/O error occurs.
-     * @since 1.21 
+     * @since 1.21
      */
     public ZipArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
         this(Files.isDirectory(inputPath, options) && !entryName.endsWith("/") ?
@@ -260,7 +260,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     /**
      * Sets the modification time of the entry.
      * @param fileTime the entry modification time.
-     * @since 1.21 
+     * @since 1.21
      */
     public void setTime(final FileTime fileTime) {
         setTime(fileTime.toMillis());

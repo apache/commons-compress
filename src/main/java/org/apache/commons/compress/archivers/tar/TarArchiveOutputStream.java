@@ -558,7 +558,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         }
         return new TarArchiveEntry(inputFile, entryName);
     }
-    
+
     @Override
     public ArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
         if (finished) {

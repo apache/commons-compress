@@ -40,7 +40,7 @@ public final class IOUtils {
 
     private static final int COPY_BUF_SIZE = 8024;
     private static final int SKIP_BUF_SIZE = 4096;
-    
+
     /**
      * Empty array of of type {@link LinkOption}.
      *

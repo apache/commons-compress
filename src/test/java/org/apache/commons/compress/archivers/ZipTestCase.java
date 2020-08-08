@@ -62,7 +62,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public final class ZipTestCase extends AbstractTestCase {
-    
+
     /**
      * Archives 2 files and unarchives it again. If the file length of result
      * and source is the same, it looks like the operations have worked

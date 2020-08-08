@@ -237,7 +237,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
 
     /** The entry's file reference */
     private final Path file;
-    
+
     /** The entry's file linkOptions*/
     private final LinkOption[] linkOptions;
 

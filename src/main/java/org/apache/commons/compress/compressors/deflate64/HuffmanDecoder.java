@@ -29,7 +29,7 @@ import java.util.Arrays;
 import static org.apache.commons.compress.compressors.deflate64.HuffmanState.*;
 
 class HuffmanDecoder implements Closeable {
-    
+
     /**
      * <pre>
      * --------------------------------------------------------------------

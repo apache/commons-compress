@@ -1785,7 +1785,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @param inputPath path to create the entry from.
      * @param entryName name of the entry.
      * @param options options indicating how symbolic links are handled.
-     * @return a new instance. 
+     * @return a new instance.
      * @throws IOException if an I/O error occurs.
      * @since 1.21
      */
