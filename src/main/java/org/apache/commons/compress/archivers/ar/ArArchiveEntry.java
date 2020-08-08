@@ -19,6 +19,10 @@
 package org.apache.commons.compress.archivers.ar;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
 import java.util.Date;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -107,7 +111,7 @@ public class ArArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Create a new instance using the attributes of the given file
+     * Creates a new instance using the attributes of the given file
      * @param inputFile the file to create an entry from
      * @param entryName the name of the entry
      */
@@ -115,6 +119,19 @@ public class ArArchiveEntry implements ArchiveEntry {
         // TODO sort out mode
         this(entryName, inputFile.isFile() ? inputFile.length() : 0,
              0, 0, DEFAULT_MODE, inputFile.lastModified() / 1000);
+    }
+
+    /**
+     * Creates a new instance using the attributes of the given file
+     * @param inputPath the file to create an entry from
+     * @param entryName the name of the entry
+     * @param options options indicating how symbolic links are handled.
+     * @throws IOException if an I/O error occurs.
+     * @since 1.21
+     */
+    public ArArchiveEntry(Path inputPath, String entryName, LinkOption... options) throws IOException {
+        this(entryName, Files.isRegularFile(inputPath, options) ? Files.size(inputPath) : 0, 0, 0, DEFAULT_MODE,
+            Files.getLastModifiedTime(inputPath, options).toMillis() / 1000);
     }
 
     @Override
@@ -180,8 +197,7 @@ public class ArArchiveEntry implements ArchiveEntry {
         final ArArchiveEntry other = (ArArchiveEntry) obj;
         if (name == null) {
             return other.name == null;
-        } else {
-            return name.equals(other.name);
         }
+        return name.equals(other.name);
     }
 }

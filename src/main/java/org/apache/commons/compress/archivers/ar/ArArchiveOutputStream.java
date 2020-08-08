@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
@@ -48,7 +50,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     /** indicates if this archive is finished */
     private boolean finished = false;
 
-    public ArArchiveOutputStream( final OutputStream pOut ) {
+    public ArArchiveOutputStream(final OutputStream pOut) {
         this.out = pOut;
     }
 
@@ -85,7 +87,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     }
 
     @Override
-    public void putArchiveEntry( final ArchiveEntry pEntry ) throws IOException {
+    public void putArchiveEntry(final ArchiveEntry pEntry) throws IOException {
         if(finished) {
             throw new IOException("Stream has already been finished");
         }
@@ -111,7 +113,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         haveUnclosedEntry = true;
     }
 
-    private long fill( final long pOffset, final long pNewOffset, final char pFill ) throws IOException {
+    private long fill(final long pOffset, final long pNewOffset, final char pFill) throws IOException {
         final long diff = pNewOffset - pOffset;
 
         if (diff > 0) {
@@ -123,13 +125,13 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         return pNewOffset;
     }
 
-    private long write( final String data ) throws IOException {
+    private long write(final String data) throws IOException {
         final byte[] bytes = data.getBytes(StandardCharsets.US_ASCII);
         write(bytes);
         return bytes.length;
     }
 
-    private long writeEntryHeader( final ArArchiveEntry pEntry ) throws IOException {
+    private long writeEntryHeader(final ArArchiveEntry pEntry) throws IOException {
 
         long offset = 0;
         boolean mustAppendName = false;
@@ -219,11 +221,24 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
 
     @Override
     public ArchiveEntry createArchiveEntry(final File inputFile, final String entryName)
-            throws IOException {
-        if(finished) {
+        throws IOException {
+        if (finished) {
             throw new IOException("Stream has already been finished");
         }
         return new ArArchiveEntry(inputFile, entryName);
+    }
+    
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.21
+     */
+    @Override
+    public ArchiveEntry createArchiveEntry(Path inputPath, String entryName, LinkOption... options) throws IOException {
+        if (finished) {
+            throw new IOException("Stream has already been finished");
+        }
+        return new ArArchiveEntry(inputPath, entryName, options);
     }
 
     @Override
