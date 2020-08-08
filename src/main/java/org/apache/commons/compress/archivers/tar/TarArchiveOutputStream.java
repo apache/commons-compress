@@ -25,6 +25,8 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -555,6 +557,14 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             throw new IOException("Stream has already been finished");
         }
         return new TarArchiveEntry(inputFile, entryName);
+    }
+    
+    @Override
+    public ArchiveEntry createArchiveEntry(Path inputPath, String entryName, LinkOption... options) throws IOException {
+        if (finished) {
+            throw new IOException("Stream has already been finished");
+        }
+        return new TarArchiveEntry(inputPath, entryName, options);
     }
 
     /**

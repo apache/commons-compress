@@ -30,6 +30,7 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 
 /**
  * Utility functions
@@ -39,6 +40,13 @@ public final class IOUtils {
 
     private static final int COPY_BUF_SIZE = 8024;
     private static final int SKIP_BUF_SIZE = 4096;
+    
+    /**
+     * Empty array of of type {@link LinkOption}.
+     *
+     * @since 1.21
+     */
+    public static final LinkOption[] EMPTY_LINK_OPTIONS = {};
 
     // This buffer does not need to be synchronised because it is write only; the contents are ignored
     // Does not affect Immutability

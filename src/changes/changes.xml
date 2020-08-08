@@ -143,19 +143,25 @@ The <action> type attribute can be add,update,fix,remove.
         Add ArArchiveOutputStream.createArchiveEntry(Path, String, LinkOption...).
       </action>
       <action type="update" date="2020-08-08" due-to="Gary Gregory" dev="ggregory">
-        Add ArArchiveEntry(Path, String, LinkOption...)
+        Add ArArchiveEntry(Path, String, LinkOption...).
       </action>
       <action type="update" date="2020-08-08" due-to="Gary Gregory" dev="ggregory">
-        Add ctor CpioArchiveEntry(Path, String, LinkOption...)
+        Add ctor CpioArchiveEntry(Path, String, LinkOption...).
       </action>
       <action type="update" date="2020-08-08" due-to="Gary Gregory" dev="ggregory">
-        Add ctor CpioArchiveEntry(short, Path, String, LinkOption...)
+        Add ctor CpioArchiveEntry(short, Path, String, LinkOption...).
       </action>
       <action type="update" date="2020-08-08" due-to="Gary Gregory" dev="ggregory">
-        Add CpioArchiveEntry.setTime(FileTime)
+        Add CpioArchiveEntry.setTime(FileTime).
       </action>
       <action type="update" date="2020-08-08" due-to="Gary Gregory" dev="ggregory">
-        Add createArchiveEntry(Path, String, LinkOption...)
+        Add TarArchiveOutputStream.createArchiveEntry(Path, String, LinkOption...).
+      </action>
+      <action type="update" date="2020-08-08" due-to="Gary Gregory" dev="ggregory">
+        Add ctor TarArchiveEntry(Path, String, LinkOption...).
+      </action>
+      <action type="update" date="2020-08-08" due-to="Gary Gregory" dev="ggregory">
+        Add IOUtils.EMPTY_LINK_OPTIONS.
       </action>
       <action type="update" date="2020-08-08" due-to="Gary Gregory" dev="ggregory">
         Add Path support to ZipArchiveOutputStream #123.

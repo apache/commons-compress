@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.DosFileAttributes;
@@ -41,6 +42,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.utils.ArchiveUtils;
+import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * This class represents an entry in a Tar archive. It consists
@@ -157,6 +159,7 @@ import org.apache.commons.compress.utils.ArchiveUtils;
  */
 
 public class TarArchiveEntry implements ArchiveEntry, TarConstants {
+
     private static final TarArchiveEntry[] EMPTY_TAR_ARCHIVE_ENTRIES = new TarArchiveEntry[0];
 
     /**
@@ -234,6 +237,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
 
     /** The entry's file reference */
     private final Path file;
+    
+    /** The entry's file linkOptions*/
+    private final LinkOption[] linkOptions;
 
     /** Extra, user supplied pax headers     */
     private final Map<String,String> extraPaxHeaders = new HashMap<>();
@@ -263,6 +269,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
 
         this.userName = user;
         this.file = null;
+        this.linkOptions = IOUtils.EMPTY_LINK_OPTIONS;
         this.preserveAbsolutePath = preserveAbsolutePath;
     }
 
@@ -409,6 +416,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
     public TarArchiveEntry(final File file, final String fileName) {
         final String normalizedName = normalizeFileName(fileName, false);
         this.file = file.toPath();
+        this.linkOptions = IOUtils.EMPTY_LINK_OPTIONS;
 
         try {
             readFileMode(this.file, normalizedName);
@@ -443,44 +451,46 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      *
      * @param file     The file that the entry represents.
      * @param fileName the name to be used for the entry.
+     * @param linkOptions options indicating how symbolic links are handled.
      * @throws IOException if an I/O error occurs
      * @since 1.21
      */
-    public TarArchiveEntry(final Path file, final String fileName) throws IOException {
+    public TarArchiveEntry(final Path file, final String fileName, final LinkOption... linkOptions) throws IOException {
         final String normalizedName = normalizeFileName(fileName, false);
         this.file = file;
+        this.linkOptions = linkOptions == null ? IOUtils.EMPTY_LINK_OPTIONS : linkOptions;
 
-        readFileMode(file, normalizedName);
+        readFileMode(file, normalizedName, linkOptions);
 
         this.userName = "";
         readOsSpecificProperties(file);
         preserveAbsolutePath = false;
     }
 
-    private void readOsSpecificProperties(final Path file) throws IOException {
+    private void readOsSpecificProperties(final Path file, final LinkOption... options) throws IOException {
         Set<String> availableAttributeViews = file.getFileSystem().supportedFileAttributeViews();
         if (availableAttributeViews.contains("posix")) {
-            final PosixFileAttributes posixFileAttributes = Files.readAttributes(file, PosixFileAttributes.class);
+            final PosixFileAttributes posixFileAttributes = Files.readAttributes(file, PosixFileAttributes.class, options);
             setModTime(posixFileAttributes.lastModifiedTime());
             this.userName = posixFileAttributes.owner().getName();
             this.groupName = posixFileAttributes.group().getName();
             if (availableAttributeViews.contains("unix")) {
-                this.userId = ((Number) Files.getAttribute(file, "unix:uid")).longValue();
-                this.groupId = ((Number) Files.getAttribute(file, "unix:gid")).longValue();
+                this.userId = ((Number) Files.getAttribute(file, "unix:uid", options)).longValue();
+                this.groupId = ((Number) Files.getAttribute(file, "unix:gid", options)).longValue();
             }
         } else if (availableAttributeViews.contains("dos")) {
-            final DosFileAttributes dosFileAttributes = Files.readAttributes(file, DosFileAttributes.class);
+            final DosFileAttributes dosFileAttributes = Files.readAttributes(file, DosFileAttributes.class, options);
             setModTime(dosFileAttributes.lastModifiedTime());
-            this.userName = Files.getOwner(file).getName();
+            this.userName = Files.getOwner(file, options).getName();
         } else {
-            final BasicFileAttributes basicFileAttributes = Files.readAttributes(file, BasicFileAttributes.class);
+            final BasicFileAttributes basicFileAttributes = Files.readAttributes(file, BasicFileAttributes.class, options);
             setModTime(basicFileAttributes.lastModifiedTime());
-            this.userName = Files.getOwner(file).getName();
+            this.userName = Files.getOwner(file, options).getName();
         }
     }
 
-    private void readFileMode(Path file, String normalizedName) throws IOException {
-        if (Files.isDirectory(file)) {
+    private void readFileMode(final Path file, final String normalizedName, final LinkOption... options) throws IOException {
+        if (Files.isDirectory(file, options)) {
             this.mode = DEFAULT_DIR_MODE;
             this.linkFlag = LF_DIR;
 
@@ -1088,7 +1098,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
     @Override
     public boolean isDirectory() {
         if (file != null) {
-            return Files.isDirectory(file);
+            return Files.isDirectory(file, linkOptions);
         }
 
         if (linkFlag == LF_DIR) {
@@ -1106,7 +1116,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      */
     public boolean isFile() {
         if (file != null) {
-            return Files.isRegularFile(file);
+            return Files.isRegularFile(file, linkOptions);
         }
         if (linkFlag == LF_OLDNORM || linkFlag == LF_NORMAL) {
             return true;
