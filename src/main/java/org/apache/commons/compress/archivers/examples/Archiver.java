@@ -27,6 +27,7 @@ import java.nio.channels.SeekableByteChannel;
 import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardOpenOption;
@@ -53,11 +54,13 @@ public class Archiver {
 
         private final ArchiveOutputStream target;
         private final Path directory;
+        private final LinkOption[] linkOptions;
 
         private ArchiverFileVisitor(final ArchiveOutputStream target,
-            final Path directory /* BiConsumer<Path,T> fileConsumer */) {
+            final Path directory, final LinkOption... linkOptions /*, BiConsumer<Path,T> fileConsumer */) {
             this.target = target;
             this.directory = directory;
+            this.linkOptions = linkOptions;
         }
 
         @Override
@@ -72,7 +75,7 @@ public class Archiver {
             final String name = directory.relativize(path).toString().replace('\\', '/');
             if (!name.isEmpty()) {
                 final ArchiveEntry archiveEntry = target.createArchiveEntry(path,
-                    isFile || name.endsWith("/") ? name : name + "/");
+                    isFile || name.endsWith("/") ? name : name + "/", linkOptions);
                 target.putArchiveEntry(archiveEntry);
                 if (isFile) {
                     // Refactor this as a BiConsumer on Java 8
@@ -111,13 +114,15 @@ public class Archiver {
      *
      * @param target the stream to write the new archive to.
      * @param directory the directory that contains the files to archive.
-     * @param fileVisitOptions options to configure the traversal of the source {@code directory}.
+     * @param fileVisitOptions linkOptions to configure the traversal of the source {@code directory}.
+     * @param linkOptions indicating how symbolic links are handled.
      * @throws IOException if an I/O error occurs or the archive cannot be created for other reasons.
      * @since 1.21
      */
     public void create(final ArchiveOutputStream target, final Path directory,
-        final EnumSet<FileVisitOption> fileVisitOptions) throws IOException {
-        Files.walkFileTree(directory, fileVisitOptions, Integer.MAX_VALUE, new ArchiverFileVisitor(target, directory));
+        final EnumSet<FileVisitOption> fileVisitOptions, final LinkOption... linkOptions) throws IOException {
+        Files.walkFileTree(directory, fileVisitOptions, Integer.MAX_VALUE,
+            new ArchiverFileVisitor(target, directory, linkOptions));
         target.finish();
     }
 
