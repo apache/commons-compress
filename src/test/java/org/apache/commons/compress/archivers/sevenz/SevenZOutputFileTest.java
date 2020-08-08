@@ -20,6 +20,7 @@ package org.apache.commons.compress.archivers.sevenz;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -77,6 +78,30 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             outArchive.closeArchiveEntry();
 
             entry = new SevenZArchiveEntry();
+            entry.setName("foo/bar/boo0");
+            entry.setCreationDate(creationDate);
+            entry.setAccessDate(accessDate);
+            outArchive.putArchiveEntry(entry);
+            outArchive.write(new ByteArrayInputStream(new byte[0]));
+            outArchive.closeArchiveEntry();
+
+            entry = new SevenZArchiveEntry();
+            entry.setName("foo/bar/boo1");
+            entry.setCreationDate(creationDate);
+            entry.setAccessDate(accessDate);
+            outArchive.putArchiveEntry(entry);
+            outArchive.write(new ByteArrayInputStream(new byte[] {'a'}));
+            outArchive.closeArchiveEntry();
+
+            entry = new SevenZArchiveEntry();
+            entry.setName("foo/bar/boo10000");
+            entry.setCreationDate(creationDate);
+            entry.setAccessDate(accessDate);
+            outArchive.putArchiveEntry(entry);
+            outArchive.write(new ByteArrayInputStream(new byte[10000]));
+            outArchive.closeArchiveEntry();
+
+            entry = new SevenZArchiveEntry();
             entry.setName("xyzzy");
             outArchive.putArchiveEntry(entry);
             outArchive.write(0);
@@ -112,6 +137,36 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             assertFalse(entry.isDirectory());
             assertFalse(entry.isAntiItem());
             assertEquals(0, entry.getSize());
+            assertFalse(entry.getHasLastModifiedDate());
+            assertEquals(accessDate, entry.getAccessDate());
+            assertEquals(creationDate, entry.getCreationDate());
+
+            entry = archive.getNextEntry();
+            assert (entry != null);
+            assertEquals("foo/bar/boo0", entry.getName());
+            assertFalse(entry.isDirectory());
+            assertFalse(entry.isAntiItem());
+            assertEquals(0, entry.getSize());
+            assertFalse(entry.getHasLastModifiedDate());
+            assertEquals(accessDate, entry.getAccessDate());
+            assertEquals(creationDate, entry.getCreationDate());
+
+            entry = archive.getNextEntry();
+            assert (entry != null);
+            assertEquals("foo/bar/boo1", entry.getName());
+            assertFalse(entry.isDirectory());
+            assertFalse(entry.isAntiItem());
+            assertEquals(1, entry.getSize());
+            assertFalse(entry.getHasLastModifiedDate());
+            assertEquals(accessDate, entry.getAccessDate());
+            assertEquals(creationDate, entry.getCreationDate());
+
+            entry = archive.getNextEntry();
+            assert (entry != null);
+            assertEquals("foo/bar/boo10000", entry.getName());
+            assertFalse(entry.isDirectory());
+            assertFalse(entry.isAntiItem());
+            assertEquals(10000, entry.getSize());
             assertFalse(entry.getHasLastModifiedDate());
             assertEquals(accessDate, entry.getAccessDate());
             assertEquals(creationDate, entry.getCreationDate());

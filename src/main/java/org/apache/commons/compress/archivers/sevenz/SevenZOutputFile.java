@@ -17,12 +17,14 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -239,6 +241,20 @@ public class SevenZOutputFile implements Closeable {
     public void write(final byte[] b, final int off, final int len) throws IOException {
         if (len > 0) {
             getCurrentOutputStream().write(b, off, len);
+        }
+    }
+
+    /**
+     * Writes all of the given input stream to the current archive entry.
+     * @param inputStream the data source.
+     * @throws IOException if an I/O error occurs.
+     * @since 1.21
+     */
+    public void write(final InputStream inputStream) throws IOException {
+        final byte[] buffer = new byte[8024];
+        int n = 0;
+        while (-1 != (n = inputStream.read(buffer))) {
+            write(buffer, 0, n);
         }
     }
 
@@ -810,4 +826,5 @@ public class SevenZOutputFile implements Closeable {
             // the file will be closed by the containing class's close method
         }
     }
+
 }
