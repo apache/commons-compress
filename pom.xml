@@ -272,6 +272,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
   </scm>
 
   <build>
+    <defaultGoal>clean package apache-rat:check japicmp:cmp javadoc:javadoc</defaultGoal>
     <pluginManagement>
       <plugins>
         <!-- Override Javadoc config in parent pom to add JCIP tags -->
