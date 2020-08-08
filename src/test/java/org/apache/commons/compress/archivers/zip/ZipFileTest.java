@@ -366,7 +366,7 @@ public class ZipFileTest {
         }
         zf = new ZipFile(new SeekableInMemoryByteChannel(data), ZipEncodingHelper.UTF8);
 
-        final Map<String, byte[]> content = new HashMap<String, byte[]>();
+        final Map<String, byte[]> content = new HashMap<>();
         for (final ZipArchiveEntry entry: Collections.list(zf.getEntries())) {
             content.put(entry.getName(), IOUtils.toByteArray(zf.getInputStream(entry)));
         }
@@ -396,7 +396,7 @@ public class ZipFileTest {
         final File archive = getFile("mixed.zip");
         zf = new ZipFile(archive);
 
-        final Map<String, byte[]> content = new HashMap<String, byte[]>();
+        final Map<String, byte[]> content = new HashMap<>();
         for (final ZipArchiveEntry entry: Collections.list(zf.getEntries())) {
             content.put(entry.getName(), IOUtils.toByteArray(zf.getInputStream(entry)));
         }

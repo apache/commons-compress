@@ -31,7 +31,6 @@ import static org.apache.commons.compress.archivers.zip.ZipShort.putShort;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -1196,12 +1195,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         ZipUtil.toDosTime(calendarInstance, ze.getTime(), buf, LFH_TIME_OFFSET);
 
         // CRC
-        if (phased){
+        if (phased || !(zipMethod == DEFLATED || channel != null)){
             putLong(ze.getCrc(), buf, LFH_CRC_OFFSET);
-        } else if (zipMethod == DEFLATED || channel != null) {
-            System.arraycopy(LZERO, 0, buf, LFH_CRC_OFFSET, WORD);
         } else {
-            putLong(ze.getCrc(), buf, LFH_CRC_OFFSET);
+            System.arraycopy(LZERO, 0, buf, LFH_CRC_OFFSET, WORD);
         }
 
         // compressed length

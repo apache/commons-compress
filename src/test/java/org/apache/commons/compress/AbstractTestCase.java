@@ -404,7 +404,7 @@ public abstract class AbstractTestCase {
         }
     }
 
-    protected static interface StreamWrapper<I extends InputStream> {
+    protected interface StreamWrapper<I extends InputStream> {
         I wrap(InputStream in) throws Exception;
     }
 }

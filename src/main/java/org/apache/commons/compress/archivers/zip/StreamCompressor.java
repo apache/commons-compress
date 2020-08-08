@@ -286,7 +286,7 @@ public abstract class StreamCompressor implements Closeable {
         }
 
         @Override
-        protected final void writeOut(final byte[] data, final int offset, final int length)
+        protected void writeOut(final byte[] data, final int offset, final int length)
                 throws IOException {
             bs.writeOut(data, offset, length);
         }
@@ -301,7 +301,7 @@ public abstract class StreamCompressor implements Closeable {
         }
 
         @Override
-        protected final void writeOut(final byte[] data, final int offset, final int length)
+        protected void writeOut(final byte[] data, final int offset, final int length)
                 throws IOException {
             os.write(data, offset, length);
         }
@@ -316,7 +316,7 @@ public abstract class StreamCompressor implements Closeable {
         }
 
         @Override
-        protected final void writeOut(final byte[] data, final int offset, final int length)
+        protected void writeOut(final byte[] data, final int offset, final int length)
                 throws IOException {
             raf.write(data, offset, length);
         }
@@ -332,7 +332,7 @@ public abstract class StreamCompressor implements Closeable {
         }
 
         @Override
-        protected final void writeOut(final byte[] data, final int offset, final int length)
+        protected void writeOut(final byte[] data, final int offset, final int length)
                 throws IOException {
             channel.write(ByteBuffer.wrap(data, offset, length));
         }

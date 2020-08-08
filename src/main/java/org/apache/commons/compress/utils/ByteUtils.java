@@ -253,7 +253,7 @@ public final class ByteUtils {
         }
     }
 
-    private static final void checkReadLength(final int length) {
+    private static void checkReadLength(final int length) {
         if (length > 8) {
             throw new IllegalArgumentException("Can't read more than eight bytes into a long value");
         }

@@ -2420,7 +2420,7 @@ public class Zip64SupportIT {
                 true, 65536L);
     }
 
-    static interface ZipOutputTest {
+    interface ZipOutputTest {
         void test(File f, ZipArchiveOutputStream zos) throws IOException;
     }
 

@@ -343,7 +343,7 @@ public final class Parameters {
         return lazyThreshold;
     }
 
-    private static final boolean isPowerOfTwo(final int x) {
+    private static boolean isPowerOfTwo(final int x) {
         // pre-condition: x > 0
         return (x & (x - 1)) == 0;
     }

@@ -38,7 +38,7 @@ public class ServiceLoaderIteratorTest {
     public void testNextThrowsNoSuchElementException() {
 
         final Class<String> clasz = String.class;
-        final ServiceLoaderIterator<String> serviceLoaderIterator = new ServiceLoaderIterator<String>(clasz);
+        final ServiceLoaderIterator<String> serviceLoaderIterator = new ServiceLoaderIterator<>(clasz);
 
         serviceLoaderIterator.next();
 
@@ -49,7 +49,7 @@ public class ServiceLoaderIteratorTest {
     public void testHasNextReturnsFalse() {
 
         final Class<Object> clasz = Object.class;
-        final ServiceLoaderIterator<Object> serviceLoaderIterator = new ServiceLoaderIterator<Object>(clasz);
+        final ServiceLoaderIterator<Object> serviceLoaderIterator = new ServiceLoaderIterator<>(clasz);
         final boolean result = serviceLoaderIterator.hasNext();
 
         assertFalse(result);
@@ -61,7 +61,7 @@ public class ServiceLoaderIteratorTest {
     public void testRemoveThrowsUnsupportedOperationException() {
 
         final Class<Integer> clasz = Integer.class;
-        final ServiceLoaderIterator<Integer> serviceLoaderIterator = new ServiceLoaderIterator<Integer>(clasz);
+        final ServiceLoaderIterator<Integer> serviceLoaderIterator = new ServiceLoaderIterator<>(clasz);
 
         serviceLoaderIterator.remove();
 

@@ -34,7 +34,7 @@ public interface CloseableConsumer {
     /**
      * Closes the passed in Closeable immediately.
      */
-    public static CloseableConsumer CLOSING_CONSUMER = new CloseableConsumer() {
+    CloseableConsumer CLOSING_CONSUMER = new CloseableConsumer() {
         @Override
         public void accept(final Closeable c) throws IOException {
             c.close();
@@ -44,7 +44,7 @@ public interface CloseableConsumer {
     /**
      * Completely ignores the passed in Closeable.
      */
-    public static CloseableConsumer NULL_CONSUMER = new CloseableConsumer() {
+    CloseableConsumer NULL_CONSUMER = new CloseableConsumer() {
         @Override
         public void accept(final Closeable c) { }
     };
