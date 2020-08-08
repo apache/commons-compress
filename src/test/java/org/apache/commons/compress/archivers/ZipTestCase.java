@@ -18,7 +18,13 @@
  */
 package org.apache.commons.compress.archivers;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -30,6 +36,7 @@ import java.io.OutputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -498,14 +505,16 @@ public final class ZipTestCase extends AbstractTestCase {
         ZipArchiveOutputStream zos = null;
         ZipFile zf = null;
         FileInputStream fis = null;
+        File tmpDir = tmp[0];
+        File tmpFile = tmp[1];
         try {
-            archive = File.createTempFile("test.", ".zip", tmp[0]);
+            archive = File.createTempFile("test.", ".zip", tmpDir);
             archive.deleteOnExit();
             zos = new ZipArchiveOutputStream(archive);
-            final ZipArchiveEntry in = new ZipArchiveEntry(tmp[1], "foo");
+            final ZipArchiveEntry in = new ZipArchiveEntry(tmpFile, "foo");
             zos.putArchiveEntry(in);
-            final byte[] b = new byte[(int) tmp[1].length()];
-            fis = new FileInputStream(tmp[1]);
+            final byte[] b = new byte[(int) tmpFile.length()];
+            fis = new FileInputStream(tmpFile);
             while (fis.read(b) > 0) {
                 zos.write(b);
             }
@@ -518,8 +527,8 @@ public final class ZipTestCase extends AbstractTestCase {
             final ZipArchiveEntry out = zf.getEntry("foo");
             assertNotNull(out);
             assertEquals("foo", out.getName());
-            assertEquals(tmp[1].length(), out.getSize());
-            assertEquals(tmp[1].lastModified() / 2000,
+            assertEquals(tmpFile.length(), out.getSize());
+            assertEquals(tmpFile.lastModified() / 2000,
                          out.getLastModifiedDate().getTime() / 2000);
             assertFalse(out.isDirectory());
         } finally {
@@ -531,8 +540,58 @@ public final class ZipTestCase extends AbstractTestCase {
             if (fis != null) {
                 fis.close();
             }
-            tryHardToDelete(tmp[1]);
-            rmdir(tmp[0]);
+            tryHardToDelete(tmpFile);
+            rmdir(tmpDir);
+        }
+    }
+
+    @Test
+    public void testZipArchiveEntryNewFromPath() throws Exception {
+        final File[] tmp = createTempDirAndFile();
+        File archiveFile = null;
+        Path archivePath = null;
+        ZipArchiveOutputStream zos = null;
+        ZipFile zf = null;
+        FileInputStream fis = null;
+        File tmpDir = tmp[0];
+        File tmpFile = tmp[1];
+        Path tmpFilePath = tmpFile.toPath();
+        try {
+            archiveFile = File.createTempFile("test.", ".zip", tmpDir);
+            archivePath = archiveFile.toPath();
+            archiveFile.deleteOnExit();
+            zos = new ZipArchiveOutputStream(archivePath);
+            final ZipArchiveEntry in = (ZipArchiveEntry) zos.createArchiveEntry(tmpFilePath, "foo");
+            zos.putArchiveEntry(in);
+            final byte[] b = new byte[(int) tmpFile.length()];
+            fis = new FileInputStream(tmpFile);
+            while (fis.read(b) > 0) {
+                zos.write(b);
+            }
+            fis.close();
+            fis = null;
+            zos.closeArchiveEntry();
+            zos.close();
+            zos = null;
+            zf = new ZipFile(archiveFile);
+            final ZipArchiveEntry out = zf.getEntry("foo");
+            assertNotNull(out);
+            assertEquals("foo", out.getName());
+            assertEquals(tmpFile.length(), out.getSize());
+            assertEquals(tmpFile.lastModified() / 2000,
+                         out.getLastModifiedDate().getTime() / 2000);
+            assertFalse(out.isDirectory());
+        } finally {
+            ZipFile.closeQuietly(zf);
+            if (zos != null) {
+                zos.close();
+            }
+            tryHardToDelete(archiveFile);
+            if (fis != null) {
+                fis.close();
+            }
+            tryHardToDelete(tmpFile);
+            rmdir(tmpDir);
         }
     }
 

@@ -17,6 +17,18 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import static org.apache.commons.compress.archivers.zip.ZipConstants.DATA_DESCRIPTOR_MIN_VERSION;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.DEFLATE_MIN_VERSION;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.INITIAL_VERSION;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC_SHORT;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MIN_VERSION;
+import static org.apache.commons.compress.archivers.zip.ZipLong.putLong;
+import static org.apache.commons.compress.archivers.zip.ZipShort.putShort;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,6 +38,9 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Calendar;
 import java.util.EnumSet;
@@ -39,18 +54,6 @@ import java.util.zip.ZipException;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.utils.IOUtils;
-
-import static org.apache.commons.compress.archivers.zip.ZipConstants.DATA_DESCRIPTOR_MIN_VERSION;
-import static org.apache.commons.compress.archivers.zip.ZipConstants.DEFLATE_MIN_VERSION;
-import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
-import static org.apache.commons.compress.archivers.zip.ZipConstants.INITIAL_VERSION;
-import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
-import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
-import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC;
-import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC_SHORT;
-import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MIN_VERSION;
-import static org.apache.commons.compress.archivers.zip.ZipLong.putLong;
-import static org.apache.commons.compress.archivers.zip.ZipShort.putShort;
 
 /**
  * Reimplementation of {@link java.util.zip.ZipOutputStream
@@ -307,12 +310,24 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @throws IOException on error
      */
     public ZipArchiveOutputStream(final File file) throws IOException {
+        this(file.toPath());
+    }
+
+    /**
+     * Creates a new ZIP OutputStream writing to a Path.  Will use
+     * random access if possible.
+     * @param file the file to zip to
+     * @param options options specifying how the file is opened.
+     * @throws IOException on error
+     * @since 1.21
+     */
+    public ZipArchiveOutputStream(final Path file, OpenOption... options) throws IOException {
         def = new Deflater(level, true);
         OutputStream o = null;
         SeekableByteChannel _channel = null;
         StreamCompressor _streamCompressor = null;
         try {
-            _channel = Files.newByteChannel(file.toPath(),
+            _channel = Files.newByteChannel(file,
                 EnumSet.of(StandardOpenOption.CREATE, StandardOpenOption.WRITE,
                            StandardOpenOption.READ,
                            StandardOpenOption.TRUNCATE_EXISTING));
@@ -321,7 +336,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         } catch (final IOException e) { // NOSONAR
             IOUtils.closeQuietly(_channel);
             _channel = null;
-            o = new FileOutputStream(file);
+            o = Files.newOutputStream(file, options);
             _streamCompressor = StreamCompressor.create(o, def);
         }
         out = o;
@@ -1755,6 +1770,32 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             throw new IOException("Stream has already been finished");
         }
         return new ZipArchiveEntry(inputFile, entryName);
+    }
+
+    /**
+     * Creates a new zip entry taking some information from the given
+     * file and using the provided name.
+     *
+     * <p>The name will be adjusted to end with a forward slash "/" if
+     * the file is a directory.  If the file is not a directory a
+     * potential trailing forward slash will be stripped from the
+     * entry name.</p>
+     *
+     * <p>Must not be used if the stream has already been closed.</p>
+     * @param inputPath path to create the entry from.
+     * @param entryName name of the entry.
+     * @param options options indicating how symbolic links are handled.
+     * @return a new instance. 
+     * @throws IOException if an I/O error occurs.
+     * @since 1.21
+     */
+    @Override
+    public ArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, LinkOption... options)
+        throws IOException {
+        if (finished) {
+            throw new IOException("Stream has already been finished");
+        }
+        return new ZipArchiveEntry(inputPath, entryName);
     }
 
     /**

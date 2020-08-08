@@ -21,6 +21,8 @@ package org.apache.commons.compress.archivers;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
 
 /**
  * Archive output stream implementations are expected to override the
@@ -89,6 +91,26 @@ public abstract class ArchiveOutputStream extends OutputStream {
      * @throws IOException if an I/O error occurs
      */
     public abstract ArchiveEntry createArchiveEntry(File inputFile, String entryName) throws IOException;
+
+    /**
+     * Create an archive entry using the inputPath and entryName provided.
+     *
+     * The default implementation calls simply delegates as:
+     * <pre>return createArchiveEntry(inputFile.toFile(), entryName);</pre>
+     *
+     * Subclasses should override this method.
+     *
+     * @param inputPath the file to create the entry from
+     * @param entryName name to use for the entry
+     * @param options options indicating how symbolic links are handled.
+     * @return the ArchiveEntry set up with details from the file
+     *
+     * @throws IOException if an I/O error occurs
+     * @since 1.21
+     */
+    public ArchiveEntry createArchiveEntry(Path inputPath, String entryName, LinkOption... options) throws IOException {
+        return createArchiveEntry(inputPath.toFile(), entryName);
+    }
 
     // Generic implementations of OutputStream methods that may be useful to sub-classes
 

@@ -17,15 +17,20 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.EntryStreamOffsets;
-
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipException;
+
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.EntryStreamOffsets;
 
 /**
  * Extension that adds better handling of extra fields and provides
@@ -226,6 +231,39 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         }
         setTime(inputFile.lastModified());
         // TODO are there any other fields we can set here?
+    }
+
+    /**
+     * Creates a new zip entry taking some information from the given
+     * path and using the provided name.
+     *
+     * <p>The name will be adjusted to end with a forward slash "/" if
+     * the file is a directory.  If the file is not a directory a
+     * potential trailing forward slash will be stripped from the
+     * entry name.</p>
+     * @param inputPath path to create the entry from.
+     * @param entryName name of the entry.
+     * @param options options indicating how symbolic links are handled.
+     * @throws IOException if an I/O error occurs.
+     * @since 1.21 
+     */
+    public ZipArchiveEntry(final Path inputPath, final String entryName, LinkOption... options) throws IOException {
+        this(Files.isDirectory(inputPath, options) && !entryName.endsWith("/") ?
+             entryName + "/" : entryName);
+        if (Files.isRegularFile(inputPath, options)){
+            setSize(Files.size(inputPath));
+        }
+        setTime(Files.getLastModifiedTime(inputPath, options));
+        // TODO are there any other fields we can set here?
+    }
+
+    /**
+     * Sets the modification time of the entry.
+     * @param fileTime the entry modification time.
+     * @since 1.21 
+     */
+    public void setTime(final FileTime fileTime) {
+        setTime(fileTime.toMillis());
     }
 
     /**
