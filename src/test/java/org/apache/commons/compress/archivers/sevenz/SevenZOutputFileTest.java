@@ -122,6 +122,11 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             outArchive.putArchiveEntry(entry);
             outArchive.closeArchiveEntry();
 
+            entry = outArchive.createArchiveEntry(dir.toPath(), "baz2/");
+            entry.setAntiItem(true);
+            outArchive.putArchiveEntry(entry);
+            outArchive.closeArchiveEntry();
+
             entry = new SevenZArchiveEntry();
             entry.setName("dada");
             entry.setHasWindowsAttributes(true);
@@ -202,6 +207,12 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             entry = archive.getNextEntry();
             assert (entry != null);
             assertEquals("baz/", entry.getName());
+            assertTrue(entry.isDirectory());
+            assertTrue(entry.isAntiItem());
+
+            entry = archive.getNextEntry();
+            assert (entry != null);
+            assertEquals("baz2/", entry.getName());
             assertTrue(entry.isDirectory());
             assertTrue(entry.isAntiItem());
 

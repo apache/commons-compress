@@ -163,6 +163,25 @@ public class SevenZOutputFile implements Closeable {
     }
 
     /**
+     * Create an archive entry using the inputPath and entryName provided.
+     *
+     * @param inputPath path to create an entry from
+     * @param entryName the name to use
+     * @return the ArchiveEntry set up with details from the file
+     *
+     * @throws IOException on error
+     * @since 1.21
+     */
+    public SevenZArchiveEntry createArchiveEntry(final Path inputPath,
+            final String entryName) throws IOException {
+        final SevenZArchiveEntry entry = new SevenZArchiveEntry();
+        entry.setDirectory(Files.isDirectory(inputPath));
+        entry.setName(entryName);
+        entry.setLastModifiedDate(new Date(Files.getLastModifiedTime(inputPath).toMillis()));
+        return entry;
+    }
+
+    /**
      * Records an archive entry to add.
      *
      * The caller must then write the content to the archive and call

@@ -137,6 +137,9 @@ The <action> type attribute can be add,update,fix,remove.
         Add SevenZOutputFile.write(Path, OpenOption...).
       </action>
       <action type="update" date="2020-08-08" due-to="Gary Gregory" dev="ggregory">
+        Add SevenZOutputFile.createArchiveEntry(Path, String).
+      </action>
+      <action type="update" date="2020-08-08" due-to="Gary Gregory" dev="ggregory">
         Add Path support to ZipArchiveOutputStream #123.
       </action>
       <action type="update" date="2020-07-23" due-to="Dependabot" dev="ggregory">

@@ -167,7 +167,7 @@ public class Archiver {
                 Objects.requireNonNull(attrs);
                 final String name = directory.relativize(path).toString().replace('\\', '/');
                 if (!name.isEmpty()) {
-                    final ArchiveEntry archiveEntry = target.createArchiveEntry(path.toFile(),
+                    final ArchiveEntry archiveEntry = target.createArchiveEntry(path,
                         isFile || name.endsWith("/") ? name : name + "/");
                     target.putArchiveEntry(archiveEntry);
                     if (isFile) {
