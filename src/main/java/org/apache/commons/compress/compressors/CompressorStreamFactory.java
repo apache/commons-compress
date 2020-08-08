@@ -405,6 +405,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     private volatile boolean decompressConcatenated = false;
 
     private final int memoryLimitInKb;
+
     /**
      * Create an instance with the decompress Concatenated option set to false.
      */
@@ -436,7 +437,6 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         this.decompressConcatenated = decompressUntilEOF;
         this.memoryLimitInKb = memoryLimitInKb;
     }
-
 
     /**
      * Create an instance with the provided decompress Concatenated option.
