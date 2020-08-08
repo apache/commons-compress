@@ -23,11 +23,13 @@ import java.io.Closeable;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Files;
 
 /**
  * Utility functions
@@ -260,5 +262,16 @@ public final class IOUtils {
             } catch (final IOException ignored) { // NOPMD NOSONAR
             }
         }
+    }
+
+    /**
+     * Copies the source file to the given output stream.
+     * @param sourceFile The file to read.
+     * @param outputStream The output stream to write.
+     * @throws IOException if an I/O error occurs when reading or writing.
+     * @since 1.21
+     */
+    public static void copy(File sourceFile, OutputStream outputStream) throws IOException {
+        Files.copy(sourceFile.toPath(), outputStream);
     }
 }

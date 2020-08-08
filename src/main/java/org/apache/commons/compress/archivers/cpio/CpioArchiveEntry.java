@@ -19,8 +19,14 @@
 package org.apache.commons.compress.archivers.cpio;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 
@@ -316,6 +322,23 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
 
     /**
      * Creates a CpioArchiveEntry with a specified name for a
+     * specified file. The format of this entry will be the new
+     * format.
+     *
+     * @param inputPath
+     *            The file to gather information from.
+     * @param entryName
+     *            The name of this entry.
+     * @param options options indicating how symbolic links are handled.
+     * @throws IOException if an I/O error occurs
+     * @since 1.21
+     */
+    public CpioArchiveEntry(final Path inputPath, final String entryName, LinkOption... options) throws IOException {
+        this(FORMAT_NEW, inputPath, entryName, options);
+    }
+
+    /**
+     * Creates a CpioArchiveEntry with a specified name for a
      * specified file.
      *
      * @param format
@@ -351,7 +374,44 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Check if the method is allowed for the defined format.
+     * Creates a CpioArchiveEntry with a specified name for a
+     * specified path.
+     *
+     * @param format
+     *            The cpio format for this entry.
+     * @param inputPath
+     *            The file to gather information from.
+     * @param entryName
+     *            The name of this entry.
+     * <p>
+     * Possible format values are:
+     * <pre>
+     * CpioConstants.FORMAT_NEW
+     * CpioConstants.FORMAT_NEW_CRC
+     * CpioConstants.FORMAT_OLD_BINARY
+     * CpioConstants.FORMAT_OLD_ASCII
+     * </pre>
+     * @param options options indicating how symbolic links are handled.
+     *
+     * @throws IOException if an I/O error occurs
+     * @since 1.21
+     */
+    public CpioArchiveEntry(final short format, final Path inputPath, final String entryName, LinkOption... options)
+        throws IOException {
+        this(format, entryName, Files.isRegularFile(inputPath, options) ? Files.size(inputPath) : 0);
+        if (Files.isDirectory(inputPath, options)) {
+            setMode(C_ISDIR);
+        } else if (Files.isRegularFile(inputPath, options)) {
+            setMode(C_ISREG);
+        } else {
+            throw new IllegalArgumentException("Cannot determine type of file " + inputPath);
+        }
+        // TODO set other fields as needed
+        setTime(Files.getLastModifiedTime(inputPath, options));
+    }
+
+    /**
+     * Checks if the method is allowed for the defined format.
      */
     private void checkNewFormat() {
         if ((this.fileFormat & FORMAT_NEW_MASK) == 0) {
@@ -360,7 +420,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Check if the method is allowed for the defined format.
+     * Checks if the method is allowed for the defined format.
      */
     private void checkOldFormat() {
         if ((this.fileFormat & FORMAT_OLD_MASK) == 0) {
@@ -369,7 +429,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Get the checksum.
+     * Gets the checksum.
      * Only supported for the new formats.
      *
      * @return Returns the checksum.
@@ -381,7 +441,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Get the device id.
+     * Gets the device id.
      *
      * @return Returns the device id.
      * @throws UnsupportedOperationException
@@ -394,7 +454,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Get the major device id.
+     * Gets the major device id.
      *
      * @return Returns the major device id.
      * @throws UnsupportedOperationException
@@ -407,7 +467,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Get the minor device id
+     * Gets the minor device id
      *
      * @return Returns the minor device id.
      * @throws UnsupportedOperationException if format is not a new format
@@ -418,7 +478,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Get the filesize.
+     * Gets the filesize.
      *
      * @return Returns the filesize.
      * @see org.apache.commons.compress.archivers.ArchiveEntry#getSize()
@@ -429,7 +489,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Get the format for this entry.
+     * Gets the format for this entry.
      *
      * @return Returns the format.
      */
@@ -438,7 +498,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Get the group id.
+     * Gets the group id.
      *
      * @return Returns the group id.
      */
@@ -447,7 +507,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Get the header size for this CPIO format
+     * Gets the header size for this CPIO format
      *
      * @return Returns the header size in bytes.
      */
@@ -456,7 +516,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Get the alignment boundary for this CPIO format
+     * Gets the alignment boundary for this CPIO format
      *
      * @return Returns the aligment boundary (0, 2, 4) in bytes
      */
@@ -465,7 +525,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Get the number of bytes needed to pad the header to the alignment boundary.
+     * Gets the number of bytes needed to pad the header to the alignment boundary.
      *
      * @deprecated This method doesn't properly work for multi-byte encodings. And
      *             creates corrupt archives. Use {@link #getHeaderPadCount(Charset)}
@@ -478,7 +538,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Get the number of bytes needed to pad the header to the alignment boundary.
+     * Gets the number of bytes needed to pad the header to the alignment boundary.
      *
      * @param charset
      *             The character set used to encode the entry name in the stream.
@@ -496,7 +556,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Get the number of bytes needed to pad the header to the alignment boundary.
+     * Gets the number of bytes needed to pad the header to the alignment boundary.
      *
      * @param namesize
      *            The length of the name in bytes, as read in the stream.
@@ -519,7 +579,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Get the number of bytes needed to pad the data to the alignment boundary.
+     * Gets the number of bytes needed to pad the data to the alignment boundary.
      *
      * @return the number of bytes needed to pad the data (0,1,2,3)
      */
@@ -534,7 +594,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Set the inode.
+     * Sets the inode.
      *
      * @return Returns the inode.
      */
@@ -543,7 +603,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Get the mode of this entry (e.g. directory, regular file).
+     * Gets the mode of this entry (e.g. directory, regular file).
      *
      * @return Returns the mode.
      */
@@ -552,7 +612,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Get the name.
+     * Gets the name.
      *
      * <p>This method returns the raw name as it is stored inside of the archive.</p>
      *
@@ -564,7 +624,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Get the number of links.
+     * Gets the number of links.
      *
      * @return Returns the number of links.
      */
@@ -575,7 +635,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Get the remote device id.
+     * Gets the remote device id.
      *
      * @return Returns the remote device id.
      * @throws UnsupportedOperationException
@@ -588,7 +648,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Get the remote major device id.
+     * Gets the remote major device id.
      *
      * @return Returns the remote major device id.
      * @throws UnsupportedOperationException
@@ -601,7 +661,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Get the remote minor device id.
+     * Gets the remote minor device id.
      *
      * @return Returns the remote minor device id.
      * @throws UnsupportedOperationException
@@ -614,7 +674,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Get the time in seconds.
+     * Gets the time in seconds.
      *
      * @return Returns the time.
      */
@@ -628,7 +688,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Get the user id.
+     * Gets the user id.
      *
      * @return Returns the user id.
      */
@@ -637,7 +697,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Check if this entry represents a block device.
+     * Checks if this entry represents a block device.
      *
      * @return TRUE if this entry is a block device.
      */
@@ -646,7 +706,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Check if this entry represents a character device.
+     * Checks if this entry represents a character device.
      *
      * @return TRUE if this entry is a character device.
      */
@@ -655,7 +715,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Check if this entry represents a directory.
+     * Checks if this entry represents a directory.
      *
      * @return TRUE if this entry is a directory.
      */
@@ -665,7 +725,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Check if this entry represents a network device.
+     * Checks if this entry represents a network device.
      *
      * @return TRUE if this entry is a network device.
      */
@@ -674,7 +734,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Check if this entry represents a pipe.
+     * Checks if this entry represents a pipe.
      *
      * @return TRUE if this entry is a pipe.
      */
@@ -683,7 +743,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Check if this entry represents a regular file.
+     * Checks if this entry represents a regular file.
      *
      * @return TRUE if this entry is a regular file.
      */
@@ -692,7 +752,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Check if this entry represents a socket.
+     * Checks if this entry represents a socket.
      *
      * @return TRUE if this entry is a socket.
      */
@@ -701,7 +761,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Check if this entry represents a symbolic link.
+     * Checks if this entry represents a symbolic link.
      *
      * @return TRUE if this entry is a symbolic link.
      */
@@ -710,7 +770,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Set the checksum. The checksum is calculated by adding all bytes of a
+     * Sets the checksum. The checksum is calculated by adding all bytes of a
      * file to transfer (crc += buf[pos] &amp; 0xFF).
      *
      * @param chksum
@@ -722,7 +782,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Set the device id.
+     * Sets the device id.
      *
      * @param device
      *            The device id to set.
@@ -736,7 +796,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Set major device id.
+     * Sets major device id.
      *
      * @param maj
      *            The major device id to set.
@@ -747,7 +807,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Set the minor device id
+     * Sets the minor device id
      *
      * @param min
      *            The minor device id to set.
@@ -758,7 +818,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Set the filesize.
+     * Sets the filesize.
      *
      * @param size
      *            The filesize to set.
@@ -772,7 +832,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Set the group id.
+     * Sets the group id.
      *
      * @param gid
      *            The group id to set.
@@ -782,7 +842,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Set the inode.
+     * Sets the inode.
      *
      * @param inode
      *            The inode to set.
@@ -792,7 +852,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Set the mode of this entry (e.g. directory, regular file).
+     * Sets the mode of this entry (e.g. directory, regular file).
      *
      * @param mode
      *            The mode to set.
@@ -820,7 +880,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Set the name.
+     * Sets the name.
      *
      * @param name
      *            The name to set.
@@ -830,7 +890,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Set the number of links.
+     * Sets the number of links.
      *
      * @param nlink
      *            The number of links to set.
@@ -840,7 +900,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Set the remote device id.
+     * Sets the remote device id.
      *
      * @param device
      *            The remote device id to set.
@@ -854,7 +914,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Set the remote major device id.
+     * Sets the remote major device id.
      *
      * @param rmaj
      *            The remote major device id to set.
@@ -868,7 +928,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Set the remote minor device id.
+     * Sets the remote minor device id.
      *
      * @param rmin
      *            The remote minor device id to set.
@@ -882,7 +942,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Set the time in seconds.
+     * Sets the time in seconds.
      *
      * @param time
      *            The time to set.
@@ -892,7 +952,17 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Set the user id.
+     * Sets the time.
+     *
+     * @param time
+     *            The time to set.
+     */
+    public void setTime(final FileTime time) {
+        this.mtime = time.to(TimeUnit.SECONDS);
+    }
+
+    /**
+     * Sets the user id.
      *
      * @param uid
      *            The user id to set.
@@ -926,8 +996,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
         final CpioArchiveEntry other = (CpioArchiveEntry) obj;
         if (name == null) {
             return other.name == null;
-        } else {
-            return name.equals(other.name);
         }
+        return name.equals(other.name);
     }
 }

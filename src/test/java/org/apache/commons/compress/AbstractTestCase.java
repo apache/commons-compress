@@ -217,7 +217,7 @@ public abstract class AbstractTestCase {
             throws IOException, FileNotFoundException {
         final ArchiveEntry entry = out.createArchiveEntry(infile, filename);
         out.putArchiveEntry(entry);
-        IOUtils.copy(new FileInputStream(infile), out);
+        IOUtils.copy(infile, out);
         out.closeArchiveEntry();
         archiveList.add(filename);
     }

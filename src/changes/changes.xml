@@ -146,6 +146,18 @@ The <action> type attribute can be add,update,fix,remove.
         Add ArArchiveEntry(Path, String, LinkOption...)
       </action>
       <action type="update" date="2020-08-08" due-to="Gary Gregory" dev="ggregory">
+        Add ctor CpioArchiveEntry(Path, String, LinkOption...)
+      </action>
+      <action type="update" date="2020-08-08" due-to="Gary Gregory" dev="ggregory">
+        Add ctor CpioArchiveEntry(short, Path, String, LinkOption...)
+      </action>
+      <action type="update" date="2020-08-08" due-to="Gary Gregory" dev="ggregory">
+        Add CpioArchiveEntry.setTime(FileTime)
+      </action>
+      <action type="update" date="2020-08-08" due-to="Gary Gregory" dev="ggregory">
+        Add createArchiveEntry(Path, String, LinkOption...)
+      </action>
+      <action type="update" date="2020-08-08" due-to="Gary Gregory" dev="ggregory">
         Add Path support to ZipArchiveOutputStream #123.
       </action>
       <action type="update" date="2020-07-23" due-to="Dependabot" dev="ggregory">

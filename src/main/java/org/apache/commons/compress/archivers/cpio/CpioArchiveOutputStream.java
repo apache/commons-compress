@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -575,6 +577,20 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
             throw new IOException("Stream has already been finished");
         }
         return new CpioArchiveEntry(inputFile, entryName);
+    }
+
+    /**
+     * Creates a new ArchiveEntry. The entryName must be an ASCII encoded string.
+     *
+     * @see org.apache.commons.compress.archivers.ArchiveOutputStream#createArchiveEntry(java.io.File, java.lang.String)
+     */
+    @Override
+    public ArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, LinkOption... options)
+            throws IOException {
+        if(finished) {
+            throw new IOException("Stream has already been finished");
+        }
+        return new CpioArchiveEntry(inputPath, entryName, options);
     }
 
 }
