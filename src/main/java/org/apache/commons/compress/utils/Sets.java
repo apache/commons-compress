@@ -42,7 +42,7 @@ public class Sets {
      * @return A new HasSet
      */
     @SafeVarargs
-    public static <E> HashSet<E> newHashSet(E... elements) {
+    public static <E> HashSet<E> newHashSet(final E... elements) {
         final HashSet<E> set = new HashSet<>(elements.length);
         Collections.addAll(set, elements);
         return set;

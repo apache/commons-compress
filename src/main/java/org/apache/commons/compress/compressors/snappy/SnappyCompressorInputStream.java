@@ -102,13 +102,13 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
             fill();
             return read(b, off, len);
         case IN_LITERAL:
-            int litLen = readLiteral(b, off, len);
+            final int litLen = readLiteral(b, off, len);
             if (!hasMoreDataInBlock()) {
                 state = State.NO_BLOCK;
             }
             return litLen > 0 ? litLen : read(b, off, len);
         case IN_BACK_REFERENCE:
-            int backReferenceLen = readBackReference(b, off, len);
+            final int backReferenceLen = readBackReference(b, off, len);
             if (!hasMoreDataInBlock()) {
                 state = State.NO_BLOCK;
             }
@@ -172,7 +172,7 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
 
             try {
                 startBackReference(offset, length);
-            } catch (IllegalArgumentException ex) {
+            } catch (final IllegalArgumentException ex) {
                 throw new IOException("Illegal block with bad offset found", ex);
             }
             state = State.IN_BACK_REFERENCE;
@@ -198,7 +198,7 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
 
             try {
                 startBackReference(offset, length);
-            } catch (IllegalArgumentException ex) {
+            } catch (final IllegalArgumentException ex) {
                 throw new IOException("Illegal block with bad offset found", ex);
             }
             state = State.IN_BACK_REFERENCE;
@@ -223,7 +223,7 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
 
             try {
                 startBackReference(offset, length);
-            } catch (IllegalArgumentException ex) {
+            } catch (final IllegalArgumentException ex) {
                 throw new IOException("Illegal block with bad offset found", ex);
             }
             state = State.IN_BACK_REFERENCE;

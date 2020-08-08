@@ -73,11 +73,11 @@ public class LZMACompressorInputStream extends CompressorInputStream
      *
      * @since 1.14
      */
-    public LZMACompressorInputStream(final InputStream inputStream, int memoryLimitInKb)
+    public LZMACompressorInputStream(final InputStream inputStream, final int memoryLimitInKb)
             throws IOException {
         try {
             in = new LZMAInputStream(countingStream = new CountingInputStream(inputStream), memoryLimitInKb);
-        } catch (org.tukaani.xz.MemoryLimitException e) {
+        } catch (final org.tukaani.xz.MemoryLimitException e) {
             //convert to commons-compress exception
             throw new MemoryLimitException(e.getMemoryNeeded(), e.getMemoryLimit(), e);
         }

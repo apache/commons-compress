@@ -33,13 +33,13 @@ import org.junit.Test;
 
 public final class SnappyRoundtripTest extends AbstractTestCase {
 
-    private void roundTripTest(String testFile) throws IOException {
+    private void roundTripTest(final String testFile) throws IOException {
         roundTripTest(getFile(testFile),
             SnappyCompressorOutputStream.createParameterBuilder(SnappyCompressorInputStream.DEFAULT_BLOCK_SIZE)
                 .build());
     }
 
-    private void roundTripTest(final File input, Parameters params) throws IOException {
+    private void roundTripTest(final File input, final Parameters params) throws IOException {
         long start = System.currentTimeMillis();
         final File outputSz = new File(dir, input.getName() + ".raw.sz");
         try (FileInputStream is = new FileInputStream(input);
@@ -53,15 +53,15 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
         try (FileInputStream is = new FileInputStream(input);
              SnappyCompressorInputStream sis = new SnappyCompressorInputStream(new FileInputStream(outputSz),
                  params.getWindowSize())) {
-            byte[] expected = IOUtils.toByteArray(is);
-            byte[] actual = IOUtils.toByteArray(sis);
+            final byte[] expected = IOUtils.toByteArray(is);
+            final byte[] actual = IOUtils.toByteArray(sis);
             Assert.assertArrayEquals(expected, actual);
         }
         System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
     }
-    private void roundTripTest(final byte[] input, Parameters params) throws IOException {
+    private void roundTripTest(final byte[] input, final Parameters params) throws IOException {
         long start = System.currentTimeMillis();
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        final ByteArrayOutputStream os = new ByteArrayOutputStream();
         try (
              SnappyCompressorOutputStream sos = new SnappyCompressorOutputStream(os, input.length, params)) {
             sos.write(input);
@@ -72,8 +72,8 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
         try (
              SnappyCompressorInputStream sis = new SnappyCompressorInputStream(new ByteArrayInputStream(os.toByteArray()),
                  params.getWindowSize())) {
-            byte[] expected = input;
-            byte[] actual = IOUtils.toByteArray(sis);
+            final byte[] expected = input;
+            final byte[] actual = IOUtils.toByteArray(sis);
             Assert.assertArrayEquals(expected, actual);
         }
         System.err.println("byte array" + " read after " + (System.currentTimeMillis() - start) + "ms");
@@ -128,14 +128,14 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
         // Start with the four byte sequence 0000 after that add > 64k
         // of random noise that doesn't contain any 0000 at all, then
         // add 0000.
-        File f = new File(dir, "reallyBigOffsetTest");
-        ByteArrayOutputStream fs = new ByteArrayOutputStream((1<<16) + 1024);
+        final File f = new File(dir, "reallyBigOffsetTest");
+        final ByteArrayOutputStream fs = new ByteArrayOutputStream((1<<16) + 1024);
             fs.write(0);
             fs.write(0);
             fs.write(0);
             fs.write(0);
-            int cnt = 1 << 16 + 5;
-            Random r = new Random();
+            final int cnt = 1 << 16 + 5;
+            final Random r = new Random();
             for (int i = 0 ; i < cnt; i++) {
                 fs.write(r.nextInt(255) + 1);
             }
@@ -162,10 +162,10 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
         // The four byte methods would require even more luck and a
         // buffer (and a file written to disk) that was 2^5 bigger
         // than the buffer used here.
-        File f = new File(dir, "reallyBigLiteralTest");
+        final File f = new File(dir, "reallyBigLiteralTest");
         try (FileOutputStream fs = new FileOutputStream(f)) {
-            int cnt = 1 << 19;
-            Random r = new Random();
+            final int cnt = 1 << 19;
+            final Random r = new Random();
             for (int i = 0 ; i < cnt; i++) {
                 fs.write(r.nextInt(256));
             }
@@ -173,8 +173,8 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
         roundTripTest(f, newParameters(1 << 18, 4, 64, 1 << 16 - 1, 1 << 18 - 1));
     }
 
-    private static Parameters newParameters(int windowSize, int minBackReferenceLength, int maxBackReferenceLength,
-        int maxOffset, int maxLiteralLength) {
+    private static Parameters newParameters(final int windowSize, final int minBackReferenceLength, final int maxBackReferenceLength,
+        final int maxOffset, final int maxLiteralLength) {
         return Parameters.builder(windowSize)
             .withMinBackReferenceLength(minBackReferenceLength)
             .withMaxBackReferenceLength(maxBackReferenceLength)

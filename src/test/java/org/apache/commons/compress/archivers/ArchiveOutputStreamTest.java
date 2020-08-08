@@ -196,9 +196,9 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
         }
     }
 
-    private ArchiveOutputStream createArchiveWithDummyEntry(String archiveType, OutputStream out1, File dummy)
+    private ArchiveOutputStream createArchiveWithDummyEntry(final String archiveType, final OutputStream out1, final File dummy)
         throws Exception {
-        ArchiveOutputStream aos1 = factory.createArchiveOutputStream(archiveType, out1);
+        final ArchiveOutputStream aos1 = factory.createArchiveOutputStream(archiveType, out1);
         aos1.putArchiveEntry(aos1.createArchiveEntry(dummy, "dummy"));
         try (InputStream is = new FileInputStream(dummy)) {
             IOUtils.copy(is, aos1);

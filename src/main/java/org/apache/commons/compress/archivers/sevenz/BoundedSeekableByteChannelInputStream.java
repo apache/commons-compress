@@ -43,7 +43,7 @@ class BoundedSeekableByteChannelInputStream extends InputStream {
     public int read() throws IOException {
         if (bytesRemaining > 0) {
             --bytesRemaining;
-            int read = read(1);
+            final int read = read(1);
             if (read < 0) {
                 return read;
             }
@@ -92,9 +92,9 @@ class BoundedSeekableByteChannelInputStream extends InputStream {
         return bytesRead;
     }
 
-    private int read(int len) throws IOException {
+    private int read(final int len) throws IOException {
         buffer.rewind().limit(len);
-        int read = channel.read(buffer);
+        final int read = channel.read(buffer);
         buffer.flip();
         return read;
     }

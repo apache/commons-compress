@@ -229,7 +229,7 @@ public class ArchiveStreamFactoryTest {
 
     @Test
     public void testDetect() throws Exception {
-        for (String extension : new String[]{
+        for (final String extension : new String[]{
                 ArchiveStreamFactory.AR,
                 ArchiveStreamFactory.ARJ,
                 ArchiveStreamFactory.CPIO,
@@ -246,26 +246,26 @@ public class ArchiveStreamFactoryTest {
         try {
             ArchiveStreamFactory.detect(new BufferedInputStream(new ByteArrayInputStream(new byte[0])));
             fail("shouldn't be able to detect empty stream");
-        } catch (ArchiveException e) {
+        } catch (final ArchiveException e) {
             assertEquals("No Archiver found for the stream signature", e.getMessage());
         }
 
         try {
             ArchiveStreamFactory.detect(null);
             fail("shouldn't be able to detect null stream");
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             assertEquals("Stream must not be null.", e.getMessage());
         }
 
         try {
             ArchiveStreamFactory.detect(new BufferedInputStream(new MockEvilInputStream()));
             fail("Expected ArchiveException");
-        } catch (ArchiveException e) {
+        } catch (final ArchiveException e) {
             assertEquals("IOException while reading signature.", e.getMessage());
         }
     }
 
-    private String detect(String resource) throws IOException, ArchiveException {
+    private String detect(final String resource) throws IOException, ArchiveException {
         try(InputStream in = new BufferedInputStream(new FileInputStream(
                 getFile(resource)))) {
             return ArchiveStreamFactory.detect(in);

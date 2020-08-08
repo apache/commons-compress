@@ -64,7 +64,7 @@ public final class ByteUtils {
      * @param bytes the byte array to convert
      * @return the number read
      */
-    public static long fromLittleEndian(byte[] bytes) {
+    public static long fromLittleEndian(final byte[] bytes) {
         return fromLittleEndian(bytes, 0, bytes.length);
     }
 
@@ -76,7 +76,7 @@ public final class ByteUtils {
      * @return the number read
      * @throws IllegalArgumentException if len is bigger than eight
      */
-    public static long fromLittleEndian(byte[] bytes, final int off, final int length) {
+    public static long fromLittleEndian(final byte[] bytes, final int off, final int length) {
         checkReadLength(length);
         long l = 0;
         for (int i = 0; i < length; i++) {
@@ -94,12 +94,12 @@ public final class ByteUtils {
      * @throws IOException if reading fails or the stream doesn't
      * contain the given number of bytes anymore
      */
-    public static long fromLittleEndian(InputStream in, int length) throws IOException {
+    public static long fromLittleEndian(final InputStream in, final int length) throws IOException {
         // somewhat duplicates the ByteSupplier version in order to save the creation of a wrapper object
         checkReadLength(length);
         long l = 0;
         for (int i = 0; i < length; i++) {
-            long b = in.read();
+            final long b = in.read();
             if (b == -1) {
                 throw new IOException("Premature end of data");
             }
@@ -121,11 +121,11 @@ public final class ByteUtils {
      * @throws IOException if the supplier fails or doesn't supply the
      * given number of bytes anymore
      */
-    public static long fromLittleEndian(ByteSupplier supplier, final int length) throws IOException {
+    public static long fromLittleEndian(final ByteSupplier supplier, final int length) throws IOException {
         checkReadLength(length);
         long l = 0;
         for (int i = 0; i < length; i++) {
-            long b = supplier.getAsByte();
+            final long b = supplier.getAsByte();
             if (b == -1) {
                 throw new IOException("Premature end of data");
             }
@@ -143,12 +143,12 @@ public final class ByteUtils {
      * @throws IOException if reading fails or the stream doesn't
      * contain the given number of bytes anymore
      */
-    public static long fromLittleEndian(DataInput in, int length) throws IOException {
+    public static long fromLittleEndian(final DataInput in, final int length) throws IOException {
         // somewhat duplicates the ByteSupplier version in order to save the creation of a wrapper object
         checkReadLength(length);
         long l = 0;
         for (int i = 0; i < length; i++) {
-            long b = in.readUnsignedByte();
+            final long b = in.readUnsignedByte();
             l |= (b << (i * 8));
         }
         return l;
@@ -178,7 +178,7 @@ public final class ByteUtils {
      * @param length the number of bytes to use to represent the value
      * @throws IOException if writing fails
      */
-    public static void toLittleEndian(OutputStream out, final long value, final int length)
+    public static void toLittleEndian(final OutputStream out, final long value, final int length)
         throws IOException {
         // somewhat duplicates the ByteConsumer version in order to save the creation of a wrapper object
         long num = value;
@@ -196,7 +196,7 @@ public final class ByteUtils {
      * @param length the number of bytes to use to represent the value
      * @throws IOException if writing fails
      */
-    public static void toLittleEndian(ByteConsumer consumer, final long value, final int length)
+    public static void toLittleEndian(final ByteConsumer consumer, final long value, final int length)
         throws IOException {
         long num = value;
         for (int i = 0; i < length; i++) {
@@ -213,7 +213,7 @@ public final class ByteUtils {
      * @param length the number of bytes to use to represent the value
      * @throws IOException if writing fails
      */
-    public static void toLittleEndian(DataOutput out, final long value, final int length)
+    public static void toLittleEndian(final DataOutput out, final long value, final int length)
         throws IOException {
         // somewhat duplicates the ByteConsumer version in order to save the creation of a wrapper object
         long num = value;
@@ -229,7 +229,7 @@ public final class ByteUtils {
      */
     public static class InputStreamByteSupplier implements ByteSupplier {
         private final InputStream is;
-        public InputStreamByteSupplier(InputStream is) {
+        public InputStreamByteSupplier(final InputStream is) {
             this.is = is;
         }
         @Override
@@ -244,16 +244,16 @@ public final class ByteUtils {
      */
     public static class OutputStreamByteConsumer implements ByteConsumer {
         private final OutputStream os;
-        public OutputStreamByteConsumer(OutputStream os) {
+        public OutputStreamByteConsumer(final OutputStream os) {
             this.os = os;
         }
         @Override
-        public void accept(int b) throws IOException {
+        public void accept(final int b) throws IOException {
             os.write(b);
         }
     }
 
-    private static final void checkReadLength(int length) {
+    private static final void checkReadLength(final int length) {
         if (length > 8) {
             throw new IllegalArgumentException("Can't read more than eight bytes into a long value");
         }

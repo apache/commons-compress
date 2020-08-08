@@ -124,7 +124,7 @@ public class SevenZFile implements Closeable {
      * @throws IOException if reading the archive fails or the memory limit (if set) is too small
      * @since 1.19
      */
-    public SevenZFile(final File fileName, final char[] password, SevenZFileOptions options) throws IOException {
+    public SevenZFile(final File fileName, final char[] password, final SevenZFileOptions options) throws IOException {
         this(Files.newByteChannel(fileName.toPath(), EnumSet.of(StandardOpenOption.READ)), // NOSONAR
                 fileName.getAbsolutePath(), utf16Decode(password), true, options);
     }
@@ -172,7 +172,7 @@ public class SevenZFile implements Closeable {
      * @throws IOException if reading the archive fails or the memory limit (if set) is too small
      * @since 1.19
      */
-    public SevenZFile(final SeekableByteChannel channel, SevenZFileOptions options) throws IOException {
+    public SevenZFile(final SeekableByteChannel channel, final SevenZFileOptions options) throws IOException {
         this(channel, DEFAULT_FILE_NAME, (char[]) null, options);
     }
 
@@ -224,7 +224,7 @@ public class SevenZFile implements Closeable {
      * @throws IOException if reading the archive fails
      * @since 1.17
      */
-    public SevenZFile(final SeekableByteChannel channel, String fileName,
+    public SevenZFile(final SeekableByteChannel channel, final String fileName,
                       final char[] password) throws IOException {
         this(channel, fileName, password, SevenZFileOptions.DEFAULT);
     }
@@ -243,7 +243,7 @@ public class SevenZFile implements Closeable {
      * @throws IOException if reading the archive fails or the memory limit (if set) is too small
      * @since 1.19
      */
-    public SevenZFile(final SeekableByteChannel channel, String fileName, final char[] password,
+    public SevenZFile(final SeekableByteChannel channel, final String fileName, final char[] password,
             final SevenZFileOptions options) throws IOException {
         this(channel, fileName, utf16Decode(password), false, options);
     }
@@ -260,7 +260,7 @@ public class SevenZFile implements Closeable {
      * @throws IOException if reading the archive fails
      * @since 1.17
      */
-    public SevenZFile(final SeekableByteChannel channel, String fileName)
+    public SevenZFile(final SeekableByteChannel channel, final String fileName)
         throws IOException {
         this(channel, fileName, SevenZFileOptions.DEFAULT);
     }
@@ -278,7 +278,7 @@ public class SevenZFile implements Closeable {
      * @throws IOException if reading the archive fails or the memory limit (if set) is too small
      * @since 1.19
      */
-    public SevenZFile(final SeekableByteChannel channel, String fileName, final SevenZFileOptions options)
+    public SevenZFile(final SeekableByteChannel channel, final String fileName, final SevenZFileOptions options)
             throws IOException {
         this(channel, fileName, null, false, options);
     }
@@ -321,13 +321,13 @@ public class SevenZFile implements Closeable {
      * @deprecated use the char[]-arg version for the password instead
      */
     @Deprecated
-    public SevenZFile(final SeekableByteChannel channel, String fileName,
+    public SevenZFile(final SeekableByteChannel channel, final String fileName,
                       final byte[] password) throws IOException {
         this(channel, fileName, password, false, SevenZFileOptions.DEFAULT);
     }
 
-    private SevenZFile(final SeekableByteChannel channel, String filename,
-                       final byte[] password, boolean closeOnError, SevenZFileOptions options) throws IOException {
+    private SevenZFile(final SeekableByteChannel channel, final String filename,
+                       final byte[] password, final boolean closeOnError, final SevenZFileOptions options) throws IOException {
         boolean succeeded = false;
         this.channel = channel;
         this.fileName = filename;
@@ -427,7 +427,7 @@ public class SevenZFile implements Closeable {
     }
 
     private Archive readHeaders(final byte[] password) throws IOException {
-        ByteBuffer buf = ByteBuffer.allocate(12 /* signature + 2 bytes version + 4 bytes CRC */)
+        final ByteBuffer buf = ByteBuffer.allocate(12 /* signature + 2 bytes version + 4 bytes CRC */)
             .order(ByteOrder.LITTLE_ENDIAN);
         readFully(buf);
         final byte[] signature = new byte[6];
@@ -447,8 +447,8 @@ public class SevenZFile implements Closeable {
         final long startHeaderCrc = 0xffffFFFFL & buf.getInt();
         if (startHeaderCrc == 0) {
             // This is an indication of a corrupt header - peek the next 20 bytes
-            long currentPosition = channel.position();
-            ByteBuffer peekBuf = ByteBuffer.allocate(20);
+            final long currentPosition = channel.position();
+            final ByteBuffer peekBuf = ByteBuffer.allocate(20);
             readFully(peekBuf);
             channel.position(currentPosition);
             // Header invalid if all data is 0
@@ -472,7 +472,7 @@ public class SevenZFile implements Closeable {
     }
 
     private Archive tryToLocateEndHeader(final byte[] password) throws IOException {
-        ByteBuffer nidBuf = ByteBuffer.allocate(1);
+        final ByteBuffer nidBuf = ByteBuffer.allocate(1);
         final long searchLimit = 1024l * 1024 * 1;
         // Main header, plus bytes that readStartHeader would read
         final long previousDataSize = channel.position() + 20;
@@ -490,7 +490,7 @@ public class SevenZFile implements Closeable {
             channel.position(pos);
             nidBuf.rewind();
             channel.read(nidBuf);
-            int nid = nidBuf.array()[0];
+            final int nid = nidBuf.array()[0];
             // First indicator: Byte equals one of these header identifiers
             if (nid == NID.kEncodedHeader || nid == NID.kHeader) {
                 try {
@@ -498,12 +498,12 @@ public class SevenZFile implements Closeable {
                     final StartHeader startHeader = new StartHeader();
                     startHeader.nextHeaderOffset = pos - previousDataSize;
                     startHeader.nextHeaderSize = channel.size() - pos;
-                    Archive result = initializeArchive(startHeader, password, false);
+                    final Archive result = initializeArchive(startHeader, password, false);
                     // Sanity check: There must be some data...
                     if (result.packSizes != null && result.files.length > 0) {
                         return result;
                     }
-                } catch (Exception ignore) {
+                } catch (final Exception ignore) {
                     // Wrong guess...
                 }
             }
@@ -511,7 +511,7 @@ public class SevenZFile implements Closeable {
         throw new IOException("Start header corrupt and unable to guess end header");
     }
 
-    private Archive initializeArchive(StartHeader startHeader, final byte[] password, boolean verifyCrc) throws IOException {
+    private Archive initializeArchive(final StartHeader startHeader, final byte[] password, final boolean verifyCrc) throws IOException {
         assertFitsIntoInt("nextHeaderSize", startHeader.nextHeaderSize);
         final int nextHeaderSizeInt = (int) startHeader.nextHeaderSize;
         channel.position(SIGNATURE_HEADER_SIZE + startHeader.nextHeaderOffset);
@@ -1159,7 +1159,7 @@ public class SevenZFile implements Closeable {
      * @param isRandomAccess is this called in a random access
      * @throws IOException if there are exceptions when reading the file
      */
-    private void buildDecodingStream(int entryIndex, boolean isRandomAccess) throws IOException {
+    private void buildDecodingStream(final int entryIndex, final boolean isRandomAccess) throws IOException {
         if (archive.streamMap == null) {
             throw new IOException("Archive doesn't contain stream information to read entries");
         }
@@ -1186,8 +1186,8 @@ public class SevenZFile implements Closeable {
             // the content methods should be set to methods of the first entry as it must not be null,
             // and the content methods would only be set if the content methods was not set
             if(isRandomAccess && file.getContentMethods() == null) {
-                int folderFirstFileIndex = archive.streamMap.folderFirstFileIndex[folderIndex];
-                SevenZArchiveEntry folderFirstFile = archive.files[folderFirstFileIndex];
+                final int folderFirstFileIndex = archive.streamMap.folderFirstFileIndex[folderIndex];
+                final SevenZArchiveEntry folderFirstFile = archive.files[folderFirstFileIndex];
                 file.setContentMethods(folderFirstFile.getContentMethods());
             }
             isInSameFolder = true;
@@ -1227,7 +1227,7 @@ public class SevenZFile implements Closeable {
      * @param file        the 7z entry to read
      * @throws IOException if exceptions occur when reading the 7z file
      */
-    private void reopenFolderInputStream(int folderIndex, SevenZArchiveEntry file) throws IOException {
+    private void reopenFolderInputStream(final int folderIndex, final SevenZArchiveEntry file) throws IOException {
         deferredBlockStreams.clear();
         if (currentFolderInputStream != null) {
             currentFolderInputStream.close();
@@ -1264,7 +1264,7 @@ public class SevenZFile implements Closeable {
      * @throws IOException there are exceptions when skipping entries
      * @since 1.21
      */
-    private boolean skipEntriesWhenNeeded(int entryIndex, boolean isInSameFolder, int folderIndex) throws IOException {
+    private boolean skipEntriesWhenNeeded(final int entryIndex, final boolean isInSameFolder, final int folderIndex) throws IOException {
         final SevenZArchiveEntry file = archive.files[entryIndex];
         // if the entry to be read is the current entry, and the entry has not
         // been read yet, then there's nothing we need to do
@@ -1291,7 +1291,7 @@ public class SevenZFile implements Closeable {
         }
 
         for (int i = filesToSkipStartIndex; i < entryIndex; i++) {
-            SevenZArchiveEntry fileToSkip = archive.files[i];
+            final SevenZArchiveEntry fileToSkip = archive.files[i];
             InputStream fileStreamToSkip = new BoundedInputStream(currentFolderInputStream, fileToSkip.getSize());
             if (fileToSkip.getHasCrc()) {
                 fileStreamToSkip = new CRC32VerifyingInputStream(fileStreamToSkip, fileToSkip.getSize(), fileToSkip.getCrcValue());
@@ -1315,7 +1315,7 @@ public class SevenZFile implements Closeable {
     private boolean hasCurrentEntryBeenRead() {
         boolean hasCurrentEntryBeenRead = false;
         if (deferredBlockStreams.size() > 0) {
-            InputStream currentEntryInputStream = deferredBlockStreams.get(deferredBlockStreams.size() - 1);
+            final InputStream currentEntryInputStream = deferredBlockStreams.get(deferredBlockStreams.size() - 1);
             // get the bytes remaining to read, and compare it with the size of
             // the file to figure out if the file has been read
             if (currentEntryInputStream instanceof CRC32VerifyingInputStream) {
@@ -1358,7 +1358,7 @@ public class SevenZFile implements Closeable {
                 }
                 return r;
             }
-            private void count(int c) {
+            private void count(final int c) {
                 compressedBytesReadFromCurrentEntry += c;
             }
         };
@@ -1389,7 +1389,7 @@ public class SevenZFile implements Closeable {
      *             if an I/O error has occurred
      */
     public int read() throws IOException {
-        int b = getCurrentStream().read();
+        final int b = getCurrentStream().read();
         if (b >= 0) {
             uncompressedBytesReadFromCurrentEntry++;
         }
@@ -1429,7 +1429,7 @@ public class SevenZFile implements Closeable {
      * @throws IOException if unable to create an input stream from the zipentry
      * @since Compress 1.20
      */
-    public InputStream getInputStream(SevenZArchiveEntry entry) throws IOException {
+    public InputStream getInputStream(final SevenZArchiveEntry entry) throws IOException {
         int entryIndex = -1;
         for (int i = 0; i < this.archive.files.length;i++) {
             if (entry == this.archive.files[i]) {
@@ -1474,7 +1474,7 @@ public class SevenZFile implements Closeable {
         if (len == 0) {
             return 0;
         }
-        int cnt = getCurrentStream().read(b, off, len);
+        final int cnt = getCurrentStream().read(b, off, len);
         if (cnt > 0) {
             uncompressedBytesReadFromCurrentEntry += cnt;
         }
@@ -1516,7 +1516,7 @@ public class SevenZFile implements Closeable {
         return value;
     }
 
-    private static int getUnsignedByte(ByteBuffer buf) {
+    private static int getUnsignedByte(final ByteBuffer buf) {
         return buf.get() & 0xff;
     }
 
@@ -1547,8 +1547,8 @@ public class SevenZFile implements Closeable {
         if (bytesToSkip < 1) {
             return 0;
         }
-        int current = input.position();
-        int maxSkip = input.remaining();
+        final int current = input.position();
+        final int maxSkip = input.remaining();
         if (maxSkip < bytesToSkip) {
             bytesToSkip = maxSkip;
         }
@@ -1556,7 +1556,7 @@ public class SevenZFile implements Closeable {
         return bytesToSkip;
     }
 
-    private void readFully(ByteBuffer buf) throws IOException {
+    private void readFully(final ByteBuffer buf) throws IOException {
         buf.rewind();
         IOUtils.readFully(channel, buf);
         buf.flip();
@@ -1599,20 +1599,20 @@ public class SevenZFile implements Closeable {
 
     private static final CharsetEncoder PASSWORD_ENCODER = StandardCharsets.UTF_16LE.newEncoder();
 
-    private static byte[] utf16Decode(char[] chars) throws IOException {
+    private static byte[] utf16Decode(final char[] chars) throws IOException {
         if (chars == null) {
             return null;
         }
-        ByteBuffer encoded = PASSWORD_ENCODER.encode(CharBuffer.wrap(chars));
+        final ByteBuffer encoded = PASSWORD_ENCODER.encode(CharBuffer.wrap(chars));
         if (encoded.hasArray()) {
             return encoded.array();
         }
-        byte[] e = new byte[encoded.remaining()];
+        final byte[] e = new byte[encoded.remaining()];
         encoded.get(e);
         return e;
     }
 
-    private static void assertFitsIntoInt(String what, long value) throws IOException {
+    private static void assertFitsIntoInt(final String what, final long value) throws IOException {
         if (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE) {
             throw new IOException("Cannot handle " + what + " " + value);
         }

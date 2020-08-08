@@ -54,21 +54,21 @@ public class BinaryTreeTest {
         try {
             binaryFinary.addLeaf(0,0,0,1);
             fail("should have thrown illegalArgumentException");
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
         }
 
-        InputStream is = new ByteArrayInputStream(new byte[]{});
+        final InputStream is = new ByteArrayInputStream(new byte[]{});
         try {
             BinaryTree.decode(is,0);
             fail("should have thrown IOException");
-        } catch (IOException e) {
+        } catch (final IOException e) {
 
         }
         binaryFinary = new BinaryTree(4);
         try {
             binaryFinary.read(new BitStream(new ByteArrayInputStream(new byte[] {0})));
             fail("expected read fail");
-        } catch (IOException e) {
+        } catch (final IOException e) {
         }
     }
 }

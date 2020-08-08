@@ -48,17 +48,17 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
     @Test
     public void constructorThrowsOnNonSplitZipFiles() throws IOException {
         thrown.expect(IOException.class);
-        List<SeekableByteChannel> channels = new ArrayList<>();
-        File file = getFile("COMPRESS-189.zip");
+        final List<SeekableByteChannel> channels = new ArrayList<>();
+        final File file = getFile("COMPRESS-189.zip");
         channels.add(Files.newByteChannel(file.toPath(), StandardOpenOption.READ));
         new ZipSplitReadOnlySeekableByteChannel(channels);
     }
 
     @Test
     public void channelsPositionIsZeroAfterConstructor() throws IOException {
-        List<SeekableByteChannel> channels = getSplitZipChannels();
+        final List<SeekableByteChannel> channels = getSplitZipChannels();
         new ZipSplitReadOnlySeekableByteChannel(channels);
-        for (SeekableByteChannel channel : channels) {
+        for (final SeekableByteChannel channel : channels) {
             Assert.assertEquals(0, channel.position());
         }
     }
@@ -77,16 +77,16 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
 
     @Test
     public void forOrderedSeekableByteChannelsReturnCorrectClass() throws IOException {
-        File file1 = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
-        SeekableByteChannel firstChannel = Files.newByteChannel(file1.toPath(), StandardOpenOption.READ);
+        final File file1 = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
+        final SeekableByteChannel firstChannel = Files.newByteChannel(file1.toPath(), StandardOpenOption.READ);
 
-        File file2 = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z02");
-        SeekableByteChannel secondChannel = Files.newByteChannel(file2.toPath(), StandardOpenOption.READ);
+        final File file2 = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z02");
+        final SeekableByteChannel secondChannel = Files.newByteChannel(file2.toPath(), StandardOpenOption.READ);
 
-        File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.zip");
-        SeekableByteChannel lastChannel = Files.newByteChannel(lastFile.toPath(), StandardOpenOption.READ);
+        final File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.zip");
+        final SeekableByteChannel lastChannel = Files.newByteChannel(lastFile.toPath(), StandardOpenOption.READ);
 
-        List<SeekableByteChannel> channels = new ArrayList<>();
+        final List<SeekableByteChannel> channels = new ArrayList<>();
         channels.add(firstChannel);
         channels.add(secondChannel);
 
@@ -99,7 +99,7 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
 
     @Test
     public void forOrderedSeekableByteChannelsReturnsIdentityForSingleElement() throws IOException {
-        SeekableByteChannel emptyChannel = new SeekableInMemoryByteChannel(new byte[0]);
+        final SeekableByteChannel emptyChannel = new SeekableInMemoryByteChannel(new byte[0]);
         final SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.forOrderedSeekableByteChannels(emptyChannel);
         Assert.assertSame(emptyChannel, channel);
     }
@@ -118,11 +118,11 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
 
     @Test
     public void forFilesReturnCorrectClass() throws IOException {
-        File firstFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
-        File secondFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z02");
-        File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
+        final File firstFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
+        final File secondFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z02");
+        final File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
 
-        ArrayList<File> list = new ArrayList<>();
+        final ArrayList<File> list = new ArrayList<>();
         list.add(firstFile);
         list.add(secondFile);
 
@@ -136,26 +136,26 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
     @Test
     public void buildFromLastSplitSegmentThrowsOnNotZipFile() throws IOException {
         thrown.expect(IllegalArgumentException.class);
-        File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
+        final File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
         ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
     }
 
     @Test
     public void positionToSomeZipSplitSegment() throws IOException {
-        File firstFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
-        int firstFileSize = (int) firstFile.length();
+        final File firstFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
+        final int firstFileSize = (int) firstFile.length();
 
-        File secondFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z02");
-        int secondFileSize = (int) secondFile.length();
+        final File secondFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z02");
+        final int secondFileSize = (int) secondFile.length();
 
-        File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.zip");
-        int lastFileSize = (int) lastFile.length();
+        final File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.zip");
+        final int lastFileSize = (int) lastFile.length();
 
-        Random random = new Random();
-        int randomDiskNumber = random.nextInt(3);
-        int randomOffset = randomDiskNumber < 2 ? random.nextInt(firstFileSize) : random.nextInt(lastFileSize);
+        final Random random = new Random();
+        final int randomDiskNumber = random.nextInt(3);
+        final int randomOffset = randomDiskNumber < 2 ? random.nextInt(firstFileSize) : random.nextInt(lastFileSize);
 
-        ZipSplitReadOnlySeekableByteChannel channel = (ZipSplitReadOnlySeekableByteChannel) ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
+        final ZipSplitReadOnlySeekableByteChannel channel = (ZipSplitReadOnlySeekableByteChannel) ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
         channel.position(randomDiskNumber, randomOffset);
         long expectedPosition = randomOffset;
 
@@ -166,14 +166,14 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
     }
 
     private List<SeekableByteChannel> getSplitZipChannels() throws IOException {
-        List<SeekableByteChannel> channels = new ArrayList<>();
-        File file1 = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
+        final List<SeekableByteChannel> channels = new ArrayList<>();
+        final File file1 = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
         channels.add(Files.newByteChannel(file1.toPath(), StandardOpenOption.READ));
 
-        File file2 = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z02");
+        final File file2 = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z02");
         channels.add(Files.newByteChannel(file2.toPath(), StandardOpenOption.READ));
 
-        File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.zip");
+        final File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.zip");
         channels.add(Files.newByteChannel(lastFile.toPath(), StandardOpenOption.READ));
 
         return channels;

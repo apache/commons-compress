@@ -34,7 +34,7 @@ public class MockEvilInputStream extends InputStream {
     }
 
     @Override
-    public int read(byte[] bytes, int offset, int length) throws IOException {
+    public int read(final byte[] bytes, final int offset, final int length) throws IOException {
         throw new IOException("Evil");
     }
 }

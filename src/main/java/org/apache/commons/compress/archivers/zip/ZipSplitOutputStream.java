@@ -81,25 +81,25 @@ class ZipSplitOutputStream extends OutputStream {
      * @throws IllegalArgumentException
      * @throws IOException
      */
-    public void prepareToWriteUnsplittableContent(long unsplittableContentSize) throws IllegalArgumentException, IOException {
+    public void prepareToWriteUnsplittableContent(final long unsplittableContentSize) throws IllegalArgumentException, IOException {
         if (unsplittableContentSize > this.splitSize) {
             throw new IllegalArgumentException("The unsplittable content size is bigger than the split segment size");
         }
 
-        long bytesRemainingInThisSegment = this.splitSize - this.currentSplitSegmentBytesWritten;
+        final long bytesRemainingInThisSegment = this.splitSize - this.currentSplitSegmentBytesWritten;
         if (bytesRemainingInThisSegment < unsplittableContentSize) {
             openNewSplitSegment();
         }
     }
 
     @Override
-    public void write(int i) throws IOException {
+    public void write(final int i) throws IOException {
         singleByte[0] = (byte)(i & 0xff);
         write(singleByte);
     }
 
     @Override
-    public void write(byte[] b) throws IOException {
+    public void write(final byte[] b) throws IOException {
         write(b, 0, b.length);
     }
 
@@ -113,7 +113,7 @@ class ZipSplitOutputStream extends OutputStream {
      * @throws IOException
      */
     @Override
-    public void write(byte[] b, int off, int len) throws IOException {
+    public void write(final byte[] b, final int off, final int len) throws IOException {
         if (len <= 0) {
             return;
         }
@@ -122,7 +122,7 @@ class ZipSplitOutputStream extends OutputStream {
             openNewSplitSegment();
             write(b, off, len);
         } else if (currentSplitSegmentBytesWritten + len > splitSize) {
-            int bytesToWriteForThisSegment = (int) splitSize - (int) currentSplitSegmentBytesWritten;
+            final int bytesToWriteForThisSegment = (int) splitSize - (int) currentSplitSegmentBytesWritten;
             write(b, off, bytesToWriteForThisSegment);
             openNewSplitSegment();
             write(b, off + bytesToWriteForThisSegment, len - bytesToWriteForThisSegment);
@@ -149,8 +149,8 @@ class ZipSplitOutputStream extends OutputStream {
             throw new IOException("This archive has already been finished");
         }
 
-        String zipFileBaseName = FileNameUtils.getBaseName(zipFile.getName());
-        File lastZipSplitSegmentFile = new File(zipFile.getParentFile(), zipFileBaseName + ".zip");
+        final String zipFileBaseName = FileNameUtils.getBaseName(zipFile.getName());
+        final File lastZipSplitSegmentFile = new File(zipFile.getParentFile(), zipFileBaseName + ".zip");
         outputStream.close();
         if (!zipFile.renameTo(lastZipSplitSegmentFile)) {
             throw new IOException("Failed to rename " + zipFile + " to " + lastZipSplitSegmentFile);
@@ -217,9 +217,9 @@ class ZipSplitOutputStream extends OutputStream {
      * @return
      * @throws IOException
      */
-    private File createNewSplitSegmentFile(Integer zipSplitSegmentSuffixIndex) throws IOException {
-        int newZipSplitSegmentSuffixIndex = zipSplitSegmentSuffixIndex == null ? (currentSplitSegmentIndex + 2) : zipSplitSegmentSuffixIndex;
-        String baseName = FileNameUtils.getBaseName(zipFile.getName());
+    private File createNewSplitSegmentFile(final Integer zipSplitSegmentSuffixIndex) throws IOException {
+        final int newZipSplitSegmentSuffixIndex = zipSplitSegmentSuffixIndex == null ? (currentSplitSegmentIndex + 2) : zipSplitSegmentSuffixIndex;
+        final String baseName = FileNameUtils.getBaseName(zipFile.getName());
         String extension = ".z";
         if (newZipSplitSegmentSuffixIndex <= 9) {
             extension += "0" + newZipSplitSegmentSuffixIndex;
@@ -227,7 +227,7 @@ class ZipSplitOutputStream extends OutputStream {
             extension += newZipSplitSegmentSuffixIndex;
         }
 
-        File newFile = new File(zipFile.getParent(), baseName + extension);
+        final File newFile = new File(zipFile.getParent(), baseName + extension);
 
         if (newFile.exists()) {
             throw new IOException("split zip segment " + baseName + extension + " already exists");

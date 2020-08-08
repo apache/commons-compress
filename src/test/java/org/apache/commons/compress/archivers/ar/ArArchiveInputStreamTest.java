@@ -64,7 +64,7 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
     public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         try (FileInputStream in = new FileInputStream(getFile("bla.ar"));
              ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
-            ArchiveEntry e = archive.getNextEntry();
+            final ArchiveEntry e = archive.getNextEntry();
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read());
             assertEquals(-1, archive.read());
@@ -73,10 +73,10 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        byte[] buf = new byte[2];
+        final byte[] buf = new byte[2];
         try (FileInputStream in = new FileInputStream(getFile("bla.ar"));
              ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
-            ArchiveEntry e = archive.getNextEntry();
+            final ArchiveEntry e = archive.getNextEntry();
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read(buf));
             assertEquals(-1, archive.read(buf));
@@ -98,12 +98,12 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
             };
 
             try (ArArchiveInputStream archiveInputStream = new ArArchiveInputStream(simpleInputStream)) {
-                ArArchiveEntry entry1 = archiveInputStream.getNextArEntry();
+                final ArArchiveEntry entry1 = archiveInputStream.getNextArEntry();
                 assertThat(entry1, not(nullValue()));
                 assertThat(entry1.getName(), equalTo("test1.xml"));
                 assertThat(entry1.getLength(), equalTo(610L));
 
-                ArArchiveEntry entry2 = archiveInputStream.getNextArEntry();
+                final ArArchiveEntry entry2 = archiveInputStream.getNextArEntry();
                 assertThat(entry2.getName(), equalTo("test2.xml"));
                 assertThat(entry2.getLength(), equalTo(82L));
 

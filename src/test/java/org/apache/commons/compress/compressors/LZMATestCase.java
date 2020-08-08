@@ -93,7 +93,7 @@ public final class LZMATestCase extends AbstractTestCase {
     @Test
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.lzma");
-        byte[] buf = new byte[2];
+        final byte[] buf = new byte[2];
         try (InputStream is = new FileInputStream(input)) {
             final LZMACompressorInputStream in =
                     new LZMACompressorInputStream(is);

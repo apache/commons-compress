@@ -131,8 +131,8 @@ public class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test public void testExtraPaxHeaders() throws IOException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
 
         TarArchiveEntry entry = new TarArchiveEntry("./weasels");
         entry.addPaxHeader("APACHE.mustelida","true");
@@ -152,7 +152,7 @@ public class TarArchiveEntryTest implements TarConstants {
         assertNotEquals("should have extra headers before clear",0,entry.getExtraPaxHeaders().size());
         entry.clearExtraPaxHeaders();
         assertEquals("extra headers should be empty after clear",0,entry.getExtraPaxHeaders().size());
-        TarArchiveInputStream tis = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()));
+        final TarArchiveInputStream tis = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()));
         entry = tis.getNextTarEntry();
         assertNotNull("couldn't get entry",entry);
 
@@ -202,7 +202,7 @@ public class TarArchiveEntryTest implements TarConstants {
 
     @Test
     public void getFileFromNonFileEntry() {
-        TarArchiveEntry entry = new TarArchiveEntry("test.txt");
+        final TarArchiveEntry entry = new TarArchiveEntry("test.txt");
         assertNull(entry.getFile());
         assertNull(entry.getPath());
     }
@@ -210,7 +210,7 @@ public class TarArchiveEntryTest implements TarConstants {
     @Test
     public void testLinuxFileInformationFromFile() throws IOException {
         assumeTrue("Information is only available on linux", OS.equals("linux"));
-        TarArchiveEntry entry = new TarArchiveEntry(getFile("test1.xml"));
+        final TarArchiveEntry entry = new TarArchiveEntry(getFile("test1.xml"));
         assertNotEquals(0, entry.getLongUserId());
         assertNotEquals(0, entry.getLongGroupId());
         assertNotEquals("", entry.getUserName());
@@ -219,7 +219,7 @@ public class TarArchiveEntryTest implements TarConstants {
     @Test
     public void testLinuxFileInformationFromPath() throws IOException {
         assumeTrue("Information is only available on linux", OS.equals("linux"));
-        TarArchiveEntry entry = new TarArchiveEntry(getPath("test1.xml"));
+        final TarArchiveEntry entry = new TarArchiveEntry(getPath("test1.xml"));
         assertNotEquals(0, entry.getLongUserId());
         assertNotEquals(0, entry.getLongGroupId());
         assertNotEquals("", entry.getUserName());
@@ -228,14 +228,14 @@ public class TarArchiveEntryTest implements TarConstants {
     @Test
     public void testWindowsFileInformationFromFile() throws IOException {
         assumeTrue("Information should only be checked on Windows", OS.startsWith("windows"));
-        TarArchiveEntry entry = new TarArchiveEntry(getFile("test1.xml"));
+        final TarArchiveEntry entry = new TarArchiveEntry(getFile("test1.xml"));
         assertNotEquals("", entry.getUserName());
     }
 
     @Test
     public void testWindowsFileInformationFromPath() throws IOException {
         assumeTrue("Information should only be checked on Windows", OS.startsWith("windows"));
-        TarArchiveEntry entry = new TarArchiveEntry(getPath("test1.xml"));
+        final TarArchiveEntry entry = new TarArchiveEntry(getPath("test1.xml"));
         assertNotEquals("", entry.getUserName());
     }
 

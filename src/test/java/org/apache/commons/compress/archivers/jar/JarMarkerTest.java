@@ -27,11 +27,11 @@ import org.junit.Test;
 public class JarMarkerTest {
 
     @Test public void testJarMarkerLengthCheck() {
-        JarMarker jarMarker = JarMarker.getInstance();
+        final JarMarker jarMarker = JarMarker.getInstance();
         try {
             jarMarker.parseFromLocalFileData(null,0,1);
             fail("should have thrown exception due to length of 1");
-        } catch (ZipException e) {
+        } catch (final ZipException e) {
 
         }
     }

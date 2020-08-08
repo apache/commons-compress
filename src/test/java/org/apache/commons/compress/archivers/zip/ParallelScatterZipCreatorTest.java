@@ -86,7 +86,7 @@ public class ParallelScatterZipCreatorTest {
             public CallableConsumer apply(final ParallelScatterZipCreator zipCreator) {
                 return new CallableConsumer() {
                     @Override
-                    public void accept(Callable<? extends ScatterZipOutputStream> c) {
+                    public void accept(final Callable<? extends ScatterZipOutputStream> c) {
                         zipCreator.submit(c);
                     }
                 };
@@ -102,7 +102,7 @@ public class ParallelScatterZipCreatorTest {
             public CallableConsumer apply(final ParallelScatterZipCreator zipCreator) {
                 return new CallableConsumer() {
                     @Override
-                    public void accept(Callable<? extends ScatterZipOutputStream> c) {
+                    public void accept(final Callable<? extends ScatterZipOutputStream> c) {
                         zipCreator.submitStreamAwareCallable(c);
                     }
                 };
@@ -146,7 +146,7 @@ public class ParallelScatterZipCreatorTest {
             public CallableConsumer apply(final ParallelScatterZipCreator zipCreator) {
                 return new CallableConsumer() {
                     @Override
-                    public void accept(Callable<? extends ScatterZipOutputStream> c) {
+                    public void accept(final Callable<? extends ScatterZipOutputStream> c) {
                         zipCreator.submit(c);
                     }
                 };
@@ -162,7 +162,7 @@ public class ParallelScatterZipCreatorTest {
             public CallableConsumer apply(final ParallelScatterZipCreator zipCreator) {
                 return new CallableConsumer() {
                     @Override
-                    public void accept(Callable<? extends ScatterZipOutputStream> c) {
+                    public void accept(final Callable<? extends ScatterZipOutputStream> c) {
                         zipCreator.submitStreamAwareCallable(c);
                     }
                 };
@@ -170,11 +170,11 @@ public class ParallelScatterZipCreatorTest {
         }, Deflater.BEST_COMPRESSION);
     }
 
-    private void callableApi(CallableConsumerSupplier consumerSupplier) throws Exception {
+    private void callableApi(final CallableConsumerSupplier consumerSupplier) throws Exception {
         callableApi(consumerSupplier, Deflater.DEFAULT_COMPRESSION);
     }
 
-    private void callableApi(CallableConsumerSupplier consumerSupplier, int compressionLevel) throws Exception {
+    private void callableApi(final CallableConsumerSupplier consumerSupplier, final int compressionLevel) throws Exception {
         final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(result);
         zos.setEncoding("UTF-8");
         final ExecutorService es = Executors.newFixedThreadPool(1);
@@ -197,7 +197,7 @@ public class ParallelScatterZipCreatorTest {
         assertNotNull(zipCreator.getStatisticsMessage());
     }
 
-    private void callableApiWithTestFiles(CallableConsumerSupplier consumerSupplier, int compressionLevel) throws Exception {
+    private void callableApiWithTestFiles(final CallableConsumerSupplier consumerSupplier, final int compressionLevel) throws Exception {
         final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(result);
         zos.setEncoding("UTF-8");
         final ExecutorService es = Executors.newFixedThreadPool(1);
@@ -313,7 +313,7 @@ public class ParallelScatterZipCreatorTest {
     private Map<String, byte[]> writeTestFilesAsCallable(final ParallelScatterZipCreator zipCreator,
                                                          final CallableConsumer consumer) throws IOException {
         final Map<String, byte[]> entries = new HashMap<>();
-        File baseDir = getFile("");
+        final File baseDir = getFile("");
         int filesCount = 0;
         for (final File file : baseDir.listFiles()) {
             // do not compress too many files
@@ -338,7 +338,7 @@ public class ParallelScatterZipCreatorTest {
                 public InputStream get() {
                     try {
                         return new FileInputStream(file);
-                    } catch (FileNotFoundException e) {
+                    } catch (final FileNotFoundException e) {
                         return null;
                     }
                 }

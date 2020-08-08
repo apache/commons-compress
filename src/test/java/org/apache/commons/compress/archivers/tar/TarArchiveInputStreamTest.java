@@ -322,7 +322,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
             final TarArchiveEntry entry = is.getNextTarEntry();
             assertEquals("package/package.json", entry.getName());
             assertEquals(is.getCurrentEntry(),entry);
-            TarArchiveEntry weaselEntry = new TarArchiveEntry(entry.getName());
+            final TarArchiveEntry weaselEntry = new TarArchiveEntry(entry.getName());
             weaselEntry.setSize(entry.getSize());
             is.setCurrentEntry(weaselEntry);
             assertEquals(entry,is.getCurrentEntry());
@@ -332,7 +332,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
                is.setCurrentEntry(null);
                is.read();
                fail("should abort because current entry is nulled");
-            }  catch(IllegalStateException e) {
+            }  catch(final IllegalStateException e) {
                 // expected
             }
             is.setCurrentEntry(entry);
@@ -356,7 +356,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
     public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         try (FileInputStream in = new FileInputStream(getFile("bla.tar"));
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
-            ArchiveEntry e = archive.getNextEntry();
+            final ArchiveEntry e = archive.getNextEntry();
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read());
             assertEquals(-1, archive.read());
@@ -365,10 +365,10 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        byte[] buf = new byte[2];
+        final byte[] buf = new byte[2];
         try (FileInputStream in = new FileInputStream(getFile("bla.tar"));
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
-            ArchiveEntry e = archive.getNextEntry();
+            final ArchiveEntry e = archive.getNextEntry();
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read(buf));
             assertEquals(-1, archive.read(buf));
@@ -380,7 +380,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
         final String rootPath = dir.getAbsolutePath();
         final String dirDirectory = "COMPRESS-509";
         final int count = 100;
-        File root = new File(rootPath + "/" + dirDirectory);
+        final File root = new File(rootPath + "/" + dirDirectory);
         root.mkdirs();
         for (int i = 1; i < count; i++) {
             // -----------------------
@@ -390,21 +390,21 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
             for (int j = 0; j < i; j++) {
                 subDir += "a";
             }
-            File dir = new File(rootPath + "/" + dirDirectory, "/" + subDir);
+            final File dir = new File(rootPath + "/" + dirDirectory, "/" + subDir);
             dir.mkdir();
 
             // -----------------------
             // tar these dirs
             // -----------------------
-            String fileName = "/" + dirDirectory + "/" + subDir;
-            File tarF = new File(rootPath + "/tar" + i + ".tar");
-            FileOutputStream dest = new FileOutputStream(tarF);
-            TarArchiveOutputStream out = new TarArchiveOutputStream(new BufferedOutputStream(dest));
+            final String fileName = "/" + dirDirectory + "/" + subDir;
+            final File tarF = new File(rootPath + "/tar" + i + ".tar");
+            final FileOutputStream dest = new FileOutputStream(tarF);
+            final TarArchiveOutputStream out = new TarArchiveOutputStream(new BufferedOutputStream(dest));
             out.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_STAR);
             out.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
 
-            File file = new File(rootPath, fileName);
-            TarArchiveEntry entry = new TarArchiveEntry(file);
+            final File file = new File(rootPath, fileName);
+            final TarArchiveEntry entry = new TarArchiveEntry(file);
             entry.setName(fileName);
             out.putArchiveEntry(entry);
             out.closeArchiveEntry();
@@ -414,8 +414,8 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
             // -----------------------
             // untar these tars
             // -----------------------
-            InputStream is = new FileInputStream(tarF);
-            TarArchiveInputStream debInputStream = (TarArchiveInputStream) ArchiveStreamFactory.DEFAULT
+            final InputStream is = new FileInputStream(tarF);
+            final TarArchiveInputStream debInputStream = (TarArchiveInputStream) ArchiveStreamFactory.DEFAULT
                     .createArchiveInputStream("tar", is);
             TarArchiveEntry outEntry;
             while ((outEntry = (TarArchiveEntry) debInputStream.getNextEntry()) != null) {

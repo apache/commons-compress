@@ -36,20 +36,20 @@ public final class TarArchiveStructSparse {
     private final long offset;
     private final long numbytes;
 
-    public TarArchiveStructSparse(long offset, long numbytes) {
+    public TarArchiveStructSparse(final long offset, final long numbytes) {
         this.offset = offset;
         this.numbytes = numbytes;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        TarArchiveStructSparse that = (TarArchiveStructSparse) o;
+        final TarArchiveStructSparse that = (TarArchiveStructSparse) o;
         return offset == that.offset &&
                 numbytes == that.numbytes;
     }

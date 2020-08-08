@@ -51,7 +51,7 @@ public class XZCompressorInputStreamTest {
         singleByteReadConsistentlyReturnsMinusOneAtEof(true);
     }
 
-    private void singleByteReadConsistentlyReturnsMinusOneAtEof(boolean decompressConcatenated) throws IOException {
+    private void singleByteReadConsistentlyReturnsMinusOneAtEof(final boolean decompressConcatenated) throws IOException {
         final File input = getFile("bla.tar.xz");
         try (InputStream is = new FileInputStream(input)) {
             final XZCompressorInputStream in =
@@ -73,9 +73,9 @@ public class XZCompressorInputStreamTest {
         multiByteReadConsistentlyReturnsMinusOneAtEof(true);
     }
 
-    private void multiByteReadConsistentlyReturnsMinusOneAtEof(boolean decompressConcatenated) throws IOException {
+    private void multiByteReadConsistentlyReturnsMinusOneAtEof(final boolean decompressConcatenated) throws IOException {
         final File input = getFile("bla.tar.xz");
-        byte[] buf = new byte[2];
+        final byte[] buf = new byte[2];
         try (InputStream is = new FileInputStream(input)) {
             final XZCompressorInputStream in =
                 new XZCompressorInputStream(is, decompressConcatenated);

@@ -588,11 +588,11 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
         return hc;
     }
 
-    private static Date zipLongToDate(ZipLong unixTime) {
+    private static Date zipLongToDate(final ZipLong unixTime) {
         return unixTime != null ? new Date(unixTime.getIntValue() * 1000L) : null;
     }
 
-    private static ZipLong unixTimeToZipLong(long l) {
+    private static ZipLong unixTimeToZipLong(final long l) {
         if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("X5455 timestamps must fit in a signed 32 bit integer: " + l);
         }

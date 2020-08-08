@@ -97,7 +97,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
      * @param in  the InputStream from which to read the compressed data
      * @throws IOException if reading fails
      */
-    public FramedLZ4CompressorInputStream(InputStream in) throws IOException {
+    public FramedLZ4CompressorInputStream(final InputStream in) throws IOException {
         this(in, false);
     }
 
@@ -111,7 +111,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
      *          after the frame stream
      * @throws IOException if reading fails
      */
-    public FramedLZ4CompressorInputStream(InputStream in, boolean decompressConcatenated) throws IOException {
+    public FramedLZ4CompressorInputStream(final InputStream in, final boolean decompressConcatenated) throws IOException {
         this.inputStream = new CountingInputStream(in);
         this.decompressConcatenated = decompressConcatenated;
         init(true);
@@ -171,15 +171,15 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
         return inputStream.getBytesRead();
     }
 
-    private void init(boolean firstFrame) throws IOException {
+    private void init(final boolean firstFrame) throws IOException {
         if (readSignature(firstFrame)) {
             readFrameDescriptor();
             nextBlock();
         }
     }
 
-    private boolean readSignature(boolean firstFrame) throws IOException {
-        String garbageMessage = firstFrame ? "Not a LZ4 frame stream" : "LZ4 frame stream followed by garbage";
+    private boolean readSignature(final boolean firstFrame) throws IOException {
+        final String garbageMessage = firstFrame ? "Not a LZ4 frame stream" : "LZ4 frame stream followed by garbage";
         final byte[] b = new byte[4];
         int read = IOUtils.readFully(inputStream, b);
         count(read);
@@ -205,7 +205,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
     }
 
     private void readFrameDescriptor() throws IOException {
-        int flags = readOneByte();
+        final int flags = readOneByte();
         if (flags == -1) {
             throw new IOException("Premature end of stream while reading frame flags");
         }
@@ -224,25 +224,25 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
         expectBlockChecksum = (flags & BLOCK_CHECKSUM_MASK) != 0;
         expectContentSize = (flags & CONTENT_SIZE_MASK) != 0;
         expectContentChecksum = (flags & CONTENT_CHECKSUM_MASK) != 0;
-        int bdByte = readOneByte();
+        final int bdByte = readOneByte();
         if (bdByte == -1) { // max size is irrelevant for this implementation
             throw new IOException("Premature end of stream while reading frame BD byte");
         }
         contentHash.update(bdByte);
         if (expectContentSize) { // for now we don't care, contains the uncompressed size
-            byte[] contentSize = new byte[8];
-            int skipped = IOUtils.readFully(inputStream, contentSize);
+            final byte[] contentSize = new byte[8];
+            final int skipped = IOUtils.readFully(inputStream, contentSize);
             count(skipped);
             if (8 != skipped) {
                 throw new IOException("Premature end of stream while reading content size");
             }
             contentHash.update(contentSize, 0, contentSize.length);
         }
-        int headerHash = readOneByte();
+        final int headerHash = readOneByte();
         if (headerHash == -1) { // partial hash of header.
             throw new IOException("Premature end of stream while reading frame header checksum");
         }
-        int expectedHash = (int) ((contentHash.getValue() >> 8) & 0xff);
+        final int expectedHash = (int) ((contentHash.getValue() >> 8) & 0xff);
         contentHash.reset();
         if (headerHash != expectedHash) {
             throw new IOException("Frame header checksum mismatch");
@@ -251,9 +251,9 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
 
     private void nextBlock() throws IOException {
         maybeFinishCurrentBlock();
-        long len = ByteUtils.fromLittleEndian(supplier, 4);
-        boolean uncompressed = (len & UNCOMPRESSED_FLAG_MASK) != 0;
-        int realLen = (int) (len & (~UNCOMPRESSED_FLAG_MASK));
+        final long len = ByteUtils.fromLittleEndian(supplier, 4);
+        final boolean uncompressed = (len & UNCOMPRESSED_FLAG_MASK) != 0;
+        final int realLen = (int) (len & (~UNCOMPRESSED_FLAG_MASK));
         if (realLen < 0) {
             throw new IOException("Found illegal block with negative size");
         }
@@ -275,7 +275,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
             currentBlock = capped;
         } else {
             inUncompressed = false;
-            BlockLZ4CompressorInputStream s = new BlockLZ4CompressorInputStream(capped);
+            final BlockLZ4CompressorInputStream s = new BlockLZ4CompressorInputStream(capped);
             if (expectBlockDependency) {
                 s.prefill(blockDependencyBuffer);
             }
@@ -301,14 +301,14 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
         contentHash.reset();
     }
 
-    private void verifyChecksum(XXHash32 hash, String kind) throws IOException {
-        byte[] checksum = new byte[4];
-        int read = IOUtils.readFully(inputStream, checksum);
+    private void verifyChecksum(final XXHash32 hash, final String kind) throws IOException {
+        final byte[] checksum = new byte[4];
+        final int read = IOUtils.readFully(inputStream, checksum);
         count(read);
         if (4 != read) {
             throw new IOException("Premature end of stream while reading " + kind + " checksum");
         }
-        long expectedHash = hash.getValue();
+        final long expectedHash = hash.getValue();
         if (expectedHash != ByteUtils.fromLittleEndian(checksum)) {
             throw new IOException(kind + " checksum mismatch.");
         }
@@ -323,20 +323,20 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
         return -1;
     }
 
-    private int readOnce(byte[] b, int off, int len) throws IOException {
+    private int readOnce(final byte[] b, final int off, final int len) throws IOException {
         if (inUncompressed) {
-            int cnt = currentBlock.read(b, off, len);
+            final int cnt = currentBlock.read(b, off, len);
             count(cnt);
             return cnt;
         }
-        BlockLZ4CompressorInputStream l = (BlockLZ4CompressorInputStream) currentBlock;
-        long before = l.getBytesRead();
-        int cnt = currentBlock.read(b, off, len);
+        final BlockLZ4CompressorInputStream l = (BlockLZ4CompressorInputStream) currentBlock;
+        final long before = l.getBytesRead();
+        final int cnt = currentBlock.read(b, off, len);
         count(l.getBytesRead() - before);
         return cnt;
     }
 
-    private static boolean isSkippableFrameSignature(byte[] b) {
+    private static boolean isSkippableFrameSignature(final byte[] b) {
         if ((b[0] & SKIPPABLE_FRAME_PREFIX_BYTE_MASK) != SKIPPABLE_FRAME_PREFIX_BYTE_MASK) {
             return false;
         }
@@ -356,14 +356,14 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
      * hold an LZ4 signature and returns the number of bytes read
      * while storing the bytes in the given array.</p>
      */
-    private int skipSkippableFrame(byte[] b) throws IOException {
+    private int skipSkippableFrame(final byte[] b) throws IOException {
         int read = 4;
         while (read == 4 && isSkippableFrameSignature(b)) {
             final long len = ByteUtils.fromLittleEndian(supplier, 4);
             if (len < 0) {
                 throw new IOException("Found illegal skippable frame with negative size");
             }
-            long skipped = IOUtils.skip(inputStream, len);
+            final long skipped = IOUtils.skip(inputStream, len);
             count(skipped);
             if (len != skipped) {
                 throw new IOException("Premature end of stream while skipping frame");
@@ -377,7 +377,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
     private void appendToBlockDependencyBuffer(final byte[] b, final int off, int len) {
         len = Math.min(len, blockDependencyBuffer.length);
         if (len > 0) {
-            int keep = blockDependencyBuffer.length - len;
+            final int keep = blockDependencyBuffer.length - len;
             if (keep > 0) {
                 // move last keep bytes towards the start of the buffer
                 System.arraycopy(blockDependencyBuffer, len, blockDependencyBuffer, 0, keep);

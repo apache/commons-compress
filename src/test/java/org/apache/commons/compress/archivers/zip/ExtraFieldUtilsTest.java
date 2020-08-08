@@ -105,8 +105,8 @@ public class ExtraFieldUtilsTest implements UnixStat {
     @Test
     public void parseTurnsArrayIndexOutOfBoundsIntoZipException() throws Exception {
         ExtraFieldUtils.register(AiobThrowingExtraField.class);
-        AiobThrowingExtraField f = new AiobThrowingExtraField();
-        byte[] d = new byte[4 + AiobThrowingExtraField.LENGTH];
+        final AiobThrowingExtraField f = new AiobThrowingExtraField();
+        final byte[] d = new byte[4 + AiobThrowingExtraField.LENGTH];
         System.arraycopy(f.getHeaderId().getBytes(), 0, d, 0, 2);
         System.arraycopy(f.getLocalFileDataLength().getBytes(), 0, d, 2, 2);
         System.arraycopy(f.getLocalFileDataData(), 0, d, 4, AiobThrowingExtraField.LENGTH);
@@ -272,13 +272,13 @@ public class ExtraFieldUtilsTest implements UnixStat {
         }
 
         @Override
-        public void parseFromLocalFileData(byte[] buffer, int offset, int length)
+        public void parseFromLocalFileData(final byte[] buffer, final int offset, final int length)
             throws ZipException {
             throw new ArrayIndexOutOfBoundsException();
         }
 
         @Override
-        public void parseFromCentralDirectoryData(byte[] buffer, int offset, int length)
+        public void parseFromCentralDirectoryData(final byte[] buffer, final int offset, final int length)
             throws ZipException {
             parseFromLocalFileData(buffer, offset, length);
         }

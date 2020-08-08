@@ -153,7 +153,7 @@ public class SevenZTestCase extends AbstractTestCase {
         }
     }
 
-    private void singleByteReadConsistentlyReturnsMinusOneAtEof(SevenZFile archive) throws Exception {
+    private void singleByteReadConsistentlyReturnsMinusOneAtEof(final SevenZFile archive) throws Exception {
         SevenZArchiveEntry entry = archive.getNextEntry();
         entry = archive.getNextEntry();
         readFully(archive);
@@ -196,7 +196,7 @@ public class SevenZTestCase extends AbstractTestCase {
         }
     }
 
-    private void multiByteReadConsistentlyReturnsMinusOneAtEof(SevenZFile archive) throws Exception {
+    private void multiByteReadConsistentlyReturnsMinusOneAtEof(final SevenZFile archive) throws Exception {
         final byte[] buf = new byte[2];
         SevenZArchiveEntry entry = archive.getNextEntry();
         entry = archive.getNextEntry();

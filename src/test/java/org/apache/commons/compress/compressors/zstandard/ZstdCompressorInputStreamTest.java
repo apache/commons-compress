@@ -106,7 +106,7 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
         final File original = getFile("zstandard.testdata");
         final long originalFileLength = original.length();
 
-        byte[] originalFileContent = new byte[((int) originalFileLength)];
+        final byte[] originalFileContent = new byte[((int) originalFileLength)];
 
         try (InputStream ois = new FileInputStream(original)) {
             ois.read(originalFileContent);
@@ -137,7 +137,7 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
     @Test
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("zstandard.testdata.zst");
-        byte[] buf = new byte[2];
+        final byte[] buf = new byte[2];
         try (InputStream is = new FileInputStream(input)) {
             final ZstdCompressorInputStream in =
                     new ZstdCompressorInputStream(is);

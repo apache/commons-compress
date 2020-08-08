@@ -45,7 +45,7 @@ public class Deflate64CompressorInputStreamTest {
 
     @Test
     public void readWhenClosed() throws Exception {
-        Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(nullDecoder);
+        final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(nullDecoder);
         assertEquals(-1, input.read());
         assertEquals(-1, input.read(new byte[1]));
         assertEquals(-1, input.read(new byte[1], 0, 1));
@@ -53,7 +53,7 @@ public class Deflate64CompressorInputStreamTest {
 
     @Test
     public void properSizeWhenClosed() throws Exception {
-        Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(nullDecoder);
+        final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(nullDecoder);
         assertEquals(0, input.available());
     }
 
@@ -61,14 +61,14 @@ public class Deflate64CompressorInputStreamTest {
     public void delegatesAvailable() throws Exception {
         Mockito.when(decoder.available()).thenReturn(1024);
 
-        Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder);
+        final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder);
         assertEquals(1024, input.available());
     }
 
     @Test
     public void closeCallsDecoder() throws Exception {
 
-        Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder);
+        final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder);
         input.close();
 
         Mockito.verify(decoder, times(1)).close();
@@ -77,7 +77,7 @@ public class Deflate64CompressorInputStreamTest {
     @Test
     public void closeIsDelegatedJustOnce() throws Exception {
 
-        Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder);
+        final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder);
 
         input.close();
         input.close();
@@ -87,7 +87,7 @@ public class Deflate64CompressorInputStreamTest {
 
     @Test
     public void uncompressedBlock() throws Exception {
-        byte[] data = {
+        final byte[] data = {
             1, 11, 0, -12, -1,
             'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'
         };
@@ -101,7 +101,7 @@ public class Deflate64CompressorInputStreamTest {
 
     @Test
     public void uncompressedBlockViaFactory() throws Exception {
-        byte[] data = {
+        final byte[] data = {
             1, 11, 0, -12, -1,
             'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'
         };
@@ -116,7 +116,7 @@ public class Deflate64CompressorInputStreamTest {
 
     @Test
     public void uncompressedBlockAvailable() throws Exception {
-        byte[] data = {
+        final byte[] data = {
             1, 11, 0, -12, -1,
             'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'
         };
@@ -130,7 +130,7 @@ public class Deflate64CompressorInputStreamTest {
     @Test
     public void streamIgnoresExtraBytesAfterDeflatedInput() throws Exception
     {
-        byte[] data = {
+        final byte[] data = {
             1, 11, 0, -12, -1,
             'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd', 'X'
         };
@@ -145,7 +145,7 @@ public class Deflate64CompressorInputStreamTest {
     @Test(expected = java.io.EOFException.class)
     public void throwsEOFExceptionOnTruncatedStreams() throws Exception
     {
-        byte[] data = {
+        final byte[] data = {
             1, 11, 0, -12, -1,
             'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l',
         };
@@ -169,7 +169,7 @@ public class Deflate64CompressorInputStreamTest {
 
     @Test
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        byte[] buf = new byte[2];
+        final byte[] buf = new byte[2];
         try (final Deflate64CompressorInputStream in =
                     new Deflate64CompressorInputStream(nullDecoder)) {
             IOUtils.toByteArray(in);

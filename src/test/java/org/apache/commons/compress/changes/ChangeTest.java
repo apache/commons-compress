@@ -36,9 +36,9 @@ public class ChangeTest {
     @Test(expected = NullPointerException.class)
     public void testFailsToCreateChangeTakingFourArgumentsThrowsNullPointerExceptionOne() {
 
-        MemoryArchiveEntry memoryArchiveEntry = new MemoryArchiveEntry("x");
+        final MemoryArchiveEntry memoryArchiveEntry = new MemoryArchiveEntry("x");
 
-        Change change  = new Change(memoryArchiveEntry, null, false);
+        final Change change  = new Change(memoryArchiveEntry, null, false);
 
     }
 
@@ -46,9 +46,9 @@ public class ChangeTest {
     @Test(expected = NullPointerException.class)
     public void testFailsToCreateChangeTakingFourArgumentsThrowsNullPointerExceptionTwo() {
 
-        PipedInputStream pipedInputStream = new PipedInputStream(1);
+        final PipedInputStream pipedInputStream = new PipedInputStream(1);
 
-        Change change  = new Change(null, pipedInputStream, false);
+        final Change change  = new Change(null, pipedInputStream, false);
 
     }
 
@@ -56,7 +56,7 @@ public class ChangeTest {
     @Test(expected = NullPointerException.class)
     public void testFailsToCreateChangeTakingThreeArgumentsThrowsNullPointerException() {
 
-        Change change  = new Change(null, (-407));
+        final Change change  = new Change(null, (-407));
 
     }
 

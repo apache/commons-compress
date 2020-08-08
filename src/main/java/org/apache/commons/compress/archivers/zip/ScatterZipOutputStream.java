@@ -51,7 +51,7 @@ public class ScatterZipOutputStream implements Closeable {
     private final Queue<CompressedEntry> items = new ConcurrentLinkedQueue<>();
     private final ScatterGatherBackingStore backingStore;
     private final StreamCompressor streamCompressor;
-    private AtomicBoolean isClosed = new AtomicBoolean();
+    private final AtomicBoolean isClosed = new AtomicBoolean();
     private ZipEntryWriter zipEntryWriter = null;
 
     private static class CompressedEntry {
@@ -126,7 +126,7 @@ public class ScatterZipOutputStream implements Closeable {
         private final Iterator<CompressedEntry> itemsIterator;
         private final InputStream itemsIteratorData;
 
-        public ZipEntryWriter(ScatterZipOutputStream scatter) throws IOException {
+        public ZipEntryWriter(final ScatterZipOutputStream scatter) throws IOException {
             scatter.backingStore.closeForWriting();
             itemsIterator = scatter.items.iterator();
             itemsIteratorData = scatter.backingStore.getInputStream();
@@ -140,7 +140,7 @@ public class ScatterZipOutputStream implements Closeable {
         }
 
         public void writeNextZipEntry(final ZipArchiveOutputStream target) throws IOException {
-            CompressedEntry compressedEntry = itemsIterator.next();
+            final CompressedEntry compressedEntry = itemsIterator.next();
             try (final BoundedInputStream rawStream = new BoundedInputStream(itemsIteratorData, compressedEntry.compressedSize)) {
                 target.addRawArchiveEntry(compressedEntry.transferToArchiveEntry(), rawStream);
             }

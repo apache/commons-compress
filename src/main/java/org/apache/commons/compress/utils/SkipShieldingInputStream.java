@@ -40,12 +40,12 @@ public class SkipShieldingInputStream extends FilterInputStream {
     private static final int SKIP_BUFFER_SIZE = 8192;
     // we can use a shared buffer as the content is discarded anyway
     private static final byte[] SKIP_BUFFER = new byte[SKIP_BUFFER_SIZE];
-    public SkipShieldingInputStream(InputStream in) {
+    public SkipShieldingInputStream(final InputStream in) {
         super(in);
     }
 
     @Override
-    public long skip(long n) throws IOException {
+    public long skip(final long n) throws IOException {
         return n < 0 ? 0 : read(SKIP_BUFFER, 0, (int) Math.min(n, SKIP_BUFFER_SIZE));
     }
 }

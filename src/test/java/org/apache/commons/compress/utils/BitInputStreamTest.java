@@ -123,7 +123,7 @@ public class BitInputStreamTest {
      */
     @Test
     public void littleEndianWithOverflow() throws Exception {
-        ByteArrayInputStream in = new ByteArrayInputStream(new byte[] {
+        final ByteArrayInputStream in = new ByteArrayInputStream(new byte[] {
                 87, // 01010111
                 45, // 00101101
                 66, // 01000010
@@ -148,7 +148,7 @@ public class BitInputStreamTest {
 
     @Test
     public void bigEndianWithOverflow() throws Exception {
-        ByteArrayInputStream in = new ByteArrayInputStream(new byte[] {
+        final ByteArrayInputStream in = new ByteArrayInputStream(new byte[] {
                 87, // 01010111
                 45, // 00101101
                 66, // 01000010

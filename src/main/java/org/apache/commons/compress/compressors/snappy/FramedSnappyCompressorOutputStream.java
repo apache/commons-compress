@@ -71,7 +71,7 @@ public class FramedSnappyCompressorOutputStream extends CompressorOutputStream {
      * particular to balance compression ratio vs compression speed.
      * @throws IOException if writing the signature fails
      */
-    public FramedSnappyCompressorOutputStream(final OutputStream out, Parameters params) throws IOException {
+    public FramedSnappyCompressorOutputStream(final OutputStream out, final Parameters params) throws IOException {
         this.out = out;
         this.params = params;
         consumer = new ByteUtils.OutputStreamByteConsumer(out);
@@ -79,13 +79,13 @@ public class FramedSnappyCompressorOutputStream extends CompressorOutputStream {
     }
 
     @Override
-    public void write(int b) throws IOException {
+    public void write(final int b) throws IOException {
         oneByte[0] = (byte) (b & 0xff);
         write(oneByte);
     }
 
     @Override
-    public void write(byte[] data, int off, int len) throws IOException {
+    public void write(final byte[] data, int off, int len) throws IOException {
         if (currentIndex + len > MAX_COMPRESSED_BUFFER_SIZE) {
             flushBuffer();
             while (len > MAX_COMPRESSED_BUFFER_SIZE) {
@@ -122,18 +122,18 @@ public class FramedSnappyCompressorOutputStream extends CompressorOutputStream {
 
     private void flushBuffer() throws IOException {
         out.write(FramedSnappyCompressorInputStream.COMPRESSED_CHUNK_TYPE);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (OutputStream o = new SnappyCompressorOutputStream(baos, currentIndex, params)) {
             o.write(buffer, 0, currentIndex);
         }
-        byte[] b = baos.toByteArray();
+        final byte[] b = baos.toByteArray();
         writeLittleEndian(3, b.length + 4L /* CRC */);
         writeCrc();
         out.write(b);
         currentIndex = 0;
     }
 
-    private void writeLittleEndian(final int numBytes, long num) throws IOException {
+    private void writeLittleEndian(final int numBytes, final long num) throws IOException {
         ByteUtils.toLittleEndian(consumer, num, numBytes);
     }
 

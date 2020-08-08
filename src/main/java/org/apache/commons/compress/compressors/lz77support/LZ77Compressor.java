@@ -112,7 +112,7 @@ public class LZ77Compressor {
     public static final class LiteralBlock extends Block {
         private final byte[] data;
         private final int offset, length;
-        public LiteralBlock(byte[] data, int offset, int length) {
+        public LiteralBlock(final byte[] data, final int offset, final int length) {
             this.data = data;
             this.offset = offset;
             this.length = length;
@@ -156,7 +156,7 @@ public class LZ77Compressor {
      */
     public static final class BackReference extends Block {
         private final int offset, length;
-        public BackReference(int offset, int length) {
+        public BackReference(final int offset, final int length) {
             this.offset = offset;
             this.length = length;
         }
@@ -255,7 +255,7 @@ public class LZ77Compressor {
      * @param callback the callback
      * @throws NullPointerException if either parameter is <code>null</code>
      */
-    public LZ77Compressor(Parameters params, Callback callback) {
+    public LZ77Compressor(final Parameters params, final Callback callback) {
         Objects.requireNonNull(params, "params");
         Objects.requireNonNull(callback, "callback");
         
@@ -277,7 +277,7 @@ public class LZ77Compressor {
      * @param data the data to compress - must not be null
      * @throws IOException if the callback throws an exception
      */
-    public void compress(byte[] data) throws IOException {
+    public void compress(final byte[] data) throws IOException {
         compress(data, 0, data.length);
     }
 
@@ -290,7 +290,7 @@ public class LZ77Compressor {
      * @param len the number of bytes to compress
      * @throws IOException if the callback throws an exception
      */
-    public void compress(byte[] data, int off, int len) throws IOException {
+    public void compress(final byte[] data, int off, int len) throws IOException {
         final int wSize = params.getWindowSize();
         while (len > wSize) { // chop into windowSize sized chunks
             doCompress(data, off, wSize);
@@ -330,7 +330,7 @@ public class LZ77Compressor {
      * @param data the data to fill the window with.
      * @throws IllegalStateException if the compressor has already started to accept data
      */
-    public void prefill(byte[] data) {
+    public void prefill(final byte[] data) {
         if (currentPosition != 0 || lookahead != 0) {
             throw new IllegalStateException("The compressor has already started to accept data, can't prefill anymore");
         }
@@ -365,14 +365,14 @@ public class LZ77Compressor {
      * <p>The hash is shifted by five bits on each update so all
      * effects of A have been swapped after the third update.</p>
      */
-    private int nextHash(int oldHash, byte nextByte) {
+    private int nextHash(final int oldHash, final byte nextByte) {
         final int nextVal = nextByte & 0xFF;
         return ((oldHash << H_SHIFT) ^ nextVal) & HASH_MASK;
     }
 
     // performs the actual algorithm with the pre-condition len <= windowSize
-    private void doCompress(byte[] data, int off, int len) throws IOException {
-        int spaceLeft = window.length - currentPosition - lookahead;
+    private void doCompress(final byte[] data, final int off, final int len) throws IOException {
+        final int spaceLeft = window.length - currentPosition - lookahead;
         if (len > spaceLeft) {
             slide();
         }
@@ -397,11 +397,11 @@ public class LZ77Compressor {
         matchStart -= wSize;
         blockStart -= wSize;
         for (int i = 0; i < HASH_SIZE; i++) {
-            int h = head[i];
+            final int h = head[i];
             head[i] = h >= wSize ? h - wSize : NO_MATCH;
         }
         for (int i = 0; i < wSize; i++) {
-            int p = prev[i];
+            final int p = prev[i];
             prev[i] = p >= wSize ? p - wSize : NO_MATCH;
         }
     }
@@ -421,7 +421,7 @@ public class LZ77Compressor {
         while (lookahead >= minMatch) {
             catchUpMissedInserts();
             int matchLength = 0;
-            int hashHead = insertString(currentPosition);
+            final int hashHead = insertString(currentPosition);
             if (hashHead != NO_MATCH && hashHead - currentPosition <= params.getMaxOffset()) {
                 // sets matchStart as a side effect
                 matchLength = longestMatch(hashHead);
@@ -461,9 +461,9 @@ public class LZ77Compressor {
      * <p>Updates <code>insertHash</code> and <code>prev</code> as a
      * side effect.</p>
      */
-    private int insertString(int pos) {
+    private int insertString(final int pos) {
         insertHash = nextHash(insertHash, window[pos - 1 + NUMBER_OF_BYTES_IN_HASH]);
-        int hashHead = head[insertHash];
+        final int hashHead = head[insertHash];
         prev[pos & wMask] = hashHead;
         head[insertHash] = pos;
         return hashHead;
@@ -476,7 +476,7 @@ public class LZ77Compressor {
 
         lookahead--;
         currentPosition++;
-        int hashHead = insertString(currentPosition);
+        final int hashHead = insertString(currentPosition);
         final int prevHashHead = prev[currentPosition & wMask];
         int matchLength = longestMatch(hashHead);
 
@@ -494,7 +494,7 @@ public class LZ77Compressor {
         return matchLength;
     }
 
-    private void insertStringsInMatch(int matchLength) {
+    private void insertStringsInMatch(final int matchLength) {
         // inserts strings contained in current match
         // insertString inserts the byte 2 bytes after position, which may not yet be available -> missedInserts
         final int stop = Math.min(matchLength - 1, lookahead - NUMBER_OF_BYTES_IN_HASH);
@@ -511,7 +511,7 @@ public class LZ77Compressor {
         }
     }
 
-    private void flushBackReference(int matchLength) throws IOException {
+    private void flushBackReference(final int matchLength) throws IOException {
         callback.accept(new BackReference(currentPosition - matchStart, matchLength));
     }
 

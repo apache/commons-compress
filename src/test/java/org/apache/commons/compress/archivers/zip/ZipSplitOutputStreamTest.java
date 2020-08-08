@@ -48,18 +48,18 @@ public class ZipSplitOutputStreamTest extends AbstractTestCase {
     @Test
     public void throwsIfUnsplittableSizeLargerThanSplitSize() throws IOException {
         thrown.expect(IllegalArgumentException.class);
-        long splitSize = 100 * 1024;
-        ZipSplitOutputStream output = new ZipSplitOutputStream(File.createTempFile("temp", "zip"), splitSize);
+        final long splitSize = 100 * 1024;
+        final ZipSplitOutputStream output = new ZipSplitOutputStream(File.createTempFile("temp", "zip"), splitSize);
         output.prepareToWriteUnsplittableContent(splitSize + 1);
     }
 
     @Test
     public void splitZipBeginsWithZipSplitSignature() throws IOException {
-        File tempFile = File.createTempFile("temp", "zip");
+        final File tempFile = File.createTempFile("temp", "zip");
         new ZipSplitOutputStream(tempFile, 100 * 1024L);
 
-        InputStream inputStream = new FileInputStream(tempFile);
-        byte[] buffer = new byte[4];
+        final InputStream inputStream = new FileInputStream(tempFile);
+        final byte[] buffer = new byte[4];
         inputStream.read(buffer);
 
         Assert.assertEquals(ByteBuffer.wrap(ZipArchiveOutputStream.DD_SIG).getInt(), ByteBuffer.wrap(buffer).getInt());
@@ -67,13 +67,13 @@ public class ZipSplitOutputStreamTest extends AbstractTestCase {
 
     @Test
     public void testCreateSplittedFiles() throws IOException {
-        File testOutputFile = new File(dir, "testCreateSplittedFiles.zip");
-        int splitSize = 100 * 1024; /* 100KB */
-        ZipSplitOutputStream zipSplitOutputStream = new ZipSplitOutputStream(testOutputFile, splitSize);
+        final File testOutputFile = new File(dir, "testCreateSplittedFiles.zip");
+        final int splitSize = 100 * 1024; /* 100KB */
+        final ZipSplitOutputStream zipSplitOutputStream = new ZipSplitOutputStream(testOutputFile, splitSize);
 
-        File fileToTest = getFile("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip.zip");
-        InputStream inputStream = new FileInputStream(fileToTest);
-        byte[] buffer = new byte[4096];
+        final File fileToTest = getFile("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip.zip");
+        final InputStream inputStream = new FileInputStream(fileToTest);
+        final byte[] buffer = new byte[4096];
         int readLen;
 
         while ((readLen = inputStream.read(buffer)) > 0) {

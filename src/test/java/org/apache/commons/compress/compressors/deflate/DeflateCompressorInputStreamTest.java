@@ -80,7 +80,7 @@ public class DeflateCompressorInputStreamTest {
     @Test
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = AbstractTestCase.getFile("bla.tar.deflatez");
-        byte[] buf = new byte[2];
+        final byte[] buf = new byte[2];
         try (InputStream is = new FileInputStream(input)) {
             final DeflateCompressorInputStream in =
                     new DeflateCompressorInputStream(is);

@@ -247,7 +247,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * @throws IOException if an I/O error occurs.
      * @since 1.21 
      */
-    public ZipArchiveEntry(final Path inputPath, final String entryName, LinkOption... options) throws IOException {
+    public ZipArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
         this(Files.isDirectory(inputPath, options) && !entryName.endsWith("/") ?
              entryName + "/" : entryName);
         if (Files.isRegularFile(inputPath, options)){
@@ -425,7 +425,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      *      requested alignment, 0 for default.
      * @since 1.14
      */
-    public void setAlignment(int alignment) {
+    public void setAlignment(final int alignment) {
         if ((alignment & (alignment - 1)) != 0 || alignment > 0xffff) {
             throw new IllegalArgumentException("Invalid value for alignment, must be power of two and no bigger than "
                 + 0xffff + " but is " + alignment);
@@ -500,14 +500,14 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         if (parsingBehavior == ExtraFieldParsingMode.ONLY_PARSEABLE_LENIENT) {
             return getExtraFields(false);
         }
-        byte[] local = getExtra();
-        List<ZipExtraField> localFields = new ArrayList<>(Arrays.asList(ExtraFieldUtils.parse(local, true,
+        final byte[] local = getExtra();
+        final List<ZipExtraField> localFields = new ArrayList<>(Arrays.asList(ExtraFieldUtils.parse(local, true,
             parsingBehavior)));
-        byte[] central = getCentralDirectoryExtra();
-        List<ZipExtraField> centralFields = new ArrayList<>(Arrays.asList(ExtraFieldUtils.parse(central, false,
+        final byte[] central = getCentralDirectoryExtra();
+        final List<ZipExtraField> centralFields = new ArrayList<>(Arrays.asList(ExtraFieldUtils.parse(central, false,
             parsingBehavior)));
-        List<ZipExtraField> merged = new ArrayList<>();
-        for (ZipExtraField l : localFields) {
+        final List<ZipExtraField> merged = new ArrayList<>();
+        for (final ZipExtraField l : localFields) {
             ZipExtraField c = null;
             if (l instanceof UnparseableExtraFieldData) {
                 c = findUnparseable(centralFields);
@@ -515,7 +515,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
                 c = findMatching(l.getHeaderId(), centralFields);
             }
             if (c != null) {
-                byte[] cd = c.getCentralDirectoryData();
+                final byte[] cd = c.getCentralDirectoryData();
                 if (cd != null && cd.length > 0) {
                     l.parseFromCentralDirectoryData(cd, 0, cd.length);
                 }
@@ -567,8 +567,8 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
             : allExtraFieldsNoCopy;
     }
 
-    private ZipExtraField findUnparseable(List<ZipExtraField> fs) {
-        for (ZipExtraField f : fs) {
+    private ZipExtraField findUnparseable(final List<ZipExtraField> fs) {
+        for (final ZipExtraField f : fs) {
             if (f instanceof UnparseableExtraFieldData) {
                 return f;
             }
@@ -576,8 +576,8 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         return null;
     }
 
-    private ZipExtraField findMatching(ZipShort headerId, List<ZipExtraField> fs) {
-        for (ZipExtraField f : fs) {
+    private ZipExtraField findMatching(final ZipShort headerId, final List<ZipExtraField> fs) {
+        for (final ZipExtraField f : fs) {
             if (headerId.equals(f.getHeaderId())) {
                 return f;
             }
@@ -857,7 +857,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         return this.localHeaderOffset;
     }
 
-    protected void setLocalHeaderOffset(long localHeaderOffset) {
+    protected void setLocalHeaderOffset(final long localHeaderOffset) {
         this.localHeaderOffset = localHeaderOffset;
     }
 
@@ -872,7 +872,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * @param dataOffset
      *      new value of data offset.
      */
-    protected void setDataOffset(long dataOffset) {
+    protected void setDataOffset(final long dataOffset) {
         this.dataOffset = dataOffset;
     }
 
@@ -881,7 +881,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         return isStreamContiguous;
     }
 
-    protected void setStreamContiguous(boolean isStreamContiguous) {
+    protected void setStreamContiguous(final boolean isStreamContiguous) {
         this.isStreamContiguous = isStreamContiguous;
     }
 
@@ -948,7 +948,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
                         } else {
                             existing.parseFromCentralDirectoryData(b, 0, b.length);
                         }
-                    } catch (ZipException ex) {
+                    } catch (final ZipException ex) {
                         // emulate ExtraFieldParsingMode.fillAndMakeUnrecognizedOnError
                         final UnrecognizedExtraField u = new UnrecognizedExtraField();
                         u.setHeaderId(existing.getHeaderId());
@@ -1096,7 +1096,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * @param nameSource source of the name field value
      * @since 1.16
      */
-    public void setNameSource(NameSource nameSource) {
+    public void setNameSource(final NameSource nameSource) {
         this.nameSource = nameSource;
     }
 
@@ -1114,7 +1114,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * @param commentSource source of the comment field value
      * @since 1.16
      */
-    public void setCommentSource(CommentSource commentSource) {
+    public void setCommentSource(final CommentSource commentSource) {
         this.commentSource = commentSource;
     }
 
@@ -1134,7 +1134,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * @param diskNumberStart the number of the split segment this entry starts at.
      * @since 1.20
      */
-    public void setDiskNumberStart(long diskNumberStart) {
+    public void setDiskNumberStart(final long diskNumberStart) {
         this.diskNumberStart = diskNumberStart;
     }
 
@@ -1176,7 +1176,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
          */
         BEST_EFFORT(ExtraFieldUtils.UnparseableExtraField.READ) {
             @Override
-            public ZipExtraField fill(ZipExtraField field, byte[] data, int off, int len, boolean local) {
+            public ZipExtraField fill(final ZipExtraField field, final byte[] data, final int off, final int len, final boolean local) {
                 return fillAndMakeUnrecognizedOnError(field, data, off, len, local);
             }
         },
@@ -1205,7 +1205,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
          */
         ONLY_PARSEABLE_LENIENT(ExtraFieldUtils.UnparseableExtraField.SKIP) {
             @Override
-            public ZipExtraField fill(ZipExtraField field, byte[] data, int off, int len, boolean local) {
+            public ZipExtraField fill(final ZipExtraField field, final byte[] data, final int off, final int len, final boolean local) {
                 return fillAndMakeUnrecognizedOnError(field, data, off, len, local);
             }
         },
@@ -1229,13 +1229,13 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
 
         private final ExtraFieldUtils.UnparseableExtraField onUnparseableData;
 
-        private ExtraFieldParsingMode(ExtraFieldUtils.UnparseableExtraField onUnparseableData) {
+        private ExtraFieldParsingMode(final ExtraFieldUtils.UnparseableExtraField onUnparseableData) {
             this.onUnparseableData = onUnparseableData;
         }
 
         @Override
-        public ZipExtraField onUnparseableExtraField(byte[] data, int off, int len, boolean local,
-            int claimedLength) throws ZipException {
+        public ZipExtraField onUnparseableExtraField(final byte[] data, final int off, final int len, final boolean local,
+            final int claimedLength) throws ZipException {
             return onUnparseableData.onUnparseableExtraField(data, off, len, local, claimedLength);
         }
 
@@ -1246,16 +1246,16 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         }
 
         @Override
-        public ZipExtraField fill(ZipExtraField field, byte[] data, int off, int len, boolean local)
+        public ZipExtraField fill(final ZipExtraField field, final byte[] data, final int off, final int len, final boolean local)
             throws ZipException {
             return ExtraFieldUtils.fillExtraField(field, data, off, len, local);
         }
 
-        private static ZipExtraField fillAndMakeUnrecognizedOnError(ZipExtraField field, byte[] data, int off,
-            int len, boolean local) {
+        private static ZipExtraField fillAndMakeUnrecognizedOnError(final ZipExtraField field, final byte[] data, final int off,
+            final int len, final boolean local) {
             try {
                 return ExtraFieldUtils.fillExtraField(field, data, off, len, local);
-            } catch (ZipException ex) {
+            } catch (final ZipException ex) {
                 final UnrecognizedExtraField u = new UnrecognizedExtraField();
                 u.setHeaderId(field.getHeaderId());
                 if (local) {

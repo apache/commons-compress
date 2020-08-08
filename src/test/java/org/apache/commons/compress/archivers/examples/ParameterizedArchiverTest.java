@@ -63,7 +63,7 @@ public class ParameterizedArchiverTest extends AbstractTestCase {
     private final String format;
     private File target;
 
-    public ParameterizedArchiverTest(String format) {
+    public ParameterizedArchiverTest(final String format) {
         this.format = format;
     }
 
@@ -71,7 +71,7 @@ public class ParameterizedArchiverTest extends AbstractTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        File c = new File(dir, "a/b/c");
+        final File c = new File(dir, "a/b/c");
         c.mkdirs();
         try (OutputStream os = Files.newOutputStream(new File(dir, "a/b/d.txt").toPath())) {
             os.write("Hello, world 1".getBytes(StandardCharsets.UTF_8));
@@ -120,7 +120,7 @@ public class ParameterizedArchiverTest extends AbstractTestCase {
              ArchiveInputStream ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(format, bis)) {
             assertDir("a", ais.getNextEntry());
             assertDir("a/b", ais.getNextEntry());
-            ArchiveEntry n = ais.getNextEntry();
+            final ArchiveEntry n = ais.getNextEntry();
             Assert.assertNotNull(n);
             // File.list may return a/b/c or a/b/d.txt first
             if (n.getName().endsWith("/")) {
@@ -135,19 +135,19 @@ public class ParameterizedArchiverTest extends AbstractTestCase {
         }
     }
 
-    private void assertDir(String expectedName, ArchiveEntry entry) {
+    private void assertDir(final String expectedName, final ArchiveEntry entry) {
         Assert.assertNotNull(expectedName + " does not exists", entry);
         Assert.assertEquals(expectedName + "/", entry.getName());
         Assert.assertTrue(expectedName + " is not a directory", entry.isDirectory());
     }
 
-    private void assertHelloWorld(String expectedName, String suffix, ArchiveEntry entry, InputStream is)
+    private void assertHelloWorld(final String expectedName, final String suffix, final ArchiveEntry entry, final InputStream is)
         throws IOException {
         Assert.assertNotNull(expectedName + " does not exists", entry);
         Assert.assertEquals(expectedName, entry.getName());
         Assert.assertFalse(expectedName + " is a directory", entry.isDirectory());
-        byte[] expected = ("Hello, world " + suffix).getBytes(StandardCharsets.UTF_8);
-        byte[] actual = IOUtils.toByteArray(is);
+        final byte[] expected = ("Hello, world " + suffix).getBytes(StandardCharsets.UTF_8);
+        final byte[] actual = IOUtils.toByteArray(is);
         Assert.assertArrayEquals(expected, actual);
     }
 }

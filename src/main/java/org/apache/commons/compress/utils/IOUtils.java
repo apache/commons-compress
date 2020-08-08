@@ -219,11 +219,11 @@ public final class IOUtils {
      * @throws IOException - if an I/O error occurs.
      * @throws EOFException - if the channel reaches the end before reading all the bytes.
      */
-    public static void readFully(ReadableByteChannel channel, ByteBuffer b) throws IOException {
+    public static void readFully(final ReadableByteChannel channel, final ByteBuffer b) throws IOException {
         final int expectedLength = b.remaining();
         int read = 0;
         while (read < expectedLength) {
-            int readNow = channel.read(b);
+            final int readNow = channel.read(b);
             if (readNow <= 0) {
                 break;
             }
@@ -279,7 +279,7 @@ public final class IOUtils {
      * @throws IOException if an I/O error occurs when reading or writing.
      * @since 1.21
      */
-    public static void copy(File sourceFile, OutputStream outputStream) throws IOException {
+    public static void copy(final File sourceFile, final OutputStream outputStream) throws IOException {
         Files.copy(sourceFile.toPath(), outputStream);
     }
 }

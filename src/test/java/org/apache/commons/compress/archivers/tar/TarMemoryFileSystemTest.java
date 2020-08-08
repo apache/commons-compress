@@ -43,7 +43,7 @@ public class TarMemoryFileSystemTest {
     @Test
     public void tarFromMemoryFileSystem() throws IOException, ArchiveException {
         try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().build()) {
-            Path p = fileSystem.getPath("test.txt");
+            final Path p = fileSystem.getPath("test.txt");
             Files.write(p, "Test".getBytes(StandardCharsets.UTF_8));
 
             final File f = File.createTempFile("commons-compress-memoryfs", ".tar");
@@ -62,7 +62,7 @@ public class TarMemoryFileSystemTest {
     @Test
     public void tarToMemoryFileSystem() throws IOException, ArchiveException {
         try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().build()) {
-            Path p = fileSystem.getPath("target.tar");
+            final Path p = fileSystem.getPath("target.tar");
 
             try (final OutputStream out = Files.newOutputStream(p);
                  final ArchiveOutputStream tarOut = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.TAR, out)) {
@@ -112,7 +112,7 @@ public class TarMemoryFileSystemTest {
 
             try (final InputStream input = Files.newInputStream(target);
                  final TarArchiveInputStream tarIn = new TarArchiveInputStream(input)) {
-                TarArchiveEntry nextTarEntry = tarIn.getNextTarEntry();
+                final TarArchiveEntry nextTarEntry = tarIn.getNextTarEntry();
 
                 assertEquals(user, nextTarEntry.getUserName());
                 assertEquals(group, nextTarEntry.getGroupName());

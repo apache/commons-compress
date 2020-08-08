@@ -104,15 +104,15 @@ public class ExplodeSupportTest {
     @Test
     public void testConstructorThrowsExceptions() {
         try {
-            ExplodingInputStream eis = new  ExplodingInputStream(4095,2,new ByteArrayInputStream(new byte[] {}));
+            final ExplodingInputStream eis = new  ExplodingInputStream(4095,2,new ByteArrayInputStream(new byte[] {}));
             fail("should have failed with illegal argument exception");
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
         }
 
         try {
-            ExplodingInputStream eis = new  ExplodingInputStream(4096,4,new ByteArrayInputStream(new byte[] {}));
+            final ExplodingInputStream eis = new  ExplodingInputStream(4096,4,new ByteArrayInputStream(new byte[] {}));
             fail("should have failed with illegal argument exception");
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
         }
 
     }

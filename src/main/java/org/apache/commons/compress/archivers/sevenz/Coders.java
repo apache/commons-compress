@@ -69,7 +69,7 @@ class Coders {
     }
 
     static InputStream addDecoder(final String archiveName, final InputStream is, final long uncompressedLength,
-            final Coder coder, final byte[] password, int maxMemoryLimitInKb) throws IOException {
+            final Coder coder, final byte[] password, final int maxMemoryLimitInKb) throws IOException {
         final CoderBase cb = findByMethod(SevenZMethod.byId(coder.decompressionMethodId));
         if (cb == null) {
             throw new IOException("Unsupported compression method " +
@@ -91,7 +91,7 @@ class Coders {
     static class CopyDecoder extends CoderBase {
         @Override
         InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
-                final Coder coder, final byte[] password, int maxMemoryLimitInKb) throws IOException {
+                final Coder coder, final byte[] password, final int maxMemoryLimitInKb) throws IOException {
             return in;
         }
         @Override
@@ -108,7 +108,7 @@ class Coders {
 
         @Override
         InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
-                final Coder coder, final byte[] password, int maxMemoryLimitInKb) throws IOException {
+                final Coder coder, final byte[] password, final int maxMemoryLimitInKb) throws IOException {
             try {
                 return opts.getInputStream(in);
             } catch (final AssertionError e) {
@@ -135,7 +135,7 @@ class Coders {
         @SuppressWarnings("resource") // caller must close the InputStream
         @Override
         InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
-                final Coder coder, final byte[] password, int maxMemoryLimitInKb)
+                final Coder coder, final byte[] password, final int maxMemoryLimitInKb)
             throws IOException {
             final Inflater inflater = new Inflater(true);
             // Inflater with nowrap=true has this odd contract for a zero padding
@@ -160,8 +160,8 @@ class Coders {
               InflaterInputStream inflaterInputStream;
               Inflater inflater;
 
-            public DeflateDecoderInputStream(InflaterInputStream inflaterInputStream,
-                Inflater inflater) {
+            public DeflateDecoderInputStream(final InflaterInputStream inflaterInputStream,
+                final Inflater inflater) {
                 this.inflaterInputStream = inflaterInputStream;
                 this.inflater = inflater;
             }
@@ -196,8 +196,8 @@ class Coders {
               DeflaterOutputStream deflaterOutputStream;
               Deflater deflater;
 
-            public DeflateDecoderOutputStream(DeflaterOutputStream deflaterOutputStream,
-                Deflater deflater) {
+            public DeflateDecoderOutputStream(final DeflaterOutputStream deflaterOutputStream,
+                final Deflater deflater) {
                 this.deflaterOutputStream = deflaterOutputStream;
                 this.deflater = deflater;
             }
@@ -236,7 +236,7 @@ class Coders {
         @SuppressWarnings("resource") // caller must close the InputStream
         @Override
         InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
-                final Coder coder, final byte[] password, int maxMemoryLimitInKb)
+                final Coder coder, final byte[] password, final int maxMemoryLimitInKb)
             throws IOException {
             return new Deflate64CompressorInputStream(in);
         }
@@ -249,7 +249,7 @@ class Coders {
 
         @Override
         InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
-                final Coder coder, final byte[] password, int maxMemoryLimitInKb)
+                final Coder coder, final byte[] password, final int maxMemoryLimitInKb)
                 throws IOException {
             return new BZip2CompressorInputStream(in);
         }

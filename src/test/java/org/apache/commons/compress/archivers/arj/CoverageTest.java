@@ -27,7 +27,7 @@ public class CoverageTest {
 
     @Test
     public void testHostOsInstance() {
-        HostOs hostOs = new HostOs();
+        final HostOs hostOs = new HostOs();
         assertNotNull(hostOs);
     }
     @Test
@@ -39,7 +39,7 @@ public class CoverageTest {
     }
     @Test
     public void testCallLFHToString() {
-        LocalFileHeader lfh = new LocalFileHeader();
+        final LocalFileHeader lfh = new LocalFileHeader();
         assertNotNull(lfh.toString());
     }
 

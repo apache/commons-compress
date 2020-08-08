@@ -39,7 +39,7 @@ public class XZCompressorOutputStreamTest {
     @Test
     public void testWrite() throws IOException {
 
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(4590);
+        final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(4590);
         try (XZCompressorOutputStream xZCompressorOutputStream = new XZCompressorOutputStream(byteArrayOutputStream)) {
             xZCompressorOutputStream.write(4590);
         }

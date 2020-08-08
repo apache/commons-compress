@@ -137,7 +137,7 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
     @Test
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("brotli.testdata.compressed");
-        byte[] buf = new byte[2];
+        final byte[] buf = new byte[2];
         try (InputStream is = new FileInputStream(input)) {
             final BrotliCompressorInputStream in =
                     new BrotliCompressorInputStream(is);

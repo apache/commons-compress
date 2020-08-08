@@ -33,8 +33,8 @@ public class BlockLZ4CompressorInputStreamTest extends AbstractTestCase {
     public void readBlaLz4() throws IOException {
         try (InputStream a = new BlockLZ4CompressorInputStream(new FileInputStream(getFile("bla.tar.block_lz4")));
             FileInputStream e = new FileInputStream(getFile("bla.tar"))) {
-            byte[] expected = IOUtils.toByteArray(e);
-            byte[] actual = IOUtils.toByteArray(a);
+            final byte[] expected = IOUtils.toByteArray(e);
+            final byte[] actual = IOUtils.toByteArray(a);
             Assert.assertArrayEquals(expected, actual);
         }
     }
@@ -55,7 +55,7 @@ public class BlockLZ4CompressorInputStreamTest extends AbstractTestCase {
     @Test
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.block_lz4");
-        byte[] buf = new byte[2];
+        final byte[] buf = new byte[2];
         try (InputStream is = new FileInputStream(input)) {
             final BlockLZ4CompressorInputStream in =
                     new BlockLZ4CompressorInputStream(is);

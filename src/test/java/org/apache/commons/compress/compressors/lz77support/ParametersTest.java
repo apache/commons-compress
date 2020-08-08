@@ -26,7 +26,7 @@ public class ParametersTest {
 
     @Test
     public void defaultConstructor() {
-        Parameters p = newParameters(128);
+        final Parameters p = newParameters(128);
         assertEquals(128, p.getWindowSize());
         assertEquals(3, p.getMinBackReferenceLength());
         assertEquals(127, p.getMaxBackReferenceLength());
@@ -36,19 +36,19 @@ public class ParametersTest {
 
     @Test
     public void minBackReferenceLengthIsAtLeastThree() {
-        Parameters p = newParameters(128, 2, 3, 4, 5);
+        final Parameters p = newParameters(128, 2, 3, 4, 5);
         assertEquals(3, p.getMinBackReferenceLength());
     }
 
     @Test
     public void maxBackReferenceLengthIsMinBackReferenceLengthWhenSmallerThanMinBackReferenceLength() {
-        Parameters p = newParameters(128, 2, 2, 4, 5);
+        final Parameters p = newParameters(128, 2, 2, 4, 5);
         assertEquals(3, p.getMaxBackReferenceLength());
     }
 
     @Test
     public void maxBackReferenceLengthIsMinBackReferenceLengthWhenSmallerThanMinBackReferenceLengthReversedInvocationOrder() {
-        Parameters p = Parameters.builder(128)
+        final Parameters p = Parameters.builder(128)
             .withMaxBackReferenceLength(2)
             .withMinBackReferenceLength(2)
             .withMaxOffset(4)
@@ -59,49 +59,49 @@ public class ParametersTest {
 
     @Test
     public void maxBackReferenceLengthIsMinBackReferenceLengthIfBothAreEqual() {
-        Parameters p = newParameters(128, 2, 3, 4, 5);
+        final Parameters p = newParameters(128, 2, 3, 4, 5);
         assertEquals(3, p.getMaxBackReferenceLength());
     }
 
     @Test
     public void maxOffsetIsWindowSizeMinus1IfSetTo0() {
-        Parameters p = newParameters(128, 2, 3, 0, 5);
+        final Parameters p = newParameters(128, 2, 3, 0, 5);
         assertEquals(127, p.getMaxOffset());
     }
 
     @Test
     public void maxOffsetIsWindowSizeMinus1IfSetToANegativeValue() {
-        Parameters p = newParameters(128, 2, 3, -1, 5);
+        final Parameters p = newParameters(128, 2, 3, -1, 5);
         assertEquals(127, p.getMaxOffset());
     }
 
     @Test
     public void maxOffsetIsWindowSizeMinus1IfBiggerThanWindowSize() {
-        Parameters p = newParameters(128, 2, 3, 129, 5);
+        final Parameters p = newParameters(128, 2, 3, 129, 5);
         assertEquals(127, p.getMaxOffset());
     }
 
     @Test
     public void maxLiteralLengthIsWindowSizeIfSetTo0() {
-        Parameters p = newParameters(128, 2, 3, 4, 0);
+        final Parameters p = newParameters(128, 2, 3, 4, 0);
         assertEquals(128, p.getMaxLiteralLength());
     }
 
     @Test
     public void maxLiteralLengthIsWindowSizeIfSetToANegativeValue() {
-        Parameters p = newParameters(128, 2, 3, 0, -1);
+        final Parameters p = newParameters(128, 2, 3, 0, -1);
         assertEquals(128, p.getMaxLiteralLength());
     }
 
     @Test
     public void maxLiteralLengthIsWindowSizeIfSetToAValueTooBigToHoldInSlidingWindow() {
-        Parameters p = newParameters(128, 2, 3, 0, 259);
+        final Parameters p = newParameters(128, 2, 3, 0, 259);
         assertEquals(128, p.getMaxLiteralLength());
     }
 
     @Test
     public void allParametersUsuallyTakeTheirSpecifiedValues() {
-        Parameters p = newParameters(256, 4, 5, 6, 7);
+        final Parameters p = newParameters(256, 4, 5, 6, 7);
         assertEquals(256, p.getWindowSize());
         assertEquals(4, p.getMinBackReferenceLength());
         assertEquals(5, p.getMaxBackReferenceLength());
@@ -119,12 +119,12 @@ public class ParametersTest {
         newParameters(100, 200, 300, 400, 500);
     }
 
-    private static Parameters newParameters(int windowSize) {
+    private static Parameters newParameters(final int windowSize) {
         return Parameters.builder(windowSize).build();
     }
 
-    private static Parameters newParameters(int windowSize, int minBackReferenceLength, int maxBackReferenceLength,
-        int maxOffset, int maxLiteralLength) {
+    private static Parameters newParameters(final int windowSize, final int minBackReferenceLength, final int maxBackReferenceLength,
+        final int maxOffset, final int maxLiteralLength) {
         return Parameters.builder(windowSize)
             .withMinBackReferenceLength(minBackReferenceLength)
             .withMaxBackReferenceLength(maxBackReferenceLength)

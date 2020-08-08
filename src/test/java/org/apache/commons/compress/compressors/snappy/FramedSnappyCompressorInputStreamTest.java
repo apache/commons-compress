@@ -171,7 +171,7 @@ public final class FramedSnappyCompressorInputStreamTest
      */
     @Test
     public void readIWAFileWithBiggerOffset() throws Exception {
-        File o = new File(dir, "COMPRESS-358.raw");
+        final File o = new File(dir, "COMPRESS-358.raw");
         try (InputStream is = new FileInputStream(getFile("COMPRESS-358.iwa"));
              FramedSnappyCompressorInputStream in =
                  new FramedSnappyCompressorInputStream(is, 1<<16, FramedSnappyDialect.IWORK_ARCHIVE);
@@ -180,8 +180,8 @@ public final class FramedSnappyCompressorInputStreamTest
         }
         try (FileInputStream a = new FileInputStream(o);
              FileInputStream e = new FileInputStream(getFile("COMPRESS-358.uncompressed"))) {
-            byte[] expected = IOUtils.toByteArray(e);
-            byte[] actual = IOUtils.toByteArray(a);
+            final byte[] expected = IOUtils.toByteArray(e);
+            final byte[] actual = IOUtils.toByteArray(a);
             assertArrayEquals(expected, actual);
         }
     }
@@ -202,7 +202,7 @@ public final class FramedSnappyCompressorInputStreamTest
     @Test
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.sz");
-        byte[] buf = new byte[2];
+        final byte[] buf = new byte[2];
         try (InputStream is = new FileInputStream(input)) {
             final FramedSnappyCompressorInputStream in =
                     new FramedSnappyCompressorInputStream(is);

@@ -147,28 +147,28 @@ public final class DetectCompressorTestCase {
         try {
             CompressorStreamFactory.detect(new BufferedInputStream(new ByteArrayInputStream(new byte[0])));
             fail("shouldn't be able to detect empty stream");
-        } catch (CompressorException e) {
+        } catch (final CompressorException e) {
             assertEquals("No Compressor found for the stream signature.", e.getMessage());
         }
 
         try {
             CompressorStreamFactory.detect(null);
             fail("shouldn't be able to detect null stream");
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             assertEquals("Stream must not be null.", e.getMessage());
         }
 
         try {
             CompressorStreamFactory.detect(new BufferedInputStream(new MockEvilInputStream()));
             fail("Expected IOException");
-        } catch (CompressorException e) {
+        } catch (final CompressorException e) {
             assertEquals("IOException while reading signature.", e.getMessage());
         }
 
 
     }
 
-    private String detect(String testFileName) throws IOException, CompressorException {
+    private String detect(final String testFileName) throws IOException, CompressorException {
         String name = null;
         try (InputStream is = new BufferedInputStream(
                 new FileInputStream(getFile(testFileName)))) {
@@ -208,13 +208,13 @@ public final class DetectCompressorTestCase {
     }
 
     private InputStream getStreamFor(final String fileName, final int memoryLimitInKb) throws Exception {
-        CompressorStreamFactory fac = new CompressorStreamFactory(true,
+        final CompressorStreamFactory fac = new CompressorStreamFactory(true,
                 memoryLimitInKb);
-        InputStream is = new BufferedInputStream(
+        final InputStream is = new BufferedInputStream(
                 new FileInputStream(getFile(fileName)));
         try {
             return fac.createCompressorInputStream(is);
-        } catch (CompressorException e) {
+        } catch (final CompressorException e) {
             if (e.getCause() != null && e.getCause() instanceof Exception) {
                 //unwrap cause to reveal MemoryLimitException
                 throw (Exception)e.getCause();

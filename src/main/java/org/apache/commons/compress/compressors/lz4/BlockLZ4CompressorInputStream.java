@@ -71,7 +71,7 @@ public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputSt
             readSizes();
             /*FALLTHROUGH*/
         case IN_LITERAL:
-            int litLen = readLiteral(b, off, len);
+            final int litLen = readLiteral(b, off, len);
             if (!hasMoreDataInBlock()) {
                 state = State.LOOKING_FOR_BACK_REFERENCE;
             }
@@ -83,7 +83,7 @@ public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputSt
             }
             /*FALLTHROUGH*/
         case IN_BACK_REFERENCE:
-            int backReferenceLen = readBackReference(b, off, len);
+            final int backReferenceLen = readBackReference(b, off, len);
             if (!hasMoreDataInBlock()) {
                 state = State.NO_BLOCK;
             }
@@ -94,7 +94,7 @@ public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputSt
     }
 
     private void readSizes() throws IOException {
-        int nextBlock = readOneByte();
+        final int nextBlock = readOneByte();
         if (nextBlock == -1) {
             throw new IOException("Premature end of stream while looking for next block");
         }
@@ -131,7 +131,7 @@ public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputSt
         int backReferenceOffset = 0;
         try {
             backReferenceOffset = (int) ByteUtils.fromLittleEndian(supplier, 2);
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             if (nextBackReferenceSize == 0) { // the last block has no back-reference
                 return false;
             }
@@ -147,7 +147,7 @@ public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputSt
         }
         try {
             startBackReference(backReferenceOffset, backReferenceSize + 4);
-        } catch (IllegalArgumentException ex) {
+        } catch (final IllegalArgumentException ex) {
             throw new IOException("Illegal block with bad offset found", ex);
         }
         state = State.IN_BACK_REFERENCE;

@@ -40,13 +40,13 @@ public class AES256SHA256DecoderTest {
     @Test
     public void testDecodeWithNonEmptyString() throws IOException {
 
-        AES256SHA256Decoder aES256SHA256Decoder = new AES256SHA256Decoder();
-        BufferedInputStream bufferedInputStream = new BufferedInputStream(null, 3138);
-        Coder coder = new Coder();
-        byte[] byteArray = new byte[8];
+        final AES256SHA256Decoder aES256SHA256Decoder = new AES256SHA256Decoder();
+        final BufferedInputStream bufferedInputStream = new BufferedInputStream(null, 3138);
+        final Coder coder = new Coder();
+        final byte[] byteArray = new byte[8];
         byteArray[1] = (byte) (-72);
         coder.properties = byteArray;
-        InputStream inputStream = aES256SHA256Decoder.decode("x", bufferedInputStream, 3138, coder, coder.properties,
+        final InputStream inputStream = aES256SHA256Decoder.decode("x", bufferedInputStream, 3138, coder, coder.properties,
                 Integer.MAX_VALUE);
 
         ObjectInputStream objectInputStream = null;
@@ -54,7 +54,7 @@ public class AES256SHA256DecoderTest {
         try {
             objectInputStream = new ObjectInputStream(inputStream);
             fail("Expecting exception: IOException");
-        } catch(Throwable e) {
+        } catch(final Throwable e) {
             assertEquals("Salt size + IV size too long in x",e.getMessage());
             assertEquals("org.apache.commons.compress.archivers.sevenz.AES256SHA256Decoder$1", e.getStackTrace()[0].getClassName());
         }

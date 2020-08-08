@@ -28,7 +28,7 @@ import java.io.OutputStream;
  */
 public class FlushShieldFilterOutputStream extends FilterOutputStream {
 
-    public FlushShieldFilterOutputStream(OutputStream out) {
+    public FlushShieldFilterOutputStream(final OutputStream out) {
         super(out);
     }
 

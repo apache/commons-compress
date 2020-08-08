@@ -44,7 +44,7 @@ public class CpioArchiveTest {
 
     private final short format;
 
-    public CpioArchiveTest(short format) {
+    public CpioArchiveTest(final short format) {
         this.format = format;
     }
 
@@ -53,7 +53,7 @@ public class CpioArchiveTest {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             try (CpioArchiveOutputStream os = new CpioArchiveOutputStream(baos, format, CpioConstants.BLOCK_SIZE,
                 "UTF-16LE")) {
-                CpioArchiveEntry entry = new CpioArchiveEntry(format, "T\u00e4st.txt", 4);
+                final CpioArchiveEntry entry = new CpioArchiveEntry(format, "T\u00e4st.txt", 4);
                 if (format == CpioConstants.FORMAT_NEW_CRC) {
                     entry.setChksum(10);
                 }
@@ -64,7 +64,7 @@ public class CpioArchiveTest {
             baos.close();
             try (ByteArrayInputStream bin = new ByteArrayInputStream(baos.toByteArray());
                  CpioArchiveInputStream in = new CpioArchiveInputStream(bin, "UTF-16LE")) {
-                CpioArchiveEntry entry = (CpioArchiveEntry) in.getNextEntry();
+                final CpioArchiveEntry entry = (CpioArchiveEntry) in.getNextEntry();
                 Assert.assertNotNull(entry);
                 Assert.assertEquals("T\u00e4st.txt", entry.getName());
                 Assert.assertArrayEquals(new byte[] { 1, 2, 3, 4 }, IOUtils.toByteArray(in));

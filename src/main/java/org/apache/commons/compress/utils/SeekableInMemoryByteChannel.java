@@ -52,7 +52,7 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
      *
      * @param data input data or pre-allocated array.
      */
-    public SeekableInMemoryByteChannel(byte[] data) {
+    public SeekableInMemoryByteChannel(final byte[] data) {
         this.data = data;
         size = data.length;
     }
@@ -71,7 +71,7 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
      *
      * @param size size of internal buffer to allocate, in bytes.
      */
-    public SeekableInMemoryByteChannel(int size) {
+    public SeekableInMemoryByteChannel(final int size) {
         this(new byte[size]);
     }
 
@@ -88,7 +88,7 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
     }
 
     @Override
-    public SeekableByteChannel position(long newPosition) throws IOException {
+    public SeekableByteChannel position(final long newPosition) throws IOException {
         ensureOpen();
         if (newPosition < 0L || newPosition > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Position has to be in range 0.. " + Integer.MAX_VALUE);
@@ -115,7 +115,7 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
      * invoked on a closed channel.</p>
      */
     @Override
-    public SeekableByteChannel truncate(long newSize) {
+    public SeekableByteChannel truncate(final long newSize) {
         if (newSize < 0L || newSize > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Size has to be in range 0.. " + Integer.MAX_VALUE);
         }
@@ -129,10 +129,10 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
     }
 
     @Override
-    public int read(ByteBuffer buf) throws IOException {
+    public int read(final ByteBuffer buf) throws IOException {
         ensureOpen();
         int wanted = buf.remaining();
-        int possible = size - position;
+        final int possible = size - position;
         if (possible <= 0) {
             return -1;
         }
@@ -155,12 +155,12 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
     }
 
     @Override
-    public int write(ByteBuffer b) throws IOException {
+    public int write(final ByteBuffer b) throws IOException {
         ensureOpen();
         int wanted = b.remaining();
-        int possibleWithoutResize = size - position;
+        final int possibleWithoutResize = size - position;
         if (wanted > possibleWithoutResize) {
-            int newSize = position + wanted;
+            final int newSize = position + wanted;
             if (newSize < 0) { // overflow
                 resize(Integer.MAX_VALUE);
                 wanted = Integer.MAX_VALUE - position;
@@ -189,7 +189,7 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
         return data;
     }
 
-    private void resize(int newLength) {
+    private void resize(final int newLength) {
         int len = data.length;
         if (len <= 0) {
             len = 1;

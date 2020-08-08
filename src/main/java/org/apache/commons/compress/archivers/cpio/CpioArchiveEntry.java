@@ -333,7 +333,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @throws IOException if an I/O error occurs
      * @since 1.21
      */
-    public CpioArchiveEntry(final Path inputPath, final String entryName, LinkOption... options) throws IOException {
+    public CpioArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
         this(FORMAT_NEW, inputPath, entryName, options);
     }
 
@@ -396,7 +396,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @throws IOException if an I/O error occurs
      * @since 1.21
      */
-    public CpioArchiveEntry(final short format, final Path inputPath, final String entryName, LinkOption... options)
+    public CpioArchiveEntry(final short format, final Path inputPath, final String entryName, final LinkOption... options)
         throws IOException {
         this(format, entryName, Files.isRegularFile(inputPath, options) ? Files.size(inputPath) : 0);
         if (Files.isDirectory(inputPath, options)) {
@@ -545,7 +545,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @return the number of bytes needed to pad the header (0,1,2,3)
      * @since 1.18
      */
-    public int getHeaderPadCount(Charset charset) {
+    public int getHeaderPadCount(final Charset charset) {
         if (name == null) {
             return 0;
         }
@@ -565,7 +565,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      *
      * @since 1.18
      */
-    public int getHeaderPadCount(long namesize) {
+    public int getHeaderPadCount(final long namesize) {
         if (this.alignmentBoundary == 0) { return 0; }
         int size = this.headerSize + 1;  // Name has terminating null
         if (name != null) {

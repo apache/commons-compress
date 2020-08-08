@@ -108,15 +108,15 @@ public class MultiReadOnlySeekableByteChannelTest {
 
     @Test
     public void closesAllAndThrowsExceptionIfCloseThrows() throws IOException {
-        SeekableByteChannel[] ts = new ThrowingSeekableByteChannel[] {
+        final SeekableByteChannel[] ts = new ThrowingSeekableByteChannel[] {
             new ThrowingSeekableByteChannel(),
             new ThrowingSeekableByteChannel()
         };
-        SeekableByteChannel s = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(ts);
+        final SeekableByteChannel s = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(ts);
         try {
             s.close();
             Assert.fail("IOException expected");
-        } catch (IOException expected) {
+        } catch (final IOException expected) {
         }
         Assert.assertFalse(ts[0].isOpen());
         Assert.assertFalse(ts[1].isOpen());
@@ -124,21 +124,21 @@ public class MultiReadOnlySeekableByteChannelTest {
 
     @Test
     public void cantTruncate() throws IOException {
-        SeekableByteChannel s = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(makeEmpty(), makeEmpty());
+        final SeekableByteChannel s = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(makeEmpty(), makeEmpty());
         thrown.expect(NonWritableChannelException.class);
         s.truncate(1);
     }
 
     @Test
     public void cantWrite() throws IOException {
-        SeekableByteChannel s = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(makeEmpty(), makeEmpty());
+        final SeekableByteChannel s = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(makeEmpty(), makeEmpty());
         thrown.expect(NonWritableChannelException.class);
         s.write(ByteBuffer.allocate(10));
     }
 
     @Test
     public void cantPositionToANegativePosition() throws IOException {
-        SeekableByteChannel s = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(makeEmpty(), makeEmpty());
+        final SeekableByteChannel s = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(makeEmpty(), makeEmpty());
         thrown.expect(IllegalArgumentException.class);
         s.position(-1);
     }
@@ -147,20 +147,20 @@ public class MultiReadOnlySeekableByteChannelTest {
         return makeSingle(new byte[0]);
     }
 
-    private SeekableByteChannel makeSingle(byte[] arr) {
+    private SeekableByteChannel makeSingle(final byte[] arr) {
         return new SeekableInMemoryByteChannel(arr);
     }
 
-    private SeekableByteChannel makeMulti(byte[][] arr) throws IOException {
-        SeekableByteChannel[] s = new SeekableByteChannel[arr.length];
+    private SeekableByteChannel makeMulti(final byte[][] arr) throws IOException {
+        final SeekableByteChannel[] s = new SeekableByteChannel[arr.length];
         for (int i = 0; i < s.length; i++) {
             s[i] = makeSingle(arr[i]);
         }
         return MultiReadOnlySeekableByteChannel.forSeekableByteChannels(s);
     }
 
-    private void checkEmpty(SeekableByteChannel channel) throws IOException {
-        ByteBuffer buf = ByteBuffer.allocate(10);
+    private void checkEmpty(final SeekableByteChannel channel) throws IOException {
+        final ByteBuffer buf = ByteBuffer.allocate(10);
 
         Assert.assertTrue(channel.isOpen());
         Assert.assertEquals(0, channel.size());
@@ -176,12 +176,12 @@ public class MultiReadOnlySeekableByteChannelTest {
         try {
             channel.read(buf);
             Assert.fail("expected a ClosedChannelException");
-        } catch (ClosedChannelException expected) {
+        } catch (final ClosedChannelException expected) {
         }
         try {
             channel.position(100);
             Assert.fail("expected a ClosedChannelException");
-        } catch (ClosedChannelException expected) {
+        } catch (final ClosedChannelException expected) {
         }
     }
 
@@ -194,7 +194,7 @@ public class MultiReadOnlySeekableByteChannelTest {
         }
     }
 
-    private void check(final byte[] expected, SeekableByteChannel channel) throws IOException {
+    private void check(final byte[] expected, final SeekableByteChannel channel) throws IOException {
         for (int readBufferSize = 1; readBufferSize <= expected.length + 5; readBufferSize++) {
             check(expected, channel, readBufferSize);
         }
@@ -218,7 +218,7 @@ public class MultiReadOnlySeekableByteChannelTest {
         int bytesRead = channel.read(buf);
 
         while (bytesRead != -1) {
-            int remaining = buf.remaining();
+            final int remaining = buf.remaining();
 
             buf.flip();
             resultBuffer.put(buf);
@@ -239,13 +239,13 @@ public class MultiReadOnlySeekableByteChannelTest {
         }
 
         resultBuffer.flip();
-        byte[] arr = new byte[resultBuffer.remaining()];
+        final byte[] arr = new byte[resultBuffer.remaining()];
         resultBuffer.get(arr);
         Assert.assertArrayEquals("readBufferSize " + readBufferSize, expected, arr);
     }
 
     private byte[][] grouped(final byte[] input, final int chunkSize) {
-        List<byte[]> groups = new ArrayList<>();
+        final List<byte[]> groups = new ArrayList<>();
         int idx = 0;
         for (; idx + chunkSize <= input.length; idx += chunkSize) {
             groups.add(Arrays.copyOfRange(input, idx, idx + chunkSize));
@@ -268,11 +268,11 @@ public class MultiReadOnlySeekableByteChannelTest {
             throw new IOException("foo");
         }
         @Override
-        public int read(ByteBuffer dst) throws IOException {
+        public int read(final ByteBuffer dst) throws IOException {
             return -1;
         }
         @Override
-        public int write(ByteBuffer src) throws IOException {
+        public int write(final ByteBuffer src) throws IOException {
             return 0;
         }
         @Override
@@ -280,7 +280,7 @@ public class MultiReadOnlySeekableByteChannelTest {
             return 0;
         }
         @Override
-        public SeekableByteChannel position(long newPosition) throws IOException {
+        public SeekableByteChannel position(final long newPosition) throws IOException {
             return this;
         }
         @Override
@@ -288,7 +288,7 @@ public class MultiReadOnlySeekableByteChannelTest {
             return 0;
         }
         @Override
-        public SeekableByteChannel truncate(long size) throws IOException {
+        public SeekableByteChannel truncate(final long size) throws IOException {
             return this;
         }
     }
@@ -368,7 +368,7 @@ public class MultiReadOnlySeekableByteChannelTest {
         try (SeekableByteChannel c = testChannel()) {
             c.position(2);
             Assert.assertEquals(2, c.position());
-            ByteBuffer readBuffer = ByteBuffer.allocate(5);
+            final ByteBuffer readBuffer = ByteBuffer.allocate(5);
             Assert.assertEquals(-1, c.read(readBuffer));
         }
     }

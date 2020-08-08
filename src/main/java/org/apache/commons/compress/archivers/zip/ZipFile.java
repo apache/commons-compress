@@ -374,7 +374,7 @@ public class ZipFile implements Closeable {
             }
             fillNameMap();
             success = true;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new IOException("Error on ZipFile " + archiveName, e);
         } finally {
             closed = !success;
@@ -580,7 +580,7 @@ public class ZipFile implements Closeable {
                 try {
                     return new ExplodingInputStream(ze.getGeneralPurposeBit().getSlidingDictionarySize(),
                             ze.getGeneralPurposeBit().getNumberOfShannonFanoTrees(), is);
-                } catch (IllegalArgumentException ex) {
+                } catch (final IllegalArgumentException ex) {
                     throw new IOException("bad IMPLODE data", ex);
                 }
             case DEFLATED:
@@ -1171,7 +1171,7 @@ public class ZipFile implements Closeable {
                     wordBbuf.rewind();
                     IOUtils.readFully(archive, wordBbuf);
                     wordBbuf.flip();
-                } catch (EOFException ex) { // NOSONAR
+                } catch (final EOFException ex) { // NOSONAR
                     break;
                 }
                 int curr = wordBbuf.get();
@@ -1201,8 +1201,8 @@ public class ZipFile implements Closeable {
      * skipping failed.
      */
     private void skipBytes(final int count) throws IOException {
-        long currentPosition = archive.position();
-        long newPosition = currentPosition + count;
+        final long currentPosition = archive.position();
+        final long newPosition = currentPosition + count;
         if (newPosition > archive.size()) {
             throw new EOFException();
         }
@@ -1238,7 +1238,7 @@ public class ZipFile implements Closeable {
             // entries is filled in populateFromCentralDirectory and
             // never modified
             final Entry ze = (Entry) zipArchiveEntry;
-            int[] lens = setDataOffset(ze);
+            final int[] lens = setDataOffset(ze);
             final int fileNameLen = lens[0];
             final int extraFieldLen = lens[1];
             skipBytes(fileNameLen);
@@ -1268,7 +1268,7 @@ public class ZipFile implements Closeable {
         }
     }
 
-    private int[] setDataOffset(ZipArchiveEntry ze) throws IOException {
+    private int[] setDataOffset(final ZipArchiveEntry ze) throws IOException {
         long offset = ze.getLocalHeaderOffset();
         if (isSplitZipArchive) {
             ((ZipSplitReadOnlySeekableByteChannel) archive)
@@ -1290,8 +1290,8 @@ public class ZipFile implements Closeable {
         return new int[] { fileNameLen, extraFieldLen };
     }
 
-    private long getDataOffset(ZipArchiveEntry ze) throws IOException {
-        long s = ze.getDataOffset();
+    private long getDataOffset(final ZipArchiveEntry ze) throws IOException {
+        final long s = ze.getDataOffset();
         if (s == EntryStreamOffsets.OFFSET_UNKNOWN) {
             setDataOffset(ze);
             return ze.getDataOffset();
@@ -1314,7 +1314,7 @@ public class ZipFile implements Closeable {
      * Creates new BoundedInputStream, according to implementation of
      * underlying archive channel.
      */
-    private BoundedInputStream createBoundedInputStream(long start, long remaining) {
+    private BoundedInputStream createBoundedInputStream(final long start, final long remaining) {
         return archive instanceof FileChannel ?
             new BoundedFileChannelInputStream(start, remaining) :
             new BoundedInputStream(start, remaining);
@@ -1350,7 +1350,7 @@ public class ZipFile implements Closeable {
             else {
                 singleByteBuffer.rewind();
             }
-            int read = read(loc, singleByteBuffer);
+            final int read = read(loc, singleByteBuffer);
             if (read < 0) {
                 return read;
             }
@@ -1373,7 +1373,7 @@ public class ZipFile implements Closeable {
 
             ByteBuffer buf;
             buf = ByteBuffer.wrap(b, off, len);
-            int ret = read(loc, buf);
+            final int ret = read(loc, buf);
             if (ret > 0) {
                 loc += ret;
                 return ret;
@@ -1381,7 +1381,7 @@ public class ZipFile implements Closeable {
             return ret;
         }
 
-        protected int read(long pos, ByteBuffer buf) throws IOException {
+        protected int read(final long pos, final ByteBuffer buf) throws IOException {
             int read;
             synchronized (archive) {
                 archive.position(pos);
@@ -1407,8 +1407,8 @@ public class ZipFile implements Closeable {
         }
 
         @Override
-        protected int read(long pos, ByteBuffer buf) throws IOException {
-            int read = archive.read(buf, pos);
+        protected int read(final long pos, final ByteBuffer buf) throws IOException {
+            final int read = archive.read(buf, pos);
             buf.flip();
             return read;
         }
@@ -1490,7 +1490,7 @@ public class ZipFile implements Closeable {
     }
 
     private static class StoredStatisticsStream extends CountingInputStream implements InputStreamStatistics {
-        StoredStatisticsStream(InputStream in) {
+        StoredStatisticsStream(final InputStream in) {
             super(in);
         }
 

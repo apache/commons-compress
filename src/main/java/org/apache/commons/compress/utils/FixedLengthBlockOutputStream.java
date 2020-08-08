@@ -59,9 +59,9 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
      * @param os   The stream to wrap.
      * @param blockSize The block size to use.
      */
-    public FixedLengthBlockOutputStream(OutputStream os, int blockSize) {
+    public FixedLengthBlockOutputStream(final OutputStream os, final int blockSize) {
         if (os instanceof FileOutputStream) {
-            FileOutputStream fileOutputStream = (FileOutputStream) os;
+            final FileOutputStream fileOutputStream = (FileOutputStream) os;
             out = fileOutputStream.getChannel();
             buffer = ByteBuffer.allocateDirect(blockSize);
         } else {
@@ -75,7 +75,7 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
      * @param out   The writable byte channel to wrap.
      * @param blockSize The block size to use.
      */
-    public FixedLengthBlockOutputStream(WritableByteChannel out, int blockSize) {
+    public FixedLengthBlockOutputStream(final WritableByteChannel out, final int blockSize) {
         this.out = out;
         this.blockSize = blockSize;
         this.buffer = ByteBuffer.allocateDirect(blockSize);
@@ -89,10 +89,10 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
 
     private void writeBlock() throws IOException {
         buffer.flip();
-        int i = out.write(buffer);
-        boolean hasRemaining = buffer.hasRemaining();
+        final int i = out.write(buffer);
+        final boolean hasRemaining = buffer.hasRemaining();
         if (i != blockSize || hasRemaining) {
-            String msg = String
+            final String msg = String
                 .format("Failed to write %,d bytes atomically. Only wrote  %,d",
                     blockSize, i);
             throw new IOException(msg);
@@ -101,7 +101,7 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
     }
 
     @Override
-    public void write(int b) throws IOException {
+    public void write(final int b) throws IOException {
         if (!isOpen()) {
             throw new ClosedChannelException();
         }
@@ -110,14 +110,14 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
     }
 
     @Override
-    public void write(byte[] b, final int offset, final int length) throws IOException {
+    public void write(final byte[] b, final int offset, final int length) throws IOException {
         if (!isOpen()) {
             throw new ClosedChannelException();
         }
         int off = offset;
         int len = length;
         while (len > 0) {
-            int n = Math.min(len, buffer.remaining());
+            final int n = Math.min(len, buffer.remaining());
             buffer.put(b, off, n);
             maybeFlush();
             len -= n;
@@ -126,22 +126,22 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
     }
 
     @Override
-    public int write(ByteBuffer src) throws IOException {
+    public int write(final ByteBuffer src) throws IOException {
         if (!isOpen()) {
             throw new ClosedChannelException();
         }
-        int srcRemaining = src.remaining();
+        final int srcRemaining = src.remaining();
 
         if (srcRemaining < buffer.remaining()) {
             // if don't have enough bytes in src to fill up a block we must buffer
             buffer.put(src);
         } else {
             int srcLeft = srcRemaining;
-            int savedLimit = src.limit();
+            final int savedLimit = src.limit();
             // If we're not at the start of buffer, we have some bytes already  buffered
             // fill up the reset of buffer and write the block.
             if (buffer.position() != 0) {
-                int n = buffer.remaining();
+                final int n = buffer.remaining();
                 src.limit(src.position() + n);
                 buffer.put(src);
                 writeBlock();
@@ -195,9 +195,9 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
         buffer.order(ByteOrder.nativeOrder());
         int bytesToWrite = buffer.remaining();
         if (bytesToWrite > 8) {
-            int align = buffer.position() & 7;
+            final int align = buffer.position() & 7;
             if (align != 0) {
-                int limit = 8 - align;
+                final int limit = 8 - align;
                 for (int i = 0; i < limit; i++) {
                     buffer.put((byte) 0);
                 }
@@ -225,12 +225,12 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
         private final OutputStream out;
         private final AtomicBoolean closed = new AtomicBoolean(false);
 
-        private BufferAtATimeOutputChannel(OutputStream out) {
+        private BufferAtATimeOutputChannel(final OutputStream out) {
             this.out = out;
         }
 
         @Override
-        public int write(ByteBuffer buffer) throws IOException {
+        public int write(final ByteBuffer buffer) throws IOException {
             if (!isOpen()) {
                 throw new ClosedChannelException();
             }
@@ -239,15 +239,15 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
             }
 
             try {
-                int pos = buffer.position();
-                int len = buffer.limit() - pos;
+                final int pos = buffer.position();
+                final int len = buffer.limit() - pos;
                 out.write(buffer.array(), buffer.arrayOffset() + pos, len);
                 buffer.position(buffer.limit());
                 return len;
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 try {
                     close();
-                } catch (IOException ignored) { //NOSONAR
+                } catch (final IOException ignored) { //NOSONAR
                 }
                 throw e;
             }

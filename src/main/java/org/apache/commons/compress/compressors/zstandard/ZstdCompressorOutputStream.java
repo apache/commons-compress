@@ -43,8 +43,8 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream {
      * @throws IOException if zstd-jni does
      * @since 1.18
      */
-    public ZstdCompressorOutputStream(final OutputStream outStream, int level, boolean closeFrameOnFlush,
-        boolean useChecksum) throws IOException {
+    public ZstdCompressorOutputStream(final OutputStream outStream, final int level, final boolean closeFrameOnFlush,
+        final boolean useChecksum) throws IOException {
         this.encOS = new ZstdOutputStream(outStream, level);
         this.encOS.setCloseFrameOnFlush(closeFrameOnFlush);
         this.encOS.setChecksum(useChecksum);
@@ -58,7 +58,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream {
      * @throws IOException if zstd-jni does
      * @since 1.18
      */
-    public ZstdCompressorOutputStream(final OutputStream outStream, int level, boolean closeFrameOnFlush)
+    public ZstdCompressorOutputStream(final OutputStream outStream, final int level, final boolean closeFrameOnFlush)
         throws IOException {
         this.encOS = new ZstdOutputStream(outStream, level);
         this.encOS.setCloseFrameOnFlush(closeFrameOnFlush);
@@ -72,7 +72,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream {
      * @throws IOException if zstd-jni does
      * @since 1.18
      */
-    public ZstdCompressorOutputStream(final OutputStream outStream, int level) throws IOException {
+    public ZstdCompressorOutputStream(final OutputStream outStream, final int level) throws IOException {
         this.encOS = new ZstdOutputStream(outStream, level);
     }
 

@@ -53,8 +53,8 @@ public class ZipFileIgnoringLocalFileHeaderTest {
     @Test
     public void testZipUnarchive() throws Exception {
         try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
-            for (Enumeration<ZipArchiveEntry> e = zf.getEntries(); e.hasMoreElements(); ) {
-                ZipArchiveEntry entry = e.nextElement();
+            for (final Enumeration<ZipArchiveEntry> e = zf.getEntries(); e.hasMoreElements(); ) {
+                final ZipArchiveEntry entry = e.nextElement();
                 try (final OutputStream out = new FileOutputStream(new File(dir, entry.getName()))) {
                     IOUtils.copy(zf.getInputStream(entry), out);
                 }
@@ -65,7 +65,7 @@ public class ZipFileIgnoringLocalFileHeaderTest {
     @Test
     public void getEntryWorks() throws IOException {
         try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
-            ZipArchiveEntry ze = zf.getEntry("test1.xml");
+            final ZipArchiveEntry ze = zf.getEntry("test1.xml");
             Assert.assertEquals(610, ze.getSize());
         }
     }
@@ -85,7 +85,7 @@ public class ZipFileIgnoringLocalFileHeaderTest {
     @Test
     public void getRawInputStreamReturnsNull() throws IOException {
         try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
-            ZipArchiveEntry ze = zf.getEntry("test1.xml");
+            final ZipArchiveEntry ze = zf.getEntry("test1.xml");
             Assert.assertNull(zf.getRawInputStream(ze));
         }
     }
@@ -93,7 +93,7 @@ public class ZipFileIgnoringLocalFileHeaderTest {
     @Test
     public void testPhysicalOrder() throws IOException {
         try (final ZipFile zf = openZipWithoutLFH("ordertest.zip")) {
-            Enumeration<ZipArchiveEntry> e = zf.getEntriesInPhysicalOrder();
+            final Enumeration<ZipArchiveEntry> e = zf.getEntriesInPhysicalOrder();
             ZipArchiveEntry ze = null;
             do {
                 ze = e.nextElement();
@@ -102,7 +102,7 @@ public class ZipFileIgnoringLocalFileHeaderTest {
         }
     }
 
-    private static ZipFile openZipWithoutLFH(String fileName) throws IOException {
+    private static ZipFile openZipWithoutLFH(final String fileName) throws IOException {
         return new ZipFile(AbstractTestCase.getFile(fileName), ZipEncodingHelper.UTF8, true, true);
     }
 }

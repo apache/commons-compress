@@ -209,7 +209,7 @@ public final class Pack200TestCase extends AbstractTestCase {
         singleByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.TEMP_FILE);
     }
 
-    private void singleByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy s) throws Exception {
+    private void singleByteReadConsistentlyReturnsMinusOneAtEof(final Pack200Strategy s) throws Exception {
         final File input = getFile("bla.pack");
         try (final Pack200CompressorInputStream in = new Pack200CompressorInputStream(input, s)) {
             IOUtils.toByteArray(in);
@@ -229,9 +229,9 @@ public final class Pack200TestCase extends AbstractTestCase {
         multiByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.TEMP_FILE);
     }
 
-    private void multiByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy s) throws Exception {
+    private void multiByteReadConsistentlyReturnsMinusOneAtEof(final Pack200Strategy s) throws Exception {
         final File input = getFile("bla.pack");
-        byte[] buf = new byte[2];
+        final byte[] buf = new byte[2];
         try (final Pack200CompressorInputStream in = new Pack200CompressorInputStream(input, s)) {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read(buf));

@@ -35,7 +35,7 @@ class LZMADecoder extends CoderBase {
 
     @Override
     InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
-            final Coder coder, final byte[] password, int maxMemoryLimitInKb) throws IOException {
+            final Coder coder, final byte[] password, final int maxMemoryLimitInKb) throws IOException {
         if (coder.properties == null) {
             throw new IOException("Missing LZMA properties");
         }
@@ -66,8 +66,8 @@ class LZMADecoder extends CoderBase {
     byte[] getOptionsAsProperties(final Object opts) throws IOException {
         final LZMA2Options options = getOptions(opts);
         final byte props = (byte) ((options.getPb() * 5 + options.getLp()) * 9 + options.getLc());
-        int dictSize = options.getDictSize();
-        byte[] o = new byte[5];
+        final int dictSize = options.getDictSize();
+        final byte[] o = new byte[5];
         o[0] = props;
         ByteUtils.toLittleEndian(o, dictSize, 1, 4);
         return o;
@@ -83,11 +83,11 @@ class LZMADecoder extends CoderBase {
         }
         final byte propsByte = coder.properties[0];
         int props = propsByte & 0xFF;
-        int pb = props / (9 * 5);
+        final int pb = props / (9 * 5);
         props -= pb * 9 * 5;
-        int lp = props / 9;
-        int lc = props - lp * 9;
-        LZMA2Options opts = new LZMA2Options();
+        final int lp = props / 9;
+        final int lc = props - lp * 9;
+        final LZMA2Options opts = new LZMA2Options();
         opts.setPb(pb);
         opts.setLcLp(lc, lp);
         opts.setDictSize(getDictionarySize(coder));

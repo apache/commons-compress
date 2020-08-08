@@ -42,8 +42,8 @@ public class ZCompressorInputStreamTest {
 
     @Test(expected = IOException.class)
     public void testFailsToCreateZCompressorInputStreamAndThrowsIOException() throws IOException {
-        SequenceInputStream sequenceInputStream = new SequenceInputStream(Collections.<InputStream>emptyEnumeration());
-        ZCompressorInputStream zCompressorInputStream = new ZCompressorInputStream(sequenceInputStream);
+        final SequenceInputStream sequenceInputStream = new SequenceInputStream(Collections.<InputStream>emptyEnumeration());
+        final ZCompressorInputStream zCompressorInputStream = new ZCompressorInputStream(sequenceInputStream);
     }
 
     @Test
@@ -62,7 +62,7 @@ public class ZCompressorInputStreamTest {
     @Test
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.Z");
-        byte[] buf = new byte[2];
+        final byte[] buf = new byte[2];
         try (InputStream is = new FileInputStream(input)) {
             final ZCompressorInputStream in =
                     new ZCompressorInputStream(is);

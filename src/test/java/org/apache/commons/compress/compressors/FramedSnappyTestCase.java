@@ -105,20 +105,20 @@ public final class FramedSnappyTestCase
 
     @Test
     public void testRoundtripWithOneBigWrite() throws Exception {
-        Random r = new Random();
-        File input = new File(dir, "bigChunkTest");
+        final Random r = new Random();
+        final File input = new File(dir, "bigChunkTest");
         try (FileOutputStream fs = new FileOutputStream(input)) {
             for (int i = 0 ; i < 1 << 17; i++) {
                 fs.write(r.nextInt(256));
             }
         }
-        long start = System.currentTimeMillis();
+        final long start = System.currentTimeMillis();
         final File outputSz = new File(dir, input.getName() + ".sz");
         try (FileInputStream is = new FileInputStream(input);
              FileOutputStream os = new FileOutputStream(outputSz);
              CompressorOutputStream sos = new CompressorStreamFactory()
                  .createCompressorOutputStream("snappy-framed", os)) {
-            byte[] b = IOUtils.toByteArray(is);
+            final byte[] b = IOUtils.toByteArray(is);
             sos.write(b[0]);
             sos.write(b, 1, b.length - 1); // must be split into multiple compressed chunks
         }
@@ -127,14 +127,14 @@ public final class FramedSnappyTestCase
         try (FileInputStream is = new FileInputStream(input);
              CompressorInputStream sis = new CompressorStreamFactory()
                  .createCompressorInputStream("snappy-framed", new FileInputStream(outputSz))) {
-            byte[] expected = IOUtils.toByteArray(is);
-            byte[] actual = IOUtils.toByteArray(sis);
+            final byte[] expected = IOUtils.toByteArray(is);
+            final byte[] actual = IOUtils.toByteArray(sis);
             assertArrayEquals(expected, actual);
         }
     }
 
-    private void testRoundtrip(File input)  throws Exception {
-        long start = System.currentTimeMillis();
+    private void testRoundtrip(final File input)  throws Exception {
+        final long start = System.currentTimeMillis();
         final File outputSz = new File(dir, input.getName() + ".sz");
         try (FileInputStream is = new FileInputStream(input);
              FileOutputStream os = new FileOutputStream(outputSz);
@@ -147,8 +147,8 @@ public final class FramedSnappyTestCase
         try (FileInputStream is = new FileInputStream(input);
              CompressorInputStream sis = new CompressorStreamFactory()
                  .createCompressorInputStream("snappy-framed", new FileInputStream(outputSz))) {
-            byte[] expected = IOUtils.toByteArray(is);
-            byte[] actual = IOUtils.toByteArray(sis);
+            final byte[] expected = IOUtils.toByteArray(is);
+            final byte[] actual = IOUtils.toByteArray(sis);
             assertArrayEquals(expected, actual);
         }
     }

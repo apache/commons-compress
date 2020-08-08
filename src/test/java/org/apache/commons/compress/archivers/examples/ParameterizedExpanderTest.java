@@ -60,7 +60,7 @@ public class ParameterizedExpanderTest extends AbstractTestCase {
     private final String format;
     private File archive;
 
-    public ParameterizedExpanderTest(String format) {
+    public ParameterizedExpanderTest(final String format) {
         this.format = format;
     }
 
@@ -69,7 +69,7 @@ public class ParameterizedExpanderTest extends AbstractTestCase {
     public void setUp() throws Exception {
         super.setUp();
         archive = new File(dir, "test." + format);
-        File dummy = new File(dir, "x");
+        final File dummy = new File(dir, "x");
         try (OutputStream o = Files.newOutputStream(dummy.toPath())) {
             o.write(new byte[14]);
         }
@@ -144,11 +144,11 @@ public class ParameterizedExpanderTest extends AbstractTestCase {
         assertHelloWorld("a/b/c/e.txt", "2");
     }
 
-    private void assertHelloWorld(String fileName, String suffix) throws IOException {
+    private void assertHelloWorld(final String fileName, final String suffix) throws IOException {
         Assert.assertTrue(fileName + " does not exist", new File(resultDir, fileName).isFile());
-        byte[] expected = ("Hello, world " + suffix).getBytes(StandardCharsets.UTF_8);
+        final byte[] expected = ("Hello, world " + suffix).getBytes(StandardCharsets.UTF_8);
         try (InputStream is = Files.newInputStream(new File(resultDir, fileName).toPath())) {
-            byte[] actual = IOUtils.toByteArray(is);
+            final byte[] actual = IOUtils.toByteArray(is);
             Assert.assertArrayEquals(expected, actual);
         }
     }

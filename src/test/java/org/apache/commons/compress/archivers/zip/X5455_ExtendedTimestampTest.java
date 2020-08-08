@@ -249,7 +249,7 @@ public class X5455_ExtendedTimestampTest {
         // get/set modify time
         xf.setModifyTime(time);
         assertEquals(time, xf.getModifyTime());
-        Date xfModifyJavaTime = xf.getModifyJavaTime();
+        final Date xfModifyJavaTime = xf.getModifyJavaTime();
         assertEquals(timeMillis, xfModifyJavaTime.getTime());
         xf.setModifyJavaTime(new Date(timeMillis));
         assertEquals(time, xf.getModifyTime());

@@ -46,7 +46,7 @@ public class TarArchiveSparseEntry implements TarConstants {
     /** If an extension sparse header follows. */
     private final boolean isExtended;
 
-    private List<TarArchiveStructSparse> sparseHeaders;
+    private final List<TarArchiveStructSparse> sparseHeaders;
 
     /**
      * Construct an entry from an archive's header bytes. File is set
@@ -59,7 +59,7 @@ public class TarArchiveSparseEntry implements TarConstants {
         int offset = 0;
         sparseHeaders = new ArrayList<>();
         for(int i = 0; i < SPARSE_HEADERS_IN_EXTENSION_HEADER;i++) {
-            TarArchiveStructSparse sparseHeader = TarUtils.parseSparse(headerBuf,
+            final TarArchiveStructSparse sparseHeader = TarUtils.parseSparse(headerBuf,
                     offset + i * (SPARSE_OFFSET_LEN + SPARSE_NUMBYTES_LEN));
 
             // some sparse headers are empty, we need to skip these sparse headers

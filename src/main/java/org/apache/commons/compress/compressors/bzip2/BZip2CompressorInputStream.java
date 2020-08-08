@@ -236,8 +236,8 @@ public class BZip2CompressorInputStream extends CompressorInputStream
         }
     }
 
-    private int readNextByte(BitInputStream in) throws IOException {
-        long b = in.readBits(8);
+    private int readNextByte(final BitInputStream in) throws IOException {
+        final long b = in.readBits(8);
         return (int) b;
     }
 
@@ -276,7 +276,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
     }
 
     private void initBlock() throws IOException {
-        BitInputStream bin = this.bin;
+        final BitInputStream bin = this.bin;
         char magic0;
         char magic1;
         char magic2;
@@ -387,27 +387,27 @@ public class BZip2CompressorInputStream extends CompressorInputStream
      * @return the requested bits combined into an int
      * @throws IOException
      */
-    private static int bsR(BitInputStream bin, final int n) throws IOException {
-        long thech = bin.readBits(n);
+    private static int bsR(final BitInputStream bin, final int n) throws IOException {
+        final long thech = bin.readBits(n);
         if (thech < 0) {
             throw new IOException("Unexpected end of stream");
         }
         return (int) thech;
     }
 
-    private static boolean bsGetBit(BitInputStream bin) throws IOException {
+    private static boolean bsGetBit(final BitInputStream bin) throws IOException {
         return bsR(bin, 1) != 0;
     }
 
-    private static char bsGetUByte(BitInputStream bin) throws IOException {
+    private static char bsGetUByte(final BitInputStream bin) throws IOException {
         return (char) bsR(bin, 8);
     }
 
-    private static int bsGetInt(BitInputStream bin) throws IOException {
+    private static int bsGetInt(final BitInputStream bin) throws IOException {
         return bsR(bin, 32);
     }
 
-    private static void checkBounds(final int checkVal, final int limitExclusive, String name)
+    private static void checkBounds(final int checkVal, final int limitExclusive, final String name)
         throws IOException {
         if (checkVal < 0) {
             throw new IOException("Corrupted input, " + name + " value negative");

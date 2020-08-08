@@ -35,9 +35,9 @@ public class FolderTest {
     @Test
     public void testGetUnpackSizeForCoderOne() {
 
-        Folder folder = new Folder();
-        Coder[] coderArray = new Coder[5];
-        Coder coder = new Coder();
+        final Folder folder = new Folder();
+        final Coder[] coderArray = new Coder[5];
+        final Coder coder = new Coder();
         folder.coders = coderArray;
 
         assertEquals(0L, folder.getUnpackSizeForCoder(coder));
@@ -48,10 +48,10 @@ public class FolderTest {
     @Test
     public void testGetUnpackSizeOne() {
 
-        Folder folder = new Folder();
+        final Folder folder = new Folder();
         folder.totalOutputStreams = 266L;
-        BindPair[] bindPairArray = new BindPair[1];
-        BindPair bindPair = new BindPair();
+        final BindPair[] bindPairArray = new BindPair[1];
+        final BindPair bindPair = new BindPair();
         bindPairArray[0] = bindPair;
         folder.bindPairs = bindPairArray;
         folder.totalOutputStreams = 1L;
@@ -64,7 +64,7 @@ public class FolderTest {
     @Test
     public void testGetUnpackSizeTwo() {
 
-        Folder folder = new Folder();
+        final Folder folder = new Folder();
 
         assertEquals(0L, folder.getUnpackSize());
 
@@ -74,9 +74,9 @@ public class FolderTest {
     @Test
     public void testFindBindPairForInStream() {
 
-        Folder folder = new Folder();
-        BindPair[] bindPairArray = new BindPair[1];
-        BindPair bindPair = new BindPair();
+        final Folder folder = new Folder();
+        final BindPair[] bindPairArray = new BindPair[1];
+        final BindPair bindPair = new BindPair();
         bindPairArray[0] = bindPair;
         folder.bindPairs = bindPairArray;
 

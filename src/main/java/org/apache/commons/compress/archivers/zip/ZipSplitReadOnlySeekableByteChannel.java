@@ -62,7 +62,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * @throws IOException if the first channel doesn't seem to hold
      * the beginning of a split archive
      */
-    public ZipSplitReadOnlySeekableByteChannel(List<SeekableByteChannel> channels)
+    public ZipSplitReadOnlySeekableByteChannel(final List<SeekableByteChannel> channels)
         throws IOException {
         super(channels);
 
@@ -90,7 +90,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      */
     private void assertSplitSignature(final List<SeekableByteChannel> channels)
         throws IOException {
-        SeekableByteChannel channel = channels.get(0);
+        final SeekableByteChannel channel = channels.get(0);
         // the zip split file signature is at the beginning of the first split segment
         channel.position(0L);
 
@@ -114,7 +114,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * @throws NullPointerException if channels is null
      * @throws IOException if reading channels fails
      */
-    public static SeekableByteChannel forOrderedSeekableByteChannels(SeekableByteChannel... channels) throws IOException {
+    public static SeekableByteChannel forOrderedSeekableByteChannels(final SeekableByteChannel... channels) throws IOException {
         if (Objects.requireNonNull(channels, "channels must not be null").length == 1) {
             return channels[0];
         }
@@ -132,18 +132,18 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * @throws IOException if the first channel doesn't seem to hold
      * the beginning of a split archive
      */
-    public static SeekableByteChannel forOrderedSeekableByteChannels(SeekableByteChannel lastSegmentChannel,
-        Iterable<SeekableByteChannel> channels) throws IOException {
+    public static SeekableByteChannel forOrderedSeekableByteChannels(final SeekableByteChannel lastSegmentChannel,
+        final Iterable<SeekableByteChannel> channels) throws IOException {
         Objects.requireNonNull(channels, "channels");
         Objects.requireNonNull(lastSegmentChannel, "lastSegmentChannel");
 
-        List<SeekableByteChannel> channelsList = new ArrayList<>();
-        for (SeekableByteChannel channel : channels) {
+        final List<SeekableByteChannel> channelsList = new ArrayList<>();
+        for (final SeekableByteChannel channel : channels) {
             channelsList.add(channel);
         }
         channelsList.add(lastSegmentChannel);
 
-        SeekableByteChannel[] channelArray = new SeekableByteChannel[channelsList.size()];
+        final SeekableByteChannel[] channelArray = new SeekableByteChannel[channelsList.size()];
         return forOrderedSeekableByteChannels(channelsList.toArray(channelArray));
     }
 
@@ -156,21 +156,21 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * @throws IOException if the first channel doesn't seem to hold
      * the beginning of a split archive
      */
-    public static SeekableByteChannel buildFromLastSplitSegment(File lastSegmentFile) throws IOException {
-        String extension = FileNameUtils.getExtension(lastSegmentFile.getCanonicalPath());
+    public static SeekableByteChannel buildFromLastSplitSegment(final File lastSegmentFile) throws IOException {
+        final String extension = FileNameUtils.getExtension(lastSegmentFile.getCanonicalPath());
         if (!extension.equalsIgnoreCase(ArchiveStreamFactory.ZIP)) {
             throw new IllegalArgumentException("The extension of last zip split segment should be .zip");
         }
 
-        File parent = lastSegmentFile.getParentFile();
-        String fileBaseName = FileNameUtils.getBaseName(lastSegmentFile.getCanonicalPath());
-        ArrayList<File> splitZipSegments = new ArrayList<>();
+        final File parent = lastSegmentFile.getParentFile();
+        final String fileBaseName = FileNameUtils.getBaseName(lastSegmentFile.getCanonicalPath());
+        final ArrayList<File> splitZipSegments = new ArrayList<>();
 
         // zip split segments should be like z01,z02....z(n-1) based on the zip specification
-        Pattern pattern = Pattern.compile(Pattern.quote(fileBaseName) + ".[zZ][0-9]+");
+        final Pattern pattern = Pattern.compile(Pattern.quote(fileBaseName) + ".[zZ][0-9]+");
         final File[] children = parent.listFiles();
         if (children != null) {
-            for (File file : children) {
+            for (final File file : children) {
                 if (!pattern.matcher(file.getName()).matches()) {
                     continue;
                 }
@@ -194,9 +194,9 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * @throws IOException if the first channel doesn't seem to hold
      * the beginning of a split archive
      */
-    public static SeekableByteChannel forFiles(File... files) throws IOException {
-        List<SeekableByteChannel> channels = new ArrayList<>();
-        for (File f : Objects.requireNonNull(files, "files must not be null")) {
+    public static SeekableByteChannel forFiles(final File... files) throws IOException {
+        final List<SeekableByteChannel> channels = new ArrayList<>();
+        for (final File f : Objects.requireNonNull(files, "files must not be null")) {
             channels.add(Files.newByteChannel(f.toPath(), StandardOpenOption.READ));
         }
         if (channels.size() == 1) {
@@ -216,26 +216,26 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * the beginning of a split archive
      * @throws NullPointerException if files or lastSegmentFile is null
      */
-    public static SeekableByteChannel forFiles(File lastSegmentFile, Iterable<File> files) throws IOException {
+    public static SeekableByteChannel forFiles(final File lastSegmentFile, final Iterable<File> files) throws IOException {
         Objects.requireNonNull(files, "files");
         Objects.requireNonNull(lastSegmentFile, "lastSegmentFile");
 
-        List<File> filesList = new ArrayList<>();
-        for (File f : files) {
+        final List<File> filesList = new ArrayList<>();
+        for (final File f : files) {
             filesList.add(f);
         }
         filesList.add(lastSegmentFile);
 
-        File[] filesArray = new File[filesList.size()];
+        final File[] filesArray = new File[filesList.size()];
         return forFiles(filesList.toArray(filesArray));
     }
 
     private static class ZipSplitSegmentComparator implements Comparator<File>, Serializable {
         private static final long serialVersionUID = 20200123L;
         @Override
-        public int compare(File file1, File file2) {
-            String extension1 = FileNameUtils.getExtension(file1.getPath());
-            String extension2 = FileNameUtils.getExtension(file2.getPath());
+        public int compare(final File file1, final File file2) {
+            final String extension1 = FileNameUtils.getExtension(file1.getPath());
+            final String extension2 = FileNameUtils.getExtension(file2.getPath());
 
             if (!extension1.startsWith("z")) {
                 return -1;
@@ -245,8 +245,8 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
                 return 1;
             }
 
-            Integer splitSegmentNumber1 = Integer.parseInt(extension1.substring(1));
-            Integer splitSegmentNumber2 = Integer.parseInt(extension2.substring(1));
+            final Integer splitSegmentNumber1 = Integer.parseInt(extension1.substring(1));
+            final Integer splitSegmentNumber2 = Integer.parseInt(extension2.substring(1));
 
             return splitSegmentNumber1.compareTo(splitSegmentNumber2);
         }

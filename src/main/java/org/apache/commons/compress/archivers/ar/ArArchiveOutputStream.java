@@ -234,7 +234,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
      * @since 1.21
      */
     @Override
-    public ArchiveEntry createArchiveEntry(Path inputPath, String entryName, LinkOption... options) throws IOException {
+    public ArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
         if (finished) {
             throw new IOException("Stream has already been finished");
         }

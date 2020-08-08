@@ -55,15 +55,15 @@ public class ResourceAlignmentExtraField implements ZipExtraField {
     public ResourceAlignmentExtraField() {
     }
 
-    public ResourceAlignmentExtraField(int alignment) {
+    public ResourceAlignmentExtraField(final int alignment) {
         this(alignment, false);
     }
 
-    public ResourceAlignmentExtraField(int alignment, boolean allowMethodChange) {
+    public ResourceAlignmentExtraField(final int alignment, final boolean allowMethodChange) {
         this(alignment, allowMethodChange, 0);
     }
 
-    public ResourceAlignmentExtraField(int alignment, boolean allowMethodChange, int padding) {
+    public ResourceAlignmentExtraField(final int alignment, final boolean allowMethodChange, final int padding) {
         if (alignment < 0 || alignment > 0x7fff) {
             throw new IllegalArgumentException("Alignment must be between 0 and 0x7fff, was: " + alignment);
         }
@@ -112,7 +112,7 @@ public class ResourceAlignmentExtraField implements ZipExtraField {
 
     @Override
     public byte[] getLocalFileDataData() {
-        byte[] content = new byte[BASE_SIZE + padding];
+        final byte[] content = new byte[BASE_SIZE + padding];
         ZipShort.putShort(alignment | (allowMethodChange ? ALLOW_METHOD_MESSAGE_CHANGE_FLAG : 0),
                           content, 0);
         return content;
@@ -124,17 +124,17 @@ public class ResourceAlignmentExtraField implements ZipExtraField {
     }
 
     @Override
-    public void parseFromLocalFileData(byte[] buffer, int offset, int length) throws ZipException {
+    public void parseFromLocalFileData(final byte[] buffer, final int offset, final int length) throws ZipException {
         parseFromCentralDirectoryData(buffer, offset, length);
         this.padding = length - BASE_SIZE;
     }
 
     @Override
-    public void parseFromCentralDirectoryData(byte[] buffer, int offset, int length) throws ZipException {
+    public void parseFromCentralDirectoryData(final byte[] buffer, final int offset, final int length) throws ZipException {
         if (length < BASE_SIZE) {
             throw new ZipException("Too short content for ResourceAlignmentExtraField (0xa11e): " + length);
         }
-        int alignmentValue = ZipShort.getValue(buffer, offset);
+        final int alignmentValue = ZipShort.getValue(buffer, offset);
         this.alignment = (short) (alignmentValue & (ALLOW_METHOD_MESSAGE_CHANGE_FLAG - 1));
         this.allowMethodChange = (alignmentValue & ALLOW_METHOD_MESSAGE_CHANGE_FLAG) != 0;
     }

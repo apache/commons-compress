@@ -37,7 +37,7 @@ public class BZip2CompressorInputStreamTest {
     @Test(expected = IOException.class)
     public void shouldThrowAnIOExceptionWhenAppliedToAZipFile() throws Exception {
         try (FileInputStream in = new FileInputStream(getFile("bla.zip"))) {
-            BZip2CompressorInputStream bis = new BZip2CompressorInputStream(in);
+            final BZip2CompressorInputStream bis = new BZip2CompressorInputStream(in);
             bis.close();
         }
     }
@@ -88,7 +88,7 @@ public class BZip2CompressorInputStreamTest {
     @Test
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.txt.bz2");
-        byte[] buf = new byte[2];
+        final byte[] buf = new byte[2];
         try (InputStream is = new FileInputStream(input)) {
             final BZip2CompressorInputStream in =
                     new BZip2CompressorInputStream(is);

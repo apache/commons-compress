@@ -116,7 +116,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * exception instead.
      * @since 1.19
      */
-    public TarArchiveInputStream(final InputStream is, boolean lenient) {
+    public TarArchiveInputStream(final InputStream is, final boolean lenient) {
         this(is, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, lenient);
     }
 
@@ -187,7 +187,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @since 1.19
      */
     public TarArchiveInputStream(final InputStream is, final int blockSize, final int recordSize,
-                                 final String encoding, boolean lenient) {
+                                 final String encoding, final boolean lenient) {
         this.inputStream = is;
         this.hasHitEOF = false;
         this.encoding = encoding;
@@ -206,7 +206,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     public void close() throws IOException {
         // Close all the input streams in sparseInputStreams
         if(sparseInputStreams != null) {
-            for (InputStream inputStream : sparseInputStreams) {
+            for (final InputStream inputStream : sparseInputStreams) {
                 inputStream.close();
             }
         }
@@ -417,7 +417,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             } else if (!globalPaxHeaders.isEmpty()) {
                 applyPaxHeadersToCurrentEntry(globalPaxHeaders, globalSparseHeaders);
             }
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             throw new IOException("Error detected parsing the pax header", e);
         }
 
@@ -596,13 +596,13 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @return sparse headers parsed from sparse map
      * @throws IOException
      */
-    private List<TarArchiveStructSparse> parsePAX01SparseHeaders(String sparseMap) throws IOException {
-        List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
-        String[] sparseHeaderStrings = sparseMap.split(",");
+    private List<TarArchiveStructSparse> parsePAX01SparseHeaders(final String sparseMap) throws IOException {
+        final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
+        final String[] sparseHeaderStrings = sparseMap.split(",");
 
         for (int i = 0; i < sparseHeaderStrings.length;i += 2) {
-            long sparseOffset = Long.parseLong(sparseHeaderStrings[i]);
-            long sparseNumbytes = Long.parseLong(sparseHeaderStrings[i + 1]);
+            final long sparseOffset = Long.parseLong(sparseHeaderStrings[i]);
+            final long sparseNumbytes = Long.parseLong(sparseHeaderStrings[i + 1]);
             sparseHeaders.add(new TarArchiveStructSparse(sparseOffset, sparseNumbytes));
         }
 
@@ -620,7 +620,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      */
     private List<TarArchiveStructSparse> parsePAX1XSparseHeaders() throws IOException {
         // for 1.X PAX Headers
-        List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
+        final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
         long bytesRead = 0;
 
         long[] readResult = readLineOfNumberForPax1X(inputStream);
@@ -628,17 +628,17 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         bytesRead += readResult[1];
         while (sparseHeadersCount-- > 0) {
             readResult = readLineOfNumberForPax1X(inputStream);
-            long sparseOffset = readResult[0];
+            final long sparseOffset = readResult[0];
             bytesRead += readResult[1];
 
             readResult = readLineOfNumberForPax1X(inputStream);
-            long sparseNumbytes = readResult[0];
+            final long sparseNumbytes = readResult[0];
             bytesRead += readResult[1];
             sparseHeaders.add(new TarArchiveStructSparse(sparseOffset, sparseNumbytes));
         }
 
         // skip the rest of this record data
-        long bytesToSkip = recordSize - bytesRead % recordSize;
+        final long bytesToSkip = recordSize - bytesRead % recordSize;
         IOUtils.skip(inputStream, bytesToSkip);
         return sparseHeaders;
     }
@@ -651,7 +651,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @return the decimal number delimited by '\n', and the bytes read from input stream
      * @throws IOException
      */
-    private long[] readLineOfNumberForPax1X(InputStream inputStream) throws IOException {
+    private long[] readLineOfNumberForPax1X(final InputStream inputStream) throws IOException {
         int number;
         long result = 0;
         long bytesRead = 0;
@@ -690,7 +690,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @return map of PAX headers values found inside of the current (local or global) PAX headers tar entry.
      * @throws IOException
      */
-    Map<String, String> parsePaxHeaders(final InputStream inputStream, List<TarArchiveStructSparse> sparseHeaders)
+    Map<String, String> parsePaxHeaders(final InputStream inputStream, final List<TarArchiveStructSparse> sparseHeaders)
         throws IOException {
         final Map<String, String> headers = new HashMap<>(globalPaxHeaders);
         Long offset = null;
@@ -921,7 +921,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @return The number of bytes read, or -1 at EOF.
      * @throws IOException on error
      */
-    private int readSparse(final byte[] buf, final int offset, int numToRead) throws IOException {
+    private int readSparse(final byte[] buf, final int offset, final int numToRead) throws IOException {
         // if there are no actual input streams, just read from the original input stream
         if (sparseInputStreams == null || sparseInputStreams.size() == 0) {
             return inputStream.read(buf, offset, numToRead);
@@ -931,8 +931,8 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             return -1;
         }
 
-        InputStream currentInputStream = sparseInputStreams.get(currentSparseInputStreamIndex);
-        int readLen = currentInputStream.read(buf, offset, numToRead);
+        final InputStream currentInputStream = sparseInputStreams.get(currentSparseInputStreamIndex);
+        final int readLen = currentInputStream.read(buf, offset, numToRead);
 
         // if the current input stream is the last input stream,
         // just return the number of bytes read from current input stream
@@ -950,7 +950,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         // and recursively call read
         if (readLen < numToRead) {
             currentSparseInputStreamIndex++;
-            int readLenOfNext = readSparse(buf, offset + readLen, numToRead - readLen);
+            final int readLenOfNext = readSparse(buf, offset + readLen, numToRead - readLen);
             if (readLenOfNext == -1) {
                 return readLen;
             }
@@ -1071,8 +1071,8 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             final Comparator<TarArchiveStructSparse> sparseHeaderComparator = new Comparator<TarArchiveStructSparse>() {
                 @Override
                 public int compare(final TarArchiveStructSparse p, final TarArchiveStructSparse q) {
-                    Long pOffset = p.getOffset();
-                    Long qOffset = q.getOffset();
+                    final Long pOffset = p.getOffset();
+                    final Long qOffset = q.getOffset();
                     return pOffset.compareTo(qOffset);
                 }
             };
@@ -1083,7 +1083,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             // Stream doesn't need to be closed at all as it doesn't use any resources
             final InputStream zeroInputStream = new TarArchiveSparseZeroInputStream(); //NOSONAR
             long offset = 0;
-            for (TarArchiveStructSparse sparseHeader : sparseHeaders) {
+            for (final TarArchiveStructSparse sparseHeader : sparseHeaders) {
                 if (sparseHeader.getOffset() == 0 && sparseHeader.getNumbytes() == 0) {
                     break;
                 }

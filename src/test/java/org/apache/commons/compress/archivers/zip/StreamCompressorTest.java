@@ -62,7 +62,7 @@ public class StreamCompressorTest {
 
     @Test
     public void testCreateDataOutputCompressor() throws IOException {
-        DataOutput dataOutputStream = new DataOutputStream(new ByteArrayOutputStream());
+        final DataOutput dataOutputStream = new DataOutputStream(new ByteArrayOutputStream());
         try (StreamCompressor streamCompressor = StreamCompressor
             .create(dataOutputStream, new Deflater(9))) {
             assertNotNull(streamCompressor);

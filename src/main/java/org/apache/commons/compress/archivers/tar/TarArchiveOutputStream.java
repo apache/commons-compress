@@ -449,7 +449,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * @throws IOException on error
      */
     @Override
-    public void write(final byte[] wBuf, int wOffset, int numToWrite) throws IOException {
+    public void write(final byte[] wBuf, final int wOffset, final int numToWrite) throws IOException {
         if (!haveUnclosedEntry) {
             throw new IllegalStateException("No current tar entry");
         }
@@ -486,7 +486,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         closeArchiveEntry();
     }
 
-    private byte[] encodeExtendedPaxHeadersContents(Map<String, String> headers)
+    private byte[] encodeExtendedPaxHeadersContents(final Map<String, String> headers)
         throws UnsupportedEncodingException {
         final StringWriter w = new StringWriter();
         for (final Map.Entry<String, String> h : headers.entrySet()) {
@@ -560,7 +560,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
     
     @Override
-    public ArchiveEntry createArchiveEntry(Path inputPath, String entryName, LinkOption... options) throws IOException {
+    public ArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
         if (finished) {
             throw new IOException("Stream has already been finished");
         }

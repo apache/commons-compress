@@ -35,15 +35,15 @@ import java.util.zip.InflaterInputStream;
     private long compressedCount = 0;
     private long uncompressedCount = 0;
 
-    public InflaterInputStreamWithStatistics(InputStream in) {
+    public InflaterInputStreamWithStatistics(final InputStream in) {
         super(in);
     }
 
-    public InflaterInputStreamWithStatistics(InputStream in, Inflater inf) {
+    public InflaterInputStreamWithStatistics(final InputStream in, final Inflater inf) {
         super(in, inf);
     }
 
-    public InflaterInputStreamWithStatistics(InputStream in, Inflater inf, int size) {
+    public InflaterInputStreamWithStatistics(final InputStream in, final Inflater inf, final int size) {
         super(in, inf, size);
     }
 
@@ -63,7 +63,7 @@ import java.util.zip.InflaterInputStream;
     }
 
     @Override
-    public int read(byte[] b, int off, int len) throws IOException {
+    public int read(final byte[] b, final int off, final int len) throws IOException {
         final int bytes = super.read(b, off, len);
         if (bytes > -1) {
             uncompressedCount += bytes;

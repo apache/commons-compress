@@ -213,7 +213,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     private static final String YOU_NEED_XZ_JAVA = youNeed("XZ for Java", "https://tukaani.org/xz/java.html");
     private static final String YOU_NEED_ZSTD_JNI = youNeed("Zstd JNI", "https://github.com/luben/zstd-jni");
 
-    private static String youNeed(String name, String url) {
+    private static String youNeed(final String name, final String url) {
         return " In addition to Apache Commons Compress you need the " + name + " library - see " + url;
     }
 
@@ -478,7 +478,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         try {
             signatureLength = IOUtils.readFully(inputStream, signature);
             inputStream.reset();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new CompressorException("IOException while reading signature.", e);
         }
 

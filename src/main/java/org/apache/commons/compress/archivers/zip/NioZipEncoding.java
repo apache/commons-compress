@@ -51,7 +51,7 @@ class NioZipEncoding implements ZipEncoding, CharsetAccessor {
      * @param charset  The character set to use.
      * @param useReplacement should invalid characters be replaced, or reported.
      */
-    NioZipEncoding(final Charset charset, boolean useReplacement) {
+    NioZipEncoding(final Charset charset, final boolean useReplacement) {
         this.charset = charset;
         this.useReplacement = useReplacement;
     }
@@ -90,7 +90,7 @@ class NioZipEncoding implements ZipEncoding, CharsetAccessor {
                 // write the unmappable characters in utf-16
                 // pseudo-URL encoding style to ByteBuffer.
 
-                int spaceForSurrogate = estimateIncrementalEncodingSize(enc, 6 * res.length());
+                final int spaceForSurrogate = estimateIncrementalEncodingSize(enc, 6 * res.length());
                 if (spaceForSurrogate > out.remaining()) {
                     // if the destination buffer isn't over sized, assume that the presence of one
                     // unmappable character makes it likely that there will be more. Find all the
@@ -99,7 +99,7 @@ class NioZipEncoding implements ZipEncoding, CharsetAccessor {
                     for (int i = cb.position() ; i < cb.limit(); i++) {
                         charCount += !enc.canEncode(cb.get(i)) ? 6 : 1;
                     }
-                    int totalExtraSpace = estimateIncrementalEncodingSize(enc, charCount);
+                    final int totalExtraSpace = estimateIncrementalEncodingSize(enc, charCount);
                     out = ZipEncodingHelper.growBufferBy(out, totalExtraSpace - out.remaining());
                 }
                 if (tmp == null) {
@@ -110,7 +110,7 @@ class NioZipEncoding implements ZipEncoding, CharsetAccessor {
                 }
 
             } else if (res.isOverflow()) {
-                int increment = estimateIncrementalEncodingSize(enc, cb.remaining());
+                final int increment = estimateIncrementalEncodingSize(enc, cb.remaining());
                 out = ZipEncodingHelper.growBufferBy(out, increment);
 
             } else if (res.isUnderflow() || res.isError()) {
@@ -136,19 +136,19 @@ class NioZipEncoding implements ZipEncoding, CharsetAccessor {
             .decode(ByteBuffer.wrap(data)).toString();
     }
 
-    private static ByteBuffer encodeFully(CharsetEncoder enc, CharBuffer cb, ByteBuffer out) {
+    private static ByteBuffer encodeFully(final CharsetEncoder enc, final CharBuffer cb, final ByteBuffer out) {
         ByteBuffer o = out;
         while (cb.hasRemaining()) {
-            CoderResult result = enc.encode(cb, o, false);
+            final CoderResult result = enc.encode(cb, o, false);
             if (result.isOverflow()) {
-                int increment = estimateIncrementalEncodingSize(enc, cb.remaining());
+                final int increment = estimateIncrementalEncodingSize(enc, cb.remaining());
                 o = ZipEncodingHelper.growBufferBy(o, increment);
             }
         }
         return o;
     }
 
-    private static CharBuffer encodeSurrogate(CharBuffer cb, char c) {
+    private static CharBuffer encodeSurrogate(final CharBuffer cb, final char c) {
         cb.position(0).limit(6);
         cb.put('%');
         cb.put('U');
@@ -199,9 +199,9 @@ class NioZipEncoding implements ZipEncoding, CharsetAccessor {
      * @param charChount number of characters in string
      * @return estimated size in bytes.
      */
-    private static int estimateInitialBufferSize(CharsetEncoder enc, int charChount) {
-        float first = enc.maxBytesPerChar();
-        float rest = (charChount - 1) * enc.averageBytesPerChar();
+    private static int estimateInitialBufferSize(final CharsetEncoder enc, final int charChount) {
+        final float first = enc.maxBytesPerChar();
+        final float rest = (charChount - 1) * enc.averageBytesPerChar();
         return (int) Math.ceil(first + rest);
     }
 
@@ -212,7 +212,7 @@ class NioZipEncoding implements ZipEncoding, CharsetAccessor {
      * @param charCount number of characters remaining
      * @return estimated size in bytes.
      */
-    private static int estimateIncrementalEncodingSize(CharsetEncoder enc, int charCount) {
+    private static int estimateIncrementalEncodingSize(final CharsetEncoder enc, final int charCount) {
         return (int) Math.ceil(charCount * enc.averageBytesPerChar());
     }
 

@@ -49,13 +49,13 @@ public final class BlockLZ4CompressorRoundtripTest extends AbstractTestCase {
     private final String config;
     private final Parameters params;
 
-    public BlockLZ4CompressorRoundtripTest(String config, Parameters params) {
+    public BlockLZ4CompressorRoundtripTest(final String config, final Parameters params) {
         this.config = config;
         this.params = params;
     }
 
-    private void roundTripTest(String testFile) throws IOException {
-        File input = getFile(testFile);
+    private void roundTripTest(final String testFile) throws IOException {
+        final File input = getFile(testFile);
         long start = System.currentTimeMillis();
         final File outputSz = new File(dir, input.getName() + ".block.lz4");
         try (FileInputStream is = new FileInputStream(input);
@@ -69,8 +69,8 @@ public final class BlockLZ4CompressorRoundtripTest extends AbstractTestCase {
         start = System.currentTimeMillis();
         try (FileInputStream is = new FileInputStream(input);
              BlockLZ4CompressorInputStream sis = new BlockLZ4CompressorInputStream(new FileInputStream(outputSz))) {
-            byte[] expected = IOUtils.toByteArray(is);
-            byte[] actual = IOUtils.toByteArray(sis);
+            final byte[] expected = IOUtils.toByteArray(is);
+            final byte[] actual = IOUtils.toByteArray(sis);
             Assert.assertArrayEquals(expected, actual);
         }
         System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");

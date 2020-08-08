@@ -94,7 +94,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
     public ArArchiveEntry getNextArEntry() throws IOException {
         if (currentEntry != null) {
             final long entryEnd = entryOffset + currentEntry.getLength();
-            long skipped = IOUtils.skip(input, entryEnd - offset);
+            final long skipped = IOUtils.skip(input, entryEnd - offset);
             trackReadBytes(skipped);
             currentEntry = null;
         }
@@ -201,23 +201,23 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         throw new IOException("Failed to read entry: " + offset);
     }
 
-    private long asLong(final byte[] byteArray, int offset, int len) {
+    private long asLong(final byte[] byteArray, final int offset, final int len) {
         return Long.parseLong(ArchiveUtils.toAsciiString(byteArray, offset, len).trim());
     }
 
-    private int asInt(final byte[] byteArray, int offset, int len) {
+    private int asInt(final byte[] byteArray, final int offset, final int len) {
         return asInt(byteArray, offset, len, 10, false);
     }
 
-    private int asInt(final byte[] byteArray, int offset, int len, final boolean treatBlankAsZero) {
+    private int asInt(final byte[] byteArray, final int offset, final int len, final boolean treatBlankAsZero) {
         return asInt(byteArray, offset, len, 10, treatBlankAsZero);
     }
 
-    private int asInt(final byte[] byteArray, int offset, int len, final int base) {
+    private int asInt(final byte[] byteArray, final int offset, final int len, final int base) {
         return asInt(byteArray, offset, len, base, false);
     }
 
-    private int asInt(final byte[] byteArray, int offset, int len, final int base, final boolean treatBlankAsZero) {
+    private int asInt(final byte[] byteArray, final int offset, final int len, final int base, final boolean treatBlankAsZero) {
         final String string = ArchiveUtils.toAsciiString(byteArray, offset, len).trim();
         if (string.length() == 0 && treatBlankAsZero) {
             return 0;

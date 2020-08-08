@@ -49,7 +49,7 @@ public class SparseFilesTest extends AbstractTestCase {
             assertFalse(ae.isPaxGNUSparse());
             assertFalse(tin.canReadEntryData(ae));
 
-            List<TarArchiveStructSparse> sparseHeaders = ae.getSparseHeaders();
+            final List<TarArchiveStructSparse> sparseHeaders = ae.getSparseHeaders();
             assertEquals(3, sparseHeaders.size());
 
             assertEquals(0, sparseHeaders.get(0).getOffset());
@@ -153,7 +153,7 @@ public class SparseFilesTest extends AbstractTestCase {
             assertArrayEquals(IOUtils.toByteArray(tin),
                 IOUtils.toByteArray(sparseFileInputStream));
 
-            List<TarArchiveStructSparse> sparseHeaders = ae.getSparseHeaders();
+            final List<TarArchiveStructSparse> sparseHeaders = ae.getSparseHeaders();
             assertEquals(7, sparseHeaders.size());
 
             assertEquals(0, sparseHeaders.get(0).getOffset());
@@ -218,7 +218,7 @@ public class SparseFilesTest extends AbstractTestCase {
         assertFalse(ae.isOldGNUSparse());
         assertFalse(tin.canReadEntryData(ae));
 
-        List<TarArchiveStructSparse> sparseHeaders = ae.getSparseHeaders();
+        final List<TarArchiveStructSparse> sparseHeaders = ae.getSparseHeaders();
         assertEquals(3, sparseHeaders.size());
 
         assertEquals(0, sparseHeaders.get(0).getOffset());
@@ -231,14 +231,14 @@ public class SparseFilesTest extends AbstractTestCase {
         assertEquals(0, sparseHeaders.get(2).getNumbytes());
     }
 
-    private InputStream extractTarAndGetInputStream(File tarFile, String sparseFileName) throws IOException, InterruptedException {
-        ProcessBuilder pb = new ProcessBuilder("tar", "-xf", tarFile.getPath(), "-C", resultDir.getPath());
+    private InputStream extractTarAndGetInputStream(final File tarFile, final String sparseFileName) throws IOException, InterruptedException {
+        final ProcessBuilder pb = new ProcessBuilder("tar", "-xf", tarFile.getPath(), "-C", resultDir.getPath());
         pb.redirectErrorStream(true);
-        Process process = pb.start();
+        final Process process = pb.start();
         // wait until the extract finishes
         assertEquals(new String(IOUtils.toByteArray(process.getInputStream())), 0, process.waitFor());
 
-        for (File file : resultDir.listFiles()) {
+        for (final File file : resultDir.listFiles()) {
             if (file.getName().equals(sparseFileName)) {
                 return new FileInputStream(file);
             }

@@ -37,13 +37,13 @@ public class FileNameUtils {
      * @return the extension of filename
      * @param filename the name of the file to obtain the extension of.
      */
-    public static String getExtension(String filename) {
+    public static String getExtension(final String filename) {
         if (filename == null) {
             return null;
         }
 
-        String name = new File(filename).getName();
-        int extensionPosition = name.lastIndexOf('.');
+        final String name = new File(filename).getName();
+        final int extensionPosition = name.lastIndexOf('.');
         if (extensionPosition < 0) {
             return "";
         }
@@ -61,14 +61,14 @@ public class FileNameUtils {
      * @return the basename of filename
      * @param filename the name of the file to obtain the basename of.
      */
-    public static String getBaseName(String filename) {
+    public static String getBaseName(final String filename) {
         if (filename == null) {
             return null;
         }
 
-        String name = new File(filename).getName();
+        final String name = new File(filename).getName();
 
-        int extensionPosition = name.lastIndexOf('.');
+        final int extensionPosition = name.lastIndexOf('.');
         if (extensionPosition < 0) {
             return name;
         }

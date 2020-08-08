@@ -148,7 +148,7 @@ public final class ZipTestCase extends AbstractTestCase {
 
                 ZipArchiveEntry entry;
                 while ((entry = (ZipArchiveEntry) inputStream.getNextEntry()) != null) {
-                    byte[] result = new byte[(int) entry.getSize()];
+                    final byte[] result = new byte[(int) entry.getSize()];
                     IOUtils.readFully(inputStream, result);
                     results.add(result);
                 }
@@ -258,7 +258,7 @@ public final class ZipTestCase extends AbstractTestCase {
                     while ((nestedEntry = (ZipArchiveEntry) nestedIn.getNextEntry()) != null) {
                         results.add(nestedEntry.getName());
                     }
-                } catch (ZipException ex) {
+                } catch (final ZipException ex) {
                     // expected since you cannot create a final ArchiveInputStream from test3.xml
                     expectedExceptions.add(ex);
                 }
@@ -505,8 +505,8 @@ public final class ZipTestCase extends AbstractTestCase {
         ZipArchiveOutputStream zos = null;
         ZipFile zf = null;
         FileInputStream fis = null;
-        File tmpDir = tmp[0];
-        File tmpFile = tmp[1];
+        final File tmpDir = tmp[0];
+        final File tmpFile = tmp[1];
         try {
             archive = File.createTempFile("test.", ".zip", tmpDir);
             archive.deleteOnExit();
@@ -553,9 +553,9 @@ public final class ZipTestCase extends AbstractTestCase {
         ZipArchiveOutputStream zos = null;
         ZipFile zf = null;
         FileInputStream fis = null;
-        File tmpDir = tmp[0];
-        File tmpFile = tmp[1];
-        Path tmpFilePath = tmpFile.toPath();
+        final File tmpDir = tmp[0];
+        final File tmpFile = tmp[1];
+        final Path tmpFilePath = tmpFile.toPath();
         try {
             archiveFile = File.createTempFile("test.", ".zip", tmpDir);
             archivePath = archiveFile.toPath();
@@ -644,7 +644,7 @@ public final class ZipTestCase extends AbstractTestCase {
 
     @Test
     public void inputStreamStatisticsOfZipBombExcel() throws IOException, ArchiveException {
-        Map<String, List<Long>> expected = new HashMap<String, List<Long>>() {{
+        final Map<String, List<Long>> expected = new HashMap<String, List<Long>>() {{
             put("[Content_Types].xml", Arrays.asList(8390036L, 8600L));
             put("xl/worksheets/sheet1.xml", Arrays.asList(1348L, 508L));
         }};
@@ -653,7 +653,7 @@ public final class ZipTestCase extends AbstractTestCase {
 
     @Test
     public void inputStreamStatisticsForImplodedEntry() throws IOException, ArchiveException {
-        Map<String, List<Long>> expected = new HashMap<String, List<Long>>() {{
+        final Map<String, List<Long>> expected = new HashMap<String, List<Long>>() {{
             put("LICENSE.TXT", Arrays.asList(11560L, 4131L));
         }};
         testInputStreamStatistics("imploding-8Kdict-3trees.zip", expected);
@@ -661,7 +661,7 @@ public final class ZipTestCase extends AbstractTestCase {
 
     @Test
     public void inputStreamStatisticsForShrunkEntry() throws IOException, ArchiveException {
-        Map<String, List<Long>> expected = new HashMap<String, List<Long>>() {{
+        final Map<String, List<Long>> expected = new HashMap<String, List<Long>>() {{
             put("TEST1.XML", Arrays.asList(76L, 66L));
             put("TEST2.XML", Arrays.asList(81L, 76L));
         }};
@@ -670,7 +670,7 @@ public final class ZipTestCase extends AbstractTestCase {
 
     @Test
     public void inputStreamStatisticsForStoredEntry() throws IOException, ArchiveException {
-        Map<String, List<Long>> expected = new HashMap<String, List<Long>>() {{
+        final Map<String, List<Long>> expected = new HashMap<String, List<Long>>() {{
             put("test.txt", Arrays.asList(5L, 5L));
         }};
         testInputStreamStatistics("COMPRESS-264.zip", expected);
@@ -678,7 +678,7 @@ public final class ZipTestCase extends AbstractTestCase {
 
     @Test
     public void inputStreamStatisticsForBzip2Entry() throws IOException, ArchiveException {
-        Map<String, List<Long>> expected = new HashMap<String, List<Long>>() {{
+        final Map<String, List<Long>> expected = new HashMap<String, List<Long>>() {{
             put("lots-of-as", Arrays.asList(42L, 39L));
         }};
         testInputStreamStatistics("bzip2-zip.zip", expected);
@@ -686,7 +686,7 @@ public final class ZipTestCase extends AbstractTestCase {
 
     @Test
     public void inputStreamStatisticsForDeflate64Entry() throws IOException, ArchiveException {
-        Map<String, List<Long>> expected = new HashMap<String, List<Long>>() {{
+        final Map<String, List<Long>> expected = new HashMap<String, List<Long>>() {{
             put("input2", Arrays.asList(3072L, 2111L));
         }};
         testInputStreamStatistics("COMPRESS-380/COMPRESS-380.zip", expected);
@@ -704,14 +704,14 @@ public final class ZipTestCase extends AbstractTestCase {
 
     @Test(expected = IOException.class)
     public void buildSplitZipWithSegmentAlreadyExistThrowsException() throws IOException {
-        File directoryToZip = getFilesToZip();
-        File outputZipFile = new File(dir, "splitZip.zip");
-        long splitSize = 100 * 1024L; /* 100 KB */
+        final File directoryToZip = getFilesToZip();
+        final File outputZipFile = new File(dir, "splitZip.zip");
+        final long splitSize = 100 * 1024L; /* 100 KB */
         try (final ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile,
             splitSize)) {
 
             // create a file that has the same name of one of the created split segments
-            File sameNameFile = new File(dir, "splitZip.z01");
+            final File sameNameFile = new File(dir, "splitZip.z01");
             sameNameFile.createNewFile();
 
             addFilesToZip(zipArchiveOutputStream, directoryToZip);
@@ -720,24 +720,24 @@ public final class ZipTestCase extends AbstractTestCase {
 
     @Test
     public void buildSplitZipTest() throws IOException {
-        File directoryToZip = getFilesToZip();
+        final File directoryToZip = getFilesToZip();
         createTestSplitZipSegments();
 
-        File lastFile = new File(dir, "splitZip.zip");
+        final File lastFile = new File(dir, "splitZip.zip");
         try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
             InputStream inputStream = Channels.newInputStream(channel);
             ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream,
                 StandardCharsets.UTF_8.toString(), true, false, true)) {
 
             ArchiveEntry entry;
-            int filesNum = countNonDirectories(directoryToZip);
+            final int filesNum = countNonDirectories(directoryToZip);
             int filesCount = 0;
             while ((entry = splitInputStream.getNextEntry()) != null) {
                 if (entry.isDirectory()) {
                     continue;
                 }
                 // compare all files one by one
-                File fileToCompare = new File(entry.getName());
+                final File fileToCompare = new File(entry.getName());
                 try (InputStream inputStreamToCompare = new FileInputStream(fileToCompare)) {
                     assertArrayEquals(IOUtils.toByteArray(splitInputStream),
                         IOUtils.toByteArray(inputStreamToCompare));
@@ -749,7 +749,7 @@ public final class ZipTestCase extends AbstractTestCase {
         }
     }
 
-    private void testInputStreamStatistics(String fileName, Map<String, List<Long>> expectedStatistics)
+    private void testInputStreamStatistics(final String fileName, final Map<String, List<Long>> expectedStatistics)
         throws IOException, ArchiveException {
         final File input = getFile(fileName);
 
@@ -775,12 +775,12 @@ public final class ZipTestCase extends AbstractTestCase {
         }
 
         // compare statistics of stream / file access
-        for (Map.Entry<String,List<List<Long>>> me : actualStatistics.entrySet()) {
+        for (final Map.Entry<String,List<List<Long>>> me : actualStatistics.entrySet()) {
             assertEquals("Mismatch of stats for: " + me.getKey(),
                          me.getValue().get(0), me.getValue().get(1));
         }
 
-        for (Map.Entry<String, List<Long>> me : expectedStatistics.entrySet()) {
+        for (final Map.Entry<String, List<Long>> me : expectedStatistics.entrySet()) {
             assertEquals("Mismatch of stats with expected value for: " + me.getKey(),
                 me.getValue(), actualStatistics.get(me.getKey()).get(0));
         }
@@ -805,9 +805,9 @@ public final class ZipTestCase extends AbstractTestCase {
     }
 
     private File getFilesToZip() throws IOException {
-        File originalZipFile = getFile("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip.zip");
+        final File originalZipFile = getFile("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip.zip");
         try (ZipFile zipFile = new ZipFile(originalZipFile)) {
-            Enumeration<ZipArchiveEntry> zipEntries = zipFile.getEntries();
+            final Enumeration<ZipArchiveEntry> zipEntries = zipFile.getEntries();
             ZipArchiveEntry zipEntry;
             File outputFile;
             byte[] buffer;
@@ -838,22 +838,22 @@ public final class ZipTestCase extends AbstractTestCase {
     }
 
     private void createTestSplitZipSegments() throws IOException {
-        File directoryToZip = getFilesToZip();
-        File outputZipFile = new File(dir, "splitZip.zip");
-        long splitSize = 100 * 1024L; /* 100 KB */
+        final File directoryToZip = getFilesToZip();
+        final File outputZipFile = new File(dir, "splitZip.zip");
+        final long splitSize = 100 * 1024L; /* 100 KB */
         try (final ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile,
             splitSize)) {
             addFilesToZip(zipArchiveOutputStream, directoryToZip);
         }
     }
 
-    private void addFilesToZip(ZipArchiveOutputStream zipArchiveOutputStream, File fileToAdd) throws IOException {
+    private void addFilesToZip(final ZipArchiveOutputStream zipArchiveOutputStream, final File fileToAdd) throws IOException {
         if (fileToAdd.isDirectory()) {
-            for (File file : fileToAdd.listFiles()) {
+            for (final File file : fileToAdd.listFiles()) {
                 addFilesToZip(zipArchiveOutputStream, file);
             }
         } else {
-            ZipArchiveEntry zipArchiveEntry = new ZipArchiveEntry(fileToAdd.getPath());
+            final ZipArchiveEntry zipArchiveEntry = new ZipArchiveEntry(fileToAdd.getPath());
             zipArchiveEntry.setMethod(ZipEntry.DEFLATED);
 
             zipArchiveOutputStream.putArchiveEntry(zipArchiveEntry);
@@ -864,13 +864,13 @@ public final class ZipTestCase extends AbstractTestCase {
         }
     }
 
-    private int countNonDirectories(File file) {
+    private int countNonDirectories(final File file) {
         if(!file.isDirectory()) {
             return 1;
         }
 
         int result = 0;
-        for (File fileInDirectory : file.listFiles()) {
+        for (final File fileInDirectory : file.listFiles()) {
             result += countNonDirectories(fileInDirectory);
         }
 

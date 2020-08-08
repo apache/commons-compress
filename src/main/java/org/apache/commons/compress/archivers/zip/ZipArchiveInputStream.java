@@ -261,7 +261,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
             firstEntry = false;
         }
 
-        long currentHeaderOffset = getBytesRead();
+        final long currentHeaderOffset = getBytesRead();
         try {
             if (firstEntry) {
                 // split archives have a special signature before the
@@ -350,10 +350,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
         current.entry.setDataOffset(getBytesRead());
         current.entry.setStreamContiguous(true);
 
-        ZipMethod m = ZipMethod.getMethodByCode(current.entry.getMethod());
+        final ZipMethod m = ZipMethod.getMethodByCode(current.entry.getMethod());
         if (current.entry.getCompressedSize() != ArchiveEntry.SIZE_UNKNOWN) {
             if (ZipUtil.canHandleEntryData(current.entry) && m != ZipMethod.STORED && m != ZipMethod.DEFLATED) {
-                InputStream bis = new BoundedInputStream(in, current.entry.getCompressedSize());
+                final InputStream bis = new BoundedInputStream(in, current.entry.getCompressedSize());
                 switch (m) {
                 case UNSHRINKING:
                     current.in = new UnshrinkingInputStream(bis);
@@ -364,7 +364,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
                             current.entry.getGeneralPurposeBit().getSlidingDictionarySize(),
                             current.entry.getGeneralPurposeBit().getNumberOfShannonFanoTrees(),
                             bis);
-                    } catch (IllegalArgumentException ex) {
+                    } catch (final IllegalArgumentException ex) {
                         throw new IOException("bad IMPLODE data", ex);
                     }
                     break;
@@ -1061,7 +1061,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
         // data so it will be too short.
         if (entriesRead > 0) {
             realSkip((long) entriesRead * CFH_LEN - LFH_LEN);
-            boolean foundEocd = findEocdRecord();
+            final boolean foundEocd = findEocdRecord();
             if (foundEocd) {
                 realSkip((long) ZipFile.MIN_EOCD_SIZE - WORD /* signature */ - SHORT /* comment len */);
                 readFully(shortBuf);
@@ -1176,24 +1176,24 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
      *
      * @see <a href="https://source.android.com/security/apksigning/v2">https://source.android.com/security/apksigning/v2</a>
      */
-    private boolean isApkSigningBlock(byte[] suspectLocalFileHeader) throws IOException {
+    private boolean isApkSigningBlock(final byte[] suspectLocalFileHeader) throws IOException {
         // length of block excluding the size field itself
-        BigInteger len = ZipEightByteInteger.getValue(suspectLocalFileHeader);
+        final BigInteger len = ZipEightByteInteger.getValue(suspectLocalFileHeader);
         // LFH has already been read and all but the first eight bytes contain (part of) the APK signing block,
         // also subtract 16 bytes in order to position us at the magic string
         BigInteger toSkip = len.add(BigInteger.valueOf(DWORD - suspectLocalFileHeader.length
             - (long) APK_SIGNING_BLOCK_MAGIC.length));
-        byte[] magic = new byte[APK_SIGNING_BLOCK_MAGIC.length];
+        final byte[] magic = new byte[APK_SIGNING_BLOCK_MAGIC.length];
 
         try {
             if (toSkip.signum() < 0) {
                 // suspectLocalFileHeader contains the start of suspect magic string
-                int off = suspectLocalFileHeader.length + toSkip.intValue();
+                final int off = suspectLocalFileHeader.length + toSkip.intValue();
                 // length was shorter than magic length
                 if (off < DWORD) {
                     return false;
                 }
-                int bytesInBuffer = Math.abs(toSkip.intValue());
+                final int bytesInBuffer = Math.abs(toSkip.intValue());
                 System.arraycopy(suspectLocalFileHeader, off, magic, 0, Math.min(bytesInBuffer, magic.length));
                 if (bytesInBuffer < magic.length) {
                     readFully(magic, bytesInBuffer);
@@ -1206,7 +1206,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
                 realSkip(toSkip.longValue());
                 readFully(magic);
             }
-        } catch (EOFException ex) { //NOSONAR
+        } catch (final EOFException ex) { //NOSONAR
             // length was invalid
             return false;
         }

@@ -138,7 +138,7 @@ class TapeInputStream extends FilterInputStream {
             if (readOffset == blockSize) {
                 try {
                     readBlock(true);
-                } catch (ShortFileException sfe) { // NOSONAR
+                } catch (final ShortFileException sfe) { // NOSONAR
                     return -1;
                 }
             }
@@ -189,7 +189,7 @@ class TapeInputStream extends FilterInputStream {
             if (readOffset == blockSize) {
                 try {
                     readBlock((len - bytes) < blockSize);
-                } catch (ShortFileException sfe) { // NOSONAR
+                } catch (final ShortFileException sfe) { // NOSONAR
                     return -1;
                 }
             }
@@ -237,7 +237,7 @@ class TapeInputStream extends FilterInputStream {
         if (readOffset == blockSize) {
             try {
                 readBlock(true);
-            } catch (ShortFileException sfe) { // NOSONAR
+            } catch (final ShortFileException sfe) { // NOSONAR
                 return null;
             }
         }

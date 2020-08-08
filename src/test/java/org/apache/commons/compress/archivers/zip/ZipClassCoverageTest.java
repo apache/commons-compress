@@ -32,13 +32,13 @@ public class ZipClassCoverageTest {
 
     @Test
     public void testConstructZip64RequiredException() {
-        Zip64RequiredException e = new Zip64RequiredException("critique of pure");
+        final Zip64RequiredException e = new Zip64RequiredException("critique of pure");
         assertNotNull(e);
     }
     @Test
     public void testMessageException() {
-        ZipArchiveEntry ze = new ZipArchiveEntry("hello");
-        String entryTooBigMessage = Zip64RequiredException.getEntryTooBigMessage(ze);
+        final ZipArchiveEntry ze = new ZipArchiveEntry("hello");
+        final String entryTooBigMessage = Zip64RequiredException.getEntryTooBigMessage(ze);
         assertEquals("hello's size exceeds the limit of 4GByte.",
             entryTooBigMessage);
     }
@@ -46,11 +46,11 @@ public class ZipClassCoverageTest {
     @Test
     public void testConstantConstructor()
         throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        Class<ZipConstants> clazz = ZipConstants.class;
-        Constructor<ZipConstants> constructor = clazz.getDeclaredConstructor();
+        final Class<ZipConstants> clazz = ZipConstants.class;
+        final Constructor<ZipConstants> constructor = clazz.getDeclaredConstructor();
         assertFalse(constructor.isAccessible());
         constructor.setAccessible(true);
-        Object o = constructor.newInstance();
+        final Object o = constructor.newInstance();
         assertThat(o, IsInstanceOf.instanceOf(clazz));
         constructor.setAccessible(false);
 

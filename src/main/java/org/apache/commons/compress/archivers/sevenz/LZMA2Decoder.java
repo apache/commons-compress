@@ -34,7 +34,7 @@ class LZMA2Decoder extends CoderBase {
 
     @Override
     InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
-            final Coder coder, final byte[] password, int maxMemoryLimitInKb) throws IOException {
+            final Coder coder, final byte[] password, final int maxMemoryLimitInKb) throws IOException {
         try {
             final int dictionarySize = getDictionarySize(coder);
             final int memoryUsageInKb = LZMA2InputStream.getMemoryUsage(dictionarySize);

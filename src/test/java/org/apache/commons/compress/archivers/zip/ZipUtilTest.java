@@ -248,14 +248,14 @@ public class ZipUtilTest {
 
     @Test(expected = UnsupportedZipFeatureException.class)
     public void testUnsupportedMethod() throws Exception {
-        ZipArchiveEntry ze = new ZipArchiveEntry();
+        final ZipArchiveEntry ze = new ZipArchiveEntry();
         ze.setMethod(ZipMethod.EXPANDING_LEVEL_1.getCode());
         ZipUtil.checkRequestedFeatures(ze);
     }
 
     @Test(expected = UnsupportedZipFeatureException.class)
     public void testUnknownMethod() throws Exception {
-        ZipArchiveEntry ze = new ZipArchiveEntry();
+        final ZipArchiveEntry ze = new ZipArchiveEntry();
         ze.setMethod(100);
         ZipUtil.checkRequestedFeatures(ze);
     }

@@ -26,11 +26,11 @@ final class CloseableConsumerAdapter implements Closeable {
     private final CloseableConsumer consumer;
     private Closeable closeable;
 
-    CloseableConsumerAdapter(CloseableConsumer consumer) {
+    CloseableConsumerAdapter(final CloseableConsumer consumer) {
         this.consumer = Objects.requireNonNull(consumer, "consumer");
     }
 
-    <C extends Closeable> C track(C closeable) {
+    <C extends Closeable> C track(final C closeable) {
         this.closeable = closeable;
         return closeable;
     }

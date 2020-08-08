@@ -30,12 +30,12 @@ public class CoverageTest {
     }
 
     @Test public void testCLIInstance() {
-        CLI foo = new CLI();
+        final CLI foo = new CLI();
         assertNotNull(foo);
         try {
             CLI.main(new String[]{"/dev/null/not-there"});
             fail("shouldn't be able to list contents of  a file that isn't there");
-        } catch (Exception ignored) {
+        } catch (final Exception ignored) {
 
         }
     }

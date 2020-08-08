@@ -119,7 +119,7 @@ public class BitInputStream implements Closeable {
      * @since 1.16
      */
     public void alignWithByteBoundary() {
-        int toSkip = bitsCachedSize % Byte.SIZE;
+        final int toSkip = bitsCachedSize % Byte.SIZE;
         if (toSkip > 0) {
             readCachedBits(toSkip);
         }
@@ -143,19 +143,19 @@ public class BitInputStream implements Closeable {
         long overflow = 0L;
 
         // bitsCachedSize >= 57 and left-shifting it 8 bits would cause an overflow
-        int bitsToAddCount = count - bitsCachedSize;
+        final int bitsToAddCount = count - bitsCachedSize;
         overflowBits = Byte.SIZE - bitsToAddCount;
         final long nextByte = in.read();
         if (nextByte < 0) {
             return nextByte;
         }
         if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
-            long bitsToAdd = nextByte & MASKS[bitsToAddCount];
+            final long bitsToAdd = nextByte & MASKS[bitsToAddCount];
             bitsCached |= (bitsToAdd << bitsCachedSize);
             overflow = (nextByte >>> bitsToAddCount) & MASKS[overflowBits];
         } else {
             bitsCached <<= bitsToAddCount;
-            long bitsToAdd = (nextByte >>> (overflowBits)) & MASKS[bitsToAddCount];
+            final long bitsToAdd = (nextByte >>> (overflowBits)) & MASKS[bitsToAddCount];
             bitsCached |= bitsToAdd;
             overflow = nextByte & MASKS[overflowBits];
         }
@@ -165,7 +165,7 @@ public class BitInputStream implements Closeable {
         return bitsOut;
     }
 
-    private long readCachedBits(int count) {
+    private long readCachedBits(final int count) {
         final long bitsOut;
         if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
             bitsOut = (bitsCached & MASKS[count]);

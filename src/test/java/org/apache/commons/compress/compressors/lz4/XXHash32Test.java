@@ -39,7 +39,7 @@ public class XXHash32Test {
     private final File file;
     private final String expectedChecksum;
 
-    public XXHash32Test(String fileName, String c) throws IOException {
+    public XXHash32Test(final String fileName, final String c) throws IOException {
         file = AbstractTestCase.getFile(fileName);
         expectedChecksum = c;
     }
@@ -56,9 +56,9 @@ public class XXHash32Test {
 
     @Test
     public void verifyChecksum() throws IOException {
-        XXHash32 h = new XXHash32();
+        final XXHash32 h = new XXHash32();
         try (FileInputStream s = new FileInputStream(file)) {
-            byte[] b = IOUtils.toByteArray(s);
+            final byte[] b = IOUtils.toByteArray(s);
             h.update(b, 0, b.length);
         }
         Assert.assertEquals("checksum for " + file.getName(), expectedChecksum, Long.toHexString(h.getValue()));

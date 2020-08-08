@@ -63,7 +63,7 @@ public class XXHash32 implements Checksum {
      * Creates an XXHash32 instance.
      * @param seed the seed to use
      */
-    public XXHash32(int seed) {
+    public XXHash32(final int seed) {
         this.seed = seed;
         initializeState();
     }
@@ -76,13 +76,13 @@ public class XXHash32 implements Checksum {
     }
 
     @Override
-    public void update(int b) {
+    public void update(final int b) {
         oneByte[0] = (byte) (b & 0xff);
         update(oneByte, 0, 1);
     }
 
     @Override
-    public void update(byte[] b, int off, final int len) {
+    public void update(final byte[] b, int off, final int len) {
         if (len <= 0) {
             return;
         }
@@ -146,7 +146,7 @@ public class XXHash32 implements Checksum {
         return hash & 0xffffffffL;
     }
 
-    private static int getInt(byte[] buffer, int idx) {
+    private static int getInt(final byte[] buffer, final int idx) {
         return (int) (fromLittleEndian(buffer, idx, 4) & 0xffffffffL);
     }
 
@@ -157,7 +157,7 @@ public class XXHash32 implements Checksum {
         state[3] = seed - PRIME1;
     }
 
-    private void process(byte[] b, int offset) {
+    private void process(final byte[] b, final int offset) {
         // local shadows for performance
         int s0 = state[0];
         int s1 = state[1];

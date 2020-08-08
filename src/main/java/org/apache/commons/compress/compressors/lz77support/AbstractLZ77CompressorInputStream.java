@@ -132,7 +132,7 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      * @throws IOException if reading fails
      * @throws IllegalArgumentException if windowSize is not bigger than 0
      */
-    public AbstractLZ77CompressorInputStream(final InputStream is, int windowSize) throws IOException {
+    public AbstractLZ77CompressorInputStream(final InputStream is, final int windowSize) throws IOException {
         this.in = new CountingInputStream(is);
         if (windowSize <= 0) {
             throw new IllegalArgumentException("windowSize must be bigger than 0");
@@ -181,12 +181,12 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      * @param data the data to fill the window with.
      * @throws IllegalStateException if the stream has already started to read data
      */
-    public void prefill(byte[] data) {
+    public void prefill(final byte[] data) {
         if (writeIndex != 0) {
             throw new IllegalStateException("The stream has already been read from, can't prefill anymore");
         }
         // we don't need more data than the big offset could refer to, so cap it
-        int len = Math.min(windowSize, data.length);
+        final int len = Math.min(windowSize, data.length);
         // we need the last data as we are dealing with *back*-references
         System.arraycopy(data, data.length - len, buf, 0, len);
         writeIndex += len;
@@ -207,7 +207,7 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      * @param length the length of the block
      * @throws IllegalArgumentException if length is negative
      */
-    protected final void startLiteral(long length) {
+    protected final void startLiteral(final long length) {
         if (length < 0) {
             throw new IllegalArgumentException("length must not be negative");
         }
@@ -245,7 +245,7 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
         return readFromBuffer(b, off, len);
     }
 
-    private void tryToReadLiteral(int bytesToRead) throws IOException {
+    private void tryToReadLiteral(final int bytesToRead) throws IOException {
         // min of "what is still inside the literal", "what does the user want" and "how much can fit into the buffer"
         final int reallyTryToRead = Math.min((int) Math.min(bytesToRead, bytesRemaining),
                                              buf.length - writeIndex);
@@ -287,7 +287,7 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      * bigger than the number of bytes available for back-references
      * or if length is negative
      */
-    protected final void startBackReference(int offset, long length) {
+    protected final void startBackReference(final int offset, final long length) {
         if (offset <= 0 || offset > writeIndex) {
             throw new IllegalArgumentException("offset must be bigger than 0 but not bigger than the number"
                 + " of bytes available for back-references");
@@ -319,10 +319,10 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
         return readFromBuffer(b, off, len);
     }
 
-    private void tryToCopy(int bytesToCopy) {
+    private void tryToCopy(final int bytesToCopy) {
         // this will fit into the buffer without sliding and not
         // require more than is available inside the back-reference
-        int copy = Math.min((int) Math.min(bytesToCopy, bytesRemaining),
+        final int copy = Math.min((int) Math.min(bytesToCopy, bytesRemaining),
                             buf.length - writeIndex);
         if (copy == 0) {
             // NOP

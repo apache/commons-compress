@@ -63,7 +63,7 @@ public class SevenZNativeHeapTest extends AbstractTestCase {
 
         private final Inflater inflater;
 
-        public DelegatingInflater(Inflater inflater) {
+        public DelegatingInflater(final Inflater inflater) {
             this.inflater = inflater;
         }
         AtomicBoolean isEnded = new AtomicBoolean();
@@ -75,22 +75,22 @@ public class SevenZNativeHeapTest extends AbstractTestCase {
         }
 
         @Override
-        public void setInput(byte[] b, int off, int len) {
+        public void setInput(final byte[] b, final int off, final int len) {
             inflater.setInput(b, off, len);
         }
 
         @Override
-        public void setInput(byte[] b) {
+        public void setInput(final byte[] b) {
             inflater.setInput(b);
         }
 
         @Override
-        public void setDictionary(byte[] b, int off, int len) {
+        public void setDictionary(final byte[] b, final int off, final int len) {
             inflater.setDictionary(b, off, len);
         }
 
         @Override
-        public void setDictionary(byte[] b) {
+        public void setDictionary(final byte[] b) {
             inflater.setDictionary(b);
         }
 
@@ -115,12 +115,12 @@ public class SevenZNativeHeapTest extends AbstractTestCase {
         }
 
         @Override
-        public int inflate(byte[] b, int off, int len) throws DataFormatException {
+        public int inflate(final byte[] b, final int off, final int len) throws DataFormatException {
             return inflater.inflate(b, off, len);
         }
 
         @Override
-        public int inflate(byte[] b) throws DataFormatException {
+        public int inflate(final byte[] b) throws DataFormatException {
             return inflater.inflate(b);
         }
 
@@ -160,7 +160,7 @@ public class SevenZNativeHeapTest extends AbstractTestCase {
 
         private final Deflater deflater;
 
-        public DelegatingDeflater(Deflater deflater) {
+        public DelegatingDeflater(final Deflater deflater) {
             this.deflater = deflater;
         }
 
@@ -173,32 +173,32 @@ public class SevenZNativeHeapTest extends AbstractTestCase {
         }
 
         @Override
-        public void setInput(byte[] b, int off, int len) {
+        public void setInput(final byte[] b, final int off, final int len) {
             deflater.setInput(b, off, len);
         }
 
         @Override
-        public void setInput(byte[] b) {
+        public void setInput(final byte[] b) {
             deflater.setInput(b);
         }
 
         @Override
-        public void setDictionary(byte[] b, int off, int len) {
+        public void setDictionary(final byte[] b, final int off, final int len) {
             deflater.setDictionary(b, off, len);
         }
 
         @Override
-        public void setDictionary(byte[] b) {
+        public void setDictionary(final byte[] b) {
             deflater.setDictionary(b);
         }
 
         @Override
-        public void setStrategy(int strategy) {
+        public void setStrategy(final int strategy) {
             deflater.setStrategy(strategy);
         }
 
         @Override
-        public void setLevel(int level) {
+        public void setLevel(final int level) {
             deflater.setLevel(level);
         }
 
@@ -218,17 +218,17 @@ public class SevenZNativeHeapTest extends AbstractTestCase {
         }
 
         @Override
-        public int deflate(byte[] b, int off, int len) {
+        public int deflate(final byte[] b, final int off, final int len) {
             return deflater.deflate(b, off, len);
         }
 
         @Override
-        public int deflate(byte[] b) {
+        public int deflate(final byte[] b) {
             return deflater.deflate(b);
         }
 
         @Override
-        public int deflate(byte[] b, int off, int len, int flush) {
+        public int deflate(final byte[] b, final int off, final int len, final int flush) {
             return deflater.deflate(b, off, len, flush);
         }
 

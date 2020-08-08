@@ -60,7 +60,7 @@ public class LongSymLinkTest extends AbstractTestCase {
     static {
         try {
             ARCDIR = new File(CLASSLOADER.getResource("longsymlink").toURI());
-        } catch (URISyntaxException e) {
+        } catch (final URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }

@@ -39,14 +39,14 @@ public class ZstdRoundtripTest extends AbstractTestCase {
     public void directRoundtrip() throws Exception {
         roundtrip(new OutputStreamCreator() {
             @Override
-            public ZstdCompressorOutputStream wrap(FileOutputStream os) throws IOException {
+            public ZstdCompressorOutputStream wrap(final FileOutputStream os) throws IOException {
                 return new ZstdCompressorOutputStream(os);
             }
         });
     }
 
-    private void roundtrip(OutputStreamCreator oc) throws IOException {
-        File input = getFile("bla.tar");
+    private void roundtrip(final OutputStreamCreator oc) throws IOException {
+        final File input = getFile("bla.tar");
         long start = System.currentTimeMillis();
         final File output = new File(dir, input.getName() + ".zstd");
         try (FileInputStream is = new FileInputStream(input);
@@ -59,8 +59,8 @@ public class ZstdRoundtripTest extends AbstractTestCase {
         start = System.currentTimeMillis();
         try (FileInputStream is = new FileInputStream(input);
              ZstdCompressorInputStream zis = new ZstdCompressorInputStream(new FileInputStream(output))) {
-            byte[] expected = IOUtils.toByteArray(is);
-            byte[] actual = IOUtils.toByteArray(zis);
+            final byte[] expected = IOUtils.toByteArray(is);
+            final byte[] actual = IOUtils.toByteArray(zis);
             Assert.assertArrayEquals(expected, actual);
         }
         System.err.println(output.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
@@ -68,7 +68,7 @@ public class ZstdRoundtripTest extends AbstractTestCase {
 
     @Test
     public void factoryRoundtrip() throws Exception {
-        File input = getFile("bla.tar");
+        final File input = getFile("bla.tar");
         long start = System.currentTimeMillis();
         final File output = new File(dir, input.getName() + ".zstd");
         try (FileInputStream is = new FileInputStream(input);
@@ -80,8 +80,8 @@ public class ZstdRoundtripTest extends AbstractTestCase {
         try (FileInputStream is = new FileInputStream(input);
              CompressorInputStream zis = new CompressorStreamFactory()
              .createCompressorInputStream("zstd", new FileInputStream(output))) {
-            byte[] expected = IOUtils.toByteArray(is);
-            byte[] actual = IOUtils.toByteArray(zis);
+            final byte[] expected = IOUtils.toByteArray(is);
+            final byte[] actual = IOUtils.toByteArray(zis);
             Assert.assertArrayEquals(expected, actual);
         }
     }
@@ -90,7 +90,7 @@ public class ZstdRoundtripTest extends AbstractTestCase {
     public void roundtripWithCustomLevel() throws Exception {
         roundtrip(new OutputStreamCreator() {
             @Override
-            public ZstdCompressorOutputStream wrap(FileOutputStream os) throws IOException {
+            public ZstdCompressorOutputStream wrap(final FileOutputStream os) throws IOException {
                 return new ZstdCompressorOutputStream(os, 1);
             }
         });
@@ -100,7 +100,7 @@ public class ZstdRoundtripTest extends AbstractTestCase {
     public void roundtripWithCloseFrameOnFlush() throws Exception {
         roundtrip(new OutputStreamCreator() {
             @Override
-            public ZstdCompressorOutputStream wrap(FileOutputStream os) throws IOException {
+            public ZstdCompressorOutputStream wrap(final FileOutputStream os) throws IOException {
                 return new ZstdCompressorOutputStream(os, 3, true);
             }
         });
@@ -110,7 +110,7 @@ public class ZstdRoundtripTest extends AbstractTestCase {
     public void roundtripWithChecksum() throws Exception {
         roundtrip(new OutputStreamCreator() {
             @Override
-            public ZstdCompressorOutputStream wrap(FileOutputStream os) throws IOException {
+            public ZstdCompressorOutputStream wrap(final FileOutputStream os) throws IOException {
                 return new ZstdCompressorOutputStream(os, 3, false, true);
             }
         });

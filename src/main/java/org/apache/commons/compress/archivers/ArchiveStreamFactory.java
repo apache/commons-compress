@@ -168,9 +168,9 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         return Lists.newArrayList(serviceLoaderIterator());
     }
 
-    static void putAll(Set<String> names, ArchiveStreamProvider provider,
-            TreeMap<String, ArchiveStreamProvider> map) {
-        for (String name : names) {
+    static void putAll(final Set<String> names, final ArchiveStreamProvider provider,
+            final TreeMap<String, ArchiveStreamProvider> map) {
+        for (final String name : names) {
             map.put(toKey(name), provider);
         }
     }
@@ -214,9 +214,9 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         return AccessController.doPrivileged(new PrivilegedAction<SortedMap<String, ArchiveStreamProvider>>() {
             @Override
             public SortedMap<String, ArchiveStreamProvider> run() {
-                TreeMap<String, ArchiveStreamProvider> map = new TreeMap<>();
+                final TreeMap<String, ArchiveStreamProvider> map = new TreeMap<>();
                 putAll(DEFAULT.getInputStreamArchiveNames(), DEFAULT, map);
-                for (ArchiveStreamProvider provider : findArchiveStreamProviders()) {
+                for (final ArchiveStreamProvider provider : findArchiveStreamProviders()) {
                     putAll(provider.getInputStreamArchiveNames(), provider, map);
                 }
                 return map;
@@ -255,9 +255,9 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         return AccessController.doPrivileged(new PrivilegedAction<SortedMap<String, ArchiveStreamProvider>>() {
             @Override
             public SortedMap<String, ArchiveStreamProvider> run() {
-                TreeMap<String, ArchiveStreamProvider> map = new TreeMap<>();
+                final TreeMap<String, ArchiveStreamProvider> map = new TreeMap<>();
                 putAll(DEFAULT.getOutputStreamArchiveNames(), DEFAULT, map);
-                for (ArchiveStreamProvider provider : findArchiveStreamProviders()) {
+                for (final ArchiveStreamProvider provider : findArchiveStreamProviders()) {
                     putAll(provider.getOutputStreamArchiveNames(), provider, map);
                 }
                 return map;
@@ -487,7 +487,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
      * @throws ArchiveException if an archiver cannot be detected in the stream
      * @since 1.14
      */
-    public static String detect(InputStream in) throws ArchiveException {
+    public static String detect(final InputStream in) throws ArchiveException {
         if (in == null) {
             throw new IllegalArgumentException("Stream must not be null.");
         }
@@ -502,7 +502,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         try {
             signatureLength = IOUtils.readFully(in, signature);
             in.reset();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new ArchiveException("IOException while reading signature.", e);
         }
 
@@ -526,7 +526,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         try {
             signatureLength = IOUtils.readFully(in, dumpsig);
             in.reset();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new ArchiveException("IOException while reading dump signature", e);
         }
         if (DumpArchiveInputStream.matches(dumpsig, signatureLength)) {
@@ -539,7 +539,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         try {
             signatureLength = IOUtils.readFully(in, tarHeader);
             in.reset();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new ArchiveException("IOException while reading tar signature", e);
         }
         if (TarArchiveInputStream.matches(tarHeader, signatureLength)) {

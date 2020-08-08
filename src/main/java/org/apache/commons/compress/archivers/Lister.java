@@ -50,7 +50,7 @@ public final class Lister {
         if (!f.isFile()) {
             System.err.println(f + " doesn't exist or is a directory");
         }
-        String format = args.length > 1 ? args[1] : detectFormat(f);
+        final String format = args.length > 1 ? args[1] : detectFormat(f);
         if (ArchiveStreamFactory.SEVEN_Z.equalsIgnoreCase(format)) {
             list7z(f);
         } else if ("zipfile".equals(format)) {
@@ -60,7 +60,7 @@ public final class Lister {
         }
     }
 
-    private static void listStream(File f, String[] args) throws ArchiveException, IOException {
+    private static void listStream(final File f, final String[] args) throws ArchiveException, IOException {
         try (final InputStream fis = new BufferedInputStream(Files.newInputStream(f.toPath()));
                 final ArchiveInputStream ais = createArchiveInputStream(args, fis)) {
             System.out.println("Created " + ais.toString());
@@ -79,28 +79,28 @@ public final class Lister {
         return FACTORY.createArchiveInputStream(fis);
     }
 
-    private static String detectFormat(File f) throws ArchiveException, IOException {
+    private static String detectFormat(final File f) throws ArchiveException, IOException {
         try (final InputStream fis = new BufferedInputStream(Files.newInputStream(f.toPath()))) {
             return FACTORY.detect(fis);
         }
     }
 
-    private static void list7z(File f) throws ArchiveException, IOException {
+    private static void list7z(final File f) throws ArchiveException, IOException {
         try (SevenZFile z = new SevenZFile(f)) {
             System.out.println("Created " + z.toString());
             ArchiveEntry ae;
             while ((ae = z.getNextEntry()) != null) {
-                String name = ae.getName() == null ? z.getDefaultName() + " (entry name was null)"
+                final String name = ae.getName() == null ? z.getDefaultName() + " (entry name was null)"
                     : ae.getName();
                 System.out.println(name);
             }
         }
     }
 
-    private static void listZipUsingZipFile(File f) throws ArchiveException, IOException {
+    private static void listZipUsingZipFile(final File f) throws ArchiveException, IOException {
         try (ZipFile z = new ZipFile(f)) {
             System.out.println("Created " + z.toString());
-            for (Enumeration<ZipArchiveEntry> en = z.getEntries(); en.hasMoreElements(); ) {
+            for (final Enumeration<ZipArchiveEntry> en = z.getEntries(); en.hasMoreElements(); ) {
                 System.out.println(en.nextElement().getName());
             }
         }

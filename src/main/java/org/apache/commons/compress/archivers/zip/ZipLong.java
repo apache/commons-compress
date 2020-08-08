@@ -86,7 +86,7 @@ public final class ZipLong implements Cloneable, Serializable {
      * @param value the int to store as a ZipLong
      * @since 1.15
      */
-    public ZipLong(int value) {
+    public ZipLong(final int value) {
         this.value = value;
     }
 
@@ -150,7 +150,7 @@ public final class ZipLong implements Cloneable, Serializable {
      *         must be non-negative and no larger than {@code buf.length-4}
      */
 
-    public static void putLong(final long value, final byte[] buf, int offset) {
+    public static void putLong(final long value, final byte[] buf, final int offset) {
         ByteUtils.toLittleEndian(buf, value, offset, 4);
     }
 

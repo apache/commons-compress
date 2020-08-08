@@ -260,7 +260,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
     /**
      * Construct an empty entry and prepares the header values.
      */
-    private TarArchiveEntry(boolean preserveAbsolutePath) {
+    private TarArchiveEntry(final boolean preserveAbsolutePath) {
         String user = System.getProperty("user.name", "");
 
         if (user.length() > MAX_NAMELEN) {
@@ -420,7 +420,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
 
         try {
             readFileMode(this.file, normalizedName);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             // Ignore exceptions from NIO for backwards compatibility
             // Fallback to get size of file if it's no directory to the old file api
             if (!file.isDirectory()) {
@@ -431,7 +431,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
         this.userName = "";
         try {
             readOsSpecificProperties(this.file);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             // Ignore exceptions from NIO for backwards compatibility
             // Fallback to get the last modified date of the file from the old file api
             this.modTime = file.lastModified() / MILLIS_PER_SECOND;
@@ -468,7 +468,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
     }
 
     private void readOsSpecificProperties(final Path file, final LinkOption... options) throws IOException {
-        Set<String> availableAttributeViews = file.getFileSystem().supportedFileAttributeViews();
+        final Set<String> availableAttributeViews = file.getFileSystem().supportedFileAttributeViews();
         if (availableAttributeViews.contains("posix")) {
             final PosixFileAttributes posixFileAttributes = Files.readAttributes(file, PosixFileAttributes.class, options);
             setModTime(posixFileAttributes.lastModifiedTime());
@@ -547,7 +547,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * @throws IllegalArgumentException if any of the numeric fields have an invalid format
      * @throws IOException on error
      */
-    public TarArchiveEntry(final byte[] headerBuf, final ZipEncoding encoding, boolean lenient)
+    public TarArchiveEntry(final byte[] headerBuf, final ZipEncoding encoding, final boolean lenient)
         throws IOException {
         this(false);
         parseTarHeader(headerBuf, encoding, false, lenient);
@@ -897,7 +897,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * @param sparseHeaders The new sparse headers
      * @since 1.20
      */
-    public void setSparseHeaders(List<TarArchiveStructSparse> sparseHeaders) {
+    public void setSparseHeaders(final List<TarArchiveStructSparse> sparseHeaders) {
         this.sparseHeaders = sparseHeaders;
     }
 
@@ -1208,7 +1208,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * @param value value of header.
      * @since 1.15
      */
-    public void addPaxHeader(String name,String value) {
+    public void addPaxHeader(final String name,final String value) {
          processPaxHeader(name,value);
     }
 
@@ -1218,7 +1218,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * @return The value of the header, if any.
      * @since 1.15
      */
-    public String getExtraPaxHeader(String name) {
+    public String getExtraPaxHeader(final String name) {
         return extraPaxHeaders.get(name);
     }
 
@@ -1227,7 +1227,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * @param headers
      * @since 1.15
      */
-    void updateEntryFromPaxHeaders(Map<String, String> headers) {
+    void updateEntryFromPaxHeaders(final Map<String, String> headers) {
         for (final Map.Entry<String, String> ent : headers.entrySet()) {
             final String key = ent.getKey();
             final String val = ent.getValue();
@@ -1242,7 +1242,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * @param val
      * @since 1.15
      */
-    private void processPaxHeader(String key, String val) {
+    private void processPaxHeader(final String key, final String val) {
         processPaxHeader(key,val,extraPaxHeaders);
     }
 
@@ -1256,7 +1256,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * @throws NumberFormatException  if encountered errors when parsing the numbers
      * @since 1.15
      */
-    private void processPaxHeader(String key, String val, Map<String, String> headers) {
+    private void processPaxHeader(final String key, final String val, final Map<String, String> headers) {
     /*
      * The following headers are defined for Pax.
      * atime, ctime, charset: cannot use these without changing TarArchiveEntry fields
@@ -1340,14 +1340,14 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
             return EMPTY_TAR_ARCHIVE_ENTRIES;
         }
 
-        List<TarArchiveEntry> entries = new ArrayList<>();
+        final List<TarArchiveEntry> entries = new ArrayList<>();
         try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(file)) {
-            Iterator<Path> iterator = dirStream.iterator();
+            final Iterator<Path> iterator = dirStream.iterator();
             while (iterator.hasNext()) {
-                Path p = iterator.next();
+                final Path p = iterator.next();
                 entries.add(new TarArchiveEntry(p));
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             return EMPTY_TAR_ARCHIVE_ENTRIES;
         }
         return entries.toArray(new TarArchiveEntry[0]);
@@ -1528,7 +1528,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
             offset += PAD2LEN_GNU;
             sparseHeaders = new ArrayList<>();
             for (int i = 0; i < SPARSE_HEADERS_IN_OLDGNU_HEADER; i++) {
-                TarArchiveStructSparse sparseHeader = TarUtils.parseSparse(header,
+                final TarArchiveStructSparse sparseHeader = TarUtils.parseSparse(header,
                         offset + i * (SPARSE_OFFSET_LEN + SPARSE_NUMBYTES_LEN));
 
                 // some sparse headers are empty, we need to skip these sparse headers
@@ -1569,11 +1569,11 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
         }
     }
 
-    private long parseOctalOrBinary(byte[] header, int offset, int length, boolean lenient) {
+    private long parseOctalOrBinary(final byte[] header, final int offset, final int length, final boolean lenient) {
         if (lenient) {
             try {
                 return TarUtils.parseOctalOrBinary(header, offset, length);
-            } catch (IllegalArgumentException ex) { //NOSONAR
+            } catch (final IllegalArgumentException ex) { //NOSONAR
                 return UNKNOWN;
             }
         }

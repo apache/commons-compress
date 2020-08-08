@@ -626,17 +626,17 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
     @SuppressWarnings("deprecation")
     @Test public void testRecordSize() throws IOException {
         try {
-            TarArchiveOutputStream tos =
+            final TarArchiveOutputStream tos =
                 new TarArchiveOutputStream(new ByteArrayOutputStream(),512,511);
             fail("should have rejected recordSize of 511");
-        } catch(IllegalArgumentException e) {
+        } catch(final IllegalArgumentException e) {
             // expected;
         }
         try {
-            TarArchiveOutputStream tos =
+            final TarArchiveOutputStream tos =
                 new TarArchiveOutputStream(new ByteArrayOutputStream(),512,511,null);
             fail("should have rejected recordSize of 511");
-        } catch(IllegalArgumentException e) {
+        } catch(final IllegalArgumentException e) {
             // expected;
         }
         try (TarArchiveOutputStream tos = new TarArchiveOutputStream(new ByteArrayOutputStream(),
@@ -650,7 +650,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
     }
     @Test
     public void testBlockSizes() throws Exception {
-        String fileName = "/test1.xml";
+        final String fileName = "/test1.xml";
         byte[] contents = getResourceContents(fileName);
         testPadding(TarConstants.DEFAULT_BLKSIZE, fileName, contents); // USTAR / pre-pax
         testPadding(5120, fileName, contents); // PAX default
@@ -659,13 +659,13 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         try {
             testPadding(511, fileName, contents);    // don't specify a block size -> use minimum length
             fail("should have thrown an illegal argument exception");
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             //expected
         }
         try {
             testPadding(0, fileName, contents);    // don't specify a block size -> use minimum length
             fail("should have thrown an illegal argument exception");
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             //expected
         }
         // test with "content" that is an exact multiple of record length
@@ -674,7 +674,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         testPadding(TarConstants.DEFAULT_BLKSIZE, fileName, contents);
     }
 
-    private void testPadding(int blockSize, String fileName, byte[] contents) throws IOException {
+    private void testPadding(int blockSize, final String fileName, final byte[] contents) throws IOException {
         final File f = File.createTempFile("commons-compress-padding", ".tar");
         f.deleteOnExit();
         final FileOutputStream fos = new FileOutputStream(f);
@@ -692,15 +692,15 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         tos.write(contents);
         tos.closeArchiveEntry();
         tos.close();
-        int fileRecordsSize = (int) Math.ceil((double) contents.length / 512) * 512;
+        final int fileRecordsSize = (int) Math.ceil((double) contents.length / 512) * 512;
         final int headerSize = 512;
         final int endOfArchiveSize = 1024;
-        int unpaddedSize = headerSize + fileRecordsSize + endOfArchiveSize;
-        int paddedSize = (int) Math.ceil((double)unpaddedSize/blockSize)*blockSize;
+        final int unpaddedSize = headerSize + fileRecordsSize + endOfArchiveSize;
+        final int paddedSize = (int) Math.ceil((double)unpaddedSize/blockSize)*blockSize;
         assertEquals(paddedSize, f.length());
     }
 
-    private byte[] getResourceContents(String name) throws IOException {
+    private byte[] getResourceContents(final String name) throws IOException {
         ByteArrayOutputStream bos;
         try (InputStream resourceAsStream = getClass().getResourceAsStream(name)) {
             bos = new ByteArrayOutputStream();
@@ -709,35 +709,35 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         return bos.toByteArray();
     }
     @Test public void testPutGlobalPaxHeaderEntry() throws IOException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
-        int pid = 73;
-        int globCount = 1;
-        byte lfPaxGlobalExtendedHeader = TarConstants.LF_PAX_GLOBAL_EXTENDED_HEADER;
-        TarArchiveEntry globalHeader = new TarArchiveEntry("/tmp/GlobalHead." + pid + "." + globCount,
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
+        final int pid = 73;
+        final int globCount = 1;
+        final byte lfPaxGlobalExtendedHeader = TarConstants.LF_PAX_GLOBAL_EXTENDED_HEADER;
+        final TarArchiveEntry globalHeader = new TarArchiveEntry("/tmp/GlobalHead." + pid + "." + globCount,
             lfPaxGlobalExtendedHeader);
         globalHeader.addPaxHeader("SCHILLY.xattr.user.org.apache.weasels","global-weasels");
         tos.putArchiveEntry(globalHeader);
         TarArchiveEntry entry = new TarArchiveEntry("message");
-        String x = "If at first you don't succeed, give up";
+        final String x = "If at first you don't succeed, give up";
         entry.setSize(x.length());
         tos.putArchiveEntry(entry);
         tos.write(x.getBytes());
         tos.closeArchiveEntry();
         entry = new TarArchiveEntry("counter-message");
-        String y = "Nothing succeeds like excess";
+        final String y = "Nothing succeeds like excess";
         entry.setSize(y.length());
         entry.addPaxHeader("SCHILLY.xattr.user.org.apache.weasels.species","unknown");
         tos.putArchiveEntry(entry);
         tos.write(y.getBytes());
         tos.closeArchiveEntry();
         tos.close();
-        TarArchiveInputStream in = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()));
+        final TarArchiveInputStream in = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()));
         TarArchiveEntry entryIn = in.getNextTarEntry();
         assertNotNull(entryIn);
         assertEquals("message",entryIn.getName());
         assertEquals("global-weasels",entryIn.getExtraPaxHeader("SCHILLY.xattr.user.org.apache.weasels"));
-        Reader reader = new InputStreamReader(in);
+        final Reader reader = new InputStreamReader(in);
         for(int i=0;i<x.length();i++) {
             assertEquals(x.charAt(i),reader.read());
         }

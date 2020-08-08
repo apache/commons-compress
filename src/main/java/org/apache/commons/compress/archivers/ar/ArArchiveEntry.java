@@ -129,7 +129,7 @@ public class ArArchiveEntry implements ArchiveEntry {
      * @throws IOException if an I/O error occurs.
      * @since 1.21
      */
-    public ArArchiveEntry(Path inputPath, String entryName, LinkOption... options) throws IOException {
+    public ArArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
         this(entryName, Files.isRegularFile(inputPath, options) ? Files.size(inputPath) : 0, 0, 0, DEFAULT_MODE,
             Files.getLastModifiedTime(inputPath, options).toMillis() / 1000);
     }

@@ -108,7 +108,7 @@ public abstract class ArchiveOutputStream extends OutputStream {
      * @throws IOException if an I/O error occurs
      * @since 1.21
      */
-    public ArchiveEntry createArchiveEntry(Path inputPath, String entryName, LinkOption... options) throws IOException {
+    public ArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
         return createArchiveEntry(inputPath.toFile(), entryName);
     }
 

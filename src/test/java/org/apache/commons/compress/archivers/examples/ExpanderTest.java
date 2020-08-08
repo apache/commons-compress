@@ -129,8 +129,8 @@ public class ExpanderTest extends AbstractTestCase {
 
     @Test
     public void fileCantEscapeDoubleDotPathWithSimilarSibling() throws IOException, ArchiveException {
-        String sibling = resultDir.getName() + "x";
-        File s = new File(resultDir.getParentFile(), sibling);
+        final String sibling = resultDir.getName() + "x";
+        final File s = new File(resultDir.getParentFile(), sibling);
         Assume.assumeFalse(s.exists());
         s.mkdirs();
         Assume.assumeTrue(s.exists());
@@ -149,7 +149,7 @@ public class ExpanderTest extends AbstractTestCase {
 
     private void setup7z() throws IOException, ArchiveException {
         archive = new File(dir, "test.7z");
-        File dummy = new File(dir, "x");
+        final File dummy = new File(dir, "x");
         try (OutputStream o = Files.newOutputStream(dummy.toPath())) {
             o.write(new byte[14]);
         }
@@ -172,7 +172,7 @@ public class ExpanderTest extends AbstractTestCase {
 
     private void setupZip() throws IOException, ArchiveException {
         archive = new File(dir, "test.zip");
-        File dummy = new File(dir, "x");
+        final File dummy = new File(dir, "x");
         try (OutputStream o = Files.newOutputStream(dummy.toPath())) {
             o.write(new byte[14]);
         }
@@ -194,9 +194,9 @@ public class ExpanderTest extends AbstractTestCase {
         }
     }
 
-    private void setupZip(String entry) throws IOException, ArchiveException {
+    private void setupZip(final String entry) throws IOException, ArchiveException {
         archive = new File(dir, "test.zip");
-        File dummy = new File(dir, "x");
+        final File dummy = new File(dir, "x");
         try (OutputStream o = Files.newOutputStream(dummy.toPath())) {
             o.write(new byte[14]);
         }
@@ -217,11 +217,11 @@ public class ExpanderTest extends AbstractTestCase {
         assertHelloWorld("a/b/c/e.txt", "2");
     }
 
-    private void assertHelloWorld(String fileName, String suffix) throws IOException {
+    private void assertHelloWorld(final String fileName, final String suffix) throws IOException {
         Assert.assertTrue(fileName + " does not exist", new File(resultDir, fileName).isFile());
-        byte[] expected = ("Hello, world " + suffix).getBytes(StandardCharsets.UTF_8);
+        final byte[] expected = ("Hello, world " + suffix).getBytes(StandardCharsets.UTF_8);
         try (InputStream is = Files.newInputStream(new File(resultDir, fileName).toPath())) {
-            byte[] actual = IOUtils.toByteArray(is);
+            final byte[] actual = IOUtils.toByteArray(is);
             Assert.assertArrayEquals(expected, actual);
         }
     }

@@ -175,7 +175,7 @@ public class SevenZOutputFile implements Closeable {
      * @since 1.21
      */
     public SevenZArchiveEntry createArchiveEntry(final Path inputPath,
-        final String entryName, LinkOption... options) throws IOException {
+        final String entryName, final LinkOption... options) throws IOException {
         final SevenZArchiveEntry entry = new SevenZArchiveEntry();
         entry.setDirectory(Files.isDirectory(inputPath, options));
         entry.setName(entryName);
@@ -288,7 +288,7 @@ public class SevenZOutputFile implements Closeable {
      * @throws IOException if an I/O error occurs.
      * @since 1.21
      */
-    public void write(final Path path, OpenOption... options) throws IOException {
+    public void write(final Path path, final OpenOption... options) throws IOException {
         try (InputStream in = new BufferedInputStream(Files.newInputStream(path, options))) {
             write(in);
         }
@@ -318,7 +318,7 @@ public class SevenZOutputFile implements Closeable {
         final CRC32 crc32 = new CRC32();
         crc32.update(headerBytes);
 
-        ByteBuffer bb = ByteBuffer.allocate(SevenZFile.sevenZSignature.length
+        final ByteBuffer bb = ByteBuffer.allocate(SevenZFile.sevenZSignature.length
                                             + 2 /* version */
                                             + 4 /* start header CRC */
                                             + 8 /* next header position */

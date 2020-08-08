@@ -302,7 +302,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         writeAsciiLong(devMin, 8, 16);
         writeAsciiLong(entry.getRemoteDeviceMaj(), 8, 16);
         writeAsciiLong(entry.getRemoteDeviceMin(), 8, 16);
-        byte[] name = encode(entry.getName());
+        final byte[] name = encode(entry.getName());
         writeAsciiLong(name.length + 1L, 8, 16);
         writeAsciiLong(entry.getChksum(), 8, 16);
         writeCString(name);
@@ -334,7 +334,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         writeAsciiLong(entry.getNumberOfLinks(), 6, 8);
         writeAsciiLong(entry.getRemoteDevice(), 6, 8);
         writeAsciiLong(entry.getTime(), 11, 8);
-        byte[] name = encode(entry.getName());
+        final byte[] name = encode(entry.getName());
         writeAsciiLong(name.length + 1L, 6, 8);
         writeAsciiLong(entry.getSize(), 11, 8);
         writeCString(name);
@@ -365,7 +365,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         writeBinaryLong(entry.getNumberOfLinks(), 2, swapHalfWord);
         writeBinaryLong(entry.getRemoteDevice(), 2, swapHalfWord);
         writeBinaryLong(entry.getTime(), 4, swapHalfWord);
-        byte[] name = encode(entry.getName());
+        final byte[] name = encode(entry.getName());
         writeBinaryLong(name.length + 1L, 2, swapHalfWord);
         writeBinaryLong(entry.getSize(), 4, swapHalfWord);
         writeCString(name);
@@ -559,7 +559,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      * @param str the String to write
      * @throws IOException if the string couldn't be written
      */
-    private void writeCString(byte[] str) throws IOException {
+    private void writeCString(final byte[] str) throws IOException {
         out.write(str);
         out.write('\0');
         count(str.length + 1);
@@ -585,7 +585,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      * @see org.apache.commons.compress.archivers.ArchiveOutputStream#createArchiveEntry(java.io.File, java.lang.String)
      */
     @Override
-    public ArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, LinkOption... options)
+    public ArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options)
             throws IOException {
         if(finished) {
             throw new IOException("Stream has already been finished");

@@ -155,10 +155,10 @@ public class ZipFileTest {
     @Test
     public void testPhysicalOrderOfSpecificFile() throws Exception {
         readOrderTest();
-        String entryName = "src/main/java/org/apache/commons/compress/archivers/zip/ZipExtraField.java";
-        Iterable<ZipArchiveEntry> entries = zf.getEntriesInPhysicalOrder(entryName);
-        Iterator<ZipArchiveEntry> iter = entries.iterator();
-        ZipArchiveEntry entry = iter.next();
+        final String entryName = "src/main/java/org/apache/commons/compress/archivers/zip/ZipExtraField.java";
+        final Iterable<ZipArchiveEntry> entries = zf.getEntriesInPhysicalOrder(entryName);
+        final Iterator<ZipArchiveEntry> iter = entries.iterator();
+        final ZipArchiveEntry entry = iter.next();
 
         assertEquals(entryName, entry.getName());
         assertFalse(iter.hasNext());
@@ -367,22 +367,22 @@ public class ZipFileTest {
         zf = new ZipFile(new SeekableInMemoryByteChannel(data), ZipEncodingHelper.UTF8);
 
         final Map<String, byte[]> content = new HashMap<String, byte[]>();
-        for (ZipArchiveEntry entry: Collections.list(zf.getEntries())) {
+        for (final ZipArchiveEntry entry: Collections.list(zf.getEntries())) {
             content.put(entry.getName(), IOUtils.toByteArray(zf.getInputStream(entry)));
         }
 
         final AtomicInteger passedCount = new AtomicInteger();
-        Runnable run = new Runnable() {
+        final Runnable run = new Runnable() {
             @Override
             public void run() {
-                for (ZipArchiveEntry entry: Collections.list(zf.getEntries())) {
+                for (final ZipArchiveEntry entry: Collections.list(zf.getEntries())) {
                     assertAllReadMethods(content.get(entry.getName()), zf, entry);
                 }
                 passedCount.incrementAndGet();
             }
         };
-        Thread t0 = new Thread(run);
-        Thread t1 = new Thread(run);
+        final Thread t0 = new Thread(run);
+        final Thread t1 = new Thread(run);
         t0.start();
         t1.start();
         t0.join();
@@ -397,22 +397,22 @@ public class ZipFileTest {
         zf = new ZipFile(archive);
 
         final Map<String, byte[]> content = new HashMap<String, byte[]>();
-        for (ZipArchiveEntry entry: Collections.list(zf.getEntries())) {
+        for (final ZipArchiveEntry entry: Collections.list(zf.getEntries())) {
             content.put(entry.getName(), IOUtils.toByteArray(zf.getInputStream(entry)));
         }
 
         final AtomicInteger passedCount = new AtomicInteger();
-        Runnable run = new Runnable() {
+        final Runnable run = new Runnable() {
             @Override
             public void run() {
-                for (ZipArchiveEntry entry: Collections.list(zf.getEntries())) {
+                for (final ZipArchiveEntry entry: Collections.list(zf.getEntries())) {
                     assertAllReadMethods(content.get(entry.getName()), zf, entry);
                 }
                 passedCount.incrementAndGet();
             }
         };
-        Thread t0 = new Thread(run);
-        Thread t1 = new Thread(run);
+        final Thread t0 = new Thread(run);
+        final Thread t1 = new Thread(run);
         t0.start();
         t1.start();
         t0.join();
@@ -428,11 +428,11 @@ public class ZipFileTest {
         // mixed.zip contains both inflated and stored files
         final File archive = getFile("mixed.zip");
         try (ZipFile zf = new ZipFile(archive)) {
-            ZipArchiveEntry inflatedEntry = zf.getEntry("inflated.txt");
+            final ZipArchiveEntry inflatedEntry = zf.getEntry("inflated.txt");
             Assert.assertEquals(0x0000, inflatedEntry.getLocalHeaderOffset());
             Assert.assertEquals(0x0046, inflatedEntry.getDataOffset());
             Assert.assertTrue(inflatedEntry.isStreamContiguous());
-            ZipArchiveEntry storedEntry = zf.getEntry("stored.txt");
+            final ZipArchiveEntry storedEntry = zf.getEntry("stored.txt");
             Assert.assertEquals(0x5892, storedEntry.getLocalHeaderOffset());
             Assert.assertEquals(0x58d6, storedEntry.getDataOffset());
             Assert.assertTrue(inflatedEntry.isStreamContiguous());
@@ -444,16 +444,16 @@ public class ZipFileTest {
      */
     @Test
     public void testDelayedOffsetsAndSizes() throws Exception {
-        ByteArrayOutputStream zipContent = new ByteArrayOutputStream();
+        final ByteArrayOutputStream zipContent = new ByteArrayOutputStream();
         try (ZipArchiveOutputStream zipOutput = new ZipArchiveOutputStream(zipContent)) {
-            ZipArchiveEntry inflatedEntry = new ZipArchiveEntry("inflated.txt");
+            final ZipArchiveEntry inflatedEntry = new ZipArchiveEntry("inflated.txt");
             inflatedEntry.setMethod(ZipEntry.DEFLATED);
             zipOutput.putArchiveEntry(inflatedEntry);
             zipOutput.write("Hello Deflated\n".getBytes());
             zipOutput.closeArchiveEntry();
 
-            byte[] storedContent = "Hello Stored\n".getBytes();
-            ZipArchiveEntry storedEntry = new ZipArchiveEntry("stored.txt");
+            final byte[] storedContent = "Hello Stored\n".getBytes();
+            final ZipArchiveEntry storedEntry = new ZipArchiveEntry("stored.txt");
             storedEntry.setMethod(ZipEntry.STORED);
             storedEntry.setSize(storedContent.length);
             storedEntry.setCrc(calculateCrc32(storedContent));
@@ -464,13 +464,13 @@ public class ZipFileTest {
         }
 
         try (ZipFile zf = new ZipFile(new SeekableInMemoryByteChannel(zipContent.toByteArray()))) {
-            ZipArchiveEntry inflatedEntry = zf.getEntry("inflated.txt");
+            final ZipArchiveEntry inflatedEntry = zf.getEntry("inflated.txt");
             Assert.assertNotEquals(-1L, inflatedEntry.getLocalHeaderOffset());
             Assert.assertNotEquals(-1L, inflatedEntry.getDataOffset());
             Assert.assertTrue(inflatedEntry.isStreamContiguous());
             Assert.assertNotEquals(-1L, inflatedEntry.getCompressedSize());
             Assert.assertNotEquals(-1L, inflatedEntry.getSize());
-            ZipArchiveEntry storedEntry = zf.getEntry("stored.txt");
+            final ZipArchiveEntry storedEntry = zf.getEntry("stored.txt");
             Assert.assertNotEquals(-1L, storedEntry.getLocalHeaderOffset());
             Assert.assertNotEquals(-1L, storedEntry.getDataOffset());
             Assert.assertTrue(inflatedEntry.isStreamContiguous());
@@ -484,23 +484,23 @@ public class ZipFileTest {
      */
     @Test
     public void testEntryAlignment() throws Exception {
-        SeekableInMemoryByteChannel zipContent = new SeekableInMemoryByteChannel();
+        final SeekableInMemoryByteChannel zipContent = new SeekableInMemoryByteChannel();
         try (ZipArchiveOutputStream zipOutput = new ZipArchiveOutputStream(zipContent)) {
-            ZipArchiveEntry inflatedEntry = new ZipArchiveEntry("inflated.txt");
+            final ZipArchiveEntry inflatedEntry = new ZipArchiveEntry("inflated.txt");
             inflatedEntry.setMethod(ZipEntry.DEFLATED);
             inflatedEntry.setAlignment(1024);
             zipOutput.putArchiveEntry(inflatedEntry);
             zipOutput.write("Hello Deflated\n".getBytes(StandardCharsets.UTF_8));
             zipOutput.closeArchiveEntry();
 
-            ZipArchiveEntry storedEntry = new ZipArchiveEntry("stored.txt");
+            final ZipArchiveEntry storedEntry = new ZipArchiveEntry("stored.txt");
             storedEntry.setMethod(ZipEntry.STORED);
             storedEntry.setAlignment(1024);
             zipOutput.putArchiveEntry(storedEntry);
             zipOutput.write("Hello Stored\n".getBytes(StandardCharsets.UTF_8));
             zipOutput.closeArchiveEntry();
 
-            ZipArchiveEntry storedEntry2 = new ZipArchiveEntry("stored2.txt");
+            final ZipArchiveEntry storedEntry2 = new ZipArchiveEntry("stored2.txt");
             storedEntry2.setMethod(ZipEntry.STORED);
             storedEntry2.setAlignment(1024);
             storedEntry2.addExtraField(new ResourceAlignmentExtraField(1));
@@ -508,7 +508,7 @@ public class ZipFileTest {
             zipOutput.write("Hello overload-alignment Stored\n".getBytes(StandardCharsets.UTF_8));
             zipOutput.closeArchiveEntry();
 
-            ZipArchiveEntry storedEntry3 = new ZipArchiveEntry("stored3.txt");
+            final ZipArchiveEntry storedEntry3 = new ZipArchiveEntry("stored3.txt");
             storedEntry3.setMethod(ZipEntry.STORED);
             storedEntry3.addExtraField(new ResourceAlignmentExtraField(1024));
             zipOutput.putArchiveEntry(storedEntry3);
@@ -520,8 +520,8 @@ public class ZipFileTest {
         try (ZipFile zf = new ZipFile(new SeekableInMemoryByteChannel(
                         Arrays.copyOfRange(zipContent.array(), 0, (int)zipContent.size())
         ))) {
-            ZipArchiveEntry inflatedEntry = zf.getEntry("inflated.txt");
-            ResourceAlignmentExtraField inflatedAlignmentEx =
+            final ZipArchiveEntry inflatedEntry = zf.getEntry("inflated.txt");
+            final ResourceAlignmentExtraField inflatedAlignmentEx =
                             (ResourceAlignmentExtraField)inflatedEntry.getExtraField(ResourceAlignmentExtraField.ID);
             assertNotEquals(-1L, inflatedEntry.getCompressedSize());
             assertNotEquals(-1L, inflatedEntry.getSize());
@@ -533,8 +533,8 @@ public class ZipFileTest {
                 Assert.assertEquals("Hello Deflated\n",
                                 new String(IOUtils.toByteArray(stream), StandardCharsets.UTF_8));
             }
-            ZipArchiveEntry storedEntry = zf.getEntry("stored.txt");
-            ResourceAlignmentExtraField storedAlignmentEx =
+            final ZipArchiveEntry storedEntry = zf.getEntry("stored.txt");
+            final ResourceAlignmentExtraField storedAlignmentEx =
                             (ResourceAlignmentExtraField)storedEntry.getExtraField(ResourceAlignmentExtraField.ID);
             assertNotEquals(-1L, storedEntry.getCompressedSize());
             assertNotEquals(-1L, storedEntry.getSize());
@@ -547,8 +547,8 @@ public class ZipFileTest {
                                 new String(IOUtils.toByteArray(stream), StandardCharsets.UTF_8));
             }
 
-            ZipArchiveEntry storedEntry2 = zf.getEntry("stored2.txt");
-            ResourceAlignmentExtraField stored2AlignmentEx =
+            final ZipArchiveEntry storedEntry2 = zf.getEntry("stored2.txt");
+            final ResourceAlignmentExtraField stored2AlignmentEx =
                             (ResourceAlignmentExtraField)storedEntry2.getExtraField(ResourceAlignmentExtraField.ID);
             assertNotEquals(-1L, storedEntry2.getCompressedSize());
             assertNotEquals(-1L, storedEntry2.getSize());
@@ -561,8 +561,8 @@ public class ZipFileTest {
                                 new String(IOUtils.toByteArray(stream), StandardCharsets.UTF_8));
             }
 
-            ZipArchiveEntry storedEntry3 = zf.getEntry("stored3.txt");
-            ResourceAlignmentExtraField stored3AlignmentEx =
+            final ZipArchiveEntry storedEntry3 = zf.getEntry("stored3.txt");
+            final ResourceAlignmentExtraField stored3AlignmentEx =
                             (ResourceAlignmentExtraField)storedEntry3.getExtraField(ResourceAlignmentExtraField.ID);
             assertNotEquals(-1L, storedEntry3.getCompressedSize());
             assertNotEquals(-1L, storedEntry3.getSize());
@@ -582,9 +582,9 @@ public class ZipFileTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testEntryAlignmentExceed() throws Exception {
-        SeekableInMemoryByteChannel zipContent = new SeekableInMemoryByteChannel();
+        final SeekableInMemoryByteChannel zipContent = new SeekableInMemoryByteChannel();
         try (ZipArchiveOutputStream zipOutput = new ZipArchiveOutputStream(zipContent)) {
-            ZipArchiveEntry inflatedEntry = new ZipArchiveEntry("inflated.txt");
+            final ZipArchiveEntry inflatedEntry = new ZipArchiveEntry("inflated.txt");
             inflatedEntry.setMethod(ZipEntry.STORED);
             inflatedEntry.setAlignment(0x20000);
         }
@@ -595,7 +595,7 @@ public class ZipFileTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidAlignment() throws Exception {
-        ZipArchiveEntry entry = new ZipArchiveEntry("dummy");
+        final ZipArchiveEntry entry = new ZipArchiveEntry("dummy");
         entry.setAlignment(3);
     }
 
@@ -625,10 +625,10 @@ public class ZipFileTest {
         final File archive = getFile("COMPRESS-380/COMPRESS-380.zip");
         try (FileInputStream in = new FileInputStream(input);
              ZipFile zf = new ZipFile(archive)) {
-            byte[] orig = IOUtils.toByteArray(in);
-            ZipArchiveEntry e = zf.getEntry("input2");
+            final byte[] orig = IOUtils.toByteArray(in);
+            final ZipArchiveEntry e = zf.getEntry("input2");
             try (InputStream s = zf.getInputStream(e)) {
-                byte[] fromZip = IOUtils.toByteArray(s);
+                final byte[] fromZip = IOUtils.toByteArray(s);
                 assertArrayEquals(orig, fromZip);
             }
         }
@@ -664,9 +664,9 @@ public class ZipFileTest {
         singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("bzip2-zip.zip"));
     }
 
-    private void singleByteReadConsistentlyReturnsMinusOneAtEof(File file) throws Exception {
+    private void singleByteReadConsistentlyReturnsMinusOneAtEof(final File file) throws Exception {
         try (ZipFile archive = new ZipFile(file)) {
-            ZipArchiveEntry e = archive.getEntries().nextElement();
+            final ZipArchiveEntry e = archive.getEntries().nextElement();
             try (InputStream is = archive.getInputStream(e)) {
                 IOUtils.toByteArray(is);
                 assertEquals(-1, is.read());
@@ -707,8 +707,8 @@ public class ZipFileTest {
 
     @Test
     public void extractFileLiesAcrossSplitZipSegmentsCreatedByZip() throws Exception {
-        File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.zip");
-        SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
+        final File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.zip");
+        final SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
         zf = new ZipFile(channel);
 
         // the compressed content of UnsupportedCompressionAlgorithmException.java lies between .z01 and .z02
@@ -724,8 +724,8 @@ public class ZipFileTest {
 
     @Test
     public void extractFileLiesAcrossSplitZipSegmentsCreatedByZipOfZip64() throws Exception {
-        File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip_zip64.zip");
-        SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
+        final File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip_zip64.zip");
+        final SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
         zf = new ZipFile(channel);
 
         // the compressed content of UnsupportedCompressionAlgorithmException.java lies between .z01 and .z02
@@ -741,13 +741,13 @@ public class ZipFileTest {
 
     @Test
     public void extractFileLiesAcrossSplitZipSegmentsCreatedByWinrar() throws Exception {
-        File lastFile = getFile("COMPRESS-477/split_zip_created_by_winrar/split_zip_created_by_winrar.zip");
-        SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
+        final File lastFile = getFile("COMPRESS-477/split_zip_created_by_winrar/split_zip_created_by_winrar.zip");
+        final SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
         zf = new ZipFile(channel);
 
         // the compressed content of ZipArchiveInputStream.java lies between .z01 and .z02
-        ZipArchiveEntry zipEntry = zf.getEntry("commons-compress/src/main/java/org/apache/commons/compress/archivers/zip/ZipArchiveInputStream.java");
-        File fileToCompare = getFile("COMPRESS-477/split_zip_created_by_winrar/file_to_compare_1");
+        final ZipArchiveEntry zipEntry = zf.getEntry("commons-compress/src/main/java/org/apache/commons/compress/archivers/zip/ZipArchiveInputStream.java");
+        final File fileToCompare = getFile("COMPRESS-477/split_zip_created_by_winrar/file_to_compare_1");
         assertFileEqualsToEntry(fileToCompare, zipEntry, zf);
     }
 
@@ -763,10 +763,10 @@ public class ZipFileTest {
         outputStream.setLevel(Deflater.BEST_COMPRESSION + 1);
     }
 
-    private void multiByteReadConsistentlyReturnsMinusOneAtEof(File file) throws Exception {
-        byte[] buf = new byte[2];
+    private void multiByteReadConsistentlyReturnsMinusOneAtEof(final File file) throws Exception {
+        final byte[] buf = new byte[2];
         try (ZipFile archive = new ZipFile(file)) {
-            ZipArchiveEntry e = archive.getEntries().nextElement();
+            final ZipArchiveEntry e = archive.getEntries().nextElement();
             try (InputStream is = archive.getInputStream(e)) {
                 IOUtils.toByteArray(is);
                 assertEquals(-1, is.read(buf));
@@ -775,21 +775,21 @@ public class ZipFileTest {
         }
     }
 
-    private void assertAllReadMethods(byte[] expected, ZipFile zipFile, ZipArchiveEntry entry) {
+    private void assertAllReadMethods(final byte[] expected, final ZipFile zipFile, final ZipArchiveEntry entry) {
         // simple IOUtil read
         try (InputStream stream = zf.getInputStream(entry)) {
-            byte[] full = IOUtils.toByteArray(stream);
+            final byte[] full = IOUtils.toByteArray(stream);
             assertArrayEquals(expected, full);
         }
-        catch (IOException ex) {
+        catch (final IOException ex) {
             throw new RuntimeException(ex);
         }
 
         // big buffer at the beginning and then chunks by IOUtils read
         try (InputStream stream = zf.getInputStream(entry)) {
             byte[] full;
-            byte[] bytes = new byte[0x40000];
-            int read = stream.read(bytes);
+            final byte[] bytes = new byte[0x40000];
+            final int read = stream.read(bytes);
             if (read < 0) {
                 full = new byte[0];
             }
@@ -798,21 +798,21 @@ public class ZipFileTest {
             }
             assertArrayEquals(expected, full);
         }
-        catch (IOException ex) {
+        catch (final IOException ex) {
             throw new RuntimeException(ex);
         }
 
         // small chunk / single byte and big buffer then
         try (InputStream stream = zf.getInputStream(entry)) {
             byte[] full;
-            int single = stream.read();
+            final int single = stream.read();
             if (single < 0) {
                 full = new byte[0];
             }
             else {
-                byte[] big = new byte[0x40000];
+                final byte[] big = new byte[0x40000];
                 big[0] = (byte)single;
-                int read = stream.read(big, 1, big.length-1);
+                final int read = stream.read(big, 1, big.length-1);
                 if (read < 0) {
                     full = new byte[]{ (byte)single };
                 }
@@ -822,7 +822,7 @@ public class ZipFileTest {
             }
             assertArrayEquals(expected, full);
         }
-        catch (IOException ex) {
+        catch (final IOException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -830,16 +830,16 @@ public class ZipFileTest {
     /**
      * Utility to append the rest of the stream to already read data.
      */
-    private byte[] readStreamRest(byte[] beginning, int length, InputStream stream) throws IOException {
-        byte[] rest = IOUtils.toByteArray(stream);
-        byte[] full = new byte[length+rest.length];
+    private byte[] readStreamRest(final byte[] beginning, final int length, final InputStream stream) throws IOException {
+        final byte[] rest = IOUtils.toByteArray(stream);
+        final byte[] full = new byte[length+rest.length];
         System.arraycopy(beginning, 0, full, 0, length);
         System.arraycopy(rest, 0, full, length, rest.length);
         return full;
     }
 
-    private long calculateCrc32(byte[] content) {
-        CRC32 crc = new CRC32();
+    private long calculateCrc32(final byte[] content) {
+        final CRC32 crc = new CRC32();
         crc.update(content);
         return crc.getValue();
     }
@@ -868,19 +868,19 @@ public class ZipFileTest {
                      ze.getName());
     }
 
-    private static void nameSource(String archive, String entry, ZipArchiveEntry.NameSource expected) throws Exception {
+    private static void nameSource(final String archive, final String entry, final ZipArchiveEntry.NameSource expected) throws Exception {
         try (ZipFile zf = new ZipFile(getFile(archive))) {
-            ZipArchiveEntry ze = zf.getEntry(entry);
+            final ZipArchiveEntry ze = zf.getEntry(entry);
             assertEquals(entry, ze.getName());
             assertEquals(expected, ze.getNameSource());
         }
     }
 
-    private void assertFileEqualsToEntry(File fileToCompare, ZipArchiveEntry entry, ZipFile zipFile) throws IOException {
-        byte[] buffer = new byte[10240];
-        File tempFile = File.createTempFile("temp","txt");
-        OutputStream outputStream = new FileOutputStream(tempFile);
-        InputStream inputStream = zipFile.getInputStream(entry);
+    private void assertFileEqualsToEntry(final File fileToCompare, final ZipArchiveEntry entry, final ZipFile zipFile) throws IOException {
+        final byte[] buffer = new byte[10240];
+        final File tempFile = File.createTempFile("temp","txt");
+        final OutputStream outputStream = new FileOutputStream(tempFile);
+        final InputStream inputStream = zipFile.getInputStream(entry);
         int readLen;
         while((readLen = inputStream.read(buffer)) > 0) {
             outputStream.write(buffer, 0, readLen);
@@ -892,9 +892,9 @@ public class ZipFileTest {
         assertFileEqualIgnoreEndOfLine(fileToCompare, tempFile);
     }
 
-    private void assertFileEqualIgnoreEndOfLine(File file1, File file2) throws IOException {
-        List<String> linesOfFile1 = Files.readAllLines(Paths.get(file1.getCanonicalPath()), StandardCharsets.UTF_8);
-        List<String> linesOfFile2 = Files.readAllLines(Paths.get(file2.getCanonicalPath()), StandardCharsets.UTF_8);
+    private void assertFileEqualIgnoreEndOfLine(final File file1, final File file2) throws IOException {
+        final List<String> linesOfFile1 = Files.readAllLines(Paths.get(file1.getCanonicalPath()), StandardCharsets.UTF_8);
+        final List<String> linesOfFile2 = Files.readAllLines(Paths.get(file2.getCanonicalPath()), StandardCharsets.UTF_8);
 
         if(linesOfFile1.size() != linesOfFile2.size()) {
             fail("files not equal : " + file1.getName() + " , " + file2.getName());

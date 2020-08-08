@@ -378,7 +378,7 @@ public class TarUtilsTest {
         try {
             checkRoundTripOctalOrBinary(Long.MAX_VALUE, 8);
             fail("Should throw exception - value is too long to fit buffer of this len");
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             assertEquals("Value 9223372036854775807 is too large for 8 byte field.", e.getMessage());
         }
     }
@@ -390,7 +390,7 @@ public class TarUtilsTest {
         final byte [] buffer = new byte[] {
                 ' ', ' ', ' ', ' ', ' ', '0', '1', '0', '0', '0', '0', '0', // sparseOffset
                 ' ', ' ', ' ', ' ', ' ', '0', '1', '1', '1', '0', '0', '0'};
-        TarArchiveStructSparse sparse = TarUtils.parseSparse(buffer, 0);
+        final TarArchiveStructSparse sparse = TarUtils.parseSparse(buffer, 0);
         assertEquals(sparse.getOffset(), expectedOffset);
         assertEquals(sparse.getNumbytes(), expectedNumbytes);
     }

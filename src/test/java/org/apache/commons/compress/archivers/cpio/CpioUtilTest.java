@@ -73,7 +73,7 @@ public class CpioUtilTest {
     @Test(expected = UnsupportedOperationException.class)
     public void testByteArray2longThrowsUnsupportedOperationException() {
 
-        byte[] byteArray = new byte[1];
+        final byte[] byteArray = new byte[1];
 
         CpioUtil.byteArray2long(byteArray, true);
 

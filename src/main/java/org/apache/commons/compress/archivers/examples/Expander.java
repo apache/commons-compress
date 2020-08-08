@@ -63,7 +63,7 @@ public class Expander {
      * @throws IOException if an I/O error occurs
      * @throws ArchiveException if the archive cannot be read for other reasons
      */
-    public void expand(File archive, File targetDirectory) throws IOException, ArchiveException {
+    public void expand(final File archive, final File targetDirectory) throws IOException, ArchiveException {
         String format = null;
         try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()))) {
             format = ArchiveStreamFactory.DEFAULT.detect(i);
@@ -81,7 +81,7 @@ public class Expander {
      * @throws IOException if an I/O error occurs
      * @throws ArchiveException if the archive cannot be read for other reasons
      */
-    public void expand(String format, File archive, File targetDirectory) throws IOException, ArchiveException {
+    public void expand(final String format, final File archive, final File targetDirectory) throws IOException, ArchiveException {
         if (prefersSeekableByteChannel(format)) {
             try (SeekableByteChannel c = FileChannel.open(archive.toPath(), StandardOpenOption.READ)) {
                 expand(format, c, targetDirectory, CloseableConsumer.CLOSING_CONSUMER);
@@ -110,7 +110,7 @@ public class Expander {
      * @deprecated this method leaks resources
      */
     @Deprecated
-    public void expand(InputStream archive, File targetDirectory) throws IOException, ArchiveException {
+    public void expand(final InputStream archive, final File targetDirectory) throws IOException, ArchiveException {
         expand(archive, targetDirectory, CloseableConsumer.NULL_CONSUMER);
     }
 
@@ -133,7 +133,7 @@ public class Expander {
      * @throws ArchiveException if the archive cannot be read for other reasons
      * @since 1.19
      */
-    public void expand(InputStream archive, File targetDirectory, CloseableConsumer closeableConsumer)
+    public void expand(final InputStream archive, final File targetDirectory, final CloseableConsumer closeableConsumer)
         throws IOException, ArchiveException {
         try (CloseableConsumerAdapter c = new CloseableConsumerAdapter(closeableConsumer)) {
             expand(c.track(ArchiveStreamFactory.DEFAULT.createArchiveInputStream(archive)),
@@ -158,7 +158,7 @@ public class Expander {
      * @deprecated this method leaks resources
      */
     @Deprecated
-    public void expand(String format, InputStream archive, File targetDirectory)
+    public void expand(final String format, final InputStream archive, final File targetDirectory)
         throws IOException, ArchiveException {
         expand(format, archive, targetDirectory, CloseableConsumer.NULL_CONSUMER);
     }
@@ -182,7 +182,7 @@ public class Expander {
      * @throws ArchiveException if the archive cannot be read for other reasons
      * @since 1.19
      */
-    public void expand(String format, InputStream archive, File targetDirectory, CloseableConsumer closeableConsumer)
+    public void expand(final String format, final InputStream archive, final File targetDirectory, final CloseableConsumer closeableConsumer)
         throws IOException, ArchiveException {
         try (CloseableConsumerAdapter c = new CloseableConsumerAdapter(closeableConsumer)) {
             expand(c.track(ArchiveStreamFactory.DEFAULT.createArchiveInputStream(format, archive)),
@@ -207,7 +207,7 @@ public class Expander {
      * @deprecated this method leaks resources
      */
     @Deprecated
-    public void expand(String format, SeekableByteChannel archive, File targetDirectory)
+    public void expand(final String format, final SeekableByteChannel archive, final File targetDirectory)
         throws IOException, ArchiveException {
         expand(format, archive, targetDirectory, CloseableConsumer.NULL_CONSUMER);
     }
@@ -231,8 +231,8 @@ public class Expander {
      * @throws ArchiveException if the archive cannot be read for other reasons
      * @since 1.19
      */
-    public void expand(String format, SeekableByteChannel archive, File targetDirectory,
-        CloseableConsumer closeableConsumer)
+    public void expand(final String format, final SeekableByteChannel archive, final File targetDirectory,
+        final CloseableConsumer closeableConsumer)
         throws IOException, ArchiveException {
         try (CloseableConsumerAdapter c = new CloseableConsumerAdapter(closeableConsumer)) {
         if (!prefersSeekableByteChannel(format)) {
@@ -256,7 +256,7 @@ public class Expander {
      * @throws IOException if an I/O error occurs
      * @throws ArchiveException if the archive cannot be read for other reasons
      */
-    public void expand(final ArchiveInputStream archive, File targetDirectory)
+    public void expand(final ArchiveInputStream archive, final File targetDirectory)
         throws IOException, ArchiveException {
         expand(new ArchiveEntrySupplier() {
             @Override
@@ -269,7 +269,7 @@ public class Expander {
             }
         }, new EntryWriter() {
             @Override
-            public void writeEntryDataTo(ArchiveEntry entry, OutputStream out) throws IOException {
+            public void writeEntryDataTo(final ArchiveEntry entry, final OutputStream out) throws IOException {
                 IOUtils.copy(archive, out);
             }
         }, targetDirectory);
@@ -283,7 +283,7 @@ public class Expander {
      * @throws IOException if an I/O error occurs
      * @throws ArchiveException if the archive cannot be read for other reasons
      */
-    public void expand(final ZipFile archive, File targetDirectory)
+    public void expand(final ZipFile archive, final File targetDirectory)
         throws IOException, ArchiveException {
         final Enumeration<ZipArchiveEntry> entries = archive.getEntries();
         expand(new ArchiveEntrySupplier() {
@@ -297,7 +297,7 @@ public class Expander {
             }
         }, new EntryWriter() {
             @Override
-            public void writeEntryDataTo(ArchiveEntry entry, OutputStream out) throws IOException {
+            public void writeEntryDataTo(final ArchiveEntry entry, final OutputStream out) throws IOException {
                 try (InputStream in = archive.getInputStream((ZipArchiveEntry) entry)) {
                     IOUtils.copy(in, out);
                 }
@@ -313,7 +313,7 @@ public class Expander {
      * @throws IOException if an I/O error occurs
      * @throws ArchiveException if the archive cannot be read for other reasons
      */
-    public void expand(final SevenZFile archive, File targetDirectory)
+    public void expand(final SevenZFile archive, final File targetDirectory)
         throws IOException, ArchiveException {
         expand(new ArchiveEntrySupplier() {
             @Override
@@ -322,7 +322,7 @@ public class Expander {
             }
         }, new EntryWriter() {
             @Override
-            public void writeEntryDataTo(ArchiveEntry entry, OutputStream out) throws IOException {
+            public void writeEntryDataTo(final ArchiveEntry entry, final OutputStream out) throws IOException {
                 final byte[] buffer = new byte[8024];
                 int n;
                 while (-1 != (n = archive.read(buffer))) {
@@ -332,11 +332,11 @@ public class Expander {
         }, targetDirectory);
     }
 
-    private boolean prefersSeekableByteChannel(String format) {
+    private boolean prefersSeekableByteChannel(final String format) {
         return ArchiveStreamFactory.ZIP.equalsIgnoreCase(format) || ArchiveStreamFactory.SEVEN_Z.equalsIgnoreCase(format);
     }
 
-    private void expand(ArchiveEntrySupplier supplier, EntryWriter writer, File targetDirectory)
+    private void expand(final ArchiveEntrySupplier supplier, final EntryWriter writer, final File targetDirectory)
         throws IOException {
         String targetDirPath = targetDirectory.getCanonicalPath();
         if (!targetDirPath.endsWith(File.separator)) {
@@ -344,7 +344,7 @@ public class Expander {
         }
         ArchiveEntry nextEntry = supplier.getNextReadableEntry();
         while (nextEntry != null) {
-            File f = new File(targetDirectory, nextEntry.getName());
+            final File f = new File(targetDirectory, nextEntry.getName());
             if (!f.getCanonicalPath().startsWith(targetDirPath)) {
                 throw new IOException("Expanding " + nextEntry.getName()
                     + " would create file outside of " + targetDirectory);
@@ -354,7 +354,7 @@ public class Expander {
                     throw new IOException("Failed to create directory " + f);
                 }
             } else {
-                File parent = f.getParentFile();
+                final File parent = f.getParentFile();
                 if (!parent.isDirectory() && !parent.mkdirs()) {
                     throw new IOException("Failed to create directory " + parent);
                 }

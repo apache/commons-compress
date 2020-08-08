@@ -31,7 +31,7 @@ public class AbstractLZ77CompressorInputStreamTest {
 
     private static class TestStream extends AbstractLZ77CompressorInputStream {
         private boolean literal;
-        TestStream(InputStream in) throws IOException {
+        TestStream(final InputStream in) throws IOException {
             super(in, 1024);
         }
         @Override
@@ -41,7 +41,7 @@ public class AbstractLZ77CompressorInputStreamTest {
             }
             return readBackReference(b, off, len);
         }
-        void literal(int len) {
+        void literal(final int len) {
             startLiteral(len);
             literal = true;
         }
@@ -49,7 +49,7 @@ public class AbstractLZ77CompressorInputStreamTest {
 
     @Test(expected = IllegalStateException.class)
     public void cantPrefillAfterDataHasBeenRead() throws IOException {
-        byte[] data = new byte[] { 1, 2, 3, 4 };
+        final byte[] data = new byte[] { 1, 2, 3, 4 };
         try (TestStream s = new TestStream(new ByteArrayInputStream(data))) {
             s.literal(3);
             assertEquals(1, s.read());
@@ -59,11 +59,11 @@ public class AbstractLZ77CompressorInputStreamTest {
 
     @Test
     public void prefillCanBeUsedForBackReferences() throws IOException {
-        byte[] data = new byte[] { 1, 2, 3, 4 };
+        final byte[] data = new byte[] { 1, 2, 3, 4 };
         try (TestStream s = new TestStream(new ByteArrayInputStream(new byte[0]))) {
             s.prefill(data);
             s.startBackReference(2, 4);
-            byte[] r = new byte[4];
+            final byte[] r = new byte[4];
             assertEquals(4, s.read(r));
             assertArrayEquals(new byte[] { 3, 4, 3, 4 }, r);
         }
@@ -71,13 +71,13 @@ public class AbstractLZ77CompressorInputStreamTest {
 
     @Test
     public void ifPrefillExceedsWindowSizeTheLastBytesAreUsed() throws IOException {
-        byte[] data = new byte[2048];
+        final byte[] data = new byte[2048];
         data[2046] = 3;
         data[2047] = 4;
         try (TestStream s = new TestStream(new ByteArrayInputStream(new byte[0]))) {
             s.prefill(data);
             s.startBackReference(2, 4);
-            byte[] r = new byte[4];
+            final byte[] r = new byte[4];
             assertEquals(4, s.read(r));
             assertArrayEquals(new byte[] { 3, 4, 3, 4 }, r);
         }

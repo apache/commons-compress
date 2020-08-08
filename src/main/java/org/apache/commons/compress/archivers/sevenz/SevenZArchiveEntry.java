@@ -494,7 +494,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
@@ -551,16 +551,16 @@ public class SevenZArchiveEntry implements ArchiveEntry {
         return ((date.getTime() - ntfsEpoch.getTimeInMillis())* 1000 * 10);
     }
 
-    private boolean equalSevenZMethods(Iterable<? extends SevenZMethodConfiguration> c1,
-        Iterable<? extends SevenZMethodConfiguration> c2) {
+    private boolean equalSevenZMethods(final Iterable<? extends SevenZMethodConfiguration> c1,
+        final Iterable<? extends SevenZMethodConfiguration> c2) {
         if (c1 == null) {
             return c2 == null;
         }
         if (c2 == null) {
             return false;
         }
-        Iterator<? extends SevenZMethodConfiguration> i1 = c1.iterator();
-        Iterator<? extends SevenZMethodConfiguration> i2 = c2.iterator();
+        final Iterator<? extends SevenZMethodConfiguration> i1 = c1.iterator();
+        final Iterator<? extends SevenZMethodConfiguration> i2 = c2.iterator();
         while (i1.hasNext()) {
             if (!i2.hasNext()) {
                 return false;

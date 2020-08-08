@@ -43,7 +43,7 @@ public class SevenZArchiverTest extends AbstractTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        File c = new File(dir, "a/b/c");
+        final File c = new File(dir, "a/b/c");
         c.mkdirs();
         try (OutputStream os = Files.newOutputStream(new File(dir, "a/b/d.txt").toPath())) {
             os.write("Hello, world 1".getBytes(StandardCharsets.UTF_8));
@@ -89,7 +89,7 @@ public class SevenZArchiverTest extends AbstractTestCase {
         try (SevenZFile z = new SevenZFile(target)) {
             assertDir("a", z.getNextEntry());
             assertDir("a/b", z.getNextEntry());
-            ArchiveEntry n = z.getNextEntry();
+            final ArchiveEntry n = z.getNextEntry();
             Assert.assertNotNull(n);
             // File.list may return a/b/c or a/b/d.txt first
             if (n.getName().endsWith("/")) {
@@ -104,19 +104,19 @@ public class SevenZArchiverTest extends AbstractTestCase {
         }
     }
 
-    private void assertDir(String expectedName, ArchiveEntry entry) {
+    private void assertDir(final String expectedName, final ArchiveEntry entry) {
         Assert.assertNotNull(expectedName + " does not exists", entry);
         Assert.assertEquals(expectedName + "/", entry.getName());
         Assert.assertTrue(expectedName + " is not a directory", entry.isDirectory());
     }
 
-    private void assertHelloWorld(String expectedName, String suffix, ArchiveEntry entry, SevenZFile z)
+    private void assertHelloWorld(final String expectedName, final String suffix, final ArchiveEntry entry, final SevenZFile z)
         throws IOException {
         Assert.assertNotNull(expectedName + " does not exists", entry);
         Assert.assertEquals(expectedName, entry.getName());
         Assert.assertFalse(expectedName + " is a directory", entry.isDirectory());
-        byte[] expected = ("Hello, world " + suffix).getBytes(StandardCharsets.UTF_8);
-        byte[] actual = new byte[expected.length];
+        final byte[] expected = ("Hello, world " + suffix).getBytes(StandardCharsets.UTF_8);
+        final byte[] actual = new byte[expected.length];
         Assert.assertEquals(actual.length, z.read(actual));
         Assert.assertEquals(-1, z.read());
         Assert.assertArrayEquals(expected, actual);

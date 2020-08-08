@@ -31,13 +31,13 @@ public class Deflate64BugsTest {
     @Test
     public void readBeyondMemoryException() throws Exception {
         try (ZipFile zfile = new ZipFile(getFile("COMPRESS-380/COMPRESS-380-readbeyondmemory.zip"))) {
-            Enumeration<ZipArchiveEntry> entries = zfile.getEntries();
+            final Enumeration<ZipArchiveEntry> entries = zfile.getEntries();
             while (entries.hasMoreElements()) {
-                ZipArchiveEntry e = entries.nextElement();
-                byte [] buf = new byte [1024 * 8];
+                final ZipArchiveEntry e = entries.nextElement();
+                final byte [] buf = new byte [1024 * 8];
                 try (InputStream is = zfile.getInputStream(e)) {
                     while (true) {
-                        int read = is.read(buf);
+                        final int read = is.read(buf);
                         if (read == -1) {
                             break;
                         }

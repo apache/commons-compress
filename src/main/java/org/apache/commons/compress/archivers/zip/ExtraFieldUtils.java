@@ -86,7 +86,7 @@ public class ExtraFieldUtils {
      */
     public static ZipExtraField createExtraField(final ZipShort headerId)
         throws InstantiationException, IllegalAccessException {
-        ZipExtraField field = createExtraFieldNoDefault(headerId);
+        final ZipExtraField field = createExtraFieldNoDefault(headerId);
         if (field != null) {
             return field;
         }
@@ -157,8 +157,8 @@ public class ExtraFieldUtils {
         throws ZipException {
         return parse(data, local, new ExtraFieldParsingBehavior() {
             @Override
-            public ZipExtraField onUnparseableExtraField(byte[] data, int off, int len, boolean local,
-                int claimedLength) throws ZipException {
+            public ZipExtraField onUnparseableExtraField(final byte[] data, final int off, final int len, final boolean local,
+                final int claimedLength) throws ZipException {
                 return onUnparseableData.onUnparseableExtraField(data, off, len, local, claimedLength);
             }
 
@@ -169,7 +169,7 @@ public class ExtraFieldUtils {
             }
 
             @Override
-            public ZipExtraField fill(ZipExtraField field, byte[] data, int off, int len, boolean local)
+            public ZipExtraField fill(final ZipExtraField field, final byte[] data, final int off, final int len, final boolean local)
                 throws ZipException {
                 return fillExtraField(field, data, off, len, local);
             }
@@ -198,7 +198,7 @@ public class ExtraFieldUtils {
             final ZipShort headerId = new ZipShort(data, start);
             final int length = new ZipShort(data, start + 2).getValue();
             if (start + WORD + length > data.length) {
-                ZipExtraField field = parsingBehavior.onUnparseableExtraField(data, start, data.length - start,
+                final ZipExtraField field = parsingBehavior.onUnparseableExtraField(data, start, data.length - start,
                     local, length);
                 if (field != null) {
                     v.add(field);
@@ -209,7 +209,7 @@ public class ExtraFieldUtils {
                 break LOOP;
             }
             try {
-                ZipExtraField ze = Objects.requireNonNull(parsingBehavior.createExtraField(headerId),
+                final ZipExtraField ze = Objects.requireNonNull(parsingBehavior.createExtraField(headerId),
                     "createExtraField must not return null");
                 v.add(Objects.requireNonNull(parsingBehavior.fill(ze, data, start + WORD, length, local),
                     "fill must not return null"));
@@ -326,7 +326,7 @@ public class ExtraFieldUtils {
                 ze.parseFromCentralDirectoryData(data, off, len);
             }
             return ze;
-        } catch (ArrayIndexOutOfBoundsException aiobe) {
+        } catch (final ArrayIndexOutOfBoundsException aiobe) {
             throw (ZipException) new ZipException("Failed to parse corrupt ZIP extra field of type "
                 + Integer.toHexString(ze.getHeaderId().getValue())).initCause(aiobe);
         }
@@ -388,8 +388,8 @@ public class ExtraFieldUtils {
         public int getKey() { return key; }
 
         @Override
-        public ZipExtraField onUnparseableExtraField(byte[] data, int off, int len, boolean local,
-            int claimedLength) throws ZipException {
+        public ZipExtraField onUnparseableExtraField(final byte[] data, final int off, final int len, final boolean local,
+            final int claimedLength) throws ZipException {
             switch(key) {
             case THROW_KEY:
                 throw new ZipException("Bad extra field starting at "

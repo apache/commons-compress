@@ -52,47 +52,47 @@ public class DataDescriptorTest {
 
     @Test
     public void writesDataDescriptorForDeflatedEntryOnUnseekableOutput() throws IOException {
-        ByteArrayOutputStream o = new ByteArrayOutputStream();
+        final ByteArrayOutputStream o = new ByteArrayOutputStream();
         try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(o)) {
             zos.putArchiveEntry(new ZipArchiveEntry("test1.txt"));
             zos.write("foo".getBytes(StandardCharsets.UTF_8));
             zos.closeArchiveEntry();
         }
-        byte[] data = o.toByteArray();
+        final byte[] data = o.toByteArray();
 
-        byte[] versionInLFH = Arrays.copyOfRange(data, 4, 6);
+        final byte[] versionInLFH = Arrays.copyOfRange(data, 4, 6);
         // 2.0 because of DD
         assertArrayEquals(new byte[] { 20, 0 }, versionInLFH);
-        byte[] gpbInLFH = Arrays.copyOfRange(data, 6, 8);
+        final byte[] gpbInLFH = Arrays.copyOfRange(data, 6, 8);
         // DD and EFS flags
         assertArrayEquals(new byte[] { 8, 8 }, gpbInLFH);
-        byte[] crcAndSizedInLFH = Arrays.copyOfRange(data, 14, 26);
+        final byte[] crcAndSizedInLFH = Arrays.copyOfRange(data, 14, 26);
         assertArrayEquals(new byte[12], crcAndSizedInLFH);
 
-        int cdhStart = findCentralDirectory(data);
-        byte[] versionInCDH = Arrays.copyOfRange(data, cdhStart + 6, cdhStart + 8);
+        final int cdhStart = findCentralDirectory(data);
+        final byte[] versionInCDH = Arrays.copyOfRange(data, cdhStart + 6, cdhStart + 8);
         assertArrayEquals(new byte[] { 20, 0 }, versionInCDH);
-        byte[] gpbInCDH = Arrays.copyOfRange(data, cdhStart + 8, cdhStart + 10);
+        final byte[] gpbInCDH = Arrays.copyOfRange(data, cdhStart + 8, cdhStart + 10);
         assertArrayEquals(new byte[] { 8, 8 }, gpbInCDH);
 
-        int ddStart = cdhStart - 16;
+        final int ddStart = cdhStart - 16;
         assertEquals(ZipLong.DD_SIG, new ZipLong(data, ddStart));
-        long crcFromDD = ZipLong.getValue(data, ddStart + 4);
-        long cSizeFromDD = ZipLong.getValue(data, ddStart + 8);
-        long sizeFromDD = ZipLong.getValue(data, ddStart + 12);
+        final long crcFromDD = ZipLong.getValue(data, ddStart + 4);
+        final long cSizeFromDD = ZipLong.getValue(data, ddStart + 8);
+        final long sizeFromDD = ZipLong.getValue(data, ddStart + 12);
         assertEquals(3, sizeFromDD);
 
-        long crcFromCDH = ZipLong.getValue(data, cdhStart + 16);
+        final long crcFromCDH = ZipLong.getValue(data, cdhStart + 16);
         assertEquals(crcFromDD, crcFromCDH);
-        long cSizeFromCDH = ZipLong.getValue(data, cdhStart + 20);
+        final long cSizeFromCDH = ZipLong.getValue(data, cdhStart + 20);
         assertEquals(cSizeFromDD, cSizeFromCDH);
-        long sizeFromCDH = ZipLong.getValue(data, cdhStart + 24);
+        final long sizeFromCDH = ZipLong.getValue(data, cdhStart + 24);
         assertEquals(sizeFromDD, sizeFromCDH);
     }
 
     @Test
     public void doesntWriteDataDescriptorForDeflatedEntryOnSeekableOutput() throws IOException {
-        File f = new File(dir, "test.zip");
+        final File f = new File(dir, "test.zip");
         try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(f)) {
             zos.putArchiveEntry(new ZipArchiveEntry("test1.txt"));
             zos.write("foo".getBytes(StandardCharsets.UTF_8));
@@ -104,49 +104,49 @@ public class DataDescriptorTest {
             data = IOUtils.toByteArray(fis);
         }
 
-        byte[] versionInLFH = Arrays.copyOfRange(data, 4, 6);
+        final byte[] versionInLFH = Arrays.copyOfRange(data, 4, 6);
         // still 2.0 because of Deflate
         assertArrayEquals(new byte[] { 20, 0 }, versionInLFH);
-        byte[] gpbInLFH = Arrays.copyOfRange(data, 6, 8);
+        final byte[] gpbInLFH = Arrays.copyOfRange(data, 6, 8);
         // no DD but EFS flag
         assertArrayEquals(new byte[] { 0, 8 }, gpbInLFH);
 
-        int cdhStart = findCentralDirectory(data);
-        byte[] versionInCDH = Arrays.copyOfRange(data, cdhStart + 6, cdhStart + 8);
+        final int cdhStart = findCentralDirectory(data);
+        final byte[] versionInCDH = Arrays.copyOfRange(data, cdhStart + 6, cdhStart + 8);
         assertArrayEquals(new byte[] { 20, 0 }, versionInCDH);
-        byte[] gpbInCDH = Arrays.copyOfRange(data, cdhStart + 8, cdhStart + 10);
+        final byte[] gpbInCDH = Arrays.copyOfRange(data, cdhStart + 8, cdhStart + 10);
         assertArrayEquals(new byte[] { 0, 8 }, gpbInCDH);
 
-        int ddStart = cdhStart - 16;
+        final int ddStart = cdhStart - 16;
         assertNotEquals(ZipLong.DD_SIG, new ZipLong(data, ddStart));
-        long crcFromLFH = ZipLong.getValue(data, 14);
-        long cSizeFromLFH = ZipLong.getValue(data, 18);
-        long sizeFromLFH = ZipLong.getValue(data, 22);
+        final long crcFromLFH = ZipLong.getValue(data, 14);
+        final long cSizeFromLFH = ZipLong.getValue(data, 18);
+        final long sizeFromLFH = ZipLong.getValue(data, 22);
         assertEquals(3, sizeFromLFH);
 
-        long crcFromCDH = ZipLong.getValue(data, cdhStart + 16);
+        final long crcFromCDH = ZipLong.getValue(data, cdhStart + 16);
         assertEquals(crcFromLFH, crcFromCDH);
-        long cSizeFromCDH = ZipLong.getValue(data, cdhStart + 20);
+        final long cSizeFromCDH = ZipLong.getValue(data, cdhStart + 20);
         assertEquals(cSizeFromLFH, cSizeFromCDH);
-        long sizeFromCDH = ZipLong.getValue(data, cdhStart + 24);
+        final long sizeFromCDH = ZipLong.getValue(data, cdhStart + 24);
         assertEquals(sizeFromLFH, sizeFromCDH);
     }
 
     @Test
     public void doesntWriteDataDescriptorWhenAddingRawEntries() throws IOException {
-        ByteArrayOutputStream init = new ByteArrayOutputStream();
+        final ByteArrayOutputStream init = new ByteArrayOutputStream();
         try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(init)) {
             zos.putArchiveEntry(new ZipArchiveEntry("test1.txt"));
             zos.write("foo".getBytes(StandardCharsets.UTF_8));
             zos.closeArchiveEntry();
         }
 
-        File f = new File(dir, "test.zip");
+        final File f = new File(dir, "test.zip");
         try (FileOutputStream fos = new FileOutputStream(f)) {
             fos.write(init.toByteArray());
         }
 
-        ByteArrayOutputStream o = new ByteArrayOutputStream();
+        final ByteArrayOutputStream o = new ByteArrayOutputStream();
         ZipArchiveEntry zae;
         try (ZipFile zf = new ZipFile(f);
              ZipArchiveOutputStream zos = new ZipArchiveOutputStream(o)) {
@@ -154,36 +154,36 @@ public class DataDescriptorTest {
             zos.addRawArchiveEntry(zae, zf.getRawInputStream(zae));
         }
 
-        byte[] data = o.toByteArray();
-        byte[] versionInLFH = Arrays.copyOfRange(data, 4, 6);
+        final byte[] data = o.toByteArray();
+        final byte[] versionInLFH = Arrays.copyOfRange(data, 4, 6);
         // still 2.0 because of Deflate
         assertArrayEquals(new byte[] { 20, 0 }, versionInLFH);
-        byte[] gpbInLFH = Arrays.copyOfRange(data, 6, 8);
+        final byte[] gpbInLFH = Arrays.copyOfRange(data, 6, 8);
         // no DD but EFS flag
         assertArrayEquals(new byte[] { 0, 8 }, gpbInLFH);
 
-        int cdhStart = findCentralDirectory(data);
-        byte[] versionInCDH = Arrays.copyOfRange(data, cdhStart + 6, cdhStart + 8);
+        final int cdhStart = findCentralDirectory(data);
+        final byte[] versionInCDH = Arrays.copyOfRange(data, cdhStart + 6, cdhStart + 8);
         assertArrayEquals(new byte[] { 20, 0 }, versionInCDH);
-        byte[] gpbInCDH = Arrays.copyOfRange(data, cdhStart + 8, cdhStart + 10);
+        final byte[] gpbInCDH = Arrays.copyOfRange(data, cdhStart + 8, cdhStart + 10);
         assertArrayEquals(new byte[] { 0, 8 }, gpbInCDH);
 
-        int ddStart = cdhStart - 16;
+        final int ddStart = cdhStart - 16;
         assertNotEquals(ZipLong.DD_SIG, new ZipLong(data, ddStart));
-        long crcFromLFH = ZipLong.getValue(data, 14);
-        long cSizeFromLFH = ZipLong.getValue(data, 18);
-        long sizeFromLFH = ZipLong.getValue(data, 22);
+        final long crcFromLFH = ZipLong.getValue(data, 14);
+        final long cSizeFromLFH = ZipLong.getValue(data, 18);
+        final long sizeFromLFH = ZipLong.getValue(data, 22);
         assertEquals(3, sizeFromLFH);
 
-        long crcFromCDH = ZipLong.getValue(data, cdhStart + 16);
+        final long crcFromCDH = ZipLong.getValue(data, cdhStart + 16);
         assertEquals(crcFromLFH, crcFromCDH);
-        long cSizeFromCDH = ZipLong.getValue(data, cdhStart + 20);
+        final long cSizeFromCDH = ZipLong.getValue(data, cdhStart + 20);
         assertEquals(cSizeFromLFH, cSizeFromCDH);
-        long sizeFromCDH = ZipLong.getValue(data, cdhStart + 24);
+        final long sizeFromCDH = ZipLong.getValue(data, cdhStart + 24);
         assertEquals(sizeFromLFH, sizeFromCDH);
     }
 
-    private int findCentralDirectory(byte[] data) {
+    private int findCentralDirectory(final byte[] data) {
         // not a ZIP64 archive, no comment, "End of central directory record" at the end
         return (int) ZipLong.getValue(data, data.length - 22 + 16);
     }

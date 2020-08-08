@@ -42,8 +42,8 @@ public class FactoryTest extends AbstractTestCase {
         roundtripViaFactory(CompressorStreamFactory.getLZ4Block());
     }
 
-    private void roundtripViaFactory(String format) throws Exception {
-        File input = getFile("bla.tar");
+    private void roundtripViaFactory(final String format) throws Exception {
+        final File input = getFile("bla.tar");
         long start = System.currentTimeMillis();
         final File outputSz = new File(dir, input.getName() + "." + format + ".lz4");
         try (FileInputStream is = new FileInputStream(input);
@@ -57,8 +57,8 @@ public class FactoryTest extends AbstractTestCase {
         try (FileInputStream is = new FileInputStream(input);
              InputStream sis = new CompressorStreamFactory()
                  .createCompressorInputStream(format, new FileInputStream(outputSz))) {
-            byte[] expected = IOUtils.toByteArray(is);
-            byte[] actual = IOUtils.toByteArray(sis);
+            final byte[] expected = IOUtils.toByteArray(is);
+            final byte[] actual = IOUtils.toByteArray(sis);
             Assert.assertArrayEquals(expected, actual);
         }
         System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");

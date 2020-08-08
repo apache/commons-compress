@@ -311,8 +311,8 @@ public class TarUtils {
      * @return a parsed sparse struct
      */
     public static TarArchiveStructSparse parseSparse(final byte[] buffer, final int offset) {
-        long sparseOffset = parseOctalOrBinary(buffer, offset, SPARSE_OFFSET_LEN);
-        long sparseNumbytes = parseOctalOrBinary(buffer, offset + SPARSE_OFFSET_LEN, SPARSE_NUMBYTES_LEN);
+        final long sparseOffset = parseOctalOrBinary(buffer, offset, SPARSE_OFFSET_LEN);
+        final long sparseNumbytes = parseOctalOrBinary(buffer, offset + SPARSE_OFFSET_LEN, SPARSE_NUMBYTES_LEN);
 
         return new TarArchiveStructSparse(sparseOffset, sparseNumbytes);
     }

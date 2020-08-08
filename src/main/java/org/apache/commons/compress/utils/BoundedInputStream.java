@@ -79,8 +79,8 @@ public class BoundedInputStream extends InputStream {
      */
     @Override
     public long skip(final long n) throws IOException {
-        long bytesToSkip = Math.min(bytesRemaining, n);
-        long bytesSkipped = in.skip(bytesToSkip);
+        final long bytesToSkip = Math.min(bytesRemaining, n);
+        final long bytesSkipped = in.skip(bytesToSkip);
         bytesRemaining -= bytesSkipped;
 
         return bytesSkipped;

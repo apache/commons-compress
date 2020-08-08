@@ -30,7 +30,7 @@ public class SevenZFileOptions {
     private final int maxMemoryLimitInKb;
     private final boolean useDefaultNameForUnnamedEntries;
 
-    private SevenZFileOptions(int maxMemoryLimitInKb, boolean useDefaultNameForUnnamedEntries) {
+    private SevenZFileOptions(final int maxMemoryLimitInKb, final boolean useDefaultNameForUnnamedEntries) {
         this.maxMemoryLimitInKb = maxMemoryLimitInKb;
         this.useDefaultNameForUnnamedEntries = useDefaultNameForUnnamedEntries;
     }
@@ -90,7 +90,7 @@ public class SevenZFileOptions {
          * @param maxMemoryLimitInKb limit of the maximum amount of memory to use
          * @return the reconfigured builder
          */
-        public Builder withMaxMemoryLimitInKb(int maxMemoryLimitInKb) {
+        public Builder withMaxMemoryLimitInKb(final int maxMemoryLimitInKb) {
             this.maxMemoryLimitInKb = maxMemoryLimitInKb;
             return this;
         }
@@ -103,7 +103,7 @@ public class SevenZFileOptions {
          * unnamed entries will be set to the archive's default name
          * @return the reconfigured builder
          */
-        public Builder withUseDefaultNameForUnnamedEntries(boolean useDefaultNameForUnnamedEntries) {
+        public Builder withUseDefaultNameForUnnamedEntries(final boolean useDefaultNameForUnnamedEntries) {
             this.useDefaultNameForUnnamedEntries = useDefaultNameForUnnamedEntries;
             return this;
         }

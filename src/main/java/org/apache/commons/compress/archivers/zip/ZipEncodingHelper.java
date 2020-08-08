@@ -56,10 +56,10 @@ public abstract class ZipEncodingHelper {
         if (name != null) {
             try {
                 cs = Charset.forName(name);
-            } catch (UnsupportedCharsetException e) { // NOSONAR we use the default encoding instead
+            } catch (final UnsupportedCharsetException e) { // NOSONAR we use the default encoding instead
             }
         }
-        boolean useReplacement = isUTF8(cs.name());
+        final boolean useReplacement = isUTF8(cs.name());
         return new NioZipEncoding(cs, useReplacement);
     }
 
@@ -84,7 +84,7 @@ public abstract class ZipEncodingHelper {
         return false;
     }
 
-    static ByteBuffer growBufferBy(ByteBuffer buffer, int increment) {
+    static ByteBuffer growBufferBy(final ByteBuffer buffer, final int increment) {
         buffer.limit(buffer.position());
         buffer.rewind();
 

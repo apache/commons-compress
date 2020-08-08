@@ -42,12 +42,12 @@ public class Deflate64CompressorInputStream extends CompressorInputStream implem
      *
      * @param in the stream to read from
      */
-    public Deflate64CompressorInputStream(InputStream in) {
+    public Deflate64CompressorInputStream(final InputStream in) {
         this(new HuffmanDecoder(in));
         originalStream = in;
     }
 
-    Deflate64CompressorInputStream(HuffmanDecoder decoder) {
+    Deflate64CompressorInputStream(final HuffmanDecoder decoder) {
         this.decoder = decoder;
     }
 
@@ -57,7 +57,7 @@ public class Deflate64CompressorInputStream extends CompressorInputStream implem
     @Override
     public int read() throws IOException {
         while (true) {
-            int r = read(oneByte);
+            final int r = read(oneByte);
             switch (r) {
                 case 1:
                     return oneByte[0] & 0xFF;
@@ -75,7 +75,7 @@ public class Deflate64CompressorInputStream extends CompressorInputStream implem
      * @throws java.io.EOFException if the underlying stream is exhausted before the end of deflated data was reached.
      */
     @Override
-    public int read(byte[] b, int off, int len) throws IOException {
+    public int read(final byte[] b, final int off, final int len) throws IOException {
         if (len == 0) {
             return 0;
         }
@@ -83,7 +83,7 @@ public class Deflate64CompressorInputStream extends CompressorInputStream implem
         if (decoder != null) {
             try {
                 read = decoder.decode(b, off, len);
-            } catch (RuntimeException ex) {
+            } catch (final RuntimeException ex) {
                 throw new IOException("Invalid Deflate64 input", ex);
             }
             compressedBytesRead = decoder.getBytesRead();

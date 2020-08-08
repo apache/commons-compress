@@ -36,7 +36,7 @@ public interface CloseableConsumer {
      */
     public static CloseableConsumer CLOSING_CONSUMER = new CloseableConsumer() {
         @Override
-        public void accept(Closeable c) throws IOException {
+        public void accept(final Closeable c) throws IOException {
             c.close();
         }
     };
@@ -46,7 +46,7 @@ public interface CloseableConsumer {
      */
     public static CloseableConsumer NULL_CONSUMER = new CloseableConsumer() {
         @Override
-        public void accept(Closeable c) { }
+        public void accept(final Closeable c) { }
     };
 
     /**

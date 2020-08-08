@@ -41,8 +41,8 @@ public class SevenZArchiveEntryTest {
 
     @Test
     public void noMethodsIsDifferentFromSomeMethods() {
-        SevenZArchiveEntry z1 = new SevenZArchiveEntry();
-        SevenZArchiveEntry z2 = new SevenZArchiveEntry();
+        final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
+        final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
         z2.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.COPY)));
         Assert.assertNotEquals(z1, z2);
         Assert.assertNotEquals(z2, z1);
@@ -50,8 +50,8 @@ public class SevenZArchiveEntryTest {
 
     @Test
     public void oneMethodsIsDifferentFromTwoMethods() {
-        SevenZArchiveEntry z1 = new SevenZArchiveEntry();
-        SevenZArchiveEntry z2 = new SevenZArchiveEntry();
+        final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
+        final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
         z1.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.COPY)));
         z2.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER),
                                            new SevenZMethodConfiguration(SevenZMethod.LZMA2)));
@@ -61,8 +61,8 @@ public class SevenZArchiveEntryTest {
 
     @Test
     public void sameMethodsYieldEqualEntries() {
-        SevenZArchiveEntry z1 = new SevenZArchiveEntry();
-        SevenZArchiveEntry z2 = new SevenZArchiveEntry();
+        final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
+        final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
         z1.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER),
                                            new SevenZMethodConfiguration(SevenZMethod.LZMA2)));
         z2.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER),
@@ -73,8 +73,8 @@ public class SevenZArchiveEntryTest {
 
     @Test
     public void methodOrderMattersInEquals() {
-        SevenZArchiveEntry z1 = new SevenZArchiveEntry();
-        SevenZArchiveEntry z2 = new SevenZArchiveEntry();
+        final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
+        final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
         z1.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.LZMA2),
                                            new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER)));
         z2.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER),
@@ -85,9 +85,9 @@ public class SevenZArchiveEntryTest {
 
     @Test
     public void methodConfigurationMattersInEquals() {
-        SevenZArchiveEntry z1 = new SevenZArchiveEntry();
-        SevenZArchiveEntry z2 = new SevenZArchiveEntry();
-        SevenZArchiveEntry z3 = new SevenZArchiveEntry();
+        final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
+        final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
+        final SevenZArchiveEntry z3 = new SevenZArchiveEntry();
         z1.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.LZMA2, 1)));
         z2.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.LZMA2, 2)));
         z3.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.LZMA2, 2)));

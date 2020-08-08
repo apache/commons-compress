@@ -83,7 +83,7 @@ public class IOUtilsTest {
 
     @Test
     public void readFullyOnChannelReadsFully() throws IOException {
-        ByteBuffer b = ByteBuffer.allocate(20);
+        final ByteBuffer b = ByteBuffer.allocate(20);
         final byte[] source = new byte[20];
         for (byte i = 0; i < 20; i++) {
             source[i] = i;
@@ -94,7 +94,7 @@ public class IOUtilsTest {
 
     @Test(expected = EOFException.class)
     public void readFullyOnChannelThrowsEof() throws IOException {
-        ByteBuffer b = ByteBuffer.allocate(21);
+        final ByteBuffer b = ByteBuffer.allocate(21);
         final byte[] source = new byte[20];
         for (byte i = 0; i < 20; i++) {
             source[i] = i;
@@ -107,11 +107,11 @@ public class IOUtilsTest {
         IOUtils.copy(new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream(), 0);
     }
 
-    private static void readFully(final byte[] source, ByteBuffer b) throws IOException {
+    private static void readFully(final byte[] source, final ByteBuffer b) throws IOException {
         IOUtils.readFully(new ReadableByteChannel() {
                 private int idx;
                 @Override
-                public int read(ByteBuffer buf) {
+                public int read(final ByteBuffer buf) {
                     if (idx >= source.length) {
                         return -1;
                     }

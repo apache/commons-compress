@@ -43,7 +43,7 @@ public final class Parameters {
      * @throws IllegalArgumentException if windowSize is not a power of two.
      * @return a builder configured for the given window size
      */
-    public static Builder builder(int windowSize) {
+    public static Builder builder(final int windowSize) {
         return new Builder(windowSize);
     }
 
@@ -56,7 +56,7 @@ public final class Parameters {
         private Integer niceBackReferenceLength, maxCandidates, lazyThreshold;
         private Boolean lazyMatches;
 
-        private Builder(int windowSize) {
+        private Builder(final int windowSize) {
             if (windowSize < 2 || !isPowerOfTwo(windowSize)) {
                 throw new IllegalArgumentException("windowSize must be a power of two");
             }
@@ -85,7 +85,7 @@ public final class Parameters {
          * is smaller than <code>minBackReferenceLength</code>.
          * @return the builder
          */
-        public Builder withMinBackReferenceLength(int minBackReferenceLength) {
+        public Builder withMinBackReferenceLength(final int minBackReferenceLength) {
             this.minBackReferenceLength = Math.max(TRUE_MIN_BACK_REFERENCE_LENGTH, minBackReferenceLength);
             if (windowSize < this.minBackReferenceLength) {
                 throw new IllegalArgumentException("minBackReferenceLength can't be bigger than windowSize");
@@ -111,7 +111,7 @@ public final class Parameters {
          * is capped at <code>windowSize - 1</code>.
          * @return the builder
          */
-        public Builder withMaxBackReferenceLength(int maxBackReferenceLength) {
+        public Builder withMaxBackReferenceLength(final int maxBackReferenceLength) {
             this.maxBackReferenceLength = maxBackReferenceLength < minBackReferenceLength ? minBackReferenceLength
                 : Math.min(maxBackReferenceLength, windowSize - 1);
             return this;
@@ -131,7 +131,7 @@ public final class Parameters {
          * - 1</code>.
          * @return the builder
          */
-        public Builder withMaxOffset(int maxOffset) {
+        public Builder withMaxOffset(final int maxOffset) {
             this.maxOffset = maxOffset < 1 ? windowSize - 1 : Math.min(maxOffset, windowSize - 1);
             return this;
         }
@@ -150,7 +150,7 @@ public final class Parameters {
          * <code>windowSize</code>.
          * @return the builder
          */
-        public Builder withMaxLiteralLength(int maxLiteralLength) {
+        public Builder withMaxLiteralLength(final int maxLiteralLength) {
             this.maxLiteralLength = maxLiteralLength < 1 ? windowSize
                 : Math.min(maxLiteralLength, windowSize);
             return this;
@@ -165,7 +165,7 @@ public final class Parameters {
          * @param niceLen the "nice length" of a back-reference
          * @return the builder
          */
-        public Builder withNiceBackReferenceLength(int niceLen) {
+        public Builder withNiceBackReferenceLength(final int niceLen) {
             niceBackReferenceLength = niceLen;
             return this;
         }
@@ -177,7 +177,7 @@ public final class Parameters {
          * @param maxCandidates maximum number of back-reference candidates
          * @return the builder
          */
-        public Builder withMaxNumberOfCandidates(int maxCandidates) {
+        public Builder withMaxNumberOfCandidates(final int maxCandidates) {
             this.maxCandidates = maxCandidates;
             return this;
         }
@@ -192,7 +192,7 @@ public final class Parameters {
          * @param lazy whether lazy matching should be performed
          * @return the builder
          */
-        public Builder withLazyMatching(boolean lazy) {
+        public Builder withLazyMatching(final boolean lazy) {
             lazyMatches = lazy;
             return this;
         }
@@ -205,7 +205,7 @@ public final class Parameters {
          * @param threshold the threshold for lazy matching
          * @return the builder
          */
-        public Builder withLazyThreshold(int threshold) {
+        public Builder withLazyThreshold(final int threshold) {
             lazyThreshold = threshold;
             return this;
         }
@@ -245,11 +245,11 @@ public final class Parameters {
          */
         public Parameters build() {
             // default settings tuned for a compromise of good compression and acceptable speed
-            int niceLen = niceBackReferenceLength != null ? niceBackReferenceLength
+            final int niceLen = niceBackReferenceLength != null ? niceBackReferenceLength
                 : Math.max(minBackReferenceLength, maxBackReferenceLength / 2);
-            int candidates = maxCandidates != null ? maxCandidates : Math.max(256, windowSize / 128);
-            boolean lazy = lazyMatches == null || lazyMatches;
-            int threshold = lazy ? (lazyThreshold != null ? lazyThreshold : niceLen) : minBackReferenceLength;
+            final int candidates = maxCandidates != null ? maxCandidates : Math.max(256, windowSize / 128);
+            final boolean lazy = lazyMatches == null || lazyMatches;
+            final int threshold = lazy ? (lazyThreshold != null ? lazyThreshold : niceLen) : minBackReferenceLength;
 
             return new Parameters(windowSize, minBackReferenceLength, maxBackReferenceLength,
                 maxOffset, maxLiteralLength, niceLen, candidates, lazy, threshold);
@@ -260,9 +260,9 @@ public final class Parameters {
         niceBackReferenceLength, maxCandidates, lazyThreshold;
     private final boolean lazyMatching;
 
-    private Parameters(int windowSize, int minBackReferenceLength, int maxBackReferenceLength, int maxOffset,
-            int maxLiteralLength, int niceBackReferenceLength, int maxCandidates, boolean lazyMatching,
-            int lazyThreshold) {
+    private Parameters(final int windowSize, final int minBackReferenceLength, final int maxBackReferenceLength, final int maxOffset,
+            final int maxLiteralLength, final int niceBackReferenceLength, final int maxCandidates, final boolean lazyMatching,
+            final int lazyThreshold) {
         this.windowSize = windowSize;
         this.minBackReferenceLength = minBackReferenceLength;
         this.maxBackReferenceLength = maxBackReferenceLength;
@@ -343,7 +343,7 @@ public final class Parameters {
         return lazyThreshold;
     }
 
-    private static final boolean isPowerOfTwo(int x) {
+    private static final boolean isPowerOfTwo(final int x) {
         // pre-condition: x > 0
         return (x & (x - 1)) == 0;
     }

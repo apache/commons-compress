@@ -230,7 +230,7 @@ public class ParallelScatterZipCreator {
         return new Callable<ScatterZipOutputStream>() {
             @Override
             public ScatterZipOutputStream call() throws Exception {
-                ScatterZipOutputStream scatterStream = tlScatterStreams.get();
+                final ScatterZipOutputStream scatterStream = tlScatterStreams.get();
                 scatterStream.addArchiveEntry(zipArchiveEntryRequest);
                 return scatterStream;
             }
@@ -257,7 +257,7 @@ public class ParallelScatterZipCreator {
         return new Callable<ScatterZipOutputStream>() {
             @Override
             public ScatterZipOutputStream call() throws Exception {
-                ScatterZipOutputStream scatterStream = tlScatterStreams.get();
+                final ScatterZipOutputStream scatterStream = tlScatterStreams.get();
                 scatterStream.addArchiveEntry(zipArchiveEntryRequestSupplier.get());
                 return scatterStream;
             }
@@ -299,7 +299,7 @@ public class ParallelScatterZipCreator {
             compressionDoneAt = System.currentTimeMillis();
 
             for (final Future<? extends ScatterZipOutputStream> future : futures) {
-                ScatterZipOutputStream scatterStream = future.get();
+                final ScatterZipOutputStream scatterStream = future.get();
                 scatterStream.zipEntryWriter().writeNextZipEntry(targetStream);
             }
 
@@ -326,7 +326,7 @@ public class ParallelScatterZipCreator {
         for (final ScatterZipOutputStream scatterStream : streams) {
             try {
                 scatterStream.close();
-            } catch (IOException ex) { //NOSONAR
+            } catch (final IOException ex) { //NOSONAR
                 // no way to properly log this
             }
         }

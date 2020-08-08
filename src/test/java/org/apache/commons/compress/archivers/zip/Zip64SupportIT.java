@@ -1966,7 +1966,7 @@ public class Zip64SupportIT {
                     }, extra);
                     // skip compressed size
                     a.skipBytes(8);
-                    byte[] offset = new byte[8];
+                    final byte[] offset = new byte[8];
                     a.readFully(offset);
                     assertArrayEquals("extra offset", new byte[] {
                             0, 0, 0, 0, 0, 0, 0, 0,
@@ -2325,7 +2325,7 @@ public class Zip64SupportIT {
                     }, extra);
                     // skip compressed size
                     a.skipBytes(8);
-                    byte[] offset = new byte[8];
+                    final byte[] offset = new byte[8];
                     a.readFully(offset);
                     assertArrayEquals("extra offset", new byte[] {
                             0, 0, 0, 0, 0, 0, 0, 0,

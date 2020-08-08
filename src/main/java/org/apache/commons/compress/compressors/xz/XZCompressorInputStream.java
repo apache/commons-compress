@@ -125,8 +125,8 @@ public class XZCompressorInputStream extends CompressorInputStream
      *
      * @since 1.14
      */
-    public XZCompressorInputStream(InputStream inputStream,
-                                   boolean decompressConcatenated, final int memoryLimitInKb)
+    public XZCompressorInputStream(final InputStream inputStream,
+                                   final boolean decompressConcatenated, final int memoryLimitInKb)
             throws IOException {
         countingStream = new CountingInputStream(inputStream);
         if (decompressConcatenated) {
@@ -142,7 +142,7 @@ public class XZCompressorInputStream extends CompressorInputStream
             final int ret = in.read();
             count(ret == -1 ? -1 : 1);
             return ret;
-        } catch (org.tukaani.xz.MemoryLimitException e) {
+        } catch (final org.tukaani.xz.MemoryLimitException e) {
             throw new MemoryLimitException(e.getMemoryNeeded(), e.getMemoryLimit(), e);
         }
     }
@@ -156,7 +156,7 @@ public class XZCompressorInputStream extends CompressorInputStream
             final int ret = in.read(buf, off, len);
             count(ret);
             return ret;
-        } catch (org.tukaani.xz.MemoryLimitException e) {
+        } catch (final org.tukaani.xz.MemoryLimitException e) {
             //convert to commons-compress MemoryLimtException
             throw new MemoryLimitException(e.getMemoryNeeded(), e.getMemoryLimit(), e);
         }
@@ -166,7 +166,7 @@ public class XZCompressorInputStream extends CompressorInputStream
     public long skip(final long n) throws IOException {
         try {
             return IOUtils.skip(in, n);
-        } catch (org.tukaani.xz.MemoryLimitException e) {
+        } catch (final org.tukaani.xz.MemoryLimitException e) {
             //convert to commons-compress MemoryLimtException
             throw new MemoryLimitException(e.getMemoryNeeded(), e.getMemoryLimit(), e);
         }

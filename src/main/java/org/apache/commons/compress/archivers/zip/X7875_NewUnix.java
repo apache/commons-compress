@@ -168,9 +168,9 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
         // (e.g., so that the sign-bit is set to zero).  We need to remove that
         // before sending the number over the wire.
         uidBytes = trimLeadingZeroesForceMinLength(uidBytes);
-        int uidBytesLen = uidBytes != null ? uidBytes.length : 0;
+        final int uidBytesLen = uidBytes != null ? uidBytes.length : 0;
         gidBytes = trimLeadingZeroesForceMinLength(gidBytes);
-        int gidBytesLen = gidBytes != null ? gidBytes.length : 0;
+        final int gidBytesLen = gidBytes != null ? gidBytes.length : 0;
 
         // Couldn't bring myself to just call getLocalFileDataLength() when we've
         // already got the arrays right here.  Yeah, yeah, I know, premature

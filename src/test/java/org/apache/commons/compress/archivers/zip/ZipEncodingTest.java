@@ -47,17 +47,17 @@ public class ZipEncodingTest {
 
     @Test
     public void testNothingToMakeCoverallsHappier() {
-        Object o = new ZipEncodingHelper() {
+        final Object o = new ZipEncodingHelper() {
         };
         assertNotNull(o);
     }
 
     @Test
     public void testGetNonexistentEncoding() throws IOException {
-        ZipEncoding ze = ZipEncodingHelper.getZipEncoding("I-am-a-banana");
+        final ZipEncoding ze = ZipEncodingHelper.getZipEncoding("I-am-a-banana");
         assertNotNull(ze);
         if (ze instanceof CharsetAccessor) {
-            CharsetAccessor hasCharset = (CharsetAccessor) ze;
+            final CharsetAccessor hasCharset = (CharsetAccessor) ze;
             Assert.assertEquals(Charset.defaultCharset(), hasCharset.getCharset());
         }
     }
@@ -86,7 +86,7 @@ public class ZipEncodingTest {
     }
 
 
-    private void doSimpleEncodingsTest(int n) throws IOException {
+    private void doSimpleEncodingsTest(final int n) throws IOException {
 
         doSimpleEncodingTest("Cp" + n, null);
         doSimpleEncodingTest("cp" + n, null);

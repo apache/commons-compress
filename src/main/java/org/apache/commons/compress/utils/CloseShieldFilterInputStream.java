@@ -29,7 +29,7 @@ import java.io.InputStream;
  */
 public class CloseShieldFilterInputStream extends FilterInputStream {
 
-    public CloseShieldFilterInputStream(InputStream in) {
+    public CloseShieldFilterInputStream(final InputStream in) {
         super(in);
     }
 

@@ -321,7 +321,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @throws IOException on error
      * @since 1.21
      */
-    public ZipArchiveOutputStream(final Path file, OpenOption... options) throws IOException {
+    public ZipArchiveOutputStream(final Path file, final OpenOption... options) throws IOException {
         def = new Deflater(level, true);
         OutputStream o = null;
         SeekableByteChannel _channel = null;
@@ -386,7 +386,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @throws IOException on error
      * @since 1.13
      */
-    public ZipArchiveOutputStream(SeekableByteChannel channel) throws IOException {
+    public ZipArchiveOutputStream(final SeekableByteChannel channel) throws IOException {
         this.channel = channel;
         def = new Deflater(level, true);
         streamCompressor = StreamCompressor.create(channel, def);
@@ -536,12 +536,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             throw new IOException("This archive contains unclosed entries.");
         }
 
-        long cdOverallOffset = streamCompressor.getTotalBytesWritten();
+        final long cdOverallOffset = streamCompressor.getTotalBytesWritten();
         cdOffset = cdOverallOffset;
         if (isSplitZip) {
             // when creating a split zip, the offset should be
             // the offset to the corresponding segment disk
-            ZipSplitOutputStream zipSplitOutputStream = (ZipSplitOutputStream)this.out;
+            final ZipSplitOutputStream zipSplitOutputStream = (ZipSplitOutputStream)this.out;
             cdOffset = zipSplitOutputStream.getCurrentSplitSegmentBytesWritten();
             cdDiskNumberStart = zipSplitOutputStream.getCurrentSplitSegmentIndex();
         }
@@ -1135,7 +1135,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         if (isSplitZip) {
             // when creating a split zip, the offset should be
             // the offset to the corresponding segment disk
-            ZipSplitOutputStream splitOutputStream = (ZipSplitOutputStream)this.out;
+            final ZipSplitOutputStream splitOutputStream = (ZipSplitOutputStream)this.out;
             ze.setDiskNumberStart(splitOutputStream.getCurrentSplitSegmentIndex());
             localHeaderStart = splitOutputStream.getCurrentSplitSegmentBytesWritten();
         }
@@ -1149,12 +1149,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
 
     private byte[] createLocalFileHeader(final ZipArchiveEntry ze, final ByteBuffer name, final boolean encodable,
-                                         final boolean phased, long archiveOffset) {
-        ZipExtraField oldEx = ze.getExtraField(ResourceAlignmentExtraField.ID);
+                                         final boolean phased, final long archiveOffset) {
+        final ZipExtraField oldEx = ze.getExtraField(ResourceAlignmentExtraField.ID);
         if (oldEx != null) {
             ze.removeExtraField(ResourceAlignmentExtraField.ID);
         }
-        ResourceAlignmentExtraField oldAlignmentEx =
+        final ResourceAlignmentExtraField oldAlignmentEx =
             oldEx instanceof ResourceAlignmentExtraField ? (ResourceAlignmentExtraField) oldEx : null;
 
         int alignment = ze.getAlignment();
@@ -1163,11 +1163,11 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         }
 
         if (alignment > 1 || (oldAlignmentEx != null && !oldAlignmentEx.allowMethodChange())) {
-            int oldLength = LFH_FILENAME_OFFSET +
+            final int oldLength = LFH_FILENAME_OFFSET +
                             name.limit() - name.position() +
                             ze.getLocalFileDataExtra().length;
 
-            int padding = (int) ((-archiveOffset - oldLength - ZipExtraField.EXTRAFIELD_HEADER_SIZE
+            final int padding = (int) ((-archiveOffset - oldLength - ZipExtraField.EXTRAFIELD_HEADER_SIZE
                             - ResourceAlignmentExtraField.BASE_SIZE) &
                             (alignment - 1));
             ze.addExtraField(new ResourceAlignmentExtraField(alignment,
@@ -1343,11 +1343,11 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         if(isSplitZip) {
             // calculate the disk number for every central file header,
             // this will be used in writing End Of Central Directory and Zip64 End Of Central Directory
-            int currentSplitSegment = ((ZipSplitOutputStream)this.out).getCurrentSplitSegmentIndex();
+            final int currentSplitSegment = ((ZipSplitOutputStream)this.out).getCurrentSplitSegmentIndex();
             if(numberOfCDInDiskData.get(currentSplitSegment) == null) {
                 numberOfCDInDiskData.put(currentSplitSegment, 1);
             } else {
-                int originalNumberOfCD = numberOfCDInDiskData.get(currentSplitSegment);
+                final int originalNumberOfCD = numberOfCDInDiskData.get(currentSplitSegment);
                 numberOfCDInDiskData.put(currentSplitSegment, originalNumberOfCD + 1);
             }
         }
@@ -1502,7 +1502,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         final int numberOfEntries = entries.size();
 
         // total number of entries in the central directory on this disk
-        int numOfEntriesOnThisDisk = isSplitZip
+        final int numOfEntriesOnThisDisk = isSplitZip
             ? (numberOfCDInDiskData.get(numberOfThisDisk) == null ? 0 : numberOfCDInDiskData.get(numberOfThisDisk))
             : numberOfEntries;
         final byte[] numOfEntriesOnThisDiskData = ZipShort
@@ -1599,7 +1599,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         if(isSplitZip) {
             // when creating a split zip, the offset of should be
             // the offset to the corresponding segment disk
-            ZipSplitOutputStream zipSplitOutputStream = (ZipSplitOutputStream)this.out;
+            final ZipSplitOutputStream zipSplitOutputStream = (ZipSplitOutputStream)this.out;
             offset = zipSplitOutputStream.getCurrentSplitSegmentBytesWritten();
             diskNumberStart = zipSplitOutputStream.getCurrentSplitSegmentIndex();
         }
@@ -1634,7 +1634,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         writeOut(ZipLong.getBytes(cdDiskNumberStart));
 
         // total number of entries in the central directory on this disk
-        int numOfEntriesOnThisDisk = isSplitZip
+        final int numOfEntriesOnThisDisk = isSplitZip
             ? (numberOfCDInDiskData.get(numberOfThisDisk) == null ? 0 : numberOfCDInDiskData.get(numberOfThisDisk))
             : entries.size();
         final byte[] numOfEntriesOnThisDiskData = ZipEightByteInteger.getBytes(numOfEntriesOnThisDisk);
@@ -1692,7 +1692,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         if(isSplitZip) {
             numberOfThisDisk = ((ZipSplitOutputStream)this.out).getCurrentSplitSegmentIndex();
         }
-        int numOfEntriesOnThisDisk = numberOfCDInDiskData.get(numberOfThisDisk) == null ? 0 : numberOfCDInDiskData.get(numberOfThisDisk);
+        final int numOfEntriesOnThisDisk = numberOfCDInDiskData.get(numberOfThisDisk) == null ? 0 : numberOfCDInDiskData.get(numberOfThisDisk);
         return numberOfThisDisk >= ZIP64_MAGIC_SHORT            /* number of this disk */
                 || cdDiskNumberStart >= ZIP64_MAGIC_SHORT       /* number of the disk with the start of the central directory */
                 || numOfEntriesOnThisDisk >= ZIP64_MAGIC_SHORT  /* total number of entries in the central directory on this disk */
@@ -1725,7 +1725,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
 
-    private GeneralPurposeBit getGeneralPurposeBits(final boolean utfFallback, boolean usesDataDescriptor) {
+    private GeneralPurposeBit getGeneralPurposeBits(final boolean utfFallback, final boolean usesDataDescriptor) {
         final GeneralPurposeBit b = new GeneralPurposeBit();
         b.useUTF8ForNames(useUTF8Flag || utfFallback);
         if (usesDataDescriptor) {
@@ -1744,11 +1744,11 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         return versionNeededToExtractMethod(zipMethod);
     }
 
-    private boolean usesDataDescriptor(final int zipMethod, boolean phased) {
+    private boolean usesDataDescriptor(final int zipMethod, final boolean phased) {
         return !phased && zipMethod == DEFLATED && channel == null;
     }
 
-    private int versionNeededToExtractMethod(int zipMethod) {
+    private int versionNeededToExtractMethod(final int zipMethod) {
         return zipMethod == DEFLATED ? DEFLATE_MIN_VERSION : INITIAL_VERSION;
     }
 
@@ -1790,7 +1790,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @since 1.21
      */
     @Override
-    public ArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, LinkOption... options)
+    public ArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options)
         throws IOException {
         if (finished) {
             throw new IOException("Stream has already been finished");
@@ -1810,7 +1810,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             entry.causedUseOfZip64 = !hasUsedZip64;
         }
         hasUsedZip64 = true;
-        ZipExtraField extra = ze.getExtraField(Zip64ExtendedInformationExtraField.HEADER_ID);
+        final ZipExtraField extra = ze.getExtraField(Zip64ExtendedInformationExtraField.HEADER_ID);
         Zip64ExtendedInformationExtraField z64 = extra instanceof Zip64ExtendedInformationExtraField
             ? (Zip64ExtendedInformationExtraField) extra : null;
         if (z64 == null) {
@@ -1961,7 +1961,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private static final class EntryMetaData {
         private final long offset;
         private final boolean usesDataDescriptor;
-        private EntryMetaData(long offset, boolean usesDataDescriptor) {
+        private EntryMetaData(final long offset, final boolean usesDataDescriptor) {
             this.offset = offset;
             this.usesDataDescriptor = usesDataDescriptor;
         }

@@ -99,7 +99,7 @@ public class ArchiveUtilsTest extends AbstractTestCase {
     @Test
     public void testIsEqualWithNullWithPositive() {
 
-        byte[] byteArray = new byte[8];
+        final byte[] byteArray = new byte[8];
         byteArray[1] = (byte) (-77);
 
         assertFalse(ArchiveUtils.isEqualWithNull(byteArray, 0, (byte)0, byteArray, (byte)0, (byte)80));
@@ -109,7 +109,7 @@ public class ArchiveUtilsTest extends AbstractTestCase {
     @Test
     public void testToAsciiBytes() {
 
-        byte[] byteArray = ArchiveUtils.toAsciiBytes("SOCKET");
+        final byte[] byteArray = ArchiveUtils.toAsciiBytes("SOCKET");
 
         assertArrayEquals(new byte[] {(byte)83, (byte)79, (byte)67, (byte)75, (byte)69, (byte)84}, byteArray);
 
@@ -120,8 +120,8 @@ public class ArchiveUtilsTest extends AbstractTestCase {
     @Test
     public void testToStringWithNonNull() {
 
-        SevenZArchiveEntry sevenZArchiveEntry = new SevenZArchiveEntry();
-        String string = ArchiveUtils.toString(sevenZArchiveEntry);
+        final SevenZArchiveEntry sevenZArchiveEntry = new SevenZArchiveEntry();
+        final String string = ArchiveUtils.toString(sevenZArchiveEntry);
 
         assertEquals("-       0 null", string);
 
@@ -137,7 +137,7 @@ public class ArchiveUtilsTest extends AbstractTestCase {
     @Test(expected = StringIndexOutOfBoundsException.class)
     public void testToAsciiStringThrowsStringIndexOutOfBoundsException() {
 
-        byte[] byteArray = new byte[3];
+        final byte[] byteArray = new byte[3];
 
         ArchiveUtils.toAsciiString(byteArray, 940, 2730);
 
