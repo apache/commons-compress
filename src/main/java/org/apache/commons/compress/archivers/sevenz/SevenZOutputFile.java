@@ -31,6 +31,8 @@ import java.nio.ByteOrder;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -38,8 +40,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.CRC32;
 
@@ -255,6 +257,19 @@ public class SevenZOutputFile implements Closeable {
         int n = 0;
         while (-1 != (n = inputStream.read(buffer))) {
             write(buffer, 0, n);
+        }
+    }
+
+    /**
+     * Writes all of the given input stream to the current archive entry.
+     * @param path the data source.
+     * @param options options specifying how the file is opened.
+     * @throws IOException if an I/O error occurs.
+     * @since 1.21
+     */
+    public void write(final Path path, OpenOption... options) throws IOException {
+        try (InputStream in = new BufferedInputStream(Files.newInputStream(path, options))) {
+            write(in);
         }
     }
 

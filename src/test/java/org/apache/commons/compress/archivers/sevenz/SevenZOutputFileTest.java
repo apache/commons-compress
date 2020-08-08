@@ -23,6 +23,8 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -102,6 +104,14 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             outArchive.closeArchiveEntry();
 
             entry = new SevenZArchiveEntry();
+            entry.setName("foo/bar/test.txt");
+            entry.setCreationDate(creationDate);
+            entry.setAccessDate(accessDate);
+            outArchive.putArchiveEntry(entry);
+            outArchive.write(Paths.get("src/test/resources/test.txt"));
+            outArchive.closeArchiveEntry();
+
+            entry = new SevenZArchiveEntry();
             entry.setName("xyzzy");
             outArchive.putArchiveEntry(entry);
             outArchive.write(0);
@@ -167,6 +177,16 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             assertFalse(entry.isDirectory());
             assertFalse(entry.isAntiItem());
             assertEquals(10000, entry.getSize());
+            assertFalse(entry.getHasLastModifiedDate());
+            assertEquals(accessDate, entry.getAccessDate());
+            assertEquals(creationDate, entry.getCreationDate());
+
+            entry = archive.getNextEntry();
+            assert (entry != null);
+            assertEquals("foo/bar/test.txt", entry.getName());
+            assertFalse(entry.isDirectory());
+            assertFalse(entry.isAntiItem());
+            assertEquals(Files.size(Paths.get("src/test/resources/test.txt")), entry.getSize());
             assertFalse(entry.getHasLastModifiedDate());
             assertEquals(accessDate, entry.getAccessDate());
             assertEquals(creationDate, entry.getCreationDate());
