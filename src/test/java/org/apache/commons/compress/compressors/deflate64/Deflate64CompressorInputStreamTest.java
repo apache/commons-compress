@@ -284,7 +284,7 @@ public class Deflate64CompressorInputStreamTest {
         for (int i = 0; i < len; i++) {
             input[i] = (byte) bytes[i];
         }
-        try (ArchiveInputStream ais = new ArchiveStreamFactory()
+        try (ArchiveInputStream ais = ArchiveStreamFactory.DEFAULT
              .createArchiveInputStream("zip", new ByteArrayInputStream(input))) {
             ais.getNextEntry();
             IOUtils.toByteArray(ais);

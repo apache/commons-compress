@@ -29,12 +29,12 @@ public class ArchiveServiceLoaderTest {
 
     @Test(expected = ArchiveInvocationConfirmationException.class)
     public void testInputStream() throws ArchiveException {
-        new ArchiveStreamFactory().createArchiveInputStream("ArchiveTestInput1", new ByteArrayInputStream(new byte[] {}));
+        ArchiveStreamFactory.DEFAULT.createArchiveInputStream("ArchiveTestInput1", new ByteArrayInputStream(new byte[] {}));
     }
 
     @Test(expected = ArchiveInvocationConfirmationException.class)
     public void testOutputStream() throws ArchiveException {
-        new ArchiveStreamFactory().createArchiveOutputStream("ArchiveTestOutput1", new ByteArrayOutputStream());
+        ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ArchiveTestOutput1", new ByteArrayOutputStream());
     }
 
 }

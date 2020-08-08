@@ -69,7 +69,7 @@ public final class ZipTestCase extends AbstractTestCase {
         final File file2 = getFile("test2.xml");
 
         try (final OutputStream out = new FileOutputStream(output)) {
-            try (ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("zip", out)) {
+            try (ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("zip", out)) {
                 os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
                 try (final FileInputStream input = new FileInputStream(file1)) {
                     IOUtils.copy(input, os);
@@ -88,7 +88,7 @@ public final class ZipTestCase extends AbstractTestCase {
         final List<File> results = new ArrayList<>();
 
         try (final InputStream fileInputStream = new FileInputStream(output)) {
-            try (ArchiveInputStream archiveInputStream = new ArchiveStreamFactory().createArchiveInputStream("zip",
+            try (ArchiveInputStream archiveInputStream = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip",
                 fileInputStream)) {
                 ZipArchiveEntry entry = null;
                 while ((entry = (ZipArchiveEntry) archiveInputStream.getNextEntry()) != null) {
@@ -136,7 +136,7 @@ public final class ZipTestCase extends AbstractTestCase {
             }
 
             // Unarchive the same
-            try (ArchiveInputStream inputStream = new ArchiveStreamFactory().createArchiveInputStream("zip",
+            try (ArchiveInputStream inputStream = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip",
                 new ByteArrayInputStream(channel.array()))) {
 
                 ZipArchiveEntry entry;
@@ -159,7 +159,7 @@ public final class ZipTestCase extends AbstractTestCase {
     public void testZipUnarchive() throws Exception {
         final File input = getFile("bla.zip");
         try (final InputStream is = new FileInputStream(input);
-                final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("zip", is)) {
+                final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", is)) {
             final ZipArchiveEntry entry = (ZipArchiveEntry) in.getNextEntry();
             try (final OutputStream out = new FileOutputStream(new File(dir, entry.getName()))) {
                 IOUtils.copy(in, out);
@@ -239,13 +239,13 @@ public final class ZipTestCase extends AbstractTestCase {
         final List<ZipException> expectedExceptions = new ArrayList<>();
 
         try (final InputStream fis = new FileInputStream(input);
-            ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("zip", fis)) {
+            ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", fis)) {
 
             ZipArchiveEntry entry = null;
             while ((entry = (ZipArchiveEntry) in.getNextEntry()) != null) {
                 results.add(entry.getName());
 
-                final ArchiveInputStream nestedIn = new ArchiveStreamFactory().createArchiveInputStream("zip", in);
+                final ArchiveInputStream nestedIn = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", in);
                 try {
                     ZipArchiveEntry nestedEntry = null;
                     while ((nestedEntry = (ZipArchiveEntry) nestedIn.getNextEntry()) != null) {
@@ -698,7 +698,7 @@ public final class ZipTestCase extends AbstractTestCase {
 
         // stream access
         try (final FileInputStream fis = new FileInputStream(input);
-            final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("zip", fis)) {
+            final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", fis)) {
             for (ArchiveEntry entry; (entry = in.getNextEntry()) != null; ) {
                 readStream(in, entry, actualStatistics);
             }

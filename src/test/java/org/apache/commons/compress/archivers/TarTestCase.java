@@ -47,7 +47,7 @@ public final class TarTestCase extends AbstractTestCase {
         final File output = new File(dir, "bla.tar");
         final File file1 = getFile("test1.xml");
         final OutputStream out = new FileOutputStream(output);
-        final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("tar", out);
+        final ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("tar", out);
         final TarArchiveEntry entry = new TarArchiveEntry("testdata/test1.xml");
         entry.setModTime(0);
         entry.setSize(file1.length());
@@ -71,7 +71,7 @@ public final class TarTestCase extends AbstractTestCase {
         final File output = new File(dir, "bla.tar");
         final File file1 = getFile("test1.xml");
         final OutputStream out = new FileOutputStream(output);
-        final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("tar", out);
+        final ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("tar", out);
         final TarArchiveEntry entry = new TarArchiveEntry(name);
         entry.setModTime(0);
         entry.setSize(file1.length());
@@ -94,7 +94,7 @@ public final class TarTestCase extends AbstractTestCase {
             final String toLongName = "testdata/123456789012345678901234567890123456789012345678901234567890123456789012345678901234567.xml";
             final File output2 = new File(dir, "bla.tar");
             final OutputStream out2 = new FileOutputStream(output2);
-            os2 = new ArchiveStreamFactory().createArchiveOutputStream("tar", out2);
+            os2 = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("tar", out2);
             final TarArchiveEntry entry2 = new TarArchiveEntry(toLongName);
             entry2.setModTime(0);
             entry2.setSize(file1.length());
@@ -119,7 +119,7 @@ public final class TarTestCase extends AbstractTestCase {
     public void testTarUnarchive() throws Exception {
         final File input = getFile("bla.tar");
         final InputStream is = new FileInputStream(input);
-        final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("tar", is);
+        final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("tar", is);
         final TarArchiveEntry entry = (TarArchiveEntry)in.getNextEntry();
         final OutputStream out = new FileOutputStream(new File(dir, entry.getName()));
         IOUtils.copy(in, out);
@@ -324,7 +324,7 @@ public final class TarTestCase extends AbstractTestCase {
     public void testCOMPRESS178() throws Exception {
         final File input = getFile("COMPRESS-178.tar");
         final InputStream is = new FileInputStream(input);
-        final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("tar", is);
+        final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("tar", is);
         try {
             in.getNextEntry();
             fail("Expected IOException");

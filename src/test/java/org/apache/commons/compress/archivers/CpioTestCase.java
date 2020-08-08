@@ -46,7 +46,7 @@ public final class CpioTestCase extends AbstractTestCase {
         final File file2 = getFile("test2.xml");
 
         final OutputStream out = new FileOutputStream(output);
-        final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("cpio", out);
+        final ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("cpio", out);
         os.putArchiveEntry(new CpioArchiveEntry("test1.xml", file1.length()));
         IOUtils.copy(new FileInputStream(file1), os);
         os.closeArchiveEntry();
@@ -69,7 +69,7 @@ public final class CpioTestCase extends AbstractTestCase {
 
         {
             final OutputStream out = new FileOutputStream(output);
-            final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("cpio", out);
+            final ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("cpio", out);
             CpioArchiveEntry entry = new CpioArchiveEntry("test1.xml", file1Length);
             entry.setMode(CpioConstants.C_ISREG);
             os.putArchiveEntry(entry);
@@ -89,7 +89,7 @@ public final class CpioTestCase extends AbstractTestCase {
         // Unarchive Operation
         final File input = output;
         final InputStream is = new FileInputStream(input);
-        final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("cpio", is);
+        final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("cpio", is);
 
 
         final Map<String, File> result = new HashMap<>();

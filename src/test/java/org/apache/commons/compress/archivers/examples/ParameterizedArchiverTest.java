@@ -108,7 +108,7 @@ public class ParameterizedArchiverTest extends AbstractTestCase {
     @Test
     public void archiveStreamVersion() throws IOException, ArchiveException {
         try (OutputStream os = Files.newOutputStream(target.toPath());
-             ArchiveOutputStream aos = new ArchiveStreamFactory().createArchiveOutputStream(format, os)) {
+             ArchiveOutputStream aos = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(format, os)) {
             new Archiver().create(aos, dir);
         }
         verifyContent();
@@ -117,7 +117,7 @@ public class ParameterizedArchiverTest extends AbstractTestCase {
     private void verifyContent() throws IOException, ArchiveException {
         try (InputStream is = Files.newInputStream(target.toPath());
              BufferedInputStream bis = new BufferedInputStream(is);
-             ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(format, bis)) {
+             ArchiveInputStream ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(format, bis)) {
             assertDir("a", ais.getNextEntry());
             assertDir("a/b", ais.getNextEntry());
             ArchiveEntry n = ais.getNextEntry();

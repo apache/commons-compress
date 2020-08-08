@@ -71,7 +71,7 @@ public final class Pack200TestCase extends AbstractTestCase {
                 ? new Pack200CompressorInputStream(input, mode)
                 : new Pack200CompressorInputStream(new FileInputStream(input),
                 mode)) {
-            final ArchiveInputStream in = new ArchiveStreamFactory()
+            final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT
                     .createArchiveInputStream("jar", is);
 
             ArchiveEntry entry = in.getNextEntry();
@@ -111,7 +111,7 @@ public final class Pack200TestCase extends AbstractTestCase {
 
         try (OutputStream out = new Pack200CompressorOutputStream(new FileOutputStream(output),
                 mode)) {
-            final ArchiveOutputStream os = new ArchiveStreamFactory()
+            final ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT
                     .createArchiveOutputStream("jar", out);
 
             os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
@@ -126,7 +126,7 @@ public final class Pack200TestCase extends AbstractTestCase {
         }
 
         try (InputStream is = new Pack200CompressorInputStream(output)) {
-            final ArchiveInputStream in = new ArchiveStreamFactory()
+            final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT
                     .createArchiveInputStream("jar", is);
             final List<String> files = new ArrayList<>();
             files.add("testdata/test1.xml");

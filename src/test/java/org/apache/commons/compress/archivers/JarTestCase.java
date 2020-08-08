@@ -40,7 +40,7 @@ public final class JarTestCase extends AbstractTestCase {
 
         final OutputStream out = new FileOutputStream(output);
 
-        final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("jar", out);
+        final ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("jar", out);
 
         os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
         IOUtils.copy(new FileInputStream(file1), os);
@@ -58,7 +58,7 @@ public final class JarTestCase extends AbstractTestCase {
     public void testJarUnarchive() throws Exception {
         final File input = getFile("bla.jar");
         final InputStream is = new FileInputStream(input);
-        final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("jar", is);
+        final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is);
 
         ZipArchiveEntry entry = (ZipArchiveEntry)in.getNextEntry();
         File o = new File(dir, entry.getName());
@@ -89,7 +89,7 @@ public final class JarTestCase extends AbstractTestCase {
     public void testJarUnarchiveAll() throws Exception {
         final File input = getFile("bla.jar");
         final InputStream is = new FileInputStream(input);
-        final ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream("jar", is);
+        final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is);
 
         ArchiveEntry entry = in.getNextEntry();
         while (entry != null) {

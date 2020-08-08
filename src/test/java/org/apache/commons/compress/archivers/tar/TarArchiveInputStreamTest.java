@@ -415,7 +415,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
             // untar these tars
             // -----------------------
             InputStream is = new FileInputStream(tarF);
-            TarArchiveInputStream debInputStream = (TarArchiveInputStream) new ArchiveStreamFactory()
+            TarArchiveInputStream debInputStream = (TarArchiveInputStream) ArchiveStreamFactory.DEFAULT
                     .createArchiveInputStream("tar", is);
             TarArchiveEntry outEntry;
             while ((outEntry = (TarArchiveEntry) debInputStream.getNextEntry()) != null) {

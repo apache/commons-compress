@@ -73,7 +73,7 @@ public class ParameterizedExpanderTest extends AbstractTestCase {
         try (OutputStream o = Files.newOutputStream(dummy.toPath())) {
             o.write(new byte[14]);
         }
-        try (ArchiveOutputStream aos = new ArchiveStreamFactory()
+        try (ArchiveOutputStream aos = ArchiveStreamFactory.DEFAULT
              .createArchiveOutputStream(format, Files.newOutputStream(archive.toPath()))) {
             aos.putArchiveEntry(aos.createArchiveEntry(dir, "a"));
             aos.closeArchiveEntry();
@@ -130,7 +130,7 @@ public class ParameterizedExpanderTest extends AbstractTestCase {
     @Test
     public void archiveInputStreamVersion() throws IOException, ArchiveException {
         try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()));
-             ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(format, i)) {
+             ArchiveInputStream ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(format, i)) {
             new Expander().expand(ais, resultDir);
         }
         verifyTargetDir();

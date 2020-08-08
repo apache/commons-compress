@@ -46,7 +46,7 @@ public final class ArTestCase extends AbstractTestCase {
         final File file2 = getFile("test2.xml");
 
         final OutputStream out = new FileOutputStream(output);
-        final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("ar", out);
+        final ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ar", out);
         os.putArchiveEntry(new ArArchiveEntry("test1.xml", file1.length()));
         IOUtils.copy(new FileInputStream(file1), os);
         os.closeArchiveEntry();
@@ -66,7 +66,7 @@ public final class ArTestCase extends AbstractTestCase {
             final File file2 = getFile("test2.xml");
 
             final OutputStream out = new FileOutputStream(output);
-            final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("ar", out);
+            final ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ar", out);
             os.putArchiveEntry(new ArArchiveEntry("test1.xml", file1.length()));
             IOUtils.copy(new FileInputStream(file1), os);
             os.closeArchiveEntry();
@@ -102,7 +102,7 @@ public final class ArTestCase extends AbstractTestCase {
             // create
 
             final OutputStream out = new FileOutputStream(output);
-            final ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream("ar", out);
+            final ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ar", out);
             os.putArchiveEntry(new ArArchiveEntry("test1.xml", file1.length()));
             IOUtils.copy(new FileInputStream(file1), os);
             os.closeArchiveEntry();

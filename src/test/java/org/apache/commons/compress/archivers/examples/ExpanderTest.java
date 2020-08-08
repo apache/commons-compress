@@ -176,7 +176,7 @@ public class ExpanderTest extends AbstractTestCase {
         try (OutputStream o = Files.newOutputStream(dummy.toPath())) {
             o.write(new byte[14]);
         }
-        try (ArchiveOutputStream aos = new ArchiveStreamFactory()
+        try (ArchiveOutputStream aos = ArchiveStreamFactory.DEFAULT
              .createArchiveOutputStream("zip", Files.newOutputStream(archive.toPath()))) {
             aos.putArchiveEntry(aos.createArchiveEntry(dir, "a"));
             aos.closeArchiveEntry();
@@ -200,7 +200,7 @@ public class ExpanderTest extends AbstractTestCase {
         try (OutputStream o = Files.newOutputStream(dummy.toPath())) {
             o.write(new byte[14]);
         }
-        try (ArchiveOutputStream aos = new ArchiveStreamFactory()
+        try (ArchiveOutputStream aos = ArchiveStreamFactory.DEFAULT
              .createArchiveOutputStream("zip", Files.newOutputStream(archive.toPath()))) {
             aos.putArchiveEntry(aos.createArchiveEntry(dummy, entry));
             aos.write("Hello, world 1".getBytes(StandardCharsets.UTF_8));

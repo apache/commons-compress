@@ -66,7 +66,7 @@ public class Expander {
     public void expand(File archive, File targetDirectory) throws IOException, ArchiveException {
         String format = null;
         try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()))) {
-            format = new ArchiveStreamFactory().detect(i);
+            format = ArchiveStreamFactory.DEFAULT.detect(i);
         }
         expand(format, archive, targetDirectory);
     }
@@ -136,7 +136,7 @@ public class Expander {
     public void expand(InputStream archive, File targetDirectory, CloseableConsumer closeableConsumer)
         throws IOException, ArchiveException {
         try (CloseableConsumerAdapter c = new CloseableConsumerAdapter(closeableConsumer)) {
-            expand(c.track(new ArchiveStreamFactory().createArchiveInputStream(archive)),
+            expand(c.track(ArchiveStreamFactory.DEFAULT.createArchiveInputStream(archive)),
                 targetDirectory);
         }
     }
@@ -185,7 +185,7 @@ public class Expander {
     public void expand(String format, InputStream archive, File targetDirectory, CloseableConsumer closeableConsumer)
         throws IOException, ArchiveException {
         try (CloseableConsumerAdapter c = new CloseableConsumerAdapter(closeableConsumer)) {
-            expand(c.track(new ArchiveStreamFactory().createArchiveInputStream(format, archive)),
+            expand(c.track(ArchiveStreamFactory.DEFAULT.createArchiveInputStream(format, archive)),
                 targetDirectory);
         }
     }

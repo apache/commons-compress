@@ -50,7 +50,7 @@ public final class DumpTestCase extends AbstractTestCase {
         ArchiveInputStream in = null;
         OutputStream out = null;
         try {
-            in = new ArchiveStreamFactory()
+            in = ArchiveStreamFactory.DEFAULT
                 .createArchiveInputStream("dump", is);
 
             ArchiveEntry entry = in.getNextEntry();
@@ -92,7 +92,7 @@ public final class DumpTestCase extends AbstractTestCase {
     private void archiveDetection(final File f) throws Exception {
         try (InputStream is = new FileInputStream(f)) {
             assertEquals(DumpArchiveInputStream.class,
-                    new ArchiveStreamFactory()
+                ArchiveStreamFactory.DEFAULT
                             .createArchiveInputStream(new BufferedInputStream(is))
                             .getClass());
         }

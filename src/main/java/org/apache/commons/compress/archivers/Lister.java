@@ -37,7 +37,8 @@ import org.apache.commons.compress.archivers.zip.ZipFile;
  * @since 1.1
  */
 public final class Lister {
-    private static final ArchiveStreamFactory factory = new ArchiveStreamFactory();
+
+    private static final ArchiveStreamFactory FACTORY = ArchiveStreamFactory.DEFAULT;
 
     public static void main(final String[] args) throws Exception {
         if (args.length == 0) {
@@ -73,14 +74,14 @@ public final class Lister {
     private static ArchiveInputStream createArchiveInputStream(final String[] args, final InputStream fis)
             throws ArchiveException {
         if (args.length > 1) {
-            return factory.createArchiveInputStream(args[1], fis);
+            return FACTORY.createArchiveInputStream(args[1], fis);
         }
-        return factory.createArchiveInputStream(fis);
+        return FACTORY.createArchiveInputStream(fis);
     }
 
     private static String detectFormat(File f) throws ArchiveException, IOException {
         try (final InputStream fis = new BufferedInputStream(Files.newInputStream(f.toPath()))) {
-            return factory.detect(fis);
+            return FACTORY.detect(fis);
         }
     }
 

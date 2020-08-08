@@ -51,7 +51,7 @@ public class ArchiveStreamFactoryTest {
     @Test
     public void shortTextFilesAreNoTARs() throws Exception {
         try {
-            new ArchiveStreamFactory()
+            ArchiveStreamFactory.DEFAULT
                 .createArchiveInputStream(new ByteArrayInputStream("This certainly is not a tar archive, really, no kidding".getBytes()));
             fail("created an input stream for a non-archive");
         } catch (final ArchiveException ae) {
@@ -66,7 +66,7 @@ public class ArchiveStreamFactoryTest {
     public void aiffFilesAreNoTARs() throws Exception {
         try (FileInputStream fis = new FileInputStream("src/test/resources/testAIFF.aif")) {
             try (InputStream is = new BufferedInputStream(fis)) {
-                new ArchiveStreamFactory().createArchiveInputStream(is);
+                ArchiveStreamFactory.DEFAULT.createArchiveInputStream(is);
                 fail("created an input stream for a non-archive");
             } catch (final ArchiveException ae) {
                 assertTrue(ae.getMessage().startsWith("No Archiver found"));
@@ -78,7 +78,7 @@ public class ArchiveStreamFactoryTest {
     public void testCOMPRESS209() throws Exception {
         try (FileInputStream fis = new FileInputStream("src/test/resources/testCompress209.doc")) {
             try (InputStream bis = new BufferedInputStream(fis)) {
-                new ArchiveStreamFactory().createArchiveInputStream(bis);
+                ArchiveStreamFactory.DEFAULT.createArchiveInputStream(bis);
                 fail("created an input stream for a non-archive");
             } catch (final ArchiveException ae) {
                 assertTrue(ae.getMessage().startsWith("No Archiver found"));
@@ -88,14 +88,14 @@ public class ArchiveStreamFactoryTest {
 
     @Test(expected = StreamingNotSupportedException.class)
     public void cantRead7zFromStream() throws Exception {
-        new ArchiveStreamFactory()
+        ArchiveStreamFactory.DEFAULT
             .createArchiveInputStream(ArchiveStreamFactory.SEVEN_Z,
                                       new ByteArrayInputStream(new byte[0]));
     }
 
     @Test(expected = StreamingNotSupportedException.class)
     public void cantWrite7zToStream() throws Exception {
-        new ArchiveStreamFactory()
+        ArchiveStreamFactory.DEFAULT
             .createArchiveOutputStream(ArchiveStreamFactory.SEVEN_Z,
                                        new ByteArrayOutputStream());
     }
@@ -109,7 +109,7 @@ public class ArchiveStreamFactoryTest {
     public void detectsAndThrowsFor7z() throws Exception {
         try (FileInputStream fis = new FileInputStream("src/test/resources/bla.7z")) {
             try (InputStream bis = new BufferedInputStream(fis)) {
-                new ArchiveStreamFactory().createArchiveInputStream(bis);
+                ArchiveStreamFactory.DEFAULT.createArchiveInputStream(bis);
                 fail("Expected a StreamingNotSupportedException");
             } catch (final StreamingNotSupportedException ex) {
                 assertEquals(ArchiveStreamFactory.SEVEN_Z, ex.getFormat());
@@ -126,7 +126,7 @@ public class ArchiveStreamFactoryTest {
     public void skipsPK00Prefix() throws Exception {
         try (FileInputStream fis = new FileInputStream("src/test/resources/COMPRESS-208.zip")) {
             try (InputStream bis = new BufferedInputStream(fis)) {
-                try (ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(bis)) {
+                try (ArchiveInputStream ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(bis)) {
                     assertTrue(ais instanceof ZipArchiveInputStream);
                 }
             }
@@ -193,7 +193,7 @@ public class ArchiveStreamFactoryTest {
         return fac;
     }
     // The different factory types
-    private static final ArchiveStreamFactory FACTORY = new ArchiveStreamFactory();
+    private static final ArchiveStreamFactory FACTORY = ArchiveStreamFactory.DEFAULT;
     private static final ArchiveStreamFactory FACTORY_UTF8 = new ArchiveStreamFactory("UTF-8");
     private static final ArchiveStreamFactory FACTORY_ASCII = new ArchiveStreamFactory("ASCII");
     private static final ArchiveStreamFactory FACTORY_SET_UTF8 = getFactory("UTF-8");

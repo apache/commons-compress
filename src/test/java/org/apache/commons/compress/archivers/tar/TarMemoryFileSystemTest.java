@@ -48,7 +48,7 @@ public class TarMemoryFileSystemTest {
 
             final File f = File.createTempFile("commons-compress-memoryfs", ".tar");
             try (final OutputStream out = Files.newOutputStream(f.toPath());
-                 final ArchiveOutputStream tarOut = new ArchiveStreamFactory().createArchiveOutputStream(ArchiveStreamFactory.TAR, out)) {
+                 final ArchiveOutputStream tarOut = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.TAR, out)) {
                 final TarArchiveEntry entry = new TarArchiveEntry(p);
                 tarOut.putArchiveEntry(entry);
 
@@ -65,7 +65,7 @@ public class TarMemoryFileSystemTest {
             Path p = fileSystem.getPath("target.tar");
 
             try (final OutputStream out = Files.newOutputStream(p);
-                 final ArchiveOutputStream tarOut = new ArchiveStreamFactory().createArchiveOutputStream(ArchiveStreamFactory.TAR, out)) {
+                 final ArchiveOutputStream tarOut = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.TAR, out)) {
                 final String content = "Test";
                 final TarArchiveEntry entry = new TarArchiveEntry("test.txt");
                 entry.setSize(content.length());
@@ -102,7 +102,7 @@ public class TarMemoryFileSystemTest {
 
             final Path target = fileSystem.getPath("original-file.tar");
             try (final OutputStream out = Files.newOutputStream(target);
-                 final ArchiveOutputStream tarOut = new ArchiveStreamFactory().createArchiveOutputStream(ArchiveStreamFactory.TAR, out)) {
+                 final ArchiveOutputStream tarOut = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.TAR, out)) {
                 final TarArchiveEntry entry = new TarArchiveEntry(source);
                 tarOut.putArchiveEntry(entry);
 

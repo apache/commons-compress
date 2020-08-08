@@ -33,7 +33,7 @@ public class ExceptionMessageTest {
     @Test
     public void testMessageWhenArchiverNameIsNull_1(){
         try{
-            new ArchiveStreamFactory().createArchiveInputStream(null, System.in);
+            ArchiveStreamFactory.DEFAULT.createArchiveInputStream(null, System.in);
             fail("Should raise an IllegalArgumentException.");
         }catch (final IllegalArgumentException e) {
             assertEquals(ARCHIVER_NULL_MESSAGE, e.getMessage());
@@ -45,7 +45,7 @@ public class ExceptionMessageTest {
     @Test
     public void testMessageWhenInputStreamIsNull(){
         try{
-            new ArchiveStreamFactory().createArchiveInputStream("zip", null);
+            ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", null);
             fail("Should raise an IllegalArgumentException.");
         }catch (final IllegalArgumentException e) {
             assertEquals(INPUTSTREAM_NULL_MESSAGE, e.getMessage());
@@ -57,7 +57,7 @@ public class ExceptionMessageTest {
     @Test
     public void testMessageWhenArchiverNameIsNull_2(){
         try{
-            new ArchiveStreamFactory().createArchiveOutputStream(null, System.out);
+            ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(null, System.out);
             fail("Should raise an IllegalArgumentException.");
         } catch (final IllegalArgumentException e) {
             assertEquals(ARCHIVER_NULL_MESSAGE, e.getMessage());
@@ -69,7 +69,7 @@ public class ExceptionMessageTest {
     @Test
     public void testMessageWhenOutputStreamIsNull(){
         try{
-            new ArchiveStreamFactory().createArchiveOutputStream("zip", null);
+            ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("zip", null);
             fail("Should raise an IllegalArgumentException.");
         } catch (final IllegalArgumentException e) {
             assertEquals(OUTPUTSTREAM_NULL_MESSAGE, e.getMessage());

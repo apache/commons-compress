@@ -94,7 +94,11 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
 
     private static final int SIGNATURE_SIZE = 12;
 
-    private static final ArchiveStreamFactory SINGLETON = new ArchiveStreamFactory();
+    /**
+     * The singleton instance using the platform default encoding.
+     * @since 1.21
+     */
+    public static final ArchiveStreamFactory DEFAULT = new ArchiveStreamFactory();
 
     /**
      * Constant (value {@value}) used to identify the AR archive format.
@@ -211,7 +215,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             @Override
             public SortedMap<String, ArchiveStreamProvider> run() {
                 TreeMap<String, ArchiveStreamProvider> map = new TreeMap<>();
-                putAll(SINGLETON.getInputStreamArchiveNames(), SINGLETON, map);
+                putAll(DEFAULT.getInputStreamArchiveNames(), DEFAULT, map);
                 for (ArchiveStreamProvider provider : findArchiveStreamProviders()) {
                     putAll(provider.getInputStreamArchiveNames(), provider, map);
                 }
@@ -252,7 +256,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             @Override
             public SortedMap<String, ArchiveStreamProvider> run() {
                 TreeMap<String, ArchiveStreamProvider> map = new TreeMap<>();
-                putAll(SINGLETON.getOutputStreamArchiveNames(), SINGLETON, map);
+                putAll(DEFAULT.getOutputStreamArchiveNames(), DEFAULT, map);
                 for (ArchiveStreamProvider provider : findArchiveStreamProviders()) {
                     putAll(provider.getOutputStreamArchiveNames(), provider, map);
                 }
