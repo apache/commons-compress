@@ -75,7 +75,7 @@ public class ParameterizedExpanderTest extends AbstractTestCase {
         }
         try (ArchiveOutputStream aos = ArchiveStreamFactory.DEFAULT
              .createArchiveOutputStream(format, Files.newOutputStream(archive.toPath()))) {
-            aos.putArchiveEntry(aos.createArchiveEntry(dir, "a"));
+            aos.putArchiveEntry(aos.createArchiveEntry(dir.toPath(), "a"));
             aos.closeArchiveEntry();
             aos.putArchiveEntry(aos.createArchiveEntry(dir, "a/b"));
             aos.closeArchiveEntry();
