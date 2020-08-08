@@ -29,9 +29,6 @@ matrix:
 cache:
   directories:
     - $HOME/.m2
-    - .mvn
-# don't run mvn install before building
-install: true
 
 # do all the building and testing in a single phase, instead of compiling everything three times
 # and running all tests twice.
