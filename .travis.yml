@@ -35,7 +35,7 @@ jdk:
 # https://github.com/travis-ci/travis-cookbooks/blob/master/cookbooks/travis_jdk/files/install-jdk.sh#L200
 # (which has 11.0.2 hard-coded!), and instead replace it with the latest openjdk-11-jdk-headless Ubuntu package.
 # NB /usr/local/lib/jvm/openjdk11/bin is also on the PATH, but there's no need to change it (because we rm -rf anyway)
-  matrix:
+matrix:
   allow_failures:
     - jdk: openjdk-ea
     - jdk: openjdk14
