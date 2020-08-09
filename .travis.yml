@@ -19,6 +19,10 @@ cache:
   directories:
     - $HOME/.m2
 
+addons:
+  apt:
+    packages:
+      - oracle-java11-installer
 jdk:
   - openjdk8
   - openjdk11
