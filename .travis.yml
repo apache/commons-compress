@@ -30,7 +30,7 @@ dist: bionic
 # (which has 11.0.2 hard-coded!), and instead replace it with the latest openjdk-11-jdk-headless Ubuntu package.
 # NB /usr/local/lib/jvm/openjdk11/bin is also on the PATH, but there's no need to change it (because we rm -rf anyway)
 before_install:
-  if: jdk = openjdk11
+  - if: jdk = openjdk11
   - echo $JAVA_HOME
   - which java
   - sudo rm -rf /usr/local/lib/jvm/
