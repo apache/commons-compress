@@ -22,7 +22,7 @@ cache:
 addons:
   apt:
     packages:
-      - oracle-java11-installer
+      - openjdk-11-jdk-installer
 jdk:
   - openjdk8
   - openjdk11
