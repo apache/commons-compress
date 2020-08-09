@@ -22,7 +22,7 @@ cache:
 addons:
   apt:
     packages:
-      - openjdk-11-jdk-installer
+      - openjdk-11-jdk
 jdk:
   - openjdk8
   - openjdk11
