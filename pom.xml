@@ -526,7 +526,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       </build>
     </profile>
     <profile>
-      <id>java8+</id>
+      <id>java11+</id>
       <activation>
         <jdk>[11,)</jdk>
       </activation>
