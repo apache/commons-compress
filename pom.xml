@@ -283,7 +283,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
           <configuration> 
             <source>${maven.compiler.source}</source>
             <quiet>true</quiet>
-            <source>${maven.compiler.source}</source>
+            <release>7</release>
             <encoding>${commons.encoding}</encoding>
             <docencoding>${commons.docEncoding}</docencoding>
             <linksource>true</linksource>
@@ -436,7 +436,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
         <configuration> 
           <source>${maven.compiler.source}</source>
           <quiet>true</quiet>
-          <source>${maven.compiler.source}</source>
+          <release>7</release>
           <encoding>${commons.encoding}</encoding>
           <docencoding>${commons.docEncoding}</docencoding>
           <linksource>true</linksource>
