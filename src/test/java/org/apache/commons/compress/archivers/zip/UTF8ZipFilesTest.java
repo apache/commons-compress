@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.zip.CRC32;
@@ -135,7 +136,13 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         final File archive = getFile("utf8-winzip-test.zip");
         ZipFile zf = null;
         try {
-            zf = new ZipFile(archive, null, true);
+            // fix for test fails on Windows with default charset that is not UTF-8
+            String encoding = null;
+            if (Charset.defaultCharset() != StandardCharsets.UTF_8) {
+                encoding = StandardCharsets.UTF_8.name();
+            }
+
+            zf = new ZipFile(archive, encoding, true);
             assertCanRead(zf, ASCII_TXT);
             assertCanRead(zf, EURO_FOR_DOLLAR_TXT);
             assertCanRead(zf, OIL_BARREL_TXT);
@@ -162,7 +169,13 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
             new FileInputStream(getFile("utf8-winzip-test.zip"));
         ZipArchiveInputStream zi = null;
         try {
-            zi = new ZipArchiveInputStream(archive, null, true);
+            // fix for test fails on Windows with default charset that is not UTF-8
+            String encoding = null;
+            if (Charset.defaultCharset() != StandardCharsets.UTF_8) {
+                encoding = StandardCharsets.UTF_8.name();
+            }
+
+            zi = new ZipArchiveInputStream(archive, encoding, true);
             assertEquals(EURO_FOR_DOLLAR_TXT, zi.getNextEntry().getName());
             assertEquals(OIL_BARREL_TXT, zi.getNextEntry().getName());
             assertEquals(ASCII_TXT, zi.getNextEntry().getName());
