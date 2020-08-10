@@ -281,6 +281,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>${commons.javadoc.version}</version>
           <configuration> 
+            <source>${maven.compiler.source}</source>
             <quiet>true</quiet>
             <source>${maven.compiler.source}</source>
             <encoding>${commons.encoding}</encoding>
@@ -433,6 +434,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration> 
+          <source>${maven.compiler.source}</source>
           <quiet>true</quiet>
           <source>${maven.compiler.source}</source>
           <encoding>${commons.encoding}</encoding>

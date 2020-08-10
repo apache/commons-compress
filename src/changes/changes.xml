@@ -166,8 +166,8 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" date="2020-08-08" due-to="Gary Gregory" dev="ggregory">
         Add Path support to ZipArchiveOutputStream #123.
       </action>
-      <action type="update" date="2020-07-23" due-to="Dependabot" dev="ggregory">
-        Update GitHub actions/checkout from v1 to v2.3.1 #114.
+      <action type="update" date="2020-08-10" due-to="Dependabot" dev="ggregory">
+        Update GitHub actions/checkout from v1 to v2.3.1 #114, #124.
       </action>
       <action issue="COMPRESS-543" type="fix" date="2020-08-10" due-to="wulf2333" dev="PeterLee">
         Fix for test fails on Windows. The tests are failing because the
