@@ -37,8 +37,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.CRC32;
 
 import org.apache.commons.compress.utils.BoundedInputStream;
@@ -935,7 +937,8 @@ public class SevenZFile implements Closeable {
     private void readFilesInfo(final ByteBuffer header, final Archive archive) throws IOException {
         final long numFiles = readUint64(header);
         assertFitsIntoInt("numFiles", numFiles);
-        final SevenZArchiveEntry[] files = new SevenZArchiveEntry[(int) numFiles];
+        final int numFilesInt = (int) numFiles;
+        final Map<Integer, SevenZArchiveEntry> fileMap = new HashMap<>();
         BitSet isEmptyStream = null;
         BitSet isEmptyFile = null;
         BitSet isAnti = null;
@@ -947,7 +950,7 @@ public class SevenZFile implements Closeable {
             final long size = readUint64(header);
             switch (propertyType) {
                 case NID.kEmptyStream: {
-                    isEmptyStream = readBits(header, files.length);
+                    isEmptyStream = readBits(header, numFilesInt);
                     break;
                 }
                 case NID.kEmptyFile: {
@@ -978,85 +981,78 @@ public class SevenZFile implements Closeable {
                     int nextFile = 0;
                     int nextName = 0;
                     for (int i = 0; i < names.length; i += 2) {
-                        if (names[i] == 0 && names[i+1] == 0) {
-                            String fName = new String(names, nextName, i - nextName, StandardCharsets.UTF_16LE);
-                            if (files[nextFile] == null) {
-                                files[nextFile] = new SevenZArchiveEntry();
-                            }
-                            files[nextFile].setName(fName);
+                        if (names[i] == 0 && names[i + 1] == 0) {
+                            checkEntryIsInitialized(fileMap, nextFile);
+                            fileMap.get(nextFile).setName(new String(names, nextName, i - nextName, StandardCharsets.UTF_16LE));
                             nextName = i + 2;
                             nextFile++;
                         }
                     }
-                    if (nextName != names.length || nextFile != files.length) {
+                    if (nextName != names.length || nextFile != numFiles) {
                         throw new IOException("Error parsing file names");
                     }
                     break;
                 }
                 case NID.kCTime: {
-                    final BitSet timesDefined = readAllOrBits(header, files.length);
+                    final BitSet timesDefined = readAllOrBits(header, numFilesInt);
                     final int external = getUnsignedByte(header);
                     if (external != 0) {
                         throw new IOException("Unimplemented");
                     }
-                    for (int i = 0; i < files.length; i++) {
-                        if (files[i] == null) {
-                            files[i] = new SevenZArchiveEntry();
-                        }
-                        files[i].setHasCreationDate(timesDefined.get(i));
-                        if (files[i].getHasCreationDate()) {
-                            files[i].setCreationDate(header.getLong());
+                    for (int i = 0; i < numFilesInt; i++) {
+                        checkEntryIsInitialized(fileMap, i);
+                        final SevenZArchiveEntry entryAtIndex = fileMap.get(i);
+                        entryAtIndex.setHasCreationDate(timesDefined.get(i));
+                        if (entryAtIndex.getHasCreationDate()) {
+                            entryAtIndex.setCreationDate(header.getLong());
                         }
                     }
                     break;
                 }
                 case NID.kATime: {
-                    final BitSet timesDefined = readAllOrBits(header, files.length);
+                    final BitSet timesDefined = readAllOrBits(header, numFilesInt);
                     final int external = getUnsignedByte(header);
                     if (external != 0) {
                         throw new IOException("Unimplemented");
                     }
-                    for (int i = 0; i < files.length; i++) {
-                        if (files[i] == null) {
-                            files[i] = new SevenZArchiveEntry();
-                        }
-                        files[i].setHasAccessDate(timesDefined.get(i));
-                        if (files[i].getHasAccessDate()) {
-                            files[i].setAccessDate(header.getLong());
+                    for (int i = 0; i < numFilesInt; i++) {
+                        checkEntryIsInitialized(fileMap, i);
+                        final SevenZArchiveEntry entryAtIndex = fileMap.get(i);
+                        entryAtIndex.setHasAccessDate(timesDefined.get(i));
+                        if (entryAtIndex.getHasAccessDate()) {
+                            entryAtIndex.setAccessDate(header.getLong());
                         }
                     }
                     break;
                 }
                 case NID.kMTime: {
-                    final BitSet timesDefined = readAllOrBits(header, files.length);
+                    final BitSet timesDefined = readAllOrBits(header, numFilesInt);
                     final int external = getUnsignedByte(header);
                     if (external != 0) {
                         throw new IOException("Unimplemented");
                     }
-                    for (int i = 0; i < files.length; i++) {
-                        if (files[i] == null) {
-                            files[i] = new SevenZArchiveEntry();
-                        }
-                        files[i].setHasLastModifiedDate(timesDefined.get(i));
-                        if (files[i].getHasLastModifiedDate()) {
-                            files[i].setLastModifiedDate(header.getLong());
+                    for (int i = 0; i < numFilesInt; i++) {
+                        checkEntryIsInitialized(fileMap, i);
+                        final SevenZArchiveEntry entryAtIndex = fileMap.get(i);
+                        entryAtIndex.setHasLastModifiedDate(timesDefined.get(i));
+                        if (entryAtIndex.getHasLastModifiedDate()) {
+                            entryAtIndex.setLastModifiedDate(header.getLong());
                         }
                     }
                     break;
                 }
                 case NID.kWinAttributes: {
-                    final BitSet attributesDefined = readAllOrBits(header, files.length);
+                    final BitSet attributesDefined = readAllOrBits(header, numFilesInt);
                     final int external = getUnsignedByte(header);
                     if (external != 0) {
                         throw new IOException("Unimplemented");
                     }
-                    for (int i = 0; i < files.length; i++) {
-                        if (files[i] == null) {
-                            files[i] = new SevenZArchiveEntry();
-                        }
-                        files[i].setHasWindowsAttributes(attributesDefined.get(i));
-                        if (files[i].getHasWindowsAttributes()) {
-                            files[i].setWindowsAttributes(header.getInt());
+                    for (int i = 0; i < numFilesInt; i++) {
+                        checkEntryIsInitialized(fileMap, i);
+                        final SevenZArchiveEntry entryAtIndex = fileMap.get(i);
+                        entryAtIndex.setHasWindowsAttributes(attributesDefined.get(i));
+                        if (entryAtIndex.getHasWindowsAttributes()) {
+                            entryAtIndex.setWindowsAttributes(header.getInt());
                         }
                     }
                     break;
@@ -1085,37 +1081,44 @@ public class SevenZFile implements Closeable {
         }
         int nonEmptyFileCounter = 0;
         int emptyFileCounter = 0;
-        for (int i = 0; i < files.length; i++) {
-            if (files[i] == null) {
+        for (int i = 0; i < numFilesInt; i++) {
+            final SevenZArchiveEntry entryAtIndex = fileMap.get(i);
+            if (entryAtIndex == null) {
                 continue;
             }
-            files[i].setHasStream(isEmptyStream == null || !isEmptyStream.get(i));
-            if (files[i].hasStream()) {
+            entryAtIndex.setHasStream(isEmptyStream == null || !isEmptyStream.get(i));
+            if (entryAtIndex.hasStream()) {
                 if (archive.subStreamsInfo == null) {
                     throw new IOException("Archive contains file with streams but no subStreamsInfo");
                 }
-                files[i].setDirectory(false);
-                files[i].setAntiItem(false);
-                files[i].setHasCrc(archive.subStreamsInfo.hasCrc.get(nonEmptyFileCounter));
-                files[i].setCrcValue(archive.subStreamsInfo.crcs[nonEmptyFileCounter]);
-                files[i].setSize(archive.subStreamsInfo.unpackSizes[nonEmptyFileCounter]);
+                entryAtIndex.setDirectory(false);
+                entryAtIndex.setAntiItem(false);
+                entryAtIndex.setHasCrc(archive.subStreamsInfo.hasCrc.get(nonEmptyFileCounter));
+                entryAtIndex.setCrcValue(archive.subStreamsInfo.crcs[nonEmptyFileCounter]);
+                entryAtIndex.setSize(archive.subStreamsInfo.unpackSizes[nonEmptyFileCounter]);
                 ++nonEmptyFileCounter;
             } else {
-                files[i].setDirectory(isEmptyFile == null || !isEmptyFile.get(emptyFileCounter));
-                files[i].setAntiItem(isAnti != null && isAnti.get(emptyFileCounter));
-                files[i].setHasCrc(false);
-                files[i].setSize(0);
+                entryAtIndex.setDirectory(isEmptyFile == null || !isEmptyFile.get(emptyFileCounter));
+                entryAtIndex.setAntiItem(isAnti != null && isAnti.get(emptyFileCounter));
+                entryAtIndex.setHasCrc(false);
+                entryAtIndex.setSize(0);
                 ++emptyFileCounter;
             }
         }
-        List<SevenZArchiveEntry> entries = new ArrayList<>();
-        for (SevenZArchiveEntry e : files) {
+        final List<SevenZArchiveEntry> entries = new ArrayList<>();
+        for (final SevenZArchiveEntry e : fileMap.values()) {
             if (e != null) {
                 entries.add(e);
             }
         }
         archive.files = entries.toArray(new SevenZArchiveEntry[0]);
         calculateStreamMap(archive);
+    }
+
+    private void checkEntryIsInitialized(final Map<Integer, SevenZArchiveEntry> archiveEntries, final int index) {
+        if (archiveEntries.get(index) == null) {
+            archiveEntries.put(index, new SevenZArchiveEntry());
+        }
     }
 
     private void calculateStreamMap(final Archive archive) throws IOException {
