@@ -442,6 +442,24 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
         }
     }
 
+    @Test(expected = IOException.class)
+    public void testParseTarTruncatedInPadding() throws IOException {
+        try (FileInputStream in = new FileInputStream(getFile("./COMPRESS-544_truncated_in_padding.tar"));
+             TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
+            while (archive.getNextTarEntry() != null) {
+            }
+        }
+    }
+
+    @Test(expected = IOException.class)
+    public void testParseTarTruncatedInContent() throws IOException {
+        try (FileInputStream in = new FileInputStream(getFile("./COMPRESS-544_truncated_in_content.tar"));
+             TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
+            while (archive.getNextTarEntry() != null) {
+            }
+        }
+    }
+
     private TarArchiveInputStream getTestStream(final String name) {
         return new TarArchiveInputStream(
                 TarArchiveInputStreamTest.class.getResourceAsStream(name));

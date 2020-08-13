@@ -173,6 +173,10 @@ The <action> type attribute can be add,update,fix,remove.
         Fix for test fails on Windows. The tests are failing because the
         default charset is not UTF-8.
       </action>
+      <action issue="COMPRESS-544" type="fix" date="2020-08-13" due-to="Aditya Prasad" dev="PeterLee">
+        TarArchiveInputStream can not detect a truncated tar in skip()
+        and skipRecordPadding().
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20">

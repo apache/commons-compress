@@ -24,6 +24,7 @@
 package org.apache.commons.compress.archivers.tar;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -261,8 +262,8 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @param n
      *            the number of bytes to be skipped.
      * @return the actual number of bytes skipped.
-     * @throws IOException
-     *                if some other I/O error occurs.
+     * @throws IOException if a truncated tar archive is detected
+     *                     or some other I/O error occurs
      */
     @Override
     public long skip(final long n) throws IOException {
@@ -270,13 +271,19 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             return 0;
         }
 
+        final long availableOfInputStream = inputStream.available();
         final long available = currEntry.getRealSize() - entryOffset;
-        final long skipped;
+        final long numToSkip = Math.min(n, available);
+        long skipped;
+
         if (!currEntry.isSparse()) {
-            skipped = IOUtils.skip(inputStream, Math.min(n, available));
+            skipped = IOUtils.skip(inputStream, numToSkip);
         } else {
-            skipped = skipSparse(Math.min(n, available));
+            skipped = skipSparse(numToSkip);
         }
+
+        skipped = getActuallySkipped(availableOfInputStream, skipped, numToSkip);
+
         count(skipped);
         entryOffset += skipped;
         return skipped;
@@ -436,15 +443,44 @@ public class TarArchiveInputStream extends ArchiveInputStream {
 
     /**
      * The last record block should be written at the full size, so skip any
-     * additional space used to fill a record after an entry
+     * additional space used to fill a record after an entry.
+     *
+     * @throws IOException if a truncated tar archive is detected
      */
     private void skipRecordPadding() throws IOException {
         if (!isDirectory() && this.entrySize > 0 && this.entrySize % this.recordSize != 0) {
+            final long available = inputStream.available();
             final long numRecords = (this.entrySize / this.recordSize) + 1;
             final long padding = (numRecords * this.recordSize) - this.entrySize;
-            final long skipped = IOUtils.skip(inputStream, padding);
+            long skipped = IOUtils.skip(inputStream, padding);
+
+            skipped = getActuallySkipped(available, skipped, padding);
+
             count(skipped);
         }
+    }
+
+    /**
+     * For FileInputStream, the skip always return the number you input, so we
+     * need the available bytes to determine how many bytes are actually skipped
+     *
+     * @param available available bytes returned by inputStream.available()
+     * @param skipped   skipped bytes returned by inputStream.skip()
+     * @param expected  bytes expected to skip
+     * @return number of bytes actually skipped
+     * @throws IOException if a truncated tar archive is detected
+     */
+    private long getActuallySkipped(final long available, final long skipped, final long expected) throws IOException {
+        long actuallySkipped = skipped;
+        if (inputStream instanceof FileInputStream) {
+            actuallySkipped = Math.min(skipped, available);
+        }
+
+        if (actuallySkipped != expected) {
+            throw new IOException("Truncated TAR archive");
+        }
+
+        return actuallySkipped;
     }
 
     /**
