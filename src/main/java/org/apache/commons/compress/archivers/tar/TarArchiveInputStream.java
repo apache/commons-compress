@@ -278,11 +278,13 @@ public class TarArchiveInputStream extends ArchiveInputStream {
 
         if (!currEntry.isSparse()) {
             skipped = IOUtils.skip(inputStream, numToSkip);
+            // for non-sparse entry, we should get the bytes actually skipped bytes along with
+            // inputStream.available() if inputStream is instance of FileInputStream
+            skipped = getActuallySkipped(availableOfInputStream, skipped, numToSkip);
         } else {
             skipped = skipSparse(numToSkip);
         }
 
-        skipped = getActuallySkipped(availableOfInputStream, skipped, numToSkip);
 
         count(skipped);
         entryOffset += skipped;
