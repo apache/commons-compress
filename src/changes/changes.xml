@@ -185,6 +185,11 @@ The <action> type attribute can be add,update,fix,remove.
         allocation to avoid OOM when dealing some giant 7z archives.
         Github Pull Request #120.
       </action>
+      <action issue="COMPRESS-546" type="fix" date="2020-08-15"
+              due-to="Maksim Zuev" dev="PeterLee">
+        ZipArchiveInputStream should throw an exception if a corrputed
+        zip64 extra field is met.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20">

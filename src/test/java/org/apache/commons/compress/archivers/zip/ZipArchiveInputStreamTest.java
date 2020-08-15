@@ -710,6 +710,15 @@ public class ZipArchiveInputStreamTest {
         });
     }
 
+    @Test(expected = IOException.class)
+    public void throwsIOExceptionIfThereIsCorruptedZip64Extra() throws IOException {
+        try (InputStream fis = new FileInputStream(getFile("COMPRESS-546.zip"));
+             ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(fis);) {
+            while (zipInputStream.getNextZipEntry() != null) {
+            }
+        }
+    }
+
     private static byte[] readEntry(final ZipArchiveInputStream zip, final ZipArchiveEntry zae) throws IOException {
         final int len = (int)zae.getSize();
         final byte[] buff = new byte[len];
