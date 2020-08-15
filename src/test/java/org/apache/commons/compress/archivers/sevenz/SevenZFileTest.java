@@ -28,9 +28,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -704,6 +706,23 @@ public class SevenZFileTest extends AbstractTestCase {
                 final byte[] firstRead = IOUtils.toByteArray(sevenZFile.getInputStream(entry));
                 final byte[] secondRead = IOUtils.toByteArray(sevenZFile.getInputStream(entry));
                 assertArrayEquals(firstRead, secondRead);
+            }
+        }
+    }
+
+    @Test
+    public void testNoOOMOnCorruptedHeader() throws IOException {
+        final List<Path> testFiles = new ArrayList<>();
+        testFiles.add(getPath("COMPRESS-542-1.7z"));
+        testFiles.add(getPath("COMPRESS-542-2.7z"));
+        testFiles.add(getPath("COMPRESS-542-endheadercorrupted.7z"));
+        testFiles.add(getPath("COMPRESS-542-endheadercorrupted2.7z"));
+
+        for (final Path file : testFiles) {
+            try (SevenZFile sevenZFile = new SevenZFile(Files.newByteChannel(file))) {
+                fail("Expected IOException: start header corrupt and unable to guess end header");
+            } catch (IOException e) {
+                assertEquals("Start header corrupt and unable to guess end header", e.getMessage());
             }
         }
     }
