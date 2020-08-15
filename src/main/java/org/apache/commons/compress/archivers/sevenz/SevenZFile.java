@@ -976,7 +976,7 @@ public class SevenZFile implements Closeable {
                         throw new IOException("File names length invalid");
                     }
                     assertFitsIntoInt("file names length", size - 1);
-                    final byte[] names = new byte[(int)(size - 1)];
+                    final byte[] names = new byte[(int) (size - 1)];
                     header.get(names);
                     int nextFile = 0;
                     int nextName = 0;

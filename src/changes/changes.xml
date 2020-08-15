@@ -169,13 +169,21 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" date="2020-08-10" due-to="Dependabot" dev="ggregory">
         Update GitHub actions/checkout from v1 to v2.3.1 #114, #124.
       </action>
-      <action issue="COMPRESS-543" type="fix" date="2020-08-10" due-to="wulf2333" dev="PeterLee">
+      <action issue="COMPRESS-543" type="fix" date="2020-08-10"
+              due-to="wulf2333" dev="PeterLee">
         Fix for test fails on Windows. The tests are failing because the
         default charset is not UTF-8.
       </action>
-      <action issue="COMPRESS-544" type="fix" date="2020-08-13" due-to="Aditya Prasad" dev="PeterLee">
+      <action issue="COMPRESS-544" type="fix" date="2020-08-13"
+              due-to="Aditya Prasad" dev="PeterLee">
         TarArchiveInputStream can not detect a truncated tar in skip()
         and skipRecordPadding().
+      </action>
+      <action issue="COMPRESS-542" type="fix" date="2020-08-15"
+              due-to="theobisproject" dev="theobisproject">
+        Make the memory allocation in SevenZFile.readFilesInfo a lazy
+        allocation to avoid OOM when dealing some giant 7z archives.
+        Github Pull Request #120.
       </action>
     </release>
     <release version="1.20" date="2020-02-08"
