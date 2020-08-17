@@ -990,7 +990,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
                 int expectDDPos = i;
                 if (i >= expectedDDLen &&
                     (buf.array()[i + 2] == LFH[2] && buf.array()[i + 3] == LFH[3])
-                    || (buf.array()[i] == CFH[2] && buf.array()[i + 3] == CFH[3])) {
+                    || (buf.array()[i + 2] == CFH[2] && buf.array()[i + 3] == CFH[3])) {
                     // found a LFH or CFH:
                     expectDDPos = i - expectedDDLen;
                     done = true;
