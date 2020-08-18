@@ -1005,6 +1005,35 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
+     * Write preamble data. For most of time, this is used to
+     * make self-extracting zips.
+     *
+     * @param preamble data to write
+     * @throws IOException if an entry already exists
+     * @since 1.21
+     */
+    public void writePreamble(final byte[] preamble) throws IOException {
+        writePreamble(preamble, 0, preamble.length);
+    }
+
+    /**
+     * Write preamble data. For most of time, this is used to
+     * make self-extracting zips.
+     *
+     * @param preamble data to write
+     * @param offset   the start offset in the data
+     * @param length   the number of bytes to write
+     * @throws IOException if an entry already exists
+     * @since 1.21
+     */
+    public void writePreamble(final byte[] preamble, final int offset, final int length) throws IOException {
+        if (entry != null) {
+            throw new IllegalStateException("Preamble must be written before creating an entry");
+        }
+        this.streamCompressor.writeCounted(preamble, offset, length);
+    }
+
+    /**
      * Writes bytes to ZIP entry.
      * @param b the byte array to write
      * @param offset the start position to write from
