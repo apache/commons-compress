@@ -225,7 +225,7 @@ public class SevenZTestCase extends AbstractTestCase {
         final byte[] buf = new byte[1024];
         int x = 0;
         while (0 <= (x = archive.read(buf))) {
-            
+
         }
     }
 
