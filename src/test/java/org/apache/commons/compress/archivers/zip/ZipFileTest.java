@@ -763,6 +763,86 @@ public class ZipFileTest {
         outputStream.setLevel(Deflater.BEST_COMPRESSION + 1);
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void throwsExceptionWhenWritingPreamble() throws IOException {
+        final ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(new ByteArrayOutputStream());
+        outputStream.putArchiveEntry(new ZipArchiveEntry());
+        outputStream.writePreamble(new byte[0]);
+    }
+
+    @Test
+    public void testSelfExtractingZipUsingUnzipsfx() throws IOException, InterruptedException {
+        final File unzipsfx = new File("/usr/bin/unzipsfx");
+        if (!unzipsfx.exists()) {
+            return;
+        }
+
+        final File testZip = File.createTempFile("commons-compress-selfExtractZipTest", ".zip");
+        testZip.deleteOnExit();
+
+        final String testEntryName = "test_self_extract_zip/foo";
+        final File extractedFile = new File(testZip.getParentFile(), testEntryName);
+        extractedFile.deleteOnExit();
+
+        OutputStream outputStream = null;
+        InputStream inputStream = null;
+        final byte[] testData = new byte[]{1, 2, 3, 4};
+        byte[] buffer = new byte[512];
+        int bytesRead;
+        try (InputStream unzipsfxInputStream = new FileInputStream(unzipsfx)) {
+            outputStream = new FileOutputStream(testZip);
+            final ZipArchiveOutputStream zo = new ZipArchiveOutputStream(outputStream);
+
+            while ((bytesRead = unzipsfxInputStream.read(buffer)) > 0) {
+                zo.writePreamble(buffer, 0, bytesRead);
+            }
+
+            ZipArchiveEntry ze = new ZipArchiveEntry(testEntryName);
+            ze.setMethod(ZipEntry.STORED);
+            ze.setSize(4);
+            ze.setCrc(0xb63cfbcdl);
+            zo.putArchiveEntry(ze);
+            zo.write(testData);
+            zo.closeArchiveEntry();
+            zo.close();
+            outputStream.close();
+            outputStream = null;
+
+            final ProcessBuilder pbChmod = new ProcessBuilder("chmod", "+x", testZip.getPath());
+            pbChmod.redirectErrorStream(true);
+            final Process processChmod = pbChmod.start();
+            assertEquals(new String(IOUtils.toByteArray(processChmod.getInputStream())), 0, processChmod.waitFor());
+
+            final ProcessBuilder pb = new ProcessBuilder(testZip.getPath());
+            pb.redirectOutput(ProcessBuilder.Redirect.PIPE);
+            pb.directory(testZip.getParentFile());
+            pb.redirectErrorStream(true);
+            final Process process = pb.start();
+            assertEquals(new String(IOUtils.toByteArray(process.getInputStream())), 0, process.waitFor());
+
+            if (!extractedFile.exists()) {
+                // fail if extracted file does not exist
+                fail("Can not find the extracted file");
+            }
+
+            inputStream = new FileInputStream(extractedFile);
+            bytesRead = IOUtils.readFully(inputStream, buffer);
+            assertEquals(testData.length, bytesRead);
+            assertArrayEquals(testData, Arrays.copyOfRange(buffer, 0, bytesRead));
+        } finally {
+            if (outputStream != null) {
+                outputStream.close();
+            }
+            if (inputStream != null) {
+                inputStream.close();
+            }
+
+            testZip.delete();
+            extractedFile.delete();
+            extractedFile.getParentFile().delete();
+        }
+    }
+
     private void multiByteReadConsistentlyReturnsMinusOneAtEof(final File file) throws Exception {
         final byte[] buf = new byte[2];
         try (ZipFile archive = new ZipFile(file)) {
