@@ -258,21 +258,13 @@ public class Expander {
      */
     public void expand(final ArchiveInputStream archive, final File targetDirectory)
         throws IOException, ArchiveException {
-        expand(new ArchiveEntrySupplier() {
-            @Override
-            public ArchiveEntry getNextReadableEntry() throws IOException {
-                ArchiveEntry next = archive.getNextEntry();
-                while (next != null && !archive.canReadEntryData(next)) {
-                    next = archive.getNextEntry();
-                }
-                return next;
+        expand(() -> {
+            ArchiveEntry next = archive.getNextEntry();
+            while (next != null && !archive.canReadEntryData(next)) {
+                next = archive.getNextEntry();
             }
-        }, new EntryWriter() {
-            @Override
-            public void writeEntryDataTo(final ArchiveEntry entry, final OutputStream out) throws IOException {
-                IOUtils.copy(archive, out);
-            }
-        }, targetDirectory);
+            return next;
+        }, (entry, out) -> IOUtils.copy(archive, out), targetDirectory);
     }
 
     /**
@@ -286,21 +278,15 @@ public class Expander {
     public void expand(final ZipFile archive, final File targetDirectory)
         throws IOException, ArchiveException {
         final Enumeration<ZipArchiveEntry> entries = archive.getEntries();
-        expand(new ArchiveEntrySupplier() {
-            @Override
-            public ArchiveEntry getNextReadableEntry() throws IOException {
-                ZipArchiveEntry next = entries.hasMoreElements() ? entries.nextElement() : null;
-                while (next != null && !archive.canReadEntryData(next)) {
-                    next = entries.hasMoreElements() ? entries.nextElement() : null;
-                }
-                return next;
+        expand(() -> {
+            ZipArchiveEntry next = entries.hasMoreElements() ? entries.nextElement() : null;
+            while (next != null && !archive.canReadEntryData(next)) {
+                next = entries.hasMoreElements() ? entries.nextElement() : null;
             }
-        }, new EntryWriter() {
-            @Override
-            public void writeEntryDataTo(final ArchiveEntry entry, final OutputStream out) throws IOException {
-                try (InputStream in = archive.getInputStream((ZipArchiveEntry) entry)) {
-                    IOUtils.copy(in, out);
-                }
+            return next;
+        }, (entry, out) -> {
+            try (InputStream in = archive.getInputStream((ZipArchiveEntry) entry)) {
+                IOUtils.copy(in, out);
             }
         }, targetDirectory);
     }
@@ -315,19 +301,11 @@ public class Expander {
      */
     public void expand(final SevenZFile archive, final File targetDirectory)
         throws IOException, ArchiveException {
-        expand(new ArchiveEntrySupplier() {
-            @Override
-            public ArchiveEntry getNextReadableEntry() throws IOException {
-                return archive.getNextEntry();
-            }
-        }, new EntryWriter() {
-            @Override
-            public void writeEntryDataTo(final ArchiveEntry entry, final OutputStream out) throws IOException {
-                final byte[] buffer = new byte[8024];
-                int n;
-                while (-1 != (n = archive.read(buffer))) {
-                    out.write(buffer, 0, n);
-                }
+        expand(() -> archive.getNextEntry(), (entry, out) -> {
+            final byte[] buffer = new byte[8024];
+            int n;
+            while (-1 != (n = archive.read(buffer))) {
+                out.write(buffer, 0, n);
             }
         }, targetDirectory);
     }

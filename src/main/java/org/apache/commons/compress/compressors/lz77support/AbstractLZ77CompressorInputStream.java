@@ -114,12 +114,7 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
     /**
      * Supplier that delegates to {@link #readOneByte}.
      */
-    protected final ByteUtils.ByteSupplier supplier = new ByteUtils.ByteSupplier() {
-        @Override
-        public int getAsByte() throws IOException {
-            return readOneByte();
-        }
-    };
+    protected final ByteUtils.ByteSupplier supplier = this::readOneByte;
 
     /**
      * Creates a new LZ77 input stream.

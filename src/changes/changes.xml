@@ -42,8 +42,11 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Compress Release Notes</title>
   </properties>
   <body>
-    <release version="1.21" date="not released, yet"
+    <release version="1.21" date="not released, yet (Java 8)"
              description="Release 1.21">
+      <action type="update" date="2020-08-18">
+        Update from Java 7 to 8.
+      </action>
       <action type="update" date="2020-03-07"
               due-to="Peter Alfred Lee">
         Made sure ZstdCompressorOutputStream no longer used
@@ -192,7 +195,7 @@ The <action> type attribute can be add,update,fix,remove.
       </action>
     </release>
     <release version="1.20" date="2020-02-08"
-             description="Release 1.20">
+             description="Release 1.20 (Java 7)">
       <action issue="COMPRESS-493" type="update" date="2019-08-27">
         Update optional library com.github.luben:zstd-jni from 1.4.0-1 to 1.4.4-7.
       </action>

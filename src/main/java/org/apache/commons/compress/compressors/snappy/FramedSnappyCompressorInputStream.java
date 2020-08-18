@@ -82,12 +82,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
     private final int blockSize;
     private final PureJavaCrc32C checksum = new PureJavaCrc32C();
 
-    private final ByteUtils.ByteSupplier supplier = new ByteUtils.ByteSupplier() {
-        @Override
-        public int getAsByte() throws IOException {
-            return readOneByte();
-        }
-    };
+    private final ByteUtils.ByteSupplier supplier = this::readOneByte;
 
     /**
      * Constructs a new input stream that decompresses

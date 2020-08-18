@@ -211,16 +211,13 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
      * @since 1.13
      */
     public static SortedMap<String, ArchiveStreamProvider> findAvailableArchiveInputStreamProviders() {
-        return AccessController.doPrivileged(new PrivilegedAction<SortedMap<String, ArchiveStreamProvider>>() {
-            @Override
-            public SortedMap<String, ArchiveStreamProvider> run() {
-                final TreeMap<String, ArchiveStreamProvider> map = new TreeMap<>();
-                putAll(DEFAULT.getInputStreamArchiveNames(), DEFAULT, map);
-                for (final ArchiveStreamProvider provider : findArchiveStreamProviders()) {
-                    putAll(provider.getInputStreamArchiveNames(), provider, map);
-                }
-                return map;
+        return AccessController.doPrivileged((PrivilegedAction<SortedMap<String, ArchiveStreamProvider>>) () -> {
+            final TreeMap<String, ArchiveStreamProvider> map = new TreeMap<>();
+            putAll(DEFAULT.getInputStreamArchiveNames(), DEFAULT, map);
+            for (final ArchiveStreamProvider provider : findArchiveStreamProviders()) {
+                putAll(provider.getInputStreamArchiveNames(), provider, map);
             }
+            return map;
         });
     }
 
@@ -252,16 +249,13 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
      * @since 1.13
      */
     public static SortedMap<String, ArchiveStreamProvider> findAvailableArchiveOutputStreamProviders() {
-        return AccessController.doPrivileged(new PrivilegedAction<SortedMap<String, ArchiveStreamProvider>>() {
-            @Override
-            public SortedMap<String, ArchiveStreamProvider> run() {
-                final TreeMap<String, ArchiveStreamProvider> map = new TreeMap<>();
-                putAll(DEFAULT.getOutputStreamArchiveNames(), DEFAULT, map);
-                for (final ArchiveStreamProvider provider : findArchiveStreamProviders()) {
-                    putAll(provider.getOutputStreamArchiveNames(), provider, map);
-                }
-                return map;
+        return AccessController.doPrivileged((PrivilegedAction<SortedMap<String, ArchiveStreamProvider>>) () -> {
+            final TreeMap<String, ArchiveStreamProvider> map = new TreeMap<>();
+            putAll(DEFAULT.getOutputStreamArchiveNames(), DEFAULT, map);
+            for (final ArchiveStreamProvider provider : findArchiveStreamProviders()) {
+                putAll(provider.getOutputStreamArchiveNames(), provider, map);
             }
+            return map;
         });
     }
 

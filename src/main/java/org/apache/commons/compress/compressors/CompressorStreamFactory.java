@@ -245,16 +245,13 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      * @since 1.13
      */
     public static SortedMap<String, CompressorStreamProvider> findAvailableCompressorInputStreamProviders() {
-        return AccessController.doPrivileged(new PrivilegedAction<SortedMap<String, CompressorStreamProvider>>() {
-            @Override
-            public SortedMap<String, CompressorStreamProvider> run() {
-                final TreeMap<String, CompressorStreamProvider> map = new TreeMap<>();
-                putAll(SINGLETON.getInputStreamCompressorNames(), SINGLETON, map);
-                for (final CompressorStreamProvider provider : findCompressorStreamProviders()) {
-                    putAll(provider.getInputStreamCompressorNames(), provider, map);
-                }
-                return map;
+        return AccessController.doPrivileged((PrivilegedAction<SortedMap<String, CompressorStreamProvider>>) () -> {
+            final TreeMap<String, CompressorStreamProvider> map = new TreeMap<>();
+            putAll(SINGLETON.getInputStreamCompressorNames(), SINGLETON, map);
+            for (final CompressorStreamProvider provider : findCompressorStreamProviders()) {
+                putAll(provider.getInputStreamCompressorNames(), provider, map);
             }
+            return map;
         });
     }
 
@@ -286,17 +283,13 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      * @since 1.13
      */
     public static SortedMap<String, CompressorStreamProvider> findAvailableCompressorOutputStreamProviders() {
-        return AccessController.doPrivileged(new PrivilegedAction<SortedMap<String, CompressorStreamProvider>>() {
-            @Override
-            public SortedMap<String, CompressorStreamProvider> run() {
-                final TreeMap<String, CompressorStreamProvider> map = new TreeMap<>();
-                putAll(SINGLETON.getOutputStreamCompressorNames(), SINGLETON, map);
-                for (final CompressorStreamProvider provider : findCompressorStreamProviders()) {
-                    putAll(provider.getOutputStreamCompressorNames(), provider, map);
-                }
-                return map;
+        return AccessController.doPrivileged((PrivilegedAction<SortedMap<String, CompressorStreamProvider>>) () -> {
+            final TreeMap<String, CompressorStreamProvider> map = new TreeMap<>();
+            putAll(SINGLETON.getOutputStreamCompressorNames(), SINGLETON, map);
+            for (final CompressorStreamProvider provider : findCompressorStreamProviders()) {
+                putAll(provider.getOutputStreamCompressorNames(), provider, map);
             }
-
+            return map;
         });
     }
     private static ArrayList<CompressorStreamProvider> findCompressorStreamProviders() {

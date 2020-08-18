@@ -24,7 +24,6 @@ import static org.junit.Assert.fail;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FilenameFilter;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -85,12 +84,7 @@ public class ArchiveReadTest extends AbstractTestCase {
     public static Collection<Object[]> data() {
         assertTrue(ARCDIR.exists());
         final Collection<Object[]> params = new ArrayList<>();
-        for (final String f : ARCDIR.list(new FilenameFilter() {
-            @Override
-            public boolean accept(final File dir, final String name) {
-                return !name.endsWith(".txt");
-            }
-        }))
+        for (final String f : ARCDIR.list((dir, name) -> !name.endsWith(".txt")))
         {
             params.add(new Object[] { f });
         }

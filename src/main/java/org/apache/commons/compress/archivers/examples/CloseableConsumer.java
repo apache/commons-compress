@@ -34,20 +34,12 @@ public interface CloseableConsumer {
     /**
      * Closes the passed in Closeable immediately.
      */
-    CloseableConsumer CLOSING_CONSUMER = new CloseableConsumer() {
-        @Override
-        public void accept(final Closeable c) throws IOException {
-            c.close();
-        }
-    };
+    CloseableConsumer CLOSING_CONSUMER = Closeable::close;
 
     /**
      * Completely ignores the passed in Closeable.
      */
-    CloseableConsumer NULL_CONSUMER = new CloseableConsumer() {
-        @Override
-        public void accept(final Closeable c) { }
-    };
+    CloseableConsumer NULL_CONSUMER = c -> { };
 
     /**
      * Callback that is informed about a closable resource that has

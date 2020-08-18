@@ -113,20 +113,17 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
     public BlockLZ4CompressorOutputStream(final OutputStream os, final Parameters params) throws IOException {
         this.os = os;
         compressor = new LZ77Compressor(params,
-            new LZ77Compressor.Callback() {
-                @Override
-                public void accept(final LZ77Compressor.Block block) throws IOException {
-                    switch (block.getType()) {
-                    case LITERAL:
-                        addLiteralBlock((LZ77Compressor.LiteralBlock) block);
-                        break;
-                    case BACK_REFERENCE:
-                        addBackReference((LZ77Compressor.BackReference) block);
-                        break;
-                    case EOD:
-                        writeFinalLiteralBlock();
-                        break;
-                    }
+            block -> {
+                switch (block.getType()) {
+                case LITERAL:
+                    addLiteralBlock((LZ77Compressor.LiteralBlock) block);
+                    break;
+                case BACK_REFERENCE:
+                    addBackReference((LZ77Compressor.BackReference) block);
+                    break;
+                case EOD:
+                    writeFinalLiteralBlock();
+                    break;
                 }
             });
     }

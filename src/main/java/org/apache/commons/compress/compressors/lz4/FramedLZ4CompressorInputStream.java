@@ -63,12 +63,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
     // used in no-arg read method
     private final byte[] oneByte = new byte[1];
 
-    private final ByteUtils.ByteSupplier supplier = new ByteUtils.ByteSupplier() {
-        @Override
-        public int getAsByte() throws IOException {
-            return readOneByte();
-        }
-    };
+    private final ByteUtils.ByteSupplier supplier = this::readOneByte;
 
     private final CountingInputStream inputStream;
     private final boolean decompressConcatenated;

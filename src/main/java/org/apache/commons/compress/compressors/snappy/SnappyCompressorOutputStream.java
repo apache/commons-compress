@@ -99,21 +99,18 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream {
         throws IOException {
         this.os = os;
         consumer = new ByteUtils.OutputStreamByteConsumer(os);
-        compressor = new LZ77Compressor(params, new LZ77Compressor.Callback() {
-                @Override
-                public void accept(final LZ77Compressor.Block block) throws IOException {
-                    switch (block.getType()) {
-                    case LITERAL:
-                        writeLiteralBlock((LZ77Compressor.LiteralBlock) block);
-                        break;
-                    case BACK_REFERENCE:
-                        writeBackReference((LZ77Compressor.BackReference) block);
-                        break;
-                    case EOD:
-                        break;
-                    }
-                }
-            });
+        compressor = new LZ77Compressor(params, block -> {
+            switch (block.getType()) {
+            case LITERAL:
+                writeLiteralBlock((LZ77Compressor.LiteralBlock) block);
+                break;
+            case BACK_REFERENCE:
+                writeBackReference((LZ77Compressor.BackReference) block);
+                break;
+            case EOD:
+                break;
+            }
+        });
         writeUncompressedSize(uncompressedSize);
     }
 
