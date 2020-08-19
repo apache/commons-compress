@@ -34,6 +34,7 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.EnumSet;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -50,17 +51,18 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
  */
 public class Archiver {
 
-    private static final class ArchiverFileVisitor extends SimpleFileVisitor<Path> {
+    private static class ArchiverFileVisitor extends SimpleFileVisitor<Path> {
 
+        private static final LinkOption[] EMPTY_LINK_OPTIONS = new LinkOption[0];
         private final ArchiveOutputStream target;
         private final Path directory;
         private final LinkOption[] linkOptions;
 
-        private ArchiverFileVisitor(final ArchiveOutputStream target,
-            final Path directory, final LinkOption... linkOptions /*, BiConsumer<Path,T> fileConsumer */) {
+        private ArchiverFileVisitor(final ArchiveOutputStream target, final Path directory,
+            final LinkOption... linkOptions) {
             this.target = target;
             this.directory = directory;
-            this.linkOptions = linkOptions;
+            this.linkOptions = linkOptions == null ? EMPTY_LINK_OPTIONS : linkOptions.clone();
         }
 
         @Override
@@ -68,7 +70,7 @@ public class Archiver {
             return visit(dir, attrs, false);
         }
 
-        private FileVisitResult visit(final Path path, final BasicFileAttributes attrs, final boolean isFile)
+        protected FileVisitResult visit(final Path path, final BasicFileAttributes attrs, final boolean isFile)
             throws IOException {
             Objects.requireNonNull(path);
             Objects.requireNonNull(attrs);
@@ -159,14 +161,10 @@ public class Archiver {
      */
     public void create(final SevenZOutputFile target, final Path directory) throws IOException {
         // This custom SimpleFileVisitor goes away with Java 8's BiConsumer.
-        Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
-            @Override
-            public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs)
-                throws IOException {
-                return visit(dir, attrs, false);
-            }
+        Files.walkFileTree(directory, new ArchiverFileVisitor(null, directory) {
 
-            private FileVisitResult visit(final Path path, final BasicFileAttributes attrs, final boolean isFile)
+            @Override
+            protected FileVisitResult visit(final Path path, final BasicFileAttributes attrs, final boolean isFile)
                 throws IOException {
                 Objects.requireNonNull(path);
                 Objects.requireNonNull(attrs);
@@ -184,10 +182,6 @@ public class Archiver {
                 return FileVisitResult.CONTINUE;
             }
 
-            @Override
-            public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
-                return visit(file, attrs, true);
-            }
         });
         target.finish();
     }
