@@ -184,6 +184,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" date="2020-08-21" due-to="Dependabot" dev="ggregory">
         Update maven-pmd-plugin from 3.12.0 to 3.13.0 #115.
       </action>
+      <action type="update" date="2020-08-21" due-to="Dependabot" dev="ggregory">
+        Update maven-bundle-plugin from 3.5.1 to 5.1.1 #116.
+      </action>
       <action issue="COMPRESS-543" type="fix" date="2020-08-10"
               due-to="wulf2333" dev="PeterLee">
         Fix for test fails on Windows. The tests are failing because the
