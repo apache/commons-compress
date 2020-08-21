@@ -77,7 +77,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <japicmp.skip>false</japicmp.skip>
 
     <pax.exam.version>4.13.1</pax.exam.version>
-    <slf4j.version>1.7.26</slf4j.version>
+    <slf4j.version>1.7.30</slf4j.version>
   </properties>
 
   <issueManagement>
