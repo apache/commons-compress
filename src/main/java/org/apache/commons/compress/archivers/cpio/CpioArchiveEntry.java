@@ -56,7 +56,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * CPIO 2.5 knows also about tar, but it is not recognized here.</p>
  *
  *
- * <h3>OLD FORMAT</h3>
+ * <h2>OLD FORMAT</h2>
  *
  * <p>Each file has a 76 (ascii) / 26 (binary) byte header, a variable
  * length, NUL terminated file name, and variable length file data. A
