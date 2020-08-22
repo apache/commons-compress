@@ -208,6 +208,10 @@ The <action> type attribute can be add,update,fix,remove.
         ZipArchiveInputStream should throw an exception if a corrputed
         zip64 extra field is met.
       </action>
+      <action type="fix" date="2020-08-22" dev="PeterLee">
+        Add a new maven profile in pom.xml for JDK14+ to ignore the
+        failing tests about Pack200.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20 (Java 7)">

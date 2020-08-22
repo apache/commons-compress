@@ -32,9 +32,6 @@ jdk:
   - openjdk-ea
 
 matrix:
-  allow_failures:
-    - jdk: openjdk-ea
-    - jdk: openjdk14
 # Remove the outdated OpenJDK 11.0.2 which Travis image grabbed from java.net in
 # https://github.com/travis-ci/travis-cookbooks/blob/master/cookbooks/travis_jdk/files/install-jdk.sh#L200
 # (which has 11.0.2 hard-coded!), and instead replace it with the latest openjdk-11-jdk-headless Ubuntu package.
