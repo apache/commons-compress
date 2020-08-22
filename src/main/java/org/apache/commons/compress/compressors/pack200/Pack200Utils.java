@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
-import java.util.jar.Pack200;
+import org.apache.commons.compress.java.util.jar.Pack200;
 
 /**
  * Utility methods for Pack200.

@@ -61,6 +61,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       org.tukaani.xz;resolution:=optional,
       org.brotli.dec;resolution:=optional,
       com.github.luben.zstd;resolution:=optional,
+      org.objectweb.asm;resolution:=optional,
       javax.crypto.*;resolution:=optional,
       *
     </commons.osgi.import>
@@ -87,12 +88,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
 
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.13</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>com.github.luben</groupId>
       <artifactId>zstd-jni</artifactId>
       <version>1.4.5-6</version>
@@ -110,6 +105,22 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <version>1.8</version>
       <optional>true</optional>
     </dependency>
+
+    <!-- Pack200 -->
+    <dependency>
+      <groupId>asm</groupId>
+      <artifactId>asm</artifactId>
+      <version>3.2</version>
+      <optional>true</optional>
+    </dependency>
+
+    <!--  Test -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
@@ -123,7 +134,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <scope>test</scope>
     </dependency>
 
-    <!-- integration test verifiying OSGi bundle works -->
+    <!-- integration test verifying OSGi bundle works -->
     <dependency>
       <groupId>org.ops4j.pax.exam</groupId>
       <artifactId>pax-exam-container-native</artifactId>
