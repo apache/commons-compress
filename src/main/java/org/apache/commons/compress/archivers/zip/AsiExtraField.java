@@ -266,6 +266,10 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     @Override
     public void parseFromLocalFileData(final byte[] data, final int offset, final int length)
         throws ZipException {
+        if (length < WORD) {
+            throw new ZipException("The length is too short, only "
+                    + length + " bytes, expected at least " + WORD);
+        }
 
         final long givenChecksum = ZipLong.getValue(data, offset);
         final byte[] tmp = new byte[length - WORD];

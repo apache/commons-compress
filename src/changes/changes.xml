@@ -212,6 +212,11 @@ The <action> type attribute can be add,update,fix,remove.
         Add a new maven profile in pom.xml for JDK14+ to ignore the
         failing tests about Pack200.
       </action>
+      <action issue="COMPRESS-548" type="fix" date="2020-08-24"
+              due-to="Maksim Zuev" dev="PeterLee">
+        Throw an exception when reading the zip extra field if the
+        length is too short.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20 (Java 7)">

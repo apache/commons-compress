@@ -719,6 +719,15 @@ public class ZipArchiveInputStreamTest {
         }
     }
 
+    @Test
+    public void testZipWithBadExtraFields() throws IOException {
+        try (InputStream fis = new FileInputStream(getFile("COMPRESS-548.zip"));
+             ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(fis);) {
+            while (zipInputStream.getNextZipEntry() != null) {
+            }
+        }
+    }
+
     private static byte[] readEntry(final ZipArchiveInputStream zip, final ZipArchiveEntry zae) throws IOException {
         final int len = (int)zae.getSize();
         final byte[] buff = new byte[len];
