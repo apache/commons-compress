@@ -52,7 +52,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <commons.rc.version>RC1</commons.rc.version>
     <!-- old version used by japicmp -->
     <commons.bc.version>1.20</commons.bc.version>
-    <mockito.version>1.10.19</mockito.version>
+    <mockito.version>3.5.7</mockito.version>
     <commons.pmd-plugin.version>3.13.0</commons.pmd-plugin.version>
 
     <commons.manifestlocation>${project.build.outputDirectory}/META-INF</commons.manifestlocation>
