@@ -47,7 +47,7 @@ public final class IOUtils {
      */
     public static final LinkOption[] EMPTY_LINK_OPTIONS = {};
 
-    // This buffer does not need to be synchronised because it is write only; the contents are ignored
+    // This buffer does not need to be synchronized because it is write only; the contents are ignored
     // Does not affect Immutability
     private static final byte[] SKIP_BUF = new byte[SKIP_BUF_SIZE];
 
