@@ -84,4 +84,16 @@ public class TarFileTest extends AbstractTestCase {
         }
     }
 
+    @Test(expected = IOException.class)
+    public void testParseTarTruncatedInPadding() throws IOException {
+        try (TarFile tarFile = new TarFile(getPath("COMPRESS-544_truncated_in_padding.tar"))) {
+        }
+    }
+
+    @Test(expected = IOException.class)
+    public void testParseTarTruncatedInContent() throws IOException {
+        try (TarFile tarFile = new TarFile(getPath("COMPRESS-544_truncated_in_content.tar"))) {
+        }
+    }
+
 }
