@@ -234,6 +234,7 @@ public class TarFile implements Closeable {
         if (currEntry != null) {
             // Skip to the end of the entry
             archive.position(currEntry.getDataOffset() + currEntry.getSize());
+            throwExceptionIfPositionIsNotInArchive();
 
             skipRecordPadding();
         }
@@ -501,6 +502,17 @@ public class TarFile implements Closeable {
             final long numRecords = (currEntry.getSize() / recordSize) + 1;
             final long padding = (numRecords * recordSize) - currEntry.getSize();
             archive.position(archive.position() + padding);
+            throwExceptionIfPositionIsNotInArchive();
+        }
+    }
+
+    /**
+     * Checks if the current position of the SeekableByteChannel is in the archive.
+     * @throws IOException If the position is not in the archive
+     */
+    private void throwExceptionIfPositionIsNotInArchive() throws IOException {
+        if (archive.size() < archive.position()) {
+            throw new IOException("Truncated TAR archive");
         }
     }
 
