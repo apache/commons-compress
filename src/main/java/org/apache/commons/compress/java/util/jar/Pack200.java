@@ -28,7 +28,7 @@ import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 
-import org.apache.harmony.archive.internal.nls.Messages;
+import org.apache.commons.compress.harmony.archive.internal.nls.Messages;
 
 /**
  * Class factory for {@link Pack200.Packer} and {@link Pack200.Unpacker}.
@@ -62,7 +62,7 @@ public abstract class Pack200 {
                     public Object run() {
                         String className = System
                                 .getProperty(SYSTEM_PROPERTY_PACKER,
-                                        "org.apache.harmony.pack200.Pack200PackerAdapter"); //$NON-NLS-1$
+                                        "org.apache.commons.compress.harmony.pack200.Pack200PackerAdapter"); //$NON-NLS-1$
                         try {
                             // TODO Not sure if this will cause problems with
                             // loading the packer
@@ -92,7 +92,7 @@ public abstract class Pack200 {
                     public Object run() {
                         String className = System
                                 .getProperty(SYSTEM_PROPERTY_UNPACKER,
-                                        "org.apache.harmony.unpack200.Pack200UnpackerAdapter");//$NON-NLS-1$
+                                        "org.apache.commons.compress.harmony.unpack200.Pack200UnpackerAdapter");//$NON-NLS-1$
                         try {
                             return ClassLoader.getSystemClassLoader()
                                     .loadClass(className).newInstance();
