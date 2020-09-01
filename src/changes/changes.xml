@@ -214,8 +214,13 @@ The <action> type attribute can be add,update,fix,remove.
       </action>
       <action issue="COMPRESS-548" type="fix" date="2020-08-24"
               due-to="Maksim Zuev" dev="PeterLee">
-        Throw an exception when reading the zip extra field if the
+        Throw an IOException when reading the zip extra field if the
         length is too short.
+      </action>
+      <action issue="COMPRESS-554" type="fix" date="2020-09-01"
+              due-to="Maksim Zuev" dev="PeterLee">
+        Throw an decleared IOException if a null entry is met when
+        reading a global pax header instead of a runtime NPE.
       </action>
     </release>
     <release version="1.20" date="2020-02-08"

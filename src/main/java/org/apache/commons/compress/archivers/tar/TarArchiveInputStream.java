@@ -573,6 +573,10 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     private void readGlobalPaxHeaders() throws IOException {
         globalPaxHeaders = parsePaxHeaders(this, globalSparseHeaders);
         getNextEntry(); // Get the actual file entry
+
+        if (currEntry == null) {
+            throw new IOException("Error detected parsing the pax header");
+        }
     }
 
     /**

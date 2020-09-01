@@ -460,6 +460,15 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
         }
     }
 
+    @Test(expected = IOException.class)
+    public void stCompress554() throws IOException {
+        try (FileInputStream in = new FileInputStream(getFile("./COMPRESS-554.tar"));
+             TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
+            while (archive.getNextTarEntry() != null) {
+            }
+        }
+    }
+
     private TarArchiveInputStream getTestStream(final String name) {
         return new TarArchiveInputStream(
                 TarArchiveInputStreamTest.class.getResourceAsStream(name));
