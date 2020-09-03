@@ -241,6 +241,8 @@ public class TarFile implements Closeable {
 
         final ByteBuffer headerBuf = getRecord();
         if (null == headerBuf) {
+            /* hit EOF */
+            currEntry = null;
             return null;
         }
 
@@ -457,6 +459,10 @@ public class TarFile implements Closeable {
             globalPaxHeaders = TarUtils.parsePaxHeaders(input, globalSparseHeaders, globalPaxHeaders);
         }
         getNextTarEntry(); // Get the actual file entry
+
+        if (currEntry == null) {
+            throw new IOException("Error detected parsing the pax header");
+        }
     }
 
     /**
@@ -641,7 +647,7 @@ public class TarFile implements Closeable {
         protected int read(final long pos, final ByteBuffer buf) throws IOException {
             if (entry.isSparse()) {
                 // for sparse entries, there are actually currEntry.getRealSize() bytes to read
-                if (entryOffset >= currEntry.getRealSize()) {
+                if (entryOffset >= entry.getRealSize()) {
                     return -1;
                 }
             } else {

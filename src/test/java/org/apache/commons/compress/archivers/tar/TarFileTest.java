@@ -96,4 +96,10 @@ public class TarFileTest extends AbstractTestCase {
         }
     }
 
+    @Test(expected = IOException.class)
+    public void testThrowExceptionWithNullEntry() throws IOException {
+        try (TarFile tarFile = new TarFile(getPath("COMPRESS-554.tar"))) {
+        }
+    }
+
 }
