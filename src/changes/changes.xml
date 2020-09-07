@@ -226,6 +226,15 @@ The <action> type attribute can be add,update,fix,remove.
               due-to="Maksim Zuev" dev="PeterLee">
         Add asserts for Arrays.copyOf in X0017_StrongEncryptionHeader.
       </action>
+      <action issue="COMPRESS-550" type="add" date="2020-09-07"
+              due-to="Scott Frederick" dev="PeterLee">
+        Add writePreamble to ZipArchiveInputStream. This method could
+        write raw data to zip archive before any entry was written to
+        the zip archive.
+        For most of the time, this is used to create self-extracting
+        zip.
+        Github Pull Request #127.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20 (Java 7)">
