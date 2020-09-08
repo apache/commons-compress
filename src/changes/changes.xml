@@ -235,7 +235,7 @@ The <action> type attribute can be add,update,fix,remove.
         zip.
         Github Pull Request #127.
       </action>
-      <action type="update" due-to="Dependabot">Update actions/setup-java from v1.4.1 to v1.4.2 #133.</action>
+      <action type="update" due-to="Dependabot" date="2020-09-08">Update actions/setup-java from v1.4.1 to v1.4.2 #133.</action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20 (Java 7)">
