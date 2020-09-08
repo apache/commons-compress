@@ -198,7 +198,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
      * Extra Fields (if present) to set the file names.
      */
     public ZipArchiveInputStream(final InputStream inputStream, final String encoding, final boolean useUnicodeExtraFields) {
-        this(inputStream, encoding, useUnicodeExtraFields, false);
+        this(inputStream, encoding, useUnicodeExtraFields, true);
     }
 
     /**
