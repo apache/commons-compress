@@ -142,8 +142,8 @@ public final class FramedSnappyCompressorInputStreamTest
 
     @Test
     public void testChecksumUnmasking() {
-        testChecksumUnmasking(0xc757l);
-        testChecksumUnmasking(0xffffc757l);
+        testChecksumUnmasking(0xc757L);
+        testChecksumUnmasking(0xffffc757L);
     }
 
     @Test

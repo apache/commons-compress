@@ -165,8 +165,8 @@ public class TarUtilsTest {
         checkRoundTripOctalOrBinary(1, length);
         checkRoundTripOctalOrBinary(TarConstants.MAXSIZE, length); // will need binary format
         checkRoundTripOctalOrBinary(-1, length); // will need binary format
-        checkRoundTripOctalOrBinary(0xffffffffffffffl, length);
-        checkRoundTripOctalOrBinary(-0xffffffffffffffl, length);
+        checkRoundTripOctalOrBinary(0xffffffffffffffL, length);
+        checkRoundTripOctalOrBinary(-0xffffffffffffffL, length);
     }
 
     // Check correct trailing bytes are generated
@@ -235,7 +235,7 @@ public class TarUtilsTest {
             (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
             (byte) 0xff, (byte) 0xff, (byte) 0xf1, (byte) 0xef,
         };
-        assertEquals(-3601l, TarUtils.parseOctalOrBinary(b, 0, 8));
+        assertEquals(-3601L, TarUtils.parseOctalOrBinary(b, 0, 8));
     }
 
     @Test
@@ -245,7 +245,7 @@ public class TarUtilsTest {
             (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
             (byte) 0xff, (byte) 0xff, (byte) 0xf1, (byte) 0xef,
         };
-        assertEquals(-3601l, TarUtils.parseOctalOrBinary(b, 0, 12));
+        assertEquals(-3601L, TarUtils.parseOctalOrBinary(b, 0, 12));
     }
 
 
@@ -255,7 +255,7 @@ public class TarUtilsTest {
             (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
             (byte) 0xff, (byte) 0xff, (byte) 0xf1, (byte) 0xef,
         };
-        assertEquals(-3601l, TarUtils.parseOctalOrBinary(b, 0, 8));
+        assertEquals(-3601L, TarUtils.parseOctalOrBinary(b, 0, 8));
     }
 
     // https://issues.apache.org/jira/browse/COMPRESS-191

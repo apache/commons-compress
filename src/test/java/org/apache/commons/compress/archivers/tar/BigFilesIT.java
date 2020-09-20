@@ -79,7 +79,7 @@ public class BigFilesIT {
             tin = new TarArchiveInputStream(gzin);
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
-            assertEquals(8200l * 1024 * 1024, e.getSize());
+            assertEquals(8200L * 1024 * 1024, e.getSize());
 
             long read = 0;
             final Random r = new Random(System.currentTimeMillis());
@@ -94,7 +94,7 @@ public class BigFilesIT {
                 }
                 read += readNow;
             }
-            assertEquals(8200l * 1024 * 1024, read);
+            assertEquals(8200L * 1024 * 1024, read);
             assertNull(tin.getNextTarEntry());
         } finally {
             if (tin != null) {

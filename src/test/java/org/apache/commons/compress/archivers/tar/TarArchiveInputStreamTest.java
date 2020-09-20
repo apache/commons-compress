@@ -263,7 +263,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
         final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
         tos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_POSIX);
         TarArchiveEntry t = new TarArchiveEntry("name");
-        t.setGroupId(4294967294l);
+        t.setGroupId(4294967294L);
         t.setSize(1);
         tos.putArchiveEntry(t);
         tos.write(30);
@@ -274,7 +274,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
         final TarArchiveInputStream tis =
             new TarArchiveInputStream(bis);
         t = tis.getNextTarEntry();
-        assertEquals(4294967294l, t.getLongGroupId());
+        assertEquals(4294967294L, t.getLongGroupId());
         tis.close();
     }
 

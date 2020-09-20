@@ -138,7 +138,7 @@ public class BitInputStreamTest {
         try (final BitInputStream bin = new BitInputStream(in, ByteOrder.LITTLE_ENDIAN)) {
             assertEquals(23, // 10111
                          bin.readBits(5));
-            assertEquals(714595605644185962l, // 0001-00111101-01011000-00011101-01011010-00001111-01000010-00101101-010
+            assertEquals(714595605644185962L, // 0001-00111101-01011000-00011101-01011010-00001111-01000010-00101101-010
                          bin.readBits(63));
             assertEquals(1186, // 01001010-0010
                          bin.readBits(12));
@@ -163,7 +163,7 @@ public class BitInputStreamTest {
         try (final BitInputStream bin = new BitInputStream(in, ByteOrder.BIG_ENDIAN)) {
             assertEquals(10, // 01010
                          bin.readBits(5));
-            assertEquals(8274274654740644818l, //111-00101101-01000010-00001111-01011010-00011101-01011000-00111101-0010
+            assertEquals(8274274654740644818L, //111-00101101-01000010-00001111-01011010-00011101-01011000-00111101-0010
                     bin.readBits(63));
             assertEquals(330, // 0001-01001010
                          bin.readBits(12));

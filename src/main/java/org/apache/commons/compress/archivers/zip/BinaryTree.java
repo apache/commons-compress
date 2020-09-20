@@ -51,7 +51,7 @@ class BinaryTree {
             throw new IllegalArgumentException("depth must be bigger than 0 and not bigger than 30"
                 + " but is " + depth);
         }
-        tree = new int[(int) ((1l << (depth + 1)) - 1)];
+        tree = new int[(int) ((1L << (depth + 1)) - 1)];
         Arrays.fill(tree, UNDEFINED);
     }
 

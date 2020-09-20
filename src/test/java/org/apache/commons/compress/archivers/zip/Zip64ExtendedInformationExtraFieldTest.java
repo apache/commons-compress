@@ -32,7 +32,7 @@ public class Zip64ExtendedInformationExtraFieldTest {
     private static final ZipEightByteInteger CSIZE =
         new ZipEightByteInteger(0x9ABCDEF);
     private static final ZipEightByteInteger OFF =
-        new ZipEightByteInteger(BigInteger.valueOf(0xABCDEF091234567l)
+        new ZipEightByteInteger(BigInteger.valueOf(0xABCDEF091234567L)
                                 .shiftLeft(4)
                                 .setBit(3));
     private static final ZipLong DISK = new ZipLong(0x12);

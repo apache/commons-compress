@@ -187,7 +187,7 @@ public class ZipFileTest {
             ZipArchiveEntry ze = new ZipArchiveEntry("foo");
             ze.setMethod(ZipEntry.STORED);
             ze.setSize(4);
-            ze.setCrc(0xb63cfbcdl);
+            ze.setCrc(0xb63cfbcdL);
             zo.putArchiveEntry(ze);
             zo.write(new byte[] { 1, 2, 3, 4 });
             zo.closeArchiveEntry();
@@ -800,7 +800,7 @@ public class ZipFileTest {
             ZipArchiveEntry ze = new ZipArchiveEntry(testEntryName);
             ze.setMethod(ZipEntry.STORED);
             ze.setSize(4);
-            ze.setCrc(0xb63cfbcdl);
+            ze.setCrc(0xb63cfbcdL);
             zo.putArchiveEntry(ze);
             zo.write(testData);
             zo.closeArchiveEntry();

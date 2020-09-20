@@ -45,7 +45,7 @@ import org.junit.Test;
 
 public class Zip64SupportIT {
 
-    private static final long FIVE_BILLION = 5000000000l;
+    private static final long FIVE_BILLION = 5000000000L;
     private static final int ONE_MILLION = 1000000;
     private static final int ONE_HUNDRED_THOUSAND = 100000;
 

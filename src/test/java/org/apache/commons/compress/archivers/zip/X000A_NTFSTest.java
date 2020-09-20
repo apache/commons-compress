@@ -30,14 +30,14 @@ public class X000A_NTFSTest {
         final X000A_NTFS xf = new X000A_NTFS();
         xf.setModifyJavaTime(new Date(0));
         // one second past midnight
-        xf.setAccessJavaTime(new Date(-11644473601000l));
+        xf.setAccessJavaTime(new Date(-11644473601000L));
         xf.setCreateJavaTime(null);
         final byte[] b = xf.getLocalFileDataData();
 
         final X000A_NTFS xf2 = new X000A_NTFS();
         xf2.parseFromLocalFileData(b, 0, b.length);
         assertEquals(new Date(0), xf2.getModifyJavaTime());
-        assertEquals(new Date(-11644473601000l), xf2.getAccessJavaTime());
+        assertEquals(new Date(-11644473601000L), xf2.getAccessJavaTime());
         assertEquals(null, xf2.getCreateJavaTime());
     }
 }
