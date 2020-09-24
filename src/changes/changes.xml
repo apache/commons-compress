@@ -236,6 +236,12 @@ The <action> type attribute can be add,update,fix,remove.
         Github Pull Request #127.
       </action>
       <action type="update" due-to="Dependabot" date="2020-09-08">Update actions/setup-java from v1.4.1 to v1.4.2 #133.</action>
+      <action type="fix" date="2020-09-24" dev="PeterLee">
+        Fix for the CFH signature detect in ZipArchiveInputStream.
+        The problem could be reproduced by a zip archive with Data
+        Descriptor and STORED, and without the Data Descriptor
+        signature.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20 (Java 7)">

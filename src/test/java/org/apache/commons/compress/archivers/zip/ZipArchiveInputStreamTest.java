@@ -29,6 +29,7 @@ import static org.junit.Assert.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,6 +38,7 @@ import java.io.InputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.util.Arrays;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -728,6 +730,15 @@ public class ZipArchiveInputStreamTest {
         }
     }
 
+    @Test
+    public void testZipUsingStoredWithDDAndNoDDSignature() throws IOException {
+        try (InputStream inputStream = forgeZipInputStream();
+             ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(inputStream, "UTF-8", true, true);) {
+            while (zipInputStream.getNextZipEntry() != null) {
+            }
+        }
+    }
+
     private static byte[] readEntry(final ZipArchiveInputStream zip, final ZipArchiveEntry zae) throws IOException {
         final int len = (int)zae.getSize();
         final byte[] buff = new byte[len];
@@ -762,6 +773,45 @@ public class ZipArchiveInputStreamTest {
              .createArchiveInputStream("zip", new ByteArrayInputStream(input))) {
             ais.getNextEntry();
             IOUtils.toByteArray(ais);
+        }
+    }
+
+    /**
+     * Forge a zip archive in memory, using STORED and
+     * Data Descriptor, and without signature of Data
+     * Descriptor.
+     *
+     * @return the input stream of the generated zip
+     * @throws IOException there are problems
+     */
+    private InputStream forgeZipInputStream() throws IOException {
+        try (final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+             final ZipArchiveOutputStream zo = new ZipArchiveOutputStream(byteArrayOutputStream);){
+
+            final ZipArchiveEntry entryA = new ZipArchiveEntry("foo");
+            entryA.setMethod(ZipEntry.STORED);
+            entryA.setSize(4);
+            entryA.setCrc(0xb63cfbcdl);
+            zo.putArchiveEntry(entryA);
+            zo.write(new byte[] { 1, 2, 3, 4 });
+            zo.closeArchiveEntry();
+            zo.close();
+
+            final byte[] zipContent = byteArrayOutputStream.toByteArray();
+            final byte[] old = Arrays.copyOf(zipContent, zipContent.length);
+
+            final byte[] zipContentWithDataDescriptor = new byte[zipContent.length + 12];
+            System.arraycopy(zipContent, 0, zipContentWithDataDescriptor, 0, 37);
+            // modify the general purpose bit flag
+            zipContentWithDataDescriptor[6] = 8;
+
+            // copy the crc-32, compressed size and uncompressed size to the data descriptor
+            System.arraycopy(zipContent, 14, zipContentWithDataDescriptor, 37, 12);
+
+            // and copy the rest of the zip content
+            System.arraycopy(zipContent, 37, zipContentWithDataDescriptor, 49, zipContent.length - 37);
+
+            return new ByteArrayInputStream(zipContentWithDataDescriptor);
         }
     }
 }
