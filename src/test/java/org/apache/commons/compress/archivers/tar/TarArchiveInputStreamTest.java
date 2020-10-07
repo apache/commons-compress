@@ -444,7 +444,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
 
     @Test(expected = IOException.class)
     public void testParseTarTruncatedInPadding() throws IOException {
-        try (FileInputStream in = new FileInputStream(getFile("./COMPRESS-544_truncated_in_padding.tar"));
+        try (FileInputStream in = new FileInputStream(getFile("COMPRESS-544_truncated_in_padding.tar"));
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             while (archive.getNextTarEntry() != null) {
             }
@@ -453,7 +453,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
 
     @Test(expected = IOException.class)
     public void testParseTarTruncatedInContent() throws IOException {
-        try (FileInputStream in = new FileInputStream(getFile("./COMPRESS-544_truncated_in_content.tar"));
+        try (FileInputStream in = new FileInputStream(getFile("COMPRESS-544_truncated_in_content.tar"));
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             while (archive.getNextTarEntry() != null) {
             }
@@ -462,7 +462,16 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
 
     @Test(expected = IOException.class)
     public void testThrowExceptionWithNullEntry() throws IOException {
-        try (FileInputStream in = new FileInputStream(getFile("./COMPRESS-554.tar"));
+        try (FileInputStream in = new FileInputStream(getFile("COMPRESS-554.tar"));
+             TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
+            while (archive.getNextTarEntry() != null) {
+            }
+        }
+    }
+
+    @Test(expected = IOException.class)
+    public void testThrowException() throws IOException {
+        try (FileInputStream in = new FileInputStream(getFile("COMPRESS-553.tar"));
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             while (archive.getNextTarEntry() != null) {
             }

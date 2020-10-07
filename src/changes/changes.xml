@@ -242,6 +242,12 @@ The <action> type attribute can be add,update,fix,remove.
         Descriptor and STORED, and without the Data Descriptor
         signature.
       </action>
+      <action issue="COMPRESS-553" type="fix" date="2020-10-07"
+              due-to="Maksim Zuev" dev="PeterLee">
+        The length validation in TarArchiveInputStream.parsePaxHeaders
+        should also consider the headers with length smaller than 1
+        and ignore these headers.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20 (Java 7)">

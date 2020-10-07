@@ -754,7 +754,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                             final String keyword = coll.toString(CharsetNames.UTF_8);
                             // Get rest of entry
                             final int restLen = len - read;
-                            if (restLen == 1) { // only NL
+                            if (restLen <= 1) { // only NL
                                 headers.remove(keyword);
                             } else {
                                 final byte[] rest = new byte[restLen];
