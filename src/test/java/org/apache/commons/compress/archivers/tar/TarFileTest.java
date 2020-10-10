@@ -102,4 +102,9 @@ public class TarFileTest extends AbstractTestCase {
         }
     }
 
+    @Test(expected = IOException.class)
+    public void testThrowException() throws IOException {
+        try (TarFile tarFile = new TarFile(getPath("COMPRESS-553.tar"))) {
+        }
+    }
 }
