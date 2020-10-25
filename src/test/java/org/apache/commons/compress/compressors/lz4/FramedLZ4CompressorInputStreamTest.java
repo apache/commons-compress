@@ -97,32 +97,17 @@ public final class FramedLZ4CompressorInputStreamTest
 
     @Test
     public void readDoubledBlaLz4WithDecompressConcatenatedTrue() throws Exception {
-        readDoubledBlaLz4(new StreamWrapper() {
-                @Override
-                public InputStream wrap(final InputStream in) throws Exception {
-                    return new FramedLZ4CompressorInputStream(in, true);
-                }
-            }, true);
+        readDoubledBlaLz4(in -> new FramedLZ4CompressorInputStream(in, true), true);
     }
 
     @Test
     public void readDoubledBlaLz4WithDecompressConcatenatedFalse() throws Exception {
-        readDoubledBlaLz4(new StreamWrapper() {
-                @Override
-                public InputStream wrap(final InputStream in) throws Exception {
-                    return new FramedLZ4CompressorInputStream(in, false);
-                }
-            }, false);
+        readDoubledBlaLz4(in -> new FramedLZ4CompressorInputStream(in, false), false);
     }
 
     @Test
     public void readDoubledBlaLz4WithoutExplicitDecompressConcatenated() throws Exception {
-        readDoubledBlaLz4(new StreamWrapper() {
-                @Override
-                public InputStream wrap(final InputStream in) throws Exception {
-                    return new FramedLZ4CompressorInputStream(in);
-                }
-            }, false);
+        readDoubledBlaLz4(FramedLZ4CompressorInputStream::new, false);
     }
 
     @Test
@@ -140,35 +125,20 @@ public final class FramedLZ4CompressorInputStreamTest
 
     @Test
     public void readDoubledBlaLz4ViaFactoryWithDecompressConcatenatedTrue() throws Exception {
-        readDoubledBlaLz4(new StreamWrapper() {
-                @Override
-                public InputStream wrap(final InputStream in) throws Exception {
-                    return new CompressorStreamFactory()
-                        .createCompressorInputStream(CompressorStreamFactory.getLZ4Framed(), in, true);
-                }
-            }, true);
+        readDoubledBlaLz4(in -> new CompressorStreamFactory()
+            .createCompressorInputStream(CompressorStreamFactory.getLZ4Framed(), in, true), true);
     }
 
     @Test
     public void readDoubledBlaLz4ViaFactoryWithDecompressConcatenatedFalse() throws Exception {
-        readDoubledBlaLz4(new StreamWrapper() {
-                @Override
-                public InputStream wrap(final InputStream in) throws Exception {
-                    return new CompressorStreamFactory()
-                        .createCompressorInputStream(CompressorStreamFactory.getLZ4Framed(), in, false);
-                }
-            }, false);
+        readDoubledBlaLz4(in -> new CompressorStreamFactory()
+            .createCompressorInputStream(CompressorStreamFactory.getLZ4Framed(), in, false), false);
     }
 
     @Test
     public void readDoubledBlaLz4ViaFactoryWithoutExplicitDecompressConcatenated() throws Exception {
-        readDoubledBlaLz4(new StreamWrapper() {
-                @Override
-                public InputStream wrap(final InputStream in) throws Exception {
-                    return new CompressorStreamFactory()
-                        .createCompressorInputStream(CompressorStreamFactory.getLZ4Framed(), in);
-                }
-            }, false);
+        readDoubledBlaLz4(in -> new CompressorStreamFactory()
+            .createCompressorInputStream(CompressorStreamFactory.getLZ4Framed(), in), false);
     }
 
     @Test

@@ -37,12 +37,7 @@ public class ZstdRoundtripTest extends AbstractTestCase {
 
     @Test
     public void directRoundtrip() throws Exception {
-        roundtrip(new OutputStreamCreator() {
-            @Override
-            public ZstdCompressorOutputStream wrap(final FileOutputStream os) throws IOException {
-                return new ZstdCompressorOutputStream(os);
-            }
-        });
+        roundtrip(ZstdCompressorOutputStream::new);
     }
 
     private void roundtrip(final OutputStreamCreator oc) throws IOException {
@@ -88,32 +83,17 @@ public class ZstdRoundtripTest extends AbstractTestCase {
 
     @Test
     public void roundtripWithCustomLevel() throws Exception {
-        roundtrip(new OutputStreamCreator() {
-            @Override
-            public ZstdCompressorOutputStream wrap(final FileOutputStream os) throws IOException {
-                return new ZstdCompressorOutputStream(os, 1);
-            }
-        });
+        roundtrip(os -> new ZstdCompressorOutputStream(os, 1));
     }
 
     @Test
     public void roundtripWithCloseFrameOnFlush() throws Exception {
-        roundtrip(new OutputStreamCreator() {
-            @Override
-            public ZstdCompressorOutputStream wrap(final FileOutputStream os) throws IOException {
-                return new ZstdCompressorOutputStream(os, 3, true);
-            }
-        });
+        roundtrip(os -> new ZstdCompressorOutputStream(os, 3, true));
     }
 
     @Test
     public void roundtripWithChecksum() throws Exception {
-        roundtrip(new OutputStreamCreator() {
-            @Override
-            public ZstdCompressorOutputStream wrap(final FileOutputStream os) throws IOException {
-                return new ZstdCompressorOutputStream(os, 3, false, true);
-            }
-        });
+        roundtrip(os -> new ZstdCompressorOutputStream(os, 3, false, true));
     }
 
 }

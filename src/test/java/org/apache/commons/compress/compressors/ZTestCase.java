@@ -24,7 +24,6 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.compress.AbstractTestCase;
@@ -36,34 +35,19 @@ public final class ZTestCase extends AbstractTestCase {
 
     @Test
     public void testZUnarchive() throws Exception {
-        testUnarchive(new StreamWrapper<CompressorInputStream>() {
-            @Override
-            public CompressorInputStream wrap(final InputStream is) throws IOException {
-                return new ZCompressorInputStream(is);
-            }
-        });
+        testUnarchive(ZCompressorInputStream::new);
     }
 
     @Test
     public void testZUnarchiveViaFactory() throws Exception {
-        testUnarchive(new StreamWrapper<CompressorInputStream>() {
-            @Override
-            public CompressorInputStream wrap(final InputStream is) throws Exception {
-                return new CompressorStreamFactory()
-                    .createCompressorInputStream(CompressorStreamFactory.Z, is);
-            }
-        });
+        testUnarchive(is -> new CompressorStreamFactory()
+            .createCompressorInputStream(CompressorStreamFactory.Z, is));
     }
 
     @Test
     public void testZUnarchiveViaAutoDetection() throws Exception {
-        testUnarchive(new StreamWrapper<CompressorInputStream>() {
-            @Override
-            public CompressorInputStream wrap(final InputStream is) throws Exception {
-                return new CompressorStreamFactory()
-                    .createCompressorInputStream(new BufferedInputStream(is));
-            }
-        });
+        testUnarchive(is -> new CompressorStreamFactory()
+            .createCompressorInputStream(new BufferedInputStream(is)));
     }
 
     @Test

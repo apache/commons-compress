@@ -24,7 +24,6 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.InputStream;
 import java.util.zip.ZipEntry;
 
 import static org.apache.commons.compress.AbstractTestCase.tryHardToDelete;
@@ -78,11 +77,6 @@ public class ScatterZipOutputStreamTest {
     }
 
     private InputStreamSupplier createPayloadSupplier(final ByteArrayInputStream payload) {
-        return new InputStreamSupplier() {
-            @Override
-            public InputStream get() {
-                return payload;
-            }
-        };
+        return () -> payload;
     }
 }

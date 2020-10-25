@@ -1432,31 +1432,28 @@ public class ZipFile implements Closeable {
      * @since 1.1
      */
     private final Comparator<ZipArchiveEntry> offsetComparator =
-        new Comparator<ZipArchiveEntry>() {
-        @Override
-        public int compare(final ZipArchiveEntry e1, final ZipArchiveEntry e2) {
-            if (e1 == e2) {
-                return 0;
-            }
-
-            final Entry ent1 = e1 instanceof Entry ? (Entry) e1 : null;
-            final Entry ent2 = e2 instanceof Entry ? (Entry) e2 : null;
-            if (ent1 == null) {
-                return 1;
-            }
-            if (ent2 == null) {
-                return -1;
-            }
-
-            // disk number is prior to relative offset
-            final long diskNumberStartVal = ent1.getDiskNumberStart() - ent2.getDiskNumberStart();
-            if (diskNumberStartVal != 0) {
-                return diskNumberStartVal < 0 ? -1 : +1;
-            }
-            final long val = (ent1.getLocalHeaderOffset()
-                        - ent2.getLocalHeaderOffset());
-            return val == 0 ? 0 : val < 0 ? -1 : +1;
+        (e1, e2) -> {
+        if (e1 == e2) {
+            return 0;
         }
+
+        final Entry ent1 = e1 instanceof Entry ? (Entry) e1 : null;
+        final Entry ent2 = e2 instanceof Entry ? (Entry) e2 : null;
+        if (ent1 == null) {
+            return 1;
+        }
+        if (ent2 == null) {
+            return -1;
+        }
+
+        // disk number is prior to relative offset
+        final long diskNumberStartVal = ent1.getDiskNumberStart() - ent2.getDiskNumberStart();
+        if (diskNumberStartVal != 0) {
+            return diskNumberStartVal < 0 ? -1 : +1;
+        }
+        final long val = (ent1.getLocalHeaderOffset()
+                    - ent2.getLocalHeaderOffset());
+        return val == 0 ? 0 : val < 0 ? -1 : +1;
     };
 
     /**

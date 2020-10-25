@@ -26,7 +26,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
-import java.io.FilenameFilter;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -89,12 +88,7 @@ public class LongSymLinkTest extends AbstractTestCase {
     @Parameters(name = "file={0}")
     public static Collection<Object[]> data() {
         final Collection<Object[]> params = new ArrayList<>();
-        for (final String f : ARCDIR.list(new FilenameFilter() {
-            @Override
-            public boolean accept(final File dir, final String name) {
-                return !name.endsWith(".txt");
-            }
-        }))
+        for (final String f : ARCDIR.list((dir, name) -> !name.endsWith(".txt")))
         {
             params.add(new Object[] { f });
         }

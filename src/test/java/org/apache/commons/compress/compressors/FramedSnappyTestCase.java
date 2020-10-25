@@ -24,8 +24,6 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Random;
 
 import org.apache.commons.compress.AbstractTestCase;
@@ -38,34 +36,19 @@ public final class FramedSnappyTestCase
 
     @Test
     public void testDefaultExtraction() throws Exception {
-        testUnarchive(new StreamWrapper<CompressorInputStream>() {
-            @Override
-            public CompressorInputStream wrap(final InputStream is) throws IOException {
-                return new FramedSnappyCompressorInputStream(is);
-            }
-        });
+        testUnarchive(FramedSnappyCompressorInputStream::new);
     }
 
     @Test
     public void testDefaultExtractionViaFactory() throws Exception {
-        testUnarchive(new StreamWrapper<CompressorInputStream>() {
-            @Override
-            public CompressorInputStream wrap(final InputStream is) throws Exception {
-                return new CompressorStreamFactory()
-                    .createCompressorInputStream(CompressorStreamFactory.SNAPPY_FRAMED,
-                                                 is);
-            }
-        });
+        testUnarchive(is -> new CompressorStreamFactory()
+            .createCompressorInputStream(CompressorStreamFactory.SNAPPY_FRAMED,
+                                         is));
     }
 
     @Test
     public void testDefaultExtractionViaFactoryAutodetection() throws Exception {
-        testUnarchive(new StreamWrapper<CompressorInputStream>() {
-            @Override
-            public CompressorInputStream wrap(final InputStream is) throws Exception {
-                return new CompressorStreamFactory().createCompressorInputStream(is);
-            }
-        });
+        testUnarchive(is -> new CompressorStreamFactory().createCompressorInputStream(is));
     }
 
     private void testUnarchive(final StreamWrapper<CompressorInputStream> wrapper) throws Exception {

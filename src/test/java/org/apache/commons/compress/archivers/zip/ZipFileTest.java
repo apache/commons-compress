@@ -372,14 +372,11 @@ public class ZipFileTest {
         }
 
         final AtomicInteger passedCount = new AtomicInteger();
-        final Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                for (final ZipArchiveEntry entry: Collections.list(zf.getEntries())) {
-                    assertAllReadMethods(content.get(entry.getName()), zf, entry);
-                }
-                passedCount.incrementAndGet();
+        final Runnable run = () -> {
+            for (final ZipArchiveEntry entry: Collections.list(zf.getEntries())) {
+                assertAllReadMethods(content.get(entry.getName()), zf, entry);
             }
+            passedCount.incrementAndGet();
         };
         final Thread t0 = new Thread(run);
         final Thread t1 = new Thread(run);
@@ -402,14 +399,11 @@ public class ZipFileTest {
         }
 
         final AtomicInteger passedCount = new AtomicInteger();
-        final Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                for (final ZipArchiveEntry entry: Collections.list(zf.getEntries())) {
-                    assertAllReadMethods(content.get(entry.getName()), zf, entry);
-                }
-                passedCount.incrementAndGet();
+        final Runnable run = () -> {
+            for (final ZipArchiveEntry entry: Collections.list(zf.getEntries())) {
+                assertAllReadMethods(content.get(entry.getName()), zf, entry);
             }
+            passedCount.incrementAndGet();
         };
         final Thread t0 = new Thread(run);
         final Thread t1 = new Thread(run);
