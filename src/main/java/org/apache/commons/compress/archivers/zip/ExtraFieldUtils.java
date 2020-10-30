@@ -219,8 +219,7 @@ public class ExtraFieldUtils {
             }
         }
 
-        final ZipExtraField[] result = new ZipExtraField[v.size()];
-        return v.toArray(result);
+        return v.toArray(new ZipExtraField[0]);
     }
 
     /**

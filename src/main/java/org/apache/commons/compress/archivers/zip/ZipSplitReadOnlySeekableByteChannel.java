@@ -143,8 +143,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
         }
         channelsList.add(lastSegmentChannel);
 
-        final SeekableByteChannel[] channelArray = new SeekableByteChannel[channelsList.size()];
-        return forOrderedSeekableByteChannels(channelsList.toArray(channelArray));
+        return forOrderedSeekableByteChannels(channelsList.toArray(new SeekableByteChannel[0]));
     }
 
     /**
@@ -226,8 +225,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
         }
         filesList.add(lastSegmentFile);
 
-        final File[] filesArray = new File[filesList.size()];
-        return forFiles(filesList.toArray(filesArray));
+        return forFiles(filesList.toArray(new File[0]));
     }
 
     private static class ZipSplitSegmentComparator implements Comparator<File>, Serializable {
