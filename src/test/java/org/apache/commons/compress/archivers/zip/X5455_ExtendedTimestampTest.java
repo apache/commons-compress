@@ -115,10 +115,8 @@ public class X5455_ExtendedTimestampTest {
          */
 
         final File archive = getFile("COMPRESS-210_unix_time_zip_test.zip");
-        ZipFile zf = null;
 
-        try {
-            zf = new ZipFile(archive);
+        try (ZipFile zf = new ZipFile(archive)) {
             final Enumeration<ZipArchiveEntry> en = zf.getEntries();
 
             // We expect EVERY entry of this zip file
@@ -188,10 +186,6 @@ public class X5455_ExtendedTimestampTest {
                     }
                     break;
                 }
-            }
-        } finally {
-            if (zf != null) {
-                zf.close();
             }
         }
     }
@@ -423,32 +417,24 @@ public class X5455_ExtendedTimestampTest {
     public void testWriteReadRoundtrip() throws IOException {
         tmpDir = mkdir("X5455");
         final File output = new File(tmpDir, "write_rewrite.zip");
-        final OutputStream out = new FileOutputStream(output);
         final Date d = new Date(97, 8, 24, 15, 10, 2);
-        ZipArchiveOutputStream os = null;
-        try {
-            os = new ZipArchiveOutputStream(out);
+        try (final OutputStream out = new FileOutputStream(output);
+            ZipArchiveOutputStream os = new ZipArchiveOutputStream(out)) {
             final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
             xf.setModifyJavaTime(d);
             xf.setFlags((byte) 1);
             ze.addExtraField(xf);
             os.putArchiveEntry(ze);
             os.closeArchiveEntry();
-        } finally {
-            if (os != null) {
-                os.close();
-            }
         }
-        out.close();
 
-        final ZipFile zf = new ZipFile(output);
-        final ZipArchiveEntry ze = zf.getEntry("foo");
-        final X5455_ExtendedTimestamp ext =
-            (X5455_ExtendedTimestamp) ze.getExtraField(X5455);
-        assertNotNull(ext);
-        assertTrue(ext.isBit0_modifyTimePresent());
-        assertEquals(d, ext.getModifyJavaTime());
-        zf.close();
+        try (final ZipFile zf = new ZipFile(output)) {
+            final ZipArchiveEntry ze = zf.getEntry("foo");
+            final X5455_ExtendedTimestamp ext = (X5455_ExtendedTimestamp) ze.getExtraField(X5455);
+            assertNotNull(ext);
+            assertTrue(ext.isBit0_modifyTimePresent());
+            assertEquals(d, ext.getModifyJavaTime());
+        }
     }
 
     @Test
