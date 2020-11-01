@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.zip.ZipException;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -995,11 +996,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         final ZipArchiveEntry other = (ZipArchiveEntry) obj;
         final String myName = getName();
         final String otherName = other.getName();
-        if (myName == null) {
-            if (otherName != null) {
-                return false;
-            }
-        } else if (!myName.equals(otherName)) {
+        if (!Objects.equals(myName, otherName)) {
             return false;
         }
         String myComment = getComment();
