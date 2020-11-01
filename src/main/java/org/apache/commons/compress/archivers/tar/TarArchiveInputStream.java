@@ -604,7 +604,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * giving the offset and size of the data block it describes.
      * @throws IOException
      */
-    private void paxHeaders() throws IOException{
+    private void paxHeaders() throws IOException {
         List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
         final Map<String, String> headers = parsePaxHeaders(this, sparseHeaders);
 
@@ -636,9 +636,8 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      *
      * @param sparseMap the sparse map string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
      * @return sparse headers parsed from sparse map
-     * @throws IOException
      */
-    private List<TarArchiveStructSparse> parsePAX01SparseHeaders(final String sparseMap) throws IOException {
+    private List<TarArchiveStructSparse> parsePAX01SparseHeaders(final String sparseMap) {
         final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
         final String[] sparseHeaderStrings = sparseMap.split(",");
 
