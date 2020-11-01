@@ -40,7 +40,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
 
-    <!-- override parent as version used by parent requires Java 8 -->
     <commons.felix.version>5.1.1</commons.felix.version>
 
     <commons.componentid>compress</commons.componentid>
