@@ -167,11 +167,10 @@ class NioZipEncoding implements ZipEncoding, CharsetAccessor {
                 .onMalformedInput(CodingErrorAction.REPLACE)
                 .onUnmappableCharacter(CodingErrorAction.REPLACE)
                 .replaceWith(REPLACEMENT_BYTES);
-        } else {
-            return charset.newEncoder()
-                .onMalformedInput(CodingErrorAction.REPORT)
-                .onUnmappableCharacter(CodingErrorAction.REPORT);
         }
+        return charset.newEncoder()
+            .onMalformedInput(CodingErrorAction.REPORT)
+            .onUnmappableCharacter(CodingErrorAction.REPORT);
     }
 
     private CharsetDecoder newDecoder() {
@@ -179,12 +178,11 @@ class NioZipEncoding implements ZipEncoding, CharsetAccessor {
             return this.charset.newDecoder()
                 .onMalformedInput(CodingErrorAction.REPORT)
                 .onUnmappableCharacter(CodingErrorAction.REPORT);
-        } else {
-            return  charset.newDecoder()
-                .onMalformedInput(CodingErrorAction.REPLACE)
-                .onUnmappableCharacter(CodingErrorAction.REPLACE)
-                .replaceWith(REPLACEMENT_STRING);
         }
+        return  charset.newDecoder()
+            .onMalformedInput(CodingErrorAction.REPLACE)
+            .onUnmappableCharacter(CodingErrorAction.REPLACE)
+            .replaceWith(REPLACEMENT_STRING);
     }
 
     /**

@@ -468,10 +468,9 @@ public class SevenZFile implements Closeable {
         if (headerLooksValid) {
             final StartHeader startHeader = readStartHeader(startHeaderCrc);
             return initializeArchive(startHeader, password, true);
-        } else {
-            // No valid header found - probably first file of multipart archive was removed too early. Scan for end header.
-            return tryToLocateEndHeader(password);
         }
+        // No valid header found - probably first file of multipart archive was removed too early. Scan for end header.
+        return tryToLocateEndHeader(password);
     }
 
     private Archive tryToLocateEndHeader(final byte[] password) throws IOException {
