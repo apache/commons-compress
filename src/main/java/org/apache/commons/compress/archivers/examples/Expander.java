@@ -66,7 +66,7 @@ public class Expander {
     public void expand(final File archive, final File targetDirectory) throws IOException, ArchiveException {
         String format = null;
         try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()))) {
-            format = ArchiveStreamFactory.DEFAULT.detect(i);
+            format = ArchiveStreamFactory.detect(i);
         }
         expand(format, archive, targetDirectory);
     }

@@ -81,7 +81,7 @@ public final class Lister {
 
     private static String detectFormat(final File f) throws ArchiveException, IOException {
         try (final InputStream fis = new BufferedInputStream(Files.newInputStream(f.toPath()))) {
-            return FACTORY.detect(fis);
+            return ArchiveStreamFactory.detect(fis);
         }
     }
 
