@@ -1324,7 +1324,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @param ze the entry to write
      * @throws IOException on error
      * @throws Zip64RequiredException if the archive's size exceeds 4
-     * GByte and {@link Zip64Mode #setUseZip64} is {@link
+     * GByte and {@link #setUseZip64(Zip64Mode)} is {@link
      * Zip64Mode#Never}.
      */
     protected void writeCentralFileHeader(final ZipArchiveEntry ze) throws IOException {
@@ -1503,7 +1503,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @throws IOException on error
      * @throws Zip64RequiredException if the archive's size exceeds 4
      * GByte or there are more than 65535 entries inside the archive
-     * and {@link Zip64Mode #setUseZip64} is {@link Zip64Mode#Never}.
+     * and {@link #setUseZip64(Zip64Mode)} is {@link Zip64Mode#Never}.
      */
     protected void writeCentralDirectoryEnd() throws IOException {
         if(!hasUsedZip64 && isSplitZip) {
