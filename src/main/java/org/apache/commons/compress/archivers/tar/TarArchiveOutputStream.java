@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.LinkOption;
@@ -31,6 +30,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
@@ -486,8 +486,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         closeArchiveEntry();
     }
 
-    private byte[] encodeExtendedPaxHeadersContents(final Map<String, String> headers)
-        throws UnsupportedEncodingException {
+    private byte[] encodeExtendedPaxHeadersContents(final Map<String, String> headers) {
         final StringWriter w = new StringWriter();
         for (final Map.Entry<String, String> h : headers.entrySet()) {
             final String key = h.getKey();
