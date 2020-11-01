@@ -781,7 +781,7 @@ public class ZipFileTest {
         OutputStream outputStream = null;
         InputStream inputStream = null;
         final byte[] testData = new byte[]{1, 2, 3, 4};
-        byte[] buffer = new byte[512];
+        final byte[] buffer = new byte[512];
         int bytesRead;
         try (InputStream unzipsfxInputStream = new FileInputStream(unzipsfx)) {
             outputStream = new FileOutputStream(testZip);
@@ -791,7 +791,7 @@ public class ZipFileTest {
                 zo.writePreamble(buffer, 0, bytesRead);
             }
 
-            ZipArchiveEntry ze = new ZipArchiveEntry(testEntryName);
+            final ZipArchiveEntry ze = new ZipArchiveEntry(testEntryName);
             ze.setMethod(ZipEntry.STORED);
             ze.setSize(4);
             ze.setCrc(0xb63cfbcdL);
