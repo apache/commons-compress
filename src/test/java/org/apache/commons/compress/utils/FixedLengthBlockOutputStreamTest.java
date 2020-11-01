@@ -18,9 +18,10 @@
  */
 package org.apache.commons.compress.utils;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -37,6 +38,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.hamcrest.core.IsInstanceOf;
 import org.junit.Test;
 import org.mockito.internal.matchers.GreaterOrEqual;
@@ -294,7 +296,7 @@ public class FixedLengthBlockOutputStreamTest {
 
     private static void assertContainsAtOffset(final String msg, final byte[] expected, final int offset,
         final byte[] actual) {
-        assertThat(actual.length, new GreaterOrEqual<>(offset + expected.length));
+        assertThat(actual.length, greaterThanOrEqualTo(offset + expected.length));
         for (int i = 0; i < expected.length; i++) {
             assertEquals(String.format("%s ([%d])", msg, i), expected[i], actual[i + offset]);
         }
