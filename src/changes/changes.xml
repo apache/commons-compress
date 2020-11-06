@@ -170,7 +170,7 @@ The <action> type attribute can be add,update,fix,remove.
         Add Path support to ZipArchiveOutputStream #123.
       </action>
       <action type="update" date="2020-08-10" due-to="Dependabot" dev="ggregory">
-        Update GitHub actions/checkout from v1 to v2.3.3, #114, #124, #139.
+        Update GitHub actions/checkout from v1 to v2.3.4, #114, #124, #139, #150.
       </action>
       <action type="update" date="2020-08-21" due-to="Dependabot" dev="ggregory">
         Update actions/setup-java from v1.4.0 to v1.4.3, #125, #141.
