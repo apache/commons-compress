@@ -18,14 +18,17 @@
  */
 package org.apache.commons.compress.archivers;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -533,5 +536,54 @@ public final class TarTestCase extends AbstractTestCase {
                 assertArrayEquals(new byte[0], directoryRead);
             }
         }
+    }
+
+    @Test
+    public void testLongNameLargerThanBuffer() throws IOException {
+        final List<Integer> nameLength = Arrays.asList(300, 4096);
+
+        for (final Integer length : nameLength) {
+            final String fileName = createLongName(length);
+            assertEquals(length.intValue(), fileName.length());
+            final byte[] data = createTarWithOneLongNameEntry(fileName);
+            try (final ByteArrayInputStream bis = new ByteArrayInputStream(data);
+                 final TarArchiveInputStream tis = new TarArchiveInputStream(bis)) {
+                assertEquals(fileName, tis.getNextTarEntry().getName());
+            }
+        }
+    }
+
+    @Test
+    public void testTarFileLongNameLargerThanBuffer() throws IOException {
+        final List<Integer> nameLength = Arrays.asList(300, 4096);
+
+        for (final Integer length : nameLength) {
+            final String fileName = createLongName(length);
+            assertEquals(length.intValue(), fileName.length());
+            final byte[] data = createTarWithOneLongNameEntry(fileName);
+            try (final TarFile tarFile = new TarFile(data)) {
+                List<TarArchiveEntry> entries = tarFile.getEntries();
+                assertEquals(fileName, entries.get(0).getName());
+            }
+        }
+    }
+
+    private String createLongName(final int nameLength) {
+        final StringBuffer buffer = new StringBuffer();
+        for (int i = 0; i < nameLength; i++) {
+            buffer.append('a');
+        }
+        return buffer.toString();
+    }
+
+    private byte[] createTarWithOneLongNameEntry(final String longName) throws IOException {
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos)) {
+            tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
+            TarArchiveEntry longFileNameEntry = new TarArchiveEntry(longName);
+            tos.putArchiveEntry(longFileNameEntry);
+            tos.closeArchiveEntry();
+        }
+        return bos.toByteArray();
     }
 }
