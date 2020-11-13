@@ -68,6 +68,12 @@ The <action> type attribute can be add,update,fix,remove.
         when reading the first entry multiple times by random
         access.
       </action>
+      <action issue="COMPRESS-509" type="fix" date="2020-05-06"
+              due-to="Petr Vasak" dev="PeterLee">
+        Add '/' to directories with long name in tar. This is to
+        resolve the ambiguous behavior of the TarArchiveEntry.getName()
+        method between directory with short name and long name.
+      </action>
       <action issue="COMPRESS-520" type="fix" date="2020-05-23" due-to="Robin Schimpf">
         Removed the PowerMock dependency.
       </action>
