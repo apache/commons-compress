@@ -43,14 +43,14 @@ import org.apache.commons.compress.utils.BoundedSeekableByteChannelInputStream;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 
 /**
- * The TarFile provides random access to UNIX to archives.
+ * The TarFile provides random access to UNIX archives.
  * @since 1.21
  */
 public class TarFile implements Closeable {
 
     private static final int SMALL_BUFFER_SIZE = 256;
 
-    private final ByteBuffer smallBuf = ByteBuffer.allocate(SMALL_BUFFER_SIZE);
+    private final byte[] smallBuf = new byte[SMALL_BUFFER_SIZE];
 
     private final SeekableByteChannel archive;
 
@@ -273,11 +273,11 @@ public class TarFile implements Closeable {
             }
 
             // COMPRESS-509 : the name of directories should end with '/'
-            String name = zipEncoding.decode(longNameData);
-            if (currEntry.isDirectory() && !name.endsWith("/")) {
-                name += "/";
-            }
+            final String name = zipEncoding.decode(longNameData);
             currEntry.setName(name);
+            if (currEntry.isDirectory() && !name.endsWith("/")) {
+                currEntry.setName(name + "/");
+            }
         }
 
         if (currEntry.isGlobalPaxHeader()) { // Process Global Pax headers
@@ -474,8 +474,10 @@ public class TarFile implements Closeable {
     private byte[] getLongNameData() throws IOException {
         final ByteArrayOutputStream longName = new ByteArrayOutputStream();
         int length;
-        while ((length = archive.read(smallBuf)) > 0) {
-            longName.write(smallBuf.array(), 0, length);
+        try (final InputStream in = getInputStream(currEntry)) {
+            while ((length = in.read(smallBuf)) >= 0) {
+                longName.write(smallBuf, 0, length);
+            }
         }
         getNextTarEntry();
         if (currEntry == null) {
