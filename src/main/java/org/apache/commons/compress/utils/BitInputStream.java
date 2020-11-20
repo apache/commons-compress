@@ -139,7 +139,7 @@ public class BitInputStream implements Closeable {
 
     private long processBitsGreater57(final int count) throws IOException {
         final long bitsOut;
-        int overflowBits = 0;
+        int overflowBits;
         long overflow = 0L;
 
         // bitsCachedSize >= 57 and left-shifting it 8 bits would cause an overflow
