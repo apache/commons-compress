@@ -402,15 +402,22 @@ class HuffmanDecoder implements Closeable {
                 if (symbol < 16) {
                     value = symbol;
                     auxBuffer[off++] = value;
-                } else if (symbol == 16) {
-                    length = (int) (readBits(reader, 2) + 3);
-                } else if (symbol == 17) {
-                    value = 0;
-                    length = (int) (readBits(reader, 3) + 3);
-                } else if (symbol == 18) {
-                    value = 0;
-                    length = (int) (readBits(reader, 7) + 11);
-                }
+                } else
+                    switch (symbol) {
+                    case 16:
+                        length = (int) (readBits(reader, 2) + 3);
+                        break;
+                    case 17:
+                        value = 0;
+                        length = (int) (readBits(reader, 3) + 3);
+                        break;
+                    case 18:
+                        value = 0;
+                        length = (int) (readBits(reader, 7) + 11);
+                        break;
+                    default:
+                        break;
+                    }
             }
         }
 
