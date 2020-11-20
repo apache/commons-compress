@@ -274,7 +274,6 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
      * @since 1.10
      */
     public ArchiveStreamFactory(final String encoding) {
-        super();
         this.encoding = encoding;
         // Also set the original field so can continue to use it.
         this.entryEncoding = encoding;
