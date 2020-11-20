@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.Date;
+import java.util.Objects;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 
@@ -180,10 +181,7 @@ public class ArArchiveEntry implements ArchiveEntry {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (name == null ? 0 : name.hashCode());
-        return result;
+        return Objects.hash(name);
     }
 
     @Override
