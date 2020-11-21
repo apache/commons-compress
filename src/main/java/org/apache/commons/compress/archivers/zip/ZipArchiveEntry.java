@@ -1226,7 +1226,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
 
         private final ExtraFieldUtils.UnparseableExtraField onUnparseableData;
 
-        private ExtraFieldParsingMode(final ExtraFieldUtils.UnparseableExtraField onUnparseableData) {
+        ExtraFieldParsingMode(final ExtraFieldUtils.UnparseableExtraField onUnparseableData) {
             this.onUnparseableData = onUnparseableData;
         }
 
