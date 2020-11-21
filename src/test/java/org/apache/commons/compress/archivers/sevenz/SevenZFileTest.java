@@ -721,7 +721,7 @@ public class SevenZFileTest extends AbstractTestCase {
         for (final Path file : testFiles) {
             try (SevenZFile sevenZFile = new SevenZFile(Files.newByteChannel(file))) {
                 fail("Expected IOException: start header corrupt and unable to guess end header");
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 assertEquals("Start header corrupt and unable to guess end header", e.getMessage());
             }
         }
