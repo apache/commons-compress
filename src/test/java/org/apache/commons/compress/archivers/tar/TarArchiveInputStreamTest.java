@@ -487,11 +487,11 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos)) {
             tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
-            TarArchiveEntry rootfolder = new TarArchiveEntry(folderName);
+            final TarArchiveEntry rootfolder = new TarArchiveEntry(folderName);
             tos.putArchiveEntry(rootfolder);
-            TarArchiveEntry consumerJava = new TarArchiveEntry(consumerJavaName);
+            final TarArchiveEntry consumerJava = new TarArchiveEntry(consumerJavaName);
             tos.putArchiveEntry(consumerJava);
-            TarArchiveEntry producerJava = new TarArchiveEntry(producerJavaName);
+            final TarArchiveEntry producerJava = new TarArchiveEntry(producerJavaName);
             tos.putArchiveEntry(producerJava);
             tos.closeArchiveEntry();
         }
