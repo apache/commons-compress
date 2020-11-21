@@ -784,7 +784,9 @@ public final class ZipTestCase extends AbstractTestCase {
     private void readStream(final InputStream in, final ArchiveEntry entry, final Map<String,List<List<Long>>> map) throws IOException {
         final byte[] buf = new byte[4096];
         final InputStreamStatistics stats = (InputStreamStatistics) in;
-        while (in.read(buf) != -1);
+        while (in.read(buf) != -1) {
+            // consume all.
+        }
 
         final String name = entry.getName();
         final List<List<Long>> l;

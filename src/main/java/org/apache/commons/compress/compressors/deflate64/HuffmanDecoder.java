@@ -402,7 +402,7 @@ class HuffmanDecoder implements Closeable {
                 if (symbol < 16) {
                     value = symbol;
                     auxBuffer[off++] = value;
-                } else
+                } else {
                     switch (symbol) {
                     case 16:
                         length = (int) (readBits(reader, 2) + 3);
@@ -418,6 +418,7 @@ class HuffmanDecoder implements Closeable {
                     default:
                         break;
                     }
+                }
             }
         }
 
