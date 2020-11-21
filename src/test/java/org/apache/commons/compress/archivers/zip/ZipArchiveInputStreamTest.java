@@ -60,17 +60,11 @@ public class ZipArchiveInputStreamTest {
      */
     @Test
     public void winzipBackSlashWorkaround() throws Exception {
-        ZipArchiveInputStream in = null;
-        try {
-            in = new ZipArchiveInputStream(new FileInputStream(getFile("test-winzip.zip")));
+        try (ZipArchiveInputStream in = new ZipArchiveInputStream(new FileInputStream(getFile("test-winzip.zip")))) {
             ZipArchiveEntry zae = in.getNextZipEntry();
             zae = in.getNextZipEntry();
             zae = in.getNextZipEntry();
             assertEquals("\u00e4/", zae.getName());
-        } finally {
-            if (in != null) {
-                in.close();
-            }
         }
     }
 
@@ -123,14 +117,8 @@ public class ZipArchiveInputStreamTest {
      */
     @Test
     public void shouldReadNestedZip() throws IOException {
-        ZipArchiveInputStream in = null;
-        try {
-            in = new ZipArchiveInputStream(new FileInputStream(getFile("COMPRESS-219.zip")));
+        try (ZipArchiveInputStream in = new ZipArchiveInputStream(new FileInputStream(getFile("COMPRESS-219.zip")))) {
             extractZipInputStream(in);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
         }
     }
 
@@ -265,9 +253,8 @@ public class ZipArchiveInputStreamTest {
         final int expectedNumEntries = 2;
         final InputStream is = ZipArchiveInputStreamTest.class
                 .getResourceAsStream("/archive_with_bytes_after_data.zip");
-        final ZipArchiveInputStream zip = new ZipArchiveInputStream(is);
 
-        try {
+        try (final ZipArchiveInputStream zip = new ZipArchiveInputStream(is)) {
             int actualNumEntries = 0;
             ZipArchiveEntry zae = zip.getNextZipEntry();
             while (zae != null) {
@@ -276,8 +263,6 @@ public class ZipArchiveInputStreamTest {
                 zae = zip.getNextZipEntry();
             }
             assertEquals(expectedNumEntries, actualNumEntries);
-        } finally {
-            zip.close();
         }
     }
 
@@ -289,15 +274,12 @@ public class ZipArchiveInputStreamTest {
     public void testThrowOnInvalidEntry() throws Exception {
         final InputStream is = ZipArchiveInputStreamTest.class
                 .getResourceAsStream("/invalid-zip.zip");
-        final ZipArchiveInputStream zip = new ZipArchiveInputStream(is);
 
-        try {
+        try (final ZipArchiveInputStream zip = new ZipArchiveInputStream(is)) {
             zip.getNextZipEntry();
             fail("IOException expected");
         } catch (final ZipException expected) {
             assertTrue(expected.getMessage().contains("Unexpected record signature"));
-        } finally {
-            zip.close();
         }
     }
 

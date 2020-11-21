@@ -58,17 +58,10 @@ public final class GZipTestCase extends AbstractTestCase {
         final File input = getFile("bla.tgz");
         final File output = new File(dir, "bla.tar");
         try (InputStream is = new FileInputStream(input)) {
-            final CompressorInputStream in = new CompressorStreamFactory()
+            try (CompressorInputStream in = new CompressorStreamFactory()
                     .createCompressorInputStream("gz", is);
-            FileOutputStream out = null;
-            try {
-                out = new FileOutputStream(output);
+                    FileOutputStream out = new FileOutputStream(output)) {
                 IOUtils.copy(in, out);
-            } finally {
-                if (out != null) {
-                    out.close();
-                }
-                in.close();
             }
         }
     }

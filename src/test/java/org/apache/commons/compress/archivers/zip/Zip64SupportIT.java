@@ -2448,10 +2448,8 @@ public class Zip64SupportIT {
 
     private static void read5GBOfZerosImpl(final File f, final String expectedName)
         throws IOException {
-        final FileInputStream fin = new FileInputStream(f);
-        ZipArchiveInputStream zin = null;
-        try {
-            zin = new ZipArchiveInputStream(fin);
+        try (FileInputStream fin = new FileInputStream(f);
+                ZipArchiveInputStream zin = new ZipArchiveInputStream(fin)) {
             ZipArchiveEntry zae = zin.getNextZipEntry();
             while (zae.isDirectory()) {
                 zae = zin.getNextZipEntry();
@@ -2473,11 +2471,6 @@ public class Zip64SupportIT {
             assertEquals(FIVE_BILLION, read);
             assertNull(zin.getNextZipEntry());
             assertEquals(FIVE_BILLION, zae.getSize());
-        } finally {
-            if (zin != null) {
-                zin.close();
-            }
-            fin.close(); // fin cannot be null here
         }
     }
 
@@ -2518,10 +2511,8 @@ public class Zip64SupportIT {
     }
 
     private static void read100KFilesImpl(final File f) throws IOException {
-        final FileInputStream fin = new FileInputStream(f);
-        ZipArchiveInputStream zin = null;
-        try {
-            zin = new ZipArchiveInputStream(fin);
+        try (FileInputStream fin = new FileInputStream(f);
+                ZipArchiveInputStream zin = new ZipArchiveInputStream(fin)) {
             int files = 0;
             ZipArchiveEntry zae = null;
             while ((zae = zin.getNextZipEntry()) != null) {
@@ -2531,11 +2522,6 @@ public class Zip64SupportIT {
                 }
             }
             assertEquals(ONE_HUNDRED_THOUSAND, files);
-        } finally {
-            if (zin != null) {
-                zin.close();
-            }
-            fin.close();
         }
     }
 

@@ -66,16 +66,9 @@ public final class ZTestCase extends AbstractTestCase {
         final File input = getFile("bla.tar.Z");
         final File output = new File(dir, "bla.tar");
         try (InputStream is = new FileInputStream(input)) {
-            final InputStream in = wrapper.wrap(is);
-            FileOutputStream out = null;
-            try {
-                out = new FileOutputStream(output);
+            try (InputStream in = wrapper.wrap(is);
+                    FileOutputStream out = new FileOutputStream(output)) {
                 IOUtils.copy(in, out);
-            } finally {
-                if (out != null) {
-                    out.close();
-                }
-                in.close();
             }
         }
     }

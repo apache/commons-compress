@@ -94,14 +94,8 @@ public final class Lister {
         if (!f.getParentFile().exists()) {
             f.getParentFile().mkdirs();
         }
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(f);
+        try (FileOutputStream fos = new FileOutputStream(f)) {
             IOUtils.copy(is, fos);
-        } finally {
-            if (fos != null) {
-                fos.close();
-            }
         }
     }
 

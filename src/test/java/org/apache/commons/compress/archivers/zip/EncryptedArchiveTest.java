@@ -56,9 +56,7 @@ public class EncryptedArchiveTest {
     public void testReadPasswordEncryptedEntryViaStream()
         throws IOException {
         final File file = getFile("password-encrypted.zip");
-        ZipArchiveInputStream zin = null;
-        try {
-            zin = new ZipArchiveInputStream(new FileInputStream(file));
+        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(new FileInputStream(file))) {
             final ZipArchiveEntry zae = zin.getNextZipEntry();
             assertEquals("LICENSE.txt", zae.getName());
             assertTrue(zae.getGeneralPurposeBit().usesEncryption());
@@ -71,10 +69,6 @@ public class EncryptedArchiveTest {
             } catch (final UnsupportedZipFeatureException ex) {
                 assertSame(UnsupportedZipFeatureException.Feature.ENCRYPTION,
                            ex.getFeature());
-            }
-        } finally {
-            if (zin != null) {
-                zin.close();
             }
         }
     }

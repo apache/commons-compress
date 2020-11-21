@@ -150,17 +150,10 @@ public final class FramedSnappyCompressorInputStreamTest
     public void readIWAFile() throws Exception {
         try (ZipFile zip = new ZipFile(getFile("testNumbersNew.numbers"))) {
             try (InputStream is = zip.getInputStream(zip.getEntry("Index/Document.iwa"))) {
-                final FramedSnappyCompressorInputStream in =
+                try (FramedSnappyCompressorInputStream in =
                         new FramedSnappyCompressorInputStream(is, FramedSnappyDialect.IWORK_ARCHIVE);
-                FileOutputStream out = null;
-                try {
-                    out = new FileOutputStream(new File(dir, "snappyIWATest.raw"));
+                        FileOutputStream out = new FileOutputStream(new File(dir, "snappyIWATest.raw"))) {
                     IOUtils.copy(in, out);
-                } finally {
-                    if (out != null) {
-                        out.close();
-                    }
-                    in.close();
                 }
             }
         }

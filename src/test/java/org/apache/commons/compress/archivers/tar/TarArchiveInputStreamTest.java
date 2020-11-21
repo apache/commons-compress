@@ -113,19 +113,13 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void workaroundForBrokenTimeHeader() throws Exception {
-        TarArchiveInputStream in = null;
-        try {
-            in = new TarArchiveInputStream(new FileInputStream(getFile("simple-aix-native-tar.tar")));
+        try (TarArchiveInputStream in = new TarArchiveInputStream(new FileInputStream(getFile("simple-aix-native-tar.tar")))) {
             TarArchiveEntry tae = in.getNextTarEntry();
             tae = in.getNextTarEntry();
             assertEquals("sample/link-to-txt-file.lnk", tae.getName());
             assertEquals(new Date(0), tae.getLastModifiedDate());
             assertTrue(tae.isSymbolicLink());
             assertTrue(tae.isCheckSumOK());
-        } finally {
-            if (in != null) {
-                in.close();
-            }
         }
     }
 
@@ -141,9 +135,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
     }
 
     private void datePriorToEpoch(final String archive) throws Exception {
-        TarArchiveInputStream in = null;
-        try {
-            in = new TarArchiveInputStream(new FileInputStream(getFile(archive)));
+        try (TarArchiveInputStream in = new TarArchiveInputStream(new FileInputStream(getFile(archive)))) {
             final TarArchiveEntry tae = in.getNextTarEntry();
             assertEquals("foo", tae.getName());
             final Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
@@ -151,10 +143,6 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
             cal.set(Calendar.MILLISECOND, 0);
             assertEquals(cal.getTime(), tae.getLastModifiedDate());
             assertTrue(tae.isCheckSumOK());
-        } finally {
-            if (in != null) {
-                in.close();
-            }
         }
     }
 

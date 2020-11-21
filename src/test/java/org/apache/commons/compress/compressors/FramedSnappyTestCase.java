@@ -57,17 +57,10 @@ public final class FramedSnappyTestCase
         try (FileInputStream is = new FileInputStream(input)) {
             // the intermediate BufferedInputStream is there for mark
             // support in the autodetection test
-            final CompressorInputStream in = wrapper.wrap(new BufferedInputStream(is));
-            FileOutputStream out = null;
-            try {
-                out = new FileOutputStream(output);
+            try (CompressorInputStream in = wrapper.wrap(new BufferedInputStream(is));
+                    FileOutputStream out = new FileOutputStream(output)) {
                 IOUtils.copy(in, out);
                 assertEquals(995, in.getBytesRead());
-            } finally {
-                if (out != null) {
-                    out.close();
-                }
-                in.close();
             }
         }
         final File original = getFile("bla.tar");

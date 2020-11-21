@@ -39,9 +39,7 @@ public class SparseFilesTest extends AbstractTestCase {
     @Test
     public void testOldGNU() throws Throwable {
         final File file = getFile("oldgnu_sparse.tar");
-        TarArchiveInputStream tin = null;
-        try {
-            tin = new TarArchiveInputStream(new FileInputStream(file));
+        try (TarArchiveInputStream tin = new TarArchiveInputStream(new FileInputStream(file))) {
             final TarArchiveEntry ae = tin.getNextTarEntry();
             assertEquals("sparsefile", ae.getName());
             assertTrue(ae.isOldGNUSparse());
@@ -60,26 +58,16 @@ public class SparseFilesTest extends AbstractTestCase {
 
             assertEquals(3101184L, sparseHeaders.get(2).getOffset());
             assertEquals(0, sparseHeaders.get(2).getNumbytes());
-        } finally {
-            if (tin != null) {
-                tin.close();
-            }
         }
     }
 
     @Test
     public void testPaxGNU() throws Throwable {
         final File file = getFile("pax_gnu_sparse.tar");
-        TarArchiveInputStream tin = null;
-        try {
-            tin = new TarArchiveInputStream(new FileInputStream(file));
+        try (TarArchiveInputStream tin = new TarArchiveInputStream(new FileInputStream(file))) {
             assertPaxGNUEntry(tin, "0.0");
             assertPaxGNUEntry(tin, "0.1");
             assertPaxGNUEntry(tin, "1.0");
-        } finally {
-            if (tin != null) {
-                tin.close();
-            }
         }
     }
 

@@ -105,14 +105,9 @@ public final class LZMATestCase extends AbstractTestCase {
     }
 
     private void copy(final InputStream in, final File output) throws IOException {
-        FileOutputStream out = null;
-        try {
-            out = new FileOutputStream(output);
+        try (FileOutputStream out = new FileOutputStream(output)) {
             IOUtils.copy(in, out);
         } finally {
-            if (out != null) {
-                out.close();
-            }
             in.close();
         }
     }

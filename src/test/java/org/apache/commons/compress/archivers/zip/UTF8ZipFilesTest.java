@@ -114,16 +114,10 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
     public void testRead7ZipArchiveForStream() throws IOException {
         final FileInputStream archive =
             new FileInputStream(getFile("utf8-7zip-test.zip"));
-        ZipArchiveInputStream zi = null;
-        try {
-            zi = new ZipArchiveInputStream(archive, CP437, false);
+        try (ZipArchiveInputStream zi = new ZipArchiveInputStream(archive, CP437, false)) {
             assertEquals(ASCII_TXT, zi.getNextEntry().getName());
             assertEquals(OIL_BARREL_TXT, zi.getNextEntry().getName());
             assertEquals(EURO_FOR_DOLLAR_TXT, zi.getNextEntry().getName());
-        } finally {
-            if (zi != null) {
-                zi.close();
-            }
         }
     }
 
@@ -242,14 +236,8 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         throws IOException {
         final FileInputStream archive =
             new FileInputStream(getFile("utf8-7zip-test.zip"));
-        ZipArchiveInputStream zi = null;
-        try {
-            zi = new ZipArchiveInputStream(archive, CP437, false);
+        try (ZipArchiveInputStream zi = new ZipArchiveInputStream(archive, CP437, false)) {
             assertRawNameOfAcsiiTxt((ZipArchiveEntry) zi.getNextEntry());
-        } finally {
-            if (zi != null) {
-                zi.close();
-            }
         }
     }
 
