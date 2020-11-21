@@ -773,7 +773,7 @@ public class ZipArchiveInputStreamTest {
             final ZipArchiveEntry entryA = new ZipArchiveEntry("foo");
             entryA.setMethod(ZipEntry.STORED);
             entryA.setSize(4);
-            entryA.setCrc(0xb63cfbcdl);
+            entryA.setCrc(0xb63cfbcdL);
             zo.putArchiveEntry(entryA);
             zo.write(new byte[] { 1, 2, 3, 4 });
             zo.closeArchiveEntry();
