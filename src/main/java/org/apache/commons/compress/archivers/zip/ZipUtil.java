@@ -278,12 +278,10 @@ public abstract class ZipUtil {
                 } catch (final IOException ex) {
                     // UTF-8 unsupported?  should be impossible the
                     // Unicode*ExtraField must contain some bad bytes
-
-                    // TODO log this anywhere?
-                    return null;
                 }
             }
         }
+        // TODO log this anywhere?
         return null;
     }
 

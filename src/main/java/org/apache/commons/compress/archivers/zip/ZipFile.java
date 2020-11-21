@@ -1376,7 +1376,6 @@ public class ZipFile implements Closeable {
             final int ret = read(loc, buf);
             if (ret > 0) {
                 loc += ret;
-                return ret;
             }
             return ret;
         }
