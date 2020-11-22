@@ -19,6 +19,8 @@
 package org.apache.commons.compress.archivers.tar;
 
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeTrue;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.utils.IOUtils;
@@ -73,9 +75,7 @@ public class SparseFilesTest extends AbstractTestCase {
 
     @Test
     public void testExtractSparseTarsOnWindows() throws IOException {
-        if (!isOnWindows) {
-            return;
-        }
+        assumeTrue(isOnWindows);
 
         final File oldGNUSparseTar = getFile("oldgnu_sparse.tar");
         final File paxGNUSparseTar = getFile("pax_gnu_sparse.tar");
@@ -115,9 +115,7 @@ public class SparseFilesTest extends AbstractTestCase {
 
     @Test
     public void testExtractOldGNU() throws IOException, InterruptedException {
-        if (isOnWindows) {
-            return;
-        }
+        assumeFalse(isOnWindows);
 
         try {
             final File file = getFile("oldgnu_sparse.tar");
@@ -136,9 +134,7 @@ public class SparseFilesTest extends AbstractTestCase {
 
     @Test
     public void testExtractExtendedOldGNU() throws IOException, InterruptedException {
-        if (isOnWindows) {
-            return;
-        }
+        assumeFalse(isOnWindows);
 
         final File file = getFile("oldgnu_extended_sparse.tar");
         try (InputStream sparseFileInputStream = extractTarAndGetInputStream(file, "sparse6");
@@ -177,9 +173,7 @@ public class SparseFilesTest extends AbstractTestCase {
 
     @Test
     public void testExtractPaxGNU() throws IOException, InterruptedException {
-        if (isOnWindows) {
-            return;
-        }
+        assumeFalse(isOnWindows);
 
         final File file = getFile("pax_gnu_sparse.tar");
         try (TarArchiveInputStream tin = new TarArchiveInputStream(new FileInputStream(file))) {
