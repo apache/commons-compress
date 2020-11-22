@@ -1006,15 +1006,11 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     /**
      * Whether this class is able to read the given entry.
      *
-     * <p>May return false if the current entry is a sparse file.</p>
+     * @return The implementation will return true if the {@link ArchiveEntry} is an instance of {@link TarArchiveEntry}
      */
     @Override
     public boolean canReadEntryData(final ArchiveEntry ae) {
-        if (ae instanceof TarArchiveEntry) {
-            final TarArchiveEntry te = (TarArchiveEntry) ae;
-            return !te.isSparse();
-        }
-        return false;
+        return ae instanceof TarArchiveEntry;
     }
 
     /**
