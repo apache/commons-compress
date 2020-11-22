@@ -189,11 +189,9 @@ public class SparseFilesTest extends AbstractTestCase {
                         IOUtils.toByteArray(sparseFileInputStream));
             }
 
-            // TODO : it's wired that I can only get a 0 size sparsefile-0.1 on my Ubuntu 16.04
-            //        using "tar -xf pax_gnu_sparse.tar"
             paxGNUEntry = tin.getNextTarEntry();
             assertTrue(tin.canReadEntryData(paxGNUEntry));
-            try (InputStream sparseFileInputStream = extractTarAndGetInputStream(file, "sparsefile-0.0")) {
+            try (InputStream sparseFileInputStream = extractTarAndGetInputStream(file, "sparsefile-0.1")) {
                 assertArrayEquals(IOUtils.toByteArray(tin),
                         IOUtils.toByteArray(sparseFileInputStream));
             }
