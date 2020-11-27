@@ -75,7 +75,7 @@ public class SparseFilesTest extends AbstractTestCase {
 
     @Test
     public void testExtractSparseTarsOnWindows() throws IOException {
-        assumeTrue(isOnWindows);
+        assumeTrue("This test should be ignored if not running on Windows", isOnWindows);
 
         final File oldGNUSparseTar = getFile("oldgnu_sparse.tar");
         final File paxGNUSparseTar = getFile("pax_gnu_sparse.tar");
@@ -115,7 +115,7 @@ public class SparseFilesTest extends AbstractTestCase {
 
     @Test
     public void testExtractOldGNU() throws IOException, InterruptedException {
-        assumeFalse(isOnWindows);
+        assumeFalse("This test should be ignored on Windows", isOnWindows);
 
         try {
             final File file = getFile("oldgnu_sparse.tar");
@@ -134,7 +134,7 @@ public class SparseFilesTest extends AbstractTestCase {
 
     @Test
     public void testExtractExtendedOldGNU() throws IOException, InterruptedException {
-        assumeFalse(isOnWindows);
+        assumeFalse("This test should be ignored on Windows", isOnWindows);
 
         final File file = getFile("oldgnu_extended_sparse.tar");
         try (InputStream sparseFileInputStream = extractTarAndGetInputStream(file, "sparse6");
@@ -173,7 +173,7 @@ public class SparseFilesTest extends AbstractTestCase {
 
     @Test
     public void testExtractPaxGNU() throws IOException, InterruptedException {
-        assumeFalse(isOnWindows);
+        assumeFalse("This test should be ignored on Windows", isOnWindows);
 
         final File file = getFile("pax_gnu_sparse.tar");
         try (TarArchiveInputStream tin = new TarArchiveInputStream(new FileInputStream(file))) {
