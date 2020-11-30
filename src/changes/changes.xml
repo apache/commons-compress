@@ -270,6 +270,13 @@ The <action> type attribute can be add,update,fix,remove.
         COMPRESS-509.
         Github Pull Request #151.
       </action>
+      <action issue="COMPRESS-560" type="fix" date="2020-11-30"
+              due-to="Robin Schimpf" dev="Robin Schimpf">
+        As sparse entries can be successfully parsed now,
+        TarArchiveInputStream.canReadEntryData should return
+        true if the entry is a sparse entry.
+        Github Pull Request #153.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20 (Java 7)">
