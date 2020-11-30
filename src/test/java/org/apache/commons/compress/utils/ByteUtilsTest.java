@@ -29,7 +29,10 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import static org.apache.commons.compress.utils.ByteUtils.*;
+import static org.apache.commons.compress.utils.ByteUtils.InputStreamByteSupplier;
+import static org.apache.commons.compress.utils.ByteUtils.OutputStreamByteConsumer;
+import static org.apache.commons.compress.utils.ByteUtils.fromLittleEndian;
+import static org.apache.commons.compress.utils.ByteUtils.toLittleEndian;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 

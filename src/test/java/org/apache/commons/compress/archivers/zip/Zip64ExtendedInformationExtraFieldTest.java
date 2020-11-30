@@ -18,7 +18,8 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.math.BigInteger;
 import java.util.zip.ZipException;

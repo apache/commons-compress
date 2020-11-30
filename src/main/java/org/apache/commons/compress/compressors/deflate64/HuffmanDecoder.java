@@ -26,7 +26,10 @@ import java.io.InputStream;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
-import static org.apache.commons.compress.compressors.deflate64.HuffmanState.*;
+import static org.apache.commons.compress.compressors.deflate64.HuffmanState.DYNAMIC_CODES;
+import static org.apache.commons.compress.compressors.deflate64.HuffmanState.FIXED_CODES;
+import static org.apache.commons.compress.compressors.deflate64.HuffmanState.INITIAL;
+import static org.apache.commons.compress.compressors.deflate64.HuffmanState.STORED;
 
 class HuffmanDecoder implements Closeable {
 

@@ -28,7 +28,7 @@ import java.io.InputStream;
 import java.util.concurrent.ExecutionException;
 import java.util.zip.ZipEntry;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class ScatterSampleTest {
 

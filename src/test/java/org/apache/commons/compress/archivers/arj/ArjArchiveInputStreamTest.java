@@ -19,7 +19,8 @@
 
 package org.apache.commons.compress.archivers.arj;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.io.FileInputStream;
 import java.util.Calendar;
