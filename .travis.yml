@@ -23,7 +23,7 @@ cache:
 # Must use a fixed distribution (and remember to occassionally upgrade..)
 # Try to force to use the latest Java 11 instead of 11.0.2 to fix 
 # https://bugs.openjdk.java.net/browse/JDK-8212233
-# dist: bionic
+dist: bionic
 
 jdk:
   - openjdk8
