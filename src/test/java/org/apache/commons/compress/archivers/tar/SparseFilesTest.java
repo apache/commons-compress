@@ -178,6 +178,8 @@ public class SparseFilesTest extends AbstractTestCase {
     @Test
     public void testExtractPaxGNU() throws IOException, InterruptedException {
         assumeFalse("This test should be ignored on Windows", isOnWindows);
+        assumeFalse("This test should be ignored if GNU tar is version 1.28",
+                getTarBinaryHelp().startsWith("tar (GNU tar) 1.28"));
 
         final File file = getFile("pax_gnu_sparse.tar");
         try (TarArchiveInputStream tin = new TarArchiveInputStream(new FileInputStream(file))) {
@@ -240,6 +242,14 @@ public class SparseFilesTest extends AbstractTestCase {
         }
         fail("didn't find " + sparseFileName + " after extracting " + tarFile);
         return null;
+    }
+
+    private String getTarBinaryHelp() throws IOException {
+        final ProcessBuilder pb = new ProcessBuilder("tar", "--version");
+        pb.redirectErrorStream(true);
+        final Process process = pb.start();
+        // wait until the help is shown
+        return new String(IOUtils.toByteArray(process.getInputStream()));
     }
 }
 
