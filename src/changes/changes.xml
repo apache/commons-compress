@@ -277,6 +277,12 @@ The <action> type attribute can be add,update,fix,remove.
         true if the entry is a sparse entry.
         Github Pull Request #153.
       </action>
+      <action issue="COMPRESS-559" type="fix" date="2020-12-10"
+              due-to="Robin Schimpf" dev="Robin Schimpf">
+        SparseFilesTest#testExtractPaxGNU should be skipped
+        if the version of GNU tar binary is 1.28.
+        Github Pull Request #152.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20 (Java 7)">

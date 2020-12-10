@@ -178,6 +178,9 @@ public class SparseFilesTest extends AbstractTestCase {
     @Test
     public void testExtractPaxGNU() throws IOException, InterruptedException {
         assumeFalse("This test should be ignored on Windows", isOnWindows);
+        // GNU tar with version 1.28 has some problems reading sparsefile-0.1,
+        // so the test should be skipped then
+        // TODO : what about the versions lower than 1.28?
         assumeFalse("This test should be ignored if GNU tar is version 1.28",
                 getTarBinaryHelp().startsWith("tar (GNU tar) 1.28"));
 
