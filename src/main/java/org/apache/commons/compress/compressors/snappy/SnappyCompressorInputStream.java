@@ -245,7 +245,7 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
      * after the length.
      */
     private int readLiteralLength(final int b) throws IOException {
-        int length;
+        final int length;
         switch (b >> 2) {
         case 60:
             length = readOneByte();

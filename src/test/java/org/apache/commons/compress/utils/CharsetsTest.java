@@ -35,8 +35,8 @@ public class CharsetsTest {
         Assert.assertEquals(Charset.defaultCharset(), Charsets.toCharset((String) null));
         Assert.assertEquals(Charset.defaultCharset(), Charsets.toCharset((Charset) null));
         Assert.assertEquals(Charset.defaultCharset(), Charsets.toCharset(Charset.defaultCharset()));
-        Assert.assertEquals(Charset.forName("UTF-8"), Charsets.toCharset(Charset.forName("UTF-8")));
-        Assert.assertEquals(Charset.forName("UTF-8"), StandardCharsets.UTF_8);
+        Assert.assertEquals(StandardCharsets.UTF_8, Charsets.toCharset(StandardCharsets.UTF_8));
+        Assert.assertEquals(StandardCharsets.UTF_8, StandardCharsets.UTF_8);
     }
 
 }

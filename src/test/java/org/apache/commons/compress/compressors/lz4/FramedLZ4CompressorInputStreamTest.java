@@ -45,7 +45,7 @@ public final class FramedLZ4CompressorInputStreamTest
     extends AbstractTestCase {
 
     @Rule
-    public ExpectedException thrown = ExpectedException.none();
+    public final ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void testMatches() throws IOException {

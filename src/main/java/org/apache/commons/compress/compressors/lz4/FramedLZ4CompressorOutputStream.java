@@ -210,13 +210,14 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
         if (params.withContentChecksum) {
             contentHash.update(data, off, len);
         }
-        if (currentIndex + len > blockData.length) {
+        final int blockDataLength = blockData.length;
+        if (currentIndex + len > blockDataLength) {
             flushBlock();
-            while (len > blockData.length) {
-                System.arraycopy(data, off, blockData, 0, blockData.length);
-                off += blockData.length;
-                len -= blockData.length;
-                currentIndex = blockData.length;
+            while (len > blockDataLength) {
+                System.arraycopy(data, off, blockData, 0, blockDataLength);
+                off += blockDataLength;
+                len -= blockDataLength;
+                currentIndex = blockDataLength;
                 flushBlock();
             }
         }

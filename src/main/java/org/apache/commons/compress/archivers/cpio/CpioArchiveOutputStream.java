@@ -518,7 +518,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     private void writeAsciiLong(final long number, final int length,
             final int radix) throws IOException {
         final StringBuilder tmp = new StringBuilder();
-        String tmpStr;
+        final String tmpStr;
         if (radix == 16) {
             tmp.append(Long.toHexString(number));
         } else if (radix == 8) {

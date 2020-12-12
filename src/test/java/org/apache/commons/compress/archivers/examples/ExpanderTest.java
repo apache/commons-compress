@@ -47,7 +47,7 @@ import org.junit.rules.ExpectedException;
 public class ExpanderTest extends AbstractTestCase {
 
     @Rule
-    public ExpectedException thrown = ExpectedException.none();
+    public final ExpectedException thrown = ExpectedException.none();
 
     private File archive;
 

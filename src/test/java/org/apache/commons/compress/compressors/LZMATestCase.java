@@ -48,7 +48,7 @@ public final class LZMATestCase extends AbstractTestCase {
         try (InputStream is = new FileInputStream(input)) {
             orig = IOUtils.toByteArray(is);
         }
-        byte[] uncompressed;
+        final byte[] uncompressed;
         try (InputStream is = new FileInputStream(compressed);
              CompressorInputStream in = new LZMACompressorInputStream(is)) {
             uncompressed = IOUtils.toByteArray(in);

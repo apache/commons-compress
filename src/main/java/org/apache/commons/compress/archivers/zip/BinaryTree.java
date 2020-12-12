@@ -150,17 +150,18 @@ class BinaryTree {
             maxLength = Math.max(maxLength, bitLength);
         }
 
+        final int oBitLengths = originalBitLengths.length;
         // sort the array of bit lengths and memorize the permutation used to restore the order of the codes
-        final int[] permutation = new int[originalBitLengths.length];
+        final int[] permutation = new int[oBitLengths];
         for (int k = 0; k < permutation.length; k++) {
             permutation[k] = k;
         }
 
         int c = 0;
-        final int[] sortedBitLengths = new int[originalBitLengths.length];
-        for (int k = 0; k < originalBitLengths.length; k++) {
+        final int[] sortedBitLengths = new int[oBitLengths];
+        for (int k = 0; k < oBitLengths; k++) {
             // iterate over the values
-            for (int l = 0; l < originalBitLengths.length; l++) {
+            for (int l = 0; l < oBitLengths; l++) {
                 // look for the value in the original array
                 if (originalBitLengths[l] == k) {
                     // put the value at the current position in the sorted array...

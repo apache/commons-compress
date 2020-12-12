@@ -369,7 +369,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
 
     private CpioArchiveEntry readNewEntry(final boolean hasCrc)
             throws IOException {
-        CpioArchiveEntry ret;
+        final CpioArchiveEntry ret;
         if (hasCrc) {
             ret = new CpioArchiveEntry(FORMAT_NEW_CRC);
         } else {

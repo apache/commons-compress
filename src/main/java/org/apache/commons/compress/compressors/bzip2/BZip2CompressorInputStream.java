@@ -930,7 +930,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
         // 60798 byte
 
         int[] tt; // 3600000 byte
-        byte[] ll8; // 900000 byte
+        final byte[] ll8; // 900000 byte
 
         // ---------------
         // 4560782 byte

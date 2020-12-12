@@ -1110,7 +1110,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
                 final Long qOffset = q.getOffset();
                 return pOffset.compareTo(qOffset);
             };
-            Collections.sort(sparseHeaders, sparseHeaderComparator);
+            sparseHeaders.sort(sparseHeaderComparator);
         }
 
         if (sparseHeaders != null) {

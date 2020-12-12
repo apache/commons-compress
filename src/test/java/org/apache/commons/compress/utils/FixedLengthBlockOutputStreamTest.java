@@ -41,7 +41,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.hamcrest.core.IsInstanceOf;
 import org.junit.Test;
-import org.mockito.internal.matchers.GreaterOrEqual;
 
 public class FixedLengthBlockOutputStreamTest {
 
@@ -304,7 +303,7 @@ public class FixedLengthBlockOutputStreamTest {
 
     private static class MockOutputStream extends OutputStream {
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         private final int requiredWriteSize;
         private final boolean doPartialWrite;
         private final AtomicBoolean closed = new AtomicBoolean();
@@ -348,7 +347,7 @@ public class FixedLengthBlockOutputStreamTest {
 
     private static class MockWritableByteChannel implements WritableByteChannel {
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         private final int requiredWriteSize;
         private final boolean doPartialWrite;
 
@@ -370,7 +369,7 @@ public class FixedLengthBlockOutputStreamTest {
             return bytesOut;
         }
 
-        AtomicBoolean closed = new AtomicBoolean();
+        final AtomicBoolean closed = new AtomicBoolean();
 
         @Override
         public boolean isOpen() {

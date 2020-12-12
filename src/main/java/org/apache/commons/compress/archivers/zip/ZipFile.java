@@ -1371,7 +1371,7 @@ public class ZipFile implements Closeable {
                 len = (int)(end-loc);
             }
 
-            ByteBuffer buf;
+            final ByteBuffer buf;
             buf = ByteBuffer.wrap(b, off, len);
             final int ret = read(loc, buf);
             if (ret > 0) {
@@ -1381,7 +1381,7 @@ public class ZipFile implements Closeable {
         }
 
         protected int read(final long pos, final ByteBuffer buf) throws IOException {
-            int read;
+            final int read;
             synchronized (archive) {
                 archive.position(pos);
                 read = archive.read(buf);

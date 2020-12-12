@@ -250,7 +250,8 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
         while (lengthRemaining > 0) {
             // find block that contains offsetRemaining
             byte[] block = null;
-            int copyLen, copyOffset;
+            final int copyLen;
+            final int copyOffset;
             if (offsetRemaining > 0) {
                 int blockOffset = 0;
                 for (final byte[] b : expandedBlocks) {

@@ -59,7 +59,7 @@ public final class BlockLZ4CompressorRoundtripTest extends AbstractTestCase {
         long start = System.currentTimeMillis();
         final File outputSz = new File(dir, input.getName() + ".block.lz4");
         try (FileInputStream is = new FileInputStream(input);
-             FileOutputStream os = new FileOutputStream(outputSz);
+             final FileOutputStream os = new FileOutputStream(outputSz);
              BlockLZ4CompressorOutputStream los = new BlockLZ4CompressorOutputStream(os, params)) {
             IOUtils.copy(is, los);
         }

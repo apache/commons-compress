@@ -787,7 +787,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
         FIFO(1),
         UNKNOWN(15);
 
-        private int code;
+        private final int code;
 
         TYPE(final int code) {
             this.code = code;
@@ -820,7 +820,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
         WORLD_WRITE(00002),
         WORLD_EXEC(00001);
 
-        private int code;
+        private final int code;
 
         PERMISSION(final int code) {
             this.code = code;
