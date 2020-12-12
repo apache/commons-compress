@@ -932,7 +932,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
             setExtraFields(f);
         } else {
             for (final ZipExtraField element : f) {
-                ZipExtraField existing;
+                final ZipExtraField existing;
                 if (element instanceof UnparseableExtraFieldData) {
                     existing = unparseableExtra;
                 } else {

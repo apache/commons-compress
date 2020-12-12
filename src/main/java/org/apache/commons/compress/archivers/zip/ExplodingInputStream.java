@@ -167,7 +167,7 @@ class ExplodingInputStream extends InputStream implements InputStreamStatistics 
             return;
         } else if (bit == 1) {
             // literal value
-            int literal;
+            final int literal;
             if (literalTree != null) {
                 literal = literalTree.read(bits);
             } else {

@@ -137,14 +137,15 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         boolean mustAppendName = false;
 
         final String n = pEntry.getName();
-        if (LONGFILE_ERROR == longFileMode && n.length() > 16) {
+        final int nLength = n.length();
+        if (LONGFILE_ERROR == longFileMode && nLength > 16) {
             throw new IOException("File name too long, > 16 chars: "+n);
         }
         if (LONGFILE_BSD == longFileMode &&
-            (n.length() > 16 || n.contains(" "))) {
+            (nLength > 16 || n.contains(" "))) {
             mustAppendName = true;
             offset += write(ArArchiveInputStream.BSD_LONGNAME_PREFIX
-                            + String.valueOf(n.length()));
+                            + String.valueOf(nLength));
         } else {
             offset += write(n);
         }
@@ -180,7 +181,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         offset = fill(offset, 48, ' ');
         final String s =
             String.valueOf(pEntry.getLength()
-                           + (mustAppendName ? n.length() : 0));
+                           + (mustAppendName ? nLength : 0));
         if (s.length() > 10) {
             throw new IOException("Size too long");
         }

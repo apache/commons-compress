@@ -66,7 +66,7 @@ public class SevenZNativeHeapTest extends AbstractTestCase {
         public DelegatingInflater(final Inflater inflater) {
             this.inflater = inflater;
         }
-        AtomicBoolean isEnded = new AtomicBoolean();
+        final AtomicBoolean isEnded = new AtomicBoolean();
 
         @Override
         public void end() {
@@ -164,7 +164,7 @@ public class SevenZNativeHeapTest extends AbstractTestCase {
             this.deflater = deflater;
         }
 
-        AtomicBoolean isEnded = new AtomicBoolean();
+        final AtomicBoolean isEnded = new AtomicBoolean();
 
         @Override
         public void end() {

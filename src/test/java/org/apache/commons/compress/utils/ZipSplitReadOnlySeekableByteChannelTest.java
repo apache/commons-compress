@@ -37,7 +37,7 @@ import static org.apache.commons.compress.AbstractTestCase.getFile;
 
 public class ZipSplitReadOnlySeekableByteChannelTest {
     @Rule
-    public ExpectedException thrown = ExpectedException.none();
+    public final ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void constructorThrowsOnNullArg() throws IOException {

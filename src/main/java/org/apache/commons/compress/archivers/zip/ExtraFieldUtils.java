@@ -193,12 +193,13 @@ public class ExtraFieldUtils {
         throws ZipException {
         final List<ZipExtraField> v = new ArrayList<>();
         int start = 0;
+        final int dataLength = data.length;
         LOOP:
-        while (start <= data.length - WORD) {
+        while (start <= dataLength - WORD) {
             final ZipShort headerId = new ZipShort(data, start);
             final int length = new ZipShort(data, start + 2).getValue();
-            if (start + WORD + length > data.length) {
-                final ZipExtraField field = parsingBehavior.onUnparseableExtraField(data, start, data.length - start,
+            if (start + WORD + length > dataLength) {
+                final ZipExtraField field = parsingBehavior.onUnparseableExtraField(data, start, dataLength - start,
                     local, length);
                 if (field != null) {
                     v.add(field);
@@ -228,10 +229,11 @@ public class ExtraFieldUtils {
      * @return an array of bytes
      */
     public static byte[] mergeLocalFileDataData(final ZipExtraField[] data) {
-        final boolean lastIsUnparseableHolder = data.length > 0
-            && data[data.length - 1] instanceof UnparseableExtraFieldData;
+        final int dataLength = data.length;
+        final boolean lastIsUnparseableHolder = dataLength > 0
+            && data[dataLength - 1] instanceof UnparseableExtraFieldData;
         final int regularExtraFieldCount =
-            lastIsUnparseableHolder ? data.length - 1 : data.length;
+            lastIsUnparseableHolder ? dataLength - 1 : dataLength;
 
         int sum = WORD * regularExtraFieldCount;
         for (final ZipExtraField element : data) {
@@ -253,7 +255,7 @@ public class ExtraFieldUtils {
             }
         }
         if (lastIsUnparseableHolder) {
-            final byte[] local = data[data.length - 1].getLocalFileDataData();
+            final byte[] local = data[dataLength - 1].getLocalFileDataData();
             if (local != null) {
                 System.arraycopy(local, 0, result, start, local.length);
             }
@@ -267,10 +269,11 @@ public class ExtraFieldUtils {
      * @return an array of bytes
      */
     public static byte[] mergeCentralDirectoryData(final ZipExtraField[] data) {
-        final boolean lastIsUnparseableHolder = data.length > 0
-            && data[data.length - 1] instanceof UnparseableExtraFieldData;
+        final int dataLength = data.length;
+        final boolean lastIsUnparseableHolder = dataLength > 0
+            && data[dataLength - 1] instanceof UnparseableExtraFieldData;
         final int regularExtraFieldCount =
-            lastIsUnparseableHolder ? data.length - 1 : data.length;
+            lastIsUnparseableHolder ? dataLength - 1 : dataLength;
 
         int sum = WORD * regularExtraFieldCount;
         for (final ZipExtraField element : data) {
@@ -291,7 +294,7 @@ public class ExtraFieldUtils {
             }
         }
         if (lastIsUnparseableHolder) {
-            final byte[] central = data[data.length - 1].getCentralDirectoryData();
+            final byte[] central = data[dataLength - 1].getCentralDirectoryData();
             if (central != null) {
                 System.arraycopy(central, 0, result, start, central.length);
             }

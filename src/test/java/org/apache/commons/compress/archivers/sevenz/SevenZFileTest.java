@@ -60,7 +60,7 @@ public class SevenZFileTest extends AbstractTestCase {
         + " connections>\r\n<meinxml>\r\n\t<leer />\r\n</meinxml>\n";
 
     @Rule
-    public ExpectedException thrown = ExpectedException.none();
+    public final ExpectedException thrown = ExpectedException.none();
 
     // https://issues.apache.org/jira/browse/COMPRESS-320
     @Test

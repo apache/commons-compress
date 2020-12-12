@@ -494,7 +494,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
                     current.entry);
         }
 
-        int read;
+        final int read;
         if (current.entry.getMethod() == ZipArchiveOutputStream.STORED) {
             read = readStored(buffer, offset, length);
         } else if (current.entry.getMethod() == ZipArchiveOutputStream.DEFLATED) {

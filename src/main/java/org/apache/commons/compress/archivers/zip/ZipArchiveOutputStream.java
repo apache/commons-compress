@@ -854,8 +854,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
             final Zip64ExtendedInformationExtraField z64 = getZip64Extra(entry.entry);
 
-            ZipEightByteInteger size;
-            ZipEightByteInteger compressedSize;
+            final ZipEightByteInteger size;
+            final ZipEightByteInteger compressedSize;
             if (phased) {
                 // sizes are already known
                 size = new ZipEightByteInteger(entry.entry.getSize());
@@ -1379,6 +1379,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         }
 
         final byte[] extra = ze.getCentralDirectoryExtra();
+        final int extraLength = extra.length;
 
         // file comment length
         String comm = ze.getComment();
@@ -1389,7 +1390,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         final ByteBuffer commentB = getEntryEncoding(ze).encode(comm);
         final int nameLen = name.limit() - name.position();
         final int commentLen = commentB.limit() - commentB.position();
-        final int len= CFH_FILENAME_OFFSET + nameLen + extra.length + commentLen;
+        final int len= CFH_FILENAME_OFFSET + nameLen + extraLength + commentLen;
         final byte[] buf = new byte[len];
 
         System.arraycopy(CFH_SIG,  0, buf, CFH_SIG_OFFSET, WORD);
@@ -1429,7 +1430,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         putShort(nameLen, buf, CFH_FILENAME_LENGTH_OFFSET);
 
         // extra field length
-        putShort(extra.length, buf, CFH_EXTRA_LENGTH_OFFSET);
+        putShort(extraLength, buf, CFH_EXTRA_LENGTH_OFFSET);
 
         putShort(commentLen, buf, CFH_COMMENT_LENGTH_OFFSET);
 
@@ -1461,9 +1462,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         System.arraycopy(name.array(), name.arrayOffset(), buf, CFH_FILENAME_OFFSET, nameLen);
 
         final int extraStart = CFH_FILENAME_OFFSET + nameLen;
-        System.arraycopy(extra, 0, buf, extraStart, extra.length);
+        System.arraycopy(extra, 0, buf, extraStart, extraLength);
 
-        final int commentStart = extraStart + extra.length;
+        final int commentStart = extraStart + extraLength;
 
         // file comment
         System.arraycopy(commentB.array(), commentB.arrayOffset(), buf, commentStart, commentLen);

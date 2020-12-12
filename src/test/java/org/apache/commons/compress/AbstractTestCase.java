@@ -55,7 +55,7 @@ public abstract class AbstractTestCase {
     private File archive; // used to delete the archive in tearDown
     protected List<String> archiveList; // Lists the content of the archive as originally created
 
-    protected ArchiveStreamFactory factory = ArchiveStreamFactory.DEFAULT;
+    protected final ArchiveStreamFactory factory = ArchiveStreamFactory.DEFAULT;
 
     @Before
     public void setUp() throws Exception {

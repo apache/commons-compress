@@ -178,7 +178,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
             }
         }
 
-        Collections.sort(splitZipSegments, new ZipSplitSegmentComparator());
+        splitZipSegments.sort(new ZipSplitSegmentComparator());
         return forFiles(lastSegmentFile, splitZipSegments);
     }
 

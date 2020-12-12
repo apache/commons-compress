@@ -157,7 +157,7 @@ class Coders {
 
          static class DeflateDecoderInputStream extends InputStream {
 
-              InflaterInputStream inflaterInputStream;
+              final InflaterInputStream inflaterInputStream;
               Inflater inflater;
 
             public DeflateDecoderInputStream(final InflaterInputStream inflaterInputStream,
@@ -193,7 +193,7 @@ class Coders {
 
          static class DeflateDecoderOutputStream extends OutputStream {
 
-              DeflaterOutputStream deflaterOutputStream;
+              final DeflaterOutputStream deflaterOutputStream;
               Deflater deflater;
 
             public DeflateDecoderOutputStream(final DeflaterOutputStream deflaterOutputStream,

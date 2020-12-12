@@ -344,9 +344,9 @@ public final class ZipTestCase extends AbstractTestCase {
             rmdir(tmp[0]);
         }
     }
-    String first_payload = "ABBA";
-    String second_payload = "AAAAAAAAAAAA";
-    ZipArchiveEntryPredicate allFilesPredicate = zipArchiveEntry -> true;
+    final String first_payload = "ABBA";
+    final String second_payload = "AAAAAAAAAAAA";
+    final ZipArchiveEntryPredicate allFilesPredicate = zipArchiveEntry -> true;
 
     @Test
     public void testCopyRawEntriesFromFile()

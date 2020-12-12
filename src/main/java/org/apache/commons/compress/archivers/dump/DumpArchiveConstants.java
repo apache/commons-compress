@@ -47,7 +47,7 @@ public final class DumpArchiveConstants {
         END(5),
         CLRI(6);
 
-        int code;
+        final int code;
 
         SEGMENT_TYPE(final int code) {
             this.code = code;
@@ -72,7 +72,7 @@ public final class DumpArchiveConstants {
         BZLIB(1),
         LZO(2);
 
-        int code;
+        final int code;
 
         COMPRESSION_TYPE(final int code) {
             this.code = code;

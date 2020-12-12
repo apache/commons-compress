@@ -74,7 +74,7 @@ public class ZstdUtils {
         try {
             Class.forName("com.github.luben.zstd.ZstdInputStream");
             return true;
-        } catch (NoClassDefFoundError | Exception error) { // NOSONAR
+        } catch (final NoClassDefFoundError | Exception error) { // NOSONAR
             return false;
         }
     }

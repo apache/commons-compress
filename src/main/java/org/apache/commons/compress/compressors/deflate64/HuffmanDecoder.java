@@ -227,7 +227,7 @@ class HuffmanDecoder implements Closeable {
             final int max = (int) Math.min(blockLength - read, len);
             int readSoFar = 0;
             while (readSoFar < max) {
-                int readNow;
+                final int readNow;
                 if (reader.bitsCached() > 0) {
                     final byte next = (byte) readBits(Byte.SIZE);
                     b[off + readSoFar] = memory.add(next);

@@ -75,8 +75,8 @@ class BoundedSeekableByteChannelInputStream extends InputStream {
         if (bytesToRead > bytesRemaining) {
             bytesToRead = (int) bytesRemaining;
         }
-        int bytesRead;
-        ByteBuffer buf;
+        final int bytesRead;
+        final ByteBuffer buf;
         if (bytesToRead <= buffer.capacity()) {
             buf = buffer;
             bytesRead = read(bytesToRead);

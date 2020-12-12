@@ -48,7 +48,7 @@ import java.util.Stack;
  * @NotThreadSafe
  */
 public class DumpArchiveInputStream extends ArchiveInputStream {
-    private DumpArchiveSummary summary;
+    private final DumpArchiveSummary summary;
     private DumpArchiveEntry active;
     private boolean isClosed;
     private boolean hasHitEOF;
@@ -59,7 +59,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     private byte[] blockBuffer;
     private int recordOffset;
     private long filepos;
-    protected TapeInputStream raw;
+    protected final TapeInputStream raw;
 
     // map of ino -> dirent entry. We can use this to reconstruct full paths.
     private final Map<Integer, Dirent> names = new HashMap<>();
@@ -68,7 +68,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     private final Map<Integer, DumpArchiveEntry> pending = new HashMap<>();
 
     // queue of (directory) entries where we now have the full path.
-    private Queue<DumpArchiveEntry> queue;
+    private final Queue<DumpArchiveEntry> queue;
 
     /**
      * The encoding to use for file names and labels.

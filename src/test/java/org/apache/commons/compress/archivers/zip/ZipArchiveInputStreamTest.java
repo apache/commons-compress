@@ -53,7 +53,7 @@ import org.junit.rules.ExpectedException;
 public class ZipArchiveInputStreamTest {
 
     @Rule
-    public ExpectedException thrown = ExpectedException.none();
+    public final ExpectedException thrown = ExpectedException.none();
 
     /**
      * @see "https://issues.apache.org/jira/browse/COMPRESS-176"
@@ -697,7 +697,7 @@ public class ZipArchiveInputStreamTest {
     @Test(expected = IOException.class)
     public void throwsIOExceptionIfThereIsCorruptedZip64Extra() throws IOException {
         try (InputStream fis = new FileInputStream(getFile("COMPRESS-546.zip"));
-             ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(fis);) {
+             ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(fis)) {
             while (zipInputStream.getNextZipEntry() != null) {
             }
         }
@@ -706,7 +706,7 @@ public class ZipArchiveInputStreamTest {
     @Test
     public void testZipWithBadExtraFields() throws IOException {
         try (InputStream fis = new FileInputStream(getFile("COMPRESS-548.zip"));
-             ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(fis);) {
+             ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(fis)) {
             while (zipInputStream.getNextZipEntry() != null) {
             }
         }
@@ -715,7 +715,7 @@ public class ZipArchiveInputStreamTest {
     @Test
     public void testZipUsingStoredWithDDAndNoDDSignature() throws IOException {
         try (InputStream inputStream = forgeZipInputStream();
-             ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(inputStream, "UTF-8", true, true);) {
+             ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(inputStream, "UTF-8", true, true)) {
             while (zipInputStream.getNextZipEntry() != null) {
             }
         }
@@ -768,7 +768,7 @@ public class ZipArchiveInputStreamTest {
      */
     private InputStream forgeZipInputStream() throws IOException {
         try (final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-             final ZipArchiveOutputStream zo = new ZipArchiveOutputStream(byteArrayOutputStream);){
+             final ZipArchiveOutputStream zo = new ZipArchiveOutputStream(byteArrayOutputStream)){
 
             final ZipArchiveEntry entryA = new ZipArchiveEntry("foo");
             entryA.setMethod(ZipEntry.STORED);

@@ -99,7 +99,7 @@ public class DataDescriptorTest {
             zos.closeArchiveEntry();
         }
 
-        byte[] data;
+        final byte[] data;
         try (FileInputStream fis = new FileInputStream(f)) {
             data = IOUtils.toByteArray(fis);
         }
@@ -147,7 +147,7 @@ public class DataDescriptorTest {
         }
 
         final ByteArrayOutputStream o = new ByteArrayOutputStream();
-        ZipArchiveEntry zae;
+        final ZipArchiveEntry zae;
         try (ZipFile zf = new ZipFile(f);
              ZipArchiveOutputStream zos = new ZipArchiveOutputStream(o)) {
             zae = zf.getEntry("test1.txt");

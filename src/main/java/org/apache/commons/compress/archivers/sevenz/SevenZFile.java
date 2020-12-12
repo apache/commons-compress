@@ -976,10 +976,11 @@ public class SevenZFile implements Closeable {
                     }
                     assertFitsIntoInt("file names length", size - 1);
                     final byte[] names = new byte[(int) (size - 1)];
+                    final int namesLength = names.length;
                     header.get(names);
                     int nextFile = 0;
                     int nextName = 0;
-                    for (int i = 0; i < names.length; i += 2) {
+                    for (int i = 0; i < namesLength; i += 2) {
                         if (names[i] == 0 && names[i + 1] == 0) {
                             checkEntryIsInitialized(fileMap, nextFile);
                             fileMap.get(nextFile).setName(new String(names, nextName, i - nextName, StandardCharsets.UTF_16LE));
@@ -987,7 +988,7 @@ public class SevenZFile implements Closeable {
                             nextFile++;
                         }
                     }
-                    if (nextName != names.length || nextFile != numFiles) {
+                    if (nextName != namesLength || nextFile != numFiles) {
                         throw new IOException("Error parsing file names");
                     }
                     break;

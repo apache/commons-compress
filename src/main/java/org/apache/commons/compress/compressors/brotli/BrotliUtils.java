@@ -61,7 +61,7 @@ public class BrotliUtils {
         try {
             Class.forName("org.brotli.dec.BrotliInputStream");
             return true;
-        } catch (NoClassDefFoundError | Exception error) { // NOSONAR
+        } catch (final NoClassDefFoundError | Exception error) { // NOSONAR
             return false;
         }
     }

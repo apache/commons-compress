@@ -40,7 +40,7 @@ import org.junit.rules.ExpectedException;
 public class ZipArchiveEntryTest {
 
     @Rule
-    public ExpectedException thrown = ExpectedException.none();
+    public final ExpectedException thrown = ExpectedException.none();
 
     /**
      * test handling of extra fields

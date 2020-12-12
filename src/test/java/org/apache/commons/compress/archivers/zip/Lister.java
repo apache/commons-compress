@@ -102,16 +102,17 @@ public final class Lister {
     private static CommandLine parse(final String[] args) {
         final CommandLine cl = new CommandLine();
         boolean error = false;
-        for (int i = 0; i < args.length; i++) {
+        final int argsLength = args.length;
+        for (int i = 0; i < argsLength; i++) {
             if (args[i].equals("-enc")) {
-                if (args.length > i + 1) {
+                if (argsLength > i + 1) {
                     cl.encoding = args[++i];
                 } else {
                     System.err.println("missing argument to -enc");
                     error = true;
                 }
             } else if (args[i].equals("-extract")) {
-                if (args.length > i + 1) {
+                if (argsLength > i + 1) {
                     cl.dir = args[++i];
                 } else {
                     System.err.println("missing argument to -extract");

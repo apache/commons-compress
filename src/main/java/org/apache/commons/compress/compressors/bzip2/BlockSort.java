@@ -367,7 +367,7 @@ class BlockSort {
             */
             r = ((r * 7621) + 1) % 32768;
             final long r3 = r % 3;
-            long med;
+            final long med;
             if (r3 == 0) {
                 med = eclass[fmap[lo]];
             } else if (r3 == 1) {
@@ -473,7 +473,7 @@ class BlockSort {
         final int[] ftab = new int[257];
         int H, i, j, k, l, r, cc, cc1;
         int nNotDone;
-        int nBhtab;
+        final int nBhtab;
         final int[] eclass = getEclass();
 
         for (i = 0; i < nblock; i++) {

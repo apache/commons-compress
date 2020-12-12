@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -285,7 +284,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
     private static void createTestFile(final File file, final String encoding,
                                        final boolean withEFS,
                                        final boolean withExplicitUnicodeExtra)
-        throws UnsupportedEncodingException, IOException {
+        throws IOException {
 
         final ZipEncoding zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
 

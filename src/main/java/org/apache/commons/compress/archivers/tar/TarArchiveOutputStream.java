@@ -208,7 +208,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      */
     public TarArchiveOutputStream(final OutputStream os, final int blockSize,
         final String encoding) {
-        int realBlockSize;
+        final int realBlockSize;
         if (BLOCK_SIZE_UNSPECIFIED == blockSize) {
             realBlockSize = RECORD_SIZE;
         } else {
