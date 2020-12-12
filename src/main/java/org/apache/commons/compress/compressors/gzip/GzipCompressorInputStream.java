@@ -309,7 +309,7 @@ public class GzipCompressorInputStream extends CompressorInputStream
                 inf.setInput(buf, 0, bufUsed);
             }
 
-            int ret;
+            final int ret;
             try {
                 ret = inf.inflate(b, off, len);
             } catch (final DataFormatException e) { // NOSONAR
