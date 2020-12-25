@@ -556,14 +556,14 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * Construct an entry from an archive's header bytes for random access tar. File is set to null.
-     * @param headerBuf The header bytes from a tar archive entry.
-     * @param encoding encoding to use for file names
+     * @param headerBuf the header bytes from a tar archive entry.
+     * @param encoding encoding to use for file names.
      * @param lenient when set to true illegal values for group/userid, mode, device numbers and timestamp will be
      * ignored and the fields set to {@link #UNKNOWN}. When set to false such illegal fields cause an exception instead.
-     * @param dataOffset Position of the entry data in the random access file
+     * @param dataOffset position of the entry data in the random access file.
      * @since 1.21
-     * @throws IllegalArgumentException if any of the numeric fields have an invalid format
-     * @throws IOException on error
+     * @throws IllegalArgumentException if any of the numeric fields have an invalid format.
+     * @throws IOException on error.
      */
     public TarArchiveEntry(final byte[] headerBuf, final ZipEncoding encoding, final boolean lenient,
             final long dataOffset) throws IOException {
@@ -869,7 +869,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * <p>This method is only useful for entries created from a {@code
      * File} or {@code Path} but not for entries read from an archive.</p>
      *
-     * @return This entry's file or null if the entry was not created from a file.
+     * @return this entry's file or null if the entry was not created from a file.
      */
     public File getFile() {
         if (file == null) {
@@ -884,7 +884,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * <p>This method is only useful for entries created from a {@code
      * File} or {@code Path} but not for entries read from an archive.</p>
      *
-     * @return This entry's file or null if the entry was not created from a file.
+     * @return this entry's file or null if the entry was not created from a file.
      * @since 1.21
      */
     public Path getPath() {
@@ -1213,7 +1213,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * Set the offset of the data for the tar entry.
-     * @param dataOffset the position of the data in the tar
+     * @param dataOffset the position of the data in the tar.
      * @since 1.21
      */
     public void setDataOffset(final long dataOffset) {
