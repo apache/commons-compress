@@ -24,6 +24,7 @@ import java.nio.channels.SeekableByteChannel;
 /**
  * InputStream that delegates requests to the underlying SeekableByteChannel, making sure that only bytes from a certain
  * range can be read.
+ * @ThreadSafe
  * @since 1.21
  */
 public class BoundedSeekableByteChannelInputStream extends BoundedNIOInputStream {

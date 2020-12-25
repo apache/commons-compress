@@ -332,7 +332,7 @@ public class TarFile implements Closeable {
      * When reading from the non-zero input streams, the data is actually read from the original input stream.
      * The size of each input stream is introduced by the sparse headers.
      *
-     * NOTE : Some all-zero input streams and non-zero input streams have the size of 0. We DO NOT store the
+     * @implNote Some all-zero input streams and non-zero input streams have the size of 0. We DO NOT store the
      *        0 size input streams because they are meaningless.
      */
     private void buildSparseInputStreams() throws IOException {
@@ -398,24 +398,28 @@ public class TarFile implements Closeable {
     }
 
     /**
+     * <p>
      * For PAX Format 0.0, the sparse headers(GNU.sparse.offset and GNU.sparse.numbytes)
      * may appear multi times, and they look like:
-     *
+     * <pre>
      * GNU.sparse.size=size
      * GNU.sparse.numblocks=numblocks
      * repeat numblocks times
      *   GNU.sparse.offset=offset
      *   GNU.sparse.numbytes=numbytes
      * end repeat
+     * </pre>
      *
-     *
+     * <p>
      * For PAX Format 0.1, the sparse headers are stored in a single variable : GNU.sparse.map
-     *
+     * <pre>
      * GNU.sparse.map
      *    Map of non-null data chunks. It is a string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
+     * </pre>
      *
-     *
+     * <p>
      * For PAX Format 1.X:
+     * <br>
      * The sparse map itself is stored in the file data block, preceding the actual file data.
      * It consists of a series of decimal numbers delimited by newlines. The map is padded with nulls to the nearest block boundary.
      * The first number gives the number of entries in the map. Following are map entries, each one consisting of two numbers

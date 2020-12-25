@@ -23,6 +23,7 @@ import java.nio.ByteBuffer;
 
 /**
  * NIO backed bounded input stream for reading a predefined amount of data from.
+ * @ThreadSafe this base class is thread safe but implementations must not be.
  * @since 1.21
  */
 public abstract class BoundedNIOInputStream extends InputStream {
