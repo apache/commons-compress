@@ -114,7 +114,17 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
      */
     private ByteArrayInputStream lastStoredEntry = null;
 
-    /** Whether the stream will try to read STORED entries that use a data descriptor. */
+    /**
+     * Whether the stream will try to read STORED entries that use a data descriptor.
+     * Setting it to true means we will not stop reading a entry with the compressed
+     * size, instead we will stoping reading a entry when a data descriptor is met(by
+     * finding the Data Descriptor Signature). This will completely break down in some
+     * cases - like JARs in WARs.
+     * <p>
+     * See also :
+     * https://issues.apache.org/jira/projects/COMPRESS/issues/COMPRESS-555
+     * https://github.com/apache/commons-compress/pull/137#issuecomment-690835644
+     */
     private boolean allowStoredEntriesWithDataDescriptor = false;
 
     /** Count decompressed bytes for current entry */
