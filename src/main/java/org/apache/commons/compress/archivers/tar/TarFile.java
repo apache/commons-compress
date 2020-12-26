@@ -38,7 +38,7 @@ import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.BoundedInputStream;
-import org.apache.commons.compress.utils.BoundedNIOInputStream;
+import org.apache.commons.compress.utils.BoundedArchiveInputStream;
 import org.apache.commons.compress.utils.BoundedSeekableByteChannelInputStream;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 
@@ -644,7 +644,7 @@ public class TarFile implements Closeable {
         archive.close();
     }
 
-    private final class BoundedTarEntryInputStream extends BoundedNIOInputStream {
+    private final class BoundedTarEntryInputStream extends BoundedArchiveInputStream {
 
         private final SeekableByteChannel channel;
 

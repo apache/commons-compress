@@ -27,7 +27,7 @@ import java.nio.channels.SeekableByteChannel;
  * @ThreadSafe
  * @since 1.21
  */
-public class BoundedSeekableByteChannelInputStream extends BoundedNIOInputStream {
+public class BoundedSeekableByteChannelInputStream extends BoundedArchiveInputStream {
 
     private final SeekableByteChannel channel;
 
