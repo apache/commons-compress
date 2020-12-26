@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Calendar;
@@ -107,6 +109,20 @@ public class TarFileTest extends AbstractTestCase {
             List<TarArchiveEntry> entries = tarFile.getEntries();
             assertEquals(1, entries.size());
             assertEquals(name, entries.get(0).getName());
+        }
+    }
+
+    /**
+     * This test ensures the implementation is reading the padded last block if a tool has added one to an archive
+     */
+    @Test
+    public void archiveWithTrailer() throws IOException {
+        try (final SeekableByteChannel channel = Files.newByteChannel(getPath("archive_with_trailer.tar"));
+             final TarFile tarfile = new TarFile(channel, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, false)) {
+            final String tarAppendix = "Hello, world!\n";
+            final ByteBuffer buffer = ByteBuffer.allocate(tarAppendix.length());
+            channel.read(buffer);
+            assertEquals(tarAppendix, new String(buffer.array()));
         }
     }
 
