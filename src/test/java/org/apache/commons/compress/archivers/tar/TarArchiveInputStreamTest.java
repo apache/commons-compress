@@ -123,6 +123,9 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
         tis.close();
     }
 
+    /**
+     * This test ensures the implementation is reading the padded last block if a tool has added one to an archive
+     */
     @Test
     public void shouldConsumeArchiveCompletely() throws Exception {
         final InputStream is = TarArchiveInputStreamTest.class

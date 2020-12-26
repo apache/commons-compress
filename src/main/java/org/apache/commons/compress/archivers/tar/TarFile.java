@@ -548,8 +548,7 @@ public class TarFile implements Closeable {
         if (isAtEOF() && headerBuf != null) {
             // Consume rest
             tryToConsumeSecondEOFRecord();
-            // TODO: This is present in the TarArchiveInputStream but I don't know if we need this in the random access implementation. All tests are passing ...
-            // consumeRemainderOfLastBlock();
+            consumeRemainderOfLastBlock();
             headerBuf = null;
         }
         return headerBuf;
@@ -576,6 +575,18 @@ public class TarFile implements Closeable {
             if (shouldReset) {
                 archive.position(archive.position() - recordSize);
             }
+        }
+    }
+
+    /**
+     * This method is invoked once the end of the archive is hit, it
+     * tries to consume the remaining bytes under the assumption that
+     * the tool creating this archive has padded the last block.
+     */
+    private void consumeRemainderOfLastBlock() throws IOException {
+        final long bytesReadOfLastBlock = archive.position() % blockSize;
+        if (bytesReadOfLastBlock > 0) {
+            archive.position(archive.position() + blockSize - bytesReadOfLastBlock);
         }
     }
 
