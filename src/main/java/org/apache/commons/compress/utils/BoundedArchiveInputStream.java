@@ -26,7 +26,7 @@ import java.nio.ByteBuffer;
  * @ThreadSafe this base class is thread safe but implementations must not be.
  * @since 1.21
  */
-public abstract class BoundedNIOInputStream extends InputStream {
+public abstract class BoundedArchiveInputStream extends InputStream {
 
     private final long end;
     private ByteBuffer singleByteBuffer;
@@ -35,10 +35,10 @@ public abstract class BoundedNIOInputStream extends InputStream {
     /**
      * Create a new bounded input stream.
      *
-     * @param start     Position in the stream from where the reading of this bounded stream starts
-     * @param remaining Amount of bytes which are allowed to read from the bounded stream
+     * @param start     position in the stream from where the reading of this bounded stream starts.
+     * @param remaining amount of bytes which are allowed to read from the bounded stream.
      */
-    public BoundedNIOInputStream(final long start, final long remaining) {
+    public BoundedArchiveInputStream(final long start, final long remaining) {
         this.end = start + remaining;
         if (this.end < start) {
             // check for potential vulnerability due to overflow
@@ -88,11 +88,11 @@ public abstract class BoundedNIOInputStream extends InputStream {
     }
 
     /**
-     * Read content of the stream into a {@link ByteBuffer}
-     * @param pos position to start the read
-     * @param buf buffer to add the read content
-     * @return Number of read bytes
-     * @throws IOException If I/O fails
+     * Read content of the stream into a {@link ByteBuffer}.
+     * @param pos position to start the read.
+     * @param buf buffer to add the read content.
+     * @return number of read bytes.
+     * @throws IOException if I/O fails.
      */
     protected abstract int read(long pos, ByteBuffer buf) throws IOException;
 }

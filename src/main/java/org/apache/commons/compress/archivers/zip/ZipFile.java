@@ -45,7 +45,7 @@ import java.util.zip.ZipException;
 import org.apache.commons.compress.archivers.EntryStreamOffsets;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInputStream;
-import org.apache.commons.compress.utils.BoundedNIOInputStream;
+import org.apache.commons.compress.utils.BoundedArchiveInputStream;
 import org.apache.commons.compress.utils.BoundedSeekableByteChannelInputStream;
 import org.apache.commons.compress.utils.CountingInputStream;
 import org.apache.commons.compress.utils.IOUtils;
@@ -1316,7 +1316,7 @@ public class ZipFile implements Closeable {
      * Creates new BoundedInputStream, according to implementation of
      * underlying archive channel.
      */
-    private BoundedNIOInputStream createBoundedInputStream(final long start, final long remaining) {
+    private BoundedArchiveInputStream createBoundedInputStream(final long start, final long remaining) {
         return archive instanceof FileChannel ?
             new BoundedFileChannelInputStream(start, remaining) :
             new BoundedSeekableByteChannelInputStream(start, remaining, archive);
@@ -1328,7 +1328,7 @@ public class ZipFile implements Closeable {
      * file channel and therefore performs significantly faster in
      * concurrent environment.
      */
-    private class BoundedFileChannelInputStream extends BoundedNIOInputStream {
+    private class BoundedFileChannelInputStream extends BoundedArchiveInputStream {
         private final FileChannel archive;
 
         BoundedFileChannelInputStream(final long start, final long remaining) {
