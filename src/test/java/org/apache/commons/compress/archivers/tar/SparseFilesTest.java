@@ -368,6 +368,11 @@ public class SparseFilesTest extends AbstractTestCase {
     @Test
     public void testTarFileExtractPaxGNU() throws IOException, InterruptedException {
         Assume.assumeFalse("Don't run test on Windows", isOnWindows);
+        // GNU tar with version 1.28 has some problems reading sparsefile-0.1,
+        // so the test should be skipped then
+        // TODO : what about the versions lower than 1.28?
+        assumeFalse("This test should be ignored if GNU tar is version 1.28",
+                getTarBinaryHelp().startsWith("tar (GNU tar) 1.28"));
 
         final File file = getFile("pax_gnu_sparse.tar");
         try (final TarFile paxGnu = new TarFile(file)) {
@@ -379,10 +384,8 @@ public class SparseFilesTest extends AbstractTestCase {
                 assertArrayEquals(IOUtils.toByteArray(paxInput), IOUtils.toByteArray(sparseFileInputStream));
             }
 
-            // TODO : it's wired that I can only get a 0 size sparsefile-0.1 on my Ubuntu 16.04
-            //        using "tar -xf pax_gnu_sparse.tar"
             entry = entries.get(1);
-            try (InputStream sparseFileInputStream = extractTarAndGetInputStream(file, "sparsefile-0.0");
+            try (InputStream sparseFileInputStream = extractTarAndGetInputStream(file, "sparsefile-0.1");
                  InputStream paxInput = paxGnu.getInputStream(entry)) {
                 assertArrayEquals(IOUtils.toByteArray(paxInput), IOUtils.toByteArray(sparseFileInputStream));
             }
