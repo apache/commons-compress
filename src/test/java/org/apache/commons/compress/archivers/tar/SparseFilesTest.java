@@ -79,8 +79,6 @@ public class SparseFilesTest extends AbstractTestCase {
             assertTrue(ae.isOldGNUSparse());
             assertTrue(ae.isGNUSparse());
             assertFalse(ae.isPaxGNUSparse());
-            // TODO: Is this something which should be supported in the random access implementation. Is this even needed in the current stream implementation as it supports sparse entries now?
-            //assertFalse(tin.canReadEntryData(ae));
 
             List<TarArchiveStructSparse> sparseHeaders = ae.getSparseHeaders();
             assertEquals(3, sparseHeaders.size());
@@ -122,8 +120,6 @@ public class SparseFilesTest extends AbstractTestCase {
         assertTrue(entry.isGNUSparse());
         assertTrue(entry.isPaxGNUSparse());
         assertFalse(entry.isOldGNUSparse());
-        // TODO: Is this something which should be supported in the random access implementation. Is this even needed in the current stream implementation as it supports sparse entries now?
-        //assertFalse(tin.canReadEntryData(entry));
 
         List<TarArchiveStructSparse> sparseHeaders = entry.getSparseHeaders();
         assertEquals(3, sparseHeaders.size());
