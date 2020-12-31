@@ -219,7 +219,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
 
     private int asInt(final byte[] byteArray, final int offset, final int len, final int base, final boolean treatBlankAsZero) {
         final String string = ArchiveUtils.toAsciiString(byteArray, offset, len).trim();
-        if (string.length() == 0 && treatBlankAsZero) {
+        if (string.isEmpty() && treatBlankAsZero) {
             return 0;
         }
         return Integer.parseInt(string, base);
