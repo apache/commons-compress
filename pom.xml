@@ -67,9 +67,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <!-- only show issues of the current version -->
     <commons.changes.onlyCurrentVersion>true</commons.changes.onlyCurrentVersion>
 
-    <!-- generate report even if there are binary incompatible changes -->
-    <commons.japicmp.breakBuildOnBinaryIncompatibleModifications>false</commons.japicmp.breakBuildOnBinaryIncompatibleModifications>
-
     <!-- definition uses commons.componentId starting with parent 47,
          this doesn't work for us -->
     <commons.scmPubUrl>https://svn.apache.org/repos/infra/websites/production/commons/content/proper/${project.artifactId}</commons.scmPubUrl>

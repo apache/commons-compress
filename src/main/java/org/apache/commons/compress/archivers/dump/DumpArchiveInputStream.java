@@ -59,7 +59,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     private byte[] blockBuffer;
     private int recordOffset;
     private long filepos;
-    protected final TapeInputStream raw;
+    protected TapeInputStream raw;
 
     // map of ino -> dirent entry. We can use this to reconstruct full paths.
     private final Map<Integer, Dirent> names = new HashMap<>();
