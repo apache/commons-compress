@@ -45,31 +45,35 @@ public class Deflate64CompressorInputStreamTest {
 
     @Test
     public void readWhenClosed() throws Exception {
-        final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(nullDecoder);
-        assertEquals(-1, input.read());
-        assertEquals(-1, input.read(new byte[1]));
-        assertEquals(-1, input.read(new byte[1], 0, 1));
+        try (final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(nullDecoder)) {
+            assertEquals(-1, input.read());
+            assertEquals(-1, input.read(new byte[1]));
+            assertEquals(-1, input.read(new byte[1], 0, 1));
+        }
     }
 
     @Test
     public void properSizeWhenClosed() throws Exception {
-        final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(nullDecoder);
-        assertEquals(0, input.available());
+        try (final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(nullDecoder)) {
+            assertEquals(0, input.available());
+        }
     }
 
     @Test
     public void delegatesAvailable() throws Exception {
         Mockito.when(decoder.available()).thenReturn(1024);
 
-        final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder);
-        assertEquals(1024, input.available());
+        try (final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder)) {
+            assertEquals(1024, input.available());
+        }
     }
 
     @Test
     public void closeCallsDecoder() throws Exception {
 
-        final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder);
-        input.close();
+        try (final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder)) {
+            // empty
+        }
 
         Mockito.verify(decoder, times(1)).close();
     }
@@ -77,10 +81,9 @@ public class Deflate64CompressorInputStreamTest {
     @Test
     public void closeIsDelegatedJustOnce() throws Exception {
 
-        final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder);
-
-        input.close();
-        input.close();
+        try (final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder)) {
+            input.close();
+        }
 
         Mockito.verify(decoder, times(1)).close();
     }
