@@ -188,7 +188,7 @@ The <action> type attribute can be add,update,fix,remove.
         Update tests slf4j-api from 1.7.26 to 1.7.30 #117.
       </action>
       <action type="update" date="2020-08-21" due-to="Dependabot" dev="ggregory">
-        Update maven-pmd-plugin from 3.12.0 to 3.13.0 #115.
+        Update maven-pmd-plugin from 3.12.0 to 3.14.0, #115, #154.
       </action>
       <action type="update" date="2020-08-21" due-to="Dependabot" dev="ggregory">
         Update maven-bundle-plugin from 3.5.1 to 5.1.1 #116.
