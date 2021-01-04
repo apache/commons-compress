@@ -568,7 +568,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     public TarArchiveEntry(final byte[] headerBuf, final ZipEncoding encoding, final boolean lenient,
             final long dataOffset) throws IOException {
         this(headerBuf, encoding, lenient);
-        this.dataOffset = dataOffset;
+        setDataOffset(dataOffset);
     }
 
     /**
@@ -1217,6 +1217,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @since 1.21
      */
     public void setDataOffset(final long dataOffset) {
+        if (dataOffset < 0) {
+            throw new IllegalArgumentException("The offset can not be smaller than 0");
+        }
         this.dataOffset = dataOffset;
     }
 
