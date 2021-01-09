@@ -291,6 +291,11 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" date="2021-01-03" due-to="Dependabot" dev="ggregory">
         Bump zstd-jni from 1.4.5-12 to 1.4.8-1 #159.
       </action>
+      <action issue="COMPRESS-540" type="add" date="2020-01-09"
+              due-to="Robin Schimpf" dev="Robin Schimpf">
+        Added support for random access to the TAR packages.
+        Github Pull Request #113.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20 (Java 7)">
