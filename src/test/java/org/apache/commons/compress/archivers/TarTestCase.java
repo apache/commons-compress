@@ -35,6 +35,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.archivers.tar.TarFile;
+import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Test;
@@ -520,7 +521,7 @@ public final class TarTestCase extends AbstractTestCase {
             assertEquals("directory/", directoryEntry.getName());
             assertTrue(directoryEntry.isDirectory());
             byte[] directoryRead = IOUtils.toByteArray(in);
-            assertArrayEquals(new byte[0], directoryRead);
+            assertArrayEquals(ByteUtils.EMPTY_BYTE_ARRAY, directoryRead);
         }
     }
 
@@ -533,7 +534,7 @@ public final class TarTestCase extends AbstractTestCase {
             assertTrue(directoryEntry.isDirectory());
             try (InputStream directoryStream = tarFile.getInputStream(directoryEntry)) {
                 byte[] directoryRead = IOUtils.toByteArray(directoryStream);
-                assertArrayEquals(new byte[0], directoryRead);
+                assertArrayEquals(ByteUtils.EMPTY_BYTE_ARRAY, directoryRead);
             }
         }
     }

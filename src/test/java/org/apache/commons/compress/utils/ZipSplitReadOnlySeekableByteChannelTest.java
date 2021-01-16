@@ -99,7 +99,7 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
 
     @Test
     public void forOrderedSeekableByteChannelsReturnsIdentityForSingleElement() throws IOException {
-        final SeekableByteChannel emptyChannel = new SeekableInMemoryByteChannel(new byte[0]);
+        final SeekableByteChannel emptyChannel = new SeekableInMemoryByteChannel(ByteUtils.EMPTY_BYTE_ARRAY);
         final SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.forOrderedSeekableByteChannels(emptyChannel);
         Assert.assertSame(emptyChannel, channel);
     }

@@ -18,6 +18,7 @@
 package org.apache.commons.compress.compressors.deflate64;
 
 import org.apache.commons.compress.utils.BitInputStream;
+import org.apache.commons.compress.utils.ByteUtils;
 
 import java.io.Closeable;
 import java.io.EOFException;
@@ -288,7 +289,7 @@ class HuffmanDecoder implements Closeable {
         private final BinaryTreeNode distanceTree;
 
         private int runBufferPos = 0;
-        private byte[] runBuffer = new byte[0];
+        private byte[] runBuffer = ByteUtils.EMPTY_BYTE_ARRAY;
         private int runBufferLength = 0;
 
         HuffmanCodes(final HuffmanState state, final int[] lengths, final int[] distance) {

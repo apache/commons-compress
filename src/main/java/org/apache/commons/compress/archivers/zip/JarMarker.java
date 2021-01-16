@@ -19,6 +19,8 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.util.zip.ZipException;
 
+import org.apache.commons.compress.utils.ByteUtils;
+
 /**
  * If this extra field is added as the very first extra field of the
  * archive, Solaris will consider it an executable jar file.
@@ -28,7 +30,6 @@ public final class JarMarker implements ZipExtraField {
 
     private static final ZipShort ID = new ZipShort(0xCAFE);
     private static final ZipShort NULL = new ZipShort(0);
-    private static final byte[] NO_BYTES = new byte[0];
     private static final JarMarker DEFAULT = new JarMarker();
 
     /** No-arg constructor */
@@ -80,7 +81,7 @@ public final class JarMarker implements ZipExtraField {
      */
     @Override
     public byte[] getLocalFileDataData() {
-        return NO_BYTES;
+        return ByteUtils.EMPTY_BYTE_ARRAY;
     }
 
     /**
@@ -90,7 +91,7 @@ public final class JarMarker implements ZipExtraField {
      */
     @Override
     public byte[] getCentralDirectoryData() {
-        return NO_BYTES;
+        return ByteUtils.EMPTY_BYTE_ARRAY;
     }
 
     /**

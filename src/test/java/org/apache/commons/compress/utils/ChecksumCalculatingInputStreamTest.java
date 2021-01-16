@@ -41,8 +41,7 @@ public class ChecksumCalculatingInputStreamTest {
     public void testSkipReturningZero() throws IOException {
 
         final Adler32 adler32 = new Adler32();
-        final byte[] byteArray = new byte[0];
-        final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);
+        final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY);
         final ChecksumCalculatingInputStream checksumCalculatingInputStream = new ChecksumCalculatingInputStream(adler32, byteArrayInputStream);
         final long skipResult = checksumCalculatingInputStream.skip(60L);
 

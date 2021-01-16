@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
+import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Test;
@@ -90,7 +91,7 @@ public class TarUtilsTest {
     @Test
     public void testParseOctalInvalid() throws Exception{
         byte [] buffer;
-        buffer=new byte[0]; // empty byte array
+        buffer=ByteUtils.EMPTY_BYTE_ARRAY;
         try {
             TarUtils.parseOctal(buffer,0, buffer.length);
             fail("Expected IllegalArgumentException - should be at least 2 bytes long");

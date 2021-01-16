@@ -220,7 +220,7 @@ public class ExtraFieldUtils {
             }
         }
 
-        return v.toArray(new ZipExtraField[0]);
+        return v.toArray(EMPTY_ZIP_EXTRA_FIELD_ARRAY);
     }
 
     /**
@@ -416,4 +416,6 @@ public class ExtraFieldUtils {
         }
 
     }
+
+    static final ZipExtraField[] EMPTY_ZIP_EXTRA_FIELD_ARRAY = new ZipExtraField[0];
 }

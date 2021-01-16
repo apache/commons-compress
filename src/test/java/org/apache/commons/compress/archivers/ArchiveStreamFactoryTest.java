@@ -39,6 +39,7 @@ import org.apache.commons.compress.archivers.dump.DumpArchiveInputStream;
 import org.apache.commons.compress.archivers.jar.JarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
+import org.apache.commons.compress.utils.ByteUtils;
 import org.junit.Test;
 
 public class ArchiveStreamFactoryTest {
@@ -90,7 +91,7 @@ public class ArchiveStreamFactoryTest {
     public void cantRead7zFromStream() throws Exception {
         ArchiveStreamFactory.DEFAULT
             .createArchiveInputStream(ArchiveStreamFactory.SEVEN_Z,
-                                      new ByteArrayInputStream(new byte[0]));
+                                      new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY));
     }
 
     @Test(expected = StreamingNotSupportedException.class)
@@ -244,7 +245,7 @@ public class ArchiveStreamFactoryTest {
         }
 
         try {
-            ArchiveStreamFactory.detect(new BufferedInputStream(new ByteArrayInputStream(new byte[0])));
+            ArchiveStreamFactory.detect(new BufferedInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY)));
             fail("shouldn't be able to detect empty stream");
         } catch (final ArchiveException e) {
             assertEquals("No Archiver found for the stream signature", e.getMessage());

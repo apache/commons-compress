@@ -144,7 +144,7 @@ public class MultiReadOnlySeekableByteChannelTest {
     }
 
     private SeekableByteChannel makeEmpty() {
-        return makeSingle(new byte[0]);
+        return makeSingle(ByteUtils.EMPTY_BYTE_ARRAY);
     }
 
     private SeekableByteChannel makeSingle(final byte[] arr) {

@@ -61,7 +61,7 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
      * Parameterless constructor - allocates internal buffer by itself.
      */
     public SeekableInMemoryByteChannel() {
-        this(new byte[0]);
+        this(ByteUtils.EMPTY_BYTE_ARRAY);
     }
 
     /**

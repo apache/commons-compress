@@ -23,13 +23,14 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 
+import org.apache.commons.compress.utils.ByteUtils;
 import org.junit.Test;
 
 public class BitStreamTest {
 
     @Test
     public void testEmptyStream() throws Exception {
-        final BitStream stream = new BitStream(new ByteArrayInputStream(new byte[0]));
+        final BitStream stream = new BitStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY));
         assertEquals("next bit", -1, stream.nextBit());
         assertEquals("next bit", -1, stream.nextBit());
         assertEquals("next bit", -1, stream.nextBit());
@@ -64,7 +65,7 @@ public class BitStreamTest {
 
     @Test
     public void testNextByteFromEmptyStream() throws Exception {
-        final BitStream stream = new BitStream(new ByteArrayInputStream(new byte[0]));
+        final BitStream stream = new BitStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY));
         assertEquals("next byte", -1, stream.nextByte());
         assertEquals("next byte", -1, stream.nextByte());
         stream.close();

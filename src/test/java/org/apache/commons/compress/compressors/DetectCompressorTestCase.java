@@ -39,6 +39,7 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorInputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.apache.commons.compress.compressors.zstandard.ZstdCompressorInputStream;
+import org.apache.commons.compress.utils.ByteUtils;
 import org.junit.Test;
 
 @SuppressWarnings("deprecation") // deliberately tests setDecompressConcatenated
@@ -119,7 +120,7 @@ public final class DetectCompressorTestCase {
         assertTrue(zstd instanceof ZstdCompressorInputStream);
 
         try {
-            factory.createCompressorInputStream(new ByteArrayInputStream(new byte[0]));
+            factory.createCompressorInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY));
             fail("No exception thrown for an empty input stream");
         } catch (final CompressorException e) {
             // expected
@@ -145,7 +146,7 @@ public final class DetectCompressorTestCase {
         assertEquals(CompressorStreamFactory.LZMA, detect("COMPRESS-382"));
 
         try {
-            CompressorStreamFactory.detect(new BufferedInputStream(new ByteArrayInputStream(new byte[0])));
+            CompressorStreamFactory.detect(new BufferedInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY)));
             fail("shouldn't be able to detect empty stream");
         } catch (final CompressorException e) {
             assertEquals("No Compressor found for the stream signature.", e.getMessage());

@@ -29,6 +29,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
+import org.apache.commons.compress.utils.ByteUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -52,7 +53,7 @@ public class ZipArchiveEntryTest {
         a.setMode(0755);
         final UnrecognizedExtraField u = new UnrecognizedExtraField();
         u.setHeaderId(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
-        u.setLocalFileDataData(new byte[0]);
+        u.setLocalFileDataData(ByteUtils.EMPTY_BYTE_ARRAY);
 
         final ZipArchiveEntry ze = new ZipArchiveEntry("test/");
         ze.setExtraFields(new ZipExtraField[] {a, u});
@@ -106,7 +107,7 @@ public class ZipArchiveEntryTest {
         a.setMode(0755);
         final UnrecognizedExtraField u = new UnrecognizedExtraField();
         u.setHeaderId(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
-        u.setLocalFileDataData(new byte[0]);
+        u.setLocalFileDataData(ByteUtils.EMPTY_BYTE_ARRAY);
 
         final ZipArchiveEntry ze = new ZipArchiveEntry("test/");
         ze.setExtraFields(new ZipExtraField[] {a, u});
@@ -153,7 +154,7 @@ public class ZipArchiveEntryTest {
         a.setMode(0755);
         final UnrecognizedExtraField u = new UnrecognizedExtraField();
         u.setHeaderId(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
-        u.setLocalFileDataData(new byte[0]);
+        u.setLocalFileDataData(ByteUtils.EMPTY_BYTE_ARRAY);
 
         final ZipArchiveEntry ze = new ZipArchiveEntry("test/");
         ze.setExtraFields(new ZipExtraField[] {a, u});
@@ -363,7 +364,7 @@ public class ZipArchiveEntryTest {
         a.setMode(0755);
         final UnrecognizedExtraField u = new UnrecognizedExtraField();
         u.setHeaderId(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
-        u.setLocalFileDataData(new byte[0]);
+        u.setLocalFileDataData(ByteUtils.EMPTY_BYTE_ARRAY);
         final UnparseableExtraFieldData x = new UnparseableExtraFieldData();
         final byte[] unparseable = new byte[] {
             0, 0, (byte) 0xff, (byte) 0xff, 0, 0, 0

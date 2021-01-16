@@ -32,6 +32,7 @@ import java.util.zip.ZipException;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.EntryStreamOffsets;
+import org.apache.commons.compress.utils.ByteUtils;
 
 /**
  * Extension that adds better handling of extra fields and provides
@@ -63,8 +64,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     public static final int CRC_UNKNOWN = -1;
     private static final int SHORT_MASK = 0xFFFF;
     private static final int SHORT_SHIFT = 16;
-    private static final byte[] EMPTY = new byte[0];
-
     /**
      * Indicates how the name of this entry has been determined.
      * @since 1.16
@@ -144,13 +143,13 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     private String name = null;
     private byte[] rawName = null;
     private GeneralPurposeBit gpb = new GeneralPurposeBit();
-    private static final ZipExtraField[] noExtraFields = new ZipExtraField[0];
     private long localHeaderOffset = OFFSET_UNKNOWN;
     private long dataOffset = OFFSET_UNKNOWN;
     private boolean isStreamContiguous = false;
     private NameSource nameSource = NameSource.NAME;
     private CommentSource commentSource = CommentSource.COMMENT;
     private long diskNumberStart;
+    static final ZipArchiveEntry[] EMPTY_ZIP_ARCHIVE_ENTRY_ARRAY = new ZipArchiveEntry[0];
 
     /**
      * Creates a new zip entry with the specified name.
@@ -450,7 +449,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
                 }
             }
         }
-        extraFields = newFields.toArray(noExtraFields);
+        extraFields = newFields.toArray(ExtraFieldUtils.EMPTY_ZIP_EXTRA_FIELD_ARRAY);
         setExtra();
     }
 
@@ -525,12 +524,12 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
             merged.add(l);
         }
         merged.addAll(centralFields);
-        return merged.toArray(noExtraFields);
+        return merged.toArray(ExtraFieldUtils.EMPTY_ZIP_EXTRA_FIELD_ARRAY);
     }
 
     private ZipExtraField[] getParseableExtraFieldsNoCopy() {
         if (extraFields == null) {
-            return noExtraFields;
+            return ExtraFieldUtils.EMPTY_ZIP_EXTRA_FIELD_ARRAY;
         }
         return extraFields;
     }
@@ -559,7 +558,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     }
 
     private ZipExtraField[] getUnparseableOnly() {
-        return unparseableExtra == null ? noExtraFields : new ZipExtraField[] { unparseableExtra };
+        return unparseableExtra == null ? ExtraFieldUtils.EMPTY_ZIP_EXTRA_FIELD_ARRAY : new ZipExtraField[] { unparseableExtra };
     }
 
     private ZipExtraField[] getAllExtraFields() {
@@ -655,7 +654,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         if (extraFields.length == newResult.size()) {
             throw new java.util.NoSuchElementException();
         }
-        extraFields = newResult.toArray(noExtraFields);
+        extraFields = newResult.toArray(ExtraFieldUtils.EMPTY_ZIP_EXTRA_FIELD_ARRAY);
         setExtra();
     }
 
@@ -750,7 +749,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      */
     public byte[] getLocalFileDataExtra() {
         final byte[] extra = getExtra();
-        return extra != null ? extra : EMPTY;
+        return extra != null ? extra : ByteUtils.EMPTY_BYTE_ARRAY;
     }
 
     /**

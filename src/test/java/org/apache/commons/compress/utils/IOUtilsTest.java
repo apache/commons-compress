@@ -89,7 +89,7 @@ public class IOUtilsTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void copyThrowsOnZeroBufferSize() throws IOException {
-        IOUtils.copy(new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream(), 0);
+        IOUtils.copy(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), new ByteArrayOutputStream(), 0);
     }
 
     private static void readFully(final byte[] source, final ByteBuffer b) throws IOException {

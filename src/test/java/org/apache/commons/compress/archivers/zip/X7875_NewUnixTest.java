@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import org.apache.commons.compress.utils.ByteUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -101,7 +102,7 @@ public class X7875_NewUnixTest {
     @Test
     public void testTrimLeadingZeroesForceMinLength4() {
         final byte[] NULL = null;
-        final byte[] EMPTY = new byte[0];
+        final byte[] EMPTY = ByteUtils.EMPTY_BYTE_ARRAY;
         final byte[] ONE_ZERO = {0};
         final byte[] TWO_ZEROES = {0, 0};
         final byte[] FOUR_ZEROES = {0, 0, 0, 0};
@@ -229,7 +230,7 @@ public class X7875_NewUnixTest {
 
         assertEquals(0, xf.getCentralDirectoryLength().getValue());
         result = xf.getCentralDirectoryData();
-        assertArrayEquals(new byte[0], result);
+        assertArrayEquals(ByteUtils.EMPTY_BYTE_ARRAY, result);
 
         // And now we re-parse:
         xf.parseFromCentralDirectoryData(result, 0, result.length);

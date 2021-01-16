@@ -69,7 +69,7 @@ public class ByteUtilsTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void fromLittleEndianFromArrayThrowsForLengthTooBig() {
-        fromLittleEndian(new byte[0], 0, 9);
+        fromLittleEndian(ByteUtils.EMPTY_BYTE_ARRAY, 0, 9);
     }
 
     @Test
@@ -86,7 +86,7 @@ public class ByteUtilsTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void fromLittleEndianFromStreamThrowsForLengthTooBig() throws IOException {
-        fromLittleEndian(new ByteArrayInputStream(new byte[0]), 9);
+        fromLittleEndian(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), 9);
     }
 
     @Test(expected = IOException.class)
@@ -110,7 +110,7 @@ public class ByteUtilsTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void fromLittleEndianFromSupplierThrowsForLengthTooBig() throws IOException {
-        fromLittleEndian(new InputStreamByteSupplier(new ByteArrayInputStream(new byte[0])), 9);
+        fromLittleEndian(new InputStreamByteSupplier(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY)), 9);
     }
 
     @Test(expected = IOException.class)
@@ -133,7 +133,7 @@ public class ByteUtilsTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void fromLittleEndianFromDataInputThrowsForLengthTooBig() throws IOException {
-        final DataInput din = new DataInputStream(new ByteArrayInputStream(new byte[0]));
+        final DataInput din = new DataInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY));
         fromLittleEndian(din, 9);
     }
 

@@ -44,6 +44,7 @@ import java.util.zip.ZipException;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -324,7 +325,7 @@ public class ZipArchiveInputStreamTest {
     @Test
     public void properlyMarksEntriesAsUnreadableIfUncompressedSizeIsUnknown() throws Exception {
         // we never read any data
-        try (ZipArchiveInputStream zis = new ZipArchiveInputStream(new ByteArrayInputStream(new byte[0]))) {
+        try (ZipArchiveInputStream zis = new ZipArchiveInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))) {
             final ZipArchiveEntry e = new ZipArchiveEntry("test");
             e.setMethod(ZipMethod.DEFLATED.getCode());
             assertTrue(zis.canReadEntryData(e));

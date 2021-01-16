@@ -52,6 +52,7 @@ import java.util.zip.ZipException;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
+import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.IOUtils;
 
 /**
@@ -145,8 +146,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     @Deprecated
     public static final int EFS_FLAG = GeneralPurposeBit.UFT8_NAMES_FLAG;
-
-    private static final byte[] EMPTY = new byte[0];
 
     /**
      * Current entry.
@@ -649,7 +648,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         }
 
         if (!entry.hasWritten) {
-            write(EMPTY, 0, 0);
+            write(ByteUtils.EMPTY_BYTE_ARRAY, 0, 0);
         }
     }
 

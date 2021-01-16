@@ -160,7 +160,7 @@ import org.apache.commons.compress.utils.IOUtils;
  */
 
 public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamOffsets {
-    private static final TarArchiveEntry[] EMPTY_TAR_ARCHIVE_ENTRIES = new TarArchiveEntry[0];
+    private static final TarArchiveEntry[] EMPTY_TAR_ARCHIVE_ENTRY_ARRAY = new TarArchiveEntry[0];
 
     /**
      * Value used to indicate unknown mode, user/groupids, device numbers and modTime when parsing a file in lenient
@@ -1385,7 +1385,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      */
     public TarArchiveEntry[] getDirectoryEntries() {
         if (file == null || !isDirectory()) {
-            return EMPTY_TAR_ARCHIVE_ENTRIES;
+            return EMPTY_TAR_ARCHIVE_ENTRY_ARRAY;
         }
 
         final List<TarArchiveEntry> entries = new ArrayList<>();
@@ -1396,9 +1396,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
                 entries.add(new TarArchiveEntry(p));
             }
         } catch (final IOException e) {
-            return EMPTY_TAR_ARCHIVE_ENTRIES;
+            return EMPTY_TAR_ARCHIVE_ENTRY_ARRAY;
         }
-        return entries.toArray(new TarArchiveEntry[0]);
+        return entries.toArray(EMPTY_TAR_ARCHIVE_ENTRY_ARRAY);
     }
 
     /**

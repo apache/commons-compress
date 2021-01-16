@@ -23,6 +23,8 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.zip.ZipException;
 
+import org.apache.commons.compress.utils.ByteUtils;
+
 import static org.apache.commons.compress.archivers.zip.ZipUtil.reverse;
 import static org.apache.commons.compress.archivers.zip.ZipUtil.signedByteToUnsignedInt;
 import static org.apache.commons.compress.archivers.zip.ZipUtil.unsignedIntToSignedByte;
@@ -209,7 +211,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      */
     @Override
     public byte[] getCentralDirectoryData() {
-        return new byte[0];
+        return ByteUtils.EMPTY_BYTE_ARRAY;
     }
 
     /**

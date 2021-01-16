@@ -52,6 +52,7 @@ import java.util.zip.CRC32;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 
+import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.junit.After;
@@ -767,7 +768,7 @@ public class ZipFileTest {
     public void throwsExceptionWhenWritingPreamble() throws IOException {
         final ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(new ByteArrayOutputStream());
         outputStream.putArchiveEntry(new ZipArchiveEntry());
-        outputStream.writePreamble(new byte[0]);
+        outputStream.writePreamble(ByteUtils.EMPTY_BYTE_ARRAY);
     }
 
     @Test
@@ -871,7 +872,7 @@ public class ZipFileTest {
             final byte[] bytes = new byte[0x40000];
             final int read = stream.read(bytes);
             if (read < 0) {
-                full = new byte[0];
+                full = ByteUtils.EMPTY_BYTE_ARRAY;
             }
             else {
                 full = readStreamRest(bytes, read, stream);
@@ -887,7 +888,7 @@ public class ZipFileTest {
             byte[] full;
             final int single = stream.read();
             if (single < 0) {
-                full = new byte[0];
+                full = ByteUtils.EMPTY_BYTE_ARRAY;
             }
             else {
                 final byte[] big = new byte[0x40000];

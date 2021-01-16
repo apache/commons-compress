@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.zip.CRC32;
 
 import org.apache.commons.compress.utils.BoundedInputStream;
+import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.CRC32VerifyingInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
@@ -641,7 +642,7 @@ public class SevenZFile implements Closeable {
             nid = getUnsignedByte(header);
         } else {
             // archive without unpack/coders info
-            archive.folders = new Folder[0];
+            archive.folders = Folder.EMPTY_FOLDER_ARRAY;
         }
 
         if (nid == NID.kSubStreamsInfo) {
@@ -1111,7 +1112,7 @@ public class SevenZFile implements Closeable {
                 entries.add(e);
             }
         }
-        archive.files = entries.toArray(new SevenZArchiveEntry[0]);
+        archive.files = entries.toArray(SevenZArchiveEntry.EMPTY_SEVEN_Z_ARCHIVE_ENTRY_ARRAY);
         calculateStreamMap(archive);
     }
 
@@ -1194,7 +1195,7 @@ public class SevenZFile implements Closeable {
         if (folderIndex < 0) {
             deferredBlockStreams.clear();
             // TODO: previously it'd return an empty stream?
-            // new BoundedInputStream(new ByteArrayInputStream(new byte[0]), 0);
+            // new BoundedInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), 0);
             return;
         }
         final SevenZArchiveEntry file = archive.files[entryIndex];
@@ -1425,7 +1426,7 @@ public class SevenZFile implements Closeable {
 
     private InputStream getCurrentStream() throws IOException {
         if (archive.files[currentEntryIndex].getSize() == 0) {
-            return new ByteArrayInputStream(new byte[0]);
+            return new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY);
         }
         if (deferredBlockStreams.isEmpty()) {
             throw new IllegalStateException("No current 7z entry (call getNextEntry() first).");
