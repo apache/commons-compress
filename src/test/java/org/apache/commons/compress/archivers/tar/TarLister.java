@@ -67,14 +67,14 @@ public final class TarLister {
         final StringBuilder sb = new StringBuilder(Integer.toOctalString(ae.getMode()))
             .append(" ");
         String name = ae.getUserName();
-        if (name != null && name.length() > 0) {
+        if (name != null && !name.isEmpty()) {
             sb.append(name);
         } else {
             sb.append(ae.getLongUserId());
         }
         sb.append("/");
         name = ae.getGroupName();
-        if (name != null && name.length() > 0) {
+        if (name != null && !name.isEmpty()) {
             sb.append(name);
         } else {
             sb.append(ae.getLongGroupId());

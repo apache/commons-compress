@@ -367,7 +367,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 TarConstants.LF_GNUTYPE_LONGNAME, "file name");
 
             final String linkName = entry.getLinkName();
-            final boolean paxHeaderContainsLinkPath = linkName != null && linkName.length() > 0
+            final boolean paxHeaderContainsLinkPath = linkName != null && !linkName.isEmpty()
                 && handleLongName(entry, linkName, paxHeaders, "linkpath",
                 TarConstants.LF_GNUTYPE_LONGLINK, "link name");
 

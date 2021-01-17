@@ -1595,7 +1595,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             final String xstarPrefix = oldStyle
                 ? TarUtils.parseName(header, offset, PREFIXLEN_XSTAR)
                 : TarUtils.parseName(header, offset, PREFIXLEN_XSTAR, encoding);
-            if (xstarPrefix.length() > 0) {
+            if (!xstarPrefix.isEmpty()) {
                 name = xstarPrefix + "/" + name;
             }
             break;
@@ -1610,7 +1610,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             if (isDirectory() && !name.endsWith("/")){
                 name = name + "/";
             }
-            if (prefix.length() > 0){
+            if (!prefix.isEmpty()){
                 name = prefix + "/" + name;
             }
         }
