@@ -220,7 +220,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      * @return true if this is a symbolic link
      */
     public boolean isLink() {
-        return getLinkedFile().length() != 0;
+        return !getLinkedFile().isEmpty();
     }
 
     /**
