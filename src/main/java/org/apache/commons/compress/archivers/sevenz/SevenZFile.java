@@ -1342,7 +1342,7 @@ public class SevenZFile implements Closeable {
      */
     private boolean hasCurrentEntryBeenRead() {
         boolean hasCurrentEntryBeenRead = false;
-        if (deferredBlockStreams.size() > 0) {
+        if (!deferredBlockStreams.isEmpty()) {
             final InputStream currentEntryInputStream = deferredBlockStreams.get(deferredBlockStreams.size() - 1);
             // get the bytes remaining to read, and compare it with the size of
             // the file to figure out if the file has been read

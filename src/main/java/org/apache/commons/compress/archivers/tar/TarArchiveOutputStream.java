@@ -389,7 +389,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             }
             paxHeaders.putAll(entry.getExtraPaxHeaders());
 
-            if (paxHeaders.size() > 0) {
+            if (!paxHeaders.isEmpty()) {
                 writePaxHeaders(entry, entryName, paxHeaders);
             }
 

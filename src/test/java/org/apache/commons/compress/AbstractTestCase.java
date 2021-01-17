@@ -350,7 +350,7 @@ public abstract class AbstractTestCase {
                 }
             }
             in.close();
-            if (expected != null && expected.size() > 0) {
+            if (expected != null && !expected.isEmpty()) {
                 fail(expected.size() + " missing entries: " + Arrays.toString(expected.toArray()));
             }
             if (expected != null) {
