@@ -73,7 +73,7 @@ public class ParallelScatterZipCreatorTest {
         zipCreator.writeTo(zos);
         zos.close();
         removeEntriesFoundInZipFile(result, entries);
-        assertTrue(entries.size() == 0);
+        assertTrue(entries.isEmpty());
         assertNotNull( zipCreator.getStatisticsMessage());
     }
 
@@ -137,7 +137,7 @@ public class ParallelScatterZipCreatorTest {
 
 
         removeEntriesFoundInZipFile(result, entries);
-        assertTrue(entries.size() == 0);
+        assertTrue(entries.isEmpty());
         assertNotNull(zipCreator.getStatisticsMessage());
     }
 

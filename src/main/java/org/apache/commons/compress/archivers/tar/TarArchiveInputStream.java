@@ -298,7 +298,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @throws IOException
      */
     private long skipSparse(final long n) throws IOException {
-        if (sparseInputStreams == null || sparseInputStreams.size() == 0) {
+        if (sparseInputStreams == null || sparseInputStreams.isEmpty()) {
             return inputStream.skip(n);
         }
 
