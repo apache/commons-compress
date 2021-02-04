@@ -336,7 +336,7 @@ public class TarFile implements Closeable {
      *        0 size input streams because they are meaningless.
      */
     private void buildSparseInputStreams() throws IOException {
-        List<InputStream> streams = new ArrayList<>();
+        final List<InputStream> streams = new ArrayList<>();
 
         final List<TarArchiveStructSparse> sparseHeaders = currEntry.getSparseHeaders();
         // sort the sparse headers in case they are written in wrong order
@@ -368,14 +368,14 @@ public class TarFile implements Closeable {
 
                 // only store the input streams with non-zero size
                 if ((sparseHeader.getOffset() - offset) > 0) {
-                    long sizeOfZeroByteStream = sparseHeader.getOffset() - offset;
+                    final long sizeOfZeroByteStream = sparseHeader.getOffset() - offset;
                     streams.add(new BoundedInputStream(zeroInputStream, sizeOfZeroByteStream));
                     numberOfZeroBytesInSparseEntry += sizeOfZeroByteStream;
                 }
 
                 // only store the input streams with non-zero size
                 if (sparseHeader.getNumbytes() > 0) {
-                    long start =
+                    final long start =
                             currEntry.getDataOffset() + sparseHeader.getOffset() - numberOfZeroBytesInSparseEntry;
                     streams.add(new BoundedSeekableByteChannelInputStream(start, sparseHeader.getNumbytes(), archive));
                 }
@@ -673,7 +673,7 @@ public class TarFile implements Closeable {
                 }
             }
 
-            int totalRead = 0;
+            final int totalRead;
             if (entry.isSparse()) {
                 totalRead = readSparse(entryOffset, buf, buf.limit());
             } else {
@@ -703,8 +703,8 @@ public class TarFile implements Closeable {
             }
 
             final InputStream currentInputStream = entrySparseInputStreams.get(currentSparseInputStreamIndex);
-            byte[] bufArray = new byte[numToRead];
-            int readLen = currentInputStream.read(bufArray);
+            final byte[] bufArray = new byte[numToRead];
+            final int readLen = currentInputStream.read(bufArray);
             if (readLen != -1) {
                 buf.put(bufArray, 0, readLen);
             }
@@ -725,7 +725,7 @@ public class TarFile implements Closeable {
             // and recursively call read
             if (readLen < numToRead) {
                 currentSparseInputStreamIndex++;
-                int readLenOfNext = readSparse(pos + readLen, buf, numToRead - readLen);
+                final int readLenOfNext = readSparse(pos + readLen, buf, numToRead - readLen);
                 if (readLenOfNext == -1) {
                     return readLen;
                 }
@@ -739,7 +739,7 @@ public class TarFile implements Closeable {
 
         private int readArchive(final long pos, final ByteBuffer buf) throws IOException {
             channel.position(pos);
-            int read = channel.read(buf);
+            final int read = channel.read(buf);
             buf.flip();
             return read;
         }
