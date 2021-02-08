@@ -378,7 +378,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
 
         ret.setInode(readAsciiLong(8, 16));
         final long mode = readAsciiLong(8, 16);
-        if (CpioUtil.fileType(mode) != 0){ // mode is initialised to 0
+        if (CpioUtil.fileType(mode) != 0){ // mode is initialized to 0
             ret.setMode(mode);
         }
         ret.setUID(readAsciiLong(8, 16));
