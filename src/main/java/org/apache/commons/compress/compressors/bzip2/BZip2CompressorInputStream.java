@@ -331,7 +331,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
         // currBlockNo++;
         getAndMoveToFrontDecode();
 
-        this.crc.initialiseCRC();
+        this.crc.initializeCRC();
         this.currentState = START_BLOCK_STATE;
     }
 

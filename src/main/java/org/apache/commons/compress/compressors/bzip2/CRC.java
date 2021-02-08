@@ -92,10 +92,10 @@ class CRC {
         };
 
         CRC() {
-            initialiseCRC();
+            initializeCRC();
         }
 
-        void initialiseCRC() {
+        void initializeCRC() {
             globalCrc = 0xffffffff;
         }
 
