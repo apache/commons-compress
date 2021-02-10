@@ -97,7 +97,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <dependency>
       <groupId>com.github.luben</groupId>
       <artifactId>zstd-jni</artifactId>
-      <version>1.4.8-1</version>
+      <version>1.4.8-4</version>
       <optional>true</optional>
     </dependency>
     <dependency>
