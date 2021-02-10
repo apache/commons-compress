@@ -27,6 +27,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.github.luben.zstd.NoPool;
+import com.github.luben.zstd.RecyclingBufferPool;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
@@ -47,6 +49,40 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
         final File expected = getFile("zstandard.testdata");
         try (InputStream inputStream = new FileInputStream(input);
             ZstdCompressorInputStream zstdInputStream = new ZstdCompressorInputStream(inputStream)) {
+            final byte[] b = new byte[97];
+            IOUtils.read(expected, b);
+            final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            int readByte = -1;
+            while((readByte = zstdInputStream.read()) != -1) {
+                bos.write(readByte);
+            }
+            Assert.assertArrayEquals(b, bos.toByteArray());
+        }
+    }
+
+    @Test
+    public void testZstdDecodeWithNoPool() throws IOException {
+        final File input = getFile("zstandard.testdata.zst");
+        final File expected = getFile("zstandard.testdata");
+        try (InputStream inputStream = new FileInputStream(input);
+             ZstdCompressorInputStream zstdInputStream = new ZstdCompressorInputStream(inputStream, NoPool.INSTANCE)) {
+            final byte[] b = new byte[97];
+            IOUtils.read(expected, b);
+            final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            int readByte = -1;
+            while((readByte = zstdInputStream.read()) != -1) {
+                bos.write(readByte);
+            }
+            Assert.assertArrayEquals(b, bos.toByteArray());
+        }
+    }
+
+    @Test
+    public void testZstdDecodeWithRecyclingBufferPool() throws IOException {
+        final File input = getFile("zstandard.testdata.zst");
+        final File expected = getFile("zstandard.testdata");
+        try (InputStream inputStream = new FileInputStream(input);
+             ZstdCompressorInputStream zstdInputStream = new ZstdCompressorInputStream(inputStream, RecyclingBufferPool.INSTANCE)) {
             final byte[] b = new byte[97];
             IOUtils.read(expected, b);
             final ByteArrayOutputStream bos = new ByteArrayOutputStream();
