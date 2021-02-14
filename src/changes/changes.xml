@@ -296,6 +296,11 @@ The <action> type attribute can be add,update,fix,remove.
         Added support for random access to the TAR packages.
         Github Pull Request #113.
       </action>
+      <action issue="COMPRESS-565" type="add" date="2021-02-14"
+              due-to="Michael L Heuer" dev="PeterLee">
+        Added support for BufferPool in ZstdCompressorInputStream.
+        Github Pull Request #165.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20 (Java 7)">
