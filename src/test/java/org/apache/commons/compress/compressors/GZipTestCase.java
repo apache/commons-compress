@@ -203,7 +203,25 @@ public final class GZipTestCase extends AbstractTestCase {
         }
     }
 
-    private void testExtraFlags(final int compressionLevel, final int flag) throws Exception {
+    @Test
+    public void testInvalidBufferSize() {
+        final GzipParameters parameters = new GzipParameters();
+        try {
+            parameters.setBufferSize(0);
+            fail("IllegalArgumentException not thrown");
+        } catch (final IllegalArgumentException e) {
+            // expected
+        }
+
+        try {
+            parameters.setBufferSize(-1);
+            fail("IllegalArgumentException not thrown");
+        } catch (final IllegalArgumentException e) {
+            // expected
+        }
+    }
+
+    private void testExtraFlags(final int compressionLevel, final int flag, final int bufferSize) throws Exception {
         final byte[] content;
         try (FileInputStream fis = new FileInputStream(getFile("test3.xml"))) {
             content = IOUtils.toByteArray(fis);
@@ -213,6 +231,7 @@ public final class GZipTestCase extends AbstractTestCase {
 
         final GzipParameters parameters = new GzipParameters();
         parameters.setCompressionLevel(compressionLevel);
+        parameters.setBufferSize(bufferSize);
         final GzipCompressorOutputStream out = new GzipCompressorOutputStream(bout, parameters);
         IOUtils.copy(new ByteArrayInputStream(content), out);
         out.flush();
@@ -223,17 +242,17 @@ public final class GZipTestCase extends AbstractTestCase {
 
     @Test
     public void testExtraFlagsFastestCompression() throws Exception {
-        testExtraFlags(Deflater.BEST_SPEED, 4);
+        testExtraFlags(Deflater.BEST_SPEED, 4, 128);
     }
 
     @Test
     public void testExtraFlagsBestCompression() throws Exception {
-        testExtraFlags(Deflater.BEST_COMPRESSION, 2);
+        testExtraFlags(Deflater.BEST_COMPRESSION, 2, 1024);
     }
 
     @Test
     public void testExtraFlagsDefaultCompression() throws Exception {
-        testExtraFlags(Deflater.DEFAULT_COMPRESSION, 0);
+        testExtraFlags(Deflater.DEFAULT_COMPRESSION, 0, 4096);
     }
 
     @Test
