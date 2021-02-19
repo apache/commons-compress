@@ -121,6 +121,12 @@ public class GzipParameters {
         this.operatingSystem = operatingSystem;
     }
 
+    /**
+     * Gets size of the buffer used to retrieve compressed data.
+     * @return The size of the buffer used to retrieve compressed data.
+     * @since 1.21
+     * @see #setBufferSize(int)
+     */
     public int getBufferSize() {
         return this.bufferSize;
     }
