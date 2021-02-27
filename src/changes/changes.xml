@@ -301,6 +301,11 @@ The <action> type attribute can be add,update,fix,remove.
         Added support for BufferPool in ZstdCompressorInputStream.
         Github Pull Request #165.
       </action>
+      <action type="fix" date="2021-02-27" due-to="Fabian Meumertzheim">
+        Removed an empty loop that was just warming the planet for
+        certain ZIP archives.
+        Github Pull Request #172.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20 (Java 7)">
