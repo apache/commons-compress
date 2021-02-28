@@ -180,7 +180,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
     @Override
     public synchronized SeekableByteChannel position(final long newPosition) throws IOException {
         if (newPosition < 0) {
-            throw new IllegalArgumentException("Negative position: " + newPosition);
+            throw new IOException("Negative position: " + newPosition);
         }
         if (!isOpen()) {
             throw new ClosedChannelException();

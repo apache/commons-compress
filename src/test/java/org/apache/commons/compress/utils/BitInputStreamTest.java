@@ -28,14 +28,14 @@ import org.junit.Test;
 
 public class BitInputStreamTest {
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IOException.class)
     public void shouldNotAllowReadingOfANegativeAmountOfBits() throws IOException {
         try (final BitInputStream bis = new BitInputStream(getStream(), ByteOrder.LITTLE_ENDIAN)) {
             bis.readBits(-1);
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IOException.class)
     public void shouldNotAllowReadingOfMoreThan63BitsAtATime() throws IOException {
         try (final BitInputStream bis = new BitInputStream(getStream(), ByteOrder.LITTLE_ENDIAN)) {
             bis.readBits(64);

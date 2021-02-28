@@ -306,6 +306,16 @@ The <action> type attribute can be add,update,fix,remove.
         certain ZIP archives.
         Github Pull Request #172.
       </action>
+      <action issue="COMPRESS-567" type="fix" date="2021-02-28">
+        Made some of the stream classes used internally throw
+        IOExceptions on illegal arguments rather than
+        RuntimeExceptions to make it more likely that corrupt archives
+        cause expected checked exceptions rather than RuntimException
+        for various formats.
+
+        Fixes a specific case for ZIP but affects other formats as
+        well.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20 (Java 7)">

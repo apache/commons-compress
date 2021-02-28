@@ -1317,6 +1317,10 @@ public class ZipFile implements Closeable {
      * underlying archive channel.
      */
     private BoundedArchiveInputStream createBoundedInputStream(final long start, final long remaining) {
+        if (start < 0 || remaining < 0 || start + remaining < start) {
+            throw new IllegalArgumentException("Corrupted archive, stream boundaries"
+                + " are out of range");
+        }
         return archive instanceof FileChannel ?
             new BoundedFileChannelInputStream(start, remaining) :
             new BoundedSeekableByteChannelInputStream(start, remaining, archive);
