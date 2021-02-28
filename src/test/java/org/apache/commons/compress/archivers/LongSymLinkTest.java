@@ -140,7 +140,7 @@ public class LongSymLinkTest extends AbstractTestCase {
                 if (!ent.endsWith("/")) {// not a directory
                     final int lastSlash = ent.lastIndexOf('/');
                     if (lastSlash >= 0) { // extract path name
-                        expected.add(ent.substring(lastSlash + 1, ent.length()));
+                        expected.add(ent.substring(lastSlash + 1));
                     } else {
                         expected.add(ent);
                     }

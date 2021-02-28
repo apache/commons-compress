@@ -37,7 +37,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import org.apache.commons.compress.AbstractTestCase;
-import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.junit.Test;
