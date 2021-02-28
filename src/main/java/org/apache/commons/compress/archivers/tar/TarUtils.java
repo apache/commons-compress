@@ -256,7 +256,7 @@ public class TarUtils {
         // can throw an IOException which parseOctal* doesn't declare
         String string = new String(buffer, offset, length);
 
-        string=string.replaceAll("\0", "{NUL}"); // Replace NULs to allow string to be printed
+        string=string.replace("\0", "{NUL}"); // Replace NULs to allow string to be printed
         return "Invalid byte "+currentByte+" at offset "+(current-offset)+" in '"+string+"' len="+length;
     }
 
