@@ -44,9 +44,6 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.21" date="not released, yet (Java 8)"
              description="Release 1.21">
-      <action type="update" date="2020-08-18">
-        Update from Java 7 to 8.
-      </action>
       <action type="update" date="2020-03-07"
               due-to="Peter Alfred Lee">
         Made sure ZstdCompressorOutputStream no longer used
@@ -175,24 +172,6 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" date="2020-08-08" due-to="Gary Gregory" dev="ggregory">
         Add Path support to ZipArchiveOutputStream #123.
       </action>
-      <action type="update" date="2020-08-10" due-to="Dependabot" dev="ggregory">
-        Update GitHub actions/checkout from v1 to v2.3.4, #114, #124, #139, #150.
-      </action>
-      <action type="update" date="2020-08-21" due-to="Dependabot" dev="ggregory">
-        Update actions/setup-java from v1.4.0 to v1.4.3, #125, #141.
-      </action>
-      <action type="update" date="2020-08-21" due-to="Dependabot, Gary Gregory" dev="ggregory">
-        Update com.github.luben:zstd-jni from 1.4.4-7 to 1.4.5-12 #118.
-      </action>
-      <action type="update" date="2020-08-21" due-to="Dependabot" dev="ggregory">
-        Update tests slf4j-api from 1.7.26 to 1.7.30 #117.
-      </action>
-      <action type="update" date="2020-08-21" due-to="Dependabot" dev="ggregory">
-        Update maven-pmd-plugin from 3.12.0 to 3.14.0, #115, #154.
-      </action>
-      <action type="update" date="2020-08-21" due-to="Dependabot" dev="ggregory">
-        Update maven-bundle-plugin from 3.5.1 to 5.1.1 #116.
-      </action>
       <action issue="COMPRESS-543" type="fix" date="2020-08-10"
               due-to="wulf2333" dev="PeterLee">
         Fix for test fails on Windows. The tests are failing because the
@@ -254,15 +233,6 @@ The <action> type attribute can be add,update,fix,remove.
         should also consider the headers with length smaller than 1
         and ignore these headers.
       </action>
-      <action type="update" date="2020-11-01" due-to="Dependabot" dev="ggregory">
-        Bump junit from 4.13 to 4.13.1 #143.
-      </action>
-      <action type="update" date="2020-11-01" due-to="Dependabot" dev="ggregory">
-        Bump memoryfilesystem from 1.3.0 to 2.1.0 #131.
-      </action>
-      <action type="update" date="2020-11-01" due-to="Gary Gregory, Dependabot" dev="ggregory">
-        Update Mockito 1.10.19 -> 3.7.7, #161.
-      </action>
       <action issue="COMPRESS-558" type="fix" date="2020-11-13"
               due-to="Robin Schimpf" dev="Robin Schimpf">
         Fix accidentally added '/' to file names.
@@ -288,9 +258,6 @@ The <action> type attribute can be add,update,fix,remove.
         Some minor improvements.
         Github Pull Request #157.
       </action>
-      <action type="update" date="2021-01-03" due-to="Dependabot" dev="ggregory">
-        Bump zstd-jni from 1.4.5-12 to 1.4.8-1 #159.
-      </action>
       <action issue="COMPRESS-540" type="add" date="2020-01-09"
               due-to="Robin Schimpf" dev="Robin Schimpf">
         Added support for random access to the TAR packages.
@@ -315,6 +282,49 @@ The <action> type attribute can be add,update,fix,remove.
 
         Fixes a specific case for ZIP but affects other formats as
         well.
+      </action>
+      <!-- UPDATE -->
+      <action type="update" date="2020-08-18">
+        Update from Java 7 to 8.
+      </action>
+      <action type="update" date="2020-08-10" due-to="Dependabot" dev="ggregory">
+        Update GitHub actions/checkout from v1 to v2.3.4, #114, #124, #139, #150.
+      </action>
+      <action type="update" date="2020-08-21" due-to="Dependabot" dev="ggregory">
+        Update actions/setup-java from v1.4.0 to v1.4.3, #125, #141.
+      </action>
+      <action type="update" date="2020-08-21" due-to="Dependabot, Gary Gregory" dev="ggregory">
+        Update com.github.luben:zstd-jni from 1.4.4-7 to 1.4.5-12 #118.
+      </action>
+      <action type="update" date="2020-08-21" due-to="Dependabot" dev="ggregory">
+        Update tests slf4j-api from 1.7.26 to 1.7.30 #117.
+      </action>
+      <action type="update" date="2020-08-21" due-to="Dependabot" dev="ggregory">
+        Update maven-pmd-plugin from 3.12.0 to 3.14.0, #115, #154.
+      </action>
+      <action type="update" date="2020-08-21" due-to="Dependabot" dev="ggregory">
+        Update maven-bundle-plugin from 3.5.1 to 5.1.1 #116.
+      </action>
+      <action type="update" date="2020-11-01" due-to="Dependabot" dev="ggregory">
+        Bump junit from 4.13 to 4.13.1 #143.
+      </action>
+      <action type="update" date="2020-11-01" due-to="Dependabot" dev="ggregory">
+        Bump memoryfilesystem from 1.3.0 to 2.1.0 #131.
+      </action>
+      <action type="update" date="2020-11-01" due-to="Gary Gregory, Dependabot" dev="ggregory">
+        Update Mockito 1.10.19 -> 3.7.7, #161.
+      </action>
+      <action type="update" date="2021-01-03" due-to="Dependabot" dev="ggregory">
+        Bump zstd-jni from 1.4.5-12 to 1.4.8-1 #159.
+      </action>
+      <action type="update" due-to="Dependabot" dev="ggregory">
+        Bump actions/cache from v2 to v2.1.4 #164.
+      </action>
+      <action type="update" due-to="Dependabot" dev="ggregory">
+        Bump junit from 4.13.1 to 4.13.2 #167.
+      </action>
+      <action type="update" due-to="Dependabot" dev="ggregory">
+        Bump mockito-core from 3.7.7 to 3.8.0 #170.
       </action>
     </release>
     <release version="1.20" date="2020-02-08"
