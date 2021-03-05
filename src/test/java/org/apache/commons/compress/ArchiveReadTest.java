@@ -68,16 +68,16 @@ public class ArchiveReadTest extends AbstractTestCase {
     @BeforeClass
     public static void setUpFileList() throws Exception {
         assertTrue(ARCDIR.exists());
-        final File listing= new File(ARCDIR,"files.txt");
-        assertTrue("files.txt is readable",listing.canRead());
-        final BufferedReader br = new BufferedReader(new FileReader(listing));
-        String line;
-        while ((line=br.readLine())!=null){
-            if (!line.startsWith("#")){
-                FILELIST.add(line);
+        final File listing = new File(ARCDIR, "files.txt");
+        assertTrue("files.txt is readable", listing.canRead());
+        try (final BufferedReader br = new BufferedReader(new FileReader(listing))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (!line.startsWith("#")) {
+                    FILELIST.add(line);
+                }
             }
         }
-        br.close();
     }
 
     @Parameters(name = "file={0}")

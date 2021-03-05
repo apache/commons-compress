@@ -50,7 +50,7 @@ public class ArchiveStreamFactoryTest {
      * see https://issues.apache.org/jira/browse/COMPRESS-171
      */
     @Test
-    public void shortTextFilesAreNoTARs() throws Exception {
+    public void shortTextFilesAreNoTARs() {
         try {
             ArchiveStreamFactory.DEFAULT
                 .createArchiveInputStream(new ByteArrayInputStream("This certainly is not a tar archive, really, no kidding".getBytes()));
@@ -428,7 +428,7 @@ public class ArchiveStreamFactoryTest {
     }
 
     private ArchiveOutputStream getOutputStreamFor(final String type, final ArchiveStreamFactory factory)
-            throws IOException, ArchiveException {
+            throws ArchiveException {
         return factory.createArchiveOutputStream(type, new ByteArrayOutputStream());
     }
 }
