@@ -536,11 +536,10 @@ public class SevenZFile implements Closeable {
             archive = new Archive();
             nid = getUnsignedByte(buf);
         }
-        if (nid == NID.kHeader) {
-            readHeader(buf, archive);
-        } else {
+        if (nid != NID.kHeader) {
             throw new IOException("Broken or unsupported archive: no Header");
         }
+        readHeader(buf, archive);
         return archive;
     }
 

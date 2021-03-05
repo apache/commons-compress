@@ -685,7 +685,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             if (longFileMode == LONGFILE_POSIX) {
                 paxHeaders.put(paxHeaderName, name);
                 return true;
-            } else if (longFileMode == LONGFILE_GNU) {
+            }
+            if (longFileMode == LONGFILE_GNU) {
                 // create a TarEntry for the LongLink, the contents
                 // of which are the link's name
                 final TarArchiveEntry longLinkEntry = new TarArchiveEntry(TarConstants.GNU_LONGLINK,

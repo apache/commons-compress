@@ -246,7 +246,8 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     public void finish() throws IOException {
         if(haveUnclosedEntry) {
             throw new IOException("This archive contains unclosed entries.");
-        } else if(finished) {
+        }
+        if(finished) {
             throw new IOException("This archive has already been finished");
         }
         finished = true;

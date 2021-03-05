@@ -837,28 +837,28 @@ public class BZip2CompressorInputStream extends CompressorInputStream
             this.currentState = RAND_PART_A_STATE;
             this.su_count = 1;
             return setupRandPartA();
-        } else if (++this.su_count >= 4) {
-            this.su_z = (char) (this.data.ll8[this.su_tPos] & 0xff);
-            checkBounds(this.su_tPos, this.data.tt.length, "su_tPos");
-            this.su_tPos = this.data.tt[this.su_tPos];
-            if (this.su_rNToGo == 0) {
-                this.su_rNToGo = Rand.rNums(this.su_rTPos) - 1;
-                if (++this.su_rTPos == 512) {
-                    this.su_rTPos = 0;
-                }
-            } else {
-                this.su_rNToGo--;
-            }
-            this.su_j2 = 0;
-            this.currentState = RAND_PART_C_STATE;
-            if (this.su_rNToGo == 1) {
-                this.su_z ^= 1;
-            }
-            return setupRandPartC();
-        } else {
+        }
+        if (++this.su_count < 4) {
             this.currentState = RAND_PART_A_STATE;
             return setupRandPartA();
         }
+        this.su_z = (char) (this.data.ll8[this.su_tPos] & 0xff);
+        checkBounds(this.su_tPos, this.data.tt.length, "su_tPos");
+        this.su_tPos = this.data.tt[this.su_tPos];
+        if (this.su_rNToGo == 0) {
+            this.su_rNToGo = Rand.rNums(this.su_rTPos) - 1;
+            if (++this.su_rTPos == 512) {
+                this.su_rTPos = 0;
+            }
+        } else {
+            this.su_rNToGo--;
+        }
+        this.su_j2 = 0;
+        this.currentState = RAND_PART_C_STATE;
+        if (this.su_rNToGo == 1) {
+            this.su_z ^= 1;
+        }
+        return setupRandPartC();
     }
 
     private int setupRandPartC() throws IOException {
@@ -877,15 +877,15 @@ public class BZip2CompressorInputStream extends CompressorInputStream
         if (this.su_ch2 != this.su_chPrev) {
             this.su_count = 1;
             return setupNoRandPartA();
-        } else if (++this.su_count >= 4) {
+        }
+        if (++this.su_count >= 4) {
             checkBounds(this.su_tPos, this.data.ll8.length, "su_tPos");
             this.su_z = (char) (this.data.ll8[this.su_tPos] & 0xff);
             this.su_tPos = this.data.tt[this.su_tPos];
             this.su_j2 = 0;
             return setupNoRandPartC();
-        } else {
-            return setupNoRandPartA();
         }
+        return setupNoRandPartA();
     }
 
     private int setupNoRandPartC() throws IOException {

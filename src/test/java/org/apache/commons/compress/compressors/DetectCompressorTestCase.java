@@ -219,9 +219,8 @@ public final class DetectCompressorTestCase {
             if (e.getCause() != null && e.getCause() instanceof Exception) {
                 //unwrap cause to reveal MemoryLimitException
                 throw (Exception)e.getCause();
-            } else {
-                throw e;
             }
+            throw e;
         }
 
     }

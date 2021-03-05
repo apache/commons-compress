@@ -394,11 +394,10 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
 
     @Override
     public void write(final int b) throws IOException {
-        if (!closed) {
-            write0(b);
-        } else {
+        if (closed) {
             throw new IOException("Closed");
         }
+        write0(b);
     }
 
     /**
@@ -1235,11 +1234,10 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                             mtfFreq[RUNB]++;
                         }
 
-                        if (zPend >= 2) {
-                            zPend = (zPend - 2) >> 1;
-                        } else {
+                        if (zPend < 2) {
                             break;
                         }
+                        zPend = (zPend - 2) >> 1;
                     }
                     zPend = 0;
                 }
@@ -1262,11 +1260,10 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                     mtfFreq[RUNB]++;
                 }
 
-                if (zPend >= 2) {
-                    zPend = (zPend - 2) >> 1;
-                } else {
+                if (zPend < 2) {
                     break;
                 }
+                zPend = (zPend - 2) >> 1;
             }
         }
 

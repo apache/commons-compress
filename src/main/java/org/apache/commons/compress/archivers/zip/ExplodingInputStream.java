@@ -165,7 +165,8 @@ class ExplodingInputStream extends InputStream implements InputStreamStatistics 
         if (bit == -1) {
             // EOF
             return;
-        } else if (bit == 1) {
+        }
+        if (bit == 1) {
             // literal value
             final int literal;
             if (literalTree != null) {

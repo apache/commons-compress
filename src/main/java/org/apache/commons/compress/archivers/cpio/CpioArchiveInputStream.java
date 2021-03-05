@@ -306,7 +306,8 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         ensureOpen();
         if (off < 0 || len < 0 || off > b.length - len) {
             throw new IndexOutOfBoundsException();
-        } else if (len == 0) {
+        }
+        if (len == 0) {
             return 0;
         }
 

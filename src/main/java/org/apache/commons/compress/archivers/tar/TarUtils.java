@@ -128,11 +128,10 @@ public class TarUtils {
 
         // Skip leading spaces
         while (start < end){
-            if (buffer[start] == ' '){
-                start++;
-            } else {
+            if (buffer[start] != ' ') {
                 break;
             }
+            start++;
         }
 
         // Trim all trailing NULs and spaces.
@@ -673,7 +672,8 @@ public class TarUtils {
                 read++;
                 if (ch == '\n') { // blank line in header
                     break;
-                } else if (ch == ' '){ // End of length string
+                }
+                if (ch == ' '){ // End of length string
                     // Get keyword
                     final ByteArrayOutputStream coll = new ByteArrayOutputStream();
                     while((ch = inputStream.read()) != -1) {

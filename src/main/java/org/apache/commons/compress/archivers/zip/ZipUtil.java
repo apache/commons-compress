@@ -153,7 +153,8 @@ public abstract class ZipUtil {
     static BigInteger longToBig(long l) {
         if (l < Integer.MIN_VALUE) {
             throw new IllegalArgumentException("Negative longs < -2^31 not permitted: [" + l + "]");
-        } else if (l < 0 && l >= Integer.MIN_VALUE) {
+        }
+        if (l < 0 && l >= Integer.MIN_VALUE) {
             // If someone passes in a -2, they probably mean 4294967294
             // (For example, Unix UID/GID's are 32 bit unsigned.)
             l = ZipUtil.adjustToLong((int) l);

@@ -501,15 +501,20 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
 
         if (ZipArchiveInputStream.matches(signature, signatureLength)) {
             return ZIP;
-        } else if (JarArchiveInputStream.matches(signature, signatureLength)) {
+        }
+        if (JarArchiveInputStream.matches(signature, signatureLength)) {
             return JAR;
-        } else if (ArArchiveInputStream.matches(signature, signatureLength)) {
+        }
+        if (ArArchiveInputStream.matches(signature, signatureLength)) {
             return AR;
-        } else if (CpioArchiveInputStream.matches(signature, signatureLength)) {
+        }
+        if (CpioArchiveInputStream.matches(signature, signatureLength)) {
             return CPIO;
-        } else if (ArjArchiveInputStream.matches(signature, signatureLength)) {
+        }
+        if (ArjArchiveInputStream.matches(signature, signatureLength)) {
             return ARJ;
-        } else if (SevenZFile.matches(signature, signatureLength)) {
+        }
+        if (SevenZFile.matches(signature, signatureLength)) {
             return SEVEN_Z;
         }
 

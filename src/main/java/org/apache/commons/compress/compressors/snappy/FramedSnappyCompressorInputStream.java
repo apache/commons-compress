@@ -176,7 +176,8 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
         if (inUncompressedChunk) {
             return Math.min(uncompressedBytesRemaining,
                             inputStream.available());
-        } else if (currentCompressedChunk != null) {
+        }
+        if (currentCompressedChunk != null) {
             return currentCompressedChunk.available();
         }
         return 0;

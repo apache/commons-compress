@@ -324,11 +324,10 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
 
         int pos = 0;
         for (final byte b : array) {
-            if (b == 0) {
-                pos++;
-            } else {
+            if (b != 0) {
                 break;
             }
+            pos++;
         }
 
         /*

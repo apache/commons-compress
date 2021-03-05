@@ -134,22 +134,22 @@ public class ZCompressorInputStream extends LZWInputStream {
         final int code = readNextCode();
         if (code < 0) {
             return -1;
-        } else if (blockMode && code == getClearCode()) {
+        }
+        if (blockMode && code == getClearCode()) {
             clearEntries();
             reAlignReading();
             resetCodeSize();
             resetPreviousCode();
             return 0;
-        } else {
-            boolean addedUnfinishedEntry = false;
-            if (code == getTableSize()) {
-                addRepeatOfPreviousCode();
-                addedUnfinishedEntry = true;
-            } else if (code > getTableSize()) {
-                throw new IOException(String.format("Invalid %d bit code 0x%x", getCodeSize(), code));
-            }
-            return expandCodeToOutputStack(code, addedUnfinishedEntry);
         }
+        boolean addedUnfinishedEntry = false;
+        if (code == getTableSize()) {
+            addRepeatOfPreviousCode();
+            addedUnfinishedEntry = true;
+        } else if (code > getTableSize()) {
+            throw new IOException(String.format("Invalid %d bit code 0x%x", getCodeSize(), code));
+        }
+        return expandCodeToOutputStack(code, addedUnfinishedEntry);
     }
 
     /**

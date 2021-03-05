@@ -534,19 +534,23 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
     public long getCompressedCount() {
         if (current.entry.getMethod() == ZipArchiveOutputStream.STORED) {
             return current.bytesRead;
-        } else if (current.entry.getMethod() == ZipArchiveOutputStream.DEFLATED) {
-            return getBytesInflated();
-        } else if (current.entry.getMethod() == ZipMethod.UNSHRINKING.getCode()) {
-            return ((UnshrinkingInputStream) current.in).getCompressedCount();
-        } else if (current.entry.getMethod() == ZipMethod.IMPLODING.getCode()) {
-            return ((ExplodingInputStream) current.in).getCompressedCount();
-        } else if (current.entry.getMethod() == ZipMethod.ENHANCED_DEFLATED.getCode()) {
-            return ((Deflate64CompressorInputStream) current.in).getCompressedCount();
-        } else if (current.entry.getMethod() == ZipMethod.BZIP2.getCode()) {
-            return ((BZip2CompressorInputStream) current.in).getCompressedCount();
-        } else {
-            return -1;
         }
+        if (current.entry.getMethod() == ZipArchiveOutputStream.DEFLATED) {
+            return getBytesInflated();
+        }
+        if (current.entry.getMethod() == ZipMethod.UNSHRINKING.getCode()) {
+            return ((UnshrinkingInputStream) current.in).getCompressedCount();
+        }
+        if (current.entry.getMethod() == ZipMethod.IMPLODING.getCode()) {
+            return ((ExplodingInputStream) current.in).getCompressedCount();
+        }
+        if (current.entry.getMethod() == ZipMethod.ENHANCED_DEFLATED.getCode()) {
+            return ((Deflate64CompressorInputStream) current.in).getCompressedCount();
+        }
+        if (current.entry.getMethod() == ZipMethod.BZIP2.getCode()) {
+            return ((BZip2CompressorInputStream) current.in).getCompressedCount();
+        }
+        return -1;
     }
 
     /**
@@ -605,11 +609,13 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
         if (read <= 0) {
             if (inf.finished()) {
                 return -1;
-            } else if (inf.needsDictionary()) {
+            }
+            if (inf.needsDictionary()) {
                 throw new ZipException("This archive needs a preset dictionary"
                                        + " which is not supported by Commons"
                                        + " Compress.");
-            } else if (read == -1) {
+            }
+            if (read == -1) {
                 throw new IOException("Truncated ZIP file");
             }
         }
@@ -1122,7 +1128,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
             currentByte = readOneByte();
             if (currentByte == -1) {
                 break;
-            } else if (currentByte == ZipArchiveOutputStream.EOCD_SIG[3]) {
+            }
+            if (currentByte == ZipArchiveOutputStream.EOCD_SIG[3]) {
                 return true;
             }
             skipReadCall = isFirstByteOfEocdSig(currentByte);

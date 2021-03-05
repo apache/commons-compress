@@ -66,11 +66,10 @@ class BinaryTree {
     public void addLeaf(final int node, final int path, final int depth, final int value) {
         if (depth == 0) {
             // end of the path reached, add the value to the current node
-            if (tree[node] == UNDEFINED) {
-                tree[node] = value;
-            } else {
+            if (tree[node] != UNDEFINED) {
                 throw new IllegalArgumentException("Tree value at index " + node + " has already been assigned (" + tree[node] + ")");
             }
+            tree[node] = value;
         } else {
             // mark the current node as a non leaf node
             tree[node] = NODE;

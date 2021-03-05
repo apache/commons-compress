@@ -97,24 +97,8 @@ class UnshrinkingInputStream extends LZWInputStream {
         final int code = readNextCode();
         if (code < 0) {
             return -1;
-        } else if (code == getClearCode()) {
-            final int subCode = readNextCode();
-            if (subCode < 0) {
-                throw new IOException("Unexpected EOF;");
-            } else if (subCode == 1) {
-                if (getCodeSize() < MAX_CODE_SIZE) {
-                    incrementCodeSize();
-                } else {
-                    throw new IOException("Attempt to increase code size beyond maximum");
-                }
-            } else if (subCode == 2) {
-                partialClear();
-                setTableSize(getClearCode() + 1);
-            } else {
-                throw new IOException("Invalid clear code subcode " + subCode);
-            }
-            return 0;
-        } else {
+        }
+        if (code != getClearCode()) {
             boolean addedUnfinishedEntry = false;
             int effectiveCode = code;
             if (!isUsed[code]) {
@@ -123,5 +107,21 @@ class UnshrinkingInputStream extends LZWInputStream {
             }
             return expandCodeToOutputStack(effectiveCode, addedUnfinishedEntry);
         }
+        final int subCode = readNextCode();
+        if (subCode < 0) {
+            throw new IOException("Unexpected EOF;");
+        }
+        if (subCode == 1) {
+            if (getCodeSize() >= MAX_CODE_SIZE) {
+                throw new IOException("Attempt to increase code size beyond maximum");
+            }
+            incrementCodeSize();
+        } else if (subCode == 2) {
+            partialClear();
+            setTableSize(getClearCode() + 1);
+        } else {
+            throw new IOException("Invalid clear code subcode " + subCode);
+        }
+        return 0;
     }
 }

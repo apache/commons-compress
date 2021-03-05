@@ -403,7 +403,8 @@ public class DumpArchiveEntry implements ArchiveEntry {
     public boolean equals(final Object o) {
         if (o == this) {
             return true;
-        } else if (o == null || !o.getClass().equals(getClass())) {
+        }
+        if (o == null || !o.getClass().equals(getClass())) {
             return false;
         }
 

@@ -294,11 +294,10 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
         final int size = pairs.size();
         for (int i = pairsToKeep; i < size; i++) {
             final Pair p = pairs.peekFirst();
-            if (p.hasBeenWritten()) {
-                pairs.removeFirst();
-            } else {
+            if (!p.hasBeenWritten()) {
                 break;
             }
+            pairs.removeFirst();
         }
     }
 
@@ -326,11 +325,10 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
                 continue;
             }
             unwrittenLength -= p.length();
-            if (p.canBeWritten(unwrittenLength)) {
-                p.writeTo(os);
-            } else {
+            if (!p.canBeWritten(unwrittenLength)) {
                 break;
             }
+            p.writeTo(os);
         }
     }
 
