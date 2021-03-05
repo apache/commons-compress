@@ -652,12 +652,12 @@ public class TarUtils {
      * GNU.sparse.map
      *    Map of non-null data chunks. It is a string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
      *
-     * @param inputStream inputstream to read keys and values
-     * @param sparseHeaders used in PAX Format 0.0 &amp; 0.1, as it may appear multi times,
+     * @param inputStream input stream to read keys and values
+     * @param sparseHeaders used in PAX Format 0.0 &amp; 0.1, as it may appear multiple times,
      *                      the sparse headers need to be stored in an array, not a map
      * @param globalPaxHeaders global PAX headers of the tar archive
      * @return map of PAX headers values found inside of the current (local or global) PAX headers tar entry.
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     protected static Map<String, String> parsePaxHeaders(final InputStream inputStream, final List<TarArchiveStructSparse> sparseHeaders, final Map<String, String> globalPaxHeaders)
             throws IOException {
@@ -771,10 +771,10 @@ public class TarUtils {
      * It consists of a series of decimal numbers delimited by newlines. The map is padded with nulls to the nearest block boundary.
      * The first number gives the number of entries in the map. Following are map entries, each one consisting of two numbers
      * giving the offset and size of the data block it describes.
-     * @param inputStream
-     * @param recordSize
+     * @param inputStream parsing source.
+     * @param recordSize The size the TAR header 
      * @return sparse headers
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     protected static List<TarArchiveStructSparse> parsePAX1XSparseHeaders(final InputStream inputStream, final int recordSize) throws IOException {
         // for 1.X PAX Headers
