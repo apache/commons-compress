@@ -67,29 +67,35 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
     @Test
     public void testDetection() throws Exception {
 
-        final ArchiveInputStream ar = getStreamFor("bla.ar");
-        assertNotNull(ar);
-        assertTrue(ar instanceof ArArchiveInputStream);
+        try (final ArchiveInputStream ar = getStreamFor("bla.ar")) {
+            assertNotNull(ar);
+            assertTrue(ar instanceof ArArchiveInputStream);
+        }
 
-        final ArchiveInputStream tar = getStreamFor("bla.tar");
-        assertNotNull(tar);
-        assertTrue(tar instanceof TarArchiveInputStream);
+        try (final ArchiveInputStream tar = getStreamFor("bla.tar")) {
+            assertNotNull(tar);
+            assertTrue(tar instanceof TarArchiveInputStream);
+        }
 
-        final ArchiveInputStream zip = getStreamFor("bla.zip");
-        assertNotNull(zip);
-        assertTrue(zip instanceof ZipArchiveInputStream);
+        try (final ArchiveInputStream zip = getStreamFor("bla.zip")) {
+            assertNotNull(zip);
+            assertTrue(zip instanceof ZipArchiveInputStream);
+        }
 
-        final ArchiveInputStream jar = getStreamFor("bla.jar");
-        assertNotNull(jar);
-        assertTrue(jar instanceof ZipArchiveInputStream);
+        try (final ArchiveInputStream jar = getStreamFor("bla.jar")) {
+            assertNotNull(jar);
+            assertTrue(jar instanceof ZipArchiveInputStream);
+        }
 
-        final ArchiveInputStream cpio = getStreamFor("bla.cpio");
-        assertNotNull(cpio);
-        assertTrue(cpio instanceof CpioArchiveInputStream);
+        try (final ArchiveInputStream cpio = getStreamFor("bla.cpio")) {
+            assertNotNull(cpio);
+            assertTrue(cpio instanceof CpioArchiveInputStream);
+        }
 
-        final ArchiveInputStream arj = getStreamFor("bla.arj");
-        assertNotNull(arj);
-        assertTrue(arj instanceof ArjArchiveInputStream);
+        try (final ArchiveInputStream arj = getStreamFor("bla.arj")) {
+            assertNotNull(arj);
+            assertTrue(arj instanceof ArjArchiveInputStream);
+        }
 
 // Not yet implemented
 //        final ArchiveInputStream tgz = getStreamFor("bla.tgz");
