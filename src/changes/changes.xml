@@ -294,7 +294,7 @@ The <action> type attribute can be add,update,fix,remove.
         Update actions/setup-java from v1.4.0 to v1.4.3, #125, #141.
       </action>
       <action type="update" date="2020-08-21" due-to="Dependabot, Gary Gregory" dev="ggregory">
-        Update com.github.luben:zstd-jni from 1.4.4-7 to 1.4.5-12 #118.
+        Update com.github.luben:zstd-jni from 1.4.4-7 to 1.4.8-7 #118, #159, #173, #174.
       </action>
       <action type="update" date="2020-08-21" due-to="Dependabot" dev="ggregory">
         Update tests slf4j-api from 1.7.26 to 1.7.30 #117.
@@ -316,9 +316,6 @@ The <action> type attribute can be add,update,fix,remove.
       </action>
       <action type="update" due-to="Dependabot" dev="ggregory">
         Bump mockito-core from 1.10.19 to 3.8.0, #161, #170.
-      </action>
-      <action type="update" due-to="Dependabot" dev="ggregory">
-        Bump zstd-jni from 1.4.5-12 to 1.4.8-6 #159, #173.
       </action>
     </release>
     <release version="1.20" date="2020-02-08"
