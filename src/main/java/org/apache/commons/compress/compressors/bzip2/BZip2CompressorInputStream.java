@@ -32,6 +32,7 @@ import java.util.Arrays;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.BitInputStream;
 import org.apache.commons.compress.utils.CloseShieldFilterInputStream;
+import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 
 /**
@@ -208,7 +209,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
     private int read0() throws IOException {
         switch (currentState) {
         case EOF:
-            return -1;
+            return IOUtils.EOS;
 
         case START_BLOCK_STATE:
             return setupBlock();
@@ -751,7 +752,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
 
     private int setupBlock() throws IOException {
         if (currentState == EOF || this.data == null) {
-            return -1;
+            return IOUtils.EOS;
         }
 
         final int[] cftab = this.data.cftab;

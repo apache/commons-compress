@@ -87,7 +87,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
             globalPosition += totalBytesRead;
             return totalBytesRead;
         }
-        return -1;
+        return IOUtils.EOS;
     }
 
     @Override

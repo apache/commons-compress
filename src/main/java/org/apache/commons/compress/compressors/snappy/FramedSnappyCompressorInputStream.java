@@ -163,7 +163,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
         if (read == -1) {
             readNextBlock();
             if (endReached) {
-                return -1;
+                return IOUtils.EOS;
             }
             read = readOnce(b, off, len);
         }
@@ -203,17 +203,17 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
         if (inUncompressedChunk) {
             final int amount = Math.min(uncompressedBytesRemaining, len);
             if (amount == 0) {
-                return -1;
+                return IOUtils.EOS;
             }
             read = inputStream.read(b, off, amount);
-            if (read != -1) {
+            if (read != IOUtils.EOS) {
                 uncompressedBytesRemaining -= read;
                 count(read);
             }
         } else if (currentCompressedChunk != null) {
             final long before = currentCompressedChunk.getBytesRead();
             read = currentCompressedChunk.read(b, off, len);
-            if (read == -1) {
+            if (read == IOUtils.EOS) {
                 currentCompressedChunk.close();
                 currentCompressedChunk = null;
             } else {
@@ -324,7 +324,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
             count(1);
             return b & 0xFF;
         }
-        return -1;
+        return IOUtils.EOS;
     }
 
     private void verifyLastChecksumAndReset() throws IOException {

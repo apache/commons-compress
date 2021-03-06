@@ -47,6 +47,13 @@ public final class IOUtils {
      */
     public static final LinkOption[] EMPTY_LINK_OPTIONS = {};
 
+    /**
+     * The index value when the end of the stream or file has been reached {@code -1}.
+     *
+     * @since 1.21
+     */
+    public static final int EOS = -1;
+
     // This buffer does not need to be synchronized because it is write only; the contents are ignored
     // Does not affect Immutability
     private static final byte[] SKIP_BUF = new byte[SKIP_BUF_SIZE];

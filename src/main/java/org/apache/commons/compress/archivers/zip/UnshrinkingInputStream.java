@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.nio.ByteOrder;
 
 import org.apache.commons.compress.compressors.lzw.LZWInputStream;
+import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * Input stream that decompresses ZIP method 1 (unshrinking). A variation of the LZW algorithm, with some twists.
@@ -96,7 +97,7 @@ class UnshrinkingInputStream extends LZWInputStream {
         //
         final int code = readNextCode();
         if (code < 0) {
-            return -1;
+            return IOUtils.EOS;
         }
         if (code != getClearCode()) {
             boolean addedUnfinishedEntry = false;

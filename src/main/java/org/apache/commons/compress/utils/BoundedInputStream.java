@@ -46,7 +46,7 @@ public class BoundedInputStream extends InputStream {
             --bytesRemaining;
             return in.read();
         }
-        return -1;
+        return IOUtils.EOS;
     }
 
     @Override
@@ -55,7 +55,7 @@ public class BoundedInputStream extends InputStream {
             return 0;
         }
         if (bytesRemaining == 0) {
-            return -1;
+            return IOUtils.EOS;
         }
         int bytesToRead = len;
         if (bytesToRead > bytesRemaining) {

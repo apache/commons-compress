@@ -138,7 +138,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
             return 0;
         }
         if (endReached) {
-            return -1;
+            return IOUtils.EOS;
         }
         int r = readOnce(b, off, len);
         if (r == -1) {
@@ -315,7 +315,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
             count(1);
             return b & 0xFF;
         }
-        return -1;
+        return IOUtils.EOS;
     }
 
     private int readOnce(final byte[] b, final int off, final int len) throws IOException {

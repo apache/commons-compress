@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.nio.ByteOrder;
 
 import org.apache.commons.compress.compressors.lzw.LZWInputStream;
+import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * Input stream that decompresses .Z files.
@@ -133,7 +134,7 @@ public class ZCompressorInputStream extends LZWInputStream {
         //
         final int code = readNextCode();
         if (code < 0) {
-            return -1;
+            return IOUtils.EOS;
         }
         if (blockMode && code == getClearCode()) {
             clearEntries();

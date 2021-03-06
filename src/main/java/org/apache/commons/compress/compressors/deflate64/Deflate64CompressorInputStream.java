@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
+import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 
 import static org.apache.commons.compress.utils.IOUtils.closeQuietly;
@@ -61,8 +62,8 @@ public class Deflate64CompressorInputStream extends CompressorInputStream implem
             switch (r) {
                 case 1:
                     return oneByte[0] & 0xFF;
-                case -1:
-                    return -1;
+                case IOUtils.EOS:
+                    return IOUtils.EOS;
                 case 0:
                     continue;
                 default:

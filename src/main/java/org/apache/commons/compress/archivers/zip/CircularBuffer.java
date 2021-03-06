@@ -19,6 +19,8 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import org.apache.commons.compress.utils.IOUtils;
+
 /**
  * Circular byte buffer.
  *
@@ -68,7 +70,7 @@ class CircularBuffer {
             readIndex = (readIndex + 1) % size;
             return value & 0xFF;
         }
-        return -1;
+        return IOUtils.EOS;
     }
 
     /**

@@ -83,7 +83,7 @@ public class BitInputStream implements Closeable {
             throw new IOException("count must not be negative or greater than " + MAXIMUM_CACHE_SIZE);
         }
         if (ensureCache(count)) {
-            return -1;
+            return IOUtils.EOS;
         }
 
         if (bitsCachedSize < count) {

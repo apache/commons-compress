@@ -23,6 +23,7 @@ import java.io.InputStream;
 
 import org.apache.commons.compress.compressors.lz77support.AbstractLZ77CompressorInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
+import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * CompressorInputStream for the LZ4 block format.
@@ -66,7 +67,7 @@ public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputSt
         }
         switch (state) {
         case EOF:
-            return -1;
+            return IOUtils.EOS;
         case NO_BLOCK: // NOSONAR - fallthrough intended
             readSizes();
             /*FALLTHROUGH*/
@@ -79,7 +80,7 @@ public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputSt
         case LOOKING_FOR_BACK_REFERENCE: // NOSONAR - fallthrough intended
             if (!initializeBackReference()) {
                 state = State.EOF;
-                return -1;
+                return IOUtils.EOS;
             }
             /*FALLTHROUGH*/
         case IN_BACK_REFERENCE:

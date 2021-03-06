@@ -50,7 +50,7 @@ public class ChecksumVerifyingInputStream extends InputStream {
     @Override
     public int read() throws IOException {
         if (bytesRemaining <= 0) {
-            return -1;
+            return IOUtils.EOS;
         }
         final int ret = in.read();
         if (ret >= 0) {

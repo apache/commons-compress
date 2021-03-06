@@ -50,7 +50,7 @@ public abstract class BoundedArchiveInputStream extends InputStream {
     @Override
     public synchronized int read() throws IOException {
         if (loc >= end) {
-            return -1;
+            return IOUtils.EOS;
         }
         if (singleByteBuffer == null) {
             singleByteBuffer = ByteBuffer.allocate(1);
@@ -73,7 +73,7 @@ public abstract class BoundedArchiveInputStream extends InputStream {
 
         if (len > end - loc) {
             if (loc >= end) {
-                return -1;
+                return IOUtils.EOS;
             }
             len = (int) (end - loc);
         }

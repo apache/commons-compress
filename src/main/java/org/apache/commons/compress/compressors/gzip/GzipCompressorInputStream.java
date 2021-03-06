@@ -290,7 +290,7 @@ public class GzipCompressorInputStream extends CompressorInputStream
             return 0;
         }
         if (endReached) {
-            return -1;
+            return IOUtils.EOS;
         }
 
         int size = 0;

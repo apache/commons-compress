@@ -17,6 +17,8 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
+import org.apache.commons.compress.utils.IOUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -49,7 +51,7 @@ class BoundedSeekableByteChannelInputStream extends InputStream {
             }
             return buffer.get() & 0xff;
         }
-        return -1;
+        return IOUtils.EOS;
     }
 
     /**
@@ -69,7 +71,7 @@ class BoundedSeekableByteChannelInputStream extends InputStream {
             return 0;
         }
         if (bytesRemaining <= 0) {
-            return -1;
+            return IOUtils.EOS;
         }
         int bytesToRead = len;
         if (bytesToRead > bytesRemaining) {

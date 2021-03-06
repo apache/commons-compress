@@ -322,7 +322,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
                 throw new IOException("CRC Error. Occurred at byte: "
                                       + getBytesRead());
             }
-            return -1; // EOF for this entry
+            return IOUtils.EOS; // EOF for this entry
         }
         final int tmplength = (int) Math.min(len, this.entry.getSize()
                 - this.entryBytesRead);

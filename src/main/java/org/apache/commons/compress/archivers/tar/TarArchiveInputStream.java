@@ -719,7 +719,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     	int totalRead = 0;
 
         if (isAtEOF() || isDirectory()) {
-            return -1;
+            return IOUtils.EOS;
         }
 
         if (currEntry == null) {
@@ -728,12 +728,12 @@ public class TarArchiveInputStream extends ArchiveInputStream {
 
         if (!currEntry.isSparse()) {
             if (entryOffset >= entrySize) {
-                return -1;
+                return IOUtils.EOS;
             }
         } else {
             // for sparse entries, there are actually currEntry.getRealSize() bytes to read
             if (entryOffset >= currEntry.getRealSize()) {
-                return -1;
+                return IOUtils.EOS;
             }
         }
 
@@ -780,7 +780,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         }
 
         if (currentSparseInputStreamIndex >= sparseInputStreams.size()) {
-            return -1;
+            return IOUtils.EOS;
         }
 
         final InputStream currentInputStream = sparseInputStreams.get(currentSparseInputStreamIndex);
@@ -793,7 +793,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         }
 
         // if EOF of current input stream is meet, open a new input stream and recursively call read
-        if (readLen == -1) {
+        if (readLen == IOUtils.EOS) {
             currentSparseInputStreamIndex++;
             return readSparse(buf, offset, numToRead);
         }
@@ -803,7 +803,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         if (readLen < numToRead) {
             currentSparseInputStreamIndex++;
             final int readLenOfNext = readSparse(buf, offset + readLen, numToRead - readLen);
-            if (readLenOfNext == -1) {
+            if (readLenOfNext == IOUtils.EOS) {
                 return readLen;
             }
 

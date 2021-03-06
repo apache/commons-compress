@@ -22,6 +22,7 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
+import org.apache.commons.compress.utils.IOUtils;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -467,7 +468,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         int totalRead = 0;
 
         if (hasHitEOF || isClosed || entryOffset >= entrySize) {
-            return -1;
+            return IOUtils.EOS;
         }
 
         if (active == null) {

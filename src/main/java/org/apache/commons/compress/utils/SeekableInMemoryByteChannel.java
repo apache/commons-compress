@@ -136,7 +136,7 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
         int wanted = buf.remaining();
         final int possible = size - position;
         if (possible <= 0) {
-            return -1;
+            return IOUtils.EOS;
         }
         if (wanted > possible) {
             wanted = possible;

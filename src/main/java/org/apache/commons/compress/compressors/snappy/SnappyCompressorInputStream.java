@@ -23,6 +23,7 @@ import java.io.InputStream;
 
 import org.apache.commons.compress.compressors.lz77support.AbstractLZ77CompressorInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
+import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * CompressorInputStream for the raw Snappy format.
@@ -95,7 +96,7 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
             return 0;
         }
         if (endReached) {
-            return -1;
+            return IOUtils.EOS;
         }
         switch (state) {
         case NO_BLOCK:

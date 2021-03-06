@@ -359,6 +359,6 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
             count(1);
             return b & 0xFF;
         }
-        return -1;
+        return IOUtils.EOS;
     }
 }

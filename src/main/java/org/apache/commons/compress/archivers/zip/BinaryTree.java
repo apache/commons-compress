@@ -92,7 +92,7 @@ class BinaryTree {
         while (true) {
             final int bit = stream.nextBit();
             if (bit == -1) {
-                return -1;
+                return IOUtils.EOS;
             }
 
             final int childIndex = 2 * currentIndex + 1 + bit;

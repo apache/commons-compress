@@ -265,7 +265,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         }
         final long entryEnd = entryOffset + currentEntry.getLength();
         if (len < 0 || offset >= entryEnd) {
-            return -1;
+            return IOUtils.EOS;
         }
         final int toRead = (int) Math.min(len, entryEnd - offset);
         final int ret = this.input.read(b, off, toRead);
