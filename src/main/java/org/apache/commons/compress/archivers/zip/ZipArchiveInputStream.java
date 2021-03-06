@@ -443,11 +443,24 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
                     // avoid NPE if it's a corrupted zip archive
                     throw new ZipException("archive contains corrupted zip64 extra field");
                 }
-
-                current.entry.setCompressedSize(z64.getCompressedSize().getLongValue());
-                current.entry.setSize(z64.getSize().getLongValue());
+                long s = z64.getCompressedSize().getLongValue();
+                if (s < 0) {
+                    throw new ZipException("broken archive, entry with negative compressed size");
+                }
+                current.entry.setCompressedSize(s);
+                s = z64.getSize().getLongValue();
+                if (s < 0) {
+                    throw new ZipException("broken archive, entry with negative size");
+                }
+                current.entry.setSize(s);
             } else if (cSize != null && size != null) {
+                if (cSize.getValue() < 0) {
+                    throw new ZipException("broken archive, entry with negative compressed size");
+                }
                 current.entry.setCompressedSize(cSize.getValue());
+                if (size.getValue() < 0) {
+                    throw new ZipException("broken archive, entry with negative size");
+                }
                 current.entry.setSize(size.getValue());
             }
         }
@@ -888,11 +901,27 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
         final ZipLong potentialSig = new ZipLong(twoDwordBuf, DWORD);
         if (potentialSig.equals(ZipLong.CFH_SIG) || potentialSig.equals(ZipLong.LFH_SIG)) {
             pushback(twoDwordBuf, DWORD, DWORD);
-            current.entry.setCompressedSize(ZipLong.getValue(twoDwordBuf));
-            current.entry.setSize(ZipLong.getValue(twoDwordBuf, WORD));
+            long size = ZipLong.getValue(twoDwordBuf);
+            if (size < 0) {
+                throw new ZipException("broken archive, entry with negative compressed size");
+            }
+            current.entry.setCompressedSize(size);
+            size = ZipLong.getValue(twoDwordBuf, WORD);
+            if (size < 0) {
+                throw new ZipException("broken archive, entry with negative size");
+            }
+            current.entry.setSize(size);
         } else {
-            current.entry.setCompressedSize(ZipEightByteInteger.getLongValue(twoDwordBuf));
-            current.entry.setSize(ZipEightByteInteger.getLongValue(twoDwordBuf, DWORD));
+            long size = ZipEightByteInteger.getLongValue(twoDwordBuf);
+            if (size < 0) {
+                throw new ZipException("broken archive, entry with negative compressed size");
+            }
+            current.entry.setCompressedSize(size);
+            size = ZipEightByteInteger.getLongValue(twoDwordBuf, DWORD);
+            if (size < 0) {
+                throw new ZipException("broken archive, entry with negative size");
+            }
+            current.entry.setSize(size);
         }
     }
 
