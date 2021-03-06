@@ -233,9 +233,8 @@ public class TarFile implements Closeable {
 
         if (currEntry != null) {
             // Skip to the end of the entry
-            archive.position(currEntry.getDataOffset() + currEntry.getSize());
+            repositionForwardTo(currEntry.getDataOffset() + currEntry.getSize());
             throwExceptionIfPositionIsNotInArchive();
-
             skipRecordPadding();
         }
 
@@ -513,9 +512,21 @@ public class TarFile implements Closeable {
         if (!isDirectory() && currEntry.getSize() > 0 && currEntry.getSize() % recordSize != 0) {
             final long numRecords = (currEntry.getSize() / recordSize) + 1;
             final long padding = (numRecords * recordSize) - currEntry.getSize();
-            archive.position(archive.position() + padding);
+            repositionForwardBy(padding);
             throwExceptionIfPositionIsNotInArchive();
         }
+    }
+
+    private void repositionForwardTo(final long newPosition) throws IOException {
+        final long currPosition = archive.position();
+        if (newPosition < currPosition) {
+            throw new IOException("trying to move backwards inside of the archive");
+        }
+        archive.position(newPosition);
+    }
+
+    private void repositionForwardBy(final long offset) throws IOException {
+        repositionForwardTo(archive.position() + offset);
     }
 
     /**
@@ -586,7 +597,7 @@ public class TarFile implements Closeable {
     private void consumeRemainderOfLastBlock() throws IOException {
         final long bytesReadOfLastBlock = archive.position() % blockSize;
         if (bytesReadOfLastBlock > 0) {
-            archive.position(archive.position() + blockSize - bytesReadOfLastBlock);
+            repositionForwardBy(blockSize - bytesReadOfLastBlock);
         }
     }
 
