@@ -1538,6 +1538,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         groupId = (int) parseOctalOrBinary(header, offset, GIDLEN, lenient);
         offset += GIDLEN;
         size = TarUtils.parseOctalOrBinary(header, offset, SIZELEN);
+        if (size < 0) {
+            throw new IOException("broken archive, entry with negative size");
+        }
         offset += SIZELEN;
         modTime = parseOctalOrBinary(header, offset, MODTIMELEN, lenient);
         offset += MODTIMELEN;

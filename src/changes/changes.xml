@@ -317,6 +317,13 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" due-to="Dependabot" dev="ggregory">
         Bump mockito-core from 1.10.19 to 3.8.0, #161, #170.
       </action>
+      <action issue="COMPRESS-569" type="fix" date="2021-03-06">
+        Checked the sizes read for archive entries and reject archives
+        as broken with negative entry sizes.
+
+        Fixes an infinite loop in the new TarFile class but affects
+        several formats.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20 (Java 7)">

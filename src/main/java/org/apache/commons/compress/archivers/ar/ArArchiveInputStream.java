@@ -171,6 +171,10 @@ public class ArArchiveInputStream extends ArchiveInputStream {
             entryOffset += nameLen;
         }
 
+        if (len < 0) {
+            throw new IOException("broken archive, entry with negative size");
+        }
+
         currentEntry = new ArArchiveEntry(temp, len,
                                           asInt(metaData, USER_ID_OFFSET, USER_ID_LEN, true),
                                           asInt(metaData, GROUP_ID_OFFSET, GROUP_ID_LEN, true),

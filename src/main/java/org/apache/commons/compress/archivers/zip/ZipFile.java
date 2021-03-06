@@ -775,10 +775,18 @@ public class ZipFile implements Closeable {
         ze.setCrc(ZipLong.getValue(cfhBuf, off));
         off += WORD;
 
-        ze.setCompressedSize(ZipLong.getValue(cfhBuf, off));
+        long size = ZipLong.getValue(cfhBuf, off);
+        if (size < 0) {
+            throw new IOException("broken archive, entry with negative compressed size");
+        }
+        ze.setCompressedSize(size);
         off += WORD;
 
-        ze.setSize(ZipLong.getValue(cfhBuf, off));
+        size = ZipLong.getValue(cfhBuf, off);
+        if (size < 0) {
+            throw new IOException("broken archive, entry with negative size");
+        }
+        ze.setSize(size);
         off += WORD;
 
         final int fileNameLen = ZipShort.getValue(cfhBuf, off);
@@ -858,13 +866,21 @@ public class ZipFile implements Closeable {
                                             hasDiskStart);
 
             if (hasUncompressedSize) {
-                ze.setSize(z64.getSize().getLongValue());
+                final long size = z64.getSize().getLongValue();
+                if (size < 0) {
+                    throw new IOException("broken archive, entry with negative size");
+                }
+                ze.setSize(size);
             } else if (hasCompressedSize) {
                 z64.setSize(new ZipEightByteInteger(ze.getSize()));
             }
 
             if (hasCompressedSize) {
-                ze.setCompressedSize(z64.getCompressedSize().getLongValue());
+                final long size = z64.getCompressedSize().getLongValue();
+                if (size < 0) {
+                    throw new IOException("broken archive, entry with negative compressed size");
+                }
+                ze.setCompressedSize(size);
             } else if (hasUncompressedSize) {
                 z64.setCompressedSize(new ZipEightByteInteger(ze.getCompressedSize()));
             }

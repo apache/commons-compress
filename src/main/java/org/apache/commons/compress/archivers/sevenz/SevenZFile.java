@@ -1096,6 +1096,9 @@ public class SevenZFile implements Closeable {
                 entryAtIndex.setHasCrc(archive.subStreamsInfo.hasCrc.get(nonEmptyFileCounter));
                 entryAtIndex.setCrcValue(archive.subStreamsInfo.crcs[nonEmptyFileCounter]);
                 entryAtIndex.setSize(archive.subStreamsInfo.unpackSizes[nonEmptyFileCounter]);
+                if (entryAtIndex.getSize() < 0) {
+                    throw new IOException("broken archive, entry with negative size");
+                }
                 ++nonEmptyFileCounter;
             } else {
                 entryAtIndex.setDirectory(isEmptyFile == null || !isEmptyFile.get(emptyFileCounter));

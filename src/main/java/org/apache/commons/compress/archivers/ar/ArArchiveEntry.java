@@ -104,6 +104,9 @@ public class ArArchiveEntry implements ArchiveEntry {
     public ArArchiveEntry(final String name, final long length, final int userId, final int groupId,
                           final int mode, final long lastModified) {
         this.name = name;
+        if (length < 0) {
+            throw new IllegalArgumentException("length must not be negative");
+        }
         this.length = length;
         this.userId = userId;
         this.groupId = groupId;
