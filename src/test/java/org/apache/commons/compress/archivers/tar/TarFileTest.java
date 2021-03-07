@@ -356,4 +356,10 @@ public class TarFileTest extends AbstractTestCase {
             assertEquals(producerJavaName, entries.get(2).getName());
         }
     }
+
+    @Test(expected = IOException.class)
+    public void rejectsArchivesWithNegativeSizes() throws Exception {
+        try (TarFile tf = new TarFile(getFile("COMPRESS-569.tar"))) {
+        }
+    }
 }
