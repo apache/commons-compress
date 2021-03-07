@@ -29,7 +29,8 @@ jdk:
   - openjdk8
   - openjdk11
   - openjdk15
-  - openjdk-ea
+#  - openjdk-ea
+# currently fails on Java 17-ea with "Unable to make protected final java.lang.Class java.lang.ClassLoader.defineClass(java.lang.String,byte[],int,int) throws java.lang.ClassFormatError accessible: module java.base does not "opens java.lang" to unnamed module"
 
 matrix:
 # Remove the outdated OpenJDK 11.0.2 which Travis image grabbed from java.net in
