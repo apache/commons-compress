@@ -51,8 +51,7 @@ matrix:
 #        - $JAVA_HOME/bin/java -version
 
 script:
-  - test "openjdk-ea" != "${TRAVIS_JDK_VERSION}" || mvn -V --no-transfer-progress
-  - test "openjdk-ea" == "${TRAVIS_JDK_VERSION}" || mvn -V --no-transfer-progress -P!jacoco
+  - mvn -V --no-transfer-progress
  
 after_success:
-  - test "openjdk-ea" != "${TRAVIS_JDK_VERSION}" || mvn -V --no-transfer-progress clean test jacoco:report coveralls:report -Ptravis-jacoco javadoc:javadoc -Ddoclint=all
+  - mvn -V --no-transfer-progress clean test jacoco:report coveralls:report -Ptravis-jacoco javadoc:javadoc -Ddoclint=all
