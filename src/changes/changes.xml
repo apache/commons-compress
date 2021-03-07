@@ -324,6 +324,11 @@ The <action> type attribute can be add,update,fix,remove.
         Fixes an infinite loop in the new TarFile class but affects
         several formats.
       </action>
+      <action issue="COMPRESS-552" type="fix" date="2021-03-07">
+        OSGi detection was broken and so we always cached whether
+        xz/brotli/zstd/lzma have been available even in OSGi
+        environments.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20 (Java 7)">
