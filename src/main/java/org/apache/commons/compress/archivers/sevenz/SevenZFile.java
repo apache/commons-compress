@@ -414,7 +414,7 @@ public class SevenZFile implements Closeable {
     }
 
     /**
-     * Returns meta-data of all archive entries.
+     * Returns a copy of meta-data of all archive entries.
      *
      * <p>This method only provides meta-data, the entries can not be
      * used to read the contents, you still need to process all
@@ -423,11 +423,11 @@ public class SevenZFile implements Closeable {
      * <p>The content methods are only available for entries that have
      * already been reached via {@link #getNextEntry}.</p>
      *
-     * @return meta-data of all archive entries.
+     * @return a copy of meta-data of all archive entries.
      * @since 1.11
      */
     public Iterable<SevenZArchiveEntry> getEntries() {
-        return Arrays.asList(archive.files);
+        return new ArrayList<>(Arrays.asList(archive.files));
     }
 
     private Archive readHeaders(final byte[] password) throws IOException {

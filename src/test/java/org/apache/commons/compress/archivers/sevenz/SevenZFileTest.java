@@ -37,6 +37,7 @@ import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -730,6 +731,17 @@ public class SevenZFileTest extends AbstractTestCase {
                 fail("Expected IOException: start header corrupt and unable to guess end header");
             } catch (final IOException e) {
                 assertEquals("Start header corrupt and unable to guess end header", e.getMessage());
+            }
+        }
+    }
+
+    @Test
+    public void retrieveInputStreamForShuffledEntries() throws IOException {
+        try (final SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-348.7z"))) {
+            List<SevenZArchiveEntry> entries = (List<SevenZArchiveEntry>) sevenZFile.getEntries();
+            Collections.shuffle(entries);
+            for (final SevenZArchiveEntry entry : entries) {
+                IOUtils.toByteArray(sevenZFile.getInputStream(entry));
             }
         }
     }
