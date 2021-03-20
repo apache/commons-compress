@@ -332,6 +332,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action issue="COMPRESS-571" type="fix" date="2021-03-17">
         SevenZFile.getEntries now return a copy of entries.
       </action>
+      <action type="update" date="2020-08-21" due-to="Dependabot" dev="PeterLee">
+        Update com.github.luben:zstd-jni from 1.4.8-7 to 1.4.9-1 #176.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20 (Java 7)">
