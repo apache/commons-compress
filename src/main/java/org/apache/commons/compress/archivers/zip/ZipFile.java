@@ -1277,11 +1277,7 @@ public class ZipFile implements Closeable {
             // entries is filled in populateFromCentralDirectory and
             // never modified
             final String name = ze.getName();
-            LinkedList<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
-            if (entriesOfThatName == null) {
-                entriesOfThatName = new LinkedList<>();
-                nameMap.put(name, entriesOfThatName);
-            }
+            LinkedList<ZipArchiveEntry> entriesOfThatName = nameMap.computeIfAbsent(name, k -> new LinkedList<>());
             entriesOfThatName.addLast(ze);
         }
     }

@@ -340,13 +340,10 @@ public class TarFile implements Closeable {
         final List<TarArchiveStructSparse> sparseHeaders = currEntry.getSparseHeaders();
         // sort the sparse headers in case they are written in wrong order
         if (sparseHeaders != null && sparseHeaders.size() > 1) {
-            final Comparator<TarArchiveStructSparse> sparseHeaderComparator = new Comparator<TarArchiveStructSparse>() {
-                @Override
-                public int compare(final TarArchiveStructSparse p, final TarArchiveStructSparse q) {
-                    Long pOffset = p.getOffset();
-                    Long qOffset = q.getOffset();
-                    return pOffset.compareTo(qOffset);
-                }
+            final Comparator<TarArchiveStructSparse> sparseHeaderComparator = (p, q) -> {
+                Long pOffset = p.getOffset();
+                Long qOffset = q.getOffset();
+                return pOffset.compareTo(qOffset);
             };
             Collections.sort(sparseHeaders, sparseHeaderComparator);
         }
