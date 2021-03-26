@@ -570,9 +570,6 @@ public class SevenZArchiveEntry implements ArchiveEntry {
                 return false;
             }
         }
-        if (i2.hasNext()) {
-            return false;
-        }
-        return true;
+        return !i2.hasNext();
     }
 }

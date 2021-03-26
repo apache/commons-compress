@@ -327,10 +327,6 @@ public class DumpArchiveSummary {
             return false;
         }
 
-        if ((getDevname() == null) || !getDevname().equals(rhs.getDevname())) {
-            return false;
-        }
-
-        return true;
+        return (getDevname() != null) && getDevname().equals(rhs.getDevname());
     }
 }
