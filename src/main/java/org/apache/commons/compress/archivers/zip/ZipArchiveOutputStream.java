@@ -117,7 +117,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private static final int CFH_FILENAME_OFFSET = 46;
 
     /** indicates if this archive is finished. protected for use in Jar implementation */
-    protected boolean finished = false;
+    protected boolean finished;
 
     /**
      * Compression method for deflated entries.
@@ -166,7 +166,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * Has the compression level changed when compared to the last
      * entry?
      */
-    private boolean hasCompressionLevelChanged = false;
+    private boolean hasCompressionLevelChanged;
 
     /**
      * Default compression method for next entry.
@@ -184,22 +184,22 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Start of central directory.
      */
-    private long cdOffset = 0;
+    private long cdOffset;
 
     /**
      * Length of central directory.
      */
-    private long cdLength = 0;
+    private long cdLength;
 
     /**
      * Disk number start of central directory.
      */
-    private long cdDiskNumberStart = 0;
+    private long cdDiskNumberStart;
 
     /**
      * Length of end of central directory
      */
-    private long eocdLength = 0;
+    private long eocdLength;
 
     /**
      * Helper, a 0 as ZipShort.
@@ -259,7 +259,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Whether to encode non-encodable file names as UTF-8.
      */
-    private boolean fallbackToUTF8 = false;
+    private boolean fallbackToUTF8;
 
     /**
      * whether to create UnicodePathExtraField-s for each entry.
@@ -271,7 +271,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      *
      * @since 1.3
      */
-    private boolean hasUsedZip64 = false;
+    private boolean hasUsedZip64;
 
     private Zip64Mode zip64Mode = Zip64Mode.AsNeeded;
 
@@ -1959,20 +1959,20 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
          * Offset for CRC entry in the local file header data for the
          * current entry starts here.
          */
-        private long localDataStart = 0;
+        private long localDataStart;
         /**
          * Data for local header data
          */
-        private long dataStart = 0;
+        private long dataStart;
         /**
          * Number of bytes read for the current entry (can't rely on
          * Deflater#getBytesRead) when using DEFLATED.
          */
-        private long bytesRead = 0;
+        private long bytesRead;
         /**
          * Whether current entry was the first one using ZIP64 features.
          */
-        private boolean causedUseOfZip64 = false;
+        private boolean causedUseOfZip64;
         /**
          * Whether write() has been called at all.
          *

@@ -21,5 +21,5 @@ class Coder {
     byte[] decompressionMethodId;
     long numInStreams;
     long numOutStreams;
-    byte[] properties = null;
+    byte[] properties;
 }

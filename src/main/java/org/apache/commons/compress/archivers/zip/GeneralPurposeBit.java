@@ -69,10 +69,10 @@ public final class GeneralPurposeBit implements Cloneable {
      */
     public static final int UFT8_NAMES_FLAG = 1 << 11;
 
-    private boolean languageEncodingFlag = false;
-    private boolean dataDescriptorFlag = false;
-    private boolean encryptionFlag = false;
-    private boolean strongEncryptionFlag = false;
+    private boolean languageEncodingFlag;
+    private boolean dataDescriptorFlag;
+    private boolean encryptionFlag;
+    private boolean strongEncryptionFlag;
     private int slidingDictionarySize;
     private int numberOfShannonFanoTrees;
 

@@ -131,21 +131,21 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      */
     private long size = SIZE_UNKNOWN;
 
-    private int internalAttributes = 0;
+    private int internalAttributes;
     private int versionRequired;
     private int versionMadeBy;
     private int platform = PLATFORM_FAT;
     private int rawFlag;
-    private long externalAttributes = 0;
-    private int alignment = 0;
+    private long externalAttributes;
+    private int alignment;
     private ZipExtraField[] extraFields;
-    private UnparseableExtraFieldData unparseableExtra = null;
-    private String name = null;
-    private byte[] rawName = null;
+    private UnparseableExtraFieldData unparseableExtra;
+    private String name;
+    private byte[] rawName;
     private GeneralPurposeBit gpb = new GeneralPurposeBit();
     private long localHeaderOffset = OFFSET_UNKNOWN;
     private long dataOffset = OFFSET_UNKNOWN;
-    private boolean isStreamContiguous = false;
+    private boolean isStreamContiguous;
     private NameSource nameSource = NameSource.NAME;
     private CommentSource commentSource = CommentSource.COMMENT;
     private long diskNumberStart;

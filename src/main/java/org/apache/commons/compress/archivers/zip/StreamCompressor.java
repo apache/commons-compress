@@ -52,9 +52,9 @@ public abstract class StreamCompressor implements Closeable {
 
     private final CRC32 crc = new CRC32();
 
-    private long writtenToOutputStreamForLastEntry = 0;
-    private long sourcePayloadLength = 0;
-    private long totalWrittenToOutputStream = 0;
+    private long writtenToOutputStreamForLastEntry;
+    private long sourcePayloadLength;
+    private long totalWrittenToOutputStream;
 
     private static final int BUFFER_SIZE = 4096;
     private final byte[] outputBuffer = new byte[BUFFER_SIZE];

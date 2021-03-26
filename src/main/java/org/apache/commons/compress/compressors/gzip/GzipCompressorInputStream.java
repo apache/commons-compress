@@ -106,7 +106,7 @@ public class GzipCompressorInputStream extends CompressorInputStream
     private final CRC32 crc = new CRC32();
 
     // True once everything has been decompressed
-    private boolean endReached = false;
+    private boolean endReached;
 
     // used in no-arg read method
     private final byte[] oneByte = new byte[1];

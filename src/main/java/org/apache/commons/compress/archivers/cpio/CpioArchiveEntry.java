@@ -168,32 +168,32 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
 
     // Header fields
 
-    private long chksum = 0;
+    private long chksum;
 
     /** Number of bytes in the file */
-    private long filesize = 0;
+    private long filesize;
 
-    private long gid = 0;
+    private long gid;
 
-    private long inode = 0;
+    private long inode;
 
-    private long maj = 0;
+    private long maj;
 
-    private long min = 0;
+    private long min;
 
-    private long mode = 0;
+    private long mode;
 
-    private long mtime = 0;
+    private long mtime;
 
     private String name;
 
-    private long nlink = 0;
+    private long nlink;
 
-    private long rmaj = 0;
+    private long rmaj;
 
-    private long rmin = 0;
+    private long rmin;
 
-    private long uid = 0;
+    private long uid;
 
     /**
      * Creates a CpioArchiveEntry with a specified format.

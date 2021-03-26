@@ -35,7 +35,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
  */
 public class JarArchiveOutputStream extends ZipArchiveOutputStream {
 
-    private boolean jarMarkerAdded = false;
+    private boolean jarMarkerAdded;
 
     public JarArchiveOutputStream(final OutputStream out) {
         super(out);

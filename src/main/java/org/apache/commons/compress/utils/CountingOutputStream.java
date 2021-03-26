@@ -28,7 +28,7 @@ import java.io.OutputStream;
  * @NotThreadSafe
  */
 public class CountingOutputStream extends FilterOutputStream {
-    private long bytesWritten = 0;
+    private long bytesWritten;
 
     public CountingOutputStream(final OutputStream out) {
         super(out);

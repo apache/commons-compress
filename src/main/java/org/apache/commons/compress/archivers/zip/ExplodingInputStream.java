@@ -66,9 +66,9 @@ class ExplodingInputStream extends InputStream implements InputStreamStatistics 
     /** Output buffer holding the decompressed data */
     private final CircularBuffer buffer = new CircularBuffer(32 * 1024);
 
-    private long uncompressedCount = 0;
+    private long uncompressedCount;
 
-    private long treeSizes = 0;
+    private long treeSizes;
 
     /**
      * Create a new stream decompressing the content of the specified stream

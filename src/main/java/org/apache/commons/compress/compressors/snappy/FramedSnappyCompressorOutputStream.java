@@ -48,7 +48,7 @@ public class FramedSnappyCompressorOutputStream extends CompressorOutputStream {
     // used in one-arg write method
     private final byte[] oneByte = new byte[1];
     private final byte[] buffer = new byte[MAX_COMPRESSED_BUFFER_SIZE];
-    private int currentIndex = 0;
+    private int currentIndex;
 
     private final ByteUtils.ByteConsumer consumer;
 

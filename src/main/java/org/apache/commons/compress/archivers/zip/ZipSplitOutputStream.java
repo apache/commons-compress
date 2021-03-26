@@ -33,9 +33,9 @@ class ZipSplitOutputStream extends OutputStream {
     private OutputStream outputStream;
     private File zipFile;
     private final long splitSize;
-    private int currentSplitSegmentIndex = 0;
-    private long currentSplitSegmentBytesWritten = 0;
-    private boolean finished = false;
+    private int currentSplitSegmentIndex;
+    private long currentSplitSegmentBytesWritten;
+    private boolean finished;
     private final byte[] singleByte = new byte[1];
 
     /**
@@ -161,10 +161,9 @@ class ZipSplitOutputStream extends OutputStream {
     /**
      * Create a new zip split segment and prepare to write to the new segment
      *
-     * @return
      * @throws IOException
      */
-    private OutputStream openNewSplitSegment() throws IOException {
+    private void openNewSplitSegment() throws IOException {
         File newFile;
         if (currentSplitSegmentIndex == 0) {
             outputStream.close();
@@ -182,7 +181,6 @@ class ZipSplitOutputStream extends OutputStream {
         zipFile = newFile;
         currentSplitSegmentIndex++;
 
-        return outputStream;
     }
 
     /**

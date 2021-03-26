@@ -40,8 +40,8 @@ class TapeInputStream extends FilterInputStream {
     private int blockSize = DumpArchiveConstants.TP_SIZE;
     private static final int RECORD_SIZE = DumpArchiveConstants.TP_SIZE;
     private int readOffset = DumpArchiveConstants.TP_SIZE;
-    private boolean isCompressed = false;
-    private long bytesRead = 0;
+    private boolean isCompressed;
+    private long bytesRead;
 
     /**
      * Constructor

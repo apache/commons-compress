@@ -32,8 +32,8 @@ import java.util.zip.InflaterInputStream;
  */
 /* package */ class InflaterInputStreamWithStatistics extends InflaterInputStream
     implements InputStreamStatistics {
-    private long compressedCount = 0;
-    private long uncompressedCount = 0;
+    private long compressedCount;
+    private long uncompressedCount;
 
     public InflaterInputStreamWithStatistics(final InputStream in) {
         super(in);

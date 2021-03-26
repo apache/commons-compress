@@ -53,7 +53,7 @@ public abstract class ArchiveOutputStream extends OutputStream {
     static final int BYTE_MASK = 0xFF;
 
     /** holds the number of bytes written to this stream */
-    private long bytesWritten = 0;
+    private long bytesWritten;
     // Methods specific to ArchiveOutputStream
 
     /**

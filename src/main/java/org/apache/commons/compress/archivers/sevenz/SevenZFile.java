@@ -93,7 +93,7 @@ public class SevenZFile implements Closeable {
     private final Archive archive;
     private int currentEntryIndex = -1;
     private int currentFolderIndex = -1;
-    private InputStream currentFolderInputStream = null;
+    private InputStream currentFolderInputStream;
     private byte[] password;
     private final SevenZFileOptions options;
 

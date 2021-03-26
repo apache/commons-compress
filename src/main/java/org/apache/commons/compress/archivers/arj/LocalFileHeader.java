@@ -45,7 +45,7 @@ class LocalFileHeader {
     String name;
     String comment;
 
-    byte[][] extendedHeaders = null;
+    byte[][] extendedHeaders;
 
     static class Flags {
         static final int GARBLED = 0x01;

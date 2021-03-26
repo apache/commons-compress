@@ -52,7 +52,7 @@ public class ScatterZipOutputStream implements Closeable {
     private final ScatterGatherBackingStore backingStore;
     private final StreamCompressor streamCompressor;
     private final AtomicBoolean isClosed = new AtomicBoolean();
-    private ZipEntryWriter zipEntryWriter = null;
+    private ZipEntryWriter zipEntryWriter;
 
     private static class CompressedEntry {
         final ZipArchiveEntryRequest zipArchiveEntryRequest;

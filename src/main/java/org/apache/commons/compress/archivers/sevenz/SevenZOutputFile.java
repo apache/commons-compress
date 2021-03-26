@@ -56,11 +56,11 @@ import org.apache.commons.compress.utils.CountingOutputStream;
 public class SevenZOutputFile implements Closeable {
     private final SeekableByteChannel channel;
     private final List<SevenZArchiveEntry> files = new ArrayList<>();
-    private int numNonEmptyStreams = 0;
+    private int numNonEmptyStreams;
     private final CRC32 crc32 = new CRC32();
     private final CRC32 compressedCrc32 = new CRC32();
-    private long fileBytesWritten = 0;
-    private boolean finished = false;
+    private long fileBytesWritten;
+    private boolean finished;
     private CountingOutputStream currentOutputStream;
     private CountingOutputStream[] additionalCountingStreams;
     private Iterable<? extends SevenZMethodConfiguration> contentMethods =

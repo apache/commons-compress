@@ -110,7 +110,7 @@ class HuffmanDecoder implements Closeable {
         Arrays.fill(FIXED_DISTANCE, 5);
     }
 
-    private boolean finalBlock = false;
+    private boolean finalBlock;
     private DecoderState state;
     private BitInputStream reader;
     private final InputStream in;
@@ -283,14 +283,14 @@ class HuffmanDecoder implements Closeable {
     }
 
     private class HuffmanCodes extends DecoderState {
-        private boolean endOfBlock = false;
+        private boolean endOfBlock;
         private final HuffmanState state;
         private final BinaryTreeNode lengthTree;
         private final BinaryTreeNode distanceTree;
 
-        private int runBufferPos = 0;
+        private int runBufferPos;
         private byte[] runBuffer = ByteUtils.EMPTY_BYTE_ARRAY;
-        private int runBufferLength = 0;
+        private int runBufferLength;
 
         HuffmanCodes(final HuffmanState state, final int[] lengths, final int[] distance) {
             this.state = state;

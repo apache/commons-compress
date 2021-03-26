@@ -50,7 +50,7 @@ public class ResourceAlignmentExtraField implements ZipExtraField {
 
     private boolean allowMethodChange;
 
-    private int padding = 0;
+    private int padding;
 
     public ResourceAlignmentExtraField() {
     }

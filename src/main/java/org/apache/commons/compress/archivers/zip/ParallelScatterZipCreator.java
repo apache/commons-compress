@@ -57,7 +57,7 @@ public class ParallelScatterZipCreator {
     private final Deque<Future<? extends ScatterZipOutputStream>> futures = new ConcurrentLinkedDeque<>();
 
     private final long startedAt = System.currentTimeMillis();
-    private long compressionDoneAt = 0;
+    private long compressionDoneAt;
     private long scatterDoneAt;
     private final int compressionLevel;
 

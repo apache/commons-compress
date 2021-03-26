@@ -99,20 +99,20 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
     private final ByteBuffer buf = ByteBuffer.allocate(ZipArchiveOutputStream.BUFFER_SIZE);
 
     /** The entry that is currently being read. */
-    private CurrentEntry current = null;
+    private CurrentEntry current;
 
     /** Whether the stream has been closed. */
-    private boolean closed = false;
+    private boolean closed;
 
     /** Whether the stream has reached the central directory - and thus found all entries. */
-    private boolean hitCentralDirectory = false;
+    private boolean hitCentralDirectory;
 
     /**
      * When reading a stored entry that uses the data descriptor this
      * stream has to read the full entry and caches it.  This is the
      * cache.
      */
-    private ByteArrayInputStream lastStoredEntry = null;
+    private ByteArrayInputStream lastStoredEntry;
 
     /**
      * Whether the stream will try to read STORED entries that use a data descriptor.
@@ -125,10 +125,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
      * https://issues.apache.org/jira/projects/COMPRESS/issues/COMPRESS-555
      * https://github.com/apache/commons-compress/pull/137#issuecomment-690835644
      */
-    private boolean allowStoredEntriesWithDataDescriptor = false;
+    private boolean allowStoredEntriesWithDataDescriptor;
 
     /** Count decompressed bytes for current entry */
-    private long uncompressedCount = 0;
+    private long uncompressedCount;
 
     /** Whether the stream will try to skip the zip split signature(08074B50) at the beginning **/
     private final boolean skipSplitSig;
@@ -178,7 +178,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
     private final byte[] wordBuf = new byte[WORD];
     private final byte[] twoDwordBuf = new byte[2 * DWORD];
 
-    private int entriesRead = 0;
+    private int entriesRead;
 
     /**
      * Create an instance using UTF-8 encoding
@@ -1323,7 +1323,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
         private final long max;
 
         /** the number of bytes already returned */
-        private long pos = 0;
+        private long pos;
 
         /**
          * Creates a new <code>BoundedInputStream</code> that wraps the given input

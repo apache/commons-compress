@@ -39,7 +39,7 @@ class MainHeader {
     int arjFlags2;
     String name;
     String comment;
-    byte[] extendedHeaderBytes = null;
+    byte[] extendedHeaderBytes;
 
     static class Flags {
         static final int GARBLED = 0x01;
