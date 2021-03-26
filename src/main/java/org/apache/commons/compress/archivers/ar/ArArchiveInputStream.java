@@ -37,17 +37,17 @@ import org.apache.commons.compress.utils.IOUtils;
 public class ArArchiveInputStream extends ArchiveInputStream {
 
     private final InputStream input;
-    private long offset = 0;
+    private long offset;
     private boolean closed;
 
     /*
      * If getNextEntry has been called, the entry metadata is stored in
      * currentEntry.
      */
-    private ArArchiveEntry currentEntry = null;
+    private ArArchiveEntry currentEntry;
 
     // Storage area for extra long names (GNU ar)
-    private byte[] namebuffer = null;
+    private byte[] namebuffer;
 
     /*
      * The offset where the current entry started. -1 if no entry has been

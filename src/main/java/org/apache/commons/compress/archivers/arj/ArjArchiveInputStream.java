@@ -47,8 +47,8 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
     private final DataInputStream in;
     private final String charsetName;
     private final MainHeader mainHeader;
-    private LocalFileHeader currentLocalFileHeader = null;
-    private InputStream currentInputStream = null;
+    private LocalFileHeader currentLocalFileHeader;
+    private InputStream currentInputStream;
 
     /**
      * Constructs the ArjInputStream, taking ownership of the inputStream that is passed in.

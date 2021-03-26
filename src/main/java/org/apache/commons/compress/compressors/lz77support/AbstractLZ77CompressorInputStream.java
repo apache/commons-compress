@@ -106,7 +106,7 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
     private int backReferenceOffset;
 
     /** uncompressed size */
-    private int size = 0;
+    private int size;
 
     // used in no-arg read method
     private final byte[] oneByte = new byte[1];

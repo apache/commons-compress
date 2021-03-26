@@ -81,7 +81,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
     // used in one-arg write method
     private final byte[] oneByte = new byte[1];
 
-    private boolean finished = false;
+    private boolean finished;
 
     private final Deque<Pair> pairs = new LinkedList<>();
     // keeps track of the last window-size bytes (64k) in order to be

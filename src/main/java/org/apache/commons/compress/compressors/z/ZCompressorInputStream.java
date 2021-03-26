@@ -36,7 +36,7 @@ public class ZCompressorInputStream extends LZWInputStream {
     private static final int MAX_CODE_SIZE_MASK = 0x1f;
     private final boolean blockMode;
     private final int maxCodeSize;
-    private long totalCodesRead = 0;
+    private long totalCodesRead;
 
     public ZCompressorInputStream(final InputStream inputStream, final int memoryLimitInKb)
             throws IOException {

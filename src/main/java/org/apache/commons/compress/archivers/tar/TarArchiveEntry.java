@@ -179,13 +179,13 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     private int mode;
 
     /** The entry's user id. */
-    private long userId = 0;
+    private long userId;
 
     /** The entry's group id. */
-    private long groupId = 0;
+    private long groupId;
 
     /** The entry's size. */
-    private long size = 0;
+    private long size;
 
     /** The entry's modification time. */
     private long modTime;
@@ -211,10 +211,10 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     private String groupName = "";
 
     /** The entry's major device number. */
-    private int devMajor = 0;
+    private int devMajor;
 
     /** The entry's minor device number. */
-    private int devMinor = 0;
+    private int devMinor;
 
     /** The sparse headers in tar */
     private List<TarArchiveStructSparse> sparseHeaders;
@@ -230,7 +230,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /** is this entry a GNU sparse entry using 1.X PAX formats?
      *  the sparse headers of 1.x PAX Format is stored in file data block */
-    private boolean paxGNU1XSparse = false;
+    private boolean paxGNU1XSparse;
 
     /** is this entry a star sparse entry using the PAX header? */
     private boolean starSparse;

@@ -100,17 +100,17 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     private int recordsWritten;
     private final int recordsPerBlock;
 
-    private boolean closed = false;
+    private boolean closed;
 
     /**
      * Indicates if putArchiveEntry has been called without closeArchiveEntry
      */
-    private boolean haveUnclosedEntry = false;
+    private boolean haveUnclosedEntry;
 
     /**
      * indicates if this archive is finished
      */
-    private boolean finished = false;
+    private boolean finished;
 
     private final FixedLengthBlockOutputStream out;
     private final CountingOutputStream countingOut;
@@ -120,7 +120,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     // the provided encoding (for unit tests)
     final String encoding;
 
-    private boolean addPaxHeadersForNonAsciiNames = false;
+    private boolean addPaxHeadersForNonAsciiNames;
     private static final ZipEncoding ASCII =
         ZipEncodingHelper.getZipEncoding("ASCII");
 

@@ -69,7 +69,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
 
     private CpioArchiveEntry entry;
 
-    private boolean closed = false;
+    private boolean closed;
 
     /** indicates if this archive is finished */
     private boolean finished;
@@ -82,7 +82,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     private final HashMap<String, CpioArchiveEntry> names =
         new HashMap<>();
 
-    private long crc = 0;
+    private long crc;
 
     private long written;
 

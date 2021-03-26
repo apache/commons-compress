@@ -42,13 +42,13 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     public static final int LONGFILE_BSD = 1;
 
     private final OutputStream out;
-    private long entryOffset = 0;
+    private long entryOffset;
     private ArArchiveEntry prevEntry;
-    private boolean haveUnclosedEntry = false;
+    private boolean haveUnclosedEntry;
     private int longFileMode = LONGFILE_ERROR;
 
     /** indicates if this archive is finished */
-    private boolean finished = false;
+    private boolean finished;
 
     public ArArchiveOutputStream(final OutputStream pOut) {
         this.out = pOut;
@@ -66,10 +66,9 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         this.longFileMode = longFileMode;
     }
 
-    private long writeArchiveHeader() throws IOException {
+    private void writeArchiveHeader() throws IOException {
         final byte [] header = ArchiveUtils.toAsciiBytes(ArArchiveEntry.HEADER);
         out.write(header);
-        return header.length;
     }
 
     @Override
@@ -131,7 +130,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         return bytes.length;
     }
 
-    private long writeEntryHeader(final ArArchiveEntry pEntry) throws IOException {
+    private void writeEntryHeader(final ArArchiveEntry pEntry) throws IOException {
 
         long offset = 0;
         boolean mustAppendName = false;
@@ -195,7 +194,6 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
             offset += write(n);
         }
 
-        return offset;
     }
 
     @Override

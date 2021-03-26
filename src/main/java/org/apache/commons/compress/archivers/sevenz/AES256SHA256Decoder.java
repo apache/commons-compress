@@ -34,8 +34,8 @@ class AES256SHA256Decoder extends CoderBase {
     InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
             final Coder coder, final byte[] passwordBytes, final int maxMemoryLimitInKb) throws IOException {
         return new InputStream() {
-            private boolean isInitialized = false;
-            private CipherInputStream cipherInputStream = null;
+            private boolean isInitialized;
+            private CipherInputStream cipherInputStream;
 
             private CipherInputStream init() throws IOException {
                 if (isInitialized) {

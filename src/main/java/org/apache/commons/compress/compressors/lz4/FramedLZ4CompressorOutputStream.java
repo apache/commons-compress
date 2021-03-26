@@ -44,8 +44,8 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
     private final byte[] blockData;
     private final OutputStream out;
     private final Parameters params;
-    private boolean finished = false;
-    private int currentIndex = 0;
+    private boolean finished;
+    private int currentIndex;
 
     // used for frame header checksum and content checksum, if requested
     private final XXHash32 contentHash = new XXHash32();

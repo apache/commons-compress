@@ -310,7 +310,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     private int nMTF;
 
     private int currentChar = -1;
-    private int runLength = 0;
+    private int runLength;
 
     private int blockCRC;
     private int combinedCRC;

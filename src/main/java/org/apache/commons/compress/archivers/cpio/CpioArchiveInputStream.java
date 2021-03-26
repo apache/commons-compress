@@ -67,17 +67,17 @@ import org.apache.commons.compress.utils.IOUtils;
 public class CpioArchiveInputStream extends ArchiveInputStream implements
         CpioConstants {
 
-    private boolean closed = false;
+    private boolean closed;
 
     private CpioArchiveEntry entry;
 
-    private long entryBytesRead = 0;
+    private long entryBytesRead;
 
-    private boolean entryEOF = false;
+    private boolean entryEOF;
 
     private final byte[] tmpbuf = new byte[4096];
 
-    private long crc = 0;
+    private long crc;
 
     private final InputStream in;
 

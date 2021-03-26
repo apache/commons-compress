@@ -231,23 +231,23 @@ public class LZ77Compressor {
     // bit mask used when indexing into prev
     private final int wMask;
 
-    private boolean initialized = false;
+    private boolean initialized;
     // the position inside of window that shall be encoded right now
     private int currentPosition;
     // the number of bytes available to compress including the one at
     // currentPosition
-    private int lookahead = 0;
+    private int lookahead;
     // the hash of the three bytes stating at the current position
-    private int insertHash = 0;
+    private int insertHash;
     // the position inside of the window where the current literal
     // block starts (in case we are inside of a literal block).
-    private int blockStart = 0;
+    private int blockStart;
     // position of the current match
     private int matchStart = NO_MATCH;
     // number of missed insertString calls for the up to three last
     // bytes of the last match that can only be performed once more
     // data has been read
-    private int missedInserts = 0;
+    private int missedInserts;
 
     /**
      * Initializes a compressor with parameters and a callback.

@@ -40,8 +40,8 @@ public class BitInputStream implements Closeable {
 
     private final CountingInputStream in;
     private final ByteOrder byteOrder;
-    private long bitsCached = 0;
-    private int bitsCachedSize = 0;
+    private long bitsCached;
+    private int bitsCachedSize;
 
     /**
      * Constructor taking an InputStream and its bit arrangement.

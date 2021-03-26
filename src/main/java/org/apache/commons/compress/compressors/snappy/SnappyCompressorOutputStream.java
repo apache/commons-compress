@@ -59,7 +59,7 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream {
     // used in one-arg write method
     private final byte[] oneByte = new byte[1];
 
-    private boolean finished = false;
+    private boolean finished;
 
     /**
      * Constructor using the default block size of 32k.
