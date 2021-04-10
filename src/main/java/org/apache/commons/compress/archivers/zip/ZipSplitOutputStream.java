@@ -20,9 +20,9 @@ package org.apache.commons.compress.archivers.zip;
 import org.apache.commons.compress.utils.FileNameUtils;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
 
 /**
  * Used internally by {@link ZipArchiveOutputStream} when creating a split archive.
@@ -65,7 +65,7 @@ class ZipSplitOutputStream extends OutputStream {
         this.zipFile = zipFile;
         this.splitSize = splitSize;
 
-        this.outputStream = new FileOutputStream(zipFile);
+        this.outputStream = Files.newOutputStream((zipFile.toPath()));
         // write the zip split signature 0x08074B50 to the zip file
         writeZipSplitSignature();
     }
@@ -176,7 +176,7 @@ class ZipSplitOutputStream extends OutputStream {
         newFile = createNewSplitSegmentFile(null);
 
         outputStream.close();
-        outputStream = new FileOutputStream(newFile);
+        outputStream = Files.newOutputStream(newFile.toPath());
         currentSplitSegmentBytesWritten = 0;
         zipFile = newFile;
         currentSplitSegmentIndex++;

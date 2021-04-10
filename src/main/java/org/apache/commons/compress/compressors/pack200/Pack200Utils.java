@@ -22,6 +22,8 @@ package org.apache.commons.compress.compressors.pack200;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarFile;
@@ -132,8 +134,8 @@ public class Pack200Utils {
         props.put(Pack200.Packer.SEGMENT_LIMIT, "-1");
         final File tempFile = File.createTempFile("commons-compress", "pack200normalize");
         try {
-            try (FileOutputStream fos = new FileOutputStream(tempFile);
-                    JarFile jarFile = new JarFile(from)) {
+            try (OutputStream fos = Files.newOutputStream(tempFile.toPath());
+                 JarFile jarFile = new JarFile(from)) {
                 final Pack200.Packer packer = Pack200.newPacker();
                 packer.properties().putAll(props);
                 packer.pack(jarFile, fos);
