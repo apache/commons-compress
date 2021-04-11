@@ -29,9 +29,9 @@ import static org.junit.Assert.fail;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 
 import org.apache.commons.compress.AbstractTestCase;
@@ -59,8 +59,8 @@ public final class FramedLZ4CompressorInputStreamTest
 
     @Test
     public void readBlaLz4() throws IOException {
-        try (InputStream a = new FramedLZ4CompressorInputStream(new FileInputStream(getFile("bla.tar.lz4")));
-            FileInputStream e = new FileInputStream(getFile("bla.tar"))) {
+        try (InputStream a = new FramedLZ4CompressorInputStream(Files.newInputStream(getFile("bla.tar.lz4").toPath()));
+            InputStream e = Files.newInputStream(getFile("bla.tar").toPath())) {
             final byte[] expected = IOUtils.toByteArray(e);
             final byte[] actual = IOUtils.toByteArray(a);
             assertArrayEquals(expected, actual);
@@ -71,8 +71,8 @@ public final class FramedLZ4CompressorInputStreamTest
     public void readBlaLz4ViaFactory() throws Exception {
         try (InputStream a = new CompressorStreamFactory()
                  .createCompressorInputStream(CompressorStreamFactory.getLZ4Framed(),
-                                              new FileInputStream(getFile("bla.tar.lz4")));
-            FileInputStream e = new FileInputStream(getFile("bla.tar"))) {
+                                              Files.newInputStream(getFile("bla.tar.lz4").toPath()));
+            InputStream e = Files.newInputStream(getFile("bla.tar").toPath())) {
             final byte[] expected = IOUtils.toByteArray(e);
             final byte[] actual = IOUtils.toByteArray(a);
             assertArrayEquals(expected, actual);
@@ -82,8 +82,8 @@ public final class FramedLZ4CompressorInputStreamTest
     @Test
     public void readBlaLz4ViaFactoryAutoDetection() throws Exception {
         try (InputStream a = new CompressorStreamFactory()
-                 .createCompressorInputStream(new BufferedInputStream(new FileInputStream(getFile("bla.tar.lz4"))));
-            FileInputStream e = new FileInputStream(getFile("bla.tar"))) {
+                 .createCompressorInputStream(new BufferedInputStream(Files.newInputStream(getFile("bla.tar.lz4").toPath())));
+            InputStream e = Files.newInputStream(getFile("bla.tar").toPath())) {
             final byte[] expected = IOUtils.toByteArray(e);
             final byte[] actual = IOUtils.toByteArray(a);
             assertArrayEquals(expected, actual);
@@ -92,8 +92,8 @@ public final class FramedLZ4CompressorInputStreamTest
 
     @Test
     public void readBlaLz4WithDecompressConcatenated() throws IOException {
-        try (InputStream a = new FramedLZ4CompressorInputStream(new FileInputStream(getFile("bla.tar.lz4")), true);
-            FileInputStream e = new FileInputStream(getFile("bla.tar"))) {
+        try (InputStream a = new FramedLZ4CompressorInputStream(Files.newInputStream(getFile("bla.tar.lz4").toPath()), true);
+            InputStream e = Files.newInputStream(getFile("bla.tar").toPath())) {
             final byte[] expected = IOUtils.toByteArray(e);
             final byte[] actual = IOUtils.toByteArray(a);
             assertArrayEquals(expected, actual);
@@ -119,9 +119,9 @@ public final class FramedLZ4CompressorInputStreamTest
     public void readBlaLz4ViaFactoryWithDecompressConcatenated() throws Exception {
         try (InputStream a = new CompressorStreamFactory()
                  .createCompressorInputStream(CompressorStreamFactory.getLZ4Framed(),
-                                              new FileInputStream(getFile("bla.tar.lz4")),
+                                              Files.newInputStream(getFile("bla.tar.lz4").toPath()),
                                               true);
-            FileInputStream e = new FileInputStream(getFile("bla.tar"))) {
+            InputStream e = Files.newInputStream(getFile("bla.tar").toPath())) {
             final byte[] expected = IOUtils.toByteArray(e);
             final byte[] actual = IOUtils.toByteArray(a);
             assertArrayEquals(expected, actual);
@@ -148,8 +148,8 @@ public final class FramedLZ4CompressorInputStreamTest
 
     @Test
     public void readBlaDumpLz4() throws IOException {
-        try (InputStream a = new FramedLZ4CompressorInputStream(new FileInputStream(getFile("bla.dump.lz4")));
-            FileInputStream e = new FileInputStream(getFile("bla.dump"))) {
+        try (InputStream a = new FramedLZ4CompressorInputStream(Files.newInputStream(getFile("bla.dump.lz4").toPath()));
+            InputStream e = Files.newInputStream(getFile("bla.dump").toPath())) {
             final byte[] expected = IOUtils.toByteArray(e);
             final byte[] actual = IOUtils.toByteArray(a);
             assertArrayEquals(expected, actual);
@@ -158,7 +158,7 @@ public final class FramedLZ4CompressorInputStreamTest
 
     @Test(expected = IOException.class)
     public void rejectsNonLZ4Stream() throws IOException {
-        try (InputStream a = new FramedLZ4CompressorInputStream(new FileInputStream(getFile("bla.tar")))) {
+        try (InputStream a = new FramedLZ4CompressorInputStream(Files.newInputStream(getFile("bla.tar").toPath()))) {
              fail("expected exception");
         }
     }
@@ -572,7 +572,7 @@ public final class FramedLZ4CompressorInputStreamTest
     @Test
     public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.lz4");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final FramedLZ4CompressorInputStream in =
                     new FramedLZ4CompressorInputStream(is);
             IOUtils.toByteArray(in);
@@ -586,7 +586,7 @@ public final class FramedLZ4CompressorInputStreamTest
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.lz4");
         final byte[] buf = new byte[2];
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final FramedLZ4CompressorInputStream in =
                     new FramedLZ4CompressorInputStream(is);
             IOUtils.toByteArray(in);
@@ -617,12 +617,12 @@ public final class FramedLZ4CompressorInputStreamTest
 
     private void readDoubledBlaLz4(final StreamWrapper wrapper, final boolean expectDuplicateOutput) throws Exception {
         byte[] singleInput;
-        try (InputStream i = new FileInputStream(getFile("bla.tar.lz4"))) {
+        try (InputStream i = Files.newInputStream(getFile("bla.tar.lz4").toPath())) {
             singleInput = IOUtils.toByteArray(i);
         }
         final byte[] input = duplicate(singleInput);
         try (InputStream a = wrapper.wrap(new ByteArrayInputStream(input));
-            FileInputStream e = new FileInputStream(getFile("bla.tar"))) {
+            InputStream e = Files.newInputStream(getFile("bla.tar").toPath())) {
             final byte[] expected = IOUtils.toByteArray(e);
             final byte[] actual = IOUtils.toByteArray(a);
             assertArrayEquals(expectDuplicateOutput ? duplicate(expected) : expected, actual);
@@ -637,7 +637,7 @@ public final class FramedLZ4CompressorInputStreamTest
 
     private void expectIOException(final String fileName) throws IOException {
         thrown.expect(IOException.class);
-        try (InputStream is = new FileInputStream(getFile(fileName))) {
+        try (InputStream is = Files.newInputStream(getFile(fileName).toPath())) {
             final FramedLZ4CompressorInputStream in = new FramedLZ4CompressorInputStream(is);
             IOUtils.toByteArray(in);
         }

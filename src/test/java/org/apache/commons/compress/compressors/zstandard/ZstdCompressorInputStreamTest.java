@@ -22,10 +22,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 
 import com.github.luben.zstd.NoPool;
 import com.github.luben.zstd.RecyclingBufferPool;
@@ -47,7 +47,7 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
     public void testZstdDecode() throws IOException {
         final File input = getFile("zstandard.testdata.zst");
         final File expected = getFile("zstandard.testdata");
-        try (InputStream inputStream = new FileInputStream(input);
+        try (InputStream inputStream = Files.newInputStream(input.toPath());
             ZstdCompressorInputStream zstdInputStream = new ZstdCompressorInputStream(inputStream)) {
             final byte[] b = new byte[97];
             IOUtils.read(expected, b);
@@ -64,7 +64,7 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
     public void testZstdDecodeWithNoPool() throws IOException {
         final File input = getFile("zstandard.testdata.zst");
         final File expected = getFile("zstandard.testdata");
-        try (InputStream inputStream = new FileInputStream(input);
+        try (InputStream inputStream = Files.newInputStream(input.toPath());
              ZstdCompressorInputStream zstdInputStream = new ZstdCompressorInputStream(inputStream, NoPool.INSTANCE)) {
             final byte[] b = new byte[97];
             IOUtils.read(expected, b);
@@ -81,7 +81,7 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
     public void testZstdDecodeWithRecyclingBufferPool() throws IOException {
         final File input = getFile("zstandard.testdata.zst");
         final File expected = getFile("zstandard.testdata");
-        try (InputStream inputStream = new FileInputStream(input);
+        try (InputStream inputStream = Files.newInputStream(input.toPath());
              ZstdCompressorInputStream zstdInputStream = new ZstdCompressorInputStream(inputStream, RecyclingBufferPool.INSTANCE)) {
             final byte[] b = new byte[97];
             IOUtils.read(expected, b);
@@ -126,7 +126,7 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
     @Test
     public void shouldBeAbleToSkipAByte() throws IOException {
         final File input = getFile("zstandard.testdata.zst");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final ZstdCompressorInputStream in =
                     new ZstdCompressorInputStream(is);
             Assert.assertEquals(1, in.skip(1));
@@ -144,11 +144,11 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
 
         final byte[] originalFileContent = new byte[((int) originalFileLength)];
 
-        try (InputStream ois = new FileInputStream(original)) {
+        try (InputStream ois = Files.newInputStream(original.toPath())) {
             ois.read(originalFileContent);
         }
 
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final ZstdCompressorInputStream in =
                     new ZstdCompressorInputStream(is);
 
@@ -160,7 +160,7 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
     @Test
     public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("zstandard.testdata.zst");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final ZstdCompressorInputStream in =
                     new ZstdCompressorInputStream(is);
             IOUtils.toByteArray(in);
@@ -174,7 +174,7 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("zstandard.testdata.zst");
         final byte[] buf = new byte[2];
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final ZstdCompressorInputStream in =
                     new ZstdCompressorInputStream(is);
             IOUtils.toByteArray(in);
@@ -188,10 +188,10 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
     public void testZstandardUnarchive() throws Exception {
         final File input = getFile("bla.tar.zst");
         final File output = new File(dir, "bla.tar");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             try (CompressorInputStream in = new CompressorStreamFactory()
                     .createCompressorInputStream("zstd", is);
-                    FileOutputStream out = new FileOutputStream(output)) {
+                OutputStream out = Files.newOutputStream(output.toPath())) {
                 IOUtils.copy(in, out);
             }
         }

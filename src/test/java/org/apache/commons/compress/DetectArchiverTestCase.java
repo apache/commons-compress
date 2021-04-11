@@ -24,8 +24,8 @@ import static org.junit.Assert.fail;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -108,8 +108,7 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
     private ArchiveInputStream getStreamFor(final String resource)
             throws ArchiveException, IOException {
         return factory.createArchiveInputStream(
-                   new BufferedInputStream(new FileInputStream(
-                       getFile(resource))));
+                   new BufferedInputStream(Files.newInputStream(getFile(resource).toPath())));
     }
 
     // Check that the empty archives created by the code are readable
@@ -144,7 +143,7 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
         ArchiveInputStream ais = null;
         BufferedInputStream in = null;
         try {
-            in = new BufferedInputStream(new FileInputStream(ar));
+            in = new BufferedInputStream(Files.newInputStream(ar.toPath()));
             ais = factory.createArchiveInputStream(in);
         } catch (final ArchiveException ae) {
             fail("Should have recognized empty archive for "+type);

@@ -23,8 +23,8 @@ import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -70,7 +70,7 @@ public class ArchiveReadTest extends AbstractTestCase {
         assertTrue(ARCDIR.exists());
         final File listing = new File(ARCDIR, "files.txt");
         assertTrue("files.txt is readable", listing.canRead());
-        try (final BufferedReader br = new BufferedReader(new FileReader(listing))) {
+        try (final BufferedReader br = new BufferedReader(Files.newBufferedReader(listing.toPath()))) {
             String line;
             while ((line = br.readLine()) != null) {
                 if (!line.startsWith("#")) {

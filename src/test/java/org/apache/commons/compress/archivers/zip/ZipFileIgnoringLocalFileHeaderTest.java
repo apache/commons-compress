@@ -27,9 +27,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.Enumeration;
 
 public class ZipFileIgnoringLocalFileHeaderTest {
@@ -55,7 +55,7 @@ public class ZipFileIgnoringLocalFileHeaderTest {
         try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
             for (final Enumeration<ZipArchiveEntry> e = zf.getEntries(); e.hasMoreElements(); ) {
                 final ZipArchiveEntry entry = e.nextElement();
-                try (final OutputStream out = new FileOutputStream(new File(dir, entry.getName()))) {
+                try (final OutputStream out = Files.newOutputStream(new File(dir, entry.getName()).toPath())) {
                     IOUtils.copy(zf.getInputStream(entry), out);
                 }
             }

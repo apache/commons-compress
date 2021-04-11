@@ -19,9 +19,9 @@
 package org.apache.commons.compress.compressors.pack200;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.HashMap;
 
 import org.apache.commons.compress.AbstractTestCase;
@@ -40,7 +40,7 @@ public final class Pack200UtilsTest extends AbstractTestCase {
         try {
             Pack200Utils.normalize(input, output[1],
                                    new HashMap<String, String>());
-            try (FileInputStream is = new FileInputStream(output[1])) {
+            try (InputStream is = Files.newInputStream(output[1].toPath())) {
                 final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT
                         .createArchiveInputStream("jar", is);
 
@@ -53,7 +53,7 @@ public final class Pack200UtilsTest extends AbstractTestCase {
                         entry = in.getNextEntry();
                         continue;
                     }
-                    final OutputStream out = new FileOutputStream(archiveEntry);
+                    final OutputStream out = Files.newOutputStream(archiveEntry.toPath());
                     IOUtils.copy(in, out);
                     out.close();
                     entry = in.getNextEntry();
@@ -72,10 +72,10 @@ public final class Pack200UtilsTest extends AbstractTestCase {
         final File input = getFile("bla.jar");
         final File[] output = createTempDirAndFile();
         try {
-            FileInputStream is = new FileInputStream(input);
+            InputStream is = Files.newInputStream(input.toPath());
             OutputStream os = null;
             try {
-                os = new FileOutputStream(output[1]);
+                os = Files.newOutputStream(output[1].toPath());
                 IOUtils.copy(is, os);
             } finally {
                 is.close();
@@ -85,7 +85,7 @@ public final class Pack200UtilsTest extends AbstractTestCase {
             }
 
             Pack200Utils.normalize(output[1]);
-            is = new FileInputStream(output[1]);
+            is = Files.newInputStream(output[1].toPath());
             try {
                 final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT
                     .createArchiveInputStream("jar", is);
@@ -99,7 +99,7 @@ public final class Pack200UtilsTest extends AbstractTestCase {
                         entry = in.getNextEntry();
                         continue;
                     }
-                    final OutputStream out = new FileOutputStream(archiveEntry);
+                    final OutputStream out = Files.newOutputStream(archiveEntry.toPath());
                     IOUtils.copy(in, out);
                     out.close();
                     entry = in.getNextEntry();

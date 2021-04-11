@@ -23,8 +23,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.junit.Test;
@@ -69,8 +70,8 @@ public class Maven221MultiVolumeTest {
     @Test
     public void testRead7ZipMultiVolumeArchiveForStream() throws IOException {
 
-        try (final FileInputStream archive = new FileInputStream(getFile("apache-maven-2.2.1.zip.001"));
-            ZipArchiveInputStream zi = new ZipArchiveInputStream(archive, null, false)) {
+        try (final InputStream archive = Files.newInputStream(getFile("apache-maven-2.2.1.zip.001").toPath());
+             ZipArchiveInputStream zi = new ZipArchiveInputStream(archive, null, false)) {
 
             // these are the entries that are supposed to be processed
             // correctly without any problems

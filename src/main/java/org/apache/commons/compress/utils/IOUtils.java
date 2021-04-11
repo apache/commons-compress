@@ -22,7 +22,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.EOFException;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -151,7 +150,7 @@ public final class IOUtils {
      * @since 1.20
      */
     public static int read(final File file, final byte[] array) throws IOException {
-        try (FileInputStream inputStream = new FileInputStream(file)) {
+        try (InputStream inputStream = Files.newInputStream(file.toPath())) {
             return readFully(inputStream, array, 0, array.length);
         }
     }

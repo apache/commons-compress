@@ -19,9 +19,10 @@
 package org.apache.commons.compress.compressors.lz4;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
@@ -31,8 +32,8 @@ public class BlockLZ4CompressorInputStreamTest extends AbstractTestCase {
 
     @Test
     public void readBlaLz4() throws IOException {
-        try (InputStream a = new BlockLZ4CompressorInputStream(new FileInputStream(getFile("bla.tar.block_lz4")));
-            FileInputStream e = new FileInputStream(getFile("bla.tar"))) {
+        try (InputStream a = new BlockLZ4CompressorInputStream(Files.newInputStream(getFile("bla.tar.block_lz4").toPath()));
+            InputStream e = Files.newInputStream(getFile("bla.tar").toPath())) {
             final byte[] expected = IOUtils.toByteArray(e);
             final byte[] actual = IOUtils.toByteArray(a);
             Assert.assertArrayEquals(expected, actual);
@@ -42,7 +43,7 @@ public class BlockLZ4CompressorInputStreamTest extends AbstractTestCase {
     @Test
     public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.block_lz4");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final BlockLZ4CompressorInputStream in =
                     new BlockLZ4CompressorInputStream(is);
             IOUtils.toByteArray(in);
@@ -56,7 +57,7 @@ public class BlockLZ4CompressorInputStreamTest extends AbstractTestCase {
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.block_lz4");
         final byte[] buf = new byte[2];
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final BlockLZ4CompressorInputStream in =
                     new BlockLZ4CompressorInputStream(is);
             IOUtils.toByteArray(in);

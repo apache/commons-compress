@@ -24,9 +24,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -148,7 +148,7 @@ public class IOMethodsTest extends AbstractTestCase {
         final File file = createSingleEntryArchive(archiverName);
         file.deleteOnExit();
 
-        final InputStream is1 = new FileInputStream(file);
+        final InputStream is1 = Files.newInputStream(file.toPath());
         final ArchiveInputStream ais1 = factory.createArchiveInputStream(archiverName, is1);
         final ArchiveEntry nextEntry = ais1.getNextEntry();
         assertNotNull(nextEntry);
@@ -159,13 +159,13 @@ public class IOMethodsTest extends AbstractTestCase {
             assertTrue("Size should be > 0, found: "+size, size > 0);
         }
 
-        final InputStream is2 = new FileInputStream(file);
+        final InputStream is2 = Files.newInputStream(file.toPath());
         final ArchiveInputStream ais2 = factory.createArchiveInputStream(archiverName, is2);
         final ArchiveEntry nextEntry2 = ais2.getNextEntry();
         assertNotNull(nextEntry2);
         assertEquals("Expected same entry size", size, nextEntry2.getSize());
 
-        final InputStream is3 = new FileInputStream(file);
+        final InputStream is3 = Files.newInputStream(file.toPath());
         final ArchiveInputStream ais3 = factory.createArchiveInputStream(archiverName, is3);
         final ArchiveEntry nextEntry3 = ais3.getNextEntry();
         assertNotNull(nextEntry3);

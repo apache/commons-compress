@@ -27,9 +27,9 @@ import static org.junit.Assert.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.MockEvilInputStream;
@@ -172,7 +172,7 @@ public final class DetectCompressorTestCase {
     private String detect(final String testFileName) throws IOException, CompressorException {
         String name = null;
         try (InputStream is = new BufferedInputStream(
-                new FileInputStream(getFile(testFileName)))) {
+                Files.newInputStream(getFile(testFileName).toPath()))) {
             name = CompressorStreamFactory.detect(is);
         }
         return name;
@@ -212,7 +212,7 @@ public final class DetectCompressorTestCase {
         final CompressorStreamFactory fac = new CompressorStreamFactory(true,
                 memoryLimitInKb);
         final InputStream is = new BufferedInputStream(
-                new FileInputStream(getFile(fileName)));
+                Files.newInputStream(getFile(fileName).toPath()));
         try {
             return fac.createCompressorInputStream(is);
         } catch (final CompressorException e) {
@@ -272,14 +272,14 @@ public final class DetectCompressorTestCase {
     private CompressorInputStream getStreamFor(final String resource)
             throws CompressorException, IOException {
         return factory.createCompressorInputStream(
-                   new BufferedInputStream(new FileInputStream(
-                       getFile(resource))));
+                   new BufferedInputStream(Files.newInputStream(
+                       getFile(resource).toPath())));
     }
 
     private CompressorInputStream getStreamFor(final String resource, final CompressorStreamFactory factory)
             throws CompressorException, IOException {
         return factory.createCompressorInputStream(
-                   new BufferedInputStream(new FileInputStream(
-                       getFile(resource))));
+                   new BufferedInputStream(Files.newInputStream(
+                       getFile(resource).toPath())));
     }
 }

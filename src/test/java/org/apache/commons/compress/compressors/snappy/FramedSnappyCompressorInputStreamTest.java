@@ -27,10 +27,11 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
@@ -57,11 +58,11 @@ public final class FramedSnappyCompressorInputStreamTest
     public void testLoremIpsum() throws Exception {
         final File outputSz = new File(dir, "lorem-ipsum.1");
         final File outputGz = new File(dir, "lorem-ipsum.2");
-        try (FileInputStream isSz = new FileInputStream(getFile("lorem-ipsum.txt.sz"))) {
+        try (InputStream isSz = Files.newInputStream(getFile("lorem-ipsum.txt.sz").toPath())) {
             InputStream in = new FramedSnappyCompressorInputStream(isSz);
-            FileOutputStream out = null;
+            OutputStream out = null;
             try {
-                out = new FileOutputStream(outputSz);
+                out = Files.newOutputStream(outputSz.toPath());
                 IOUtils.copy(in, out);
             } finally {
                 if (out != null) {
@@ -69,10 +70,10 @@ public final class FramedSnappyCompressorInputStreamTest
                 }
                 in.close();
             }
-            try (FileInputStream isGz = new FileInputStream(getFile("lorem-ipsum.txt.gz"))) {
+            try (InputStream isGz = Files.newInputStream(getFile("lorem-ipsum.txt.gz").toPath())) {
                 in = new GzipCompressorInputStream(isGz);
                 try {
-                    out = new FileOutputStream(outputGz);
+                    out = Files.newOutputStream(outputGz.toPath());
                     IOUtils.copy(in, out);
                 } finally {
                     if (out != null) {
@@ -83,8 +84,8 @@ public final class FramedSnappyCompressorInputStreamTest
             }
         }
 
-        try (FileInputStream sz = new FileInputStream(outputSz)) {
-            try (FileInputStream gz = new FileInputStream(outputGz)) {
+        try (InputStream sz = Files.newInputStream(outputSz.toPath())) {
+            try (InputStream gz = Files.newInputStream(outputGz.toPath())) {
                 assertArrayEquals(IOUtils.toByteArray(sz),
                         IOUtils.toByteArray(gz));
             }
@@ -94,7 +95,7 @@ public final class FramedSnappyCompressorInputStreamTest
     @Test
     public void testRemainingChunkTypes() throws Exception {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try (FileInputStream isSz = new FileInputStream(getFile("mixed.txt.sz"))) {
+        try (InputStream isSz = Files.newInputStream(getFile("mixed.txt.sz").toPath())) {
             final FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(isSz);
             IOUtils.copy(in, out);
             out.close();
@@ -113,7 +114,7 @@ public final class FramedSnappyCompressorInputStreamTest
 
     @Test
     public void testAvailable() throws Exception {
-        try (FileInputStream isSz = new FileInputStream(getFile("mixed.txt.sz"))) {
+        try (InputStream isSz = Files.newInputStream(getFile("mixed.txt.sz").toPath())) {
             final FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(isSz);
             assertEquals(0, in.available()); // no chunk read so far
             assertEquals('1', in.read());
@@ -156,7 +157,7 @@ public final class FramedSnappyCompressorInputStreamTest
             try (InputStream is = zip.getInputStream(zip.getEntry("Index/Document.iwa"))) {
                 try (FramedSnappyCompressorInputStream in =
                         new FramedSnappyCompressorInputStream(is, FramedSnappyDialect.IWORK_ARCHIVE);
-                        FileOutputStream out = new FileOutputStream(new File(dir, "snappyIWATest.raw"))) {
+                        OutputStream out = Files.newOutputStream(new File(dir, "snappyIWATest.raw").toPath())) {
                     IOUtils.copy(in, out);
                 }
             }
@@ -169,14 +170,14 @@ public final class FramedSnappyCompressorInputStreamTest
     @Test
     public void readIWAFileWithBiggerOffset() throws Exception {
         final File o = new File(dir, "COMPRESS-358.raw");
-        try (InputStream is = new FileInputStream(getFile("COMPRESS-358.iwa"));
+        try (InputStream is = Files.newInputStream(getFile("COMPRESS-358.iwa").toPath());
              FramedSnappyCompressorInputStream in =
                  new FramedSnappyCompressorInputStream(is, 1<<16, FramedSnappyDialect.IWORK_ARCHIVE);
-             FileOutputStream out = new FileOutputStream(o)) {
+            OutputStream out = Files.newOutputStream(o.toPath())) {
             IOUtils.copy(in, out);
         }
-        try (FileInputStream a = new FileInputStream(o);
-             FileInputStream e = new FileInputStream(getFile("COMPRESS-358.uncompressed"))) {
+        try (InputStream a = Files.newInputStream(o.toPath());
+             InputStream e = Files.newInputStream(getFile("COMPRESS-358.uncompressed").toPath())) {
             final byte[] expected = IOUtils.toByteArray(e);
             final byte[] actual = IOUtils.toByteArray(a);
             assertArrayEquals(expected, actual);
@@ -186,7 +187,7 @@ public final class FramedSnappyCompressorInputStreamTest
     @Test
     public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.sz");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final FramedSnappyCompressorInputStream in =
                     new FramedSnappyCompressorInputStream(is);
             IOUtils.toByteArray(in);
@@ -200,7 +201,7 @@ public final class FramedSnappyCompressorInputStreamTest
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.sz");
         final byte[] buf = new byte[2];
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final FramedSnappyCompressorInputStream in =
                     new FramedSnappyCompressorInputStream(is);
             IOUtils.toByteArray(in);

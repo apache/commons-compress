@@ -29,10 +29,10 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -50,7 +50,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void workaroundForBrokenTimeHeader() throws Exception {
-        try (TarArchiveInputStream in = new TarArchiveInputStream(new FileInputStream(getFile("simple-aix-native-tar.tar")))) {
+        try (TarArchiveInputStream in = new TarArchiveInputStream(Files.newInputStream(getFile("simple-aix-native-tar.tar").toPath()))) {
             TarArchiveEntry tae = in.getNextTarEntry();
             tae = in.getNextTarEntry();
             assertEquals("sample/link-to-txt-file.lnk", tae.getName());
@@ -72,7 +72,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
     }
 
     private void datePriorToEpoch(final String archive) throws Exception {
-        try (TarArchiveInputStream in = new TarArchiveInputStream(new FileInputStream(getFile(archive)))) {
+        try (TarArchiveInputStream in = new TarArchiveInputStream(Files.newInputStream(getFile(archive).toPath()))) {
             final TarArchiveEntry tae = in.getNextTarEntry();
             assertEquals("foo", tae.getName());
             final Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
@@ -164,12 +164,12 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
     public void shouldThrowAnExceptionOnTruncatedEntries() throws Exception {
         final File dir = mkdir("COMPRESS-279");
         final TarArchiveInputStream is = getTestStream("/COMPRESS-279.tar");
-        FileOutputStream out = null;
+        OutputStream out = null;
         try {
             TarArchiveEntry entry = is.getNextTarEntry();
             int count = 0;
             while (entry != null) {
-                out = new FileOutputStream(new File(dir, String.valueOf(count)));
+                out = Files.newOutputStream(new File(dir, String.valueOf(count)).toPath());
                 IOUtils.copy(is, out);
                 out.close();
                 out = null;
@@ -282,7 +282,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        try (FileInputStream in = new FileInputStream(getFile("bla.tar"));
+        try (InputStream in = Files.newInputStream(getFile("bla.tar").toPath());
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();
             IOUtils.toByteArray(archive);
@@ -294,7 +294,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
     @Test
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
-        try (FileInputStream in = new FileInputStream(getFile("bla.tar"));
+        try (InputStream in = Files.newInputStream(getFile("bla.tar").toPath());
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();
             IOUtils.toByteArray(archive);
@@ -326,7 +326,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
             // -----------------------
             final String fileName = "/" + dirDirectory + "/" + subDir;
             final File tarF = new File(rootPath + "/tar" + i + ".tar");
-            final FileOutputStream dest = new FileOutputStream(tarF);
+            final OutputStream dest = Files.newOutputStream(tarF.toPath());
             final TarArchiveOutputStream out = new TarArchiveOutputStream(new BufferedOutputStream(dest));
             out.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_STAR);
             out.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
@@ -342,7 +342,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
             // -----------------------
             // untar these tars
             // -----------------------
-            final InputStream is = new FileInputStream(tarF);
+            final InputStream is = Files.newInputStream(tarF.toPath());
             final TarArchiveInputStream debInputStream = (TarArchiveInputStream) ArchiveStreamFactory.DEFAULT
                     .createArchiveInputStream("tar", is);
             TarArchiveEntry outEntry;
@@ -355,7 +355,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
 
     @Test(expected = IOException.class)
     public void testParseTarWithSpecialPaxHeaders() throws IOException {
-        try (FileInputStream in = new FileInputStream(getFile("COMPRESS-530.tar"));
+        try (InputStream in = Files.newInputStream(getFile("COMPRESS-530.tar").toPath());
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             archive.getNextEntry();
             IOUtils.toByteArray(archive);
@@ -364,7 +364,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
 
     @Test(expected = IOException.class)
     public void testParseTarWithNonNumberPaxHeaders() throws IOException {
-        try (FileInputStream in = new FileInputStream(getFile("COMPRESS-529.tar"));
+        try (InputStream in = Files.newInputStream(getFile("COMPRESS-529.tar").toPath());
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             archive.getNextEntry();
         }
@@ -372,7 +372,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
 
     @Test(expected = IOException.class)
     public void testParseTarTruncatedInPadding() throws IOException {
-        try (FileInputStream in = new FileInputStream(getFile("COMPRESS-544_truncated_in_padding.tar"));
+        try (InputStream in = Files.newInputStream(getFile("COMPRESS-544_truncated_in_padding.tar").toPath());
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             while (archive.getNextTarEntry() != null) {
             }
@@ -381,7 +381,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
 
     @Test(expected = IOException.class)
     public void testParseTarTruncatedInContent() throws IOException {
-        try (FileInputStream in = new FileInputStream(getFile("COMPRESS-544_truncated_in_content.tar"));
+        try (InputStream in = Files.newInputStream(getFile("COMPRESS-544_truncated_in_content.tar").toPath());
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             while (archive.getNextTarEntry() != null) {
             }
@@ -390,7 +390,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
 
     @Test(expected = IOException.class)
     public void testThrowExceptionWithNullEntry() throws IOException {
-        try (FileInputStream in = new FileInputStream(getFile("COMPRESS-554.tar"));
+        try (InputStream in = Files.newInputStream(getFile("COMPRESS-554.tar").toPath());
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             while (archive.getNextTarEntry() != null) {
             }
@@ -399,7 +399,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
 
     @Test(expected = IOException.class)
     public void testThrowException() throws IOException {
-        try (FileInputStream in = new FileInputStream(getFile("COMPRESS-553.tar"));
+        try (InputStream in = Files.newInputStream(getFile("COMPRESS-553.tar").toPath());
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             while (archive.getNextTarEntry() != null) {
             }
@@ -434,7 +434,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
 
     @Test(expected = IOException.class)
     public void rejectsArchivesWithNegativeSizes() throws Exception {
-        try (FileInputStream in = new FileInputStream(getFile("COMPRESS-569.tar"));
+        try (InputStream in = Files.newInputStream(getFile("COMPRESS-569.tar").toPath());
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             while (archive.getNextTarEntry() != null) {
             }

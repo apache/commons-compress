@@ -19,8 +19,9 @@
 package org.apache.commons.compress.compressors.lz4;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -57,7 +58,7 @@ public class XXHash32Test {
     @Test
     public void verifyChecksum() throws IOException {
         final XXHash32 h = new XXHash32();
-        try (FileInputStream s = new FileInputStream(file)) {
+        try (InputStream s = Files.newInputStream(file.toPath())) {
             final byte[] b = IOUtils.toByteArray(s);
             h.update(b, 0, b.length);
         }

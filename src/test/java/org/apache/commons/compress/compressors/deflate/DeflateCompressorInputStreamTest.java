@@ -19,9 +19,9 @@
 package org.apache.commons.compress.compressors.deflate;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.utils.IOUtils;
@@ -33,7 +33,7 @@ public class DeflateCompressorInputStreamTest {
     @Test
     public void availableShouldReturnNonZero() throws IOException {
         final File input = AbstractTestCase.getFile("bla.tar.deflatez");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final DeflateCompressorInputStream in =
                     new DeflateCompressorInputStream(is);
             Assert.assertTrue(in.available() > 0);
@@ -44,7 +44,7 @@ public class DeflateCompressorInputStreamTest {
     @Test
     public void shouldBeAbleToSkipAByte() throws IOException {
         final File input = AbstractTestCase.getFile("bla.tar.deflatez");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final DeflateCompressorInputStream in =
                     new DeflateCompressorInputStream(is);
             Assert.assertEquals(1, in.skip(1));
@@ -55,7 +55,7 @@ public class DeflateCompressorInputStreamTest {
     @Test
     public void singleByteReadWorksAsExpected() throws IOException {
         final File input = AbstractTestCase.getFile("bla.tar.deflatez");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final DeflateCompressorInputStream in =
                     new DeflateCompressorInputStream(is);
             // tar header starts with filename "test1.xml"
@@ -67,7 +67,7 @@ public class DeflateCompressorInputStreamTest {
     @Test
     public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = AbstractTestCase.getFile("bla.tar.deflatez");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final DeflateCompressorInputStream in =
                     new DeflateCompressorInputStream(is);
             IOUtils.toByteArray(in);
@@ -81,7 +81,7 @@ public class DeflateCompressorInputStreamTest {
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = AbstractTestCase.getFile("bla.tar.deflatez");
         final byte[] buf = new byte[2];
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final DeflateCompressorInputStream in =
                     new DeflateCompressorInputStream(is);
             IOUtils.toByteArray(in);

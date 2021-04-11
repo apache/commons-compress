@@ -24,11 +24,10 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 
@@ -46,10 +45,10 @@ public final class GZipTestCase extends AbstractTestCase {
     public void testGzipCreation()  throws Exception {
         final File input = getFile("test1.xml");
         final File output = new File(dir, "test1.xml.gz");
-        try (OutputStream out = new FileOutputStream(output)) {
+        try (OutputStream out = Files.newOutputStream(output.toPath())) {
             try (CompressorOutputStream cos = new CompressorStreamFactory()
                     .createCompressorOutputStream("gz", out)) {
-                IOUtils.copy(new FileInputStream(input), cos);
+                IOUtils.copy(Files.newInputStream(input.toPath()), cos);
             }
         }
     }
@@ -58,10 +57,10 @@ public final class GZipTestCase extends AbstractTestCase {
     public void testGzipUnarchive() throws Exception {
         final File input = getFile("bla.tgz");
         final File output = new File(dir, "bla.tar");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             try (CompressorInputStream in = new CompressorStreamFactory()
                     .createCompressorInputStream("gz", is);
-                    FileOutputStream out = new FileOutputStream(output)) {
+                    OutputStream out = Files.newOutputStream(output.toPath())) {
                 IOUtils.copy(in, out);
             }
         }
@@ -70,7 +69,7 @@ public final class GZipTestCase extends AbstractTestCase {
     @Test
     public void testConcatenatedStreamsReadFirstOnly() throws Exception {
         final File input = getFile("multiple.gz");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             try (CompressorInputStream in = new CompressorStreamFactory()
                     .createCompressorInputStream("gz", is)) {
                 assertEquals('a', in.read());
@@ -82,7 +81,7 @@ public final class GZipTestCase extends AbstractTestCase {
     @Test
     public void testConcatenatedStreamsReadFully() throws Exception {
         final File input = getFile("multiple.gz");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             try (CompressorInputStream in = new GzipCompressorInputStream(is, true)) {
                 assertEquals('a', in.read());
                 assertEquals('b', in.read());
@@ -101,7 +100,7 @@ public final class GZipTestCase extends AbstractTestCase {
         OutputStream out = null;
         CompressorInputStream cin = null;
         try {
-            in = new FileInputStream(getFile("bla.tgz"));
+            in = Files.newInputStream(getFile("bla.tgz").toPath());
             out = new ByteArrayOutputStream();
             IOUtils.copy(in, out);
             in.close();
@@ -136,7 +135,7 @@ public final class GZipTestCase extends AbstractTestCase {
     @Test
     public void testInteroperabilityWithGzipCompressorInputStream() throws Exception {
         final byte[] content;
-        try (FileInputStream fis = new FileInputStream(getFile("test3.xml"))) {
+        try (InputStream fis = Files.newInputStream(getFile("test3.xml").toPath())) {
             content = IOUtils.toByteArray(fis);
         }
 
@@ -162,7 +161,7 @@ public final class GZipTestCase extends AbstractTestCase {
     @Test
     public void testInteroperabilityWithGZIPInputStream() throws Exception {
         final byte[] content;
-        try (FileInputStream fis = new FileInputStream(getFile("test3.xml"))) {
+        try (InputStream fis = Files.newInputStream(getFile("test3.xml").toPath())) {
             content = IOUtils.toByteArray(fis);
         }
 
@@ -205,7 +204,7 @@ public final class GZipTestCase extends AbstractTestCase {
 
     private void testExtraFlags(final int compressionLevel, final int flag) throws Exception {
         final byte[] content;
-        try (FileInputStream fis = new FileInputStream(getFile("test3.xml"))) {
+        try (InputStream fis = Files.newInputStream(getFile("test3.xml").toPath())) {
             content = IOUtils.toByteArray(fis);
         }
 
@@ -258,8 +257,8 @@ public final class GZipTestCase extends AbstractTestCase {
         parameters.setOperatingSystem(13);
         parameters.setFilename("test3.xml");
         parameters.setComment("Umlaute möglich?");
-        try (GzipCompressorOutputStream out = new GzipCompressorOutputStream(bout, parameters); FileInputStream fis = new FileInputStream(getFile("test3" +
-                ".xml"))) {
+        try (GzipCompressorOutputStream out = new GzipCompressorOutputStream(bout, parameters); InputStream fis = Files.newInputStream(getFile("test3" +
+                ".xml").toPath())) {
             IOUtils.copy(fis, out);
         }
 
@@ -277,7 +276,7 @@ public final class GZipTestCase extends AbstractTestCase {
     @Test
     public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tgz");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final GzipCompressorInputStream in =
                     new GzipCompressorInputStream(is);
             IOUtils.toByteArray(in);
@@ -291,7 +290,7 @@ public final class GZipTestCase extends AbstractTestCase {
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tgz");
         final byte[] buf = new byte[2];
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final GzipCompressorInputStream in =
                     new GzipCompressorInputStream(is);
             IOUtils.toByteArray(in);

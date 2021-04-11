@@ -28,13 +28,13 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.util.Calendar;
 import java.util.Date;
@@ -55,7 +55,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
     public void testCount() throws Exception {
         final File f = File.createTempFile("commons-compress-tarcount", ".tar");
         f.deleteOnExit();
-        final FileOutputStream fos = new FileOutputStream(f);
+        final OutputStream fos = Files.newOutputStream(f.toPath());
 
         final ArchiveOutputStream tarOut = ArchiveStreamFactory.DEFAULT
             .createArchiveOutputStream(ArchiveStreamFactory.TAR, fos);
@@ -64,7 +64,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         final TarArchiveEntry sEntry = new TarArchiveEntry(file1, file1.getName());
         tarOut.putArchiveEntry(sEntry);
 
-        final FileInputStream in = new FileInputStream(file1);
+        final InputStream in = Files.newInputStream(file1.toPath());
         final byte[] buf = new byte[8192];
 
         int read = 0;
@@ -677,7 +677,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
     private void testPadding(int blockSize, final String fileName, final byte[] contents) throws IOException {
         final File f = File.createTempFile("commons-compress-padding", ".tar");
         f.deleteOnExit();
-        final FileOutputStream fos = new FileOutputStream(f);
+        final OutputStream fos = Files.newOutputStream(f.toPath());
         final TarArchiveOutputStream tos;
         if (blockSize != -2) {
             tos = new TarArchiveOutputStream(fos, blockSize);

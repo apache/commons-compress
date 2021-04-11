@@ -26,10 +26,9 @@ import static org.junit.Assert.assertTrue;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ar.ArArchiveEntry;
@@ -48,14 +47,14 @@ public final class ArTestCase extends AbstractTestCase {
         final File file1 = getFile("test1.xml");
         final File file2 = getFile("test2.xml");
 
-        final OutputStream out = new FileOutputStream(output);
+        final OutputStream out = Files.newOutputStream(output.toPath());
         final ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ar", out);
         os.putArchiveEntry(new ArArchiveEntry("test1.xml", file1.length()));
-        IOUtils.copy(new FileInputStream(file1), os);
+        IOUtils.copy(Files.newInputStream(file1.toPath()), os);
         os.closeArchiveEntry();
 
         os.putArchiveEntry(new ArArchiveEntry("test2.xml", file2.length()));
-        IOUtils.copy(new FileInputStream(file2), os);
+        IOUtils.copy(Files.newInputStream(file2.toPath()), os);
         os.closeArchiveEntry();
 
         os.close();
@@ -68,14 +67,14 @@ public final class ArTestCase extends AbstractTestCase {
             final File file1 = getFile("test1.xml");
             final File file2 = getFile("test2.xml");
 
-            final OutputStream out = new FileOutputStream(output);
+            final OutputStream out = Files.newOutputStream(output.toPath());
             final ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ar", out);
             os.putArchiveEntry(new ArArchiveEntry("test1.xml", file1.length()));
-            IOUtils.copy(new FileInputStream(file1), os);
+            IOUtils.copy(Files.newInputStream(file1.toPath()), os);
             os.closeArchiveEntry();
 
             os.putArchiveEntry(new ArArchiveEntry("test2.xml", file2.length()));
-            IOUtils.copy(new FileInputStream(file2), os);
+            IOUtils.copy(Files.newInputStream(file2.toPath()), os);
             os.closeArchiveEntry();
             os.close();
             out.close();
@@ -83,13 +82,13 @@ public final class ArTestCase extends AbstractTestCase {
 
         // UnArArchive Operation
         final File input = output;
-        try (final InputStream is = new FileInputStream(input);
+        try (final InputStream is = Files.newInputStream(input.toPath());
                 final ArchiveInputStream in = new ArchiveStreamFactory()
                         .createArchiveInputStream(new BufferedInputStream(is))) {
             final ArArchiveEntry entry = (ArArchiveEntry) in.getNextEntry();
 
             final File target = new File(dir, entry.getName());
-            try (final OutputStream out = new FileOutputStream(target)) {
+            try (final OutputStream out = Files.newOutputStream(target.toPath())) {
                 IOUtils.copy(in, out);
             }
         }
@@ -104,14 +103,14 @@ public final class ArTestCase extends AbstractTestCase {
         {
             // create
 
-            final OutputStream out = new FileOutputStream(output);
+            final OutputStream out = Files.newOutputStream(output.toPath());
             final ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ar", out);
             os.putArchiveEntry(new ArArchiveEntry("test1.xml", file1.length()));
-            IOUtils.copy(new FileInputStream(file1), os);
+            IOUtils.copy(Files.newInputStream(file1.toPath()), os);
             os.closeArchiveEntry();
 
             os.putArchiveEntry(new ArArchiveEntry("test2.xml", file2.length()));
-            IOUtils.copy(new FileInputStream(file2), os);
+            IOUtils.copy(Files.newInputStream(file2.toPath()), os);
             os.closeArchiveEntry();
             os.close();
             out.close();
@@ -130,8 +129,8 @@ public final class ArTestCase extends AbstractTestCase {
         {
             // remove all but one file
 
-            final InputStream is = new FileInputStream(output);
-            final OutputStream os = new FileOutputStream(output2);
+            final InputStream is = Files.newInputStream(output.toPath());
+            final OutputStream os = Files.newOutputStream(output2.toPath());
             final ArchiveOutputStream aos = new ArchiveStreamFactory().createArchiveOutputStream("ar", os);
             final ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(new BufferedInputStream(is));
             while(true) {
@@ -167,7 +166,7 @@ public final class ArTestCase extends AbstractTestCase {
         long sum = 0;
 
         {
-            final InputStream is = new FileInputStream(output2);
+            final InputStream is = Files.newInputStream(output2.toPath());
             final ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(new BufferedInputStream(is));
             while(true) {
                 final ArArchiveEntry entry = (ArArchiveEntry)ais.getNextEntry();
@@ -200,14 +199,14 @@ public final class ArTestCase extends AbstractTestCase {
         try {
             archive = File.createTempFile("test.", ".ar", tmp[0]);
             archive.deleteOnExit();
-            aos = new ArArchiveOutputStream(new FileOutputStream(archive));
+            aos = new ArArchiveOutputStream(Files.newOutputStream(archive.toPath()));
             final long beforeArchiveWrite = tmp[0].lastModified();
             final ArArchiveEntry in = new ArArchiveEntry(tmp[0], "foo");
             aos.putArchiveEntry(in);
             aos.closeArchiveEntry();
             aos.close();
             aos = null;
-            ais = new ArArchiveInputStream(new FileInputStream(archive));
+            ais = new ArArchiveInputStream(Files.newInputStream(archive.toPath()));
             final ArArchiveEntry out = ais.getNextArEntry();
             ais.close();
             ais = null;
@@ -242,7 +241,7 @@ public final class ArTestCase extends AbstractTestCase {
         try {
             archive = File.createTempFile("test.", ".ar", tmp[0]);
             archive.deleteOnExit();
-            aos = new ArArchiveOutputStream(new FileOutputStream(archive));
+            aos = new ArArchiveOutputStream(Files.newOutputStream(archive.toPath()));
             final long beforeArchiveWrite = tmp[0].lastModified();
             final ArArchiveEntry in = new ArArchiveEntry("foo", 0, 0, 0, 0,
                                                    tmp[1].lastModified() / 1000);
@@ -250,7 +249,7 @@ public final class ArTestCase extends AbstractTestCase {
             aos.closeArchiveEntry();
             aos.close();
             aos = null;
-            ais = new ArArchiveInputStream(new FileInputStream(archive));
+            ais = new ArArchiveInputStream(Files.newInputStream(archive.toPath()));
             final ArArchiveEntry out = ais.getNextArEntry();
             ais.close();
             ais = null;
@@ -279,17 +278,17 @@ public final class ArTestCase extends AbstractTestCase {
         File archive = null;
         ArArchiveOutputStream aos = null;
         ArArchiveInputStream ais = null;
-        FileInputStream fis = null;
+        InputStream fis = null;
         final File directory = tmp[0];
         final File file = tmp[1];
         try {
             archive = File.createTempFile("test.", ".ar", directory);
             archive.deleteOnExit();
-            aos = new ArArchiveOutputStream(new FileOutputStream(archive));
+            aos = new ArArchiveOutputStream(Files.newOutputStream(archive.toPath()));
             final ArArchiveEntry in = new ArArchiveEntry(file, "foo");
             aos.putArchiveEntry(in);
             final byte[] b = new byte[(int) file.length()];
-            fis = new FileInputStream(file);
+            fis = Files.newInputStream(file.toPath());
             while (fis.read(b) > 0) {
                 aos.write(b);
             }
@@ -298,7 +297,7 @@ public final class ArTestCase extends AbstractTestCase {
             aos.closeArchiveEntry();
             aos.close();
             aos = null;
-            ais = new ArArchiveInputStream(new FileInputStream(archive));
+            ais = new ArArchiveInputStream(Files.newInputStream(archive.toPath()));
             final ArArchiveEntry out = ais.getNextArEntry();
             ais.close();
             ais = null;
@@ -330,17 +329,17 @@ public final class ArTestCase extends AbstractTestCase {
         File archive = null;
         ArArchiveOutputStream aos = null;
         ArArchiveInputStream ais = null;
-        FileInputStream fis = null;
+        InputStream fis = null;
         final File directory = tmp[0];
         final File file = tmp[1];
         try {
             archive = File.createTempFile("test.", ".ar", directory);
             archive.deleteOnExit();
-            aos = new ArArchiveOutputStream(new FileOutputStream(archive));
+            aos = new ArArchiveOutputStream(Files.newOutputStream(archive.toPath()));
             final ArArchiveEntry in = new ArArchiveEntry(file.toPath(), "foo");
             aos.putArchiveEntry(in);
             final byte[] b = new byte[(int) file.length()];
-            fis = new FileInputStream(file);
+            fis = Files.newInputStream(file.toPath());
             while (fis.read(b) > 0) {
                 aos.write(b);
             }
@@ -349,7 +348,7 @@ public final class ArTestCase extends AbstractTestCase {
             aos.closeArchiveEntry();
             aos.close();
             aos = null;
-            ais = new ArArchiveInputStream(new FileInputStream(archive));
+            ais = new ArArchiveInputStream(Files.newInputStream(archive.toPath()));
             final ArArchiveEntry out = ais.getNextArEntry();
             ais.close();
             ais = null;
@@ -381,17 +380,17 @@ public final class ArTestCase extends AbstractTestCase {
         File archive = null;
         ArArchiveOutputStream aos = null;
         ArArchiveInputStream ais = null;
-        FileInputStream fis = null;
+        InputStream fis = null;
         try {
             archive = File.createTempFile("test.", ".ar", tmp[0]);
             archive.deleteOnExit();
-            aos = new ArArchiveOutputStream(new FileOutputStream(archive));
+            aos = new ArArchiveOutputStream(Files.newOutputStream(archive.toPath()));
             final ArArchiveEntry in = new ArArchiveEntry("foo", tmp[1].length(),
                                                    0, 0, 0,
                                                    tmp[1].lastModified() / 1000);
             aos.putArchiveEntry(in);
             final byte[] b = new byte[(int) tmp[1].length()];
-            fis = new FileInputStream(tmp[1]);
+            fis = Files.newInputStream(tmp[1].toPath());
             while (fis.read(b) > 0) {
                 aos.write(b);
             }
@@ -400,7 +399,7 @@ public final class ArTestCase extends AbstractTestCase {
             aos.closeArchiveEntry();
             aos.close();
             aos = null;
-            ais = new ArArchiveInputStream(new FileInputStream(archive));
+            ais = new ArArchiveInputStream(Files.newInputStream(archive.toPath()));
             final ArArchiveEntry out = ais.getNextArEntry();
             ais.close();
             ais = null;

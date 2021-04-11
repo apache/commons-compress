@@ -20,10 +20,10 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.Enumeration;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -54,7 +54,7 @@ public final class Lister {
             usage();
         }
         if (cl.useStream) {
-            try (BufferedInputStream fs = new BufferedInputStream(new FileInputStream(f))) {
+            try (BufferedInputStream fs = new BufferedInputStream(Files.newInputStream(f.toPath()))) {
                 final ZipArchiveInputStream zs =
                         new ZipArchiveInputStream(fs, cl.encoding, true,
                                 cl.allowStoredEntriesWithDataDescriptor);
@@ -94,7 +94,7 @@ public final class Lister {
         if (!f.getParentFile().exists()) {
             f.getParentFile().mkdirs();
         }
-        try (FileOutputStream fos = new FileOutputStream(f)) {
+        try (OutputStream fos = Files.newOutputStream(f.toPath())) {
             IOUtils.copy(is, fos);
         }
     }

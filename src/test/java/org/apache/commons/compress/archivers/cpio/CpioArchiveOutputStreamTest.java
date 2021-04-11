@@ -22,9 +22,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.utils.IOUtils;
@@ -36,7 +36,7 @@ public class CpioArchiveOutputStreamTest extends AbstractTestCase {
     public void testWriteOldBinary() throws Exception {
         final File f = getFile("test1.xml");
         final File output = new File(dir, "test.cpio");
-        final FileOutputStream out = new FileOutputStream(output);
+        final OutputStream out = Files.newOutputStream(output.toPath());
         InputStream in = null;
         try {
             final CpioArchiveOutputStream os =
@@ -45,7 +45,7 @@ public class CpioArchiveOutputStreamTest extends AbstractTestCase {
             os.putArchiveEntry(new CpioArchiveEntry(CpioConstants
                                                     .FORMAT_OLD_BINARY,
                                                     f, "test1.xml"));
-            IOUtils.copy(in = new FileInputStream(f), os);
+            IOUtils.copy(in = Files.newInputStream(f.toPath()), os);
             in.close();
             in = null;
             os.closeArchiveEntry();
@@ -58,7 +58,7 @@ public class CpioArchiveOutputStreamTest extends AbstractTestCase {
         }
 
         try {
-            in = new CpioArchiveInputStream(new FileInputStream(output));
+            in = new CpioArchiveInputStream(Files.newInputStream(output.toPath()));
             final CpioArchiveEntry e = ((CpioArchiveInputStream) in)
                 .getNextCPIOEntry();
             assertEquals("test1.xml", e.getName());

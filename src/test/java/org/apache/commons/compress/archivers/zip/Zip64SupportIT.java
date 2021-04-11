@@ -30,8 +30,6 @@ import static org.junit.Assume.assumeTrue;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
@@ -2366,7 +2364,7 @@ public class Zip64SupportIT {
         BufferedOutputStream os = null;
         ZipArchiveOutputStream zos = useRandomAccessFile
             ? new ZipArchiveOutputStream(f)
-            : new ZipArchiveOutputStream(os = new BufferedOutputStream(new FileOutputStream(f)));
+            : new ZipArchiveOutputStream(os = new BufferedOutputStream(Files.newOutputStream(f.toPath())));
         if (splitSize != null) {
             zos = new ZipArchiveOutputStream(f, splitSize);
         }
@@ -2448,7 +2446,7 @@ public class Zip64SupportIT {
 
     private static void read5GBOfZerosImpl(final File f, final String expectedName)
         throws IOException {
-        try (FileInputStream fin = new FileInputStream(f);
+        try (InputStream fin = Files.newInputStream(f.toPath());
                 ZipArchiveInputStream zin = new ZipArchiveInputStream(fin)) {
             ZipArchiveEntry zae = zin.getNextZipEntry();
             while (zae.isDirectory()) {
@@ -2511,7 +2509,7 @@ public class Zip64SupportIT {
     }
 
     private static void read100KFilesImpl(final File f) throws IOException {
-        try (FileInputStream fin = new FileInputStream(f);
+        try (InputStream fin = Files.newInputStream(f.toPath());
                 ZipArchiveInputStream zin = new ZipArchiveInputStream(fin)) {
             int files = 0;
             ZipArchiveEntry zae = null;

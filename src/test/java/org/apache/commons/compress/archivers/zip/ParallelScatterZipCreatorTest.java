@@ -26,10 +26,9 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -245,7 +244,7 @@ public class ParallelScatterZipCreatorTest {
                 continue;
             }
 
-            entries.put(file.getName(), IOUtils.toByteArray(new FileInputStream(file)));
+            entries.put(file.getName(), IOUtils.toByteArray(Files.newInputStream(file.toPath())));
 
             final ZipArchiveEntry zipArchiveEntry = new ZipArchiveEntry(file.getName());
             zipArchiveEntry.setMethod(ZipEntry.DEFLATED);
@@ -254,8 +253,8 @@ public class ParallelScatterZipCreatorTest {
 
             final InputStreamSupplier iss = () -> {
                 try {
-                    return new FileInputStream(file);
-                } catch (final FileNotFoundException e) {
+                    return Files.newInputStream(file.toPath());
+                } catch (final IOException e) {
                     return null;
                 }
             };

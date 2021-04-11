@@ -23,8 +23,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
+import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -36,7 +36,7 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void testNotADumpArchive() throws Exception {
-        try (FileInputStream is = new FileInputStream(getFile("bla.zip"))) {
+        try (InputStream is = Files.newInputStream(getFile("bla.zip").toPath())) {
             new DumpArchiveInputStream(is).close();
             fail("expected an exception");
         } catch (final ArchiveException ex) {
@@ -47,7 +47,7 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void testNotADumpArchiveButBigEnough() throws Exception {
-        try (FileInputStream is = new FileInputStream(getFile("zip64support.tar.bz2"))) {
+        try (InputStream is = Files.newInputStream(getFile("zip64support.tar.bz2").toPath())) {
             new DumpArchiveInputStream(is).close();
             fail("expected an exception");
         } catch (final ArchiveException ex) {
@@ -75,7 +75,7 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        try (FileInputStream in = new FileInputStream(getFile("bla.dump"));
+        try (InputStream in = Files.newInputStream(getFile("bla.dump").toPath());
              DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();
             IOUtils.toByteArray(archive);
@@ -87,7 +87,7 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
     @Test
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
-        try (FileInputStream in = new FileInputStream(getFile("bla.dump"));
+        try (InputStream in = Files.newInputStream(getFile("bla.dump").toPath());
              DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();
             IOUtils.toByteArray(archive);

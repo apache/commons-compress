@@ -31,10 +31,9 @@ import static org.junit.Assume.assumeTrue;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Locale;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
@@ -66,7 +65,7 @@ public class TarArchiveEntryTest implements TarConstants {
         TarArchiveOutputStream tout = null;
         TarArchiveInputStream tin = null;
         try {
-            tout = new TarArchiveOutputStream(new FileOutputStream(f));
+            tout = new TarArchiveOutputStream(Files.newOutputStream(f.toPath()));
             TarArchiveEntry t = new TarArchiveEntry(new File(ROOT));
             tout.putArchiveEntry(t);
             tout.closeArchiveEntry();
@@ -90,7 +89,7 @@ public class TarArchiveEntryTest implements TarConstants {
             tout.close();
             tout = null;
 
-            tin = new TarArchiveInputStream(new FileInputStream(f));
+            tin = new TarArchiveInputStream(Files.newInputStream(f.toPath()));
             //tin.setDebug(true);
             t = tin.getNextTarEntry();
             assertNotNull(t);
