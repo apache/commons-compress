@@ -22,10 +22,10 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ar.ArArchiveEntry;
@@ -144,7 +144,7 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
         ArchiveOutputStream aos1;
         aos1 = factory.createArchiveOutputStream(archiveType, out1);
         aos1.putArchiveEntry(aos1.createArchiveEntry(dummy, "dummy"));
-        try (InputStream is = new FileInputStream(dummy)) {
+        try (InputStream is = Files.newInputStream(dummy.toPath())) {
             IOUtils.copy(is, aos1);
         }
         aos1.closeArchiveEntry();
@@ -160,7 +160,7 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
         }
 
         aos1.putArchiveEntry(aos1.createArchiveEntry(dummy, "dummy"));
-        try (InputStream is = new FileInputStream(dummy)) {
+        try (InputStream is = Files.newInputStream(dummy.toPath())) {
             IOUtils.copy(is, aos1);
         }
 
@@ -200,7 +200,7 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
         throws Exception {
         final ArchiveOutputStream aos1 = factory.createArchiveOutputStream(archiveType, out1);
         aos1.putArchiveEntry(aos1.createArchiveEntry(dummy, "dummy"));
-        try (InputStream is = new FileInputStream(dummy)) {
+        try (InputStream is = Files.newInputStream(dummy.toPath())) {
             IOUtils.copy(is, aos1);
         }
         return aos1;

@@ -23,9 +23,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.z.ZCompressorInputStream;
@@ -66,9 +66,9 @@ public final class ZTestCase extends AbstractTestCase {
     private void testUnarchive(final StreamWrapper<CompressorInputStream> wrapper) throws Exception {
         final File input = getFile("bla.tar.Z");
         final File output = new File(dir, "bla.tar");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             try (InputStream in = wrapper.wrap(is);
-                    FileOutputStream out = new FileOutputStream(output)) {
+                    OutputStream out = Files.newOutputStream(output.toPath())) {
                 IOUtils.copy(in, out);
             }
         }

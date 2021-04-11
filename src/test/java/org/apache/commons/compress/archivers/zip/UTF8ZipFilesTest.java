@@ -23,12 +23,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Enumeration;
 import java.util.zip.CRC32;
 
@@ -113,8 +113,8 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
 
     @Test
     public void testRead7ZipArchiveForStream() throws IOException {
-        final FileInputStream archive =
-            new FileInputStream(getFile("utf8-7zip-test.zip"));
+        final InputStream archive =
+                Files.newInputStream(getFile("utf8-7zip-test.zip").toPath());
         try (ZipArchiveInputStream zi = new ZipArchiveInputStream(archive, CP437, false)) {
             assertEquals(ASCII_TXT, zi.getNextEntry().getName());
             assertEquals(OIL_BARREL_TXT, zi.getNextEntry().getName());
@@ -160,8 +160,8 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
 
     @Test
     public void testReadWinZipArchiveForStream() throws IOException {
-        final FileInputStream archive =
-            new FileInputStream(getFile("utf8-winzip-test.zip"));
+        final InputStream archive =
+            Files.newInputStream(getFile("utf8-winzip-test.zip").toPath());
         ZipArchiveInputStream zi = null;
         try {
             // fix for test fails on Windows with default charset that is not UTF-8
@@ -188,7 +188,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         ZipArchiveInputStream zi = null;
         try {
             createTestFile(file, CharsetNames.US_ASCII, false, true);
-            final FileInputStream archive = new FileInputStream(file);
+            final InputStream archive = Files.newInputStream(file.toPath());
             zi = new ZipArchiveInputStream(archive, CharsetNames.US_ASCII, true);
             assertEquals(OIL_BARREL_TXT, zi.getNextEntry().getName());
             assertEquals(EURO_FOR_DOLLAR_TXT, zi.getNextEntry().getName());
@@ -235,8 +235,8 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
     @Test
     public void testRawNameReadFromStream()
         throws IOException {
-        final FileInputStream archive =
-            new FileInputStream(getFile("utf8-7zip-test.zip"));
+        final InputStream archive =
+            Files.newInputStream(getFile("utf8-7zip-test.zip").toPath());
         try (ZipArchiveInputStream zi = new ZipArchiveInputStream(archive, CP437, false)) {
             assertRawNameOfAcsiiTxt((ZipArchiveEntry) zi.getNextEntry());
         }
@@ -247,7 +247,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
      */
     @Test
     public void streamSkipsOverUnicodeExtraFieldWithUnsupportedVersion() throws IOException {
-        try (FileInputStream archive = new FileInputStream(getFile("COMPRESS-479.zip"));
+        try (InputStream archive = Files.newInputStream(getFile("COMPRESS-479.zip").toPath());
              ZipArchiveInputStream zi = new ZipArchiveInputStream(archive)) {
             assertEquals(OIL_BARREL_TXT, zi.getNextEntry().getName());
             assertEquals("%U20AC_for_Dollar.txt", zi.getNextEntry().getName());

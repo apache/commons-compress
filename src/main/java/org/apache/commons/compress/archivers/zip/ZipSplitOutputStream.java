@@ -65,7 +65,7 @@ class ZipSplitOutputStream extends OutputStream {
         this.zipFile = zipFile;
         this.splitSize = splitSize;
 
-        this.outputStream = Files.newOutputStream((zipFile.toPath()));
+        this.outputStream = Files.newOutputStream(zipFile.toPath());
         // write the zip split signature 0x08074B50 to the zip file
         writeZipSplitSignature();
     }

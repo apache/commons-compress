@@ -22,10 +22,9 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 
 import org.apache.commons.compress.AbstractTestCase;
@@ -46,7 +45,7 @@ public final class DumpTestCase extends AbstractTestCase {
     }
 
     private void unarchiveAll(final File input) throws Exception {
-        final InputStream is = new FileInputStream(input);
+        final InputStream is = Files.newInputStream(input.toPath());
         ArchiveInputStream in = null;
         OutputStream out = null;
         try {
@@ -62,7 +61,7 @@ public final class DumpTestCase extends AbstractTestCase {
                     entry = in.getNextEntry();
                     continue;
                 }
-                out = new FileOutputStream(archiveEntry);
+                out = Files.newOutputStream(archiveEntry.toPath());
                 IOUtils.copy(in, out);
                 out.close();
                 out = null;
@@ -90,7 +89,7 @@ public final class DumpTestCase extends AbstractTestCase {
     }
 
     private void archiveDetection(final File f) throws Exception {
-        try (InputStream is = new FileInputStream(f)) {
+        try (InputStream is = Files.newInputStream(f.toPath())) {
             assertEquals(DumpArchiveInputStream.class,
                 ArchiveStreamFactory.DEFAULT
                             .createArchiveInputStream(new BufferedInputStream(is))
@@ -114,7 +113,7 @@ public final class DumpTestCase extends AbstractTestCase {
         expected.add("lost+found/");
         expected.add("test1.xml");
         expected.add("test2.xml");
-        try (InputStream is = new FileInputStream(f)) {
+        try (InputStream is = Files.newInputStream(f.toPath())) {
             checkArchiveContent(new DumpArchiveInputStream(is),
                     expected);
         }

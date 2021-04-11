@@ -22,9 +22,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -418,8 +418,8 @@ public class X5455_ExtendedTimestampTest {
         tmpDir = mkdir("X5455");
         final File output = new File(tmpDir, "write_rewrite.zip");
         final Date d = new Date(97, 8, 24, 15, 10, 2);
-        try (final OutputStream out = new FileOutputStream(output);
-            ZipArchiveOutputStream os = new ZipArchiveOutputStream(out)) {
+        try (final OutputStream out = Files.newOutputStream(output.toPath());
+             ZipArchiveOutputStream os = new ZipArchiveOutputStream(out)) {
             final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
             xf.setModifyJavaTime(d);
             xf.setFlags((byte) 1);

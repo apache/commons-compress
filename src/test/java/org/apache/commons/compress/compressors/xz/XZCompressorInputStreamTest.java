@@ -21,9 +21,10 @@ package org.apache.commons.compress.compressors.xz;
 import static org.apache.commons.compress.AbstractTestCase.getFile;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -53,7 +54,7 @@ public class XZCompressorInputStreamTest {
 
     private void singleByteReadConsistentlyReturnsMinusOneAtEof(final boolean decompressConcatenated) throws IOException {
         final File input = getFile("bla.tar.xz");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final XZCompressorInputStream in =
                 new XZCompressorInputStream(is, decompressConcatenated);
             IOUtils.toByteArray(in);
@@ -76,7 +77,7 @@ public class XZCompressorInputStreamTest {
     private void multiByteReadConsistentlyReturnsMinusOneAtEof(final boolean decompressConcatenated) throws IOException {
         final File input = getFile("bla.tar.xz");
         final byte[] buf = new byte[2];
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final XZCompressorInputStream in =
                 new XZCompressorInputStream(is, decompressConcatenated);
             IOUtils.toByteArray(in);

@@ -24,10 +24,10 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
 
 public class ZipSplitOutputStreamTest extends AbstractTestCase {
     @Rule
@@ -58,7 +58,7 @@ public class ZipSplitOutputStreamTest extends AbstractTestCase {
         final File tempFile = File.createTempFile("temp", "zip");
         new ZipSplitOutputStream(tempFile, 100 * 1024L);
 
-        final InputStream inputStream = new FileInputStream(tempFile);
+        final InputStream inputStream = Files.newInputStream(tempFile.toPath());
         final byte[] buffer = new byte[4];
         inputStream.read(buffer);
 
@@ -72,7 +72,7 @@ public class ZipSplitOutputStreamTest extends AbstractTestCase {
         final ZipSplitOutputStream zipSplitOutputStream = new ZipSplitOutputStream(testOutputFile, splitSize);
 
         final File fileToTest = getFile("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip.zip");
-        final InputStream inputStream = new FileInputStream(fileToTest);
+        final InputStream inputStream = Files.newInputStream(fileToTest.toPath());
         final byte[] buffer = new byte[4096];
         int readLen;
 

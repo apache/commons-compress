@@ -24,9 +24,8 @@ import static org.junit.Assert.fail;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -77,7 +76,7 @@ public class LongPathTest extends AbstractTestCase {
         assertTrue(ARCDIR.exists());
         final File listing= new File(ARCDIR,"files.txt");
         assertTrue("files.txt is readable",listing.canRead());
-        final BufferedReader br = new BufferedReader(new FileReader(listing));
+        final BufferedReader br = new BufferedReader(Files.newBufferedReader(listing.toPath()));
         String line;
         while ((line=br.readLine())!=null){
             if (!line.startsWith("#")){
@@ -118,7 +117,7 @@ public class LongPathTest extends AbstractTestCase {
             expected.add("META-INF/");
             expected.add("META-INF/MANIFEST.MF");
         }
-        final ArchiveInputStream ais = factory.createArchiveInputStream(new BufferedInputStream(new FileInputStream(file)));
+        final ArchiveInputStream ais = factory.createArchiveInputStream(new BufferedInputStream(Files.newInputStream(file.toPath())));
         // check if expected type recognized
         if (name.endsWith(".tar")){
             assertTrue(ais instanceof TarArchiveInputStream);

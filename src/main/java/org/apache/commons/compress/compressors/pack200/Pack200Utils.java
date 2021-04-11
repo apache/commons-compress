@@ -20,7 +20,6 @@
 package org.apache.commons.compress.compressors.pack200;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -141,7 +140,7 @@ public class Pack200Utils {
                 packer.pack(jarFile, fos);
             }
             final Pack200.Unpacker unpacker = Pack200.newUnpacker();
-            try (JarOutputStream jos = new JarOutputStream(new FileOutputStream(to))) {
+            try (JarOutputStream jos = new JarOutputStream(Files.newOutputStream(to.toPath()))) {
                 unpacker.unpack(tempFile, jos);
             }
         } finally {

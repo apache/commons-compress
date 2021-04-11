@@ -19,10 +19,9 @@
 package org.apache.commons.compress.compressors.lz4;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
@@ -46,17 +45,17 @@ public class FactoryTest extends AbstractTestCase {
         final File input = getFile("bla.tar");
         long start = System.currentTimeMillis();
         final File outputSz = new File(dir, input.getName() + "." + format + ".lz4");
-        try (FileInputStream is = new FileInputStream(input);
-             FileOutputStream os = new FileOutputStream(outputSz);
+        try (InputStream is = Files.newInputStream(input.toPath());
+             OutputStream os = Files.newOutputStream(outputSz.toPath());
              OutputStream los = new CompressorStreamFactory().createCompressorOutputStream(format, os)) {
             IOUtils.copy(is, los);
         }
         System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
             + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
         start = System.currentTimeMillis();
-        try (FileInputStream is = new FileInputStream(input);
+        try (InputStream is = Files.newInputStream(input.toPath());
              InputStream sis = new CompressorStreamFactory()
-                 .createCompressorInputStream(format, new FileInputStream(outputSz))) {
+                 .createCompressorInputStream(format, Files.newInputStream(outputSz.toPath()))) {
             final byte[] expected = IOUtils.toByteArray(is);
             final byte[] actual = IOUtils.toByteArray(sis);
             Assert.assertArrayEquals(expected, actual);

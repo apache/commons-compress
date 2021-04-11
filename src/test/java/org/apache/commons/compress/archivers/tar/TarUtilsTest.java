@@ -19,9 +19,10 @@
 package org.apache.commons.compress.archivers.tar;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -450,7 +451,7 @@ public class TarUtilsTest {
 
     @Test(expected = IOException.class)
     public void testParseTarWithSpecialPaxHeaders() throws IOException {
-        try (FileInputStream in = new FileInputStream(getFile("COMPRESS-530.tar"));
+        try (InputStream in = Files.newInputStream(getFile("COMPRESS-530.tar").toPath());
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             archive.getNextEntry();
             IOUtils.toByteArray(archive);

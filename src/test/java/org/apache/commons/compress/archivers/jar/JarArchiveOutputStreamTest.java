@@ -23,8 +23,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import org.junit.Test;
 import org.apache.commons.compress.AbstractTestCase;
@@ -43,7 +43,7 @@ public class JarArchiveOutputStreamTest {
         ZipFile zf = null;
         try {
 
-            out = new JarArchiveOutputStream(new FileOutputStream(testArchive));
+            out = new JarArchiveOutputStream(Files.newOutputStream(testArchive.toPath()));
             out.putArchiveEntry(new ZipArchiveEntry("foo/"));
             out.closeArchiveEntry();
             out.putArchiveEntry(new ZipArchiveEntry("bar/"));

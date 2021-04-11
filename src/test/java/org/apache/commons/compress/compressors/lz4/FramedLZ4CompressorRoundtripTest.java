@@ -21,8 +21,9 @@ package org.apache.commons.compress.compressors.lz4;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collection;
 import org.apache.commons.compress.AbstractTestCase;
@@ -70,7 +71,7 @@ public final class FramedLZ4CompressorRoundtripTest extends AbstractTestCase {
         long start = System.currentTimeMillis();
         final File outputSz = new File(dir, input.getName() + ".framed.lz4");
         byte[] expected;
-        try (FileInputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             expected = IOUtils.toByteArray(is);
         }
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();

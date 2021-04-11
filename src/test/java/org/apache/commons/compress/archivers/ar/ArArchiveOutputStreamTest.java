@@ -23,8 +23,9 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,8 +48,8 @@ public class ArArchiveOutputStreamTest extends AbstractTestCase {
     @Test
     public void testLongFileNamesWorkUsingBSDDialect() throws Exception {
         final File[] df = createTempDirAndFile();
-        try (FileOutputStream fos = new FileOutputStream(df[1]);
-                ArArchiveOutputStream os = new ArArchiveOutputStream(fos)) {
+        try (OutputStream fos = Files.newOutputStream(df[1].toPath());
+             ArArchiveOutputStream os = new ArArchiveOutputStream(fos)) {
             os.setLongFileMode(ArArchiveOutputStream.LONGFILE_BSD);
             final ArArchiveEntry ae = new ArArchiveEntry("this_is_a_long_name.txt", 14);
             os.putArchiveEntry(ae);

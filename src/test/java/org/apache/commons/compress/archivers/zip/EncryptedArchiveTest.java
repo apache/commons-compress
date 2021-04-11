@@ -26,8 +26,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import org.junit.Test;
 
@@ -60,7 +60,7 @@ public class EncryptedArchiveTest {
     public void testReadPasswordEncryptedEntryViaStream()
         throws IOException {
         final File file = getFile("password-encrypted.zip");
-        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(new FileInputStream(file))) {
+        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(Files.newInputStream(file.toPath()))) {
             final ZipArchiveEntry zae = zin.getNextZipEntry();
             assertEquals("LICENSE.txt", zae.getName());
             assertTrue(zae.getGeneralPurposeBit().usesEncryption());

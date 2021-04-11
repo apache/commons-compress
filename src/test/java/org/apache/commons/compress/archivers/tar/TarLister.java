@@ -20,8 +20,8 @@ package org.apache.commons.compress.archivers.tar;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
+import java.nio.file.Files;
 
 /**
  * Simple command line application that lists the contents of a tar archive.
@@ -43,7 +43,7 @@ public final class TarLister {
         if (!f.isFile()) {
             System.err.println(f + " doesn't exist or is a directory");
         }
-        final InputStream fis = new BufferedInputStream(new FileInputStream(f));
+        final InputStream fis = new BufferedInputStream(Files.newInputStream(f.toPath()));
         final TarArchiveInputStream ais;
         if (args.length > 1) {
             ais = new TarArchiveInputStream(fis, args[1]);

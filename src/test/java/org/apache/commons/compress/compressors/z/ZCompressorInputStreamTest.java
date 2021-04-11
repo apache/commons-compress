@@ -22,10 +22,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.SequenceInputStream;
+import java.nio.file.Files;
 import java.util.Collections;
 import org.apache.commons.compress.utils.IOUtils;
 
@@ -49,7 +49,7 @@ public class ZCompressorInputStreamTest {
     @Test
     public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.Z");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final ZCompressorInputStream in =
                     new ZCompressorInputStream(is);
             IOUtils.toByteArray(in);
@@ -63,7 +63,7 @@ public class ZCompressorInputStreamTest {
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.Z");
         final byte[] buf = new byte[2];
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final ZCompressorInputStream in =
                     new ZCompressorInputStream(is);
             IOUtils.toByteArray(in);

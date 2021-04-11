@@ -28,7 +28,6 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
@@ -204,7 +203,7 @@ public class FixedLengthBlockOutputStreamTest {
         });
         final int blockSize = 512;
         final int reps = 1000;
-        final OutputStream os = new FileOutputStream(tempFile.toFile());
+        final OutputStream os = Files.newOutputStream(tempFile.toFile().toPath());
         try (FixedLengthBlockOutputStream out = new FixedLengthBlockOutputStream(
             os, blockSize)) {
             final DataOutputStream dos = new DataOutputStream(out);

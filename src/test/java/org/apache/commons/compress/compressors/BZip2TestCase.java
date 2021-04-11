@@ -21,10 +21,9 @@ package org.apache.commons.compress.compressors;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
@@ -39,9 +38,9 @@ public final class BZip2TestCase extends AbstractTestCase {
         final File input = getFile("test.txt");
         {
             output = new File(dir, "test.txt.bz2");
-            final OutputStream out = new FileOutputStream(output);
+            final OutputStream out = Files.newOutputStream(output.toPath());
             final CompressorOutputStream cos = new CompressorStreamFactory().createCompressorOutputStream("bzip2", out);
-            final FileInputStream in = new FileInputStream(input);
+            final InputStream in = Files.newInputStream(input.toPath());
             IOUtils.copy(in, cos);
             cos.close();
             in.close();
@@ -50,10 +49,10 @@ public final class BZip2TestCase extends AbstractTestCase {
         final File decompressed = new File(dir, "decompressed.txt");
         {
             final File toDecompress = output;
-            final InputStream is = new FileInputStream(toDecompress);
+            final InputStream is = Files.newInputStream(toDecompress.toPath());
             final CompressorInputStream in =
                 new CompressorStreamFactory().createCompressorInputStream("bzip2", is);
-            final FileOutputStream os = new FileOutputStream(decompressed);
+            final OutputStream os = Files.newOutputStream(decompressed.toPath());
             IOUtils.copy(in, os);
             is.close();
             os.close();
@@ -66,9 +65,9 @@ public final class BZip2TestCase extends AbstractTestCase {
     public void testBzip2Unarchive() throws Exception {
         final File input = getFile("bla.txt.bz2");
         final File output = new File(dir, "bla.txt");
-        final InputStream is = new FileInputStream(input);
+        final InputStream is = Files.newInputStream(input.toPath());
         final CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("bzip2", is);
-        final FileOutputStream os = new FileOutputStream(output);
+        final OutputStream os = Files.newOutputStream(output.toPath());
         IOUtils.copy(in, os);
         is.close();
         os.close();
@@ -77,7 +76,7 @@ public final class BZip2TestCase extends AbstractTestCase {
     @Test
     public void testConcatenatedStreamsReadFirstOnly() throws Exception {
         final File input = getFile("multiple.bz2");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             try (CompressorInputStream in = new CompressorStreamFactory()
                     .createCompressorInputStream("bzip2", is)) {
                 assertEquals('a', in.read());
@@ -89,7 +88,7 @@ public final class BZip2TestCase extends AbstractTestCase {
     @Test
     public void testConcatenatedStreamsReadFully() throws Exception {
         final File input = getFile("multiple.bz2");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             try (CompressorInputStream in = new BZip2CompressorInputStream(is, true)) {
                 assertEquals('a', in.read());
                 assertEquals('b', in.read());
@@ -102,7 +101,7 @@ public final class BZip2TestCase extends AbstractTestCase {
     @Test
     public void testCOMPRESS131() throws Exception {
         final File input = getFile("COMPRESS-131.bz2");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             try (CompressorInputStream in = new BZip2CompressorInputStream(is, true)) {
                 int l = 0;
                 while (in.read() != -1) {

@@ -27,10 +27,11 @@ import static org.junit.Assert.fail;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 
 import org.apache.commons.compress.MockEvilInputStream;
 import org.apache.commons.compress.archivers.arj.ArjArchiveInputStream;
@@ -65,7 +66,7 @@ public class ArchiveStreamFactoryTest {
      */
     @Test
     public void aiffFilesAreNoTARs() throws Exception {
-        try (FileInputStream fis = new FileInputStream("src/test/resources/testAIFF.aif")) {
+        try (InputStream fis = Files.newInputStream(new File("src/test/resources/testAIFF.aif").toPath())) {
             try (InputStream is = new BufferedInputStream(fis)) {
                 ArchiveStreamFactory.DEFAULT.createArchiveInputStream(is);
                 fail("created an input stream for a non-archive");
@@ -77,7 +78,7 @@ public class ArchiveStreamFactoryTest {
 
     @Test
     public void testCOMPRESS209() throws Exception {
-        try (FileInputStream fis = new FileInputStream("src/test/resources/testCompress209.doc")) {
+        try (InputStream fis = Files.newInputStream(new File("src/test/resources/testCompress209.doc").toPath())) {
             try (InputStream bis = new BufferedInputStream(fis)) {
                 ArchiveStreamFactory.DEFAULT.createArchiveInputStream(bis);
                 fail("created an input stream for a non-archive");
@@ -108,7 +109,7 @@ public class ArchiveStreamFactoryTest {
      */
     @Test
     public void detectsAndThrowsFor7z() throws Exception {
-        try (FileInputStream fis = new FileInputStream("src/test/resources/bla.7z")) {
+        try (InputStream fis = Files.newInputStream(new File("src/test/resources/bla.7z").toPath())) {
             try (InputStream bis = new BufferedInputStream(fis)) {
                 ArchiveStreamFactory.DEFAULT.createArchiveInputStream(bis);
                 fail("Expected a StreamingNotSupportedException");
@@ -125,7 +126,7 @@ public class ArchiveStreamFactoryTest {
      */
     @Test
     public void skipsPK00Prefix() throws Exception {
-        try (FileInputStream fis = new FileInputStream("src/test/resources/COMPRESS-208.zip")) {
+        try (InputStream fis = Files.newInputStream(new File("src/test/resources/COMPRESS-208.zip").toPath())) {
             try (InputStream bis = new BufferedInputStream(fis)) {
                 try (ArchiveInputStream ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(bis)) {
                     assertTrue(ais instanceof ZipArchiveInputStream);
@@ -214,14 +215,14 @@ public class ArchiveStreamFactoryTest {
         String dflt;
         dflt = UNKNOWN;
         try {
-            dflt = getField(new ArjArchiveInputStream(new FileInputStream(getFile("bla.arj"))), "charsetName");
+            dflt = getField(new ArjArchiveInputStream(Files.newInputStream(getFile("bla.arj").toPath())), "charsetName");
         } catch (final Exception e) {
             e.printStackTrace();
         }
         ARJ_DEFAULT = dflt;
         dflt = UNKNOWN;
         try {
-            dflt = getField(new DumpArchiveInputStream(new FileInputStream(getFile("bla.dump"))), "encoding");
+            dflt = getField(new DumpArchiveInputStream(Files.newInputStream(getFile("bla.dump").toPath())), "encoding");
         } catch (final Exception e) {
             e.printStackTrace();
         }
@@ -267,8 +268,7 @@ public class ArchiveStreamFactoryTest {
     }
 
     private String detect(final String resource) throws IOException, ArchiveException {
-        try(InputStream in = new BufferedInputStream(new FileInputStream(
-                getFile(resource)))) {
+        try(InputStream in = new BufferedInputStream(Files.newInputStream(getFile(resource).toPath()))) {
             return ArchiveStreamFactory.detect(in);
         }
     }
@@ -415,16 +415,14 @@ public class ArchiveStreamFactoryTest {
     private ArchiveInputStream getInputStreamFor(final String resource, final ArchiveStreamFactory factory)
             throws IOException, ArchiveException {
         return factory.createArchiveInputStream(
-                   new BufferedInputStream(new FileInputStream(
-                       getFile(resource))));
+                   new BufferedInputStream(Files.newInputStream(getFile(resource).toPath())));
     }
 
     private ArchiveInputStream getInputStreamFor(final String type, final String resource, final ArchiveStreamFactory factory)
             throws IOException, ArchiveException {
         return factory.createArchiveInputStream(
                    type,
-                   new BufferedInputStream(new FileInputStream(
-                       getFile(resource))));
+                   new BufferedInputStream(Files.newInputStream(getFile(resource).toPath())));
     }
 
     private ArchiveOutputStream getOutputStreamFor(final String type, final ArchiveStreamFactory factory)

@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.nio.file.Files;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -37,7 +37,7 @@ public class ChainingTestCase extends AbstractTestCase {
     public void testTarGzip() throws Exception {
         final File file = getFile("bla.tgz");
         try (final TarArchiveInputStream is = new TarArchiveInputStream(
-            new GzipCompressorInputStream(new FileInputStream(file)))) {
+            new GzipCompressorInputStream(Files.newInputStream(file.toPath())))) {
             final TarArchiveEntry entry = (TarArchiveEntry) is.getNextEntry();
             assertNotNull(entry);
             assertEquals("test1.xml", entry.getName());
@@ -48,7 +48,7 @@ public class ChainingTestCase extends AbstractTestCase {
     public void testTarBzip2() throws Exception {
         final File file = getFile("bla.tar.bz2");
         try (final TarArchiveInputStream is = new TarArchiveInputStream(
-            new BZip2CompressorInputStream(new FileInputStream(file)))) {
+            new BZip2CompressorInputStream(Files.newInputStream(file.toPath())))) {
             final TarArchiveEntry entry = (TarArchiveEntry) is.getNextEntry();
             assertNotNull(entry);
             assertEquals("test1.xml", entry.getName());

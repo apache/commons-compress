@@ -28,7 +28,6 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -280,7 +279,7 @@ public class SevenZFileTest extends AbstractTestCase {
     @Test
     public void getEntriesOfUnarchiveInMemoryTest() throws IOException {
         byte[] data = null;
-        try (FileInputStream fis = new FileInputStream(getFile("bla.7z"))) {
+        try (InputStream fis = Files.newInputStream(getFile("bla.7z").toPath())) {
             data = IOUtils.toByteArray(fis);
         }
         try (SevenZFile sevenZFile = new SevenZFile(new SeekableInMemoryByteChannel(data))) {

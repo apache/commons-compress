@@ -26,9 +26,9 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.zip.CRC32;
 import java.util.zip.CheckedOutputStream;
 
@@ -71,7 +71,7 @@ public class ExplodeSupportTest {
     }
 
     private void testZipStreamWithImplodeCompression(final String filename, final String entryName) throws IOException {
-        final ZipArchiveInputStream zin = new ZipArchiveInputStream(new FileInputStream(new File(filename)));
+        final ZipArchiveInputStream zin = new ZipArchiveInputStream(Files.newInputStream(new File(filename).toPath()));
         final ZipArchiveEntry entry = zin.getNextZipEntry();
         assertEquals("entry name", entryName, entry.getName());
         assertTrue("entry can't be read", zin.canReadEntryData(entry));
