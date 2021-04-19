@@ -220,7 +220,6 @@ The <action> type attribute can be add,update,fix,remove.
         zip.
         Github Pull Request #127.
       </action>
-      <action type="update" due-to="Dependabot" date="2020-09-08">Update actions/setup-java from v1.4.1 to v1.4.2 #133.</action>
       <action type="fix" date="2020-09-24" dev="PeterLee">
         Fix for the CFH signature detect in ZipArchiveInputStream.
         The problem could be reproduced by a zip archive with Data
@@ -290,8 +289,8 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" date="2020-08-10" due-to="Dependabot" dev="ggregory">
         Update GitHub actions/checkout from v1 to v2.3.4, #114, #124, #139, #150.
       </action>
-      <action type="update" date="2020-08-21" due-to="Dependabot" dev="ggregory">
-        Update actions/setup-java from v1.4.0 to v1.4.3, #125, #141.
+      <action type="update" date="2020-08-21" due-to="Dependabot, Gary Gregory" dev="ggregory">
+        Update actions/setup-java from v1.4.0 to v2, #125, #133, #141.
       </action>
       <action type="update" date="2020-08-21" due-to="Dependabot, Gary Gregory" dev="ggregory">
         Update com.github.luben:zstd-jni from 1.4.4-7 to 1.4.8-7 #118, #159, #173, #174.
