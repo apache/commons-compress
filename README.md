@@ -47,6 +47,7 @@ Apache Commons Compress
 [![Coverage Status](https://coveralls.io/repos/apache/commons-compress/badge.svg)](https://coveralls.io/r/apache/commons-compress)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-compress/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-compress/)
 [![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-compress/1.20.svg)](https://javadoc.io/doc/org.apache.commons/commons-compress/1.20)
+[![Fuzzing Status](https://oss-fuzz-build-logs.storage.googleapis.com/badges/apache-commons.svg)](https://bugs.chromium.org/p/oss-fuzz/issues/list?sort=-opened&can=1&q=proj:apache-commons)
 
 **Note: Commons Compress currently doesn't build on JDK 14+, we will
 address this before releasing Compress 1.21**.
