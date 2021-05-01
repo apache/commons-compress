@@ -515,7 +515,7 @@ public class SevenZFile implements Closeable {
     }
 
     private Archive initializeArchive(final StartHeader startHeader, final byte[] password, final boolean verifyCrc) throws IOException {
-        assertFitsIntoInt("nextHeaderSize", startHeader.nextHeaderSize);
+        assertFitsIntoNonNegativeInt("nextHeaderSize", startHeader.nextHeaderSize);
         final int nextHeaderSizeInt = (int) startHeader.nextHeaderSize;
         channel.position(SIGNATURE_HEADER_SIZE + startHeader.nextHeaderOffset);
         ByteBuffer buf = ByteBuffer.allocate(nextHeaderSizeInt).order(ByteOrder.LITTLE_ENDIAN);
@@ -589,7 +589,7 @@ public class SevenZFile implements Closeable {
         int nid =  getUnsignedByte(input);
         while (nid != NID.kEnd) {
             final long propertySize = readUint64(input);
-            assertFitsIntoInt("propertySize", propertySize);
+            assertFitsIntoNonNegativeInt("propertySize", propertySize);
             final byte[] property = new byte[(int)propertySize];
             input.get(property);
             nid = getUnsignedByte(input);
@@ -620,7 +620,7 @@ public class SevenZFile implements Closeable {
             inputStreamStack = new CRC32VerifyingInputStream(inputStreamStack,
                     folder.getUnpackSize(), folder.crc);
         }
-        assertFitsIntoInt("unpackSize", folder.getUnpackSize());
+        assertFitsIntoNonNegativeInt("unpackSize", folder.getUnpackSize());
         final byte[] nextHeader = new byte[(int)folder.getUnpackSize()];
         try (DataInputStream nextHeaderInputStream = new DataInputStream(inputStreamStack)) {
             nextHeaderInputStream.readFully(nextHeader);
@@ -657,7 +657,7 @@ public class SevenZFile implements Closeable {
     private void readPackInfo(final ByteBuffer header, final Archive archive) throws IOException {
         archive.packPos = readUint64(header);
         final long numPackStreams = readUint64(header);
-        assertFitsIntoInt("numPackStreams", numPackStreams);
+        assertFitsIntoNonNegativeInt("numPackStreams", numPackStreams);
         final int numPackStreamsInt = (int) numPackStreams;
         int nid = getUnsignedByte(header);
         if (nid == NID.kSize) {
@@ -691,7 +691,7 @@ public class SevenZFile implements Closeable {
             throw new IOException("Expected kFolder, got " + nid);
         }
         final long numFolders = readUint64(header);
-        assertFitsIntoInt("numFolders", numFolders);
+        assertFitsIntoNonNegativeInt("numFolders", numFolders);
         final int numFoldersInt = (int) numFolders;
         final Folder[] folders = new Folder[numFoldersInt];
         archive.folders = folders;
@@ -708,7 +708,7 @@ public class SevenZFile implements Closeable {
             throw new IOException("Expected kCodersUnpackSize, got " + nid);
         }
         for (final Folder folder : folders) {
-            assertFitsIntoInt("totalOutputStreams", folder.totalOutputStreams);
+            assertFitsIntoNonNegativeInt("totalOutputStreams", folder.totalOutputStreams);
             folder.unpackSizes = new long[(int)folder.totalOutputStreams];
             for (int i = 0; i < folder.totalOutputStreams; i++) {
                 folder.unpackSizes[i] = readUint64(header);
@@ -746,7 +746,7 @@ public class SevenZFile implements Closeable {
             totalUnpackStreams = 0;
             for (final Folder folder : archive.folders) {
                 final long numStreams = readUint64(header);
-                assertFitsIntoInt("numStreams", numStreams);
+                assertFitsIntoNonNegativeInt("numStreams", numStreams);
                 folder.numUnpackSubStreams = (int)numStreams;
                 totalUnpackStreams += numStreams;
             }
@@ -785,6 +785,7 @@ public class SevenZFile implements Closeable {
         }
 
         if (nid == NID.kCRC) {
+            assertFitsIntoNonNegativeInt("numDigests", numDigests);
             final BitSet hasMissingCrc = readAllOrBits(header, numDigests);
             final long[] missingCrcs = new long[numDigests];
             for (int i = 0; i < numDigests; i++) {
@@ -823,7 +824,7 @@ public class SevenZFile implements Closeable {
         final Folder folder = new Folder();
 
         final long numCoders = readUint64(header);
-        assertFitsIntoInt("numCoders", numCoders);
+        assertFitsIntoNonNegativeInt("numCoders", numCoders);
         final Coder[] coders = new Coder[(int)numCoders];
         long totalInStreams = 0;
         long totalOutStreams = 0;
@@ -848,7 +849,7 @@ public class SevenZFile implements Closeable {
             totalOutStreams += coders[i].numOutStreams;
             if (hasAttributes) {
                 final long propertiesSize = readUint64(header);
-                assertFitsIntoInt("propertiesSize", propertiesSize);
+                assertFitsIntoNonNegativeInt("propertiesSize", propertiesSize);
                 coders[i].properties = new byte[(int)propertiesSize];
                 header.get(coders[i].properties);
             }
@@ -859,16 +860,16 @@ public class SevenZFile implements Closeable {
             }
         }
         folder.coders = coders;
-        assertFitsIntoInt("totalInStreams", totalInStreams);
+        assertFitsIntoNonNegativeInt("totalInStreams", totalInStreams);
         folder.totalInputStreams = totalInStreams;
-        assertFitsIntoInt("totalOutStreams", totalOutStreams);
+        assertFitsIntoNonNegativeInt("totalOutStreams", totalOutStreams);
         folder.totalOutputStreams = totalOutStreams;
 
         if (totalOutStreams == 0) {
             throw new IOException("Total output streams can't be 0");
         }
         final long numBindPairs = totalOutStreams - 1;
-        assertFitsIntoInt("numBindPairs", numBindPairs);
+        assertFitsIntoNonNegativeInt("numBindPairs", numBindPairs);
         final BindPair[] bindPairs = new BindPair[(int)numBindPairs];
         for (int i = 0; i < bindPairs.length; i++) {
             bindPairs[i] = new BindPair();
@@ -881,7 +882,7 @@ public class SevenZFile implements Closeable {
             throw new IOException("Total input streams can't be less than the number of bind pairs");
         }
         final long numPackedStreams = totalInStreams - numBindPairs;
-        assertFitsIntoInt("numPackedStreams", numPackedStreams);
+        assertFitsIntoNonNegativeInt("numPackedStreams", numPackedStreams);
         final long[] packedStreams = new long[(int)numPackedStreams];
         if (numPackedStreams == 1) {
             int i;
@@ -935,7 +936,7 @@ public class SevenZFile implements Closeable {
 
     private void readFilesInfo(final ByteBuffer header, final Archive archive) throws IOException {
         final long numFiles = readUint64(header);
-        assertFitsIntoInt("numFiles", numFiles);
+        assertFitsIntoNonNegativeInt("numFiles", numFiles);
         final int numFilesInt = (int) numFiles;
         final Map<Integer, SevenZArchiveEntry> fileMap = new HashMap<>();
         BitSet isEmptyStream = null;
@@ -974,7 +975,7 @@ public class SevenZFile implements Closeable {
                     if (((size - 1) & 1) != 0) {
                         throw new IOException("File names length invalid");
                     }
-                    assertFitsIntoInt("file names length", size - 1);
+                    assertFitsIntoNonNegativeInt("file names length", size - 1);
                     final byte[] names = new byte[(int) (size - 1)];
                     final int namesLength = names.length;
                     header.get(names);
@@ -1642,8 +1643,8 @@ public class SevenZFile implements Closeable {
         return e;
     }
 
-    private static void assertFitsIntoInt(final String what, final long value) throws IOException {
-        if (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE) {
+    private static void assertFitsIntoNonNegativeInt(final String what, final long value) throws IOException {
+        if (value > Integer.MAX_VALUE || value < 0) {
             throw new IOException("Cannot handle " + what + " " + value);
         }
     }
