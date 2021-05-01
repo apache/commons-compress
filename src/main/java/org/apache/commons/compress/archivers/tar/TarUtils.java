@@ -803,20 +803,65 @@ public class TarUtils {
      * GNU.sparse.map
      *    Map of non-null data chunks. It is a string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
      *
+     * <p>Will internally invoke {@link #parseFromPAX01SparseHeaders} and map IOExceptions to a RzuntimeException, You
+     * should use {@link #parseFromPAX01SparseHeaders} directly instead.
+     *
      * @param sparseMap the sparse map string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
      * @return sparse headers parsed from sparse map
+     * @deprecated use #parseFromPAX01SparseHeaders instead
      */
     protected static List<TarArchiveStructSparse> parsePAX01SparseHeaders(String sparseMap) {
+        try {
+            return parseFromPAX01SparseHeaders(sparseMap);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * For PAX Format 0.1, the sparse headers are stored in a single variable : GNU.sparse.map
+     * GNU.sparse.map
+     *    Map of non-null data chunks. It is a string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
+     *
+     * @param sparseMap the sparse map string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
+     * @return unmodifiable list of sparse headers parsed from sparse map
+     * @since 1.21
+     */
+    protected static List<TarArchiveStructSparse> parseFromPAX01SparseHeaders(String sparseMap)
+        throws IOException {
         List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
         String[] sparseHeaderStrings = sparseMap.split(",");
+        if (sparseHeaderStrings.length % 2 == 1) {
+            throw new IOException("Corrupted TAR archive. Bad format in GNU.sparse.map PAX Header");
+        }
 
         for (int i = 0; i < sparseHeaderStrings.length; i += 2) {
-            long sparseOffset = Long.parseLong(sparseHeaderStrings[i]);
-            long sparseNumbytes = Long.parseLong(sparseHeaderStrings[i + 1]);
+            long sparseOffset;
+            try {
+                sparseOffset = Long.parseLong(sparseHeaderStrings[i]);
+            } catch (NumberFormatException ex) {
+                throw new IOException("Corrupted TAR archive."
+                    + " Sparse struct offset contains a non-numeric value");
+            }
+            if (sparseOffset < 0) {
+                throw new IOException("Corrupted TAR archive."
+                    + " Sparse struct offset contains negative value");
+            }
+            long sparseNumbytes;
+            try {
+                sparseNumbytes = Long.parseLong(sparseHeaderStrings[i + 1]);
+            } catch (NumberFormatException ex) {
+                throw new IOException("Corrupted TAR archive."
+                    + " Sparse struct numbytes contains a non-numeric value");
+            }
+            if (sparseNumbytes < 0) {
+                throw new IOException("Corrupted TAR archive."
+                    + " Sparse struct numbytes contains negative value");
+            }
             sparseHeaders.add(new TarArchiveStructSparse(sparseOffset, sparseNumbytes));
         }
 
-        return sparseHeaders;
+        return Collections.unmodifiableList(sparseHeaders);
     }
 
     /**

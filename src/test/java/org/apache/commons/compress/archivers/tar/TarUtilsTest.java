@@ -548,4 +548,65 @@ public class TarUtilsTest {
             null, Collections.emptyMap());
     }
 
+    @Test
+    public void parseFromPAX01SparseHeaders() throws Exception {
+        final String map = "0,10,20,0,20,5";
+        final List<TarArchiveStructSparse> sparse = TarUtils.parseFromPAX01SparseHeaders(map);
+        assertEquals(3, sparse.size());
+        assertEquals(0, sparse.get(0).getOffset());
+        assertEquals(10, sparse.get(0).getNumbytes());
+        assertEquals(20, sparse.get(1).getOffset());
+        assertEquals(0, sparse.get(1).getNumbytes());
+        assertEquals(20, sparse.get(2).getOffset());
+        assertEquals(5, sparse.get(2).getNumbytes());
+    }
+
+    @Test
+    public void parseFromPAX01SparseHeadersRejectsOddNumberOfEntries() throws Exception {
+        thrown.expect(IOException.class);
+        thrown.expectMessage(startsWith("Corrupted TAR archive"));
+        final String map = "0,10,20,0,20";
+        TarUtils.parseFromPAX01SparseHeaders(map);
+    }
+
+    @Test
+    public void parseFromPAX01SparseHeadersRejectsNonNumericOffset() throws Exception {
+        thrown.expect(IOException.class);
+        thrown.expectMessage(startsWith("Corrupted TAR archive"));
+        final String map = "0,10,20,0,2a,5";
+        TarUtils.parseFromPAX01SparseHeaders(map);
+    }
+
+    @Test
+    public void parseFromPAX01SparseHeadersRejectsNonNumericNumbytes() throws Exception {
+        thrown.expect(IOException.class);
+        thrown.expectMessage(startsWith("Corrupted TAR archive"));
+        final String map = "0,10,20,0,20,b";
+        TarUtils.parseFromPAX01SparseHeaders(map);
+    }
+
+    @Test
+    public void parseFromPAX01SparseHeadersRejectsNegativeOffset() throws Exception {
+        thrown.expect(IOException.class);
+        thrown.expectMessage(startsWith("Corrupted TAR archive"));
+        final String map = "0,10,20,0,-2,5";
+        TarUtils.parseFromPAX01SparseHeaders(map);
+    }
+
+    @Test
+    public void parseFromPAX01SparseHeadersRejectsNegativeNumbytes() throws Exception {
+        thrown.expect(IOException.class);
+        thrown.expectMessage(startsWith("Corrupted TAR archive"));
+        final String map = "0,10,20,0,20,-5";
+        TarUtils.parseFromPAX01SparseHeaders(map);
+    }
+
+    @Test
+    public void parsePAX01SparseHeadersRejectsOddNumberOfEntries() throws Exception {
+        thrown.expect(RuntimeException.class);
+        thrown.expectMessage(startsWith("Corrupted TAR archive"));
+        final String map = "0,10,20,0,20";
+        TarUtils.parsePAX01SparseHeaders(map);
+    }
+
 }
