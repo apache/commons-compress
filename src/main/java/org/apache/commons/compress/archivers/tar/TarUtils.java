@@ -882,14 +882,26 @@ public class TarUtils {
 
         long[] readResult = readLineOfNumberForPax1X(inputStream);
         long sparseHeadersCount = readResult[0];
+        if (sparseHeadersCount < 0) {
+            // overflow while reading number?
+            throw new IOException("Corrupted TAR archive. Negative value in sparse headers block");
+        }
         bytesRead += readResult[1];
         while (sparseHeadersCount-- > 0) {
             readResult = readLineOfNumberForPax1X(inputStream);
-            long sparseOffset = readResult[0];
+            final long sparseOffset = readResult[0];
+            if (sparseOffset < 0) {
+                throw new IOException("Corrupted TAR archive."
+                    + " Sparse header block offset contains negative value");
+            }
             bytesRead += readResult[1];
 
             readResult = readLineOfNumberForPax1X(inputStream);
-            long sparseNumbytes = readResult[0];
+            final long sparseNumbytes = readResult[0];
+            if (sparseNumbytes < 0) {
+                throw new IOException("Corrupted TAR archive."
+                    + " Sparse header block numbytes contains negative value");
+            }
             bytesRead += readResult[1];
             sparseHeaders.add(new TarArchiveStructSparse(sparseOffset, sparseNumbytes));
         }
@@ -917,6 +929,9 @@ public class TarUtils {
             bytesRead += 1;
             if (number == -1) {
                 throw new IOException("Unexpected EOF when reading parse information of 1.X PAX format");
+            }
+            if (number < '0' || number > '9') {
+                throw new IOException("Corrupted TAR archive. Non-numeric value in sparse headers block");
             }
             result = result * 10 + (number - '0');
         }

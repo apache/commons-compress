@@ -672,4 +672,123 @@ public class TarUtilsTest {
         TarUtils.parsePAX01SparseHeaders(map);
     }
 
+    @Test
+    public void parsePAX1XSparseHeaders() throws Exception {
+        final byte[] header = ("1\n"
+                + "0\n"
+                + "20\n")
+            .getBytes();
+        final byte[] block = new byte[512];
+        System.arraycopy(header, 0, block, 0, header.length);
+        try (ByteArrayInputStream in = new ByteArrayInputStream(block)) {
+            final List<TarArchiveStructSparse> sparse = TarUtils.parsePAX1XSparseHeaders(in, 512);
+            assertEquals(1, sparse.size());
+            assertEquals(0, sparse.get(0).getOffset());
+            assertEquals(20, sparse.get(0).getNumbytes());
+            assertEquals(-1, in.read());
+        }
+    }
+
+    @Test
+    public void parsePAX1XSparseHeadersRejectsIncompleteLastLine() throws Exception {
+        thrown.expect(IOException.class);
+        thrown.expectMessage(startsWith("Unexpected EOF"));
+        final byte[] header = ("1\n"
+                + "0\n"
+                + "20")
+            .getBytes();
+        try (ByteArrayInputStream in = new ByteArrayInputStream(header)) {
+            TarUtils.parsePAX1XSparseHeaders(in, 512);
+        }
+    }
+
+    @Test
+    public void parsePAX1XSparseHeadersRejectsNonNumericNumberOfEntries() throws Exception {
+        thrown.expect(IOException.class);
+        thrown.expectMessage(startsWith("Corrupted TAR archive."));
+        final byte[] header = ("x\n"
+                + "0\n"
+                + "20\n")
+            .getBytes();
+        final byte[] block = new byte[512];
+        System.arraycopy(header, 0, block, 0, header.length);
+        try (ByteArrayInputStream in = new ByteArrayInputStream(block)) {
+            TarUtils.parsePAX1XSparseHeaders(in, 512);
+        }
+    }
+
+    @Test
+    public void parsePAX1XSparseHeadersRejectsNonNumericOffset() throws Exception {
+        thrown.expect(IOException.class);
+        thrown.expectMessage(startsWith("Corrupted TAR archive."));
+        final byte[] header = ("1\n"
+                + "x\n"
+                + "20\n")
+            .getBytes();
+        final byte[] block = new byte[512];
+        System.arraycopy(header, 0, block, 0, header.length);
+        try (ByteArrayInputStream in = new ByteArrayInputStream(block)) {
+            TarUtils.parsePAX1XSparseHeaders(in, 512);
+        }
+    }
+
+    @Test
+    public void parsePAX1XSparseHeadersRejectsNonNumericNumbytes() throws Exception {
+        thrown.expect(IOException.class);
+        thrown.expectMessage(startsWith("Corrupted TAR archive."));
+        final byte[] header = ("1\n"
+                + "0\n"
+                + "2x\n")
+            .getBytes();
+        final byte[] block = new byte[512];
+        System.arraycopy(header, 0, block, 0, header.length);
+        try (ByteArrayInputStream in = new ByteArrayInputStream(block)) {
+            TarUtils.parsePAX1XSparseHeaders(in, 512);
+        }
+    }
+    @Test
+    public void parsePAX1XSparseHeadersRejectsNegativeNumberOfEntries() throws Exception {
+        thrown.expect(IOException.class);
+        thrown.expectMessage(startsWith("Corrupted TAR archive."));
+        final byte[] header = ("111111111111111111111111111111111111111111111111111111111111111\n"
+                + "0\n"
+                + "20\n")
+            .getBytes();
+        final byte[] block = new byte[512];
+        System.arraycopy(header, 0, block, 0, header.length);
+        try (ByteArrayInputStream in = new ByteArrayInputStream(block)) {
+            TarUtils.parsePAX1XSparseHeaders(in, 512);
+        }
+    }
+
+    @Test
+    public void parsePAX1XSparseHeadersRejectsNegativeOffset() throws Exception {
+        thrown.expect(IOException.class);
+        thrown.expectMessage(startsWith("Corrupted TAR archive."));
+        final byte[] header = ("1\n"
+                + "111111111111111111111111111111111111111111111111111111111111111\n"
+                + "20\n")
+            .getBytes();
+        final byte[] block = new byte[512];
+        System.arraycopy(header, 0, block, 0, header.length);
+        try (ByteArrayInputStream in = new ByteArrayInputStream(block)) {
+            TarUtils.parsePAX1XSparseHeaders(in, 512);
+        }
+    }
+
+    @Test
+    public void parsePAX1XSparseHeadersRejectsNegativeNumbytes() throws Exception {
+        thrown.expect(IOException.class);
+        thrown.expectMessage(startsWith("Corrupted TAR archive."));
+        final byte[] header = ("1\n"
+                + "0\n"
+                + "111111111111111111111111111111111111111111111111111111111111111\n")
+            .getBytes();
+        final byte[] block = new byte[512];
+        System.arraycopy(header, 0, block, 0, header.length);
+        try (ByteArrayInputStream in = new ByteArrayInputStream(block)) {
+            TarUtils.parsePAX1XSparseHeaders(in, 512);
+        }
+    }
+
 }
