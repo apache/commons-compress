@@ -57,17 +57,7 @@ public class TarArchiveSparseEntry implements TarConstants {
      */
     public TarArchiveSparseEntry(final byte[] headerBuf) throws IOException {
         int offset = 0;
-        sparseHeaders = new ArrayList<>();
-        for(int i = 0; i < SPARSE_HEADERS_IN_EXTENSION_HEADER;i++) {
-            final TarArchiveStructSparse sparseHeader = TarUtils.parseSparse(headerBuf,
-                    offset + i * (SPARSE_OFFSET_LEN + SPARSE_NUMBYTES_LEN));
-
-            // some sparse headers are empty, we need to skip these sparse headers
-            if(sparseHeader.getOffset() > 0 || sparseHeader.getNumbytes() > 0) {
-                sparseHeaders.add(sparseHeader);
-            }
-        }
-
+        sparseHeaders = new ArrayList<>(TarUtils.readSparseStructs(headerBuf, 0, SPARSE_HEADERS_IN_EXTENSION_HEADER));
         offset += SPARSELEN_GNU_SPARSE;
         isExtended = TarUtils.parseBoolean(headerBuf, offset);
     }

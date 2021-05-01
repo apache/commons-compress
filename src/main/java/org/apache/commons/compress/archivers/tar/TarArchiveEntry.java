@@ -1577,16 +1577,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             offset += OFFSETLEN_GNU;
             offset += LONGNAMESLEN_GNU;
             offset += PAD2LEN_GNU;
-            sparseHeaders = new ArrayList<>();
-            for (int i = 0; i < SPARSE_HEADERS_IN_OLDGNU_HEADER; i++) {
-                final TarArchiveStructSparse sparseHeader = TarUtils.parseSparse(header,
-                        offset + i * (SPARSE_OFFSET_LEN + SPARSE_NUMBYTES_LEN));
-
-                // some sparse headers are empty, we need to skip these sparse headers
-                if(sparseHeader.getOffset() > 0 || sparseHeader.getNumbytes() > 0) {
-                    sparseHeaders.add(sparseHeader);
-                }
-            }
+            sparseHeaders =
+                new ArrayList<>(TarUtils.readSparseStructs(header, offset, SPARSE_HEADERS_IN_OLDGNU_HEADER));
             offset += SPARSELEN_GNU;
             isExtended = TarUtils.parseBoolean(header, offset);
             offset += ISEXTENDEDLEN_GNU;

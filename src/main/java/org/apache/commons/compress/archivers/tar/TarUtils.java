@@ -25,6 +25,7 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -324,6 +325,35 @@ public class TarUtils {
         final long sparseNumbytes = parseOctalOrBinary(buffer, offset + SPARSE_OFFSET_LEN, SPARSE_NUMBYTES_LEN);
 
         return new TarArchiveStructSparse(sparseOffset, sparseNumbytes);
+    }
+
+    /**
+     * @since 1.21
+     */
+    static List<TarArchiveStructSparse> readSparseStructs(final byte[] buffer, final int offset, final int entries)
+        throws IOException {
+        final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
+        for (int i = 0; i < entries; i++) {
+            try {
+                final TarArchiveStructSparse sparseHeader =
+                    parseSparse(buffer, offset + i * (SPARSE_OFFSET_LEN + SPARSE_NUMBYTES_LEN));
+
+                if (sparseHeader.getOffset() < 0) {
+                    throw new IOException("Corrupted TAR archive, sparse entry with negative offset");
+                }
+                if (sparseHeader.getNumbytes() < 0) {
+                    throw new IOException("Corrupted TAR archive, sparse entry with negative numbytes");
+                }
+                // some sparse headers are empty, we need to skip these sparse headers
+                if (sparseHeader.getOffset() > 0 || sparseHeader.getNumbytes() > 0) {
+                    sparseHeaders.add(sparseHeader);
+                }
+            } catch (IllegalArgumentException ex) {
+                // thrown internally by parseOctalOrBinary
+                throw new IOException("Corrupted TAR archive, sparse entry is invalid", ex);
+            }
+        }
+        return Collections.unmodifiableList(sparseHeaders);
     }
 
     /**
