@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import org.apache.commons.compress.AbstractTestCase;
@@ -276,6 +277,8 @@ public class TarArchiveEntryTest implements TarConstants {
     @Test
     public void getOrderedSparseHeadersSortsAndFiltersSparseStructs() throws Exception {
         final TarArchiveEntry te = new TarArchiveEntry("test");
+        // hacky way to set realSize
+        te.fillStarSparseData(Collections.singletonMap("SCHILY.realsize", "201"));
         te.setSparseHeaders(Arrays.asList(new TarArchiveStructSparse(10, 2), new TarArchiveStructSparse(20, 0),
             new TarArchiveStructSparse(15, 1), new TarArchiveStructSparse(0, 0)));
         final List<TarArchiveStructSparse> strs = te.getOrderedSparseHeaders();
@@ -288,6 +291,7 @@ public class TarArchiveEntryTest implements TarConstants {
     @Test(expected = IOException.class)
     public void getOrderedSparseHeadersRejectsOverlappingStructs() throws Exception {
         final TarArchiveEntry te = new TarArchiveEntry("test");
+        te.fillStarSparseData(Collections.singletonMap("SCHILY.realsize", "201"));
         te.setSparseHeaders(Arrays.asList(new TarArchiveStructSparse(10, 5), new TarArchiveStructSparse(12, 1)));
         te.getOrderedSparseHeaders();
     }
@@ -295,7 +299,16 @@ public class TarArchiveEntryTest implements TarConstants {
     @Test(expected = IOException.class)
     public void getOrderedSparseHeadersRejectsStructsWithReallyBigNumbers() throws Exception {
         final TarArchiveEntry te = new TarArchiveEntry("test");
+        te.fillStarSparseData(Collections.singletonMap("SCHILY.realsize", String.valueOf(Long.MAX_VALUE)));
         te.setSparseHeaders(Arrays.asList(new TarArchiveStructSparse(Long.MAX_VALUE, 2)));
+        te.getOrderedSparseHeaders();
+    }
+
+    @Test(expected = IOException.class)
+    public void getOrderedSparseHeadersRejectsStructsPointingBeyondOutputEntry() throws Exception {
+        final TarArchiveEntry te = new TarArchiveEntry("test");
+        te.setSparseHeaders(Arrays.asList(new TarArchiveStructSparse(200, 2)));
+        te.fillStarSparseData(Collections.singletonMap("SCHILY.realsize", "201"));
         te.getOrderedSparseHeaders();
     }
 

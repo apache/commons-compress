@@ -961,6 +961,13 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
                     + getName() + " too large.");
             }
         }
+        if (!orderedAndFiltered.isEmpty()) {
+            final TarArchiveStructSparse last = orderedAndFiltered.get(orderedAndFiltered.size() - 1);
+            if (last.getOffset() + last.getNumbytes() > getRealSize()) {
+                throw new IOException("Corrupted TAR archive. Sparse block extends beyond real size of the entry");
+            }
+        }
+
         return orderedAndFiltered;
     }
 
