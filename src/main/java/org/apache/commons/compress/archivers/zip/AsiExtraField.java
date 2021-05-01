@@ -21,6 +21,9 @@ package org.apache.commons.compress.archivers.zip;
 import java.util.zip.CRC32;
 import java.util.zip.ZipException;
 
+import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
+
 /**
  * Adds Unix file permission and UID/GID fields as well as symbolic
  * link handling.
@@ -52,7 +55,7 @@ import java.util.zip.ZipException;
 public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
 
     private static final ZipShort HEADER_ID = new ZipShort(0x756E);
-    private static final int      WORD = 4;
+    private static final int      MIN_SIZE = WORD + SHORT + WORD + SHORT + SHORT;
     /**
      * Standard Unix stat(2) file mode.
      */
@@ -266,9 +269,9 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     @Override
     public void parseFromLocalFileData(final byte[] data, final int offset, final int length)
         throws ZipException {
-        if (length < WORD) {
+        if (length < MIN_SIZE) {
             throw new ZipException("The length is too short, only "
-                    + length + " bytes, expected at least " + WORD);
+                    + length + " bytes, expected at least " + MIN_SIZE);
         }
 
         final long givenChecksum = ZipLong.getValue(data, offset);
