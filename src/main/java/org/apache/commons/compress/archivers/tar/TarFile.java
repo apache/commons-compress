@@ -359,6 +359,10 @@ public class TarFile implements Closeable {
             if (sparseHeader.getNumbytes() > 0) {
                 final long start =
                     currEntry.getDataOffset() + sparseHeader.getOffset() - numberOfZeroBytesInSparseEntry;
+                if (start + sparseHeader.getNumbytes() < start) {
+                    // possible integer overflow
+                    throw new IOException("Unreadable TAR archive, sparse block offset or length too big");
+                }
                 streams.add(new BoundedSeekableByteChannelInputStream(start, sparseHeader.getNumbytes(), archive));
             }
 
