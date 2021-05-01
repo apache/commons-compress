@@ -337,33 +337,33 @@ public class TarFile implements Closeable {
 
         final List<TarArchiveStructSparse> sparseHeaders = currEntry.getOrderedSparseHeaders();
 
-            // Stream doesn't need to be closed at all as it doesn't use any resources
-            final InputStream zeroInputStream = new TarArchiveSparseZeroInputStream(); //NOSONAR
-            // logical offset into the extracted entry
-            long offset = 0;
-            long numberOfZeroBytesInSparseEntry = 0;
-            for (TarArchiveStructSparse sparseHeader : sparseHeaders) {
-                final long zeroBlockSize = sparseHeader.getOffset() - offset;
-                if (zeroBlockSize < 0) {
-                    // sparse header says to move backwards inside of the extracted entry
-                    throw new IOException("Corrupted struct sparse detected");
-                }
-
-                // only store the zero block if it is not empty
-                if (zeroBlockSize > 0) {
-                    streams.add(new BoundedInputStream(zeroInputStream, zeroBlockSize));
-                    numberOfZeroBytesInSparseEntry += zeroBlockSize;
-                }
-
-                // only store the input streams with non-zero size
-                if (sparseHeader.getNumbytes() > 0) {
-                    final long start =
-                            currEntry.getDataOffset() + sparseHeader.getOffset() - numberOfZeroBytesInSparseEntry;
-                    streams.add(new BoundedSeekableByteChannelInputStream(start, sparseHeader.getNumbytes(), archive));
-                }
-
-                offset = sparseHeader.getOffset() + sparseHeader.getNumbytes();
+        // Stream doesn't need to be closed at all as it doesn't use any resources
+        final InputStream zeroInputStream = new TarArchiveSparseZeroInputStream(); //NOSONAR
+        // logical offset into the extracted entry
+        long offset = 0;
+        long numberOfZeroBytesInSparseEntry = 0;
+        for (TarArchiveStructSparse sparseHeader : sparseHeaders) {
+            final long zeroBlockSize = sparseHeader.getOffset() - offset;
+            if (zeroBlockSize < 0) {
+                // sparse header says to move backwards inside of the extracted entry
+                throw new IOException("Corrupted struct sparse detected");
             }
+
+            // only store the zero block if it is not empty
+            if (zeroBlockSize > 0) {
+                streams.add(new BoundedInputStream(zeroInputStream, zeroBlockSize));
+                numberOfZeroBytesInSparseEntry += zeroBlockSize;
+            }
+
+            // only store the input streams with non-zero size
+            if (sparseHeader.getNumbytes() > 0) {
+                final long start =
+                    currEntry.getDataOffset() + sparseHeader.getOffset() - numberOfZeroBytesInSparseEntry;
+                streams.add(new BoundedSeekableByteChannelInputStream(start, sparseHeader.getNumbytes(), archive));
+            }
+
+            offset = sparseHeader.getOffset() + sparseHeader.getNumbytes();
+        }
 
         sparseInputStreams.put(currEntry.getName(), streams);
     }
