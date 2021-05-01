@@ -695,6 +695,10 @@ public class TarUtils {
                                             + got);
                                 }
                                 // Drop trailing NL
+                                if (rest[rest.length - 1] != '\n') {
+                                    throw new IOException("Failed to read Paxheader."
+                                       + "Value should end with a newline");
+                                }
                                 final String value = new String(rest, 0,
                                         restLen - 1, StandardCharsets.UTF_8);
                                 headers.put(keyword, value);
@@ -705,7 +709,16 @@ public class TarUtils {
                                         // previous GNU.sparse.offset header but but no numBytes
                                         sparseHeaders.add(new TarArchiveStructSparse(offset, 0));
                                     }
-                                    offset = Long.valueOf(value);
+                                    try {
+                                        offset = Long.valueOf(value);
+                                    } catch (NumberFormatException ex) {
+                                        throw new IOException("Failed to read Paxheader."
+                                            + "GNU.sparse.offset contains a non-numeric value");
+                                    }
+                                    if (offset < 0) {
+                                        throw new IOException("Failed to read Paxheader."
+                                            + "GNU.sparse.offset contains negative value");
+                                    }
                                 }
 
                                 // for 0.0 PAX Headers
@@ -714,7 +727,18 @@ public class TarUtils {
                                         throw new IOException("Failed to read Paxheader." +
                                                 "GNU.sparse.offset is expected before GNU.sparse.numbytes shows up.");
                                     }
-                                    sparseHeaders.add(new TarArchiveStructSparse(offset, Long.parseLong(value)));
+                                    long numbytes;
+                                    try {
+                                        numbytes = Long.parseLong(value);
+                                    } catch (NumberFormatException ex) {
+                                        throw new IOException("Failed to read Paxheader."
+                                            + "GNU.sparse.numbytes contains a non-numeric value.");
+                                    }
+                                    if (numbytes < 0) {
+                                        throw new IOException("Failed to read Paxheader."
+                                            + "GNU.sparse.numbytes contains negative value");
+                                    }
+                                    sparseHeaders.add(new TarArchiveStructSparse(offset, numbytes));
                                     offset = null;
                                 }
                             }

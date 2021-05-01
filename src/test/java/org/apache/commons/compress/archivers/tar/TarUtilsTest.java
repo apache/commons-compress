@@ -23,7 +23,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
@@ -31,9 +34,12 @@ import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -41,6 +47,8 @@ import static org.junit.Assert.fail;
 
 public class TarUtilsTest {
 
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void testName(){
@@ -449,13 +457,95 @@ public class TarUtilsTest {
         assertEquals(ae, headers.get("path"));
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testParseTarWithSpecialPaxHeaders() throws IOException {
+        thrown.expect(IOException.class);
         try (InputStream in = Files.newInputStream(getFile("COMPRESS-530.tar").toPath());
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             archive.getNextEntry();
             IOUtils.toByteArray(archive);
         }
+    }
+
+    @Test
+    public void readPaxHeaderWithoutTrailingNewline() throws Exception {
+        thrown.expect(IOException.class);
+        thrown.expectMessage(startsWith("Failed to read Paxheader"));
+        TarUtils.parsePaxHeaders(
+            new ByteArrayInputStream("30 atime=1321711775.9720594634".getBytes(StandardCharsets.UTF_8)),
+            null, Collections.emptyMap());
+    }
+
+    @Test
+    public void readPax00SparseHeader() throws Exception {
+        final String header = "23 GNU.sparse.offset=0\n"
+            + "26 GNU.sparse.numbytes=10\n";
+        final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
+        TarUtils.parsePaxHeaders(
+            new ByteArrayInputStream(header.getBytes(StandardCharsets.UTF_8)),
+            sparseHeaders, Collections.emptyMap());
+        assertEquals(1, sparseHeaders.size());
+        assertEquals(0, sparseHeaders.get(0).getOffset());
+        assertEquals(10, sparseHeaders.get(0).getNumbytes());
+    }
+
+    @Test
+    public void readPax00SparseHeaderMakesNumbytesOptional() throws Exception {
+        final String header = "23 GNU.sparse.offset=0\n"
+            + "24 GNU.sparse.offset=10\n";
+        final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
+        TarUtils.parsePaxHeaders(
+            new ByteArrayInputStream(header.getBytes(StandardCharsets.UTF_8)),
+            sparseHeaders, Collections.emptyMap());
+        assertEquals(2, sparseHeaders.size());
+        assertEquals(0, sparseHeaders.get(0).getOffset());
+        assertEquals(0, sparseHeaders.get(0).getNumbytes());
+        assertEquals(10, sparseHeaders.get(1).getOffset());
+        assertEquals(0, sparseHeaders.get(1).getNumbytes());
+    }
+
+    @Test
+    public void readPax00SparseHeaderRejectsNonNumericOffset() throws Exception {
+        thrown.expect(IOException.class);
+        thrown.expectMessage(startsWith("Failed to read Paxheader"));
+        final String header = "23 GNU.sparse.offset=a\n"
+            + "26 GNU.sparse.numbytes=10\n";
+        TarUtils.parsePaxHeaders(
+            new ByteArrayInputStream(header.getBytes(StandardCharsets.UTF_8)),
+            null, Collections.emptyMap());
+    }
+
+    @Test
+    public void readPax00SparseHeaderRejectsNonNumericNumbytes() throws Exception {
+        thrown.expect(IOException.class);
+        thrown.expectMessage(startsWith("Failed to read Paxheader"));
+        final String header = "23 GNU.sparse.offset=0\n"
+            + "26 GNU.sparse.numbytes=1a\n";
+        TarUtils.parsePaxHeaders(
+            new ByteArrayInputStream(header.getBytes(StandardCharsets.UTF_8)),
+            null, Collections.emptyMap());
+    }
+
+    @Test
+    public void readPax00SparseHeaderRejectsNegativeOffset() throws Exception {
+        thrown.expect(IOException.class);
+        thrown.expectMessage(startsWith("Failed to read Paxheader"));
+        final String header = "24 GNU.sparse.offset=-1\n"
+            + "26 GNU.sparse.numbytes=10\n";
+        TarUtils.parsePaxHeaders(
+            new ByteArrayInputStream(header.getBytes(StandardCharsets.UTF_8)),
+            null, Collections.emptyMap());
+    }
+
+    @Test
+    public void readPax00SparseHeaderRejectsNegativeNumbytes() throws Exception {
+        thrown.expect(IOException.class);
+        thrown.expectMessage(startsWith("Failed to read Paxheader"));
+        final String header = "23 GNU.sparse.offset=0\n"
+            + "26 GNU.sparse.numbytes=-1\n";
+        TarUtils.parsePaxHeaders(
+            new ByteArrayInputStream(header.getBytes(StandardCharsets.UTF_8)),
+            null, Collections.emptyMap());
     }
 
 }
