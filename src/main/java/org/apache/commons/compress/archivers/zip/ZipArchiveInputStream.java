@@ -348,7 +348,13 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
 
         final byte[] extraData = new byte[extraLen];
         readFully(extraData);
-        current.entry.setExtra(extraData);
+        try {
+            current.entry.setExtra(extraData);
+        } catch (RuntimeException ex) {
+            final ZipException z = new ZipException("Invalid extra data in entry " + current.entry.getName());
+            z.initCause(ex);
+            throw z;
+        }
 
         if (!hasUTF8Flag && useUnicodeExtraFields) {
             ZipUtil.setNameAndCommentFromExtraFields(current.entry, fileName, null);

@@ -1262,7 +1262,13 @@ public class ZipFile implements Closeable {
             skipBytes(fileNameLen);
             final byte[] localExtraData = new byte[extraFieldLen];
             IOUtils.readFully(archive, ByteBuffer.wrap(localExtraData));
-            ze.setExtra(localExtraData);
+            try {
+                ze.setExtra(localExtraData);
+            } catch (RuntimeException ex) {
+                final ZipException z = new ZipException("Invalid extra data in entry " + ze.getName());
+                z.initCause(ex);
+                throw z;
+            }
 
             if (entriesWithoutUTF8Flag.containsKey(ze)) {
                 final NameAndComment nc = entriesWithoutUTF8Flag.get(ze);
