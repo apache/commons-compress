@@ -34,6 +34,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
@@ -269,6 +271,32 @@ public class TarArchiveEntryTest implements TarConstants {
     @Test(expected = IllegalArgumentException.class)
     public void negativeOffsetInSetterNotAllowed() {
         new TarArchiveEntry("test").setDataOffset(-1);
+    }
+
+    @Test
+    public void getOrderedSparseHeadersSortsAndFiltersSparseStructs() throws Exception {
+        final TarArchiveEntry te = new TarArchiveEntry("test");
+        te.setSparseHeaders(Arrays.asList(new TarArchiveStructSparse(10, 2), new TarArchiveStructSparse(20, 0),
+            new TarArchiveStructSparse(15, 1), new TarArchiveStructSparse(0, 0)));
+        final List<TarArchiveStructSparse> strs = te.getOrderedSparseHeaders();
+        assertEquals(3, strs.size());
+        assertEquals(10, strs.get(0).getOffset());
+        assertEquals(15, strs.get(1).getOffset());
+        assertEquals(20, strs.get(2).getOffset());
+    }
+
+    @Test(expected = IOException.class)
+    public void getOrderedSparseHeadersRejectsOverlappingStructs() throws Exception {
+        final TarArchiveEntry te = new TarArchiveEntry("test");
+        te.setSparseHeaders(Arrays.asList(new TarArchiveStructSparse(10, 5), new TarArchiveStructSparse(12, 1)));
+        te.getOrderedSparseHeaders();
+    }
+
+    @Test(expected = IOException.class)
+    public void getOrderedSparseHeadersRejectsStructsWithReallyBigNumbers() throws Exception {
+        final TarArchiveEntry te = new TarArchiveEntry("test");
+        te.setSparseHeaders(Arrays.asList(new TarArchiveStructSparse(Long.MAX_VALUE, 2)));
+        te.getOrderedSparseHeaders();
     }
 
     private void assertGnuMagic(final TarArchiveEntry t) {

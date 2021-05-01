@@ -40,6 +40,10 @@ import java.util.List;
  * char numbytes[12]; // offset 12
  * };
  * </pre>
+ *
+ * <p>Each such struct describes a block of data that has actually been written to the archive. The offset describes
+ * where in the extracted file the data is supposed to start and the numbytes provides the length of the block. When
+ * extracting the entry the gaps between the sparse structs are equivalent to areas filled with zero bytes.</p>
  */
 
 public class TarArchiveSparseEntry implements TarConstants {

@@ -27,8 +27,6 @@ import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -337,36 +335,24 @@ public class TarFile implements Closeable {
     private void buildSparseInputStreams() throws IOException {
         final List<InputStream> streams = new ArrayList<>();
 
-        final List<TarArchiveStructSparse> sparseHeaders = currEntry.getSparseHeaders();
-        // sort the sparse headers in case they are written in wrong order
-        if (sparseHeaders != null && sparseHeaders.size() > 1) {
-            final Comparator<TarArchiveStructSparse> sparseHeaderComparator = (p, q) -> {
-                Long pOffset = p.getOffset();
-                Long qOffset = q.getOffset();
-                return pOffset.compareTo(qOffset);
-            };
-            Collections.sort(sparseHeaders, sparseHeaderComparator);
-        }
+        final List<TarArchiveStructSparse> sparseHeaders = currEntry.getOrderedSparseHeaders();
 
-        if (sparseHeaders != null) {
             // Stream doesn't need to be closed at all as it doesn't use any resources
             final InputStream zeroInputStream = new TarArchiveSparseZeroInputStream(); //NOSONAR
+            // logical offset into the extracted entry
             long offset = 0;
             long numberOfZeroBytesInSparseEntry = 0;
             for (TarArchiveStructSparse sparseHeader : sparseHeaders) {
-                if (sparseHeader.getOffset() == 0 && sparseHeader.getNumbytes() == 0) {
-                    break;
-                }
-
-                if ((sparseHeader.getOffset() - offset) < 0) {
+                final long zeroBlockSize = sparseHeader.getOffset() - offset;
+                if (zeroBlockSize < 0) {
+                    // sparse header says to move backwards inside of the extracted entry
                     throw new IOException("Corrupted struct sparse detected");
                 }
 
-                // only store the input streams with non-zero size
-                if ((sparseHeader.getOffset() - offset) > 0) {
-                    final long sizeOfZeroByteStream = sparseHeader.getOffset() - offset;
-                    streams.add(new BoundedInputStream(zeroInputStream, sizeOfZeroByteStream));
-                    numberOfZeroBytesInSparseEntry += sizeOfZeroByteStream;
+                // only store the zero block if it is not empty
+                if (zeroBlockSize > 0) {
+                    streams.add(new BoundedInputStream(zeroInputStream, zeroBlockSize));
+                    numberOfZeroBytesInSparseEntry += zeroBlockSize;
                 }
 
                 // only store the input streams with non-zero size
@@ -378,7 +364,6 @@ public class TarFile implements Closeable {
 
                 offset = sparseHeader.getOffset() + sparseHeader.getNumbytes();
             }
-        }
 
         sparseInputStreams.put(currEntry.getName(), streams);
     }

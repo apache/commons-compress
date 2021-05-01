@@ -56,7 +56,7 @@ public class SparseFilesTest extends AbstractTestCase {
             assertTrue(tin.canReadEntryData(ae));
 
             final List<TarArchiveStructSparse> sparseHeaders = ae.getSparseHeaders();
-            assertEquals(3, sparseHeaders.size());
+            assertEquals(4, sparseHeaders.size());
 
             assertEquals(0, sparseHeaders.get(0).getOffset());
             assertEquals(2048, sparseHeaders.get(0).getNumbytes());
@@ -66,6 +66,21 @@ public class SparseFilesTest extends AbstractTestCase {
 
             assertEquals(3101184L, sparseHeaders.get(2).getOffset());
             assertEquals(0, sparseHeaders.get(2).getNumbytes());
+
+            assertEquals(0, sparseHeaders.get(3).getOffset());
+            assertEquals(0, sparseHeaders.get(3).getNumbytes());
+
+            final List<TarArchiveStructSparse> sparseOrderedHeaders = ae.getOrderedSparseHeaders();
+            assertEquals(3, sparseOrderedHeaders.size());
+
+            assertEquals(0, sparseOrderedHeaders.get(0).getOffset());
+            assertEquals(2048, sparseOrderedHeaders.get(0).getNumbytes());
+
+            assertEquals(1050624L, sparseOrderedHeaders.get(1).getOffset());
+            assertEquals(2560, sparseOrderedHeaders.get(1).getNumbytes());
+
+            assertEquals(3101184L, sparseOrderedHeaders.get(2).getOffset());
+            assertEquals(0, sparseOrderedHeaders.get(2).getNumbytes());
         }
     }
 
@@ -80,7 +95,7 @@ public class SparseFilesTest extends AbstractTestCase {
             assertFalse(ae.isPaxGNUSparse());
 
             List<TarArchiveStructSparse> sparseHeaders = ae.getSparseHeaders();
-            assertEquals(3, sparseHeaders.size());
+            assertEquals(4, sparseHeaders.size());
 
             assertEquals(0, sparseHeaders.get(0).getOffset());
             assertEquals(2048, sparseHeaders.get(0).getNumbytes());
@@ -90,6 +105,21 @@ public class SparseFilesTest extends AbstractTestCase {
 
             assertEquals(3101184L, sparseHeaders.get(2).getOffset());
             assertEquals(0, sparseHeaders.get(2).getNumbytes());
+
+            assertEquals(0, sparseHeaders.get(3).getOffset());
+            assertEquals(0, sparseHeaders.get(3).getNumbytes());
+
+            final List<TarArchiveStructSparse> sparseOrderedHeaders = ae.getOrderedSparseHeaders();
+            assertEquals(3, sparseOrderedHeaders.size());
+
+            assertEquals(0, sparseOrderedHeaders.get(0).getOffset());
+            assertEquals(2048, sparseOrderedHeaders.get(0).getNumbytes());
+
+            assertEquals(1050624L, sparseOrderedHeaders.get(1).getOffset());
+            assertEquals(2560, sparseOrderedHeaders.get(1).getNumbytes());
+
+            assertEquals(3101184L, sparseOrderedHeaders.get(2).getOffset());
+            assertEquals(0, sparseOrderedHeaders.get(2).getNumbytes());
         }
     }
 
@@ -260,7 +290,7 @@ public class SparseFilesTest extends AbstractTestCase {
             assertArrayEquals(IOUtils.toByteArray(tin),
                 IOUtils.toByteArray(sparseFileInputStream));
 
-            final List<TarArchiveStructSparse> sparseHeaders = ae.getSparseHeaders();
+            final List<TarArchiveStructSparse> sparseHeaders = ae.getOrderedSparseHeaders();
             assertEquals(7, sparseHeaders.size());
 
             assertEquals(0, sparseHeaders.get(0).getOffset());
@@ -299,7 +329,7 @@ public class SparseFilesTest extends AbstractTestCase {
                 assertArrayEquals(IOUtils.toByteArray(tarInput), IOUtils.toByteArray(sparseFileInputStream));
             }
 
-            List<TarArchiveStructSparse> sparseHeaders = ae.getSparseHeaders();
+            List<TarArchiveStructSparse> sparseHeaders = ae.getOrderedSparseHeaders();
             assertEquals(7, sparseHeaders.size());
 
             assertEquals(0, sparseHeaders.get(0).getOffset());

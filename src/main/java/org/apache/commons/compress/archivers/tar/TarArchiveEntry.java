@@ -30,6 +30,7 @@ import java.nio.file.attribute.FileTime;
 import java.nio.file.attribute.PosixFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,6 +39,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.EntryStreamOffsets;
@@ -927,6 +929,39 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      */
     public List<TarArchiveStructSparse> getSparseHeaders() {
         return sparseHeaders;
+    }
+
+    /**
+     * Get this entry's sparse headers ordered by offset with all empty sparse sections at the start filtered out.
+     *
+     * @return immutable list of this entry's sparse headers, never null
+     * @since 1.21
+     * @throws IOException if the list of sparse headers contains blocks that overlap
+     */
+    public List<TarArchiveStructSparse> getOrderedSparseHeaders() throws IOException {
+        if (sparseHeaders == null || sparseHeaders.isEmpty()) {
+            return Collections.emptyList();
+        }
+        final List<TarArchiveStructSparse> orderedAndFiltered = sparseHeaders.stream()
+            .filter(s -> s.getOffset() > 0 || s.getNumbytes() > 0)
+            .sorted(Comparator.comparingLong(TarArchiveStructSparse::getOffset))
+            .collect(Collectors.toList());
+
+        for (int i = 0; i < orderedAndFiltered.size(); i++) {
+            final TarArchiveStructSparse str = orderedAndFiltered.get(i);
+            if (i + 1 < orderedAndFiltered.size()) {
+                if (str.getOffset() + str.getNumbytes() > orderedAndFiltered.get(i + 1).getOffset()) {
+                    throw new IOException("Corrupted TAR archive. Sparse blocks for "
+                        + getName() + " overlap each other.");
+                }
+            }
+            if (str.getOffset() + str.getNumbytes() < 0) {
+                // integer overflow?
+                throw new IOException("Unreadable TAR archive. Offset and numbytes for sparse block in "
+                    + getName() + " too large.");
+            }
+        }
+        return orderedAndFiltered;
     }
 
     /**

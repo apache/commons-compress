@@ -28,7 +28,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -913,32 +912,21 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         currentSparseInputStreamIndex = -1;
         sparseInputStreams = new ArrayList<>();
 
-        final List<TarArchiveStructSparse> sparseHeaders = currEntry.getSparseHeaders();
-        // sort the sparse headers in case they are written in wrong order
-        if (sparseHeaders != null && sparseHeaders.size() > 1) {
-            final Comparator<TarArchiveStructSparse> sparseHeaderComparator = (p, q) -> {
-                final Long pOffset = p.getOffset();
-                final Long qOffset = q.getOffset();
-                return pOffset.compareTo(qOffset);
-            };
-            sparseHeaders.sort(sparseHeaderComparator);
-        }
+        final List<TarArchiveStructSparse> sparseHeaders = currEntry.getOrderedSparseHeaders();
 
-        if (sparseHeaders != null) {
             // Stream doesn't need to be closed at all as it doesn't use any resources
             final InputStream zeroInputStream = new TarArchiveSparseZeroInputStream(); //NOSONAR
+            // logical offset into the extracted entry
             long offset = 0;
             for (final TarArchiveStructSparse sparseHeader : sparseHeaders) {
-                if (sparseHeader.getOffset() == 0 && sparseHeader.getNumbytes() == 0) {
-                    break;
-                }
-
-                if ((sparseHeader.getOffset() - offset) < 0) {
+                final long zeroBlockSize = sparseHeader.getOffset() - offset;
+                if (zeroBlockSize < 0) {
+                    // sparse header says to move backwards inside of the extracted entry
                     throw new IOException("Corrupted struct sparse detected");
                 }
 
-                // only store the input streams with non-zero size
-                if ((sparseHeader.getOffset() - offset) > 0) {
+                // only store the zero block if it is not empty
+                if (zeroBlockSize > 0) {
                     sparseInputStreams.add(new BoundedInputStream(zeroInputStream, sparseHeader.getOffset() - offset));
                 }
 
@@ -949,7 +937,6 @@ public class TarArchiveInputStream extends ArchiveInputStream {
 
                 offset = sparseHeader.getOffset() + sparseHeader.getNumbytes();
             }
-        }
 
         if (!sparseInputStreams.isEmpty()) {
             currentSparseInputStreamIndex = 0;

@@ -344,10 +344,7 @@ public class TarUtils {
                 if (sparseHeader.getNumbytes() < 0) {
                     throw new IOException("Corrupted TAR archive, sparse entry with negative numbytes");
                 }
-                // some sparse headers are empty, we need to skip these sparse headers
-                if (sparseHeader.getOffset() > 0 || sparseHeader.getNumbytes() > 0) {
-                    sparseHeaders.add(sparseHeader);
-                }
+                sparseHeaders.add(sparseHeader);
             } catch (IllegalArgumentException ex) {
                 // thrown internally by parseOctalOrBinary
                 throw new IOException("Corrupted TAR archive, sparse entry is invalid", ex);
