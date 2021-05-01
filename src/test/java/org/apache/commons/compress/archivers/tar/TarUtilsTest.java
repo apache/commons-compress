@@ -549,6 +549,69 @@ public class TarUtilsTest {
     }
 
     @Test
+    public void readSparseStructsOctal() throws Exception {
+        final byte[] header = "00000000000 00000000007 ".getBytes();
+        assertEquals(24, header.length);
+        final List<TarArchiveStructSparse> sparse = TarUtils.readSparseStructs(header, 0, 1);
+        assertEquals(1, sparse.size());
+        assertEquals(0, sparse.get(0).getOffset());
+        assertEquals(7, sparse.get(0).getNumbytes());
+    }
+
+    @Test
+    public void readSparseStructsBinary() throws Exception {
+        final byte[] header = {
+            (byte) 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            (byte) 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,
+        };
+        assertEquals(24, header.length);
+        final List<TarArchiveStructSparse> sparse = TarUtils.readSparseStructs(header, 0, 1);
+        assertEquals(1, sparse.size());
+        assertEquals(0, sparse.get(0).getOffset());
+        assertEquals(7, sparse.get(0).getNumbytes());
+    }
+
+    @Test
+    public void readSparseStructsRejectsNonNumericOffset() throws Exception {
+        thrown.expect(IOException.class);
+        thrown.expectMessage(startsWith("Corrupted TAR archive"));
+        final byte[] header = "0000000000x 00000000007 ".getBytes();
+        TarUtils.readSparseStructs(header, 0, 1);
+    }
+
+    @Test
+    public void readSparseStructsRejectsNegativeOffset() throws Exception {
+        thrown.expect(IOException.class);
+        thrown.expectMessage(startsWith("Corrupted TAR archive"));
+        final byte[] header = {
+            (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+            (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+            (byte) 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,
+        };
+        TarUtils.readSparseStructs(header, 0, 1);
+    }
+
+    @Test
+    public void readSparseStructsRejectsNonNumericNumbytes() throws Exception {
+        thrown.expect(IOException.class);
+        thrown.expectMessage(startsWith("Corrupted TAR archive"));
+        final byte[] header = "00000000000 0000000000x ".getBytes();
+        TarUtils.readSparseStructs(header, 0, 1);
+    }
+
+    @Test
+    public void readSparseStructsRejectsNegativeNumbytes() throws Exception {
+        thrown.expect(IOException.class);
+        thrown.expectMessage(startsWith("Corrupted TAR archive"));
+        final byte[] header = {
+            (byte) 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+            (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+        };
+        TarUtils.readSparseStructs(header, 0, 1);
+    }
+
+    @Test
     public void parseFromPAX01SparseHeaders() throws Exception {
         final String map = "0,10,20,0,20,5";
         final List<TarArchiveStructSparse> sparse = TarUtils.parseFromPAX01SparseHeaders(map);
