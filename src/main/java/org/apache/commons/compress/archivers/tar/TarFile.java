@@ -377,7 +377,8 @@ public class TarFile implements Closeable {
      * @param headers Headers read from the pax header
      * @param sparseHeaders Sparse headers read from pax header
      */
-    private void applyPaxHeadersToCurrentEntry(final Map<String, String> headers, final List<TarArchiveStructSparse> sparseHeaders) {
+    private void applyPaxHeadersToCurrentEntry(final Map<String, String> headers, final List<TarArchiveStructSparse> sparseHeaders)
+        throws IOException {
         currEntry.updateEntryFromPaxHeaders(headers);
         currEntry.setSparseHeaders(sparseHeaders);
     }

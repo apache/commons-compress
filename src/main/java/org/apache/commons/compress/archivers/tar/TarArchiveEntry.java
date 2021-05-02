@@ -1298,8 +1298,12 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @param value value of header.
      * @since 1.15
      */
-    public void addPaxHeader(final String name,final String value) {
-         processPaxHeader(name,value);
+    public void addPaxHeader(final String name, final String value) {
+        try {
+            processPaxHeader(name,value);
+        } catch (IOException ex) {
+            throw new IllegalArgumentException("Invalid input", ex);
+        }
     }
 
     /**
@@ -1317,7 +1321,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @param headers
      * @since 1.15
      */
-    void updateEntryFromPaxHeaders(final Map<String, String> headers) {
+    void updateEntryFromPaxHeaders(final Map<String, String> headers) throws IOException {
         for (final Map.Entry<String, String> ent : headers.entrySet()) {
             final String key = ent.getKey();
             final String val = ent.getValue();
@@ -1332,8 +1336,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @param val
      * @since 1.15
      */
-    private void processPaxHeader(final String key, final String val) {
-        processPaxHeader(key,val,extraPaxHeaders);
+    private void processPaxHeader(final String key, final String val) throws IOException {
+        processPaxHeader(key, val, extraPaxHeaders);
     }
 
     /**
@@ -1346,7 +1350,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @throws NumberFormatException  if encountered errors when parsing the numbers
      * @since 1.15
      */
-    private void processPaxHeader(final String key, final String val, final Map<String, String> headers) {
+    private void processPaxHeader(final String key, final String val, final Map<String, String> headers)
+        throws IOException {
     /*
      * The following headers are defined for Pax.
      * atime, ctime, charset: cannot use these without changing TarArchiveEntry fields
@@ -1749,17 +1754,31 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         }
     }
 
-    void fillGNUSparse1xData(final Map<String, String> headers) {
+    void fillGNUSparse1xData(final Map<String, String> headers) throws IOException {
         paxGNUSparse = true;
         paxGNU1XSparse = true;
-        realSize = Integer.parseInt(headers.get("GNU.sparse.realsize"));
-        name = headers.get("GNU.sparse.name");
+        if (headers.containsKey("GNU.sparse.name")) {
+            name = headers.get("GNU.sparse.name");
+        }
+        if (headers.containsKey("GNU.sparse.realsize")) {
+            try {
+                realSize = Integer.parseInt(headers.get("GNU.sparse.realsize"));
+            } catch (NumberFormatException ex) {
+                throw new IOException("Corrupted TAR archive. GNU.sparse.realsize header for "
+                    + name + " contains non-numeric value");
+            }
+        }
     }
 
-    void fillStarSparseData(final Map<String, String> headers) {
+    void fillStarSparseData(final Map<String, String> headers) throws IOException {
         starSparse = true;
         if (headers.containsKey("SCHILY.realsize")) {
-            realSize = Long.parseLong(headers.get("SCHILY.realsize"));
+            try {
+                realSize = Long.parseLong(headers.get("SCHILY.realsize"));
+            } catch (NumberFormatException ex) {
+                throw new IOException("Corrupted TAR archive. SCHILY.realsize header for "
+                    + name + " contains non-numeric value");
+            }
         }
     }
 }
