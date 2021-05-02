@@ -1568,6 +1568,16 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     private void parseTarHeader(final byte[] header, final ZipEncoding encoding,
                                 final boolean oldStyle, final boolean lenient)
         throws IOException {
+        try {
+            parseTarHeaderUnwrapped(header, encoding, oldStyle, lenient);
+        } catch (IllegalArgumentException ex) {
+            throw new IOException("Corrupted TAR archive.", ex);
+        }
+    }
+
+    private void parseTarHeaderUnwrapped(final byte[] header, final ZipEncoding encoding,
+                                         final boolean oldStyle, final boolean lenient)
+        throws IOException {
         int offset = 0;
 
         name = oldStyle ? TarUtils.parseName(header, offset, NAMELEN)
