@@ -818,7 +818,13 @@ public class ZipFile implements Closeable {
 
         final byte[] cdExtraData = new byte[extraLen];
         IOUtils.readFully(archive, ByteBuffer.wrap(cdExtraData));
-        ze.setCentralDirectoryExtra(cdExtraData);
+        try {
+            ze.setCentralDirectoryExtra(cdExtraData);
+        } catch (RuntimeException ex) {
+            final ZipException z = new ZipException("Invalid extra data in entry " + ze.getName());
+            z.initCause(ex);
+            throw z;
+        }
 
         setSizesAndOffsetFromZip64Extra(ze);
 
