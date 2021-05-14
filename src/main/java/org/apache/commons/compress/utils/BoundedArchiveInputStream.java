@@ -58,7 +58,7 @@ public abstract class BoundedArchiveInputStream extends InputStream {
             singleByteBuffer.rewind();
         }
         int read = read(loc, singleByteBuffer);
-        if (read < 0) {
+        if (read < 1) {
             return read;
         }
         loc++;
