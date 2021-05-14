@@ -70,6 +70,9 @@ public abstract class BoundedArchiveInputStream extends InputStream {
         if (len <= 0) {
             return 0;
         }
+        if (off < 0 || len > b.length - off) {
+            throw new IllegalArgumentException("offset or len are out of bounds");
+        }
 
         if (len > end - loc) {
             if (loc >= end) {
