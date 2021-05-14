@@ -189,7 +189,7 @@ public final class IOUtils {
      */
     public static int readFully(final InputStream input, final byte[] array, final int offset, final int len)
         throws IOException {
-        if (len < 0 || offset < 0 || len + offset > array.length) {
+        if (len < 0 || offset < 0 || len + offset > array.length || len + offset < 0) {
             throw new IndexOutOfBoundsException();
         }
         int count = 0, x = 0;
