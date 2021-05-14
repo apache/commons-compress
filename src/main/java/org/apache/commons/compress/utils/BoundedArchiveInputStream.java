@@ -59,7 +59,7 @@ public abstract class BoundedArchiveInputStream extends InputStream {
         }
         int read = read(loc, singleByteBuffer);
         if (read < 1) {
-            return read;
+            return -1;
         }
         loc++;
         return singleByteBuffer.get() & 0xff;
