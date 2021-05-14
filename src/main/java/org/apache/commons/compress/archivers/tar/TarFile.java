@@ -633,8 +633,12 @@ public class TarFile implements Closeable {
      * @param entry Entry to get the input stream from
      * @return Input stream of the provided entry
      */
-    public InputStream getInputStream(final TarArchiveEntry entry) {
-        return new BoundedTarEntryInputStream(entry, archive);
+    public InputStream getInputStream(final TarArchiveEntry entry) throws IOException {
+        try {
+            return new BoundedTarEntryInputStream(entry, archive);
+        } catch (RuntimeException ex) {
+            throw new IOException("Corrupted TAR archive. Can't read entry", ex);
+        }
     }
 
     @Override
