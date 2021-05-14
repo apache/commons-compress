@@ -540,6 +540,7 @@ public class SevenZFile implements Closeable {
             throw new IOException("Broken or unsupported archive: no Header");
         }
         readHeader(buf, archive);
+        archive.subStreamsInfo = null;
         return archive;
     }
 
