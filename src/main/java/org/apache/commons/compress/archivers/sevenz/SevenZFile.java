@@ -503,7 +503,7 @@ public class SevenZFile implements Closeable {
                     startHeader.nextHeaderSize = channel.size() - pos;
                     final Archive result = initializeArchive(startHeader, password, false);
                     // Sanity check: There must be some data...
-                    if (result.packSizes != null && result.files.length > 0) {
+                    if (result.packSizes.length > 0 && result.files.length > 0) {
                         return result;
                     }
                 } catch (final Exception ignore) {
@@ -572,6 +572,7 @@ public class SevenZFile implements Closeable {
     private void readHeader(final ByteBuffer header, final Archive archive) throws IOException {
         final int pos = header.position();
         final ArchiveStatistics stats = sanityCheckAndCollectStatistics(header);
+        stats.assertValidity();
         header.position(pos);
 
         int nid = getUnsignedByte(header);
@@ -662,9 +663,19 @@ public class SevenZFile implements Closeable {
     private ByteBuffer readEncodedHeader(final ByteBuffer header, final Archive archive,
                                          final byte[] password) throws IOException {
         final int pos = header.position();
-        sanityCheckStreamsInfo(header, new ArchiveStatistics());
+        ArchiveStatistics stats = new ArchiveStatistics();
+        sanityCheckStreamsInfo(header, stats);
+        stats.assertValidity();
         header.position(pos);
+
         readStreamsInfo(header, archive);
+
+        if (archive.folders.length == 0) {
+            throw new IOException("no folders, can't read encoded header");
+        }
+        if (archive.packSizes.length == 0) {
+            throw new IOException("no packed streams, can't read encoded header");
+        }
 
         // FIXME: merge with buildDecodingStream()/buildDecoderStack() at some stage?
         final Folder folder = archive.folders[0];
@@ -830,6 +841,12 @@ public class SevenZFile implements Closeable {
         final List<Integer> numberOfOutputStreamsPerFolder = new LinkedList<>();
         for (int i = 0; i < stats.numberOfFolders; i++) {
             numberOfOutputStreamsPerFolder.add(sanityCheckFolder(header, stats));
+        }
+
+        final long totalNumberOfBindPairs = stats.numberOfOutStreams - stats.numberOfFolders;
+        final long packedStreamsRequiredByFolders = stats.numberOfInStreams - totalNumberOfBindPairs;
+        if (packedStreamsRequiredByFolders < stats.numberOfPackedStreams) {
+            throw new IOException("archive doesn't contain enough packed streams");
         }
 
         nid = getUnsignedByte(header);
@@ -1058,6 +1075,7 @@ public class SevenZFile implements Closeable {
         throws IOException {
 
         final int numCoders = assertFitsIntoNonNegativeInt("numCoders", readUint64(header));
+        stats.numberOfCoders += numCoders;
 
         long totalOutStreams = 0;
         long totalInStreams = 0;
@@ -1094,6 +1112,8 @@ public class SevenZFile implements Closeable {
         }
         assertFitsIntoNonNegativeInt("totalInStreams", totalInStreams);
         assertFitsIntoNonNegativeInt("totalOutStreams", totalOutStreams);
+        stats.numberOfOutStreams += totalOutStreams;
+        stats.numberOfInStreams += totalInStreams;
 
         if (totalOutStreams == 0) {
             throw new IOException("Total output streams can't be 0");
@@ -1119,6 +1139,7 @@ public class SevenZFile implements Closeable {
 
         final int numPackedStreams =
             assertFitsIntoNonNegativeInt("numPackedStreams", totalInStreams - numBindPairs);
+
         if (numPackedStreams == 1) {
             if (inStreamsBound.nextClearBit(0) == -1) {
                 throw new IOException("Couldn't find stream's bind pair index");
@@ -1127,8 +1148,8 @@ public class SevenZFile implements Closeable {
             for (int i = 0; i < numPackedStreams; i++) {
                 final int packedStreamIndex =
                     assertFitsIntoNonNegativeInt("packedStreamIndex", readUint64(header));
-                if (packedStreamIndex >= stats.numberOfPackedStreams) {
-                    throw new IOException("packedStreamIndex is bigger than number of packed streams");
+                if (packedStreamIndex >= totalInStreams) {
+                    throw new IOException("packedStreamIndex is bigger than number of totalInStreams");
                 }
             }
         }
@@ -1375,6 +1396,7 @@ public class SevenZFile implements Closeable {
                 }
             }
         }
+        stats.numberOfEntriesWithStream = stats.numberOfEntries - (emptyStreams > 0 ? emptyStreams : 0);
     }
 
     private void readFilesInfo(final ByteBuffer header, final Archive archive) throws IOException {
@@ -1580,7 +1602,7 @@ public class SevenZFile implements Closeable {
         }
 
         long nextPackStreamOffset = 0;
-        final int numPackSizes = archive.packSizes != null ? archive.packSizes.length : 0;
+        final int numPackSizes = archive.packSizes.length;
         streamMap.packStreamOffsets = new long[numPackSizes];
         for (int i = 0; i < numPackSizes; i++) {
             streamMap.packStreamOffsets[i] = nextPackStreamOffset;
@@ -2096,8 +2118,64 @@ public class SevenZFile implements Closeable {
     private static class ArchiveStatistics {
         private long packPos;
         private int numberOfPackedStreams;
+        private long numberOfCoders;
+        private long numberOfOutStreams;
+        private long numberOfInStreams;
         private int numberOfFolders;
         private BitSet folderHasCrc;
         private int numberOfEntries;
+        private int numberOfEntriesWithStream;
+
+        @Override
+        public String toString() {
+            return "Archive with " + numberOfEntries + " entries in " + numberOfFolders
+                + " folders. Estimated size " + (estimateSize()/1024l) + " kB.";
+        }
+
+        long estimateSize() {
+            long lowerBound = 16l * numberOfPackedStreams /* packSizes, packCrcs in Archive */
+                + numberOfPackedStreams / 8 /* packCrcsDefined in Archive */
+                + numberOfFolders * folderSize() /* folders in Archive */
+                + numberOfCoders * coderSize() /* coders in Folder */
+                + (numberOfOutStreams - numberOfFolders) * bindPairSize() /* bindPairs in Folder */
+                + 8l * (numberOfInStreams - numberOfOutStreams + numberOfFolders) /* packedStreams in Folder */
+                + 8l * numberOfOutStreams /* unpackSizes in Folder */
+                + numberOfEntries * entrySize() /* files in Archive */
+                + streamMapSize()
+                ;
+            return 2 * lowerBound /* conservative guess */;
+        }
+
+        void assertValidity() throws IOException {
+            if (numberOfEntriesWithStream > 0 && numberOfFolders == 0) {
+                throw new IOException("archive with entries but no folders");
+            }
+        }
+
+        private long folderSize() {
+            return 30; /* nested arrays are accounted for separately */
+        }
+
+        private long coderSize() {
+            return 2 /* methodId is between 1 and four bytes currently, COPY and LZMA2 are the most common with 1 */
+                + 16
+                + 4 /* properties, guess */
+                ;
+        }
+
+        private long bindPairSize() {
+            return 16;
+        }
+
+        private long entrySize() {
+            return 100; /* real size depends on name length, everything without name is about 70 bytes */
+        }
+
+        private long streamMapSize() {
+            return 8 * numberOfFolders /* folderFirstPackStreamIndex, folderFirstFileIndex */
+                + 8 * numberOfPackedStreams /* packStreamOffsets */
+                + 4 * numberOfEntries /* fileFolderIndex */
+                ;
+        }
     }
 }
