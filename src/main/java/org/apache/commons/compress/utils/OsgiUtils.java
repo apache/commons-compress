@@ -38,12 +38,12 @@ public class OsgiUtils {
             if (c.getName().equals("org.osgi.framework.BundleReference")) {
                 return true;
             }
-            c = c.getSuperclass();
-        }
-        for (Class<?> ifc : clazz.getInterfaces()) {
-            if (isBundleReference(ifc)) {
-                return true;
+            for (Class<?> ifc : c.getInterfaces()) {
+                if (isBundleReference(ifc)) {
+                    return true;
+                }
             }
+            c = c.getSuperclass();
         }
         return false;
     }
