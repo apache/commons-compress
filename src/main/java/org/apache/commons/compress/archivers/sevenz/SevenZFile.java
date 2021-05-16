@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.zip.CRC32;
 
 import org.apache.commons.compress.utils.BoundedInputStream;
@@ -936,7 +937,10 @@ public class SevenZFile implements Closeable {
             for (int i = 0; i < stats.numberOfFolders; i++) {
                 numUnpackSubStreamsPerFolder.add(assertFitsIntoNonNegativeInt("numStreams", readUint64(header)));
             }
+            stats.numberOfUnpackSubStreams = numUnpackSubStreamsPerFolder.stream().collect(Collectors.summingLong(Integer::longValue));
             nid = getUnsignedByte(header);
+        } else {
+            stats.numberOfUnpackSubStreams = stats.numberOfFolders;
         }
 
         if (nid == NID.kSize) {
@@ -952,7 +956,6 @@ public class SevenZFile implements Closeable {
                     }
                     sum += size;
                 }
-                // TODO sum < folder.unpackSize
             }
             nid = getUnsignedByte(header);
         }
@@ -1021,6 +1024,9 @@ public class SevenZFile implements Closeable {
                     subStreamsInfo.unpackSizes[nextUnpackStream++] = size;
                     sum += size;
                 }
+            }
+            if (sum > folder.getUnpackSize()) {
+                throw new IOException("sum of unpack sizes of folder exceeds total unpack size");
             }
             subStreamsInfo.unpackSizes[nextUnpackStream++] = folder.getUnpackSize() - sum;
         }
@@ -2121,6 +2127,7 @@ public class SevenZFile implements Closeable {
         private long numberOfCoders;
         private long numberOfOutStreams;
         private long numberOfInStreams;
+        private long numberOfUnpackSubStreams;
         private int numberOfFolders;
         private BitSet folderHasCrc;
         private int numberOfEntries;
@@ -2149,6 +2156,9 @@ public class SevenZFile implements Closeable {
         void assertValidity() throws IOException {
             if (numberOfEntriesWithStream > 0 && numberOfFolders == 0) {
                 throw new IOException("archive with entries but no folders");
+            }
+            if (numberOfEntriesWithStream > numberOfUnpackSubStreams) {
+                throw new IOException("archive doesn't contain enough substreams for entries");
             }
         }
 
