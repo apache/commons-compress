@@ -943,6 +943,8 @@ public class SevenZFile implements Closeable {
             stats.numberOfUnpackSubStreams = stats.numberOfFolders;
         }
 
+        assertFitsIntoNonNegativeInt(stats.numberOfUnpackSubStreams);
+
         if (nid == NID.kSize) {
             for (final int numUnpackSubStreams : numUnpackSubStreamsPerFolder) {
                 if (numUnpackSubStreams == 0) {
