@@ -1083,6 +1083,9 @@ public class SevenZFile implements Closeable {
         throws IOException {
 
         final int numCoders = assertFitsIntoNonNegativeInt("numCoders", readUint64(header));
+        if (numCoders == 0) {
+            throw new IOException("Folder without coders");
+        }
         stats.numberOfCoders += numCoders;
 
         long totalOutStreams = 0;
