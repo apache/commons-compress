@@ -341,6 +341,17 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" date="2021-05-12">
         Update org.tukaani:xz from 1.8 to 1.9
       </action>
+      <action issue="COMPRESS-565" type="add" date="2021-05-19" due-to="Evgenii Bovykin" dev="PeterLee">
+        Add a new AlwaysWithCompatibility in Zip64Mode, this is a
+        compromise for some libraries including 7z and Expand-Archive
+        Powershell utility(and likely Excel).
+
+        And we will encode both the LFH offset and Disk Number Start
+        in the ZIP64 Extended Information Extra Field - even if only
+        the disk number needs to be encoded.
+
+        Github Pull Request #169.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20 (Java 7)">
