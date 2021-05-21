@@ -166,7 +166,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * Value used to indicate unknown mode, user/groupids, device numbers and modTime when parsing a file in lenient
-     * mode an the archive contains illegal fields.
+     * mode and the archive contains illegal fields.
      * @since 1.19
      */
     public static final long UNKNOWN = -1L;
