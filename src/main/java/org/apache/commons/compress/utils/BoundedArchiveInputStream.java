@@ -67,25 +67,21 @@ public abstract class BoundedArchiveInputStream extends InputStream {
 
     @Override
     public synchronized int read(final byte[] b, final int off, int len) throws IOException {
-        if (len <= 0) {
+        if (loc >= end) {
+            return -1;
+        }
+        final long maxLen = Math.min(len, end - loc);
+        if (maxLen <= 0) {
             return 0;
         }
-        if (off < 0 || len > b.length - off) {
+        if (off < 0 || off > b.length || maxLen > b.length - off) {
             throw new IndexOutOfBoundsException("offset or len are out of bounds");
         }
 
-        if (len > end - loc) {
-            if (loc >= end) {
-                return -1;
-            }
-            len = (int) (end - loc);
-        }
-
-        ByteBuffer buf = ByteBuffer.wrap(b, off, len);
+        ByteBuffer buf = ByteBuffer.wrap(b, off, (int) maxLen);
         int ret = read(loc, buf);
         if (ret > 0) {
             loc += ret;
-            return ret;
         }
         return ret;
     }
