@@ -689,6 +689,7 @@ public class TarFile implements Closeable {
                 setAtEOF(true);
             } else {
                 entryOffset += totalRead;
+                buf.flip();
             }
             return totalRead;
         }
@@ -741,9 +742,7 @@ public class TarFile implements Closeable {
 
         private int readArchive(final long pos, final ByteBuffer buf) throws IOException {
             channel.position(pos);
-            final int read = channel.read(buf);
-            buf.flip();
-            return read;
+            return channel.read(buf);
         }
     }
 }
