@@ -134,26 +134,26 @@ import org.apache.commons.compress.utils.IOUtils;
  * The C structure for a xstar (Jörg Schilling star) Tar Entry's header is:
  * <pre>
  * struct star_header {
- *  char name[100];		// offset   0
- *  char mode[8];		// offset 100
- *  char uid[8];		// offset 108
- *  char gid[8];		// offset 116
- *  char size[12];		// offset 124
- *  char mtime[12];		// offset 136
- *  char chksum[8];		// offset 148
- *  char typeflag;		// offset 156
- *  char linkname[100];		// offset 157
- *  char magic[6];		// offset 257
- *  char version[2];		// offset 263
- *  char uname[32];		// offset 265
- *  char gname[32];		// offset 297
- *  char devmajor[8];		// offset 329
- *  char devminor[8];		// offset 337
- *  char prefix[131];		// offset 345
- *  char atime[12];             // offset 476
- *  char ctime[12];             // offset 488
- *  char mfill[8];              // offset 500
- *  char xmagic[4];             // offset 508  "tar"
+ *  char name[100];     // offset   0
+ *  char mode[8];       // offset 100
+ *  char uid[8];        // offset 108
+ *  char gid[8];        // offset 116
+ *  char size[12];      // offset 124
+ *  char mtime[12];     // offset 136
+ *  char chksum[8];     // offset 148
+ *  char typeflag;      // offset 156
+ *  char linkname[100]; // offset 157
+ *  char magic[6];      // offset 257
+ *  char version[2];    // offset 263
+ *  char uname[32];     // offset 265
+ *  char gname[32];     // offset 297
+ *  char devmajor[8];   // offset 329
+ *  char devminor[8];   // offset 337
+ *  char prefix[131];   // offset 345
+ *  char atime[12];     // offset 476
+ *  char ctime[12];     // offset 488
+ *  char mfill[8];      // offset 500
+ *  char xmagic[4];     // offset 508  "tar"
  * };
  * </pre>
  * <p>which is identical to new-style POSIX up to the first 130 bytes of the prefix.</p>
