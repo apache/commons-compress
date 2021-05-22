@@ -178,7 +178,7 @@ public class SevenZFile implements Closeable {
      * @since 1.19
      */
     public SevenZFile(final SeekableByteChannel channel, final SevenZFileOptions options) throws IOException {
-        this(channel, DEFAULT_FILE_NAME, (char[]) null, options);
+        this(channel, DEFAULT_FILE_NAME, null, options);
     }
 
     /**
@@ -371,7 +371,7 @@ public class SevenZFile implements Closeable {
      * @since 1.19
      */
     public SevenZFile(final File fileName, final SevenZFileOptions options) throws IOException {
-        this(fileName, (char[]) null, options);
+        this(fileName, null, options);
     }
 
     /**
