@@ -20,8 +20,9 @@ package org.apache.commons.compress.archivers.tar;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -254,8 +255,8 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
             weaselEntry.setSize(entry.getSize());
             is.setCurrentEntry(weaselEntry);
             assertEquals(entry,is.getCurrentEntry());
-            assertFalse(entry == is.getCurrentEntry());
-            assertTrue(weaselEntry == is.getCurrentEntry());
+            assertNotSame(entry, is.getCurrentEntry());
+            assertSame(weaselEntry, is.getCurrentEntry());
             try {
                is.setCurrentEntry(null);
                is.read();

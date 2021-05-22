@@ -18,6 +18,7 @@
 package org.apache.commons.compress.compressors.deflate64;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.times;
 
 import java.io.BufferedReader;
@@ -98,7 +99,7 @@ public class Deflate64CompressorInputStreamTest {
         try (Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(new ByteArrayInputStream(data));
              BufferedReader br = new BufferedReader(new InputStreamReader(input))) {
             assertEquals("Hello World", br.readLine());
-            assertEquals(null, br.readLine());
+            assertNull(br.readLine());
         }
     }
 
@@ -113,7 +114,7 @@ public class Deflate64CompressorInputStreamTest {
              .createCompressorInputStream(CompressorStreamFactory.DEFLATE64, new ByteArrayInputStream(data));
              BufferedReader br = new BufferedReader(new InputStreamReader(input))) {
             assertEquals("Hello World", br.readLine());
-            assertEquals(null, br.readLine());
+            assertNull(br.readLine());
         }
     }
 
@@ -141,7 +142,7 @@ public class Deflate64CompressorInputStreamTest {
         try (Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(new ByteArrayInputStream(data));
              BufferedReader br = new BufferedReader(new InputStreamReader(input))) {
             assertEquals("Hello World", br.readLine());
-            assertEquals(null, br.readLine());
+            assertNull(br.readLine());
         }
     }
 
