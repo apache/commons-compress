@@ -21,10 +21,12 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.Closeable;
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.CharBuffer;
@@ -493,7 +495,9 @@ public class SevenZFile implements Closeable {
             pos--;
             channel.position(pos);
             nidBuf.rewind();
-            channel.read(nidBuf);
+            if (channel.read(nidBuf) < 1) {
+                throw new EOFException();
+            }
             final int nid = nidBuf.array()[0];
             // First indicator: Byte equals one of these header identifiers
             if (nid == NID.kEncodedHeader || nid == NID.kHeader) {
@@ -2026,8 +2030,12 @@ public class SevenZFile implements Closeable {
         return value;
     }
 
-    private static int getUnsignedByte(final ByteBuffer buf) {
-        return buf.get() & 0xff;
+    private static int getUnsignedByte(final ByteBuffer buf) throws IOException {
+        try {
+            return buf.get() & 0xff;
+        } catch (BufferUnderflowException ex) {
+            throw new IOException(ex);
+        }
     }
 
     /**
