@@ -996,20 +996,22 @@ public class SevenZFile implements Closeable {
         for (final Folder folder : archive.folders) {
             folder.numUnpackSubStreams = 1;
         }
-        int totalUnpackStreams = archive.folders.length;
+        long unpackStreamsCount = archive.folders.length;
 
         int nid = getUnsignedByte(header);
         if (nid == NID.kNumUnpackStream) {
-            totalUnpackStreams = 0;
+            unpackStreamsCount = 0;
             for (final Folder folder : archive.folders) {
                 final long numStreams = readUint64(header);
                 assertFitsIntoNonNegativeInt("numStreams", numStreams);
                 folder.numUnpackSubStreams = (int)numStreams;
-                totalUnpackStreams += numStreams;
+                unpackStreamsCount += numStreams;
             }
             nid = getUnsignedByte(header);
         }
 
+        final int totalUnpackStreams =
+            assertFitsIntoNonNegativeInt("totalUnpackStreams", unpackStreamsCount);
         final SubStreamsInfo subStreamsInfo = new SubStreamsInfo();
         subStreamsInfo.unpackSizes = new long[totalUnpackStreams];
         subStreamsInfo.hasCrc = new BitSet(totalUnpackStreams);
