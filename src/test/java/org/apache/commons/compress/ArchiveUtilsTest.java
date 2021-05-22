@@ -133,7 +133,7 @@ public class ArchiveUtilsTest extends AbstractTestCase {
     @Test
     public void testIsEqual() {
 
-        assertTrue(ArchiveUtils.isEqual((byte[]) null, 0, 0, (byte[]) null, 0, 0));
+        assertTrue(ArchiveUtils.isEqual(null, 0, 0, null, 0, 0));
 
     }
 
