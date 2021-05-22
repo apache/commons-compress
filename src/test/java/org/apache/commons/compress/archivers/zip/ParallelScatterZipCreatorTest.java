@@ -79,13 +79,13 @@ public class ParallelScatterZipCreatorTest {
     @Test
     public void callableApiUsingSubmit() throws Exception {
         result = File.createTempFile("parallelScatterGather2", "");
-        callableApi(zipCreator -> c -> zipCreator.submit(c));
+        callableApi(zipCreator -> zipCreator::submit);
     }
 
     @Test
     public void callableApiUsingSubmitStreamAwareCallable() throws Exception {
         result = File.createTempFile("parallelScatterGather3", "");
-        callableApi(zipCreator -> c -> zipCreator.submitStreamAwareCallable(c));
+        callableApi(zipCreator -> zipCreator::submitStreamAwareCallable);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -109,13 +109,13 @@ public class ParallelScatterZipCreatorTest {
     @Test
     public void callableWithLowestLevelApiUsingSubmit() throws Exception {
         result = File.createTempFile("parallelScatterGather4", "");
-        callableApiWithTestFiles(zipCreator -> c -> zipCreator.submit(c), Deflater.NO_COMPRESSION);
+        callableApiWithTestFiles(zipCreator -> zipCreator::submit, Deflater.NO_COMPRESSION);
     }
 
     @Test
     public void callableApiWithHighestLevelUsingSubmitStreamAwareCallable() throws Exception {
         result = File.createTempFile("parallelScatterGather5", "");
-        callableApiWithTestFiles(zipCreator -> c -> zipCreator.submitStreamAwareCallable(c), Deflater.BEST_COMPRESSION);
+        callableApiWithTestFiles(zipCreator -> zipCreator::submitStreamAwareCallable, Deflater.BEST_COMPRESSION);
     }
 
     private void callableApi(final CallableConsumerSupplier consumerSupplier) throws Exception {
