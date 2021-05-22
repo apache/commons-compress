@@ -25,7 +25,7 @@ import java.util.zip.Adler32;
 import java.util.zip.CRC32;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * Unit tests for class {@link ChecksumCalculatingInputStream org.apache.commons.compress.utils.ChecksumCalculatingInputStream}.
@@ -80,7 +80,7 @@ public class ChecksumCalculatingInputStreamTest {
         final int inputStreamReadResult = bufferedInputStream.read(byteArray, 0, 1);
         final int checkSumCalculationReadResult = checksumCalculatingInputStream.read();
 
-        assertFalse(checkSumCalculationReadResult == inputStreamReadResult);
+        assertNotEquals(checkSumCalculationReadResult, inputStreamReadResult);
         assertEquals((-1), checkSumCalculationReadResult);
 
         assertEquals(0, byteArrayInputStream.available());

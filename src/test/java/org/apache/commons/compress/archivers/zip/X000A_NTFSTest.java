@@ -22,6 +22,7 @@ import org.junit.Test;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class X000A_NTFSTest {
 
@@ -38,6 +39,6 @@ public class X000A_NTFSTest {
         xf2.parseFromLocalFileData(b, 0, b.length);
         assertEquals(new Date(0), xf2.getModifyJavaTime());
         assertEquals(new Date(-11644473601000L), xf2.getAccessJavaTime());
-        assertEquals(null, xf2.getCreateJavaTime());
+        assertNull(xf2.getCreateJavaTime());
     }
 }

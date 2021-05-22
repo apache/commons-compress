@@ -93,7 +93,7 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
         try (InputStream is = Files.newInputStream(input.toPath())) {
             final BrotliCompressorInputStream in =
                     new BrotliCompressorInputStream(is);
-            Assert.assertTrue(in.available() == 0);
+            assertEquals(0, in.available());
             in.close();
         }
     }

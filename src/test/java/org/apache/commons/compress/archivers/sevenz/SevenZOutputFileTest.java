@@ -542,7 +542,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             return null;
         }
         assertEquals("foo/" + index + ".txt", entry.getName());
-        assertEquals(false, entry.isDirectory());
+        assertFalse(entry.isDirectory());
         if (entry.getSize() == 0) {
             return Boolean.FALSE;
         }
