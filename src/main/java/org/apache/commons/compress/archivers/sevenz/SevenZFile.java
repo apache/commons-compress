@@ -671,10 +671,10 @@ public class SevenZFile implements Closeable {
 
         readStreamsInfo(header, archive);
 
-        if (archive.folders.length == 0) {
+        if (archive.folders == null || archive.folders.length == 0) {
             throw new IOException("no folders, can't read encoded header");
         }
-        if (archive.packSizes.length == 0) {
+        if (archive.packSizes == null || archive.packSizes.length == 0) {
             throw new IOException("no packed streams, can't read encoded header");
         }
 
@@ -698,11 +698,12 @@ public class SevenZFile implements Closeable {
             inputStreamStack = new CRC32VerifyingInputStream(inputStreamStack,
                     folder.getUnpackSize(), folder.crc);
         }
-        assertFitsIntoNonNegativeInt("unpackSize", folder.getUnpackSize());
-        final byte[] nextHeader = new byte[(int)folder.getUnpackSize()];
-        try (DataInputStream nextHeaderInputStream = new DataInputStream(inputStreamStack)) {
-            nextHeaderInputStream.readFully(nextHeader);
+        final int unpackSize = assertFitsIntoNonNegativeInt("unpackSize", folder.getUnpackSize());
+        final byte[] nextHeader = new byte[unpackSize];
+        if (IOUtils.readFully(inputStreamStack, nextHeader) < unpackSize) {
+            throw new IOException("premature end of stream");
         }
+        inputStreamStack.close();
         return ByteBuffer.wrap(nextHeader).order(ByteOrder.LITTLE_ENDIAN);
     }
 
