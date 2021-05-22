@@ -19,8 +19,8 @@
 package org.apache.commons.compress.archivers.zip;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -74,15 +74,15 @@ public class ZipShortTest {
         final ZipShort zs2 = new ZipShort(0x1234);
         final ZipShort zs3 = new ZipShort(0x5678);
 
-        assertTrue("reflexive", zs.equals(zs));
+        assertEquals("reflexive", zs, zs);
 
-        assertTrue("works", zs.equals(zs2));
-        assertTrue("works, part two", !zs.equals(zs3));
+        assertEquals("works", zs, zs2);
+        assertFalse("works, part two", zs.equals(zs3));
 
-        assertTrue("symmetric", zs2.equals(zs));
+        assertEquals("symmetric", zs2, zs);
 
-        assertTrue("null handling", !zs.equals(null));
-        assertTrue("non ZipShort handling", !zs.equals(new Integer(0x1234)));
+        assertFalse("null handling", zs.equals(null));
+        assertFalse("non ZipShort handling", zs.equals(new Integer(0x1234)));
     }
 
     /**

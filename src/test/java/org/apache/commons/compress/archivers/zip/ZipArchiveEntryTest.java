@@ -21,6 +21,7 @@ package org.apache.commons.compress.archivers.zip;
 import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -251,7 +252,7 @@ public class ZipArchiveEntryTest {
     public void testNotEquals() {
         final ZipArchiveEntry entry1 = new ZipArchiveEntry("foo");
         final ZipArchiveEntry entry2 = new ZipArchiveEntry("bar");
-        assertFalse(entry1.equals(entry2));
+        assertNotEquals(entry1, entry2);
     }
 
     /**
@@ -267,8 +268,8 @@ public class ZipArchiveEntryTest {
         entry2.setComment("");
         entry3.setComment("bar");
         assertEquals(entry1, entry2);
-        assertFalse(entry1.equals(entry3));
-        assertFalse(entry2.equals(entry3));
+        assertNotEquals(entry1, entry3);
+        assertNotEquals(entry2, entry3);
     }
 
     @Test
@@ -378,7 +379,7 @@ public class ZipArchiveEntryTest {
         try (ZipFile zf = new ZipFile(getFile("COMPRESS-479.zip"))) {
             final ZipArchiveEntry ze = zf.getEntry("%U20AC_for_Dollar.txt");
             final ZipArchiveEntry clonedZe = (ZipArchiveEntry) ze.clone();
-            assertTrue(ze.equals(clonedZe));
+            assertEquals(ze, clonedZe);
         }
     }
 }

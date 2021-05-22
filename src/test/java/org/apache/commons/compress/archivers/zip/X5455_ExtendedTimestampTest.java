@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
@@ -42,6 +41,7 @@ import static org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp.
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -193,27 +193,27 @@ public class X5455_ExtendedTimestampTest {
 
     @Test
     public void testMisc() throws Exception {
-        assertFalse(xf.equals(new Object()));
+        assertNotEquals(xf, new Object());
         assertTrue(xf.toString().startsWith("0x5455 Zip Extra Field"));
-        assertTrue(!xf.toString().contains(" Modify:"));
-        assertTrue(!xf.toString().contains(" Access:"));
-        assertTrue(!xf.toString().contains(" Create:"));
+        assertFalse(xf.toString().contains(" Modify:"));
+        assertFalse(xf.toString().contains(" Access:"));
+        assertFalse(xf.toString().contains(" Create:"));
         Object o = xf.clone();
         assertEquals(o.hashCode(), xf.hashCode());
-        assertTrue(xf.equals(o));
+        assertEquals(xf, o);
 
         xf.setModifyJavaTime(new Date(1111));
         xf.setAccessJavaTime(new Date(2222));
         xf.setCreateJavaTime(new Date(3333));
         xf.setFlags((byte) 7);
-        assertFalse(xf.equals(o));
+        assertNotEquals(xf, o);
         assertTrue(xf.toString().startsWith("0x5455 Zip Extra Field"));
         assertTrue(xf.toString().contains(" Modify:"));
         assertTrue(xf.toString().contains(" Access:"));
         assertTrue(xf.toString().contains(" Create:"));
         o = xf.clone();
         assertEquals(o.hashCode(), xf.hashCode());
-        assertTrue(xf.equals(o));
+        assertEquals(xf, o);
     }
 
     @Test
@@ -494,7 +494,7 @@ public class X5455_ExtendedTimestampTest {
         xf.setCreateTime(time);
         xf.setFlags(providedFlags);
         byte[] result = xf.getLocalFileDataData();
-        assertTrue(Arrays.equals(expectedLocal, result));
+        assertArrayEquals(expectedLocal, result);
 
         // And now we re-parse:
         xf.parseFromLocalFileData(result, 0, result.length);
@@ -518,7 +518,7 @@ public class X5455_ExtendedTimestampTest {
         xf.setCreateTime(time);
         xf.setFlags(providedFlags);
         result = xf.getCentralDirectoryData();
-        assertTrue(Arrays.equals(expectedCentral, result));
+        assertArrayEquals(expectedCentral, result);
 
         // And now we re-parse:
         xf.parseFromCentralDirectoryData(result, 0, result.length);

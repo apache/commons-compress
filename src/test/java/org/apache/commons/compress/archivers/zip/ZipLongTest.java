@@ -21,8 +21,8 @@ package org.apache.commons.compress.archivers.zip;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
 
 /**
  * JUnit testcases for org.apache.commons.compress.archivers.zip.ZipLong.
@@ -76,15 +76,15 @@ public class ZipLongTest {
         final ZipLong zl2 = new ZipLong(0x12345678);
         final ZipLong zl3 = new ZipLong(0x87654321);
 
-        assertTrue("reflexive", zl.equals(zl));
+        assertEquals("reflexive", zl, zl);
 
-        assertTrue("works", zl.equals(zl2));
-        assertTrue("works, part two", !zl.equals(zl3));
+        assertEquals("works", zl, zl2);
+        assertFalse("works, part two", zl.equals(zl3));
 
-        assertTrue("symmetric", zl2.equals(zl));
+        assertEquals("symmetric", zl2, zl);
 
-        assertTrue("null handling", !zl.equals(null));
-        assertTrue("non ZipLong handling", !zl.equals(new Integer(0x1234)));
+        assertFalse("null handling", zl.equals(null));
+        assertFalse("non ZipLong handling", zl.equals(new Integer(0x1234)));
     }
 
     /**
