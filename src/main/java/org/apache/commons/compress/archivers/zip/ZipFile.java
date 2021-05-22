@@ -475,7 +475,7 @@ public class ZipFile implements Closeable {
     public Iterable<ZipArchiveEntry> getEntries(final String name) {
         final List<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
         return entriesOfThatName != null ? entriesOfThatName
-            : Collections.<ZipArchiveEntry>emptyList();
+            : Collections.emptyList();
     }
 
     /**

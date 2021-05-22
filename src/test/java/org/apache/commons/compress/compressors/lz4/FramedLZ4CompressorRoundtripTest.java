@@ -39,25 +39,23 @@ public final class FramedLZ4CompressorRoundtripTest extends AbstractTestCase {
 
     @Parameters(name = "using {0}")
     public static Collection<Object[]> factory() {
-        return Arrays.asList(new Object[][] {
-            new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64) },
-            new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K256) },
-            new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M1) },
-            new Object[] { FramedLZ4CompressorOutputStream.Parameters.DEFAULT },
-            // default without content checksum
-            new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M4,
-                false, false, false) },
-            // default with block checksum
-            new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M4,
-                true, true, false) },
-            // small blocksize (so we get enough blocks) and enabled block dependency, otherwise defaults
-            new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64,
-                true, false, true) },
-            // default, tuned for speed
-            new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M4,
-                true, false, false, BlockLZ4CompressorOutputStream.createParameterBuilder()
-                    .tunedForSpeed().build()) },
-        });
+        return Arrays.asList(new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64) },
+                new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K256) },
+                new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M1) },
+                new Object[] { FramedLZ4CompressorOutputStream.Parameters.DEFAULT },
+                // default without content checksum
+                new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M4,
+                    false, false, false) },
+                // default with block checksum
+                new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M4,
+                    true, true, false) },
+                // small blocksize (so we get enough blocks) and enabled block dependency, otherwise defaults
+                new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64,
+                    true, false, true) },
+                // default, tuned for speed
+                new Object[] { new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M4,
+                    true, false, false, BlockLZ4CompressorOutputStream.createParameterBuilder()
+                        .tunedForSpeed().build()) });
     }
 
     private final FramedLZ4CompressorOutputStream.Parameters params;

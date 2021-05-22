@@ -42,7 +42,7 @@ public class ZCompressorInputStreamTest {
 
     @Test(expected = IOException.class)
     public void testFailsToCreateZCompressorInputStreamAndThrowsIOException() throws IOException {
-        final SequenceInputStream sequenceInputStream = new SequenceInputStream(Collections.<InputStream>emptyEnumeration());
+        final SequenceInputStream sequenceInputStream = new SequenceInputStream(Collections.emptyEnumeration());
         final ZCompressorInputStream zCompressorInputStream = new ZCompressorInputStream(sequenceInputStream);
     }
 
