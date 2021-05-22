@@ -324,8 +324,7 @@ public class FixedLengthBlockOutputStreamTest {
 
         private void checkIsOpen() throws IOException {
             if (closed.get()) {
-                final IOException e = new IOException("Closed");
-                throw e;
+                throw new IOException("Closed");
             }
         }
 

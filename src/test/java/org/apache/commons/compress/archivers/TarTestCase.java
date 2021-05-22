@@ -569,7 +569,7 @@ public final class TarTestCase extends AbstractTestCase {
     }
 
     private String createLongName(final int nameLength) {
-        final StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < nameLength; i++) {
             buffer.append('a');
         }

@@ -73,9 +73,8 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
         try (
              SnappyCompressorInputStream sis = new SnappyCompressorInputStream(new ByteArrayInputStream(os.toByteArray()),
                  params.getWindowSize())) {
-            final byte[] expected = input;
             final byte[] actual = IOUtils.toByteArray(sis);
-            Assert.assertArrayEquals(expected, actual);
+            Assert.assertArrayEquals(input, actual);
         }
         System.err.println("byte array" + " read after " + (System.currentTimeMillis() - start) + "ms");
     }

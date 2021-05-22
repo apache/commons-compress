@@ -48,8 +48,7 @@ public final class BZip2TestCase extends AbstractTestCase {
 
         final File decompressed = new File(dir, "decompressed.txt");
         {
-            final File toDecompress = output;
-            final InputStream is = Files.newInputStream(toDecompress.toPath());
+            final InputStream is = Files.newInputStream(output.toPath());
             final CompressorInputStream in =
                 new CompressorStreamFactory().createCompressorInputStream("bzip2", is);
             final OutputStream os = Files.newOutputStream(decompressed.toPath());
