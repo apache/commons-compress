@@ -49,24 +49,13 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
     // Delete a directory tree
     private void archiveListDeleteDir(final String prefix){
-        final Iterator<String> it = archiveList.iterator();
-        while(it.hasNext()){
-            final String entry = it.next();
-            if (entry.startsWith(prefix+"/")){ // TODO won't work with folders
-                it.remove();
-            }
-        }
+        // TODO won't work with folders
+        archiveList.removeIf(entry -> entry.startsWith(prefix + "/"));
     }
 
     // Delete a single file
     private void archiveListDelete(final String prefix){
-        final Iterator<String> it = archiveList.iterator();
-        while(it.hasNext()){
-            final String entry = it.next();
-            if (entry.equals(prefix)){
-                it.remove();
-            }
-        }
+        archiveList.removeIf(entry -> entry.equals(prefix));
     }
 
     /**
