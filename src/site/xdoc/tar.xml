@@ -56,7 +56,7 @@
           file is added.  This is the default.</li>
           <li><code>LONGFILE_TRUNCATE</code>: truncate such names.</li>
           <li><code>LONGFILE_GNU</code>: use a GNU tar variant now
-          refered to as "oldgnu" of storing such names.  If you choose
+          referred to as "oldgnu" of storing such names.  If you choose
           the GNU tar option, the archive can not be extracted using
           many other tar implementations like the ones of OpenBSD,
           Solaris or MacOS X.</li> 

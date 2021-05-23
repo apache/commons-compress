@@ -330,7 +330,7 @@ try (OutputStream fo = Files.newOutputStream(Paths.get("my.tar.gz"));
         only the dictionary size used for LZMA2 can be read.</p>
 
         <p>Currently solid compression - compressing multiple files
-        as a single block to benefit from patterns repeating accross
+        as a single block to benefit from patterns repeating across
         files - is only supported when reading archives.  This also
         means compression ratio will likely be worse when using
         Commons Compress compared to the native 7z executable.</p>
@@ -346,7 +346,7 @@ try (OutputStream fo = Files.newOutputStream(Paths.get("my.tar.gz"));
         entries. The native 7zip tools derive a default name from the
         name of the archive itself for such entries. Starting with
         Compress 1.19 <code>SevenZFile</code> has an option to mimic
-        this behavior, but by default unnanmed archive entries will
+        this behavior, but by default unnamed archive entries will
         return <code>null</code> from
         <code>SevenZArchiveEntry#getName</code>.</p>
 
@@ -545,7 +545,7 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
 
         <p>Traditionally CPIO archives are written in blocks of 512
         bytes - the block size is a configuration parameter of the
-        <code>Cpio*Stream</code>'s constuctors.  Starting with version
+        <code>Cpio*Stream</code>'s constructors.  Starting with version
         1.5 <code>CpioArchiveInputStream</code> will consume the
         padding written to fill the current block when the end of the
         archive is reached.  Unfortunately many CPIO implementations
