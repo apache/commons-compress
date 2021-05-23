@@ -52,7 +52,7 @@ import java.util.BitSet;
  * ssCommons Compre
  * </pre>
  *
- * <p>Which results in a new text "ss romooCCmmpnse", in adition the
+ * <p>Which results in a new text "ss romooCCmmpnse", in addition the
  * index of the first line that contained the original text is kept -
  * in this case it is 1.  The idea is that in a long English text all
  * permutations that start with "he" are likely suffixes of a "the" and
@@ -141,7 +141,7 @@ class BlockSort {
 
     /**
      * Array instance identical to Data's sfmap, both are used only
-     * temporarily and indepently, so we do not need to allocate
+     * temporarily and independently, so we do not need to allocate
      * additional memory.
      */
     private final char[] quadrant;
@@ -588,7 +588,7 @@ class BlockSort {
      *
      * <p>
      * This is the version using unrolled loops. Normally I never use such ones
-     * in Java code. The unrolling has shown a noticable performance improvement
+     * in Java code. The unrolling has shown a noticeable performance improvement
      * on JRE 1.4.2 (Linux i586 / HotSpot Client). Of course it depends on the
      * JIT compiler of the vm.
      * </p>
