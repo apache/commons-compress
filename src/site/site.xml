@@ -37,6 +37,7 @@
       <item name="Wiki" href="https://wiki.apache.org/commons/Compress"/>
     </menu>
     <menu name="API Docs">
+      <item name="GIT latest" href="apidocs/index.html"/>
       <item name="Latest release" href="javadocs/api-release/index.html"/>
       <item name="1.20" href="javadocs/api-1.20/index.html"/>
       <item name="1.19" href="javadocs/api-1.19/index.html"/>
@@ -55,7 +56,6 @@
       <item name="1.8" href="javadocs/api-1.8/index.html"/>
       <item name="1.7" href="javadocs/api-1.7/index.html"/>
       <item name="1.6" href="javadocs/api-1.6/index.html"/>
-      <item name="GIT latest" href="apidocs/index.html"/>
     </menu>
   </body>
   
