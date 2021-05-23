@@ -129,7 +129,7 @@
         <p><code>TarArchiveInputStream</code> will recognize sparse
         file entries stored using the "oldgnu" format
         (<code>-&#x2d;sparse-version=0.0</code> in GNU tar) but is not
-        able to extract them correctly.  <a href="#Unsupported
+        able to extract them correctly.  <a href="examples.html#Unsupported
         Features"><code>canReadEntryData</code></a> will return false
         on such entries.  The other variants of sparse files can
         currently not be detected at all.</p>
