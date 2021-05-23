@@ -757,17 +757,16 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
     @Test
     public void testLongNameMd5Hash() throws Exception {
         final String longFileName = "a/considerably/longer/file/name/which/forces/use/of/the/long/link/header/which/appears/to/always/use/the/current/time/as/modification/date";
-        final String fname = longFileName;
         final Date modificationDate = new Date();
 
-        final byte[] archive1 = createTarArchiveContainingOneDirectory(fname, modificationDate);
+        final byte[] archive1 = createTarArchiveContainingOneDirectory(longFileName, modificationDate);
         final byte[] digest1 = MessageDigest.getInstance("MD5").digest(archive1);
 
         // let a second elapse otherwise the modification dates will be equal
         Thread.sleep(1000L);
 
         // now recreate exactly the same tar file
-        final byte[] archive2 = createTarArchiveContainingOneDirectory(fname, modificationDate);
+        final byte[] archive2 = createTarArchiveContainingOneDirectory(longFileName, modificationDate);
         // and I would expect the MD5 hash to be the same, but for long names it isn't
         final byte[] digest2 = MessageDigest.getInstance("MD5").digest(archive2);
 

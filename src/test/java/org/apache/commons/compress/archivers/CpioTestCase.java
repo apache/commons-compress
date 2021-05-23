@@ -89,8 +89,7 @@ public final class CpioTestCase extends AbstractTestCase {
         }
 
         // Unarchive Operation
-        final File input = output;
-        final InputStream is = Files.newInputStream(input.toPath());
+        final InputStream is = Files.newInputStream(output.toPath());
         final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("cpio", is);
 
 

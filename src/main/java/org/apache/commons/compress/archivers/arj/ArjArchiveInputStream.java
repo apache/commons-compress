@@ -115,10 +115,10 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
                 buffer.write(nextByte);
             }
             if (charsetName != null) {
-                return new String(buffer.toByteArray(), charsetName);
+                return buffer.toString(charsetName);
             }
             // intentionally using the default encoding as that's the contract for a null charsetName
-            return new String(buffer.toByteArray());
+            return buffer.toString();
         }
     }
 

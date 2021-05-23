@@ -17,6 +17,7 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -53,9 +54,12 @@ class Folder {
      * from the output of the first and so on.</p>
      */
     Iterable<Coder> getOrderedCoders() {
+        if (packedStreams == null || coders == null || packedStreams.length == 0 || coders.length == 0) {
+            return Collections.emptyList();
+        }
         final LinkedList<Coder> l = new LinkedList<>();
         int current = (int) packedStreams[0]; // more that 2^31 coders?
-        while (current != -1) {
+        while (current >= 0 && current < coders.length) {
             l.addLast(coders[current]);
             final int pair = findBindPairForOutStream(current);
             current = pair != -1 ? (int) bindPairs[pair].inIndex : -1;
@@ -64,18 +68,22 @@ class Folder {
     }
 
     int findBindPairForInStream(final int index) {
-        for (int i = 0; i < bindPairs.length; i++) {
-            if (bindPairs[i].inIndex == index) {
-                return i;
+        if (bindPairs != null) {
+            for (int i = 0; i < bindPairs.length; i++) {
+                if (bindPairs[i].inIndex == index) {
+                    return i;
+                }
             }
         }
         return -1;
     }
 
     int findBindPairForOutStream(final int index) {
-        for (int i = 0; i < bindPairs.length; i++) {
-            if (bindPairs[i].outIndex == index) {
-                return i;
+        if (bindPairs != null) {
+            for (int i = 0; i < bindPairs.length; i++) {
+                if (bindPairs[i].outIndex == index) {
+                    return i;
+                }
             }
         }
         return -1;

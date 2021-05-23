@@ -25,6 +25,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 public class ArchiveUtilsTest extends AbstractTestCase {
@@ -133,7 +134,7 @@ public class ArchiveUtilsTest extends AbstractTestCase {
     @Test
     public void testIsEqual() {
 
-        assertTrue(ArchiveUtils.isEqual((byte[]) null, 0, 0, (byte[]) null, 0, 0));
+        assertTrue(ArchiveUtils.isEqual(null, 0, 0, null, 0, 0));
 
     }
 
@@ -151,6 +152,6 @@ public class ArchiveUtilsTest extends AbstractTestCase {
     }
 
     private void asciiToByteAndBackFail(final String inputString) {
-        assertFalse(inputString.equals(ArchiveUtils.toAsciiString(ArchiveUtils.toAsciiBytes(inputString))));
+        assertNotEquals(inputString, ArchiveUtils.toAsciiString(ArchiveUtils.toAsciiBytes(inputString)));
     }
 }

@@ -192,15 +192,12 @@ public class FixedLengthBlockOutputStreamTest {
     @Test
     public void testWithFileOutputStream() throws IOException {
         final Path tempFile = Files.createTempFile("xxx", "yyy");
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                try {
-                    Files.deleteIfExists(tempFile);
-                } catch (final IOException e) {
-                }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                Files.deleteIfExists(tempFile);
+            } catch (final IOException e) {
             }
-        });
+        }));
         final int blockSize = 512;
         final int reps = 1000;
         final OutputStream os = Files.newOutputStream(tempFile.toFile().toPath());
@@ -324,8 +321,7 @@ public class FixedLengthBlockOutputStreamTest {
 
         private void checkIsOpen() throws IOException {
             if (closed.get()) {
-                final IOException e = new IOException("Closed");
-                throw e;
+                throw new IOException("Closed");
             }
         }
 

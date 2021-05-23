@@ -107,8 +107,7 @@ public class SevenZFileTest extends AbstractTestCase {
                     if (entry.hasStream()) {
                         assertTrue(entriesByName.containsKey(entry.getName()));
                         final byte[] content = readFully(archive);
-                        assertTrue("Content mismatch on: " + fileName + "!" + entry.getName(),
-                            Arrays.equals(content, entriesByName.get(entry.getName())));
+                        assertArrayEquals("Content mismatch on: " + fileName + "!" + entry.getName(), content, entriesByName.get(entry.getName()));
                     }
                 }
 

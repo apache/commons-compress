@@ -947,9 +947,10 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             .sorted(Comparator.comparingLong(TarArchiveStructSparse::getOffset))
             .collect(Collectors.toList());
 
-        for (int i = 0; i < orderedAndFiltered.size(); i++) {
+        final int numberOfHeaders = orderedAndFiltered.size();
+        for (int i = 0; i < numberOfHeaders; i++) {
             final TarArchiveStructSparse str = orderedAndFiltered.get(i);
-            if (i + 1 < orderedAndFiltered.size()) {
+            if (i + 1 < numberOfHeaders) {
                 if (str.getOffset() + str.getNumbytes() > orderedAndFiltered.get(i + 1).getOffset()) {
                     throw new IOException("Corrupted TAR archive. Sparse blocks for "
                         + getName() + " overlap each other.");
@@ -962,7 +963,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             }
         }
         if (!orderedAndFiltered.isEmpty()) {
-            final TarArchiveStructSparse last = orderedAndFiltered.get(orderedAndFiltered.size() - 1);
+            final TarArchiveStructSparse last = orderedAndFiltered.get(numberOfHeaders - 1);
             if (last.getOffset() + last.getNumbytes() > getRealSize()) {
                 throw new IOException("Corrupted TAR archive. Sparse block extends beyond real size of the entry");
             }

@@ -38,13 +38,11 @@ public final class BlockLZ4CompressorRoundtripTest extends AbstractTestCase {
 
     @org.junit.runners.Parameterized.Parameters(name = "using {0}")
     public static Collection<Object[]> factory() {
-        return Arrays.asList(new Object[][] {
-                new Object[] { "default", BlockLZ4CompressorOutputStream.createParameterBuilder().build() },
+        return Arrays.asList(new Object[] { "default", BlockLZ4CompressorOutputStream.createParameterBuilder().build() },
                 new Object[] { "tuned for speed",
                     BlockLZ4CompressorOutputStream.createParameterBuilder().tunedForSpeed().build() },
                 new Object[] { "tuned for compression ratio",
-                    BlockLZ4CompressorOutputStream.createParameterBuilder().tunedForCompressionRatio().build() }
-            });
+                    BlockLZ4CompressorOutputStream.createParameterBuilder().tunedForCompressionRatio().build() });
     }
 
     private final String config;
