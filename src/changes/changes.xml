@@ -352,6 +352,10 @@ The <action> type attribute can be add,update,fix,remove.
 
         Github Pull Request #169.
       </action>
+      <action issue="COMPRESS-566" type="add" date="2021-05-24"
+              due-to="Brett Okken">
+        gzip deflate buffer size is now configurable.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20 (Java 7)">
