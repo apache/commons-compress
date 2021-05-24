@@ -53,7 +53,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
     private final Deflater deflater;
 
     /** The buffer receiving the compressed data from the deflater */
-    private final byte[] deflateBuffer = new byte[512];
+    private final byte[] deflateBuffer;
 
     /** Indicates if the stream has been closed */
     private boolean closed;
@@ -81,7 +81,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
     public GzipCompressorOutputStream(final OutputStream out, final GzipParameters parameters) throws IOException {
         this.out = out;
         this.deflater = new Deflater(parameters.getCompressionLevel(), true);
-
+        this.deflateBuffer = new byte[parameters.getBufferSize()];
         writeHeader(parameters);
     }
 
