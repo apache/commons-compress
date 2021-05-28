@@ -766,7 +766,6 @@ public class SevenZFile implements Closeable {
             || SIGNATURE_HEADER_SIZE + packPos < 0) {
             throw new IOException("packPos (" + packPos + ") is out of range");
         }
-        stats.packPos = packPos;
         final long numPackStreams = readUint64(header);
         stats.numberOfPackedStreams = assertFitsIntoNonNegativeInt("numPackStreams", numPackStreams);
         int nid = getUnsignedByte(header);
@@ -1292,8 +1291,6 @@ public class SevenZFile implements Closeable {
         stats.numberOfEntries = assertFitsIntoNonNegativeInt("numFiles", readUint64(header));
 
         int emptyStreams = -1;
-        int emptyFiles = -1;
-        int antis = -1;
         while (true) {
             final int propertyType = getUnsignedByte(header);
             if (propertyType == 0) {
@@ -1309,14 +1306,14 @@ public class SevenZFile implements Closeable {
                     if (emptyStreams == -1) {
                         throw new IOException("Header format error: kEmptyStream must appear before kEmptyFile");
                     }
-                    emptyFiles = readBits(header, emptyStreams).cardinality();
+                    readBits(header, emptyStreams);
                     break;
                 }
                 case NID.kAnti: {
                     if (emptyStreams == -1) {
                         throw new IOException("Header format error: kEmptyStream must appear before kAnti");
                     }
-                    antis = readBits(header, emptyStreams).cardinality();
+                    readBits(header, emptyStreams);
                     break;
                 }
                 case NID.kName: {
@@ -1324,11 +1321,11 @@ public class SevenZFile implements Closeable {
                     if (external != 0) {
                         throw new IOException("Not implemented");
                     }
-                    if (((size - 1) & 1) != 0) {
-                        throw new IOException("File names length invalid");
-                    }
                     final int namesLength =
                         assertFitsIntoNonNegativeInt("file names length", size - 1);
+                    if ((namesLength & 1) != 0) {
+                        throw new IOException("File names length invalid");
+                    }
 
                     int filesSeen = 0;
                     for (int i = 0; i < namesLength; i += 2) {
@@ -2164,7 +2161,6 @@ public class SevenZFile implements Closeable {
     }
 
     private static class ArchiveStatistics {
-        private long packPos;
         private int numberOfPackedStreams;
         private long numberOfCoders;
         private long numberOfOutStreams;
