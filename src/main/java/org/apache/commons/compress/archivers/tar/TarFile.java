@@ -310,8 +310,7 @@ public class TarFile implements Closeable {
             do {
                 final ByteBuffer headerBuf = getRecord();
                 if (headerBuf == null) {
-                    currEntry = null;
-                    break;
+                    throw new IOException("premature end of tar archive. Didn't find extended_header after header with extended flag.");
                 }
                 entry = new TarArchiveSparseEntry(headerBuf.array());
                 currEntry.getSparseHeaders().addAll(entry.getSparseHeaders());

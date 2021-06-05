@@ -643,8 +643,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             do {
                 final byte[] headerBuf = getRecord();
                 if (headerBuf == null) {
-                    currEntry = null;
-                    break;
+                    throw new IOException("premature end of tar archive. Didn't find extended_header after header with extended flag.");
                 }
                 entry = new TarArchiveSparseEntry(headerBuf);
                 currEntry.getSparseHeaders().addAll(entry.getSparseHeaders());

@@ -356,6 +356,11 @@ The <action> type attribute can be add,update,fix,remove.
               due-to="Brett Okken">
         gzip deflate buffer size is now configurable.
       </action>
+      <action type="fix" date="2021-06-05">
+        The parser for GNU sparse tar headers could throw a
+        NullPointerExcpetion rather than an IOException if the archive
+        ended while more sparse headers were expected.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20 (Java 7)">
