@@ -36,6 +36,7 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.StreamingNotSupportedException;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.compress.archivers.sevenz.SevenZOutputFile;
+import org.apache.commons.compress.archivers.tar.TarFile;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
@@ -147,6 +148,15 @@ public class ExpanderTest extends AbstractTestCase {
         }
     }
 
+    @Test
+    public void tarFileVersion() throws IOException, ArchiveException {
+        setupTar();
+        try (TarFile f = new TarFile(archive)) {
+            new Expander().expand(f, resultDir);
+        }
+        verifyTargetDir();
+    }
+
     private void setup7z() throws IOException, ArchiveException {
         archive = new File(dir, "test.7z");
         final File dummy = new File(dir, "x");
@@ -178,6 +188,30 @@ public class ExpanderTest extends AbstractTestCase {
         }
         try (ArchiveOutputStream aos = ArchiveStreamFactory.DEFAULT
              .createArchiveOutputStream("zip", Files.newOutputStream(archive.toPath()))) {
+            aos.putArchiveEntry(aos.createArchiveEntry(dir, "a"));
+            aos.closeArchiveEntry();
+            aos.putArchiveEntry(aos.createArchiveEntry(dir, "a/b"));
+            aos.closeArchiveEntry();
+            aos.putArchiveEntry(aos.createArchiveEntry(dir, "a/b/c"));
+            aos.closeArchiveEntry();
+            aos.putArchiveEntry(aos.createArchiveEntry(dummy, "a/b/d.txt"));
+            aos.write("Hello, world 1".getBytes(StandardCharsets.UTF_8));
+            aos.closeArchiveEntry();
+            aos.putArchiveEntry(aos.createArchiveEntry(dummy, "a/b/c/e.txt"));
+            aos.write("Hello, world 2".getBytes(StandardCharsets.UTF_8));
+            aos.closeArchiveEntry();
+            aos.finish();
+        }
+    }
+
+    private void setupTar() throws IOException, ArchiveException {
+        archive = new File(dir, "test.tar");
+        final File dummy = new File(dir, "x");
+        try (OutputStream o = Files.newOutputStream(dummy.toPath())) {
+            o.write(new byte[14]);
+        }
+        try (ArchiveOutputStream aos = ArchiveStreamFactory.DEFAULT
+             .createArchiveOutputStream("tar", Files.newOutputStream(archive.toPath()))) {
             aos.putArchiveEntry(aos.createArchiveEntry(dir, "a"));
             aos.closeArchiveEntry();
             aos.putArchiveEntry(aos.createArchiveEntry(dir, "a/b"));

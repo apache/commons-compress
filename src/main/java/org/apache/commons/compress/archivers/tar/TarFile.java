@@ -89,7 +89,7 @@ public class TarFile implements Closeable {
      * @throws IOException when reading the tar archive fails
      */
     public TarFile(final byte[] content) throws IOException {
-        this(new SeekableInMemoryByteChannel(content), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, false);
+        this(new SeekableInMemoryByteChannel(content));
     }
 
     /**
@@ -182,6 +182,16 @@ public class TarFile implements Closeable {
      */
     public TarFile(final Path archivePath, final boolean lenient) throws IOException {
         this(Files.newByteChannel(archivePath), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, lenient);
+    }
+
+    /**
+     * Constructor for TarFile.
+     *
+     * @param content the content to use
+     * @throws IOException when reading the tar archive fails
+     */
+    public TarFile(final SeekableByteChannel content) throws IOException {
+        this(content, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, false);
     }
 
     /**

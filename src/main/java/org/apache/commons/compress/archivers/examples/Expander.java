@@ -29,12 +29,15 @@ import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.Enumeration;
+import java.util.Iterator;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarFile;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.utils.IOUtils;
@@ -237,12 +240,14 @@ public class Expander {
         try (CloseableConsumerAdapter c = new CloseableConsumerAdapter(closeableConsumer)) {
         if (!prefersSeekableByteChannel(format)) {
             expand(format, c.track(Channels.newInputStream(archive)), targetDirectory);
+        } else if (ArchiveStreamFactory.TAR.equalsIgnoreCase(format)) {
+            expand(c.track(new TarFile(archive)), targetDirectory);
         } else if (ArchiveStreamFactory.ZIP.equalsIgnoreCase(format)) {
             expand(c.track(new ZipFile(archive)), targetDirectory);
         } else if (ArchiveStreamFactory.SEVEN_Z.equalsIgnoreCase(format)) {
             expand(c.track(new SevenZFile(archive)), targetDirectory);
         } else {
-            // never reached as prefersSeekableByteChannel only returns true for ZIP and 7z
+            // never reached as prefersSeekableByteChannel only returns true for TAR, ZIP and 7z
             throw new ArchiveException("Don't know how to handle format " + format);
         }
         }
@@ -265,6 +270,26 @@ public class Expander {
             }
             return next;
         }, (entry, out) -> IOUtils.copy(archive, out), targetDirectory);
+    }
+
+    /**
+     * Expands {@code archive} into {@code targetDirectory}.
+     *
+     * @param archive the file to expand
+     * @param targetDirectory the directory to write to
+     * @throws IOException if an I/O error occurs
+     * @throws ArchiveException if the archive cannot be read for other reasons
+     * @since 1.21
+     */
+    public void expand(final TarFile archive, final File targetDirectory)
+        throws IOException, ArchiveException {
+        final Iterator<TarArchiveEntry> entryIterator = archive.getEntries().iterator();
+        expand(() -> entryIterator.hasNext() ? entryIterator.next() : null,
+            (entry, out) -> {
+            try (InputStream in = archive.getInputStream((TarArchiveEntry) entry)) {
+                IOUtils.copy(in, out);
+            }
+        }, targetDirectory);
     }
 
     /**
@@ -311,7 +336,9 @@ public class Expander {
     }
 
     private boolean prefersSeekableByteChannel(final String format) {
-        return ArchiveStreamFactory.ZIP.equalsIgnoreCase(format) || ArchiveStreamFactory.SEVEN_Z.equalsIgnoreCase(format);
+        return ArchiveStreamFactory.TAR.equalsIgnoreCase(format)
+            || ArchiveStreamFactory.ZIP.equalsIgnoreCase(format)
+            || ArchiveStreamFactory.SEVEN_Z.equalsIgnoreCase(format);
     }
 
     private void expand(final ArchiveEntrySupplier supplier, final EntryWriter writer, final File targetDirectory)
