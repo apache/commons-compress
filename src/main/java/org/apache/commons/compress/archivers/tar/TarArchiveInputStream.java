@@ -725,15 +725,8 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             throw new IllegalStateException("No current tar entry");
         }
 
-        if (!currEntry.isSparse()) {
-            if (entryOffset >= entrySize) {
-                return -1;
-            }
-        } else {
-            // for sparse entries, there are actually currEntry.getRealSize() bytes to read
-            if (entryOffset >= currEntry.getRealSize()) {
-                return -1;
-            }
+        if (entryOffset >= currEntry.getRealSize()) {
+            return -1;
         }
 
         numToRead = Math.min(numToRead, available());

@@ -666,22 +666,15 @@ public class TarFile implements Closeable {
         private int currentSparseInputStreamIndex;
 
         BoundedTarEntryInputStream(final TarArchiveEntry entry, final SeekableByteChannel channel) {
-            super(entry.getDataOffset(), entry.isSparse() ? entry.getRealSize() : entry.getSize());
+            super(entry.getDataOffset(), entry.getRealSize());
             this.entry = entry;
             this.channel = channel;
         }
 
         @Override
         protected int read(final long pos, final ByteBuffer buf) throws IOException {
-            if (entry.isSparse()) {
-                // for sparse entries, there are actually currEntry.getRealSize() bytes to read
-                if (entryOffset >= entry.getRealSize()) {
-                    return -1;
-                }
-            } else {
-                if (entryOffset >= entry.getSize()) {
-                    return -1;
-                }
+            if (entryOffset >= entry.getRealSize()) {
+                return -1;
             }
 
             final int totalRead;

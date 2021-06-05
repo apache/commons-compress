@@ -905,6 +905,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Get this entry's file size.
      *
+     * <p>This is the size the entry's data uses inside of the archive. Usually this is the same as {@link
+     * #getRealSize}, but it doesn't take the "holes" into account when the entry represents a sparse file.
+     *
      * @return This entry's file size.
      */
     @Override
@@ -1057,13 +1060,16 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * Get this entry's real file size in case of a sparse file.
+     *
+     * <p>This is the size a file would take on disk if the entry was expanded.</p>
+     *
      * <p>If the file is not a sparse file, return size instead of realSize.</p>
      *
      * @return This entry's real file size, if the file is not a sparse file, return size instead of realSize.
      */
     public long getRealSize() {
         if (!isSparse()) {
-            return size;
+            return getSize();
         }
         return realSize;
     }
