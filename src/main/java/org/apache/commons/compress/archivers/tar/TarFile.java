@@ -425,7 +425,7 @@ public class TarFile implements Closeable {
         List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
         final Map<String, String> headers;
         try (final InputStream input = getInputStream(currEntry)) {
-            headers = TarUtils.parsePaxHeaders(input, sparseHeaders, globalPaxHeaders);
+            headers = TarUtils.parsePaxHeaders(input, sparseHeaders, globalPaxHeaders, currEntry.getSize());
         }
 
         // for 0.1 PAX Headers
@@ -455,7 +455,8 @@ public class TarFile implements Closeable {
 
     private void readGlobalPaxHeaders() throws IOException {
         try (InputStream input = getInputStream(currEntry)) {
-            globalPaxHeaders = TarUtils.parsePaxHeaders(input, globalSparseHeaders, globalPaxHeaders);
+            globalPaxHeaders = TarUtils.parsePaxHeaders(input, globalSparseHeaders, globalPaxHeaders,
+                currEntry.getSize());
         }
         getNextTarEntry(); // Get the actual file entry
 
