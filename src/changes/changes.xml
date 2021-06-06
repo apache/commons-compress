@@ -187,6 +187,10 @@ The <action> type attribute can be add,update,fix,remove.
         Make the memory allocation in SevenZFile.readFilesInfo a lazy
         allocation to avoid OOM when dealing some giant 7z archives.
         Github Pull Request #120.
+
+        Also added sanity checks before even trying to parse an
+        archive and made SevenZFileOptions' maxMemorySizeInKb apply to
+        the stored metadata for an archive.
       </action>
       <action issue="COMPRESS-546" type="fix" date="2020-08-15"
               due-to="Maksim Zuev" dev="PeterLee">

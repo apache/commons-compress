@@ -45,6 +45,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.zip.CRC32;
 
+import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.CRC32VerifyingInputStream;
@@ -576,7 +577,7 @@ public class SevenZFile implements Closeable {
     private void readHeader(final ByteBuffer header, final Archive archive) throws IOException {
         final int pos = header.position();
         final ArchiveStatistics stats = sanityCheckAndCollectStatistics(header);
-        stats.assertValidity();
+        stats.assertValidity(options.getMaxMemoryLimitInKb());
         header.position(pos);
 
         int nid = getUnsignedByte(header);
@@ -669,7 +670,7 @@ public class SevenZFile implements Closeable {
         final int pos = header.position();
         ArchiveStatistics stats = new ArchiveStatistics();
         sanityCheckStreamsInfo(header, stats);
-        stats.assertValidity();
+        stats.assertValidity(options.getMaxMemoryLimitInKb());
         header.position(pos);
 
         readStreamsInfo(header, archive);
@@ -2191,12 +2192,17 @@ public class SevenZFile implements Closeable {
             return 2 * lowerBound /* conservative guess */;
         }
 
-        void assertValidity() throws IOException {
+        void assertValidity(int maxMemoryLimitInKb) throws IOException {
             if (numberOfEntriesWithStream > 0 && numberOfFolders == 0) {
                 throw new IOException("archive with entries but no folders");
             }
             if (numberOfEntriesWithStream > numberOfUnpackSubStreams) {
                 throw new IOException("archive doesn't contain enough substreams for entries");
+            }
+
+            final long memoryNeededInKb = estimateSize() / 1024;
+            if (maxMemoryLimitInKb < memoryNeededInKb) {
+                throw new MemoryLimitException(memoryNeededInKb, maxMemoryLimitInKb);
             }
         }
 
