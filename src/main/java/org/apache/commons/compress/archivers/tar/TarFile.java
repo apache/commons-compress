@@ -32,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.compress.UnhandledInputException;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ArchiveUtils;
@@ -239,6 +240,14 @@ public class TarFile implements Closeable {
             return null;
         }
 
+        try {
+            return getNextTarEntryInternal();
+        } catch (RuntimeException ex) {
+            throw new UnhandledInputException(ex);
+        }
+    }
+
+    private TarArchiveEntry getNextTarEntryInternal() throws IOException {
         if (currEntry != null) {
             // Skip to the end of the entry
             repositionForwardTo(currEntry.getDataOffset() + currEntry.getSize());
@@ -678,10 +687,14 @@ public class TarFile implements Closeable {
             }
 
             final int totalRead;
+            try {
             if (entry.isSparse()) {
                 totalRead = readSparse(entryOffset, buf, buf.limit());
             } else {
                 totalRead = readArchive(pos, buf);
+            }
+            } catch (RuntimeException ex) {
+                throw new UnhandledInputException(ex);
             }
 
             if (totalRead == -1) {

@@ -45,6 +45,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.zip.CRC32;
 
+import org.apache.commons.compress.UnhandledInputException;
 import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.CRC32VerifyingInputStream;
@@ -346,6 +347,8 @@ public class SevenZFile implements Closeable {
                 this.password = null;
             }
             succeeded = true;
+        } catch (RuntimeException ex) {
+            throw new UnhandledInputException(ex, fileName);
         } finally {
             if (!succeeded && closeOnError) {
                 this.channel.close();
@@ -410,7 +413,11 @@ public class SevenZFile implements Closeable {
         if (entry.getName() == null && options.getUseDefaultNameForUnnamedEntries()) {
             entry.setName(getDefaultName());
         }
-        buildDecodingStream(currentEntryIndex, false);
+        try {
+            buildDecodingStream(currentEntryIndex, false);
+        } catch (RuntimeException ex) {
+            throw new UnhandledInputException(ex);
+        }
         uncompressedBytesReadFromCurrentEntry = compressedBytesReadFromCurrentEntry = 0;
         return entry;
     }
@@ -510,7 +517,7 @@ public class SevenZFile implements Closeable {
                     if (result.packSizes.length > 0 && result.files.length > 0) {
                         return result;
                     }
-                } catch (final Exception ignore) {
+                } catch (Exception ignore) {
                     // Wrong guess...
                 }
             }
@@ -1899,11 +1906,15 @@ public class SevenZFile implements Closeable {
      *             if an I/O error has occurred
      */
     public int read() throws IOException {
+        try {
         final int b = getCurrentStream().read();
         if (b >= 0) {
             uncompressedBytesReadFromCurrentEntry++;
         }
         return b;
+        } catch (RuntimeException ex) {
+            throw new UnhandledInputException(ex, fileName);
+        }
     }
 
     private InputStream getCurrentStream() throws IOException {
@@ -1981,6 +1992,7 @@ public class SevenZFile implements Closeable {
      *             if an I/O error has occurred
      */
     public int read(final byte[] b, final int off, final int len) throws IOException {
+        try {
         if (len == 0) {
             return 0;
         }
@@ -1989,6 +2001,9 @@ public class SevenZFile implements Closeable {
             uncompressedBytesReadFromCurrentEntry += cnt;
         }
         return cnt;
+        } catch (RuntimeException ex) {
+            throw new UnhandledInputException(ex, fileName);
+        }
     }
 
     /**

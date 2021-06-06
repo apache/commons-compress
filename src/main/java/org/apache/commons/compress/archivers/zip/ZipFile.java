@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.zip.Inflater;
 import java.util.zip.ZipException;
 
+import org.apache.commons.compress.UnhandledInputException;
 import org.apache.commons.compress.archivers.EntryStreamOffsets;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInputStream;
@@ -376,6 +377,8 @@ public class ZipFile implements Closeable {
             }
             fillNameMap();
             success = true;
+        } catch (RuntimeException ex) {
+            throw new UnhandledInputException(ex, archiveName);
         } catch (final IOException e) {
             throw new IOException("Error on ZipFile " + archiveName, e);
         } finally {
@@ -564,7 +567,16 @@ public class ZipFile implements Closeable {
         if (!(ze instanceof Entry)) {
             return null;
         }
-        // cast validity is checked just above
+        try {
+            // cast validity is checked just above
+            return getInputStreamInternal((Entry) ze);
+        } catch (RuntimeException ex) {
+            throw new UnhandledInputException(ex);
+        }
+    }
+
+    private InputStream getInputStreamInternal(final Entry ze)
+        throws IOException {
         ZipUtil.checkRequestedFeatures(ze);
         final long start = getDataOffset(ze);
 
