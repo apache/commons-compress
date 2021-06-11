@@ -160,6 +160,9 @@ public class ZipFile implements Closeable {
     private final ByteBuffer cfhBbuf = ByteBuffer.wrap(cfhBuf);
     private final ByteBuffer shortBbuf = ByteBuffer.wrap(shortBuf);
 
+    private long centralDirectoryStartDiskNumber, centralDirectoryStartRelativeOffset;
+    private long centralDirectoryStartOffset;
+
     /**
      * Opens the given file for reading, assuming "UTF8" for file names.
      *
@@ -708,6 +711,7 @@ public class ZipFile implements Closeable {
             new HashMap<>();
 
         positionAtCentralDirectory();
+        centralDirectoryStartOffset = archive.position();
 
         wordBbuf.rewind();
         IOUtils.readFully(archive, wordBbuf);
@@ -791,12 +795,21 @@ public class ZipFile implements Closeable {
 
         final int fileNameLen = ZipShort.getValue(cfhBuf, off);
         off += SHORT;
+        if (fileNameLen < 0) {
+            throw new IOException("broken archive, entry with negative fileNameLen");
+        }
 
         final int extraLen = ZipShort.getValue(cfhBuf, off);
         off += SHORT;
+        if (extraLen < 0) {
+            throw new IOException("broken archive, entry with negative extraLen");
+        }
 
         final int commentLen = ZipShort.getValue(cfhBuf, off);
         off += SHORT;
+        if (commentLen < 0) {
+            throw new IOException("broken archive, entry with negative commentLen");
+        }
 
         ze.setDiskNumberStart(ZipShort.getValue(cfhBuf, off));
         off += SHORT;
@@ -827,6 +840,7 @@ public class ZipFile implements Closeable {
         }
 
         setSizesAndOffsetFromZip64Extra(ze);
+        sanityCheckLFHOffset(ze);
 
         final byte[] comment = new byte[commentLen];
         IOUtils.readFully(archive, ByteBuffer.wrap(comment));
@@ -837,6 +851,28 @@ public class ZipFile implements Closeable {
         }
 
         ze.setStreamContiguous(true);
+    }
+
+    private void sanityCheckLFHOffset(final ZipArchiveEntry ze) throws IOException {
+        if (ze.getDiskNumberStart() < 0) {
+            throw new IOException("broken archive, entry with negative disk number");
+        }
+        if (ze.getLocalHeaderOffset() < 0) {
+            throw new IOException("broken archive, entry with negative local file header offset");
+        }
+        if (isSplitZipArchive) {
+            if (ze.getDiskNumberStart() > centralDirectoryStartDiskNumber) {
+                throw new IOException("local file header for " + ze.getName() + " starts on a later disk than central directory");
+            }
+            if (ze.getDiskNumberStart() == centralDirectoryStartDiskNumber
+                && ze.getLocalHeaderOffset() > centralDirectoryStartRelativeOffset) {
+                throw new IOException("local file header for " + ze.getName() + " starts after central directory");
+            }
+        } else {
+            if (ze.getLocalHeaderOffset() > centralDirectoryStartOffset) {
+                throw new IOException("local file header for " + ze.getName() + " starts after central directory");
+            }
+        }
     }
 
     /**
@@ -1115,21 +1151,23 @@ public class ZipFile implements Closeable {
                     - WORD /* signature has already been read */);
             wordBbuf.rewind();
             IOUtils.readFully(archive, wordBbuf);
-            final long diskNumberOfCFD = ZipLong.getValue(wordBuf);
+            centralDirectoryStartDiskNumber = ZipLong.getValue(wordBuf);
 
             skipBytes(ZIP64_EOCD_CFD_LOCATOR_RELATIVE_OFFSET);
 
             dwordBbuf.rewind();
             IOUtils.readFully(archive, dwordBbuf);
-            final long relativeOffsetOfCFD = ZipEightByteInteger.getLongValue(dwordBuf);
+            centralDirectoryStartRelativeOffset = ZipEightByteInteger.getLongValue(dwordBuf);
             ((ZipSplitReadOnlySeekableByteChannel) archive)
-                .position(diskNumberOfCFD, relativeOffsetOfCFD);
+                .position(centralDirectoryStartDiskNumber, centralDirectoryStartRelativeOffset);
         } else {
             skipBytes(ZIP64_EOCD_CFD_LOCATOR_OFFSET
                     - WORD /* signature has already been read */);
             dwordBbuf.rewind();
             IOUtils.readFully(archive, dwordBbuf);
-            archive.position(ZipEightByteInteger.getLongValue(dwordBuf));
+            centralDirectoryStartDiskNumber = 0;
+            centralDirectoryStartRelativeOffset = ZipEightByteInteger.getLongValue(dwordBuf);
+            archive.position(centralDirectoryStartRelativeOffset);
         }
     }
 
@@ -1146,20 +1184,22 @@ public class ZipFile implements Closeable {
             skipBytes(CFD_DISK_OFFSET);
             shortBbuf.rewind();
             IOUtils.readFully(archive, shortBbuf);
-            final int diskNumberOfCFD = ZipShort.getValue(shortBuf);
+            centralDirectoryStartDiskNumber = ZipShort.getValue(shortBuf);
 
             skipBytes(CFD_LOCATOR_RELATIVE_OFFSET);
 
             wordBbuf.rewind();
             IOUtils.readFully(archive, wordBbuf);
-            final long relativeOffsetOfCFD = ZipLong.getValue(wordBuf);
+            centralDirectoryStartRelativeOffset = ZipLong.getValue(wordBuf);
             ((ZipSplitReadOnlySeekableByteChannel) archive)
-                .position(diskNumberOfCFD, relativeOffsetOfCFD);
+                .position(centralDirectoryStartDiskNumber, centralDirectoryStartRelativeOffset);
         } else {
             skipBytes(CFD_LOCATOR_OFFSET);
             wordBbuf.rewind();
             IOUtils.readFully(archive, wordBbuf);
-            archive.position(ZipLong.getValue(wordBuf));
+            centralDirectoryStartDiskNumber = 0;
+            centralDirectoryStartRelativeOffset = ZipLong.getValue(wordBuf);
+            archive.position(centralDirectoryStartRelativeOffset);
         }
     }
 
@@ -1313,6 +1353,9 @@ public class ZipFile implements Closeable {
         final int extraFieldLen = ZipShort.getValue(shortBuf);
         ze.setDataOffset(offset + LFH_OFFSET_FOR_FILENAME_LENGTH
                          + SHORT + SHORT + fileNameLen + extraFieldLen);
+        if (ze.getDataOffset() + ze.getCompressedSize() > centralDirectoryStartOffset) {
+            throw new IOException("data for " + ze.getName() + " overlaps with central directory.");
+        }
         return new int[] { fileNameLen, extraFieldLen };
     }
 
