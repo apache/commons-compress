@@ -19,10 +19,11 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Arrays;
 
 import org.apache.commons.compress.utils.IOUtils;
@@ -99,8 +100,8 @@ public class DataDescriptorTest {
             zos.closeArchiveEntry();
         }
 
-        byte[] data;
-        try (FileInputStream fis = new FileInputStream(f)) {
+        final byte[] data;
+        try (InputStream fis = Files.newInputStream(f.toPath())) {
             data = IOUtils.toByteArray(fis);
         }
 
@@ -142,12 +143,12 @@ public class DataDescriptorTest {
         }
 
         final File f = new File(dir, "test.zip");
-        try (FileOutputStream fos = new FileOutputStream(f)) {
+        try (OutputStream fos = Files.newOutputStream(f.toPath())) {
             fos.write(init.toByteArray());
         }
 
         final ByteArrayOutputStream o = new ByteArrayOutputStream();
-        ZipArchiveEntry zae;
+        final ZipArchiveEntry zae;
         try (ZipFile zf = new ZipFile(f);
              ZipArchiveOutputStream zos = new ZipArchiveOutputStream(o)) {
             zae = zf.getEntry("test1.txt");

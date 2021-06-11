@@ -41,7 +41,7 @@ import org.junit.rules.ExpectedException;
  */
 public class MultiReadOnlySeekableByteChannelTest {
     @Rule
-    public ExpectedException thrown = ExpectedException.none();
+    public final ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void constructorThrowsOnNullArg() {
@@ -139,12 +139,12 @@ public class MultiReadOnlySeekableByteChannelTest {
     @Test
     public void cantPositionToANegativePosition() throws IOException {
         final SeekableByteChannel s = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(makeEmpty(), makeEmpty());
-        thrown.expect(IllegalArgumentException.class);
+        thrown.expect(IOException.class);
         s.position(-1);
     }
 
     private SeekableByteChannel makeEmpty() {
-        return makeSingle(new byte[0]);
+        return makeSingle(ByteUtils.EMPTY_BYTE_ARRAY);
     }
 
     private SeekableByteChannel makeSingle(final byte[] arr) {
@@ -374,11 +374,11 @@ public class MultiReadOnlySeekableByteChannelTest {
     }
 
     /*
-     * <q>IllegalArgumentException - If the new position is negative</q>
+     * <q>IOException - If the new position is negative</q>
      */
     @Test
-    public void throwsIllegalArgumentExceptionWhenPositionIsSetToANegativeValue() throws Exception {
-        thrown.expect(IllegalArgumentException.class);
+    public void throwsIOExceptionWhenPositionIsSetToANegativeValue() throws Exception {
+        thrown.expect(IOException.class);
         try (SeekableByteChannel c = testChannel()) {
             c.position(-1);
         }

@@ -48,7 +48,7 @@ class CpioUtil {
             throw new UnsupportedOperationException();
         }
 
-        long ret = 0;
+        long ret;
         int pos = 0;
         final byte[] tmp_number = new byte[number.length];
         System.arraycopy(number, 0, tmp_number, 0, number.length);
@@ -88,7 +88,7 @@ class CpioUtil {
             final boolean swapHalfWord) {
         final byte[] ret = new byte[length];
         int pos = 0;
-        long tmp_number = 0;
+        long tmp_number;
 
         if (length % 2 != 0 || length < 2) {
             throw new UnsupportedOperationException();

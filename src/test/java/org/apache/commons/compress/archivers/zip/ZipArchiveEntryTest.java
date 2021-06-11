@@ -19,12 +19,18 @@
 package org.apache.commons.compress.archivers.zip;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
+import org.apache.commons.compress.utils.ByteUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -36,7 +42,7 @@ import org.junit.rules.ExpectedException;
 public class ZipArchiveEntryTest {
 
     @Rule
-    public ExpectedException thrown = ExpectedException.none();
+    public final ExpectedException thrown = ExpectedException.none();
 
     /**
      * test handling of extra fields
@@ -48,7 +54,7 @@ public class ZipArchiveEntryTest {
         a.setMode(0755);
         final UnrecognizedExtraField u = new UnrecognizedExtraField();
         u.setHeaderId(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
-        u.setLocalFileDataData(new byte[0]);
+        u.setLocalFileDataData(ByteUtils.EMPTY_BYTE_ARRAY);
 
         final ZipArchiveEntry ze = new ZipArchiveEntry("test/");
         ze.setExtraFields(new ZipExtraField[] {a, u});
@@ -102,7 +108,7 @@ public class ZipArchiveEntryTest {
         a.setMode(0755);
         final UnrecognizedExtraField u = new UnrecognizedExtraField();
         u.setHeaderId(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
-        u.setLocalFileDataData(new byte[0]);
+        u.setLocalFileDataData(ByteUtils.EMPTY_BYTE_ARRAY);
 
         final ZipArchiveEntry ze = new ZipArchiveEntry("test/");
         ze.setExtraFields(new ZipExtraField[] {a, u});
@@ -149,7 +155,7 @@ public class ZipArchiveEntryTest {
         a.setMode(0755);
         final UnrecognizedExtraField u = new UnrecognizedExtraField();
         u.setHeaderId(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
-        u.setLocalFileDataData(new byte[0]);
+        u.setLocalFileDataData(ByteUtils.EMPTY_BYTE_ARRAY);
 
         final ZipArchiveEntry ze = new ZipArchiveEntry("test/");
         ze.setExtraFields(new ZipExtraField[] {a, u});
@@ -246,7 +252,7 @@ public class ZipArchiveEntryTest {
     public void testNotEquals() {
         final ZipArchiveEntry entry1 = new ZipArchiveEntry("foo");
         final ZipArchiveEntry entry2 = new ZipArchiveEntry("bar");
-        assertFalse(entry1.equals(entry2));
+        assertNotEquals(entry1, entry2);
     }
 
     /**
@@ -262,8 +268,8 @@ public class ZipArchiveEntryTest {
         entry2.setComment("");
         entry3.setComment("bar");
         assertEquals(entry1, entry2);
-        assertFalse(entry1.equals(entry3));
-        assertFalse(entry2.equals(entry3));
+        assertNotEquals(entry1, entry3);
+        assertNotEquals(entry2, entry3);
     }
 
     @Test
@@ -359,7 +365,7 @@ public class ZipArchiveEntryTest {
         a.setMode(0755);
         final UnrecognizedExtraField u = new UnrecognizedExtraField();
         u.setHeaderId(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
-        u.setLocalFileDataData(new byte[0]);
+        u.setLocalFileDataData(ByteUtils.EMPTY_BYTE_ARRAY);
         final UnparseableExtraFieldData x = new UnparseableExtraFieldData();
         final byte[] unparseable = new byte[] {
             0, 0, (byte) 0xff, (byte) 0xff, 0, 0, 0
@@ -373,7 +379,7 @@ public class ZipArchiveEntryTest {
         try (ZipFile zf = new ZipFile(getFile("COMPRESS-479.zip"))) {
             final ZipArchiveEntry ze = zf.getEntry("%U20AC_for_Dollar.txt");
             final ZipArchiveEntry clonedZe = (ZipArchiveEntry) ze.clone();
-            assertTrue(ze.equals(clonedZe));
+            assertEquals(ze, clonedZe);
         }
     }
 }

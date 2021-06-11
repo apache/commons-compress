@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -49,7 +48,7 @@ import java.util.Stack;
  * @NotThreadSafe
  */
 public class DumpArchiveInputStream extends ArchiveInputStream {
-    private DumpArchiveSummary summary;
+    private final DumpArchiveSummary summary;
     private DumpArchiveEntry active;
     private boolean isClosed;
     private boolean hasHitEOF;
@@ -69,7 +68,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     private final Map<Integer, DumpArchiveEntry> pending = new HashMap<>();
 
     // queue of (directory) entries where we now have the full path.
-    private Queue<DumpArchiveEntry> queue;
+    private final Queue<DumpArchiveEntry> queue;
 
     /**
      * The encoding to use for file names and labels.
@@ -137,15 +136,12 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         // use priority based on queue to ensure parent directories are
         // released first.
         queue = new PriorityQueue<>(10,
-                new Comparator<DumpArchiveEntry>() {
-                    @Override
-                    public int compare(final DumpArchiveEntry p, final DumpArchiveEntry q) {
-                        if (p.getOriginalName() == null || q.getOriginalName() == null) {
-                            return Integer.MAX_VALUE;
-                        }
-
-                        return p.getOriginalName().compareTo(q.getOriginalName());
+                (p, q) -> {
+                    if (p.getOriginalName() == null || q.getOriginalName() == null) {
+                        return Integer.MAX_VALUE;
                     }
+
+                    return p.getOriginalName().compareTo(q.getOriginalName());
                 });
     }
 

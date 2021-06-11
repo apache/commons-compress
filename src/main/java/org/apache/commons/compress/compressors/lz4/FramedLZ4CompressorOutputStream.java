@@ -44,8 +44,8 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
     private final byte[] blockData;
     private final OutputStream out;
     private final Parameters params;
-    private boolean finished = false;
-    private int currentIndex = 0;
+    private boolean finished;
+    private int currentIndex;
 
     // used for frame header checksum and content checksum, if requested
     private final XXHash32 contentHash = new XXHash32();
@@ -210,13 +210,14 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
         if (params.withContentChecksum) {
             contentHash.update(data, off, len);
         }
-        if (currentIndex + len > blockData.length) {
+        final int blockDataLength = blockData.length;
+        if (currentIndex + len > blockDataLength) {
             flushBlock();
-            while (len > blockData.length) {
-                System.arraycopy(data, off, blockData, 0, blockData.length);
-                off += blockData.length;
-                len -= blockData.length;
-                currentIndex = blockData.length;
+            while (len > blockDataLength) {
+                System.arraycopy(data, off, blockData, 0, blockDataLength);
+                off += blockDataLength;
+                len -= blockDataLength;
+                currentIndex = blockDataLength;
                 flushBlock();
             }
         }

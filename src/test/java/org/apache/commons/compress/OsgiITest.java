@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.bundle;
 import static org.ops4j.pax.exam.CoreOptions.composite;
@@ -32,6 +33,7 @@ import org.ops4j.pax.exam.junit.PaxExam;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
+import java.lang.reflect.Method;
 import javax.inject.Inject;
 
 @RunWith(PaxExam.class)
@@ -62,19 +64,27 @@ public class OsgiITest {
     }
 
     @Test
-    public void loadBundle() {
-        final StringBuilder bundles = new StringBuilder();
-        boolean foundCompressBundle = false, first = true;
+    public void canLoadBundle() {
+        assertNotNull("Expected to find bundle " + EXPECTED_BUNDLE_NAME, loadBundle());
+    }
+
+    @Test
+    public void properlyDetectsRunningInsideOsgiEnv() throws Exception {
+        final Class<?> osgiUtils = loadBundle().loadClass("org.apache.commons.compress.utils.OsgiUtils");
+        assertNotNull("Can load OsgiUtils via bundle", osgiUtils);
+
+        final Method m = osgiUtils.getMethod("isRunningInOsgiEnvironment");
+        assertNotNull("Can access isRunningInOsgiEnvironment method", m);
+
+        assertTrue("Compress detects OSGi environment", (Boolean) m.invoke(null));
+    }
+
+    private Bundle loadBundle() {
         for (final Bundle b : ctx.getBundles()) {
-            final String symbolicName = b.getSymbolicName();
-            foundCompressBundle |= EXPECTED_BUNDLE_NAME.equals(symbolicName);
-            if (!first) {
-                bundles.append(", ");
+            if (EXPECTED_BUNDLE_NAME.equals(b.getSymbolicName())) {
+                return b;
             }
-            first = false;
-            bundles.append(symbolicName);
         }
-        assertTrue("Expected to find bundle " + EXPECTED_BUNDLE_NAME + " in " + bundles,
-            foundCompressBundle);
+        return null;
     }
 }

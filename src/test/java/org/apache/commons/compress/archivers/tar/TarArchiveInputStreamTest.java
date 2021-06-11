@@ -20,8 +20,9 @@ package org.apache.commons.compress.archivers.tar;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -29,14 +30,12 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Map;
 import java.util.TimeZone;
 import java.util.zip.GZIPInputStream;
 
@@ -51,81 +50,14 @@ import org.junit.Test;
 public class TarArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
-    public void readSimplePaxHeader() throws Exception {
-        final InputStream is = new ByteArrayInputStream(new byte[1]);
-        final TarArchiveInputStream tais = new TarArchiveInputStream(is);
-        final Map<String, String> headers = tais
-            .parsePaxHeaders(new ByteArrayInputStream("30 atime=1321711775.972059463\n"
-                                                      .getBytes(StandardCharsets.UTF_8)), null);
-        assertEquals(1, headers.size());
-        assertEquals("1321711775.972059463", headers.get("atime"));
-        tais.close();
-    }
-
-    @Test
-    public void secondEntryWinsWhenPaxHeaderContainsDuplicateKey() throws Exception {
-        final InputStream is = new ByteArrayInputStream(new byte[1]);
-        final TarArchiveInputStream tais = new TarArchiveInputStream(is);
-        final Map<String, String> headers = tais
-            .parsePaxHeaders(new ByteArrayInputStream("11 foo=bar\n11 foo=baz\n"
-                                                      .getBytes(StandardCharsets.UTF_8)), null);
-        assertEquals(1, headers.size());
-        assertEquals("baz", headers.get("foo"));
-        tais.close();
-    }
-
-    @Test
-    public void paxHeaderEntryWithEmptyValueRemovesKey() throws Exception {
-        final InputStream is = new ByteArrayInputStream(new byte[1]);
-        final TarArchiveInputStream tais = new TarArchiveInputStream(is);
-        final Map<String, String> headers = tais
-            .parsePaxHeaders(new ByteArrayInputStream("11 foo=bar\n7 foo=\n"
-                                                      .getBytes(StandardCharsets.UTF_8)), null);
-        assertEquals(0, headers.size());
-        tais.close();
-    }
-
-    @Test
-    public void readPaxHeaderWithEmbeddedNewline() throws Exception {
-        final InputStream is = new ByteArrayInputStream(new byte[1]);
-        final TarArchiveInputStream tais = new TarArchiveInputStream(is);
-        final Map<String, String> headers = tais
-            .parsePaxHeaders(new ByteArrayInputStream("28 comment=line1\nline2\nand3\n"
-                                                      .getBytes(StandardCharsets.UTF_8)), null);
-        assertEquals(1, headers.size());
-        assertEquals("line1\nline2\nand3", headers.get("comment"));
-        tais.close();
-    }
-
-    @Test
-    public void readNonAsciiPaxHeader() throws Exception {
-        final String ae = "\u00e4";
-        final String line = "11 path="+ ae + "\n";
-        assertEquals(11, line.getBytes(StandardCharsets.UTF_8).length);
-        final InputStream is = new ByteArrayInputStream(new byte[1]);
-        final TarArchiveInputStream tais = new TarArchiveInputStream(is);
-        final Map<String, String> headers = tais
-            .parsePaxHeaders(new ByteArrayInputStream(line.getBytes(StandardCharsets.UTF_8)), null);
-        assertEquals(1, headers.size());
-        assertEquals(ae, headers.get("path"));
-        tais.close();
-    }
-
-    @Test
     public void workaroundForBrokenTimeHeader() throws Exception {
-        TarArchiveInputStream in = null;
-        try {
-            in = new TarArchiveInputStream(new FileInputStream(getFile("simple-aix-native-tar.tar")));
+        try (TarArchiveInputStream in = new TarArchiveInputStream(Files.newInputStream(getFile("simple-aix-native-tar.tar").toPath()))) {
             TarArchiveEntry tae = in.getNextTarEntry();
             tae = in.getNextTarEntry();
             assertEquals("sample/link-to-txt-file.lnk", tae.getName());
             assertEquals(new Date(0), tae.getLastModifiedDate());
             assertTrue(tae.isSymbolicLink());
             assertTrue(tae.isCheckSumOK());
-        } finally {
-            if (in != null) {
-                in.close();
-            }
         }
     }
 
@@ -141,9 +73,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
     }
 
     private void datePriorToEpoch(final String archive) throws Exception {
-        TarArchiveInputStream in = null;
-        try {
-            in = new TarArchiveInputStream(new FileInputStream(getFile(archive)));
+        try (TarArchiveInputStream in = new TarArchiveInputStream(Files.newInputStream(getFile(archive).toPath()))) {
             final TarArchiveEntry tae = in.getNextTarEntry();
             assertEquals("foo", tae.getName());
             final Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
@@ -151,10 +81,6 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
             cal.set(Calendar.MILLISECOND, 0);
             assertEquals(cal.getTime(), tae.getLastModifiedDate());
             assertTrue(tae.isCheckSumOK());
-        } finally {
-            if (in != null) {
-                in.close();
-            }
         }
     }
 
@@ -196,6 +122,9 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
         tis.close();
     }
 
+    /**
+     * This test ensures the implementation is reading the padded last block if a tool has added one to an archive
+     */
     @Test
     public void shouldConsumeArchiveCompletely() throws Exception {
         final InputStream is = TarArchiveInputStreamTest.class
@@ -236,12 +165,12 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
     public void shouldThrowAnExceptionOnTruncatedEntries() throws Exception {
         final File dir = mkdir("COMPRESS-279");
         final TarArchiveInputStream is = getTestStream("/COMPRESS-279.tar");
-        FileOutputStream out = null;
+        OutputStream out = null;
         try {
             TarArchiveEntry entry = is.getNextTarEntry();
             int count = 0;
             while (entry != null) {
-                out = new FileOutputStream(new File(dir, String.valueOf(count)));
+                out = Files.newOutputStream(new File(dir, String.valueOf(count)).toPath());
                 IOUtils.copy(is, out);
                 out.close();
                 out = null;
@@ -263,7 +192,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
         final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
         tos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_POSIX);
         TarArchiveEntry t = new TarArchiveEntry("name");
-        t.setGroupId(4294967294l);
+        t.setGroupId(4294967294L);
         t.setSize(1);
         tos.putArchiveEntry(t);
         tos.write(30);
@@ -274,7 +203,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
         final TarArchiveInputStream tis =
             new TarArchiveInputStream(bis);
         t = tis.getNextTarEntry();
-        assertEquals(4294967294l, t.getLongGroupId());
+        assertEquals(4294967294L, t.getLongGroupId());
         tis.close();
     }
 
@@ -326,8 +255,8 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
             weaselEntry.setSize(entry.getSize());
             is.setCurrentEntry(weaselEntry);
             assertEquals(entry,is.getCurrentEntry());
-            assertFalse(entry == is.getCurrentEntry());
-            assertTrue(weaselEntry == is.getCurrentEntry());
+            assertNotSame(entry, is.getCurrentEntry());
+            assertSame(weaselEntry, is.getCurrentEntry());
             try {
                is.setCurrentEntry(null);
                is.read();
@@ -354,7 +283,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        try (FileInputStream in = new FileInputStream(getFile("bla.tar"));
+        try (InputStream in = Files.newInputStream(getFile("bla.tar").toPath());
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();
             IOUtils.toByteArray(archive);
@@ -366,7 +295,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
     @Test
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
-        try (FileInputStream in = new FileInputStream(getFile("bla.tar"));
+        try (InputStream in = Files.newInputStream(getFile("bla.tar").toPath());
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();
             IOUtils.toByteArray(archive);
@@ -398,7 +327,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
             // -----------------------
             final String fileName = "/" + dirDirectory + "/" + subDir;
             final File tarF = new File(rootPath + "/tar" + i + ".tar");
-            final FileOutputStream dest = new FileOutputStream(tarF);
+            final OutputStream dest = Files.newOutputStream(tarF.toPath());
             final TarArchiveOutputStream out = new TarArchiveOutputStream(new BufferedOutputStream(dest));
             out.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_STAR);
             out.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
@@ -414,7 +343,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
             // -----------------------
             // untar these tars
             // -----------------------
-            final InputStream is = new FileInputStream(tarF);
+            final InputStream is = Files.newInputStream(tarF.toPath());
             final TarArchiveInputStream debInputStream = (TarArchiveInputStream) ArchiveStreamFactory.DEFAULT
                     .createArchiveInputStream("tar", is);
             TarArchiveEntry outEntry;
@@ -427,7 +356,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
 
     @Test(expected = IOException.class)
     public void testParseTarWithSpecialPaxHeaders() throws IOException {
-        try (FileInputStream in = new FileInputStream(getFile("COMPRESS-530.tar"));
+        try (InputStream in = Files.newInputStream(getFile("COMPRESS-530.tar").toPath());
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             archive.getNextEntry();
             IOUtils.toByteArray(archive);
@@ -436,7 +365,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
 
     @Test(expected = IOException.class)
     public void testParseTarWithNonNumberPaxHeaders() throws IOException {
-        try (FileInputStream in = new FileInputStream(getFile("COMPRESS-529.tar"));
+        try (InputStream in = Files.newInputStream(getFile("COMPRESS-529.tar").toPath());
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             archive.getNextEntry();
         }
@@ -444,7 +373,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
 
     @Test(expected = IOException.class)
     public void testParseTarTruncatedInPadding() throws IOException {
-        try (FileInputStream in = new FileInputStream(getFile("./COMPRESS-544_truncated_in_padding.tar"));
+        try (InputStream in = Files.newInputStream(getFile("COMPRESS-544_truncated_in_padding.tar").toPath());
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             while (archive.getNextTarEntry() != null) {
             }
@@ -453,7 +382,60 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
 
     @Test(expected = IOException.class)
     public void testParseTarTruncatedInContent() throws IOException {
-        try (FileInputStream in = new FileInputStream(getFile("./COMPRESS-544_truncated_in_content.tar"));
+        try (InputStream in = Files.newInputStream(getFile("COMPRESS-544_truncated_in_content.tar").toPath());
+             TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
+            while (archive.getNextTarEntry() != null) {
+            }
+        }
+    }
+
+    @Test(expected = IOException.class)
+    public void testThrowExceptionWithNullEntry() throws IOException {
+        try (InputStream in = Files.newInputStream(getFile("COMPRESS-554.tar").toPath());
+             TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
+            while (archive.getNextTarEntry() != null) {
+            }
+        }
+    }
+
+    @Test(expected = IOException.class)
+    public void testThrowException() throws IOException {
+        try (InputStream in = Files.newInputStream(getFile("COMPRESS-553.tar").toPath());
+             TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
+            while (archive.getNextTarEntry() != null) {
+            }
+        }
+    }
+
+    @Test
+    public void testCompress558() throws IOException {
+        final String folderName = "apache-activemq-5.16.0/examples/openwire/advanced-scenarios/jms-example-exclusive-consumer/src/main/";
+        final String consumerJavaName = "apache-activemq-5.16.0/examples/openwire/advanced-scenarios/jms-example-exclusive-consumer/src/main/java/example/queue/exclusive/Consumer.java";
+        final String producerJavaName = "apache-activemq-5.16.0/examples/openwire/advanced-scenarios/jms-example-exclusive-consumer/src/main/java/example/queue/exclusive/Producer.java";
+
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos)) {
+            tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
+            final TarArchiveEntry rootfolder = new TarArchiveEntry(folderName);
+            tos.putArchiveEntry(rootfolder);
+            final TarArchiveEntry consumerJava = new TarArchiveEntry(consumerJavaName);
+            tos.putArchiveEntry(consumerJava);
+            final TarArchiveEntry producerJava = new TarArchiveEntry(producerJavaName);
+            tos.putArchiveEntry(producerJava);
+            tos.closeArchiveEntry();
+        }
+        final byte[] data = bos.toByteArray();
+        try (final ByteArrayInputStream bis = new ByteArrayInputStream(data);
+             final TarArchiveInputStream tis = new TarArchiveInputStream(bis)) {
+            assertEquals(folderName, tis.getNextTarEntry().getName());
+            assertEquals(consumerJavaName, tis.getNextTarEntry().getName());
+            assertEquals(producerJavaName, tis.getNextTarEntry().getName());
+        }
+    }
+
+    @Test(expected = IOException.class)
+    public void rejectsArchivesWithNegativeSizes() throws Exception {
+        try (InputStream in = Files.newInputStream(getFile("COMPRESS-569.tar").toPath());
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             while (archive.getNextTarEntry() != null) {
             }

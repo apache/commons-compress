@@ -18,16 +18,16 @@
  */
 package org.apache.commons.compress.utils;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
@@ -37,9 +37,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.hamcrest.core.IsInstanceOf;
 import org.junit.Test;
-import org.mockito.internal.matchers.GreaterOrEqual;
 
 public class FixedLengthBlockOutputStreamTest {
 
@@ -192,18 +192,15 @@ public class FixedLengthBlockOutputStreamTest {
     @Test
     public void testWithFileOutputStream() throws IOException {
         final Path tempFile = Files.createTempFile("xxx", "yyy");
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                try {
-                    Files.deleteIfExists(tempFile);
-                } catch (final IOException e) {
-                }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                Files.deleteIfExists(tempFile);
+            } catch (final IOException e) {
             }
-        });
+        }));
         final int blockSize = 512;
         final int reps = 1000;
-        final OutputStream os = new FileOutputStream(tempFile.toFile());
+        final OutputStream os = Files.newOutputStream(tempFile.toFile().toPath());
         try (FixedLengthBlockOutputStream out = new FixedLengthBlockOutputStream(
             os, blockSize)) {
             final DataOutputStream dos = new DataOutputStream(out);
@@ -294,7 +291,7 @@ public class FixedLengthBlockOutputStreamTest {
 
     private static void assertContainsAtOffset(final String msg, final byte[] expected, final int offset,
         final byte[] actual) {
-        assertThat(actual.length, new GreaterOrEqual<>(offset + expected.length));
+        assertThat(actual.length, greaterThanOrEqualTo(offset + expected.length));
         for (int i = 0; i < expected.length; i++) {
             assertEquals(String.format("%s ([%d])", msg, i), expected[i], actual[i + offset]);
         }
@@ -302,7 +299,7 @@ public class FixedLengthBlockOutputStreamTest {
 
     private static class MockOutputStream extends OutputStream {
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         private final int requiredWriteSize;
         private final boolean doPartialWrite;
         private final AtomicBoolean closed = new AtomicBoolean();
@@ -324,8 +321,7 @@ public class FixedLengthBlockOutputStreamTest {
 
         private void checkIsOpen() throws IOException {
             if (closed.get()) {
-                final IOException e = new IOException("Closed");
-                throw e;
+                throw new IOException("Closed");
             }
         }
 
@@ -346,7 +342,7 @@ public class FixedLengthBlockOutputStreamTest {
 
     private static class MockWritableByteChannel implements WritableByteChannel {
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         private final int requiredWriteSize;
         private final boolean doPartialWrite;
 
@@ -368,7 +364,7 @@ public class FixedLengthBlockOutputStreamTest {
             return bytesOut;
         }
 
-        AtomicBoolean closed = new AtomicBoolean();
+        final AtomicBoolean closed = new AtomicBoolean();
 
         @Override
         public boolean isOpen() {

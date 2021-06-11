@@ -21,6 +21,7 @@ package org.apache.commons.compress.compressors.zstandard;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.github.luben.zstd.BufferPool;
 import com.github.luben.zstd.ZstdInputStream;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.CountingInputStream;
@@ -41,6 +42,22 @@ public class ZstdCompressorInputStream extends CompressorInputStream
 
     public ZstdCompressorInputStream(final InputStream in) throws IOException {
         this.decIS = new ZstdInputStream(countingStream = new CountingInputStream(in));
+    }
+
+    /**
+     * Creates a new input stream that decompresses zstd-compressed data from
+     * the specific input stream
+     *
+     * @param in the input stream of compressed data
+     * @param bufferPool a configuration of zstd-jni that allows users to customize
+     *                   how buffers are recycled. Either a
+     *                   {@link com.github.luben.zstd.NoPool} or a
+     *                   {@link com.github.luben.zstd.RecyclingBufferPool} is
+     *                   allowed here.
+     * @throws IOException if an IO error occurs.
+     */
+    public ZstdCompressorInputStream(final InputStream in, final BufferPool bufferPool) throws IOException {
+        this.decIS = new ZstdInputStream(countingStream = new CountingInputStream(in), bufferPool);
     }
 
     @Override

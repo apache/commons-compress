@@ -44,12 +44,11 @@ public class ServiceLoaderIterator<E> implements Iterator<E> {
 
     public ServiceLoaderIterator(final Class<E> service, final ClassLoader classLoader) {
         this.service = service;
-        final ServiceLoader<E> serviceLoader = ServiceLoader.load(service, classLoader);
-        serviceLoaderIterator = serviceLoader.iterator();
-        nextServiceLoader = null;
+        this.serviceLoaderIterator = ServiceLoader.load(service, classLoader).iterator();
     }
 
-    private boolean getNextServiceLoader() {
+    @Override
+    public boolean hasNext() {
         while (nextServiceLoader == null) {
             try {
                 if (!serviceLoaderIterator.hasNext()) {
@@ -69,13 +68,8 @@ public class ServiceLoaderIterator<E> implements Iterator<E> {
     }
 
     @Override
-    public boolean hasNext() {
-        return getNextServiceLoader();
-    }
-
-    @Override
     public E next() {
-        if (!getNextServiceLoader()) {
+        if (!hasNext()) {
             throw new NoSuchElementException("No more elements for service " + service.getName());
         }
         final E tempNext = nextServiceLoader;

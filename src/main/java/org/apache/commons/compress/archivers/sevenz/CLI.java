@@ -42,7 +42,7 @@ public class CLI {
                 if (!entry.isDirectory()) {
                     System.out.println(" " + getContentMethods(entry));
                 } else {
-                    System.out.println("");
+                    System.out.println();
                 }
             }
 

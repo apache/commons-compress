@@ -22,7 +22,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.EOFException;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -47,7 +46,7 @@ public final class IOUtils {
      */
     public static final LinkOption[] EMPTY_LINK_OPTIONS = {};
 
-    // This buffer does not need to be synchronised because it is write only; the contents are ignored
+    // This buffer does not need to be synchronized because it is write only; the contents are ignored
     // Does not affect Immutability
     private static final byte[] SKIP_BUF = new byte[SKIP_BUF_SIZE];
 
@@ -151,7 +150,7 @@ public final class IOUtils {
      * @since 1.20
      */
     public static int read(final File file, final byte[] array) throws IOException {
-        try (FileInputStream inputStream = new FileInputStream(file)) {
+        try (InputStream inputStream = Files.newInputStream(file.toPath())) {
             return readFully(inputStream, array, 0, array.length);
         }
     }
@@ -190,7 +189,7 @@ public final class IOUtils {
      */
     public static int readFully(final InputStream input, final byte[] array, final int offset, final int len)
         throws IOException {
-        if (len < 0 || offset < 0 || len + offset > array.length) {
+        if (len < 0 || offset < 0 || len + offset > array.length || len + offset < 0) {
             throw new IndexOutOfBoundsException();
         }
         int count = 0, x = 0;

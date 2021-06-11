@@ -19,11 +19,13 @@
 package org.apache.commons.compress.archivers.zip;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.junit.Test;
@@ -68,11 +70,8 @@ public class Maven221MultiVolumeTest {
     @Test
     public void testRead7ZipMultiVolumeArchiveForStream() throws IOException {
 
-        final FileInputStream archive =
-            new FileInputStream(getFile("apache-maven-2.2.1.zip.001"));
-        ZipArchiveInputStream zi = null;
-        try {
-            zi = new ZipArchiveInputStream(archive,null,false);
+        try (final InputStream archive = Files.newInputStream(getFile("apache-maven-2.2.1.zip.001").toPath());
+             ZipArchiveInputStream zi = new ZipArchiveInputStream(archive, null, false)) {
 
             // these are the entries that are supposed to be processed
             // correctly without any problems
@@ -83,14 +82,16 @@ public class Maven221MultiVolumeTest {
             // this is the last entry that is truncated
             final ArchiveEntry lastEntry = zi.getNextEntry();
             assertEquals(LAST_ENTRY_NAME, lastEntry.getName());
-            final byte [] buffer = new byte [4096];
+            final byte[] buffer = new byte[4096];
 
             // before the fix, we'd get 0 bytes on this read and all
             // subsequent reads thus a client application might enter
             // an infinite loop after the fix, we should get an
             // exception
             try {
-                while (zi.read(buffer) > 0) { }
+                while (zi.read(buffer) > 0) {
+                    // empty
+                }
                 fail("shouldn't be able to read from truncated entry");
             } catch (final IOException e) {
                 assertEquals("Truncated ZIP file", e.getMessage());
@@ -107,14 +108,9 @@ public class Maven221MultiVolumeTest {
             // an exception
             try {
                 zi.getNextEntry();
-                fail("shouldn't be able to read another entry from truncated"
-                     + " file");
+                fail("shouldn't be able to read another entry from truncated" + " file");
             } catch (final IOException e) {
                 // this is to be expected
-            }
-        } finally {
-            if (zi != null) {
-                zi.close();
             }
         }
     }
@@ -122,7 +118,8 @@ public class Maven221MultiVolumeTest {
     @Test(expected=IOException.class)
     public void testRead7ZipMultiVolumeArchiveForFile() throws IOException {
         final File file = getFile("apache-maven-2.2.1.zip.001");
-        final ZipFile zf = new ZipFile(file);
-        zf.close();
+        try (final ZipFile zf = new ZipFile(file)) {
+            // empty
+        }
     }
 }

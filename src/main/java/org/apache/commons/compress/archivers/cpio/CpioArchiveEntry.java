@@ -26,6 +26,7 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.util.Date;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -56,7 +57,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * CPIO 2.5 knows also about tar, but it is not recognized here.</p>
  *
  *
- * <h3>OLD FORMAT</h3>
+ * <h2>OLD FORMAT</h2>
  *
  * <p>Each file has a 76 (ascii) / 26 (binary) byte header, a variable
  * length, NUL terminated file name, and variable length file data. A
@@ -167,32 +168,32 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
 
     // Header fields
 
-    private long chksum = 0;
+    private long chksum;
 
     /** Number of bytes in the file */
-    private long filesize = 0;
+    private long filesize;
 
-    private long gid = 0;
+    private long gid;
 
-    private long inode = 0;
+    private long inode;
 
-    private long maj = 0;
+    private long maj;
 
-    private long min = 0;
+    private long min;
 
-    private long mode = 0;
+    private long mode;
 
-    private long mtime = 0;
+    private long mtime;
 
     private String name;
 
-    private long nlink = 0;
+    private long nlink;
 
-    private long rmaj = 0;
+    private long rmaj;
 
-    private long rmin = 0;
+    private long rmin;
 
-    private long uid = 0;
+    private long uid;
 
     /**
      * Creates a CpioArchiveEntry with a specified format.
@@ -976,10 +977,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      */
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (name == null ? 0 : name.hashCode());
-        return result;
+        return Objects.hash(name);
     }
 
     /* (non-Javadoc)

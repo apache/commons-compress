@@ -43,7 +43,7 @@ public abstract class ArchiveInputStream extends InputStream {
     private static final int BYTE_MASK = 0xFF;
 
     /** holds the number of bytes read in this stream */
-    private long bytesRead = 0;
+    private long bytesRead;
 
     /**
      * Returns the next Archive Entry in this Stream.

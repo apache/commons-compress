@@ -57,7 +57,7 @@ public class ParallelScatterZipCreator {
     private final Deque<Future<? extends ScatterZipOutputStream>> futures = new ConcurrentLinkedDeque<>();
 
     private final long startedAt = System.currentTimeMillis();
-    private long compressionDoneAt = 0;
+    private long compressionDoneAt;
     private long scatterDoneAt;
     private final int compressionLevel;
 
@@ -181,12 +181,9 @@ public class ParallelScatterZipCreator {
      * @param callable The callable to run, created by {@link #createCallable createCallable}, possibly wrapped by caller.
      */
     public final void submit(final Callable<? extends Object> callable) {
-        submitStreamAwareCallable(new Callable<ScatterZipOutputStream>() {
-            @Override
-            public ScatterZipOutputStream call() throws Exception {
-                callable.call();
-                return tlScatterStreams.get();
-            }
+        submitStreamAwareCallable(() -> {
+            callable.call();
+            return tlScatterStreams.get();
         });
     }
 
@@ -227,13 +224,10 @@ public class ParallelScatterZipCreator {
             throw new IllegalArgumentException("Method must be set on zipArchiveEntry: " + zipArchiveEntry);
         }
         final ZipArchiveEntryRequest zipArchiveEntryRequest = createZipArchiveEntryRequest(zipArchiveEntry, source);
-        return new Callable<ScatterZipOutputStream>() {
-            @Override
-            public ScatterZipOutputStream call() throws Exception {
-                final ScatterZipOutputStream scatterStream = tlScatterStreams.get();
-                scatterStream.addArchiveEntry(zipArchiveEntryRequest);
-                return scatterStream;
-            }
+        return () -> {
+            final ScatterZipOutputStream scatterStream = tlScatterStreams.get();
+            scatterStream.addArchiveEntry(zipArchiveEntryRequest);
+            return scatterStream;
         };
     }
 
@@ -254,13 +248,10 @@ public class ParallelScatterZipCreator {
      * @since 1.13
      */
     public final Callable<ScatterZipOutputStream> createCallable(final ZipArchiveEntryRequestSupplier zipArchiveEntryRequestSupplier) {
-        return new Callable<ScatterZipOutputStream>() {
-            @Override
-            public ScatterZipOutputStream call() throws Exception {
-                final ScatterZipOutputStream scatterStream = tlScatterStreams.get();
-                scatterStream.addArchiveEntry(zipArchiveEntryRequestSupplier.get());
-                return scatterStream;
-            }
+        return () -> {
+            final ScatterZipOutputStream scatterStream = tlScatterStreams.get();
+            scatterStream.addArchiveEntry(zipArchiveEntryRequestSupplier.get());
+            return scatterStream;
         };
     }
 

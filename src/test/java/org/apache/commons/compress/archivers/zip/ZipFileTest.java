@@ -19,12 +19,16 @@
 package org.apache.commons.compress.archivers.zip;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -46,6 +50,7 @@ import java.util.zip.CRC32;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 
+import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.junit.After;
@@ -92,7 +97,7 @@ public class ZipFileTest {
     @Test
     public void testCDOrderInMemory() throws Exception {
         byte[] data = null;
-        try (FileInputStream fis = new FileInputStream(getFile("ordertest.zip"))) {
+        try (InputStream fis = Files.newInputStream(getFile("ordertest.zip").toPath())) {
             data = IOUtils.toByteArray(fis);
         }
 
@@ -182,12 +187,12 @@ public class ZipFileTest {
         OutputStream o = null;
         InputStream i = null;
         try {
-            o = new FileOutputStream(f);
+            o = Files.newOutputStream(f.toPath());
             final ZipArchiveOutputStream zo = new ZipArchiveOutputStream(o);
             ZipArchiveEntry ze = new ZipArchiveEntry("foo");
             ze.setMethod(ZipEntry.STORED);
             ze.setSize(4);
-            ze.setCrc(0xb63cfbcdl);
+            ze.setCrc(0xb63cfbcdL);
             zo.putArchiveEntry(ze);
             zo.write(new byte[] { 1, 2, 3, 4 });
             zo.closeArchiveEntry();
@@ -314,7 +319,7 @@ public class ZipFileTest {
     public void testUnshrinking() throws Exception {
         zf = new ZipFile(getFile("SHRUNK.ZIP"));
         ZipArchiveEntry test = zf.getEntry("TEST1.XML");
-        FileInputStream original = new FileInputStream(getFile("test1.xml"));
+        InputStream original = Files.newInputStream(getFile("test1.xml").toPath());
         try {
             assertArrayEquals(IOUtils.toByteArray(original),
                               IOUtils.toByteArray(zf.getInputStream(test)));
@@ -322,7 +327,7 @@ public class ZipFileTest {
             original.close();
         }
         test = zf.getEntry("TEST2.XML");
-        original = new FileInputStream(getFile("test2.xml"));
+        original = Files.newInputStream(getFile("test2.xml").toPath());
         try {
             assertArrayEquals(IOUtils.toByteArray(original),
                               IOUtils.toByteArray(zf.getInputStream(test)));
@@ -361,7 +366,7 @@ public class ZipFileTest {
     public void testConcurrentReadSeekable() throws Exception {
         // mixed.zip contains both inflated and stored files
         byte[] data = null;
-        try (FileInputStream fis = new FileInputStream(getFile("mixed.zip"))) {
+        try (InputStream fis = Files.newInputStream(getFile("mixed.zip").toPath())) {
             data = IOUtils.toByteArray(fis);
         }
         zf = new ZipFile(new SeekableInMemoryByteChannel(data), ZipEncodingHelper.UTF8);
@@ -372,14 +377,11 @@ public class ZipFileTest {
         }
 
         final AtomicInteger passedCount = new AtomicInteger();
-        final Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                for (final ZipArchiveEntry entry: Collections.list(zf.getEntries())) {
-                    assertAllReadMethods(content.get(entry.getName()), zf, entry);
-                }
-                passedCount.incrementAndGet();
+        final Runnable run = () -> {
+            for (final ZipArchiveEntry entry: Collections.list(zf.getEntries())) {
+                assertAllReadMethods(content.get(entry.getName()), zf, entry);
             }
+            passedCount.incrementAndGet();
         };
         final Thread t0 = new Thread(run);
         final Thread t1 = new Thread(run);
@@ -402,14 +404,11 @@ public class ZipFileTest {
         }
 
         final AtomicInteger passedCount = new AtomicInteger();
-        final Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                for (final ZipArchiveEntry entry: Collections.list(zf.getEntries())) {
-                    assertAllReadMethods(content.get(entry.getName()), zf, entry);
-                }
-                passedCount.incrementAndGet();
+        final Runnable run = () -> {
+            for (final ZipArchiveEntry entry: Collections.list(zf.getEntries())) {
+                assertAllReadMethods(content.get(entry.getName()), zf, entry);
             }
+            passedCount.incrementAndGet();
         };
         final Thread t0 = new Thread(run);
         final Thread t1 = new Thread(run);
@@ -623,7 +622,7 @@ public class ZipFileTest {
     public void readDeflate64CompressedStream() throws Exception {
         final File input = getFile("COMPRESS-380/COMPRESS-380-input");
         final File archive = getFile("COMPRESS-380/COMPRESS-380.zip");
-        try (FileInputStream in = new FileInputStream(input);
+        try (InputStream in = Files.newInputStream(input.toPath());
              ZipFile zf = new ZipFile(archive)) {
             final byte[] orig = IOUtils.toByteArray(in);
             final ZipArchiveEntry e = zf.getEntry("input2");
@@ -763,6 +762,86 @@ public class ZipFileTest {
         outputStream.setLevel(Deflater.BEST_COMPRESSION + 1);
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void throwsExceptionWhenWritingPreamble() throws IOException {
+        final ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(new ByteArrayOutputStream());
+        outputStream.putArchiveEntry(new ZipArchiveEntry());
+        outputStream.writePreamble(ByteUtils.EMPTY_BYTE_ARRAY);
+    }
+
+    @Test
+    public void testSelfExtractingZipUsingUnzipsfx() throws IOException, InterruptedException {
+        final File unzipsfx = new File("/usr/bin/unzipsfx");
+        if (!unzipsfx.exists()) {
+            return;
+        }
+
+        final File testZip = File.createTempFile("commons-compress-selfExtractZipTest", ".zip");
+        testZip.deleteOnExit();
+
+        final String testEntryName = "test_self_extract_zip/foo";
+        final File extractedFile = new File(testZip.getParentFile(), testEntryName);
+        extractedFile.deleteOnExit();
+
+        OutputStream outputStream = null;
+        InputStream inputStream = null;
+        final byte[] testData = new byte[]{1, 2, 3, 4};
+        final byte[] buffer = new byte[512];
+        int bytesRead;
+        try (InputStream unzipsfxInputStream = Files.newInputStream(unzipsfx.toPath())) {
+            outputStream = Files.newOutputStream(testZip.toPath());
+            final ZipArchiveOutputStream zo = new ZipArchiveOutputStream(outputStream);
+
+            while ((bytesRead = unzipsfxInputStream.read(buffer)) > 0) {
+                zo.writePreamble(buffer, 0, bytesRead);
+            }
+
+            final ZipArchiveEntry ze = new ZipArchiveEntry(testEntryName);
+            ze.setMethod(ZipEntry.STORED);
+            ze.setSize(4);
+            ze.setCrc(0xb63cfbcdL);
+            zo.putArchiveEntry(ze);
+            zo.write(testData);
+            zo.closeArchiveEntry();
+            zo.close();
+            outputStream.close();
+            outputStream = null;
+
+            final ProcessBuilder pbChmod = new ProcessBuilder("chmod", "+x", testZip.getPath());
+            pbChmod.redirectErrorStream(true);
+            final Process processChmod = pbChmod.start();
+            assertEquals(new String(IOUtils.toByteArray(processChmod.getInputStream())), 0, processChmod.waitFor());
+
+            final ProcessBuilder pb = new ProcessBuilder(testZip.getPath());
+            pb.redirectOutput(ProcessBuilder.Redirect.PIPE);
+            pb.directory(testZip.getParentFile());
+            pb.redirectErrorStream(true);
+            final Process process = pb.start();
+            assertEquals(new String(IOUtils.toByteArray(process.getInputStream())), 0, process.waitFor());
+
+            if (!extractedFile.exists()) {
+                // fail if extracted file does not exist
+                fail("Can not find the extracted file");
+            }
+
+            inputStream = Files.newInputStream(extractedFile.toPath());
+            bytesRead = IOUtils.readFully(inputStream, buffer);
+            assertEquals(testData.length, bytesRead);
+            assertArrayEquals(testData, Arrays.copyOfRange(buffer, 0, bytesRead));
+        } finally {
+            if (outputStream != null) {
+                outputStream.close();
+            }
+            if (inputStream != null) {
+                inputStream.close();
+            }
+
+            testZip.delete();
+            extractedFile.delete();
+            extractedFile.getParentFile().delete();
+        }
+    }
+
     private void multiByteReadConsistentlyReturnsMinusOneAtEof(final File file) throws Exception {
         final byte[] buf = new byte[2];
         try (ZipFile archive = new ZipFile(file)) {
@@ -791,7 +870,7 @@ public class ZipFileTest {
             final byte[] bytes = new byte[0x40000];
             final int read = stream.read(bytes);
             if (read < 0) {
-                full = new byte[0];
+                full = ByteUtils.EMPTY_BYTE_ARRAY;
             }
             else {
                 full = readStreamRest(bytes, read, stream);
@@ -807,7 +886,7 @@ public class ZipFileTest {
             byte[] full;
             final int single = stream.read();
             if (single < 0) {
-                full = new byte[0];
+                full = ByteUtils.EMPTY_BYTE_ARRAY;
             }
             else {
                 final byte[] big = new byte[0x40000];
@@ -879,7 +958,7 @@ public class ZipFileTest {
     private void assertFileEqualsToEntry(final File fileToCompare, final ZipArchiveEntry entry, final ZipFile zipFile) throws IOException {
         final byte[] buffer = new byte[10240];
         final File tempFile = File.createTempFile("temp","txt");
-        final OutputStream outputStream = new FileOutputStream(tempFile);
+        final OutputStream outputStream = Files.newOutputStream(tempFile.toPath());
         final InputStream inputStream = zipFile.getInputStream(entry);
         int readLen;
         while((readLen = inputStream.read(buffer)) > 0) {
@@ -903,8 +982,8 @@ public class ZipFileTest {
         String tempLineInFile1;
         String tempLineInFile2;
         for(int i = 0;i < linesOfFile1.size();i++) {
-            tempLineInFile1 = linesOfFile1.get(i).replaceAll("\r\n", "\n");
-            tempLineInFile2 = linesOfFile2.get(i).replaceAll("\r\n", "\n");
+            tempLineInFile1 = linesOfFile1.get(i).replace("\r\n", "\n");
+            tempLineInFile2 = linesOfFile2.get(i).replace("\r\n", "\n");
             Assert.assertEquals(tempLineInFile1, tempLineInFile2);
         }
     }

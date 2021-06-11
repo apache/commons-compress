@@ -18,13 +18,14 @@
  */
 package org.apache.commons.compress.compressors;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -69,7 +70,7 @@ public final class Pack200TestCase extends AbstractTestCase {
         final File input = getFile("bla.pack");
         try (InputStream is = useFile
                 ? new Pack200CompressorInputStream(input, mode)
-                : new Pack200CompressorInputStream(new FileInputStream(input),
+                : new Pack200CompressorInputStream(Files.newInputStream(input.toPath()),
                 mode)) {
             final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT
                     .createArchiveInputStream("jar", is);
@@ -83,7 +84,7 @@ public final class Pack200TestCase extends AbstractTestCase {
                     entry = in.getNextEntry();
                     continue;
                 }
-                final OutputStream out = new FileOutputStream(archiveEntry);
+                final OutputStream out = Files.newOutputStream(archiveEntry.toPath());
                 IOUtils.copy(in, out);
                 out.close();
                 entry = in.getNextEntry();
@@ -109,17 +110,17 @@ public final class Pack200TestCase extends AbstractTestCase {
         final File file1 = getFile("test1.xml");
         final File file2 = getFile("test2.xml");
 
-        try (OutputStream out = new Pack200CompressorOutputStream(new FileOutputStream(output),
+        try (OutputStream out = new Pack200CompressorOutputStream(Files.newOutputStream(output.toPath()),
                 mode)) {
             final ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT
                     .createArchiveOutputStream("jar", out);
 
             os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
-            IOUtils.copy(new FileInputStream(file1), os);
+            IOUtils.copy(Files.newInputStream(file1.toPath()), os);
             os.closeArchiveEntry();
 
             os.putArchiveEntry(new ZipArchiveEntry("testdata/test2.xml"));
-            IOUtils.copy(new FileInputStream(file2), os);
+            IOUtils.copy(Files.newInputStream(file2.toPath()), os);
             os.closeArchiveEntry();
 
             os.close();
@@ -138,7 +139,7 @@ public final class Pack200TestCase extends AbstractTestCase {
 
     @Test
     public void testGoodSignature() throws Exception {
-        try (InputStream is = new FileInputStream(getFile("bla.pack"))) {
+        try (InputStream is = Files.newInputStream(getFile("bla.pack").toPath())) {
             final byte[] sig = new byte[4];
             is.read(sig);
             assertTrue(Pack200CompressorInputStream.matches(sig, 4));
@@ -147,7 +148,7 @@ public final class Pack200TestCase extends AbstractTestCase {
 
     @Test
     public void testBadSignature() throws Exception {
-        try (InputStream is = new FileInputStream(getFile("bla.jar"))) {
+        try (InputStream is = Files.newInputStream(getFile("bla.jar").toPath())) {
             final byte[] sig = new byte[4];
             is.read(sig);
             assertFalse(Pack200CompressorInputStream.matches(sig, 4));
@@ -156,7 +157,7 @@ public final class Pack200TestCase extends AbstractTestCase {
 
     @Test
     public void testShortSignature() throws Exception {
-        try (InputStream is = new FileInputStream(getFile("bla.pack"))) {
+        try (InputStream is = Files.newInputStream(getFile("bla.pack").toPath())) {
             final byte[] sig = new byte[2];
             is.read(sig);
             assertFalse(Pack200CompressorInputStream.matches(sig, 2));
@@ -167,7 +168,7 @@ public final class Pack200TestCase extends AbstractTestCase {
     public void testInputStreamMethods() throws Exception {
         final Map<String, String> m = new HashMap<>();
         m.put("foo", "bar");
-        try (InputStream is = new Pack200CompressorInputStream(new FileInputStream(getFile("bla.jar")),
+        try (InputStream is = new Pack200CompressorInputStream(Files.newInputStream(getFile("bla.jar").toPath()),
                 m)) {
             // packed file is a jar, which is a zip so it starts with
             // a local file header
@@ -191,7 +192,7 @@ public final class Pack200TestCase extends AbstractTestCase {
         final File output = new File(dir, "bla.pack");
         final Map<String, String> m = new HashMap<>();
         m.put("foo", "bar");
-        try (OutputStream out = new FileOutputStream(output)) {
+        try (OutputStream out = Files.newOutputStream(output.toPath())) {
             final OutputStream os = new Pack200CompressorOutputStream(out, m);
             os.write(1);
             os.write(new byte[] { 2, 3 });

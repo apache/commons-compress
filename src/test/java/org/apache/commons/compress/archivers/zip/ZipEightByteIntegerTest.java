@@ -18,7 +18,8 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.math.BigInteger;
 
@@ -35,7 +36,7 @@ public class ZipEightByteIntegerTest {
      */
     @Test
     public void testLongToBytes() {
-        final ZipEightByteInteger zl = new ZipEightByteInteger(0xAB12345678l);
+        final ZipEightByteInteger zl = new ZipEightByteInteger(0xAB12345678L);
         final byte[] result = zl.getBytes();
         assertEquals("length getBytes", 8, result.length);
         assertEquals("first byte getBytes", 0x78, result[0]);
@@ -55,7 +56,7 @@ public class ZipEightByteIntegerTest {
     public void testLongFromBytes() {
         final byte[] val = new byte[] {0x78, 0x56, 0x34, 0x12, (byte) 0xAB, 0x00, 0x00, 0x00};
         final ZipEightByteInteger zl = new ZipEightByteInteger(val);
-        assertEquals("longValue from bytes", 0xAB12345678l, zl.getLongValue());
+        assertEquals("longValue from bytes", 0xAB12345678L, zl.getLongValue());
     }
 
     /**
@@ -99,15 +100,15 @@ public class ZipEightByteIntegerTest {
         final ZipEightByteInteger zl2 = new ZipEightByteInteger(0x12345678);
         final ZipEightByteInteger zl3 = new ZipEightByteInteger(0x87654321);
 
-        assertTrue("reflexive", zl.equals(zl));
+        assertEquals("reflexive", zl, zl);
 
-        assertTrue("works", zl.equals(zl2));
-        assertTrue("works, part two", !zl.equals(zl3));
+        assertEquals("works", zl, zl2);
+        assertFalse("works, part two", zl.equals(zl3));
 
-        assertTrue("symmetric", zl2.equals(zl));
+        assertEquals("symmetric", zl2, zl);
 
-        assertTrue("null handling", !zl.equals(null));
-        assertTrue("non ZipEightByteInteger handling", !zl.equals(new Integer(0x1234)));
+        assertFalse("null handling", zl.equals(null));
+        assertFalse("non ZipEightByteInteger handling", zl.equals(new Integer(0x1234)));
     }
 
     /**

@@ -37,48 +37,33 @@ public class IOUtilsTest {
 
     @Test
     public void skipUsingSkip() throws Exception {
-        skip(new StreamWrapper() {
-                @Override
-                public InputStream wrap(final InputStream toWrap) {
-                    return toWrap;
-                }
-            });
+        skip(toWrap -> toWrap);
     }
 
     @Test
     public void skipUsingRead() throws Exception {
-        skip(new StreamWrapper() {
-                @Override
-                public InputStream wrap(final InputStream toWrap) {
-                    return new FilterInputStream(toWrap) {
-                        @Override
-                        public long skip(final long s) {
-                            return 0;
-                        }
-                    };
-                }
-            });
+        skip(toWrap -> new FilterInputStream(toWrap) {
+            @Override
+            public long skip(final long s) {
+                return 0;
+            }
+        });
     }
 
     @Test
     public void skipUsingSkipAndRead() throws Exception {
-        skip(new StreamWrapper() {
-                @Override
-                public InputStream wrap(final InputStream toWrap) {
-                    return new FilterInputStream(toWrap) {
-                        boolean skipped;
-                        @Override
-                        public long skip(final long s) throws IOException {
-                            if (!skipped) {
-                                toWrap.skip(5);
-                                skipped = true;
-                                return 5;
-                            }
-                            return 0;
-                        }
-                    };
+        skip(toWrap -> new FilterInputStream(toWrap) {
+            boolean skipped;
+            @Override
+            public long skip(final long s) throws IOException {
+                if (!skipped) {
+                    toWrap.skip(5);
+                    skipped = true;
+                    return 5;
                 }
-            });
+                return 0;
+            }
+        });
     }
 
     @Test
@@ -104,7 +89,7 @@ public class IOUtilsTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void copyThrowsOnZeroBufferSize() throws IOException {
-        IOUtils.copy(new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream(), 0);
+        IOUtils.copy(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), new ByteArrayOutputStream(), 0);
     }
 
     private static void readFully(final byte[] source, final ByteBuffer b) throws IOException {

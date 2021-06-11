@@ -87,18 +87,8 @@ public class TarMemoryFileSystemTest {
         try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().addUser(user).addGroup(group).build()) {
             final Path source = fileSystem.getPath("original-file.txt");
             Files.write(source, "Test".getBytes(StandardCharsets.UTF_8));
-            Files.setAttribute(source, "posix:owner", new UserPrincipal() {
-                @Override
-                public String getName() {
-                    return user;
-                }
-            });
-            Files.setAttribute(source, "posix:group", new GroupPrincipal() {
-                @Override
-                public String getName() {
-                    return group;
-                }
-            });
+            Files.setAttribute(source, "posix:owner", (UserPrincipal) () -> user);
+            Files.setAttribute(source, "posix:group", (GroupPrincipal) () -> group);
 
             final Path target = fileSystem.getPath("original-file.tar");
             try (final OutputStream out = Files.newOutputStream(target);

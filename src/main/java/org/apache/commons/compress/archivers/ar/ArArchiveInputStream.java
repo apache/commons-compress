@@ -37,17 +37,17 @@ import org.apache.commons.compress.utils.IOUtils;
 public class ArArchiveInputStream extends ArchiveInputStream {
 
     private final InputStream input;
-    private long offset = 0;
+    private long offset;
     private boolean closed;
 
     /*
      * If getNextEntry has been called, the entry metadata is stored in
      * currentEntry.
      */
-    private ArArchiveEntry currentEntry = null;
+    private ArArchiveEntry currentEntry;
 
     // Storage area for extra long names (GNU ar)
-    private byte[] namebuffer = null;
+    private byte[] namebuffer;
 
     /*
      * The offset where the current entry started. -1 if no entry has been
@@ -171,6 +171,10 @@ public class ArArchiveInputStream extends ArchiveInputStream {
             entryOffset += nameLen;
         }
 
+        if (len < 0) {
+            throw new IOException("broken archive, entry with negative size");
+        }
+
         currentEntry = new ArArchiveEntry(temp, len,
                                           asInt(metaData, USER_ID_OFFSET, USER_ID_LEN, true),
                                           asInt(metaData, GROUP_ID_OFFSET, GROUP_ID_LEN, true),
@@ -219,7 +223,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
 
     private int asInt(final byte[] byteArray, final int offset, final int len, final int base, final boolean treatBlankAsZero) {
         final String string = ArchiveUtils.toAsciiString(byteArray, offset, len).trim();
-        if (string.length() == 0 && treatBlankAsZero) {
+        if (string.isEmpty() && treatBlankAsZero) {
             return 0;
         }
         return Integer.parseInt(string, base);

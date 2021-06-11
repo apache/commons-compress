@@ -55,7 +55,7 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
     /** Current state of the stream */
     private State state = State.NO_BLOCK;
 
-    private boolean endReached = false;
+    private boolean endReached;
 
     /**
      * Constructor using the default buffer size of 32k.
@@ -245,7 +245,7 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
      * after the length.
      */
     private int readLiteralLength(final int b) throws IOException {
-        int length;
+        final int length;
         switch (b >> 2) {
         case 60:
             length = readOneByte();

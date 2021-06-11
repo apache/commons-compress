@@ -41,11 +41,12 @@ import java.util.Random;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Test;
 
 public class Zip64SupportIT {
 
-    private static final long FIVE_BILLION = 5000000000l;
+    private static final long FIVE_BILLION = 5000000000L;
     private static final int ONE_MILLION = 1000000;
     private static final int ONE_HUNDRED_THOUSAND = 100000;
 
@@ -2340,6 +2341,43 @@ public class Zip64SupportIT {
                 true, 65536L);
     }
 
+    @Test
+    public void testZip64ModeAlwaysWithCompatibility() throws Throwable {
+        final File inputFile = getFile("test3.xml");
+
+        // with Zip64Mode.AlwaysWithCompatibility, the relative header offset and disk number
+        // start will not be set in extra fields
+        final File zipUsingModeAlwaysWithCompatibility = buildZipWithZip64Mode(
+                "testZip64ModeAlwaysWithCompatibility-output-1",
+                Zip64Mode.AlwaysWithCompatibility, inputFile);
+        final ZipFile zipFileWithAlwaysWithCompatibility = new ZipFile(zipUsingModeAlwaysWithCompatibility);
+        ZipArchiveEntry entry = zipFileWithAlwaysWithCompatibility.getEntries().nextElement();
+        for (final ZipExtraField extraField : entry.getExtraFields()) {
+            if (!(extraField instanceof Zip64ExtendedInformationExtraField)) {
+                continue;
+            }
+
+            assertNull(((Zip64ExtendedInformationExtraField) extraField).getRelativeHeaderOffset());
+            assertNull(((Zip64ExtendedInformationExtraField) extraField).getDiskStartNumber());
+        }
+
+        // with Zip64Mode.Always, the relative header offset and disk number start will be
+        // set in extra fields
+        final File zipUsingModeAlways = buildZipWithZip64Mode(
+                "testZip64ModeAlwaysWithCompatibility-output-2",
+                Zip64Mode.Always, inputFile);
+        final ZipFile zipFileWithAlways = new ZipFile(zipUsingModeAlways);
+        entry = zipFileWithAlways.getEntries().nextElement();
+        for (final ZipExtraField extraField : entry.getExtraFields()) {
+            if (!(extraField instanceof Zip64ExtendedInformationExtraField)) {
+                continue;
+            }
+
+            assertNotNull(((Zip64ExtendedInformationExtraField) extraField).getRelativeHeaderOffset());
+            assertNotNull(((Zip64ExtendedInformationExtraField) extraField).getDiskStartNumber());
+        }
+    }
+
     interface ZipOutputTest {
         void test(File f, ZipArchiveOutputStream zos) throws IOException;
     }
@@ -2366,7 +2404,7 @@ public class Zip64SupportIT {
         BufferedOutputStream os = null;
         ZipArchiveOutputStream zos = useRandomAccessFile
             ? new ZipArchiveOutputStream(f)
-            : new ZipArchiveOutputStream(os = new BufferedOutputStream(new FileOutputStream(f)));
+            : new ZipArchiveOutputStream(os = new BufferedOutputStream(Files.newOutputStream(f.toPath())));
         if (splitSize != null) {
             zos = new ZipArchiveOutputStream(f, splitSize);
         }
@@ -2448,10 +2486,8 @@ public class Zip64SupportIT {
 
     private static void read5GBOfZerosImpl(final File f, final String expectedName)
         throws IOException {
-        final FileInputStream fin = new FileInputStream(f);
-        ZipArchiveInputStream zin = null;
-        try {
-            zin = new ZipArchiveInputStream(fin);
+        try (InputStream fin = Files.newInputStream(f.toPath());
+                ZipArchiveInputStream zin = new ZipArchiveInputStream(fin)) {
             ZipArchiveEntry zae = zin.getNextZipEntry();
             while (zae.isDirectory()) {
                 zae = zin.getNextZipEntry();
@@ -2473,11 +2509,6 @@ public class Zip64SupportIT {
             assertEquals(FIVE_BILLION, read);
             assertNull(zin.getNextZipEntry());
             assertEquals(FIVE_BILLION, zae.getSize());
-        } finally {
-            if (zin != null) {
-                zin.close();
-            }
-            fin.close(); // fin cannot be null here
         }
     }
 
@@ -2518,10 +2549,8 @@ public class Zip64SupportIT {
     }
 
     private static void read100KFilesImpl(final File f) throws IOException {
-        final FileInputStream fin = new FileInputStream(f);
-        ZipArchiveInputStream zin = null;
-        try {
-            zin = new ZipArchiveInputStream(fin);
+        try (InputStream fin = Files.newInputStream(f.toPath());
+                ZipArchiveInputStream zin = new ZipArchiveInputStream(fin)) {
             int files = 0;
             ZipArchiveEntry zae = null;
             while ((zae = zin.getNextZipEntry()) != null) {
@@ -2531,11 +2560,6 @@ public class Zip64SupportIT {
                 }
             }
             assertEquals(ONE_HUNDRED_THOUSAND, files);
-        } finally {
-            if (zin != null) {
-                zin.close();
-            }
-            fin.close();
         }
     }
 
@@ -2624,5 +2648,23 @@ public class Zip64SupportIT {
         zos.write(new byte[] { 42 });
         zos.closeArchiveEntry();
         zos.close();
+    }
+
+    private File buildZipWithZip64Mode(final String fileName, final Zip64Mode zip64Mode, final File inputFile) throws Throwable {
+        final File outputFile = getTempFile(fileName);
+        outputFile.createNewFile();
+        try(ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(new BufferedOutputStream(new FileOutputStream(outputFile)))) {
+            zipArchiveOutputStream.setUseZip64(zip64Mode);
+            zipArchiveOutputStream.setCreateUnicodeExtraFields(ZipArchiveOutputStream.UnicodeExtraFieldPolicy.ALWAYS);
+
+            zipArchiveOutputStream.putArchiveEntry(new ZipArchiveEntry("input.bin"));
+
+            final InputStream inputStream = new FileInputStream(inputFile);
+            IOUtils.copy(inputStream, zipArchiveOutputStream);
+
+            zipArchiveOutputStream.closeArchiveEntry();
+        }
+
+        return outputFile;
     }
 }

@@ -34,7 +34,7 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
  * @since 1.3
  */
 public class Pack200CompressorOutputStream extends CompressorOutputStream {
-    private boolean finished = false;
+    private boolean finished;
     private final OutputStream originalOutput;
     private final StreamBridge streamBridge;
     private final Map<String, String> properties;

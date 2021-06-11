@@ -25,6 +25,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Enumeration;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarFile;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 
@@ -55,6 +57,8 @@ public final class Lister {
             list7z(f);
         } else if ("zipfile".equals(format)) {
             listZipUsingZipFile(f);
+        } else if ("tarfile".equals(format)) {
+            listZipUsingTarFile(f);
         } else {
             listStream(f, args);
         }
@@ -81,7 +85,7 @@ public final class Lister {
 
     private static String detectFormat(final File f) throws ArchiveException, IOException {
         try (final InputStream fis = new BufferedInputStream(Files.newInputStream(f.toPath()))) {
-            return FACTORY.detect(fis);
+            return ArchiveStreamFactory.detect(fis);
         }
     }
 
@@ -106,9 +110,19 @@ public final class Lister {
         }
     }
 
+    private static void listZipUsingTarFile(final File f) throws ArchiveException, IOException {
+        try (TarFile t = new TarFile(f)) {
+            System.out.println("Created " + t.toString());
+            for (TarArchiveEntry en : t.getEntries()) {
+                System.out.println(en.getName());
+            }
+        }
+    }
+
     private static void usage() {
         System.out.println("Parameters: archive-name [archive-type]\n");
         System.out.println("the magic archive-type 'zipfile' prefers ZipFile over ZipArchiveInputStream");
+        System.out.println("the magic archive-type 'tarfile' prefers TarFile over TarArchiveInputStream");
     }
 
 }

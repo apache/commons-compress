@@ -37,6 +37,12 @@ public final class TarArchiveStructSparse {
     private final long numbytes;
 
     public TarArchiveStructSparse(final long offset, final long numbytes) {
+        if (offset < 0) {
+            throw new IllegalArgumentException("offset must not be negative");
+        }
+        if (numbytes < 0) {
+            throw new IllegalArgumentException("numbytes must not be negative");
+        }
         this.offset = offset;
         this.numbytes = numbytes;
     }

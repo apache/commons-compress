@@ -19,9 +19,11 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import static org.junit.Assert.*;
-
-import java.util.Arrays;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -34,7 +36,7 @@ public class GeneralPurposeBitTest {
         assertFalse(new GeneralPurposeBit().usesEncryption());
         assertFalse(new GeneralPurposeBit().usesStrongEncryption());
         final byte[] b = new byte[2];
-        assertTrue(Arrays.equals(b, new GeneralPurposeBit().encode()));
+        assertArrayEquals(b, new GeneralPurposeBit().encode());
     }
 
     @Test
@@ -67,7 +69,7 @@ public class GeneralPurposeBitTest {
         assertTrue(GeneralPurposeBit.parse(flags, 0).usesDataDescriptor());
         final GeneralPurposeBit b = new GeneralPurposeBit();
         b.useDataDescriptor(true);
-        assertTrue(Arrays.equals(flags, b.encode()));
+        assertArrayEquals(flags, b.encode());
     }
 
     @Test
@@ -76,7 +78,7 @@ public class GeneralPurposeBitTest {
         assertTrue(GeneralPurposeBit.parse(flags, 0).usesUTF8ForNames());
         final GeneralPurposeBit b = new GeneralPurposeBit();
         b.useUTF8ForNames(true);
-        assertTrue(Arrays.equals(flags, b.encode()));
+        assertArrayEquals(flags, b.encode());
     }
 
     @Test
@@ -85,7 +87,7 @@ public class GeneralPurposeBitTest {
         assertTrue(GeneralPurposeBit.parse(flags, 0).usesEncryption());
         final GeneralPurposeBit b = new GeneralPurposeBit();
         b.useEncryption(true);
-        assertTrue(Arrays.equals(flags, b.encode()));
+        assertArrayEquals(flags, b.encode());
     }
 
     @Test
@@ -95,7 +97,7 @@ public class GeneralPurposeBitTest {
         final GeneralPurposeBit b = new GeneralPurposeBit();
         b.useStrongEncryption(true);
         assertTrue(b.usesEncryption());
-        assertTrue(Arrays.equals(flags, b.encode()));
+        assertArrayEquals(flags, b.encode());
 
         flags = new byte[] {(byte) 64, (byte) 0};
         assertFalse(GeneralPurposeBit.parse(flags, 0).usesStrongEncryption());

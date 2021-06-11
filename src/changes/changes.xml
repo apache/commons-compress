@@ -44,9 +44,6 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.21" date="not released, yet (Java 8)"
              description="Release 1.21">
-      <action type="update" date="2020-08-18">
-        Update from Java 7 to 8.
-      </action>
       <action type="update" date="2020-03-07"
               due-to="Peter Alfred Lee">
         Made sure ZstdCompressorOutputStream no longer used
@@ -67,6 +64,12 @@ The <action> type attribute can be add,update,fix,remove.
         Fix bugs in random access of 7z. Exceptions are thrown
         when reading the first entry multiple times by random
         access.
+      </action>
+      <action issue="COMPRESS-509" type="fix" date="2020-05-06"
+              due-to="Petr Vasak" dev="PeterLee">
+        Add '/' to directories with long name in tar. This is to
+        resolve the ambiguous behavior of the TarArchiveEntry.getName()
+        method between directory with short name and long name.
       </action>
       <action issue="COMPRESS-520" type="fix" date="2020-05-23" due-to="Robin Schimpf">
         Removed the PowerMock dependency.
@@ -169,24 +172,6 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" date="2020-08-08" due-to="Gary Gregory" dev="ggregory">
         Add Path support to ZipArchiveOutputStream #123.
       </action>
-      <action type="update" date="2020-08-10" due-to="Dependabot" dev="ggregory">
-        Update GitHub actions/checkout from v1 to v2.3.1 #114, #124.
-      </action>
-      <action type="update" date="2020-08-21" due-to="Dependabot" dev="ggregory">
-        Update actions/setup-java from v1.4.0 to v1.4.1 #125.
-      </action>
-      <action type="update" date="2020-08-21" due-to="Dependabot" dev="ggregory">
-        Update zstd-jni from 1.4.4-7 to 1.4.5-6 #118.
-      </action>
-      <action type="update" date="2020-08-21" due-to="Dependabot" dev="ggregory">
-        Update tests slf4j-api from 1.7.26 to 1.7.30 #117.
-      </action>
-      <action type="update" date="2020-08-21" due-to="Dependabot" dev="ggregory">
-        Update maven-pmd-plugin from 3.12.0 to 3.13.0 #115.
-      </action>
-      <action type="update" date="2020-08-21" due-to="Dependabot" dev="ggregory">
-        Update maven-bundle-plugin from 3.5.1 to 5.1.1 #116.
-      </action>
       <action issue="COMPRESS-543" type="fix" date="2020-08-10"
               due-to="wulf2333" dev="PeterLee">
         Fix for test fails on Windows. The tests are failing because the
@@ -202,11 +187,183 @@ The <action> type attribute can be add,update,fix,remove.
         Make the memory allocation in SevenZFile.readFilesInfo a lazy
         allocation to avoid OOM when dealing some giant 7z archives.
         Github Pull Request #120.
+
+        Also added sanity checks before even trying to parse an
+        archive and made SevenZFileOptions' maxMemorySizeInKb apply to
+        the stored metadata for an archive.
       </action>
       <action issue="COMPRESS-546" type="fix" date="2020-08-15"
               due-to="Maksim Zuev" dev="PeterLee">
         ZipArchiveInputStream should throw an exception if a corrputed
         zip64 extra field is met.
+      </action>
+      <action type="fix" date="2020-08-22" dev="PeterLee">
+        Add a new maven profile in pom.xml for JDK14+ to ignore the
+        failing tests about Pack200.
+      </action>
+      <action issue="COMPRESS-548" type="fix" date="2020-08-24"
+              due-to="Maksim Zuev" dev="PeterLee">
+        Throw an IOException when reading the zip extra field if the
+        length is too short.
+      </action>
+      <action issue="COMPRESS-554" type="fix" date="2020-09-01"
+              due-to="Maksim Zuev" dev="PeterLee">
+        Throw an decleared IOException if a null entry is met when
+        reading a global pax header instead of a runtime NPE.
+      </action>
+      <action issue="COMPRESS-547" type="fix" date="2020-09-02"
+              due-to="Maksim Zuev" dev="PeterLee">
+        Add asserts for Arrays.copyOf in X0017_StrongEncryptionHeader.
+      </action>
+      <action issue="COMPRESS-550" type="add" date="2020-09-07"
+              due-to="Scott Frederick" dev="PeterLee">
+        Add writePreamble to ZipArchiveInputStream. This method could
+        write raw data to zip archive before any entry was written to
+        the zip archive.
+        For most of the time, this is used to create self-extracting
+        zip.
+        Github Pull Request #127.
+      </action>
+      <action type="fix" date="2020-09-24" dev="PeterLee">
+        Fix for the CFH signature detect in ZipArchiveInputStream.
+        The problem could be reproduced by a zip archive with Data
+        Descriptor and STORED, and without the Data Descriptor
+        signature.
+      </action>
+      <action issue="COMPRESS-553" type="fix" date="2020-10-07"
+              due-to="Maksim Zuev" dev="PeterLee">
+        The length validation in TarArchiveInputStream.parsePaxHeaders
+        should also consider the headers with length smaller than 1
+        and ignore these headers.
+      </action>
+      <action issue="COMPRESS-558" type="fix" date="2020-11-13"
+              due-to="Robin Schimpf" dev="Robin Schimpf">
+        Fix accidentally added '/' to file names.
+        This problem is caused by the incomplete fix of
+        COMPRESS-509.
+        Github Pull Request #151.
+      </action>
+      <action issue="COMPRESS-560" type="fix" date="2020-11-30"
+              due-to="Robin Schimpf" dev="Robin Schimpf">
+        As sparse entries can be successfully parsed now,
+        TarArchiveInputStream.canReadEntryData should return
+        true if the entry is a sparse entry.
+        Github Pull Request #153.
+      </action>
+      <action issue="COMPRESS-559" type="fix" date="2020-12-10"
+              due-to="Robin Schimpf" dev="Robin Schimpf">
+        SparseFilesTest#testExtractPaxGNU should be skipped
+        if the version of GNU tar binary is 1.28.
+        Github Pull Request #152.
+      </action>
+      <action issue="COMPRESS-561" type="update" date="2020-12-22"
+              due-to="Arturo Bernal" dev="Arturo Bernal">
+        Some minor improvements.
+        Github Pull Request #157.
+      </action>
+      <action issue="COMPRESS-540" type="add" date="2020-01-09"
+              due-to="Robin Schimpf" dev="Robin Schimpf">
+        Added support for random access to the TAR packages.
+        Github Pull Request #113.
+      </action>
+      <action issue="COMPRESS-565" type="add" date="2021-02-14"
+              due-to="Michael L Heuer" dev="PeterLee">
+        Added support for BufferPool in ZstdCompressorInputStream.
+        Github Pull Request #165.
+      </action>
+      <action type="fix" date="2021-02-27" due-to="Fabian Meumertzheim">
+        Removed an empty loop that was just warming the planet for
+        certain ZIP archives.
+        Github Pull Request #172.
+      </action>
+      <action issue="COMPRESS-567" type="fix" date="2021-02-28">
+        Made some of the stream classes used internally throw
+        IOExceptions on illegal arguments rather than
+        RuntimeExceptions to make it more likely that corrupt archives
+        cause expected checked exceptions rather than RuntimException
+        for various formats.
+
+        Fixes a specific case for ZIP but affects other formats as
+        well.
+      </action>
+      <!-- UPDATE -->
+      <action type="update" date="2020-08-18">
+        Update from Java 7 to 8.
+      </action>
+      <action type="update" date="2020-08-10" due-to="Dependabot" dev="ggregory">
+        Update GitHub actions/checkout from v1 to v2.3.4, #114, #124, #139, #150.
+      </action>
+      <action type="update" date="2020-08-21" due-to="Dependabot, Gary Gregory" dev="ggregory">
+        Update actions/setup-java from v1.4.0 to v2, #125, #133, #141.
+      </action>
+      <action type="update" date="2020-08-21" due-to="Dependabot, Gary Gregory" dev="ggregory">
+        Update com.github.luben:zstd-jni from 1.4.4-7 to 1.4.8-7 #118, #159, #173, #174.
+      </action>
+      <action type="update" date="2020-08-21" due-to="Dependabot" dev="ggregory">
+        Update tests slf4j-api from 1.7.26 to 1.7.30 #117.
+      </action>
+      <action type="update" date="2020-08-21" due-to="Dependabot" dev="ggregory">
+        Update maven-pmd-plugin from 3.12.0 to 3.14.0, #115, #154.
+      </action>
+      <action type="update" date="2020-08-21" due-to="Dependabot" dev="ggregory">
+        Update maven-bundle-plugin from 3.5.1 to 5.1.1 #116.
+      </action>
+      <action type="update" date="2020-11-01" due-to="Dependabot" dev="ggregory">
+        Bump memoryfilesystem from 1.3.0 to 2.1.0 #131.
+      </action>
+      <action type="update" due-to="Dependabot" dev="ggregory">
+        Bump actions/cache from v2 to v2.1.4 #164.
+      </action>
+      <action type="update" due-to="Dependabot" dev="ggregory">
+        Bump junit from 4.13 to 4.13.2, #143, #167.
+      </action>
+      <action type="update" due-to="Dependabot" dev="ggregory">
+        Bump mockito-core from 1.10.19 to 3.8.0, #161, #170.
+      </action>
+      <action issue="COMPRESS-569" type="fix" date="2021-03-06">
+        Checked the sizes read for archive entries and reject archives
+        as broken with negative entry sizes.
+
+        Fixes an infinite loop in the new TarFile class but affects
+        several formats.
+      </action>
+      <action issue="COMPRESS-552" type="fix" date="2021-03-07">
+        OSGi detection was broken and so we always cached whether
+        xz/brotli/zstd/lzma have been available even in OSGi
+        environments.
+      </action>
+      <action issue="COMPRESS-571" type="fix" date="2021-03-17">
+        SevenZFile.getEntries now return a copy of entries.
+      </action>
+      <action type="update" date="2020-08-21" due-to="Dependabot" dev="PeterLee">
+        Update com.github.luben:zstd-jni from 1.4.8-7 to 1.4.9-1 #176.
+      </action>
+      <action issue="COMPRESS-575" type="fix" date="2021-05-01">
+        Handling of sparse tar entries has been hardened to ensure bad
+        inputs cause expected IOExceptions rather than RuntimeExceptions.
+      </action>
+      <action type="update" date="2021-05-12">
+        Update org.tukaani:xz from 1.8 to 1.9
+      </action>
+      <action issue="COMPRESS-565" type="add" date="2021-05-19" due-to="Evgenii Bovykin" dev="PeterLee">
+        Add a new AlwaysWithCompatibility in Zip64Mode, this is a
+        compromise for some libraries including 7z and Expand-Archive
+        Powershell utility(and likely Excel).
+
+        And we will encode both the LFH offset and Disk Number Start
+        in the ZIP64 Extended Information Extra Field - even if only
+        the disk number needs to be encoded.
+
+        Github Pull Request #169.
+      </action>
+      <action issue="COMPRESS-566" type="add" date="2021-05-24"
+              due-to="Brett Okken">
+        gzip deflate buffer size is now configurable.
+      </action>
+      <action type="fix" date="2021-06-05">
+        The parser for GNU sparse tar headers could throw a
+        NullPointerExcpetion rather than an IOException if the archive
+        ended while more sparse headers were expected.
       </action>
     </release>
     <release version="1.20" date="2020-02-08"

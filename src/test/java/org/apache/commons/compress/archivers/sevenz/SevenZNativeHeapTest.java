@@ -29,6 +29,7 @@ import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.sevenz.Coders.DeflateDecoder;
 import org.apache.commons.compress.archivers.sevenz.Coders.DeflateDecoder.DeflateDecoderInputStream;
 import org.apache.commons.compress.archivers.sevenz.Coders.DeflateDecoder.DeflateDecoderOutputStream;
+import org.apache.commons.compress.utils.ByteUtils;
 import org.junit.Test;
 
 public class SevenZNativeHeapTest extends AbstractTestCase {
@@ -51,7 +52,7 @@ public class SevenZNativeHeapTest extends AbstractTestCase {
         final Coders.DeflateDecoder deflateDecoder = new DeflateDecoder();
         final DelegatingInflater delegatingInflater;
         try (final DeflateDecoderInputStream inputStream = (DeflateDecoderInputStream) deflateDecoder.decode("dummy",
-            new ByteArrayInputStream(new byte[0]), 0, null, null, Integer.MAX_VALUE)) {
+            new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), 0, null, null, Integer.MAX_VALUE)) {
             delegatingInflater = new DelegatingInflater(inputStream.inflater);
             inputStream.inflater = delegatingInflater;
         }
@@ -66,7 +67,7 @@ public class SevenZNativeHeapTest extends AbstractTestCase {
         public DelegatingInflater(final Inflater inflater) {
             this.inflater = inflater;
         }
-        AtomicBoolean isEnded = new AtomicBoolean();
+        final AtomicBoolean isEnded = new AtomicBoolean();
 
         @Override
         public void end() {
@@ -164,7 +165,7 @@ public class SevenZNativeHeapTest extends AbstractTestCase {
             this.deflater = deflater;
         }
 
-        AtomicBoolean isEnded = new AtomicBoolean();
+        final AtomicBoolean isEnded = new AtomicBoolean();
 
         @Override
         public void end() {

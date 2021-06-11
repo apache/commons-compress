@@ -18,13 +18,13 @@
  */
 package org.apache.commons.compress;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.io.BufferedInputStream;
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -53,7 +53,7 @@ public abstract class AbstractTestCase {
     private File archive; // used to delete the archive in tearDown
     protected List<String> archiveList; // Lists the content of the archive as originally created
 
-    protected ArchiveStreamFactory factory = ArchiveStreamFactory.DEFAULT;
+    protected final ArchiveStreamFactory factory = ArchiveStreamFactory.DEFAULT;
 
     @Before
     public void setUp() throws Exception {
@@ -173,7 +173,7 @@ public abstract class AbstractTestCase {
             archive.deleteOnExit();
             archiveList = new ArrayList<>();
 
-            stream = new FileOutputStream(archive);
+            stream = Files.newOutputStream(archive.toPath());
             out = factory.createArchiveOutputStream(archivename, stream);
 
             final File file1 = getFile("test1.xml");
@@ -235,7 +235,7 @@ public abstract class AbstractTestCase {
         try {
             archive = File.createTempFile("empty", "." + archivename);
             archive.deleteOnExit();
-            stream = new FileOutputStream(archive);
+            stream = Files.newOutputStream(archive.toPath());
             out = factory.createArchiveOutputStream(archivename, stream);
             out.finish();
         } finally {
@@ -262,7 +262,7 @@ public abstract class AbstractTestCase {
         try {
             archive = File.createTempFile("empty", "." + archivename);
             archive.deleteOnExit();
-            stream = new FileOutputStream(archive);
+            stream = Files.newOutputStream(archive.toPath());
             out = factory.createArchiveOutputStream(archivename, stream);
             // Use short file name so does not cause problems for ar
             addArchiveEntry(out, "test1.xml", getFile("test1.xml"));
@@ -288,7 +288,7 @@ public abstract class AbstractTestCase {
      */
     protected void checkArchiveContent(final File archive, final List<String> expected)
             throws Exception {
-        try (InputStream is = new FileInputStream(archive)) {
+        try (InputStream is = Files.newInputStream(archive.toPath())) {
             final BufferedInputStream buf = new BufferedInputStream(is);
             final ArchiveInputStream in = factory.createArchiveInputStream(buf);
             this.checkArchiveContent(in, expected);
@@ -331,7 +331,7 @@ public abstract class AbstractTestCase {
                     outfile.mkdirs();
                 } else {
                     outfile.getParentFile().mkdirs();
-                    try (OutputStream out = new FileOutputStream(outfile)) {
+                    try (OutputStream out = Files.newOutputStream(outfile.toPath())) {
                         copied = IOUtils.copy(in, out);
                     }
                 }
@@ -348,7 +348,7 @@ public abstract class AbstractTestCase {
                 }
             }
             in.close();
-            if (expected != null && expected.size() > 0) {
+            if (expected != null && !expected.isEmpty()) {
                 fail(expected.size() + " missing entries: " + Arrays.toString(expected.toArray()));
             }
             if (expected != null) {
@@ -382,7 +382,7 @@ public abstract class AbstractTestCase {
         final File tmpDir = createTempDir();
         final File tmpFile = File.createTempFile("testfile", "", tmpDir);
         tmpFile.deleteOnExit();
-        try (FileOutputStream fos = new FileOutputStream(tmpFile)) {
+        try (OutputStream fos = Files.newOutputStream(tmpFile.toPath())) {
             fos.write(new byte[] { 'f', 'o', 'o' });
             return new File[] { tmpDir, tmpFile };
         }

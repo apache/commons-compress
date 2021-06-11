@@ -28,7 +28,7 @@ import java.io.InputStream;
 import java.util.concurrent.ExecutionException;
 import java.util.zip.ZipEntry;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class ScatterSampleTest {
 
@@ -44,12 +44,7 @@ public class ScatterSampleTest {
         final ScatterSample scatterSample = new ScatterSample();
         final ZipArchiveEntry archiveEntry = new ZipArchiveEntry("test1.xml");
         archiveEntry.setMethod(ZipEntry.DEFLATED);
-        final InputStreamSupplier supp = new InputStreamSupplier() {
-            @Override
-            public InputStream get() {
-                return new ByteArrayInputStream("Hello".getBytes());
-            }
-        };
+        final InputStreamSupplier supp = () -> new ByteArrayInputStream("Hello".getBytes());
 
         scatterSample.addEntry(archiveEntry, supp);
         try (final ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(result)) {

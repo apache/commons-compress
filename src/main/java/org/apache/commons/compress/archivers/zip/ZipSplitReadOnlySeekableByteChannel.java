@@ -31,7 +31,6 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -143,8 +142,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
         }
         channelsList.add(lastSegmentChannel);
 
-        final SeekableByteChannel[] channelArray = new SeekableByteChannel[channelsList.size()];
-        return forOrderedSeekableByteChannels(channelsList.toArray(channelArray));
+        return forOrderedSeekableByteChannels(channelsList.toArray(new SeekableByteChannel[0]));
     }
 
     /**
@@ -179,7 +177,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
             }
         }
 
-        Collections.sort(splitZipSegments, new ZipSplitSegmentComparator());
+        splitZipSegments.sort(new ZipSplitSegmentComparator());
         return forFiles(lastSegmentFile, splitZipSegments);
     }
 
@@ -226,8 +224,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
         }
         filesList.add(lastSegmentFile);
 
-        final File[] filesArray = new File[filesList.size()];
-        return forFiles(filesList.toArray(filesArray));
+        return forFiles(filesList.toArray(new File[0]));
     }
 
     private static class ZipSplitSegmentComparator implements Comparator<File>, Serializable {

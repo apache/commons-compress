@@ -117,7 +117,7 @@ CompressorInputStream input = new CompressorStreamFactory()
         interface can be used to track progress while extracting a
         stream or to detect potential <a
         href="https://en.wikipedia.org/wiki/Zip_bomb">zip bombs</a>
-        when the compression ration becomes suspiciously large.</p>
+        when the compression ratio becomes suspiciously large.</p>
       </subsection>
 
     </section>

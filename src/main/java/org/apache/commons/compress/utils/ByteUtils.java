@@ -29,6 +29,14 @@ import java.io.OutputStream;
  * @since 1.14
  */
 public final class ByteUtils {
+
+    /**
+     * Empty array.
+     *
+     * @since 1.21
+     */
+    public static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+
     private ByteUtils() { /* no instances */ }
 
     /**

@@ -18,18 +18,19 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import org.apache.commons.compress.utils.ByteUtils;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.zip.ZipException;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 public class X7875_NewUnixTest {
@@ -47,10 +48,8 @@ public class X7875_NewUnixTest {
     @Test
     public void testSampleFile() throws Exception {
         final File archive = getFile("COMPRESS-211_uid_gid_zip_test.zip");
-        ZipFile zf = null;
 
-        try {
-            zf = new ZipFile(archive);
+        try (ZipFile zf = new ZipFile(archive)) {
             final Enumeration<ZipArchiveEntry> en = zf.getEntries();
 
             // We expect EVERY entry of this zip file (dir & file) to
@@ -81,10 +80,6 @@ public class X7875_NewUnixTest {
                 assertEquals(expected, xf.getUID());
                 assertEquals(expected, xf.getGID());
             }
-        } finally {
-            if (zf != null) {
-                zf.close();
-            }
         }
     }
 
@@ -95,19 +90,19 @@ public class X7875_NewUnixTest {
 
     @Test
     public void testMisc() throws Exception {
-        assertFalse(xf.equals(new Object()));
+        assertNotEquals(xf, new Object());
         assertTrue(xf.toString().startsWith("0x7875 Zip Extra Field"));
         final Object o = xf.clone();
         assertEquals(o.hashCode(), xf.hashCode());
-        assertTrue(xf.equals(o));
+        assertEquals(xf, o);
         xf.setUID(12345);
-        assertFalse(xf.equals(o));
+        assertNotEquals(xf, o);
     }
 
     @Test
     public void testTrimLeadingZeroesForceMinLength4() {
         final byte[] NULL = null;
-        final byte[] EMPTY = new byte[0];
+        final byte[] EMPTY = ByteUtils.EMPTY_BYTE_ARRAY;
         final byte[] ONE_ZERO = {0};
         final byte[] TWO_ZEROES = {0, 0};
         final byte[] FOUR_ZEROES = {0, 0, 0, 0};
@@ -119,18 +114,18 @@ public class X7875_NewUnixTest {
         final byte[] SEQUENCE6 = {1, 2, 3, 4, 5, 6};
         final byte[] SEQUENCE6_LEADING_ZERO = {0, 1, 2, 3, 4, 5, 6};
 
-        assertTrue(NULL == trimTest(NULL));
-        assertTrue(Arrays.equals(ONE_ZERO, trimTest(EMPTY)));
-        assertTrue(Arrays.equals(ONE_ZERO, trimTest(ONE_ZERO)));
-        assertTrue(Arrays.equals(ONE_ZERO, trimTest(TWO_ZEROES)));
-        assertTrue(Arrays.equals(ONE_ZERO, trimTest(FOUR_ZEROES)));
-        assertTrue(Arrays.equals(SEQUENCE, trimTest(SEQUENCE)));
-        assertTrue(Arrays.equals(SEQUENCE, trimTest(SEQUENCE_LEADING_ZERO)));
-        assertTrue(Arrays.equals(SEQUENCE, trimTest(SEQUENCE_LEADING_ZEROES)));
-        assertTrue(Arrays.equals(TRAILING_ZERO, trimTest(TRAILING_ZERO)));
-        assertTrue(Arrays.equals(TRAILING_ZERO, trimTest(PADDING_ZERO)));
-        assertTrue(Arrays.equals(SEQUENCE6, trimTest(SEQUENCE6)));
-        assertTrue(Arrays.equals(SEQUENCE6, trimTest(SEQUENCE6_LEADING_ZERO)));
+        assertSame(NULL, trimTest(NULL));
+        assertArrayEquals(ONE_ZERO, trimTest(EMPTY));
+        assertArrayEquals(ONE_ZERO, trimTest(ONE_ZERO));
+        assertArrayEquals(ONE_ZERO, trimTest(TWO_ZEROES));
+        assertArrayEquals(ONE_ZERO, trimTest(FOUR_ZEROES));
+        assertArrayEquals(SEQUENCE, trimTest(SEQUENCE));
+        assertArrayEquals(SEQUENCE, trimTest(SEQUENCE_LEADING_ZERO));
+        assertArrayEquals(SEQUENCE, trimTest(SEQUENCE_LEADING_ZEROES));
+        assertArrayEquals(TRAILING_ZERO, trimTest(TRAILING_ZERO));
+        assertArrayEquals(TRAILING_ZERO, trimTest(PADDING_ZERO));
+        assertArrayEquals(SEQUENCE6, trimTest(SEQUENCE6));
+        assertArrayEquals(SEQUENCE6, trimTest(SEQUENCE6_LEADING_ZERO));
     }
 
     private static byte[] trimTest(final byte[] b) { return X7875_NewUnix.trimLeadingZeroesForceMinLength(b); }
@@ -181,7 +176,7 @@ public class X7875_NewUnixTest {
 
         assertEquals(255, xf.getUID());
         assertEquals(128, xf.getGID());
-        assertTrue(Arrays.equals(EXPECTED_1, xf.getLocalFileDataData()));
+        assertArrayEquals(EXPECTED_1, xf.getLocalFileDataData());
 
         final byte[] SPURIOUS_ZEROES_2 = {1, 4, -1, -1, 0, 0, 4, 1, 2, 0, 0};
         final byte[] EXPECTED_2 = {1, 2, -1, -1, 2, 1, 2};
@@ -189,7 +184,7 @@ public class X7875_NewUnixTest {
 
         assertEquals(65535, xf.getUID());
         assertEquals(513, xf.getGID());
-        assertTrue(Arrays.equals(EXPECTED_2, xf.getLocalFileDataData()));
+        assertArrayEquals(EXPECTED_2, xf.getLocalFileDataData());
     }
 
 
@@ -219,9 +214,9 @@ public class X7875_NewUnixTest {
         byte[] result = xf.getLocalFileDataData();
         if (expected.length < 5) {
             // We never emit zero-length entries.
-            assertTrue(Arrays.equals(new byte[]{1,1,0,1,0}, result));
+            assertArrayEquals(new byte[]{1, 1, 0, 1, 0}, result);
         } else {
-            assertTrue(Arrays.equals(expected, result));
+            assertArrayEquals(expected, result);
         }
 
 
@@ -235,7 +230,7 @@ public class X7875_NewUnixTest {
 
         assertEquals(0, xf.getCentralDirectoryLength().getValue());
         result = xf.getCentralDirectoryData();
-        assertArrayEquals(new byte[0], result);
+        assertArrayEquals(ByteUtils.EMPTY_BYTE_ARRAY, result);
 
         // And now we re-parse:
         xf.parseFromCentralDirectoryData(result, 0, result.length);

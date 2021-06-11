@@ -395,7 +395,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      * first stream and leave the input position to point to the next byte after
      * the stream
      */
-    private volatile boolean decompressConcatenated = false;
+    private volatile boolean decompressConcatenated;
 
     private final int memoryLimitInKb;
 

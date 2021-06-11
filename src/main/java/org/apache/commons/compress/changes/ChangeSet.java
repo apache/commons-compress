@@ -107,7 +107,6 @@ public final class ChangeSet {
                         if(pChange.isReplaceMode()) {
                             it.remove();
                             changes.add(pChange);
-                            return;
                         }
                         // do not add this change
                         return;

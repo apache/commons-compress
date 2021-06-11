@@ -18,10 +18,17 @@
 
 package org.apache.commons.compress.archivers.ar;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -42,8 +49,8 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
     }
 
     private void checkLongNameEntry(final String archive) throws Exception {
-        try (final FileInputStream fis = new FileInputStream(getFile(archive));
-                final ArArchiveInputStream s = new ArArchiveInputStream(new BufferedInputStream(fis))) {
+        try (final InputStream fis = Files.newInputStream((getFile(archive).toPath()));
+             final ArArchiveInputStream s = new ArArchiveInputStream(new BufferedInputStream(fis))) {
             ArchiveEntry e = s.getNextEntry();
             assertEquals("this_is_a_long_file_name.txt", e.getName());
             assertEquals(14, e.getSize());
@@ -62,7 +69,7 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        try (FileInputStream in = new FileInputStream(getFile("bla.ar"));
+        try (InputStream in = Files.newInputStream(getFile("bla.ar").toPath());
              ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();
             IOUtils.toByteArray(archive);
@@ -74,7 +81,7 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
     @Test
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
-        try (FileInputStream in = new FileInputStream(getFile("bla.ar"));
+        try (InputStream in = Files.newInputStream(getFile("bla.ar").toPath());
              ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();
             IOUtils.toByteArray(archive);
@@ -85,7 +92,7 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void simpleInputStream() throws IOException {
-        try (final FileInputStream fileInputStream = new FileInputStream(getFile("bla.ar"))) {
+        try (final InputStream fileInputStream = Files.newInputStream(getFile("bla.ar").toPath())) {
 
             // This default implementation of InputStream.available() always returns zero,
             // and there are many streams in practice where the total length of the stream is not known.
@@ -114,7 +121,7 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
 
     @Test(expected=IllegalStateException.class)
     public void cantReadWithoutOpeningAnEntry() throws Exception {
-        try (FileInputStream in = new FileInputStream(getFile("bla.ar"));
+        try (InputStream in = Files.newInputStream(getFile("bla.ar").toPath());
              ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
             archive.read();
         }
@@ -122,7 +129,7 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
 
     @Test(expected=IllegalStateException.class)
     public void cantReadAfterClose() throws Exception {
-        try (FileInputStream in = new FileInputStream(getFile("bla.ar"));
+        try (InputStream in = Files.newInputStream(getFile("bla.ar").toPath());
              ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
             archive.close();
             archive.read();

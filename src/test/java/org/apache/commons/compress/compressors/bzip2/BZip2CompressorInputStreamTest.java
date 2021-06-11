@@ -23,9 +23,10 @@ import static org.apache.commons.compress.AbstractTestCase.getFile;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
@@ -36,7 +37,7 @@ public class BZip2CompressorInputStreamTest {
 
     @Test(expected = IOException.class)
     public void shouldThrowAnIOExceptionWhenAppliedToAZipFile() throws Exception {
-        try (FileInputStream in = new FileInputStream(getFile("bla.zip"))) {
+        try (InputStream in = Files.newInputStream(getFile("bla.zip").toPath())) {
             final BZip2CompressorInputStream bis = new BZip2CompressorInputStream(in);
             bis.close();
         }
@@ -75,7 +76,7 @@ public class BZip2CompressorInputStreamTest {
     @Test
     public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.txt.bz2");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final BZip2CompressorInputStream in =
                     new BZip2CompressorInputStream(is);
             IOUtils.toByteArray(in);
@@ -89,7 +90,7 @@ public class BZip2CompressorInputStreamTest {
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.txt.bz2");
         final byte[] buf = new byte[2];
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final BZip2CompressorInputStream in =
                     new BZip2CompressorInputStream(is);
             IOUtils.toByteArray(in);

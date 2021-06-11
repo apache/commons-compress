@@ -43,5 +43,15 @@ public enum Zip64Mode {
      * Use Zip64 extensions for all entries where they are required,
      * don't use them for entries that clearly don't require them.
      */
-    AsNeeded
+    AsNeeded,
+    /**
+     * Always use Zip64 extensions for LFH and central directory as
+     * {@link Zip64Mode#Always} did, and at the meantime encode
+     * the relative offset of LFH and disk number start as needed in
+     * CFH as {@link Zip64Mode#AsNeeded} did.
+     * <p>
+     * This is a compromise for some libraries including 7z and
+     * Expand-Archive Powershell utility(and likely Excel).
+     */
+    AlwaysWithCompatibility
 }

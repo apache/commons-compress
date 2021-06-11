@@ -66,9 +66,9 @@ class ExplodingInputStream extends InputStream implements InputStreamStatistics 
     /** Output buffer holding the decompressed data */
     private final CircularBuffer buffer = new CircularBuffer(32 * 1024);
 
-    private long uncompressedCount = 0;
+    private long uncompressedCount;
 
-    private long treeSizes = 0;
+    private long treeSizes;
 
     /**
      * Create a new stream decompressing the content of the specified stream
@@ -165,9 +165,10 @@ class ExplodingInputStream extends InputStream implements InputStreamStatistics 
         if (bit == -1) {
             // EOF
             return;
-        } else if (bit == 1) {
+        }
+        if (bit == 1) {
             // literal value
-            int literal;
+            final int literal;
             if (literalTree != null) {
                 literal = literalTree.read(bits);
             } else {

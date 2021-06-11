@@ -24,7 +24,8 @@ import java.io.IOException;
 import java.util.zip.Adler32;
 import java.util.zip.CRC32;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * Unit tests for class {@link ChecksumCalculatingInputStream org.apache.commons.compress.utils.ChecksumCalculatingInputStream}.
@@ -40,8 +41,7 @@ public class ChecksumCalculatingInputStreamTest {
     public void testSkipReturningZero() throws IOException {
 
         final Adler32 adler32 = new Adler32();
-        final byte[] byteArray = new byte[0];
-        final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);
+        final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY);
         final ChecksumCalculatingInputStream checksumCalculatingInputStream = new ChecksumCalculatingInputStream(adler32, byteArrayInputStream);
         final long skipResult = checksumCalculatingInputStream.skip(60L);
 
@@ -80,7 +80,7 @@ public class ChecksumCalculatingInputStreamTest {
         final int inputStreamReadResult = bufferedInputStream.read(byteArray, 0, 1);
         final int checkSumCalculationReadResult = checksumCalculatingInputStream.read();
 
-        assertFalse(checkSumCalculationReadResult == inputStreamReadResult);
+        assertNotEquals(checkSumCalculationReadResult, inputStreamReadResult);
         assertEquals((-1), checkSumCalculationReadResult);
 
         assertEquals(0, byteArrayInputStream.available());

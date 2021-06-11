@@ -19,10 +19,9 @@
 package org.apache.commons.compress.compressors;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.deflate.DeflateCompressorInputStream;
@@ -42,10 +41,10 @@ public final class DeflateTestCase extends AbstractTestCase {
     public void testDeflateCreation()  throws Exception {
         final File input = getFile("test1.xml");
         final File output = new File(dir, "test1.xml.deflatez");
-        try (OutputStream out = new FileOutputStream(output)) {
+        try (OutputStream out = Files.newOutputStream(output.toPath())) {
             try (CompressorOutputStream cos = new CompressorStreamFactory()
                     .createCompressorOutputStream("deflate", out)) {
-                IOUtils.copy(new FileInputStream(input), cos);
+                IOUtils.copy(Files.newInputStream(input.toPath()), cos);
             }
         }
     }
@@ -59,11 +58,11 @@ public final class DeflateTestCase extends AbstractTestCase {
     public void testRawDeflateCreation()  throws Exception {
         final File input = getFile("test1.xml");
         final File output = new File(dir, "test1.xml.deflate");
-        try (OutputStream out = new FileOutputStream(output)) {
+        try (OutputStream out = Files.newOutputStream(output.toPath())) {
             final DeflateParameters params = new DeflateParameters();
             params.setWithZlibHeader(false);
             try (CompressorOutputStream cos = new DeflateCompressorOutputStream(out, params)) {
-                IOUtils.copy(new FileInputStream(input), cos);
+                IOUtils.copy(Files.newInputStream(input.toPath()), cos);
             }
         }
     }
@@ -77,18 +76,12 @@ public final class DeflateTestCase extends AbstractTestCase {
     public void testDeflateUnarchive() throws Exception {
         final File input = getFile("bla.tar.deflatez");
         final File output = new File(dir, "bla.tar");
-        try (InputStream is = new FileInputStream(input)) {
-            final CompressorInputStream in = new CompressorStreamFactory()
-                    .createCompressorInputStream("deflate", is); // zlib header is expected by default
-            FileOutputStream out = null;
-            try {
-                out = new FileOutputStream(output);
+        try (InputStream is = Files.newInputStream(input.toPath())) {
+             // zlib header is expected by default
+            try (CompressorInputStream in = new CompressorStreamFactory()
+                    .createCompressorInputStream("deflate", is);
+                    OutputStream out = Files.newOutputStream(output.toPath())) {
                 IOUtils.copy(in, out);
-            } finally {
-                if (out != null) {
-                    out.close();
-                }
-                in.close();
             }
         }
     }
@@ -102,19 +95,12 @@ public final class DeflateTestCase extends AbstractTestCase {
     public void testRawDeflateUnarchive() throws Exception {
         final File input = getFile("bla.tar.deflate");
         final File output = new File(dir, "bla.tar");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final DeflateParameters params = new DeflateParameters();
             params.setWithZlibHeader(false);
-            final CompressorInputStream in = new DeflateCompressorInputStream(is, params);
-            FileOutputStream out = null;
-            try {
-                out = new FileOutputStream(output);
+            try (CompressorInputStream in = new DeflateCompressorInputStream(is, params);
+                    OutputStream out = Files.newOutputStream(output.toPath())) {
                 IOUtils.copy(in, out);
-            } finally {
-                if (out != null) {
-                    out.close();
-                }
-                in.close();
             }
         }
     }

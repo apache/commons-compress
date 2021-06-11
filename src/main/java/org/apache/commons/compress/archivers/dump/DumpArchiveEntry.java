@@ -403,7 +403,8 @@ public class DumpArchiveEntry implements ArchiveEntry {
     public boolean equals(final Object o) {
         if (o == this) {
             return true;
-        } else if (o == null || !o.getClass().equals(getClass())) {
+        }
+        if (o == null || !o.getClass().equals(getClass())) {
             return false;
         }
 
@@ -787,7 +788,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
         FIFO(1),
         UNKNOWN(15);
 
-        private int code;
+        private final int code;
 
         TYPE(final int code) {
             this.code = code;
@@ -820,7 +821,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
         WORLD_WRITE(00002),
         WORLD_EXEC(00001);
 
-        private int code;
+        private final int code;
 
         PERMISSION(final int code) {
             this.code = code;

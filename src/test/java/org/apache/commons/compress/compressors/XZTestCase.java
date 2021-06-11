@@ -18,14 +18,13 @@
  */
 package org.apache.commons.compress.compressors;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.management.ManagementFactory;
+import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
@@ -40,10 +39,10 @@ public final class XZTestCase extends AbstractTestCase {
         System.out.println("XZTestCase: HeapMax="+max+" bytes "+(double)max/(1024*1024)+" MB");
         final File input = getFile("test1.xml");
         final File output = new File(dir, "test1.xml.xz");
-        try (OutputStream out = new FileOutputStream(output)) {
+        try (OutputStream out = Files.newOutputStream(output.toPath())) {
             try (CompressorOutputStream cos = new CompressorStreamFactory()
                     .createCompressorOutputStream("xz", out)) {
-                IOUtils.copy(new FileInputStream(input), cos);
+                IOUtils.copy(Files.newInputStream(input.toPath()), cos);
             }
         }
     }
@@ -52,18 +51,11 @@ public final class XZTestCase extends AbstractTestCase {
     public void testXZUnarchive() throws Exception {
         final File input = getFile("bla.tar.xz");
         final File output = new File(dir, "bla.tar");
-        try (InputStream is = new FileInputStream(input)) {
-            final CompressorInputStream in = new CompressorStreamFactory()
+        try (InputStream is = Files.newInputStream(input.toPath())) {
+            try (CompressorInputStream in = new CompressorStreamFactory()
                     .createCompressorInputStream("xz", is);
-            FileOutputStream out = null;
-            try {
-                out = new FileOutputStream(output);
+                    OutputStream out = Files.newOutputStream(output.toPath())) {
                 IOUtils.copy(in, out);
-            } finally {
-                if (out != null) {
-                    out.close();
-                }
-                in.close();
             }
         }
     }
@@ -71,7 +63,7 @@ public final class XZTestCase extends AbstractTestCase {
     @Test
     public void testConcatenatedStreamsReadFirstOnly() throws Exception {
         final File input = getFile("multiple.xz");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             try (CompressorInputStream in = new CompressorStreamFactory()
                     .createCompressorInputStream("xz", is)) {
                 assertEquals('a', in.read());
@@ -83,7 +75,7 @@ public final class XZTestCase extends AbstractTestCase {
     @Test
     public void testConcatenatedStreamsReadFully() throws Exception {
         final File input = getFile("multiple.xz");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             try (CompressorInputStream in = new XZCompressorInputStream(is, true)) {
                 assertEquals('a', in.read());
                 assertEquals('b', in.read());

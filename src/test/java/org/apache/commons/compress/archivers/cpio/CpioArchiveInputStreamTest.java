@@ -18,9 +18,11 @@
  */
 package org.apache.commons.compress.archivers.cpio;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-import java.io.FileInputStream;
+import java.io.InputStream;
+import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -37,7 +39,7 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
         expected.append("<empty/>\n");
 
         final StringBuilder result = new StringBuilder();
-        try (final CpioArchiveInputStream in = new CpioArchiveInputStream(new FileInputStream(getFile("bla.cpio")))) {
+        try (final CpioArchiveInputStream in = new CpioArchiveInputStream(Files.newInputStream(getFile("bla.cpio").toPath()))) {
             CpioArchiveEntry entry;
 
             while ((entry = (CpioArchiveEntry) in.getNextEntry()) != null) {
@@ -55,7 +57,7 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
     public void testCpioUnarchiveCreatedByRedlineRpm() throws Exception {
         int count = 0;
         try (final CpioArchiveInputStream in = new CpioArchiveInputStream(
-            new FileInputStream(getFile("redline.cpio")))) {
+            Files.newInputStream(getFile("redline.cpio").toPath()))) {
             CpioArchiveEntry entry = null;
 
             while ((entry = (CpioArchiveEntry) in.getNextEntry()) != null) {
@@ -71,7 +73,7 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
     public void testCpioUnarchiveMultibyteCharName() throws Exception {
         int count = 0;
         try (final CpioArchiveInputStream in = new CpioArchiveInputStream(
-            new FileInputStream(getFile("COMPRESS-459.cpio")), "UTF-8")) {
+            Files.newInputStream(getFile("COMPRESS-459.cpio").toPath()), "UTF-8")) {
             CpioArchiveEntry entry = null;
 
             while ((entry = (CpioArchiveEntry) in.getNextEntry()) != null) {
@@ -85,7 +87,7 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        try (FileInputStream in = new FileInputStream(getFile("bla.cpio"));
+        try (InputStream in = Files.newInputStream(getFile("bla.cpio").toPath());
              CpioArchiveInputStream archive = new CpioArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();
             IOUtils.toByteArray(archive);
@@ -97,7 +99,7 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
     @Test
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
-        try (FileInputStream in = new FileInputStream(getFile("bla.cpio"));
+        try (InputStream in = Files.newInputStream(getFile("bla.cpio").toPath());
              CpioArchiveInputStream archive = new CpioArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();
             IOUtils.toByteArray(archive);

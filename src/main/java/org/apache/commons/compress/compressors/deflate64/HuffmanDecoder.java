@@ -18,6 +18,7 @@
 package org.apache.commons.compress.compressors.deflate64;
 
 import org.apache.commons.compress.utils.BitInputStream;
+import org.apache.commons.compress.utils.ByteUtils;
 
 import java.io.Closeable;
 import java.io.EOFException;
@@ -26,7 +27,10 @@ import java.io.InputStream;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
-import static org.apache.commons.compress.compressors.deflate64.HuffmanState.*;
+import static org.apache.commons.compress.compressors.deflate64.HuffmanState.DYNAMIC_CODES;
+import static org.apache.commons.compress.compressors.deflate64.HuffmanState.FIXED_CODES;
+import static org.apache.commons.compress.compressors.deflate64.HuffmanState.INITIAL;
+import static org.apache.commons.compress.compressors.deflate64.HuffmanState.STORED;
 
 class HuffmanDecoder implements Closeable {
 
@@ -106,7 +110,7 @@ class HuffmanDecoder implements Closeable {
         Arrays.fill(FIXED_DISTANCE, 5);
     }
 
-    private boolean finalBlock = false;
+    private boolean finalBlock;
     private DecoderState state;
     private BitInputStream reader;
     private final InputStream in;
@@ -224,7 +228,7 @@ class HuffmanDecoder implements Closeable {
             final int max = (int) Math.min(blockLength - read, len);
             int readSoFar = 0;
             while (readSoFar < max) {
-                int readNow;
+                final int readNow;
                 if (reader.bitsCached() > 0) {
                     final byte next = (byte) readBits(Byte.SIZE);
                     b[off + readSoFar] = memory.add(next);
@@ -279,14 +283,14 @@ class HuffmanDecoder implements Closeable {
     }
 
     private class HuffmanCodes extends DecoderState {
-        private boolean endOfBlock = false;
+        private boolean endOfBlock;
         private final HuffmanState state;
         private final BinaryTreeNode lengthTree;
         private final BinaryTreeNode distanceTree;
 
-        private int runBufferPos = 0;
-        private byte[] runBuffer = new byte[0];
-        private int runBufferLength = 0;
+        private int runBufferPos;
+        private byte[] runBuffer = ByteUtils.EMPTY_BYTE_ARRAY;
+        private int runBufferLength;
 
         HuffmanCodes(final HuffmanState state, final int[] lengths, final int[] distance) {
             this.state = state;
@@ -402,14 +406,22 @@ class HuffmanDecoder implements Closeable {
                 if (symbol < 16) {
                     value = symbol;
                     auxBuffer[off++] = value;
-                } else if (symbol == 16) {
-                    length = (int) (readBits(reader, 2) + 3);
-                } else if (symbol == 17) {
-                    value = 0;
-                    length = (int) (readBits(reader, 3) + 3);
-                } else if (symbol == 18) {
-                    value = 0;
-                    length = (int) (readBits(reader, 7) + 11);
+                } else {
+                    switch (symbol) {
+                    case 16:
+                        length = (int) (readBits(reader, 2) + 3);
+                        break;
+                    case 17:
+                        value = 0;
+                        length = (int) (readBits(reader, 3) + 3);
+                        break;
+                    case 18:
+                        value = 0;
+                        length = (int) (readBits(reader, 7) + 11);
+                        break;
+                    default:
+                        break;
+                    }
                 }
             }
         }

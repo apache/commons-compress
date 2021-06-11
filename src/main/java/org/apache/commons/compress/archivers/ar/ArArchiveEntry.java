@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.Date;
+import java.util.Objects;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 
@@ -103,6 +104,9 @@ public class ArArchiveEntry implements ArchiveEntry {
     public ArArchiveEntry(final String name, final long length, final int userId, final int groupId,
                           final int mode, final long lastModified) {
         this.name = name;
+        if (length < 0) {
+            throw new IllegalArgumentException("length must not be negative");
+        }
         this.length = length;
         this.userId = userId;
         this.groupId = groupId;
@@ -180,10 +184,7 @@ public class ArArchiveEntry implements ArchiveEntry {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (name == null ? 0 : name.hashCode());
-        return result;
+        return Objects.hash(name);
     }
 
     @Override

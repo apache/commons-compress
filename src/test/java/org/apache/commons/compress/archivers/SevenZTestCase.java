@@ -17,11 +17,12 @@
  */
 package org.apache.commons.compress.archivers;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.security.NoSuchAlgorithmException;
 import javax.crypto.Cipher;
 
@@ -206,17 +207,11 @@ public class SevenZTestCase extends AbstractTestCase {
     }
 
     private void copy(final File src, final SevenZOutputFile dst) throws IOException {
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(src);
+        try (InputStream fis = Files.newInputStream(src.toPath())) {
             final byte[] buffer = new byte[8*1024];
             int bytesRead;
             while ((bytesRead = fis.read(buffer)) >= 0) {
                 dst.write(buffer, 0, bytesRead);
-            }
-        } finally {
-            if (fis != null) {
-                fis.close();
             }
         }
     }

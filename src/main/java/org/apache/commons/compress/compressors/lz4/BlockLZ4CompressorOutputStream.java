@@ -81,7 +81,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
     // used in one-arg write method
     private final byte[] oneByte = new byte[1];
 
-    private boolean finished = false;
+    private boolean finished;
 
     private final Deque<Pair> pairs = new LinkedList<>();
     // keeps track of the last window-size bytes (64k) in order to be
@@ -250,7 +250,8 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
         while (lengthRemaining > 0) {
             // find block that contains offsetRemaining
             byte[] block = null;
-            int copyLen, copyOffset;
+            final int copyLen;
+            final int copyOffset;
             if (offsetRemaining > 0) {
                 int blockOffset = 0;
                 for (final byte[] b : expandedBlocks) {
@@ -293,11 +294,10 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
         final int size = pairs.size();
         for (int i = pairsToKeep; i < size; i++) {
             final Pair p = pairs.peekFirst();
-            if (p.hasBeenWritten()) {
-                pairs.removeFirst();
-            } else {
+            if (!p.hasBeenWritten()) {
                 break;
             }
+            pairs.removeFirst();
         }
     }
 
@@ -325,11 +325,10 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
                 continue;
             }
             unwrittenLength -= p.length();
-            if (p.canBeWritten(unwrittenLength)) {
-                p.writeTo(os);
-            } else {
+            if (!p.canBeWritten(unwrittenLength)) {
                 break;
             }
+            p.writeTo(os);
         }
     }
 

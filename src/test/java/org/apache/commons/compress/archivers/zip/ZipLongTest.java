@@ -20,7 +20,9 @@ package org.apache.commons.compress.archivers.zip;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
 
 /**
  * JUnit testcases for org.apache.commons.compress.archivers.zip.ZipLong.
@@ -74,15 +76,15 @@ public class ZipLongTest {
         final ZipLong zl2 = new ZipLong(0x12345678);
         final ZipLong zl3 = new ZipLong(0x87654321);
 
-        assertTrue("reflexive", zl.equals(zl));
+        assertEquals("reflexive", zl, zl);
 
-        assertTrue("works", zl.equals(zl2));
-        assertTrue("works, part two", !zl.equals(zl3));
+        assertEquals("works", zl, zl2);
+        assertFalse("works, part two", zl.equals(zl3));
 
-        assertTrue("symmetric", zl2.equals(zl));
+        assertEquals("symmetric", zl2, zl);
 
-        assertTrue("null handling", !zl.equals(null));
-        assertTrue("non ZipLong handling", !zl.equals(new Integer(0x1234)));
+        assertFalse("null handling", zl.equals(null));
+        assertFalse("non ZipLong handling", zl.equals(new Integer(0x1234)));
     }
 
     /**
@@ -91,11 +93,11 @@ public class ZipLongTest {
     @Test
     public void testSign() {
          ZipLong zl = new ZipLong(new byte[] {(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF});
-        assertEquals(0x00000000FFFFFFFFl, zl.getValue());
+        assertEquals(0x00000000FFFFFFFFL, zl.getValue());
         assertEquals(-1,zl.getIntValue());
 
         zl = new ZipLong(0xFFFF_FFFFL);
-        assertEquals(0x00000000FFFFFFFFl, zl.getValue());
+        assertEquals(0x00000000FFFFFFFFL, zl.getValue());
         zl = new ZipLong(0xFFFF_FFFF);
         assertEquals(0xFFFF_FFFF_FFFF_FFFFL, zl.getValue());
 

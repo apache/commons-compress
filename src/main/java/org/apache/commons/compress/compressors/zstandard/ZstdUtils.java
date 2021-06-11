@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.compressors.zstandard;
 
+import org.apache.commons.compress.utils.OsgiUtils;
+
 /**
  * Utility code for the Zstandard compression format.
  * @ThreadSafe
@@ -47,11 +49,7 @@ public class ZstdUtils {
 
     static {
         cachedZstdAvailability = CachedAvailability.DONT_CACHE;
-        try {
-            Class.forName("org.osgi.framework.BundleEvent");
-        } catch (final Exception ex) { // NOSONAR
-            setCacheZstdAvailablity(true);
-        }
+        setCacheZstdAvailablity(!OsgiUtils.isRunningInOsgiEnvironment());
     }
 
     /** Private constructor to prevent instantiation of this utility class. */
@@ -74,7 +72,7 @@ public class ZstdUtils {
         try {
             Class.forName("com.github.luben.zstd.ZstdInputStream");
             return true;
-        } catch (NoClassDefFoundError | Exception error) { // NOSONAR
+        } catch (final NoClassDefFoundError | Exception error) { // NOSONAR
             return false;
         }
     }

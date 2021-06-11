@@ -40,7 +40,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
 
-    <!-- override parent as version used by parent requires Java 8 -->
     <commons.felix.version>5.1.1</commons.felix.version>
 
     <commons.componentid>compress</commons.componentid>
@@ -52,8 +51,8 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <commons.rc.version>RC1</commons.rc.version>
     <!-- old version used by japicmp -->
     <commons.bc.version>1.20</commons.bc.version>
-    <mockito.version>1.10.19</mockito.version>
-    <commons.pmd-plugin.version>3.13.0</commons.pmd-plugin.version>
+    <mockito.version>3.8.0</mockito.version>
+    <commons.pmd-plugin.version>3.14.0</commons.pmd-plugin.version>
 
     <commons.manifestlocation>${project.build.outputDirectory}/META-INF</commons.manifestlocation>
     <commons.manifestfile>${commons.manifestlocation}/MANIFEST.MF</commons.manifestfile>
@@ -68,9 +67,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
 
     <!-- only show issues of the current version -->
     <commons.changes.onlyCurrentVersion>true</commons.changes.onlyCurrentVersion>
-
-    <!-- generate report even if there are binary incompatible changes -->
-    <commons.japicmp.breakBuildOnBinaryIncompatibleModifications>false</commons.japicmp.breakBuildOnBinaryIncompatibleModifications>
 
     <!-- definition uses commons.componentId starting with parent 47,
          this doesn't work for us -->
@@ -88,9 +84,21 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
 
   <dependencies>
     <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest</artifactId>
+      <version>2.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>com.github.luben</groupId>
       <artifactId>zstd-jni</artifactId>
-      <version>1.4.5-6</version>
+      <version>1.4.9-1</version>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -102,7 +110,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <dependency>
       <groupId>org.tukaani</groupId>
       <artifactId>xz</artifactId>
-      <version>1.8</version>
+      <version>1.9</version>
       <optional>true</optional>
     </dependency>
 
@@ -116,12 +124,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
 
     <!--  Test -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.13</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
       <version>${mockito.version}</version>
@@ -130,7 +132,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <dependency>
       <groupId>com.github.marschall</groupId>
       <artifactId>memoryfilesystem</artifactId>
-      <version>1.3.0</version>
+      <version>2.1.0</version>
       <scope>test</scope>
     </dependency>
 
@@ -531,6 +533,26 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
               <includes>
                 <include>**/tar/*IT.java</include>
               </includes>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>java14+</id>
+      <activation>
+        <jdk>[14,)</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <excludes>
+                <exclude>**/DetectCompressorTestCase.java</exclude>
+                <exclude>**/Pack200TestCase.java</exclude>
+                <exclude>**/Pack200UtilsTest.java</exclude>
+              </excludes>
             </configuration>
           </plugin>
         </plugins>

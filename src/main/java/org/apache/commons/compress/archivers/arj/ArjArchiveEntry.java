@@ -82,11 +82,11 @@ public class ArjArchiveEntry implements ArchiveEntry {
      * <p>Note the interpretation of time is different depending on
      * the HostOS that has created the archive.  While an OS that is
      * {@link #isHostOsUnix considered to be Unix} stores time in a
-     * timezone independent manner, other platforms only use the local
+     * time zone independent manner, other platforms only use the local
      * time.  I.e. if an archive has been created at midnight UTC on a
-     * machine in timezone UTC this method will return midnight
-     * regardless of timezone if the archive has been created on a
-     * non-Unix system and a time taking the current timezone into
+     * machine in time zone UTC this method will return midnight
+     * regardless of time zone if the archive has been created on a
+     * non-Unix system and a time taking the current time zone into
      * account if the archive has been created on Unix.</p>
      *
      * @return the last modified date

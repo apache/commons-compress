@@ -18,10 +18,11 @@
 
 package org.apache.commons.compress;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.nio.file.Files;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -35,20 +36,22 @@ public class ChainingTestCase extends AbstractTestCase {
     @Test
     public void testTarGzip() throws Exception {
         final File file = getFile("bla.tgz");
-        final TarArchiveInputStream is = new TarArchiveInputStream(new GzipCompressorInputStream(new FileInputStream(file)));
-        final TarArchiveEntry entry = (TarArchiveEntry)is.getNextEntry();
-        assertNotNull(entry);
-        assertEquals("test1.xml", entry.getName());
-        is.close();
+        try (final TarArchiveInputStream is = new TarArchiveInputStream(
+            new GzipCompressorInputStream(Files.newInputStream(file.toPath())))) {
+            final TarArchiveEntry entry = (TarArchiveEntry) is.getNextEntry();
+            assertNotNull(entry);
+            assertEquals("test1.xml", entry.getName());
+        }
     }
 
     @Test
     public void testTarBzip2() throws Exception {
         final File file = getFile("bla.tar.bz2");
-        final TarArchiveInputStream is = new TarArchiveInputStream(new BZip2CompressorInputStream(new FileInputStream(file)));
-        final TarArchiveEntry entry = (TarArchiveEntry)is.getNextEntry();
-        assertNotNull(entry);
-        assertEquals("test1.xml", entry.getName());
-        is.close();
+        try (final TarArchiveInputStream is = new TarArchiveInputStream(
+            new BZip2CompressorInputStream(Files.newInputStream(file.toPath())))) {
+            final TarArchiveEntry entry = (TarArchiveEntry) is.getNextEntry();
+            assertNotNull(entry);
+            assertEquals("test1.xml", entry.getName());
+        }
     }
 }

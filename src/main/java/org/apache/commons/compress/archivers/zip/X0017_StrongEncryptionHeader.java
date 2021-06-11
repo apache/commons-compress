@@ -317,12 +317,6 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
             assertMinimalLength(16, length);
             this.hashAlg = HashAlgorithm.getAlgorithmByCode(ZipShort.getValue(data, offset + 12));
             this.hashSize = ZipShort.getValue(data, offset + 14);
-            // srlist... hashed public keys
-            for (long i = 0; i < this.rcount; i++) {
-                for (int j = 0; j < this.hashSize; j++) {
-                    //  ZipUtil.signedByteToUnsignedInt(data[offset + 16 + (i * this.hashSize) + j]));
-                }
-            }
         }
     }
 
@@ -341,6 +335,7 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
         assertMinimalLength(4, length);
         final int ivSize = ZipShort.getValue(data, offset);
         assertDynamicLengthFits("ivSize", ivSize, 4, length);
+        assertMinimalLength(offset + 4, ivSize);
         // TODO: what is at offset + 2?
         this.ivData = Arrays.copyOfRange(data, offset + 4, ivSize);
 
@@ -353,6 +348,7 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
 
         final int erdSize = ZipShort.getValue(data, offset + ivSize + 14);
         assertDynamicLengthFits("erdSize", erdSize, ivSize + 16, length);
+        assertMinimalLength(offset + ivSize + 16, erdSize);
         this.erdData = Arrays.copyOfRange(data, offset + ivSize + 16, erdSize);
 
         assertMinimalLength(16 + 4 + ivSize + erdSize, length);
@@ -365,7 +361,9 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
                 throw new ZipException("Invalid X0017_StrongEncryptionHeader: vSize " + vSize
                     + " is too small to hold CRC");
             }
+            assertMinimalLength(offset + ivSize + 22 + erdSize, vSize - 4);
             this.vData = Arrays.copyOfRange(data, offset + ivSize + 22 + erdSize, vSize - 4);
+            assertMinimalLength(offset + ivSize + 22 + erdSize + vSize - 4, 4);
             this.vCRC32 = Arrays.copyOfRange(data, offset + ivSize + 22 + erdSize + vSize - 4, 4);
         } else {
             assertMinimalLength(ivSize + 20 + erdSize + 6, length); // up to and including resize

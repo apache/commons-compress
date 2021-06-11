@@ -22,10 +22,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.CompressorInputStream;
@@ -44,7 +44,7 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
     public void testBrotliDecode() throws IOException {
         final File input = getFile("brotli.testdata.compressed");
         final File expected = getFile("brotli.testdata.uncompressed");
-        try (InputStream inputStream = new FileInputStream(input);
+        try (InputStream inputStream = Files.newInputStream(input.toPath());
             BrotliCompressorInputStream brotliInputStream = new BrotliCompressorInputStream(inputStream)) {
             final byte[] b = new byte[20];
             IOUtils.read(expected, b);
@@ -90,10 +90,10 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
     @Test
     public void availableShouldReturnZero() throws IOException {
         final File input = getFile("brotli.testdata.compressed");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final BrotliCompressorInputStream in =
                     new BrotliCompressorInputStream(is);
-            Assert.assertTrue(in.available() == 0);
+            assertEquals(0, in.available());
             in.close();
         }
     }
@@ -101,7 +101,7 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
     @Test
     public void shouldBeAbleToSkipAByte() throws IOException {
         final File input = getFile("brotli.testdata.compressed");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final BrotliCompressorInputStream in =
                     new BrotliCompressorInputStream(is);
             Assert.assertEquals(1, in.skip(1));
@@ -112,7 +112,7 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
     @Test
     public void singleByteReadWorksAsExpected() throws IOException {
         final File input = getFile("brotli.testdata.compressed");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final BrotliCompressorInputStream in =
                     new BrotliCompressorInputStream(is);
             //  starts with filename "XXX"
@@ -124,7 +124,7 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
     @Test
     public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("brotli.testdata.compressed");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final BrotliCompressorInputStream in =
                     new BrotliCompressorInputStream(is);
             IOUtils.toByteArray(in);
@@ -138,7 +138,7 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("brotli.testdata.compressed");
         final byte[] buf = new byte[2];
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final BrotliCompressorInputStream in =
                     new BrotliCompressorInputStream(is);
             IOUtils.toByteArray(in);
@@ -152,18 +152,11 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
     public void testBrotliUnarchive() throws Exception {
         final File input = getFile("bla.tar.br");
         final File output = new File(dir, "bla.tar");
-        try (InputStream is = new FileInputStream(input)) {
-            final CompressorInputStream in = new CompressorStreamFactory()
+        try (InputStream is = Files.newInputStream(input.toPath())) {
+            try (CompressorInputStream in = new CompressorStreamFactory()
                     .createCompressorInputStream("br", is);
-            FileOutputStream out = null;
-            try {
-                out = new FileOutputStream(output);
+                    OutputStream out = Files.newOutputStream(output.toPath())) {
                 IOUtils.copy(in, out);
-            } finally {
-                if (out != null) {
-                    out.close();
-                }
-                in.close();
             }
         }
     }

@@ -34,12 +34,10 @@ public class CpioArchiveTest {
 
     @Parameters(name = "using {0}")
     public static Collection<Object[]> factory() {
-        return Arrays.asList(new Object[][] {
-                new Object[]  { CpioConstants.FORMAT_NEW },
+        return Arrays.asList(new Object[]  { CpioConstants.FORMAT_NEW },
                 new Object[]  { CpioConstants.FORMAT_NEW_CRC },
                 new Object[]  { CpioConstants.FORMAT_OLD_ASCII },
-                new Object[]  { CpioConstants.FORMAT_OLD_BINARY },
-            });
+                new Object[]  { CpioConstants.FORMAT_OLD_BINARY });
     }
 
     private final short format;

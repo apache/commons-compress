@@ -187,7 +187,7 @@ public enum ZipMethod {
         codeToEnum = Collections.unmodifiableMap(cte);
     }
 
-    private ZipMethod() {
+    ZipMethod() {
         this(UNKNOWN_CODE);
     }
 

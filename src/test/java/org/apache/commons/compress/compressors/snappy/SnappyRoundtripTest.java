@@ -21,9 +21,10 @@ package org.apache.commons.compress.compressors.snappy;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.Random;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.lz77support.Parameters;
@@ -42,16 +43,16 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
     private void roundTripTest(final File input, final Parameters params) throws IOException {
         long start = System.currentTimeMillis();
         final File outputSz = new File(dir, input.getName() + ".raw.sz");
-        try (FileInputStream is = new FileInputStream(input);
-             FileOutputStream os = new FileOutputStream(outputSz);
+        try (InputStream is = Files.newInputStream(input.toPath());
+             OutputStream os = Files.newOutputStream(outputSz.toPath());
              SnappyCompressorOutputStream sos = new SnappyCompressorOutputStream(os, input.length(), params)) {
             IOUtils.copy(is, sos);
         }
         System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
             + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
         start = System.currentTimeMillis();
-        try (FileInputStream is = new FileInputStream(input);
-             SnappyCompressorInputStream sis = new SnappyCompressorInputStream(new FileInputStream(outputSz),
+        try (InputStream is = Files.newInputStream(input.toPath());
+             SnappyCompressorInputStream sis = new SnappyCompressorInputStream(Files.newInputStream(outputSz.toPath()),
                  params.getWindowSize())) {
             final byte[] expected = IOUtils.toByteArray(is);
             final byte[] actual = IOUtils.toByteArray(sis);
@@ -72,9 +73,8 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
         try (
              SnappyCompressorInputStream sis = new SnappyCompressorInputStream(new ByteArrayInputStream(os.toByteArray()),
                  params.getWindowSize())) {
-            final byte[] expected = input;
             final byte[] actual = IOUtils.toByteArray(sis);
-            Assert.assertArrayEquals(expected, actual);
+            Assert.assertArrayEquals(input, actual);
         }
         System.err.println("byte array" + " read after " + (System.currentTimeMillis() - start) + "ms");
     }
@@ -163,7 +163,7 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
         // buffer (and a file written to disk) that was 2^5 bigger
         // than the buffer used here.
         final File f = new File(dir, "reallyBigLiteralTest");
-        try (FileOutputStream fs = new FileOutputStream(f)) {
+        try (OutputStream fs = Files.newOutputStream(f.toPath())) {
             final int cnt = 1 << 19;
             final Random r = new Random();
             for (int i = 0 ; i < cnt; i++) {

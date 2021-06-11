@@ -184,7 +184,7 @@ public class SeekableInMemoryByteChannelTest {
         c.close();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IOException.class)
     public void shouldThrowExceptionWhenSettingIncorrectPosition() throws IOException {
         //given
         final SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel();
@@ -297,10 +297,10 @@ public class SeekableInMemoryByteChannelTest {
     }
 
     /*
-     * <q>IllegalArgumentException - If the new position is negative</q>
+     * <q>IOException - If the new position is negative</q>
      */
-    @Test(expected = IllegalArgumentException.class)
-    public void throwsIllegalArgumentExceptionWhenPositionIsSetToANegativeValue() throws Exception {
+    @Test(expected = IOException.class)
+    public void throwsIOExceptionWhenPositionIsSetToANegativeValue() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.position(-1);
         }

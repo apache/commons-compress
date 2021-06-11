@@ -69,7 +69,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
 
     private CpioArchiveEntry entry;
 
-    private boolean closed = false;
+    private boolean closed;
 
     /** indicates if this archive is finished */
     private boolean finished;
@@ -82,7 +82,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     private final HashMap<String, CpioArchiveEntry> names =
         new HashMap<>();
 
-    private long crc = 0;
+    private long crc;
 
     private long written;
 
@@ -425,7 +425,8 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         ensureOpen();
         if (off < 0 || len < 0 || off > b.length - len) {
             throw new IndexOutOfBoundsException();
-        } else if (len == 0) {
+        }
+        if (len == 0) {
             return;
         }
 
@@ -518,7 +519,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     private void writeAsciiLong(final long number, final int length,
             final int radix) throws IOException {
         final StringBuilder tmp = new StringBuilder();
-        String tmpStr;
+        final String tmpStr;
         if (radix == 16) {
             tmp.append(Long.toHexString(number));
         } else if (radix == 8) {

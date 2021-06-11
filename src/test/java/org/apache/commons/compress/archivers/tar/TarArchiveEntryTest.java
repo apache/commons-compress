@@ -31,11 +31,16 @@ import static org.junit.Assume.assumeTrue;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
+import org.apache.commons.compress.utils.CharsetNames;
 import org.junit.Test;
 
 public class TarArchiveEntryTest implements TarConstants {
@@ -63,7 +68,7 @@ public class TarArchiveEntryTest implements TarConstants {
         TarArchiveOutputStream tout = null;
         TarArchiveInputStream tin = null;
         try {
-            tout = new TarArchiveOutputStream(new FileOutputStream(f));
+            tout = new TarArchiveOutputStream(Files.newOutputStream(f.toPath()));
             TarArchiveEntry t = new TarArchiveEntry(new File(ROOT));
             tout.putArchiveEntry(t);
             tout.closeArchiveEntry();
@@ -87,7 +92,7 @@ public class TarArchiveEntryTest implements TarConstants {
             tout.close();
             tout = null;
 
-            tin = new TarArchiveInputStream(new FileInputStream(f));
+            tin = new TarArchiveInputStream(Files.newInputStream(f.toPath()));
             //tin.setDebug(true);
             t = tin.getNextTarEntry();
             assertNotNull(t);
@@ -237,6 +242,74 @@ public class TarArchiveEntryTest implements TarConstants {
         assumeTrue("Information should only be checked on Windows", OS.startsWith("windows"));
         final TarArchiveEntry entry = new TarArchiveEntry(getPath("test1.xml"));
         assertNotEquals("", entry.getUserName());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void negativeOffsetInConstructorNotAllowed() throws IOException {
+        byte[] entryContent = ("test1.xml\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000" +
+                "\u0000" +
+                "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000" +
+                "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000" +
+                "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u00000000644\u00000000765\u00000000765" +
+                "\u000000000001142\u000010716545626\u0000012260\u0000 0\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000" +
+                "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000" +
+                "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000" +
+                "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000" +
+                "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000ustar  " +
+                "\u0000tcurdt\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000" +
+                "\u0000\u0000\u0000tcurdt\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000" +
+                "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000" +
+                "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000" +
+                "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000" +
+                "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000" +
+                "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000" +
+                "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000" +
+                "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000" +
+                "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000").getBytes(StandardCharsets.UTF_8);
+        new TarArchiveEntry(entryContent, ZipEncodingHelper.getZipEncoding(CharsetNames.ISO_8859_1), false, -1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void negativeOffsetInSetterNotAllowed() {
+        new TarArchiveEntry("test").setDataOffset(-1);
+    }
+
+    @Test
+    public void getOrderedSparseHeadersSortsAndFiltersSparseStructs() throws Exception {
+        final TarArchiveEntry te = new TarArchiveEntry("test");
+        // hacky way to set realSize
+        te.fillStarSparseData(Collections.singletonMap("SCHILY.realsize", "201"));
+        te.setSparseHeaders(Arrays.asList(new TarArchiveStructSparse(10, 2), new TarArchiveStructSparse(20, 0),
+            new TarArchiveStructSparse(15, 1), new TarArchiveStructSparse(0, 0)));
+        final List<TarArchiveStructSparse> strs = te.getOrderedSparseHeaders();
+        assertEquals(3, strs.size());
+        assertEquals(10, strs.get(0).getOffset());
+        assertEquals(15, strs.get(1).getOffset());
+        assertEquals(20, strs.get(2).getOffset());
+    }
+
+    @Test(expected = IOException.class)
+    public void getOrderedSparseHeadersRejectsOverlappingStructs() throws Exception {
+        final TarArchiveEntry te = new TarArchiveEntry("test");
+        te.fillStarSparseData(Collections.singletonMap("SCHILY.realsize", "201"));
+        te.setSparseHeaders(Arrays.asList(new TarArchiveStructSparse(10, 5), new TarArchiveStructSparse(12, 1)));
+        te.getOrderedSparseHeaders();
+    }
+
+    @Test(expected = IOException.class)
+    public void getOrderedSparseHeadersRejectsStructsWithReallyBigNumbers() throws Exception {
+        final TarArchiveEntry te = new TarArchiveEntry("test");
+        te.fillStarSparseData(Collections.singletonMap("SCHILY.realsize", String.valueOf(Long.MAX_VALUE)));
+        te.setSparseHeaders(Arrays.asList(new TarArchiveStructSparse(Long.MAX_VALUE, 2)));
+        te.getOrderedSparseHeaders();
+    }
+
+    @Test(expected = IOException.class)
+    public void getOrderedSparseHeadersRejectsStructsPointingBeyondOutputEntry() throws Exception {
+        final TarArchiveEntry te = new TarArchiveEntry("test");
+        te.setSparseHeaders(Arrays.asList(new TarArchiveStructSparse(200, 2)));
+        te.fillStarSparseData(Collections.singletonMap("SCHILY.realsize", "201"));
+        te.getOrderedSparseHeaders();
     }
 
     private void assertGnuMagic(final TarArchiveEntry t) {

@@ -30,6 +30,7 @@ import java.nio.file.attribute.FileTime;
 import java.nio.file.attribute.PosixFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,8 +39,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.EntryStreamOffsets;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
@@ -158,16 +161,15 @@ import org.apache.commons.compress.utils.IOUtils;
  * @NotThreadSafe
  */
 
-public class TarArchiveEntry implements ArchiveEntry, TarConstants {
-
-    private static final TarArchiveEntry[] EMPTY_TAR_ARCHIVE_ENTRIES = new TarArchiveEntry[0];
+public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamOffsets {
+    private static final TarArchiveEntry[] EMPTY_TAR_ARCHIVE_ENTRY_ARRAY = new TarArchiveEntry[0];
 
     /**
      * Value used to indicate unknown mode, user/groupids, device numbers and modTime when parsing a file in lenient
-     * mode an the archive contains illegal fields.
+     * mode and the archive contains illegal fields.
      * @since 1.19
      */
-    public static final long UNKNOWN = -1l;
+    public static final long UNKNOWN = -1L;
 
     /** The entry's name. */
     private String name = "";
@@ -179,13 +181,13 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
     private int mode;
 
     /** The entry's user id. */
-    private long userId = 0;
+    private long userId;
 
     /** The entry's group id. */
-    private long groupId = 0;
+    private long groupId;
 
     /** The entry's size. */
-    private long size = 0;
+    private long size;
 
     /** The entry's modification time. */
     private long modTime;
@@ -211,10 +213,10 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
     private String groupName = "";
 
     /** The entry's major device number. */
-    private int devMajor = 0;
+    private int devMajor;
 
     /** The entry's minor device number. */
-    private int devMinor = 0;
+    private int devMinor;
 
     /** The sparse headers in tar */
     private List<TarArchiveStructSparse> sparseHeaders;
@@ -230,7 +232,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
 
     /** is this entry a GNU sparse entry using 1.X PAX formats?
      *  the sparse headers of 1.x PAX Format is stored in file data block */
-    private boolean paxGNU1XSparse = false;
+    private boolean paxGNU1XSparse;
 
     /** is this entry a star sparse entry using the PAX header? */
     private boolean starSparse;
@@ -256,6 +258,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
     /** Convert millis to seconds */
     public static final int MILLIS_PER_SECOND = 1000;
 
+    private long dataOffset = EntryStreamOffsets.OFFSET_UNKNOWN;
 
     /**
      * Construct an empty entry and prepares the header values.
@@ -551,6 +554,23 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
         throws IOException {
         this(false);
         parseTarHeader(headerBuf, encoding, false, lenient);
+    }
+
+    /**
+     * Construct an entry from an archive's header bytes for random access tar. File is set to null.
+     * @param headerBuf the header bytes from a tar archive entry.
+     * @param encoding encoding to use for file names.
+     * @param lenient when set to true illegal values for group/userid, mode, device numbers and timestamp will be
+     * ignored and the fields set to {@link #UNKNOWN}. When set to false such illegal fields cause an exception instead.
+     * @param dataOffset position of the entry data in the random access file.
+     * @since 1.21
+     * @throws IllegalArgumentException if any of the numeric fields have an invalid format.
+     * @throws IOException on error.
+     */
+    public TarArchiveEntry(final byte[] headerBuf, final ZipEncoding encoding, final boolean lenient,
+            final long dataOffset) throws IOException {
+        this(headerBuf, encoding, lenient);
+        setDataOffset(dataOffset);
     }
 
     /**
@@ -851,7 +871,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * <p>This method is only useful for entries created from a {@code
      * File} or {@code Path} but not for entries read from an archive.</p>
      *
-     * @return This entry's file or null if the entry was not created from a file.
+     * @return this entry's file or null if the entry was not created from a file.
      */
     public File getFile() {
         if (file == null) {
@@ -866,7 +886,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * <p>This method is only useful for entries created from a {@code
      * File} or {@code Path} but not for entries read from an archive.</p>
      *
-     * @return This entry's file or null if the entry was not created from a file.
+     * @return this entry's file or null if the entry was not created from a file.
      * @since 1.21
      */
     public Path getPath() {
@@ -884,6 +904,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
 
     /**
      * Get this entry's file size.
+     *
+     * <p>This is the size the entry's data uses inside of the archive. Usually this is the same as {@link
+     * #getRealSize}, but it doesn't take the "holes" into account when the entry represents a sparse file.
      *
      * @return This entry's file size.
      */
@@ -909,6 +932,47 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      */
     public List<TarArchiveStructSparse> getSparseHeaders() {
         return sparseHeaders;
+    }
+
+    /**
+     * Get this entry's sparse headers ordered by offset with all empty sparse sections at the start filtered out.
+     *
+     * @return immutable list of this entry's sparse headers, never null
+     * @since 1.21
+     * @throws IOException if the list of sparse headers contains blocks that overlap
+     */
+    public List<TarArchiveStructSparse> getOrderedSparseHeaders() throws IOException {
+        if (sparseHeaders == null || sparseHeaders.isEmpty()) {
+            return Collections.emptyList();
+        }
+        final List<TarArchiveStructSparse> orderedAndFiltered = sparseHeaders.stream()
+            .filter(s -> s.getOffset() > 0 || s.getNumbytes() > 0)
+            .sorted(Comparator.comparingLong(TarArchiveStructSparse::getOffset))
+            .collect(Collectors.toList());
+
+        final int numberOfHeaders = orderedAndFiltered.size();
+        for (int i = 0; i < numberOfHeaders; i++) {
+            final TarArchiveStructSparse str = orderedAndFiltered.get(i);
+            if (i + 1 < numberOfHeaders) {
+                if (str.getOffset() + str.getNumbytes() > orderedAndFiltered.get(i + 1).getOffset()) {
+                    throw new IOException("Corrupted TAR archive. Sparse blocks for "
+                        + getName() + " overlap each other.");
+                }
+            }
+            if (str.getOffset() + str.getNumbytes() < 0) {
+                // integer overflow?
+                throw new IOException("Unreadable TAR archive. Offset and numbytes for sparse block in "
+                    + getName() + " too large.");
+            }
+        }
+        if (!orderedAndFiltered.isEmpty()) {
+            final TarArchiveStructSparse last = orderedAndFiltered.get(numberOfHeaders - 1);
+            if (last.getOffset() + last.getNumbytes() > getRealSize()) {
+                throw new IOException("Corrupted TAR archive. Sparse block extends beyond real size of the entry");
+            }
+        }
+
+        return orderedAndFiltered;
     }
 
     /**
@@ -996,13 +1060,16 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
 
     /**
      * Get this entry's real file size in case of a sparse file.
+     *
+     * <p>This is the size a file would take on disk if the entry was expanded.</p>
+     *
      * <p>If the file is not a sparse file, return size instead of realSize.</p>
      *
      * @return This entry's real file size, if the file is not a sparse file, return size instead of realSize.
      */
     public long getRealSize() {
         if (!isSparse()) {
-            return size;
+            return getSize();
         }
         return realSize;
     }
@@ -1185,6 +1252,36 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
     }
 
     /**
+     * {@inheritDoc}
+     * @since 1.21
+     */
+    @Override
+    public long getDataOffset() {
+        return dataOffset;
+    }
+
+    /**
+     * Set the offset of the data for the tar entry.
+     * @param dataOffset the position of the data in the tar.
+     * @since 1.21
+     */
+    public void setDataOffset(final long dataOffset) {
+        if (dataOffset < 0) {
+            throw new IllegalArgumentException("The offset can not be smaller than 0");
+        }
+        this.dataOffset = dataOffset;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @since 1.21
+     */
+    @Override
+    public boolean isStreamContiguous() {
+        return true;
+    }
+
+    /**
      * get extra PAX Headers
      * @return read-only map containing any extra PAX Headers
      * @since 1.15
@@ -1208,8 +1305,12 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * @param value value of header.
      * @since 1.15
      */
-    public void addPaxHeader(final String name,final String value) {
-         processPaxHeader(name,value);
+    public void addPaxHeader(final String name, final String value) {
+        try {
+            processPaxHeader(name,value);
+        } catch (IOException ex) {
+            throw new IllegalArgumentException("Invalid input", ex);
+        }
     }
 
     /**
@@ -1227,7 +1328,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * @param headers
      * @since 1.15
      */
-    void updateEntryFromPaxHeaders(final Map<String, String> headers) {
+    void updateEntryFromPaxHeaders(final Map<String, String> headers) throws IOException {
         for (final Map.Entry<String, String> ent : headers.entrySet()) {
             final String key = ent.getKey();
             final String val = ent.getValue();
@@ -1242,8 +1343,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * @param val
      * @since 1.15
      */
-    private void processPaxHeader(final String key, final String val) {
-        processPaxHeader(key,val,extraPaxHeaders);
+    private void processPaxHeader(final String key, final String val) throws IOException {
+        processPaxHeader(key, val, extraPaxHeaders);
     }
 
     /**
@@ -1256,7 +1357,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      * @throws NumberFormatException  if encountered errors when parsing the numbers
      * @since 1.15
      */
-    private void processPaxHeader(final String key, final String val, final Map<String, String> headers) {
+    private void processPaxHeader(final String key, final String val, final Map<String, String> headers)
+        throws IOException {
     /*
      * The following headers are defined for Pax.
      * atime, ctime, charset: cannot use these without changing TarArchiveEntry fields
@@ -1297,16 +1399,28 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
                 setUserName(val);
                 break;
             case "size":
-                setSize(Long.parseLong(val));
+                final long size = Long.parseLong(val);
+                if (size < 0) {
+                    throw new IOException("Corrupted TAR archive. Entry size is negative");
+                }
+                setSize(size);
                 break;
             case "mtime":
                 setModTime((long) (Double.parseDouble(val) * 1000));
                 break;
             case "SCHILY.devminor":
-                setDevMinor(Integer.parseInt(val));
+                final int devMinor = Integer.parseInt(val);
+                if (devMinor < 0) {
+                    throw new IOException("Corrupted TAR archive. Dev-Minor is negative");
+                }
+                setDevMinor(devMinor);
                 break;
             case "SCHILY.devmajor":
-                setDevMajor(Integer.parseInt(val));
+                final int devMajor = Integer.parseInt(val);
+                if (devMajor < 0) {
+                    throw new IOException("Corrupted TAR archive. Dev-Major is negative");
+                }
+                setDevMajor(devMajor);
                 break;
             case "GNU.sparse.size":
                 fillGNUSparse0xData(headers);
@@ -1337,7 +1451,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
      */
     public TarArchiveEntry[] getDirectoryEntries() {
         if (file == null || !isDirectory()) {
-            return EMPTY_TAR_ARCHIVE_ENTRIES;
+            return EMPTY_TAR_ARCHIVE_ENTRY_ARRAY;
         }
 
         final List<TarArchiveEntry> entries = new ArrayList<>();
@@ -1348,9 +1462,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
                 entries.add(new TarArchiveEntry(p));
             }
         } catch (final IOException e) {
-            return EMPTY_TAR_ARCHIVE_ENTRIES;
+            return EMPTY_TAR_ARCHIVE_ENTRY_ARRAY;
         }
-        return entries.toArray(new TarArchiveEntry[0]);
+        return entries.toArray(EMPTY_TAR_ARCHIVE_ENTRY_ARRAY);
     }
 
     /**
@@ -1478,6 +1592,16 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
     private void parseTarHeader(final byte[] header, final ZipEncoding encoding,
                                 final boolean oldStyle, final boolean lenient)
         throws IOException {
+        try {
+            parseTarHeaderUnwrapped(header, encoding, oldStyle, lenient);
+        } catch (IllegalArgumentException ex) {
+            throw new IOException("Corrupted TAR archive.", ex);
+        }
+    }
+
+    private void parseTarHeaderUnwrapped(final byte[] header, final ZipEncoding encoding,
+                                         final boolean oldStyle, final boolean lenient)
+        throws IOException {
         int offset = 0;
 
         name = oldStyle ? TarUtils.parseName(header, offset, NAMELEN)
@@ -1490,6 +1614,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
         groupId = (int) parseOctalOrBinary(header, offset, GIDLEN, lenient);
         offset += GIDLEN;
         size = TarUtils.parseOctalOrBinary(header, offset, SIZELEN);
+        if (size < 0) {
+            throw new IOException("broken archive, entry with negative size");
+        }
         offset += SIZELEN;
         modTime = parseOctalOrBinary(header, offset, MODTIMELEN, lenient);
         offset += MODTIMELEN;
@@ -1526,16 +1653,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
             offset += OFFSETLEN_GNU;
             offset += LONGNAMESLEN_GNU;
             offset += PAD2LEN_GNU;
-            sparseHeaders = new ArrayList<>();
-            for (int i = 0; i < SPARSE_HEADERS_IN_OLDGNU_HEADER; i++) {
-                final TarArchiveStructSparse sparseHeader = TarUtils.parseSparse(header,
-                        offset + i * (SPARSE_OFFSET_LEN + SPARSE_NUMBYTES_LEN));
-
-                // some sparse headers are empty, we need to skip these sparse headers
-                if(sparseHeader.getOffset() > 0 || sparseHeader.getNumbytes() > 0) {
-                    sparseHeaders.add(sparseHeader);
-                }
-            }
+            sparseHeaders =
+                new ArrayList<>(TarUtils.readSparseStructs(header, offset, SPARSE_HEADERS_IN_OLDGNU_HEADER));
             offset += SPARSELEN_GNU;
             isExtended = TarUtils.parseBoolean(header, offset);
             offset += ISEXTENDEDLEN_GNU;
@@ -1547,7 +1666,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
             final String xstarPrefix = oldStyle
                 ? TarUtils.parseName(header, offset, PREFIXLEN_XSTAR)
                 : TarUtils.parseName(header, offset, PREFIXLEN_XSTAR, encoding);
-            if (xstarPrefix.length() > 0) {
+            if (!xstarPrefix.isEmpty()) {
                 name = xstarPrefix + "/" + name;
             }
             break;
@@ -1562,7 +1681,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
             if (isDirectory() && !name.endsWith("/")){
                 name = name + "/";
             }
-            if (prefix.length() > 0){
+            if (!prefix.isEmpty()){
                 name = prefix + "/" + name;
             }
         }
@@ -1654,17 +1773,31 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants {
         }
     }
 
-    void fillGNUSparse1xData(final Map<String, String> headers) {
+    void fillGNUSparse1xData(final Map<String, String> headers) throws IOException {
         paxGNUSparse = true;
         paxGNU1XSparse = true;
-        realSize = Integer.parseInt(headers.get("GNU.sparse.realsize"));
-        name = headers.get("GNU.sparse.name");
+        if (headers.containsKey("GNU.sparse.name")) {
+            name = headers.get("GNU.sparse.name");
+        }
+        if (headers.containsKey("GNU.sparse.realsize")) {
+            try {
+                realSize = Integer.parseInt(headers.get("GNU.sparse.realsize"));
+            } catch (NumberFormatException ex) {
+                throw new IOException("Corrupted TAR archive. GNU.sparse.realsize header for "
+                    + name + " contains non-numeric value");
+            }
+        }
     }
 
-    void fillStarSparseData(final Map<String, String> headers) {
+    void fillStarSparseData(final Map<String, String> headers) throws IOException {
         starSparse = true;
         if (headers.containsKey("SCHILY.realsize")) {
-            realSize = Long.parseLong(headers.get("SCHILY.realsize"));
+            try {
+                realSize = Long.parseLong(headers.get("SCHILY.realsize"));
+            } catch (NumberFormatException ex) {
+                throw new IOException("Corrupted TAR archive. SCHILY.realsize header for "
+                    + name + " contains non-numeric value");
+            }
         }
     }
 }

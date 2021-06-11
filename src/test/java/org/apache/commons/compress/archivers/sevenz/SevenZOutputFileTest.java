@@ -17,7 +17,12 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -32,6 +37,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.tukaani.xz.LZMA2Options;
 
@@ -76,7 +82,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             entry.setCreationDate(creationDate);
             entry.setAccessDate(accessDate);
             outArchive.putArchiveEntry(entry);
-            outArchive.write(new byte[0]);
+            outArchive.write(ByteUtils.EMPTY_BYTE_ARRAY);
             outArchive.closeArchiveEntry();
 
             entry = new SevenZArchiveEntry();
@@ -84,7 +90,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             entry.setCreationDate(creationDate);
             entry.setAccessDate(accessDate);
             outArchive.putArchiveEntry(entry);
-            outArchive.write(new ByteArrayInputStream(new byte[0]));
+            outArchive.write(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY));
             outArchive.closeArchiveEntry();
 
             entry = new SevenZArchiveEntry();
@@ -536,7 +542,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             return null;
         }
         assertEquals("foo/" + index + ".txt", entry.getName());
-        assertEquals(false, entry.isDirectory());
+        assertFalse(entry.isDirectory());
         if (entry.getSize() == 0) {
             return Boolean.FALSE;
         }

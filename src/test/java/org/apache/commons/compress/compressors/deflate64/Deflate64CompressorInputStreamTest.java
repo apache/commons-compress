@@ -17,6 +17,16 @@
  */
 package org.apache.commons.compress.compressors.deflate64;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.times;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
@@ -25,16 +35,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.times;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class Deflate64CompressorInputStreamTest {
@@ -45,31 +46,35 @@ public class Deflate64CompressorInputStreamTest {
 
     @Test
     public void readWhenClosed() throws Exception {
-        final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(nullDecoder);
-        assertEquals(-1, input.read());
-        assertEquals(-1, input.read(new byte[1]));
-        assertEquals(-1, input.read(new byte[1], 0, 1));
+        try (final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(nullDecoder)) {
+            assertEquals(-1, input.read());
+            assertEquals(-1, input.read(new byte[1]));
+            assertEquals(-1, input.read(new byte[1], 0, 1));
+        }
     }
 
     @Test
     public void properSizeWhenClosed() throws Exception {
-        final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(nullDecoder);
-        assertEquals(0, input.available());
+        try (final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(nullDecoder)) {
+            assertEquals(0, input.available());
+        }
     }
 
     @Test
     public void delegatesAvailable() throws Exception {
         Mockito.when(decoder.available()).thenReturn(1024);
 
-        final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder);
-        assertEquals(1024, input.available());
+        try (final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder)) {
+            assertEquals(1024, input.available());
+        }
     }
 
     @Test
     public void closeCallsDecoder() throws Exception {
 
-        final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder);
-        input.close();
+        try (final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder)) {
+            // empty
+        }
 
         Mockito.verify(decoder, times(1)).close();
     }
@@ -77,10 +82,9 @@ public class Deflate64CompressorInputStreamTest {
     @Test
     public void closeIsDelegatedJustOnce() throws Exception {
 
-        final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder);
-
-        input.close();
-        input.close();
+        try (final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder)) {
+            input.close();
+        }
 
         Mockito.verify(decoder, times(1)).close();
     }
@@ -95,7 +99,7 @@ public class Deflate64CompressorInputStreamTest {
         try (Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(new ByteArrayInputStream(data));
              BufferedReader br = new BufferedReader(new InputStreamReader(input))) {
             assertEquals("Hello World", br.readLine());
-            assertEquals(null, br.readLine());
+            assertNull(br.readLine());
         }
     }
 
@@ -110,7 +114,7 @@ public class Deflate64CompressorInputStreamTest {
              .createCompressorInputStream(CompressorStreamFactory.DEFLATE64, new ByteArrayInputStream(data));
              BufferedReader br = new BufferedReader(new InputStreamReader(input))) {
             assertEquals("Hello World", br.readLine());
-            assertEquals(null, br.readLine());
+            assertNull(br.readLine());
         }
     }
 
@@ -138,7 +142,7 @@ public class Deflate64CompressorInputStreamTest {
         try (Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(new ByteArrayInputStream(data));
              BufferedReader br = new BufferedReader(new InputStreamReader(input))) {
             assertEquals("Hello World", br.readLine());
-            assertEquals(null, br.readLine());
+            assertNull(br.readLine());
         }
     }
 

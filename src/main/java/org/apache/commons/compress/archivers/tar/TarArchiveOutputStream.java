@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.LinkOption;
@@ -31,6 +30,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
@@ -100,17 +100,17 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     private int recordsWritten;
     private final int recordsPerBlock;
 
-    private boolean closed = false;
+    private boolean closed;
 
     /**
      * Indicates if putArchiveEntry has been called without closeArchiveEntry
      */
-    private boolean haveUnclosedEntry = false;
+    private boolean haveUnclosedEntry;
 
     /**
      * indicates if this archive is finished
      */
-    private boolean finished = false;
+    private boolean finished;
 
     private final FixedLengthBlockOutputStream out;
     private final CountingOutputStream countingOut;
@@ -120,7 +120,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     // the provided encoding (for unit tests)
     final String encoding;
 
-    private boolean addPaxHeadersForNonAsciiNames = false;
+    private boolean addPaxHeadersForNonAsciiNames;
     private static final ZipEncoding ASCII =
         ZipEncodingHelper.getZipEncoding("ASCII");
 
@@ -208,7 +208,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      */
     public TarArchiveOutputStream(final OutputStream os, final int blockSize,
         final String encoding) {
-        int realBlockSize;
+        final int realBlockSize;
         if (BLOCK_SIZE_UNSPECIFIED == blockSize) {
             realBlockSize = RECORD_SIZE;
         } else {
@@ -367,7 +367,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 TarConstants.LF_GNUTYPE_LONGNAME, "file name");
 
             final String linkName = entry.getLinkName();
-            final boolean paxHeaderContainsLinkPath = linkName != null && linkName.length() > 0
+            final boolean paxHeaderContainsLinkPath = linkName != null && !linkName.isEmpty()
                 && handleLongName(entry, linkName, paxHeaders, "linkpath",
                 TarConstants.LF_GNUTYPE_LONGLINK, "link name");
 
@@ -389,7 +389,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             }
             paxHeaders.putAll(entry.getExtraPaxHeaders());
 
-            if (paxHeaders.size() > 0) {
+            if (!paxHeaders.isEmpty()) {
                 writePaxHeaders(entry, entryName, paxHeaders);
             }
 
@@ -486,8 +486,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         closeArchiveEntry();
     }
 
-    private byte[] encodeExtendedPaxHeadersContents(final Map<String, String> headers)
-        throws UnsupportedEncodingException {
+    private byte[] encodeExtendedPaxHeadersContents(final Map<String, String> headers) {
         final StringWriter w = new StringWriter();
         for (final Map.Entry<String, String> h : headers.entrySet()) {
             final String key = h.getKey();
@@ -686,7 +685,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             if (longFileMode == LONGFILE_POSIX) {
                 paxHeaders.put(paxHeaderName, name);
                 return true;
-            } else if (longFileMode == LONGFILE_GNU) {
+            }
+            if (longFileMode == LONGFILE_GNU) {
                 // create a TarEntry for the LongLink, the contents
                 // of which are the link's name
                 final TarArchiveEntry longLinkEntry = new TarArchiveEntry(TarConstants.GNU_LONGLINK,

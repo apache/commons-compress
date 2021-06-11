@@ -310,7 +310,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     private int nMTF;
 
     private int currentChar = -1;
-    private int runLength = 0;
+    private int runLength;
 
     private int blockCRC;
     private int combinedCRC;
@@ -394,11 +394,10 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
 
     @Override
     public void write(final int b) throws IOException {
-        if (!closed) {
-            write0(b);
-        } else {
+        if (closed) {
             throw new IOException("Closed");
         }
+        write0(b);
     }
 
     /**
@@ -501,11 +500,8 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     @Override
     public void close() throws IOException {
         if (!closed) {
-            final OutputStream outShadow = this.out;
-            try {
+            try (OutputStream outShadow = this.out) {
                 finish();
-            } finally {
-                outShadow.close();
             }
         }
     }
@@ -541,7 +537,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
 
     private void initBlock() {
         // blockNo++;
-        this.crc.initialiseCRC();
+        this.crc.initializeCRC();
         this.last = -1;
         // ch = 0;
 
@@ -1238,11 +1234,10 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                             mtfFreq[RUNB]++;
                         }
 
-                        if (zPend >= 2) {
-                            zPend = (zPend - 2) >> 1;
-                        } else {
+                        if (zPend < 2) {
                             break;
                         }
+                        zPend = (zPend - 2) >> 1;
                     }
                     zPend = 0;
                 }
@@ -1265,11 +1260,10 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                     mtfFreq[RUNB]++;
                 }
 
-                if (zPend >= 2) {
-                    zPend = (zPend - 2) >> 1;
-                } else {
+                if (zPend < 2) {
                     break;
                 }
+                zPend = (zPend - 2) >> 1;
             }
         }
 

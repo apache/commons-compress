@@ -50,6 +50,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     private long crc, compressedCrc;
     private long size, compressedSize;
     private Iterable<? extends SevenZMethodConfiguration> contentMethods;
+    static final SevenZArchiveEntry[] EMPTY_SEVEN_Z_ARCHIVE_ENTRY_ARRAY = new SevenZArchiveEntry[0];
 
     public SevenZArchiveEntry() {
     }
@@ -569,9 +570,6 @@ public class SevenZArchiveEntry implements ArchiveEntry {
                 return false;
             }
         }
-        if (i2.hasNext()) {
-            return false;
-        }
-        return true;
+        return !i2.hasNext();
     }
 }

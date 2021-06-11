@@ -21,7 +21,7 @@ package org.apache.commons.compress.compressors;
 import java.io.InputStream;
 
 public abstract class CompressorInputStream extends InputStream {
-    private long bytesRead = 0;
+    private long bytesRead;
 
     /**
      * Increments the counter of already read bytes.

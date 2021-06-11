@@ -20,6 +20,8 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.util.zip.ZipException;
 
+import org.apache.commons.compress.utils.ByteUtils;
+
 import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
 
@@ -47,8 +49,6 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
     private static final String LFH_MUST_HAVE_BOTH_SIZES_MSG =
         "Zip64 extended information must contain"
         + " both size values in the local file header.";
-    private static final byte[] EMPTY = new byte[0];
-
     private ZipEightByteInteger size, compressedSize, relativeHeaderOffset;
     private ZipLong diskStart;
 
@@ -131,7 +131,7 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
             addSizes(data);
             return data;
         }
-        return EMPTY;
+        return ByteUtils.EMPTY_BYTE_ARRAY;
     }
 
     @Override

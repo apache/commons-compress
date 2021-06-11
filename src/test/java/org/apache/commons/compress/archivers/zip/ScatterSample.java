@@ -25,8 +25,8 @@ import java.util.concurrent.ExecutionException;
 
 public class ScatterSample {
 
-    ParallelScatterZipCreator scatterZipCreator = new ParallelScatterZipCreator();
-    ScatterZipOutputStream dirs = ScatterZipOutputStream.fileBased(File.createTempFile("scatter-dirs", "tmp"));
+    final ParallelScatterZipCreator scatterZipCreator = new ParallelScatterZipCreator();
+    final ScatterZipOutputStream dirs = ScatterZipOutputStream.fileBased(File.createTempFile("scatter-dirs", "tmp"));
 
     public ScatterSample() throws IOException {
     }

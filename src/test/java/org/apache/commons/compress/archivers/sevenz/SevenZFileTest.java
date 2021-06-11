@@ -17,11 +17,17 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -30,6 +36,7 @@ import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -53,7 +60,7 @@ public class SevenZFileTest extends AbstractTestCase {
         + " connections>\r\n<meinxml>\r\n\t<leer />\r\n</meinxml>\n";
 
     @Rule
-    public ExpectedException thrown = ExpectedException.none();
+    public final ExpectedException thrown = ExpectedException.none();
 
     // https://issues.apache.org/jira/browse/COMPRESS-320
     @Test
@@ -100,8 +107,7 @@ public class SevenZFileTest extends AbstractTestCase {
                     if (entry.hasStream()) {
                         assertTrue(entriesByName.containsKey(entry.getName()));
                         final byte[] content = readFully(archive);
-                        assertTrue("Content mismatch on: " + fileName + "!" + entry.getName(),
-                            Arrays.equals(content, entriesByName.get(entry.getName())));
+                        assertArrayEquals("Content mismatch on: " + fileName + "!" + entry.getName(), content, entriesByName.get(entry.getName()));
                     }
                 }
 
@@ -272,7 +278,7 @@ public class SevenZFileTest extends AbstractTestCase {
     @Test
     public void getEntriesOfUnarchiveInMemoryTest() throws IOException {
         byte[] data = null;
-        try (FileInputStream fis = new FileInputStream(getFile("bla.7z"))) {
+        try (InputStream fis = Files.newInputStream(getFile("bla.7z").toPath())) {
             data = IOUtils.toByteArray(fis);
         }
         try (SevenZFile sevenZFile = new SevenZFile(new SeekableInMemoryByteChannel(data))) {
@@ -721,8 +727,19 @@ public class SevenZFileTest extends AbstractTestCase {
         for (final Path file : testFiles) {
             try (SevenZFile sevenZFile = new SevenZFile(Files.newByteChannel(file))) {
                 fail("Expected IOException: start header corrupt and unable to guess end header");
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 assertEquals("Start header corrupt and unable to guess end header", e.getMessage());
+            }
+        }
+    }
+
+    @Test
+    public void retrieveInputStreamForShuffledEntries() throws IOException {
+        try (final SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-348.7z"))) {
+            List<SevenZArchiveEntry> entries = (List<SevenZArchiveEntry>) sevenZFile.getEntries();
+            Collections.shuffle(entries);
+            for (final SevenZArchiveEntry entry : entries) {
+                IOUtils.toByteArray(sevenZFile.getInputStream(entry));
             }
         }
     }

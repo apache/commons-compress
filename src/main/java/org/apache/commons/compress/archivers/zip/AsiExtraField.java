@@ -21,6 +21,9 @@ package org.apache.commons.compress.archivers.zip;
 import java.util.zip.CRC32;
 import java.util.zip.ZipException;
 
+import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
+
 /**
  * Adds Unix file permission and UID/GID fields as well as symbolic
  * link handling.
@@ -52,19 +55,19 @@ import java.util.zip.ZipException;
 public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
 
     private static final ZipShort HEADER_ID = new ZipShort(0x756E);
-    private static final int      WORD = 4;
+    private static final int      MIN_SIZE = WORD + SHORT + WORD + SHORT + SHORT;
     /**
      * Standard Unix stat(2) file mode.
      */
-    private int mode = 0;
+    private int mode;
     /**
      * User ID.
      */
-    private int uid = 0;
+    private int uid;
     /**
      * Group ID.
      */
-    private int gid = 0;
+    private int gid;
     /**
      * File this entry points to, if it is a symbolic link.
      *
@@ -74,7 +77,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     /**
      * Is this an entry for a directory?
      */
-    private boolean dirFlag = false;
+    private boolean dirFlag;
 
     /**
      * Instance used to calculate checksums.
@@ -220,7 +223,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      * @return true if this is a symbolic link
      */
     public boolean isLink() {
-        return getLinkedFile().length() != 0;
+        return !getLinkedFile().isEmpty();
     }
 
     /**
@@ -266,6 +269,10 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     @Override
     public void parseFromLocalFileData(final byte[] data, final int offset, final int length)
         throws ZipException {
+        if (length < MIN_SIZE) {
+            throw new ZipException("The length is too short, only "
+                    + length + " bytes, expected at least " + MIN_SIZE);
+        }
 
         final long givenChecksum = ZipLong.getValue(data, offset);
         final byte[] tmp = new byte[length - WORD];
@@ -283,16 +290,17 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
         final int newMode = ZipShort.getValue(tmp, 0);
         // CheckStyle:MagicNumber OFF
         final byte[] linkArray = new byte[(int) ZipLong.getValue(tmp, 2)];
+        final int linkArrayLength = linkArray.length;
         uid = ZipShort.getValue(tmp, 6);
         gid = ZipShort.getValue(tmp, 8);
 
-        if (linkArray.length == 0) {
+        if (linkArrayLength == 0) {
             link = "";
-        } else if (linkArray.length > tmp.length - 10) {
-            throw new ZipException("Bad symbolic link name length " + linkArray.length
+        } else if (linkArrayLength > tmp.length - 10) {
+            throw new ZipException("Bad symbolic link name length " + linkArrayLength
                 + " in ASI extra field");
         } else {
-            System.arraycopy(tmp, 10, linkArray, 0, linkArray.length);
+            System.arraycopy(tmp, 10, linkArray, 0, linkArrayLength);
             link = new String(linkArray); // Uses default charset - see class Javadoc
         }
         // CheckStyle:MagicNumber ON

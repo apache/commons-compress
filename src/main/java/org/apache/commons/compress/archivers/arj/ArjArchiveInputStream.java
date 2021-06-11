@@ -47,8 +47,8 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
     private final DataInputStream in;
     private final String charsetName;
     private final MainHeader mainHeader;
-    private LocalFileHeader currentLocalFileHeader = null;
-    private InputStream currentInputStream = null;
+    private LocalFileHeader currentLocalFileHeader;
+    private InputStream currentInputStream;
 
     /**
      * Constructs the ArjInputStream, taking ownership of the inputStream that is passed in.
@@ -115,10 +115,10 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
                 buffer.write(nextByte);
             }
             if (charsetName != null) {
-                return new String(buffer.toByteArray(), charsetName);
+                return buffer.toString(charsetName);
             }
             // intentionally using the default encoding as that's the contract for a null charsetName
-            return new String(buffer.toByteArray());
+            return buffer.toString();
         }
     }
 

@@ -19,9 +19,10 @@
 package org.apache.commons.compress.compressors.lz4;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collection;
 import org.apache.commons.compress.AbstractTestCase;
@@ -37,13 +38,11 @@ public final class BlockLZ4CompressorRoundtripTest extends AbstractTestCase {
 
     @org.junit.runners.Parameterized.Parameters(name = "using {0}")
     public static Collection<Object[]> factory() {
-        return Arrays.asList(new Object[][] {
-                new Object[] { "default", BlockLZ4CompressorOutputStream.createParameterBuilder().build() },
+        return Arrays.asList(new Object[] { "default", BlockLZ4CompressorOutputStream.createParameterBuilder().build() },
                 new Object[] { "tuned for speed",
                     BlockLZ4CompressorOutputStream.createParameterBuilder().tunedForSpeed().build() },
                 new Object[] { "tuned for compression ratio",
-                    BlockLZ4CompressorOutputStream.createParameterBuilder().tunedForCompressionRatio().build() }
-            });
+                    BlockLZ4CompressorOutputStream.createParameterBuilder().tunedForCompressionRatio().build() });
     }
 
     private final String config;
@@ -58,8 +57,8 @@ public final class BlockLZ4CompressorRoundtripTest extends AbstractTestCase {
         final File input = getFile(testFile);
         long start = System.currentTimeMillis();
         final File outputSz = new File(dir, input.getName() + ".block.lz4");
-        try (FileInputStream is = new FileInputStream(input);
-             FileOutputStream os = new FileOutputStream(outputSz);
+        try (InputStream is = Files.newInputStream(input.toPath());
+             final OutputStream os = Files.newOutputStream(outputSz.toPath());
              BlockLZ4CompressorOutputStream los = new BlockLZ4CompressorOutputStream(os, params)) {
             IOUtils.copy(is, los);
         }
@@ -67,8 +66,8 @@ public final class BlockLZ4CompressorRoundtripTest extends AbstractTestCase {
         System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
             + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
         start = System.currentTimeMillis();
-        try (FileInputStream is = new FileInputStream(input);
-             BlockLZ4CompressorInputStream sis = new BlockLZ4CompressorInputStream(new FileInputStream(outputSz))) {
+        try (InputStream is = Files.newInputStream(input.toPath());
+             BlockLZ4CompressorInputStream sis = new BlockLZ4CompressorInputStream(Files.newInputStream(outputSz.toPath()))) {
             final byte[] expected = IOUtils.toByteArray(is);
             final byte[] actual = IOUtils.toByteArray(sis);
             Assert.assertArrayEquals(expected, actual);

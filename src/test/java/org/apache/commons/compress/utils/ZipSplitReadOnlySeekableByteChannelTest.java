@@ -37,7 +37,7 @@ import static org.apache.commons.compress.AbstractTestCase.getFile;
 
 public class ZipSplitReadOnlySeekableByteChannelTest {
     @Rule
-    public ExpectedException thrown = ExpectedException.none();
+    public final ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void constructorThrowsOnNullArg() throws IOException {
@@ -99,7 +99,7 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
 
     @Test
     public void forOrderedSeekableByteChannelsReturnsIdentityForSingleElement() throws IOException {
-        final SeekableByteChannel emptyChannel = new SeekableInMemoryByteChannel(new byte[0]);
+        final SeekableByteChannel emptyChannel = new SeekableInMemoryByteChannel(ByteUtils.EMPTY_BYTE_ARRAY);
         final SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.forOrderedSeekableByteChannels(emptyChannel);
         Assert.assertSame(emptyChannel, channel);
     }

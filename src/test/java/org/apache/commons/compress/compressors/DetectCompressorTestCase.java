@@ -27,9 +27,9 @@ import static org.junit.Assert.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.MockEvilInputStream;
@@ -39,6 +39,7 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorInputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.apache.commons.compress.compressors.zstandard.ZstdCompressorInputStream;
+import org.apache.commons.compress.utils.ByteUtils;
 import org.junit.Test;
 
 @SuppressWarnings("deprecation") // deliberately tests setDecompressConcatenated
@@ -119,7 +120,7 @@ public final class DetectCompressorTestCase {
         assertTrue(zstd instanceof ZstdCompressorInputStream);
 
         try {
-            factory.createCompressorInputStream(new ByteArrayInputStream(new byte[0]));
+            factory.createCompressorInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY));
             fail("No exception thrown for an empty input stream");
         } catch (final CompressorException e) {
             // expected
@@ -145,7 +146,7 @@ public final class DetectCompressorTestCase {
         assertEquals(CompressorStreamFactory.LZMA, detect("COMPRESS-382"));
 
         try {
-            CompressorStreamFactory.detect(new BufferedInputStream(new ByteArrayInputStream(new byte[0])));
+            CompressorStreamFactory.detect(new BufferedInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY)));
             fail("shouldn't be able to detect empty stream");
         } catch (final CompressorException e) {
             assertEquals("No Compressor found for the stream signature.", e.getMessage());
@@ -171,7 +172,7 @@ public final class DetectCompressorTestCase {
     private String detect(final String testFileName) throws IOException, CompressorException {
         String name = null;
         try (InputStream is = new BufferedInputStream(
-                new FileInputStream(getFile(testFileName)))) {
+                Files.newInputStream(getFile(testFileName).toPath()))) {
             name = CompressorStreamFactory.detect(is);
         }
         return name;
@@ -211,16 +212,15 @@ public final class DetectCompressorTestCase {
         final CompressorStreamFactory fac = new CompressorStreamFactory(true,
                 memoryLimitInKb);
         final InputStream is = new BufferedInputStream(
-                new FileInputStream(getFile(fileName)));
+                Files.newInputStream(getFile(fileName).toPath()));
         try {
             return fac.createCompressorInputStream(is);
         } catch (final CompressorException e) {
             if (e.getCause() != null && e.getCause() instanceof Exception) {
                 //unwrap cause to reveal MemoryLimitException
                 throw (Exception)e.getCause();
-            } else {
-                throw e;
             }
+            throw e;
         }
 
     }
@@ -272,14 +272,14 @@ public final class DetectCompressorTestCase {
     private CompressorInputStream getStreamFor(final String resource)
             throws CompressorException, IOException {
         return factory.createCompressorInputStream(
-                   new BufferedInputStream(new FileInputStream(
-                       getFile(resource))));
+                   new BufferedInputStream(Files.newInputStream(
+                       getFile(resource).toPath())));
     }
 
     private CompressorInputStream getStreamFor(final String resource, final CompressorStreamFactory factory)
             throws CompressorException, IOException {
         return factory.createCompressorInputStream(
-                   new BufferedInputStream(new FileInputStream(
-                       getFile(resource))));
+                   new BufferedInputStream(Files.newInputStream(
+                       getFile(resource).toPath())));
     }
 }

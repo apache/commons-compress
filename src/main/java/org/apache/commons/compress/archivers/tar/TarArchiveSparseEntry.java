@@ -40,6 +40,10 @@ import java.util.List;
  * char numbytes[12]; // offset 12
  * };
  * </pre>
+ *
+ * <p>Each such struct describes a block of data that has actually been written to the archive. The offset describes
+ * where in the extracted file the data is supposed to start and the numbytes provides the length of the block. When
+ * extracting the entry the gaps between the sparse structs are equivalent to areas filled with zero bytes.</p>
  */
 
 public class TarArchiveSparseEntry implements TarConstants {
@@ -57,17 +61,7 @@ public class TarArchiveSparseEntry implements TarConstants {
      */
     public TarArchiveSparseEntry(final byte[] headerBuf) throws IOException {
         int offset = 0;
-        sparseHeaders = new ArrayList<>();
-        for(int i = 0; i < SPARSE_HEADERS_IN_EXTENSION_HEADER;i++) {
-            final TarArchiveStructSparse sparseHeader = TarUtils.parseSparse(headerBuf,
-                    offset + i * (SPARSE_OFFSET_LEN + SPARSE_NUMBYTES_LEN));
-
-            // some sparse headers are empty, we need to skip these sparse headers
-            if(sparseHeader.getOffset() > 0 || sparseHeader.getNumbytes() > 0) {
-                sparseHeaders.add(sparseHeader);
-            }
-        }
-
+        sparseHeaders = new ArrayList<>(TarUtils.readSparseStructs(headerBuf, 0, SPARSE_HEADERS_IN_EXTENSION_HEADER));
         offset += SPARSELEN_GNU_SPARSE;
         isExtended = TarUtils.parseBoolean(headerBuf, offset);
     }

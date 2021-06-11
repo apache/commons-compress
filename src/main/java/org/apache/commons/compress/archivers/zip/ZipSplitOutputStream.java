@@ -20,9 +20,9 @@ package org.apache.commons.compress.archivers.zip;
 import org.apache.commons.compress.utils.FileNameUtils;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
 
 /**
  * Used internally by {@link ZipArchiveOutputStream} when creating a split archive.
@@ -33,9 +33,9 @@ class ZipSplitOutputStream extends OutputStream {
     private OutputStream outputStream;
     private File zipFile;
     private final long splitSize;
-    private int currentSplitSegmentIndex = 0;
-    private long currentSplitSegmentBytesWritten = 0;
-    private boolean finished = false;
+    private int currentSplitSegmentIndex;
+    private long currentSplitSegmentBytesWritten;
+    private boolean finished;
     private final byte[] singleByte = new byte[1];
 
     /**
@@ -65,7 +65,7 @@ class ZipSplitOutputStream extends OutputStream {
         this.zipFile = zipFile;
         this.splitSize = splitSize;
 
-        this.outputStream = new FileOutputStream(zipFile);
+        this.outputStream = Files.newOutputStream(zipFile.toPath());
         // write the zip split signature 0x08074B50 to the zip file
         writeZipSplitSignature();
     }
@@ -161,10 +161,9 @@ class ZipSplitOutputStream extends OutputStream {
     /**
      * Create a new zip split segment and prepare to write to the new segment
      *
-     * @return
      * @throws IOException
      */
-    private OutputStream openNewSplitSegment() throws IOException {
+    private void openNewSplitSegment() throws IOException {
         File newFile;
         if (currentSplitSegmentIndex == 0) {
             outputStream.close();
@@ -177,12 +176,11 @@ class ZipSplitOutputStream extends OutputStream {
         newFile = createNewSplitSegmentFile(null);
 
         outputStream.close();
-        outputStream = new FileOutputStream(newFile);
+        outputStream = Files.newOutputStream(newFile.toPath());
         currentSplitSegmentBytesWritten = 0;
         zipFile = newFile;
         currentSplitSegmentIndex++;
 
-        return outputStream;
     }
 
     /**

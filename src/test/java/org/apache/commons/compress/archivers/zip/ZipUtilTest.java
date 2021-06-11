@@ -18,10 +18,12 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -123,8 +125,8 @@ public class ZipUtilTest {
 
         for (int i = 0; i < bTest.length; i++) {
             final byte[] result = ZipUtil.reverse(bTest[i]);
-            assertTrue("reverse mutates in-place", bTest[i] == result);
-            assertTrue("reverse actually reverses", Arrays.equals(rTest[i], result));
+            assertSame("reverse mutates in-place", bTest[i], result);
+            assertArrayEquals("reverse actually reverses", rTest[i], result);
         }
     }
 

@@ -19,6 +19,7 @@
 
 package org.apache.commons.compress.compressors.gzip;
 
+import java.io.OutputStream;
 import java.util.zip.Deflater;
 
 /**
@@ -33,6 +34,7 @@ public class GzipParameters {
     private String filename;
     private String comment;
     private int operatingSystem = 255; // Unknown OS by default
+    private int bufferSize = 512;
 
     public int getCompressionLevel() {
         return compressionLevel;
@@ -117,5 +119,29 @@ public class GzipParameters {
      */
     public void setOperatingSystem(final int operatingSystem) {
         this.operatingSystem = operatingSystem;
+    }
+
+    /**
+     * Gets size of the buffer used to retrieve compressed data.
+     * @return The size of the buffer used to retrieve compressed data.
+     * @since 1.21
+     * @see #setBufferSize(int)
+     */
+    public int getBufferSize() {
+        return this.bufferSize;
+    }
+
+    /**
+     * Sets size of the buffer used to retrieve compressed data from
+     * {@link Deflater} and write to underlying {@link OutputStream}.
+     * 
+     * @param bufferSize the bufferSize to set. Must be a positive value.
+     * @since 1.21
+     */
+    public void setBufferSize(int bufferSize) {
+        if (bufferSize <= 0) {
+            throw new IllegalArgumentException("invalid buffer size: " + bufferSize);
+        }
+        this.bufferSize = bufferSize;
     }
 }

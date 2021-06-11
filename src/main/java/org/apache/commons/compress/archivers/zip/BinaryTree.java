@@ -51,7 +51,7 @@ class BinaryTree {
             throw new IllegalArgumentException("depth must be bigger than 0 and not bigger than 30"
                 + " but is " + depth);
         }
-        tree = new int[(int) ((1l << (depth + 1)) - 1)];
+        tree = new int[(int) ((1L << (depth + 1)) - 1)];
         Arrays.fill(tree, UNDEFINED);
     }
 
@@ -66,11 +66,10 @@ class BinaryTree {
     public void addLeaf(final int node, final int path, final int depth, final int value) {
         if (depth == 0) {
             // end of the path reached, add the value to the current node
-            if (tree[node] == UNDEFINED) {
-                tree[node] = value;
-            } else {
+            if (tree[node] != UNDEFINED) {
                 throw new IllegalArgumentException("Tree value at index " + node + " has already been assigned (" + tree[node] + ")");
             }
+            tree[node] = value;
         } else {
             // mark the current node as a non leaf node
             tree[node] = NODE;
@@ -150,17 +149,18 @@ class BinaryTree {
             maxLength = Math.max(maxLength, bitLength);
         }
 
+        final int oBitLengths = originalBitLengths.length;
         // sort the array of bit lengths and memorize the permutation used to restore the order of the codes
-        final int[] permutation = new int[originalBitLengths.length];
+        final int[] permutation = new int[oBitLengths];
         for (int k = 0; k < permutation.length; k++) {
             permutation[k] = k;
         }
 
         int c = 0;
-        final int[] sortedBitLengths = new int[originalBitLengths.length];
-        for (int k = 0; k < originalBitLengths.length; k++) {
+        final int[] sortedBitLengths = new int[oBitLengths];
+        for (int k = 0; k < oBitLengths; k++) {
             // iterate over the values
-            for (int l = 0; l < originalBitLengths.length; l++) {
+            for (int l = 0; l < oBitLengths; l++) {
                 // look for the value in the original array
                 if (originalBitLengths[l] == k) {
                     // put the value at the current position in the sorted array...

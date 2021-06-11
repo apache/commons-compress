@@ -20,11 +20,10 @@ package org.apache.commons.compress.compressors;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.lzma.LZMACompressorInputStream;
@@ -38,18 +37,18 @@ public final class LZMATestCase extends AbstractTestCase {
     public void lzmaRoundtrip() throws Exception {
         final File input = getFile("test1.xml");
         final File compressed = new File(dir, "test1.xml.xz");
-        try (OutputStream out = new FileOutputStream(compressed)) {
+        try (OutputStream out = Files.newOutputStream(compressed.toPath())) {
             try (CompressorOutputStream cos = new CompressorStreamFactory()
                     .createCompressorOutputStream("lzma", out)) {
-                IOUtils.copy(new FileInputStream(input), cos);
+                IOUtils.copy(Files.newInputStream(input.toPath()), cos);
             }
         }
         byte[] orig;
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             orig = IOUtils.toByteArray(is);
         }
-        byte[] uncompressed;
-        try (InputStream is = new FileInputStream(compressed);
+        final byte[] uncompressed;
+        try (InputStream is = Files.newInputStream(compressed.toPath());
              CompressorInputStream in = new LZMACompressorInputStream(is)) {
             uncompressed = IOUtils.toByteArray(in);
         }
@@ -60,7 +59,7 @@ public final class LZMATestCase extends AbstractTestCase {
     public void testLZMAUnarchive() throws Exception {
         final File input = getFile("bla.tar.lzma");
         final File output = new File(dir, "bla.tar");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final CompressorInputStream in = new LZMACompressorInputStream(is);
             copy(in, output);
         }
@@ -70,7 +69,7 @@ public final class LZMATestCase extends AbstractTestCase {
     public void testLZMAUnarchiveWithAutodetection() throws Exception {
         final File input = getFile("bla.tar.lzma");
         final File output = new File(dir, "bla.tar");
-        try (InputStream is = new BufferedInputStream(new FileInputStream(input))) {
+        try (InputStream is = new BufferedInputStream(Files.newInputStream(input.toPath()))) {
             final CompressorInputStream in = new CompressorStreamFactory()
                     .createCompressorInputStream(is);
             copy(in, output);
@@ -80,7 +79,7 @@ public final class LZMATestCase extends AbstractTestCase {
     @Test
     public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.lzma");
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final LZMACompressorInputStream in =
                     new LZMACompressorInputStream(is);
             IOUtils.toByteArray(in);
@@ -94,7 +93,7 @@ public final class LZMATestCase extends AbstractTestCase {
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.lzma");
         final byte[] buf = new byte[2];
-        try (InputStream is = new FileInputStream(input)) {
+        try (InputStream is = Files.newInputStream(input.toPath())) {
             final LZMACompressorInputStream in =
                     new LZMACompressorInputStream(is);
             IOUtils.toByteArray(in);
@@ -105,14 +104,9 @@ public final class LZMATestCase extends AbstractTestCase {
     }
 
     private void copy(final InputStream in, final File output) throws IOException {
-        FileOutputStream out = null;
-        try {
-            out = new FileOutputStream(output);
+        try (OutputStream out = Files.newOutputStream(output.toPath())) {
             IOUtils.copy(in, out);
         } finally {
-            if (out != null) {
-                out.close();
-            }
             in.close();
         }
     }

@@ -55,9 +55,12 @@ public class SevenZFileOptions {
     }
 
     /**
-     * Gets the maximum amount of memory to use for extraction. Not
-     * all codecs will honor this setting. Currently only lzma and
-     * lzma2 are supported.
+     * Gets the maximum amount of memory to use for parsing the
+     * archive and during extraction.
+     *
+     * <p>Not all codecs will honor this setting. Currently only lzma
+     * and lzma2 are supported.</p>
+     *
      * @return the maximum amount of memory to use for extraction
      */
     public int getMaxMemoryLimitInKb() {
@@ -83,9 +86,11 @@ public class SevenZFileOptions {
         private int maxMemoryLimitInKb = DEFAUL_MEMORY_LIMIT_IN_KB;
         private boolean useDefaultNameForUnnamedEntries = DEFAULT_USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES;
         /**
-         * Sets the maximum amount of memory to use for
-         * extraction. Not all codecs will honor this
-         * setting. Currently only lzma and lzma2 are supported.
+         * Sets the maximum amount of memory to use for parsing the
+         * archive and during extraction.
+         *
+         * <p>Not all codecs will honor this setting. Currently only lzma
+         * and lzma2 are supported.</p>
          *
          * @param maxMemoryLimitInKb limit of the maximum amount of memory to use
          * @return the reconfigured builder

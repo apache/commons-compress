@@ -67,17 +67,17 @@ import org.apache.commons.compress.utils.IOUtils;
 public class CpioArchiveInputStream extends ArchiveInputStream implements
         CpioConstants {
 
-    private boolean closed = false;
+    private boolean closed;
 
     private CpioArchiveEntry entry;
 
-    private long entryBytesRead = 0;
+    private long entryBytesRead;
 
-    private boolean entryEOF = false;
+    private boolean entryEOF;
 
     private final byte[] tmpbuf = new byte[4096];
 
-    private long crc = 0;
+    private long crc;
 
     private final InputStream in;
 
@@ -306,7 +306,8 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         ensureOpen();
         if (off < 0 || len < 0 || off > b.length - len) {
             throw new IndexOutOfBoundsException();
-        } else if (len == 0) {
+        }
+        if (len == 0) {
             return 0;
         }
 
@@ -369,7 +370,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
 
     private CpioArchiveEntry readNewEntry(final boolean hasCrc)
             throws IOException {
-        CpioArchiveEntry ret;
+        final CpioArchiveEntry ret;
         if (hasCrc) {
             ret = new CpioArchiveEntry(FORMAT_NEW_CRC);
         } else {
@@ -378,7 +379,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
 
         ret.setInode(readAsciiLong(8, 16));
         final long mode = readAsciiLong(8, 16);
-        if (CpioUtil.fileType(mode) != 0){ // mode is initialised to 0
+        if (CpioUtil.fileType(mode) != 0){ // mode is initialized to 0
             ret.setMode(mode);
         }
         ret.setUID(readAsciiLong(8, 16));

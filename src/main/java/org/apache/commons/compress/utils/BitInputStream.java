@@ -40,8 +40,8 @@ public class BitInputStream implements Closeable {
 
     private final CountingInputStream in;
     private final ByteOrder byteOrder;
-    private long bitsCached = 0;
-    private int bitsCachedSize = 0;
+    private long bitsCached;
+    private int bitsCachedSize;
 
     /**
      * Constructor taking an InputStream and its bit arrangement.
@@ -80,7 +80,7 @@ public class BitInputStream implements Closeable {
      */
     public long readBits(final int count) throws IOException {
         if (count < 0 || count > MAXIMUM_CACHE_SIZE) {
-            throw new IllegalArgumentException("count must not be negative or greater than " + MAXIMUM_CACHE_SIZE);
+            throw new IOException("count must not be negative or greater than " + MAXIMUM_CACHE_SIZE);
         }
         if (ensureCache(count)) {
             return -1;
@@ -139,7 +139,7 @@ public class BitInputStream implements Closeable {
 
     private long processBitsGreater57(final int count) throws IOException {
         final long bitsOut;
-        int overflowBits = 0;
+        final int overflowBits;
         long overflow = 0L;
 
         // bitsCachedSize >= 57 and left-shifting it 8 bits would cause an overflow

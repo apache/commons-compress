@@ -106,7 +106,7 @@ public class GzipCompressorInputStream extends CompressorInputStream
     private final CRC32 crc = new CRC32();
 
     // True once everything has been decompressed
-    private boolean endReached = false;
+    private boolean endReached;
 
     // used in no-arg read method
     private final byte[] oneByte = new byte[1];
@@ -309,7 +309,7 @@ public class GzipCompressorInputStream extends CompressorInputStream
                 inf.setInput(buf, 0, bufUsed);
             }
 
-            int ret;
+            final int ret;
             try {
                 ret = inf.inflate(b, off, len);
             } catch (final DataFormatException e) { // NOSONAR

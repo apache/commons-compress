@@ -24,10 +24,8 @@ import static org.junit.Assert.fail;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.FilenameFilter;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -76,7 +74,7 @@ public class LongSymLinkTest extends AbstractTestCase {
         assertTrue(ARCDIR.exists());
         final File listing= new File(ARCDIR,"files.txt");
         assertTrue("files.txt is readable",listing.canRead());
-        final BufferedReader br = new BufferedReader(new FileReader(listing));
+        final BufferedReader br = new BufferedReader(Files.newBufferedReader(listing.toPath()));
         String line;
         while ((line=br.readLine())!=null){
             if (!line.startsWith("#")){
@@ -89,12 +87,7 @@ public class LongSymLinkTest extends AbstractTestCase {
     @Parameters(name = "file={0}")
     public static Collection<Object[]> data() {
         final Collection<Object[]> params = new ArrayList<>();
-        for (final String f : ARCDIR.list(new FilenameFilter() {
-            @Override
-            public boolean accept(final File dir, final String name) {
-                return !name.endsWith(".txt");
-            }
-        }))
+        for (final String f : ARCDIR.list((dir, name) -> !name.endsWith(".txt")))
         {
             params.add(new Object[] { f });
         }
@@ -123,7 +116,7 @@ public class LongSymLinkTest extends AbstractTestCase {
             expected.add("META-INF/");
             expected.add("META-INF/MANIFEST.MF");
         }
-        final ArchiveInputStream ais = factory.createArchiveInputStream(new BufferedInputStream(new FileInputStream(file)));
+        final ArchiveInputStream ais = factory.createArchiveInputStream(new BufferedInputStream(Files.newInputStream(file.toPath())));
         // check if expected type recognized
         if (name.endsWith(".tar")){
             assertTrue(ais instanceof TarArchiveInputStream);
@@ -146,7 +139,7 @@ public class LongSymLinkTest extends AbstractTestCase {
                 if (!ent.endsWith("/")) {// not a directory
                     final int lastSlash = ent.lastIndexOf('/');
                     if (lastSlash >= 0) { // extract path name
-                        expected.add(ent.substring(lastSlash + 1, ent.length()));
+                        expected.add(ent.substring(lastSlash + 1));
                     } else {
                         expected.add(ent);
                     }

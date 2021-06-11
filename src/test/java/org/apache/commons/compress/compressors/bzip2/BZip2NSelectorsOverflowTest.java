@@ -22,8 +22,8 @@ import org.apache.commons.compress.AbstractTestCase;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
+import java.nio.file.Files;
 
 import static org.junit.Assert.assertEquals;
 
@@ -35,7 +35,7 @@ public class BZip2NSelectorsOverflowTest extends AbstractTestCase {
     @Test
     public void shouldDecompressBlockWithNSelectorOverflow() throws Exception {
         final File toDecompress = getFile("lbzip2_32767.bz2");
-        try (final InputStream is = new FileInputStream(toDecompress);
+        try (final InputStream is = Files.newInputStream(toDecompress.toPath());
              final BZip2CompressorInputStream in = new BZip2CompressorInputStream(is)) {
             int l = 0;
             while (in.read() != -1) {
