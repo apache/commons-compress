@@ -306,7 +306,7 @@ The <action> type attribute can be add,update,fix,remove.
         Update maven-pmd-plugin from 3.12.0 to 3.14.0, #115, #154.
       </action>
       <action type="update" date="2020-08-21" due-to="Dependabot" dev="ggregory">
-        Update maven-bundle-plugin from 3.5.1 to 5.1.1 #116.
+        Update maven-bundle-plugin from 3.5.1 to 5.1.2 #116, #180.
       </action>
       <action type="update" date="2020-11-01" due-to="Dependabot" dev="ggregory">
         Bump memoryfilesystem from 1.3.0 to 2.1.0 #131.
