@@ -321,7 +321,10 @@ The <action> type attribute can be add,update,fix,remove.
         Bump mockito-core from 1.10.19 to 3.11.1, #161, #170, #204.
       </action>
       <action type="update" due-to="Gary Gregory" dev="ggregory">
-        Bump commons.jacoco.version 0.8.5 -> 0.8.7, to build on Java 16.
+        Bump commons.jacoco.version from 0.8.5 to 0.8.7 to build on Java 16.
+      </action>
+      <action type="update" due-to="Gary Gregory" dev="ggregory">
+        Bump org.apache.felix:org.apache.felix.framework from 6.0.3 to 6.0.4.
       </action>
       <action issue="COMPRESS-569" type="fix" date="2021-03-06">
         Checked the sizes read for archive entries and reject archives
