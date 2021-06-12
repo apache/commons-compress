@@ -125,7 +125,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
      * https://issues.apache.org/jira/projects/COMPRESS/issues/COMPRESS-555
      * https://github.com/apache/commons-compress/pull/137#issuecomment-690835644
      */
-    private boolean allowStoredEntriesWithDataDescriptor;
+    private final boolean allowStoredEntriesWithDataDescriptor;
 
     /** Count decompressed bytes for current entry */
     private long uncompressedCount;
