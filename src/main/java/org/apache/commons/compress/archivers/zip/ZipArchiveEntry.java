@@ -776,8 +776,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      */
     @Override
     public boolean isDirectory() {
-        final String n = getName();
-        return n != null && n.endsWith("/");
+        return getName().endsWith("/");
     }
 
     /**
@@ -894,8 +893,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
         // on the super.hashCode() method since super.getName() always return
         // the empty string in the current implementation (there's no setter)
         // so it is basically draining the performance of a hashmap lookup
-        final String n = getName();
-        return (n == null ? "" : n).hashCode();
+        return getName().hashCode();
     }
 
     /**

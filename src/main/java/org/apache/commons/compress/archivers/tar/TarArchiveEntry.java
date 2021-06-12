@@ -1707,27 +1707,24 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         if (!preserveAbsolutePath) {
             final String osname = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
 
-            if (osname != null) {
+            // Strip off drive letters!
+            // REVIEW Would a better check be "(File.separator == '\')"?
 
-                // Strip off drive letters!
-                // REVIEW Would a better check be "(File.separator == '\')"?
+            if (osname.startsWith("windows")) {
+                if (fileName.length() > 2) {
+                    final char ch1 = fileName.charAt(0);
+                    final char ch2 = fileName.charAt(1);
 
-                if (osname.startsWith("windows")) {
-                    if (fileName.length() > 2) {
-                        final char ch1 = fileName.charAt(0);
-                        final char ch2 = fileName.charAt(1);
-
-                        if (ch2 == ':'
-                            && (ch1 >= 'a' && ch1 <= 'z'
-                                || ch1 >= 'A' && ch1 <= 'Z')) {
-                            fileName = fileName.substring(2);
-                        }
+                    if (ch2 == ':'
+                        && (ch1 >= 'a' && ch1 <= 'z'
+                            || ch1 >= 'A' && ch1 <= 'Z')) {
+                        fileName = fileName.substring(2);
                     }
-                } else if (osname.contains("netware")) {
-                    final int colon = fileName.indexOf(':');
-                    if (colon != -1) {
-                        fileName = fileName.substring(colon + 1);
-                    }
+                }
+            } else if (osname.contains("netware")) {
+                final int colon = fileName.indexOf(':');
+                if (colon != -1) {
+                    fileName = fileName.substring(colon + 1);
                 }
             }
         }

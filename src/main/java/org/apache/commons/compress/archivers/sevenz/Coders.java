@@ -47,7 +47,8 @@ class Coders {
     private static final Map<SevenZMethod, CoderBase> CODER_MAP = new HashMap<SevenZMethod, CoderBase>() {
 
         private static final long serialVersionUID = 1664829131806520867L;
-    {
+
+        {
             put(SevenZMethod.COPY, new CopyDecoder());
             put(SevenZMethod.LZMA, new LZMADecoder());
             put(SevenZMethod.LZMA2, new LZMA2Decoder());
@@ -62,7 +63,8 @@ class Coders {
             put(SevenZMethod.BCJ_ARM_THUMB_FILTER, new BCJDecoder(new ARMThumbOptions()));
             put(SevenZMethod.BCJ_SPARC_FILTER, new BCJDecoder(new SPARCOptions()));
             put(SevenZMethod.DELTA_FILTER, new DeltaDecoder());
-        }};
+        }
+    };
 
     static CoderBase findByMethod(final SevenZMethod method) {
         return CODER_MAP.get(method);
