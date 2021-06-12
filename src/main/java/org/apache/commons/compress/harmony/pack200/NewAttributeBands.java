@@ -283,7 +283,7 @@ public class NewAttributeBands extends BandSet {
      *
      * @param stream
      * @return
-     * @throws IOException
+     * @throws IOException If an I/O error occurs.
      */
     private UnionCase readNextUnionCase(StringReader stream) throws IOException {
         stream.mark(2);
@@ -816,7 +816,7 @@ public class NewAttributeBands extends BandSet {
      *
      * @param stream
      * @return
-     * @throws IOException
+     * @throws IOException If an I/O error occurs.
      */
     private StringReader getStreamUpToMatchingBracket(StringReader stream)
             throws IOException {
@@ -879,7 +879,7 @@ public class NewAttributeBands extends BandSet {
      *
      * @param stream
      * @return
-     * @throws IOException
+     * @throws IOException If an I/O error occurs.
      */
     private String readUpToMatchingBracket(StringReader stream)
             throws IOException {
@@ -905,7 +905,7 @@ public class NewAttributeBands extends BandSet {
      *
      * @param stream
      * @return
-     * @throws IOException
+     * @throws IOException If an I/O error occurs.
      */
     private Integer readNumber(StringReader stream) throws IOException {
         stream.mark(1);
@@ -937,7 +937,7 @@ public class NewAttributeBands extends BandSet {
      *
      * @param stream
      * @return List of LayoutElements
-     * @throws IOException
+     * @throws IOException If an I/O error occurs.
      */
     private List readBody(StringReader stream) throws IOException {
         List layoutElements = new ArrayList();

@@ -93,7 +93,7 @@ public class PackingUtils {
      *            the jar input stream
      * @param jarOutputStream
      *            the jar output stream
-     * @throws IOException
+     * @throws IOException If an I/O error occurs.
      */
     public static void copyThroughJar(JarInputStream jarInputStream,
             OutputStream outputStream) throws IOException {
@@ -125,7 +125,7 @@ public class PackingUtils {
      *            the input jar file
      * @param jarOutputStream
      *            the jar output stream
-     * @throws IOException
+     * @throws IOException If an I/O error occurs.
      */
     public static void copyThroughJar(JarFile jarFile, OutputStream outputStream)
             throws IOException {

@@ -46,7 +46,7 @@ public class FileBands extends BandSet {
     private InputStream in;
 
     /**
-     * @param segment
+     * @param segment TODO
      */
     public FileBands(Segment segment) {
         super(segment);

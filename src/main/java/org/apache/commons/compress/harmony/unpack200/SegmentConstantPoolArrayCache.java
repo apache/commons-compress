@@ -164,9 +164,9 @@ public class SegmentConstantPoolArrayCache {
          * of:
          *  {"Zero", "Foo", "Two", "Foo"}
          *  would yield a HashMap of:
-         *   "Zero" -> 0
-         *   "Foo" -> 1, 3
-         *   "Two" -> 2
+         *   "Zero" -&gt; 0
+         *   "Foo" -&gt; 1, 3
+         *   "Two" -&gt; 2
          * which is then cached.
          */
         protected void cacheIndexes() {

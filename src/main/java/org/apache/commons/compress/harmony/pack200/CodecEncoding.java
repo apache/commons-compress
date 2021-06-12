@@ -119,7 +119,7 @@ public class CodecEncoding {
      *             reality, is never, since the band_headers are likely stored
      *             in a byte array and accessed via a ByteArrayInputStream.
      *             However, an EOFException could occur if things go wrong)
-     * @throws Pack200Exception
+     * @throws Pack200Exception TODO
      */
     public static Codec getCodec(int value, InputStream in, Codec defaultCodec)
             throws IOException, Pack200Exception {

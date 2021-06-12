@@ -61,11 +61,12 @@ public class Archive {
     /**
      * Creates an Archive with the given input and output file names.
      *
-     * @param inputFile
-     * @param outputFile
+     * @param inputFile TODO
+     * @param outputFile TODO
      * @throws FileNotFoundException
      *             if the input file does not exist
-     * @throws IOException
+     * @throws FileNotFoundException TODO
+     * @throws IOException TODO
      */
     public Archive(String inputFile, String outputFile)
             throws FileNotFoundException, IOException {
@@ -80,9 +81,9 @@ public class Archive {
      * you use this method then calling {@link #setRemovePackFile(boolean)} will
      * have no effect.
      *
-     * @param inputStream
-     * @param outputStream
-     * @throws IOException
+     * @param inputStream TODO
+     * @param outputStream TODO
+     * @throws IOException TODO
      */
     public Archive(InputStream inputStream, JarOutputStream outputStream)
             throws IOException {
@@ -93,8 +94,8 @@ public class Archive {
     /**
      * Unpacks the Archive from the input file to the output file
      *
-     * @throws Pack200Exception
-     * @throws IOException
+     * @throws Pack200Exception TODO
+     * @throws IOException TODO
      */
     public void unpack() throws Pack200Exception, IOException {
         outputStream.setComment("PACK200");

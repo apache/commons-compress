@@ -117,7 +117,7 @@ public class ClassBands extends BandSet {
     private boolean [] codeHasAttributes;
 
     /**
-     * @param segment
+     * @param segment TODO
      */
     public ClassBands(Segment segment) {
         super(segment);
@@ -1182,8 +1182,8 @@ public class ClassBands extends BandSet {
      * @param in
      * @param classAttrCalls
      * @return
-     * @throws Pack200Exception
-     * @throws IOException
+     * @throws Pack200Exception TODO
+     * @throws IOException If an I/O error occurs.
      */
     private int parseClassMetadataBands(InputStream in, int[] classAttrCalls)
             throws Pack200Exception, IOException {

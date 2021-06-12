@@ -27,7 +27,7 @@ import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 
 /**
  * Stores a mapping from attribute names to their corresponding layout types.
- * Note that names of attribute layouts and their formats are <emph>not</emph>
+ * Note that names of attribute layouts and their formats are <em>not</em>
  * internationalized, and should not be translated.
  */
 public class AttributeLayoutMap {
@@ -246,8 +246,7 @@ public class AttributeLayoutMap {
      * The map should not contain the same layout and name combination more than
      * once for each context.
      *
-     * @throws Pack200Exception
-     *
+     * @throws Pack200Exception Thrown when the name layout/name combination exists twice for a context.
      */
     public void checkMap() throws Pack200Exception {
         for (int i = 0; i < layouts.length; i++) {

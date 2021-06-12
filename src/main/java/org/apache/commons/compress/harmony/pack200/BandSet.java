@@ -54,8 +54,8 @@ public abstract class BandSet {
     /**
      * Write the packed set of bands to the given output stream
      * @param out
-     * @throws IOException
-     * @throws Pack200Exception
+     * @throws IOException If an I/O error occurs.
+     * @throws Pack200Exception TODO
      */
     public abstract void pack(OutputStream out) throws IOException, Pack200Exception;
 
@@ -64,7 +64,7 @@ public abstract class BandSet {
      * @param band - the band
      * @param codec - the Codec to use
      * @return the encoded band
-     * @throws Pack200Exception
+     * @throws Pack200Exception TODO
      */
     public byte[] encodeScalar(int[] band, BHSDCodec codec) throws Pack200Exception {
         return codec.encode(band);
@@ -75,7 +75,7 @@ public abstract class BandSet {
      * @param value - the value to encode
      * @param codec - Codec to use
      * @return the encoded value
-     * @throws Pack200Exception
+     * @throws Pack200Exception TODO
      */
     public byte[] encodeScalar(int value, BHSDCodec codec) throws Pack200Exception {
         return codec.encode(value);
@@ -92,7 +92,7 @@ public abstract class BandSet {
      * @param defaultCodec
      *            - the default Codec
      * @return the encoded band
-     * @throws Pack200Exception
+     * @throws Pack200Exception TODO
      */
     public byte[] encodeBandInt(String name, int[] ints, BHSDCodec defaultCodec) throws Pack200Exception {
         byte[] encodedBand = null;
@@ -541,7 +541,7 @@ public abstract class BandSet {
      * @param haveHiFlags
      *            - ignores the high band if true as all values would be zero
      * @return the encoded band
-     * @throws Pack200Exception
+     * @throws Pack200Exception TODO
      */
     protected byte[] encodeFlags(String name, long[] flags, BHSDCodec loCodec, BHSDCodec hiCodec,
             boolean haveHiFlags) throws Pack200Exception {

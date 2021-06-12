@@ -35,10 +35,10 @@ public class IcTuple {
 
     /**
      *
-     * @param C
-     * @param F
-     * @param C2
-     * @param N
+     * @param C TODO
+     * @param F TODO
+     * @param C2 TODO
+     * @param N TODO
      * @param cIndex the index of C in cpClass
      * @param c2Index the index of C2 in cpClass, or -1 if C2 is null
      * @param nIndex the index of N in cpUTF8, or -1 if N is null
@@ -81,6 +81,9 @@ public class IcTuple {
     /**
      * Answer true if the receiver is predicted; answer false if the receiver is
      * specified explicitly in the outer and name fields.
+     * 
+     * @return true if the receiver is predicted; answer false if the receiver is
+     * specified explicitly in the outer and name fields.
      */
     public boolean predicted() {
         return predictOuter || predictSimple;
@@ -98,6 +101,8 @@ public class IcTuple {
 
     /**
      * Break the receiver into components at $ boundaries.
+     * @param className TODO
+     * @return TODO
      */
     public String[] innerBreakAtDollar(String className) {
         ArrayList resultList = new ArrayList();

@@ -47,7 +47,7 @@ public class Archive {
      * @param inputStream
      * @param outputStream
      * @param options - packing options (if null then defaults are used)
-     * @throws IOException
+     * @throws IOException If an I/O error occurs.
      */
     public Archive(JarInputStream inputStream, OutputStream outputStream,
             PackingOptions options) throws IOException {
@@ -70,7 +70,7 @@ public class Archive {
      * @param jarFile - the input file
      * @param outputStream
      * @param options - packing options (if null then defaults are used)
-     * @throws IOException
+     * @throws IOException If an I/O error occurs.
      */
     public Archive(JarFile jarFile, OutputStream outputStream,
             PackingOptions options) throws IOException {
@@ -89,8 +89,8 @@ public class Archive {
 
     /**
      * Pack the archive
-     * @throws Pack200Exception
-     * @throws IOException
+     * @throws Pack200Exception TODO
+     * @throws IOException If an I/O error occurs.
      */
     public void pack() throws Pack200Exception, IOException {
         if (0 == options.getEffort()) {

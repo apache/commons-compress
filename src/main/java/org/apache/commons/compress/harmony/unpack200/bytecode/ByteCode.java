@@ -262,7 +262,9 @@ public class ByteCode extends ClassFileEntry {
      * occurrences of -1). The CPFloat will be resolved to an int position and
      * inserted at positions 2 and 3 of the rewrite arguments.
      *
-     * @param nestedPositions
+     * @param nestedPositions Each subarray specifies a
+     * position of a nested element (from the nested[] array) and the length of
+     * that element.
      */
     public void setNestedPositions(int[][] nestedPositions) {
         this.nestedPositions = nestedPositions;
@@ -346,7 +348,7 @@ public class ByteCode extends ClassFileEntry {
      * Note that this should not be called from bytecodes which have a static
      * rewrite; use the table in ByteCodeForm instead to specify those rewrites.
      *
-     * @param rewrite
+     * @param rewrite Some bytecodes.
      */
     public void setRewrite(int[] rewrite) {
         this.rewrite = rewrite;
@@ -359,6 +361,8 @@ public class ByteCode extends ClassFileEntry {
      *
      * Note that this should not be called from bytecodes which have a static
      * rewrite; use the table in ByteCodeForm instead to specify those rewrites.
+     *
+     * @return Some bytecodes.
      */
     public int[] getRewrite() {
         return rewrite;

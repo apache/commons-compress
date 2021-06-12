@@ -67,8 +67,8 @@ public class Segment implements ClassVisitor {
      *            the OutputStream to write the packed Segment to
      * @param options
      *            packing options
-     * @throws IOException
-     * @throws Pack200Exception
+     * @throws IOException If an I/O error occurs.
+     * @throws Pack200Exception TODO
      */
     public void pack(SegmentUnit segmentUnit, OutputStream out, PackingOptions options)
             throws IOException, Pack200Exception {

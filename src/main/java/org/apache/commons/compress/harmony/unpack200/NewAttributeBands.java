@@ -71,9 +71,10 @@ public class NewAttributeBands extends BandSet {
 
     /**
      * Parse the bands relating to this AttributeLayout and return the correct
-     * class file attributes as a List of {@link Attribute}
+     * class file attributes as a List of {@link Attribute}.
      *
-     * @throws Pack200Exception
+     * @throws IOException If an I/O error occurs.
+     * @throws Pack200Exception TODO
      */
     public List parseAttributes(InputStream in, int occurrenceCount)
             throws IOException, Pack200Exception {
@@ -113,7 +114,7 @@ public class NewAttributeBands extends BandSet {
     /**
      * Tokenise the layout into AttributeElements
      *
-     * @throws IOException
+     * @throws IOException If an I/O error occurs.
      */
     private void parseLayout() throws IOException {
         if (attributeLayoutElements == null) {
@@ -304,7 +305,7 @@ public class NewAttributeBands extends BandSet {
      *
      * @param stream
      * @return
-     * @throws IOException
+     * @throws IOException If an I/O error occurs.
      */
     private UnionCase readNextUnionCase(StringReader stream) throws IOException {
         stream.mark(2);
@@ -346,22 +347,22 @@ public class NewAttributeBands extends BandSet {
     private interface AttributeLayoutElement {
 
         /**
-         * Read the bands associated with this part of the layout
+         * Read the bands associated with this part of the layout.
          *
          * @param in
          * @param count
          * @throws Pack200Exception
-         * @throws IOException
+         * @throws IOException If an I/O error occurs.
          */
         public void readBands(InputStream in, int count) throws IOException,
                 Pack200Exception;
 
         /**
-         * Add the band data for this element at the given index to the
-         * attribute
+         * Adds the band data for this element at the given index to the
+         * attribute.
          *
-         * @param index
-         * @param attribute
+         * @param index Index position to add the attribute.
+         * @param attribute The attribute to add.
          */
         public void addToAttribute(int index, NewAttribute attribute);
 
@@ -779,9 +780,9 @@ public class NewAttributeBands extends BandSet {
 
         /**
          * Used by calls when adding band contents to attributes so they don't
-         * have to keep track of the internal index of the callable
+         * have to keep track of the internal index of the callable.
          *
-         * @param attribute
+         * @param attribute TODO 
          */
         public void addNextToAttribute(NewAttribute attribute) {
             for (int i = 0; i < body.size(); i++) {
@@ -794,7 +795,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Adds the count of a call to this callable (ie the number of calls)
          *
-         * @param count
+         * @param count TODO
          */
         public void addCount(int count) {
             this.count += count;
@@ -896,7 +897,7 @@ public class NewAttributeBands extends BandSet {
      *
      * @param stream
      * @return
-     * @throws IOException
+     * @throws IOException If an I/O error occurs.
      */
     private StringReader getStreamUpToMatchingBracket(StringReader stream)
             throws IOException {
@@ -945,7 +946,7 @@ public class NewAttributeBands extends BandSet {
      *
      * @param stream
      * @return
-     * @throws IOException
+     * @throws IOException If an I/O error occurs.
      */
     private String readUpToMatchingBracket(StringReader stream)
             throws IOException {
@@ -971,7 +972,7 @@ public class NewAttributeBands extends BandSet {
      *
      * @param stream
      * @return
-     * @throws IOException
+     * @throws IOException If an I/O error occurs.
      */
     private Integer readNumber(StringReader stream) throws IOException {
         stream.mark(1);
@@ -1004,7 +1005,7 @@ public class NewAttributeBands extends BandSet {
      *
      * @param stream
      * @return List of LayoutElements
-     * @throws IOException
+     * @throws IOException If an I/O error occurs.
      */
     private List readBody(StringReader stream) throws IOException {
         List layoutElements = new ArrayList();
@@ -1027,7 +1028,7 @@ public class NewAttributeBands extends BandSet {
      * @param backwardsCalls
      *            one int for each backwards callable, which contains the number
      *            of times that callable is subject to a backwards call.
-     * @throws IOException
+     * @throws IOException If an I/O error occurs.
      */
     public void setBackwardsCalls(int[] backwardsCalls) throws IOException {
         int index = 0;

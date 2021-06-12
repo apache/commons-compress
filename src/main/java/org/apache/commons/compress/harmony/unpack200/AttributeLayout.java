@@ -111,11 +111,13 @@ public class AttributeLayout implements IMatcher {
      * Construct a default AttributeLayout (equivalent to
      * <code>new AttributeLayout(name, context, layout, index, true);</code>)
      *
-     * @param name
-     * @param context
-     * @param layout
-     * @param index
-     * @throws Pack200Exception
+     * @param name TODO
+     * @param context TODO
+     * @param layout TODO
+     * @param index TODO 
+     * @throws Pack200Exception Attribute context out of range.
+     * @throws Pack200Exception Cannot have a null layout.
+     * @throws Pack200Exception Cannot have an unnamed layout.
      */
     public AttributeLayout(String name, int context, String layout, int index)
             throws Pack200Exception {

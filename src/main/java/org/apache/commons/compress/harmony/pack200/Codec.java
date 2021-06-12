@@ -112,7 +112,7 @@ public abstract class Codec {
      * @param last
      *            the previous value encoded (for delta encodings)
      * @return the encoded bytes
-     * @throws Pack200Exception
+     * @throws Pack200Exception TODO
      */
     public abstract byte[] encode(int value, int last)
             throws Pack200Exception;
@@ -124,7 +124,7 @@ public abstract class Codec {
      * @param value
      *            the value to encode
      * @return the encoded bytes
-     * @throws Pack200Exception
+     * @throws Pack200Exception TODO
      */
     public abstract byte[] encode(int value) throws Pack200Exception;
 

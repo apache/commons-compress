@@ -73,7 +73,7 @@ public class BcBands extends BandSet {
     private List wideByteCodes;
 
     /**
-     * @param segment
+     * @param segment TODO
      */
     public BcBands(Segment segment) {
         super(segment);
