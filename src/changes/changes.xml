@@ -297,7 +297,7 @@ The <action> type attribute can be add,update,fix,remove.
         Update actions/setup-java from v1.4.0 to v2, #125, #133, #141.
       </action>
       <action type="update" date="2020-08-21" due-to="Dependabot, Gary Gregory" dev="ggregory">
-        Update com.github.luben:zstd-jni from 1.4.4-7 to 1.4.8-7 #118, #159, #173, #174.
+        Update com.github.luben:zstd-jni from 1.4.4-7 to 1.5.0-2, #118, #159, #173, #174, #203.
       </action>
       <action type="update" date="2020-08-21" due-to="Dependabot" dev="ggregory">
         Update tests slf4j-api from 1.7.26 to 1.7.30 #117.
