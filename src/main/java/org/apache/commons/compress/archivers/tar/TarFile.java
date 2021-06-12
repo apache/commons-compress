@@ -638,9 +638,10 @@ public class TarFile implements Closeable {
     }
 
     /**
-     * Get the input stream for the provided Tar Archive Entry
+     * Gets the input stream for the provided Tar Archive Entry.
      * @param entry Entry to get the input stream from
      * @return Input stream of the provided entry
+     * @throws IOException Corrupted TAR archive. Can't read entry.
      */
     public InputStream getInputStream(final TarArchiveEntry entry) throws IOException {
         try {

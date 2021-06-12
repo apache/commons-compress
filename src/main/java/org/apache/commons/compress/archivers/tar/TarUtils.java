@@ -822,6 +822,7 @@ public class TarUtils {
      *
      * @param sparseMap the sparse map string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
      * @return unmodifiable list of sparse headers parsed from sparse map
+     * @throws IOException Corrupted TAR archive.
      * @since 1.21
      */
     protected static List<TarArchiveStructSparse> parseFromPAX01SparseHeaders(String sparseMap)

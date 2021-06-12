@@ -329,6 +329,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" due-to="Gary Gregory" dev="ggregory">
         Bump commons.japicmp.version from 0.14.3 to 0.15.3 (Java 16 builds).
       </action>
+      <action type="update" due-to="Gary Gregory" dev="ggregory">
+        Bump commons.javadoc.version from 3.2.0 to 3.3.0.
+      </action>
       <action issue="COMPRESS-569" type="fix" date="2021-03-06">
         Checked the sizes read for archive entries and reject archives
         as broken with negative entry sizes.
