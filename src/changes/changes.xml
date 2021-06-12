@@ -318,7 +318,7 @@ The <action> type attribute can be add,update,fix,remove.
         Bump junit from 4.13 to 4.13.2, #143, #167.
       </action>
       <action type="update" due-to="Dependabot" dev="ggregory">
-        Bump mockito-core from 1.10.19 to 3.8.0, #161, #170.
+        Bump mockito-core from 1.10.19 to 3.11.1, #161, #170, #204.
       </action>
       <action type="update" due-to="Gary Gregory" dev="ggregory">
         Bump commons.jacoco.version 0.8.5 -> 0.8.7, to build on Java 16.
