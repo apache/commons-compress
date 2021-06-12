@@ -40,7 +40,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
 
-    <commons.felix.version>5.1.1</commons.felix.version>
+    <commons.felix.version>5.1.2</commons.felix.version>
 
     <commons.componentid>compress</commons.componentid>
     <commons.module.name>org.apache.commons.compress</commons.module.name>
@@ -51,7 +51,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <commons.rc.version>RC1</commons.rc.version>
     <!-- old version used by japicmp -->
     <commons.bc.version>1.20</commons.bc.version>
-    <mockito.version>3.8.0</mockito.version>
+    <mockito.version>3.11.1</mockito.version>
     <commons.pmd-plugin.version>3.14.0</commons.pmd-plugin.version>
 
     <commons.manifestlocation>${project.build.outputDirectory}/META-INF</commons.manifestlocation>
@@ -75,6 +75,8 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
 
     <pax.exam.version>4.13.1</pax.exam.version>
     <slf4j.version>1.7.30</slf4j.version>
+    <commons.jacoco.version>0.8.7</commons.jacoco.version>
+    <commons.japicmp.version>0.15.3</commons.japicmp.version>
   </properties>
 
   <issueManagement>
@@ -98,7 +100,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <dependency>
       <groupId>com.github.luben</groupId>
       <artifactId>zstd-jni</artifactId>
-      <version>1.4.9-1</version>
+      <version>1.5.0-2</version>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -164,7 +166,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <dependency>
       <groupId>org.apache.felix</groupId>
       <artifactId>org.apache.felix.framework</artifactId>
-      <version>6.0.3</version>
+      <version>7.0.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>

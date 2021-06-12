@@ -297,7 +297,7 @@ The <action> type attribute can be add,update,fix,remove.
         Update actions/setup-java from v1.4.0 to v2, #125, #133, #141.
       </action>
       <action type="update" date="2020-08-21" due-to="Dependabot, Gary Gregory" dev="ggregory">
-        Update com.github.luben:zstd-jni from 1.4.4-7 to 1.4.8-7 #118, #159, #173, #174.
+        Update com.github.luben:zstd-jni from 1.4.4-7 to 1.5.0-2, #118, #159, #173, #174, #203.
       </action>
       <action type="update" date="2020-08-21" due-to="Dependabot" dev="ggregory">
         Update tests slf4j-api from 1.7.26 to 1.7.30 #117.
@@ -306,19 +306,28 @@ The <action> type attribute can be add,update,fix,remove.
         Update maven-pmd-plugin from 3.12.0 to 3.14.0, #115, #154.
       </action>
       <action type="update" date="2020-08-21" due-to="Dependabot" dev="ggregory">
-        Update maven-bundle-plugin from 3.5.1 to 5.1.1 #116.
+        Update maven-bundle-plugin from 3.5.1 to 5.1.2 #116, #180.
       </action>
       <action type="update" date="2020-11-01" due-to="Dependabot" dev="ggregory">
         Bump memoryfilesystem from 1.3.0 to 2.1.0 #131.
       </action>
       <action type="update" due-to="Dependabot" dev="ggregory">
-        Bump actions/cache from v2 to v2.1.4 #164.
+        Bump actions/cache from v2 to v2.1.6, #164, #200.
       </action>
       <action type="update" due-to="Dependabot" dev="ggregory">
         Bump junit from 4.13 to 4.13.2, #143, #167.
       </action>
       <action type="update" due-to="Dependabot" dev="ggregory">
-        Bump mockito-core from 1.10.19 to 3.8.0, #161, #170.
+        Bump mockito-core from 1.10.19 to 3.11.1, #161, #170, #204.
+      </action>
+      <action type="update" due-to="Gary Gregory" dev="ggregory">
+        Bump commons.jacoco.version from 0.8.5 to 0.8.7 (Java 16 builds).
+      </action>
+      <action type="update" due-to="Gary Gregory" dev="ggregory">
+        Bump org.apache.felix:org.apache.felix.framework from 6.0.3 to 7.0.0 (Java 16 builds).
+      </action>
+      <action type="update" due-to="Gary Gregory" dev="ggregory">
+        Bump commons.japicmp.version from 0.14.3 to 0.15.3 (Java 16 builds).
       </action>
       <action issue="COMPRESS-569" type="fix" date="2021-03-06">
         Checked the sizes read for archive entries and reject archives
