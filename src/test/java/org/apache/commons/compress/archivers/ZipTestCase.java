@@ -416,7 +416,9 @@ public final class ZipTestCase extends AbstractTestCase {
 
             final ZipArchiveEntry archiveEntry = new ZipArchiveEntry("fred");
             archiveEntry.setUnixMode(0664);
-            archiveEntry.setMethod(ZipEntry.DEFLATED);
+            archiveEntry.setMethod(ZipEntry.STORED);
+            archiveEntry.setSize(3);
+            archiveEntry.setCompressedSize(3);
             zos.addRawArchiveEntry(archiveEntry, new ByteArrayInputStream("fud".getBytes()));
         }
 
