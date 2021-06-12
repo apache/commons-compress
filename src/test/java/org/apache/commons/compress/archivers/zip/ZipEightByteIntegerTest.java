@@ -20,6 +20,7 @@ package org.apache.commons.compress.archivers.zip;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 
 import java.math.BigInteger;
 
@@ -103,12 +104,12 @@ public class ZipEightByteIntegerTest {
         assertEquals("reflexive", zl, zl);
 
         assertEquals("works", zl, zl2);
-        assertFalse("works, part two", zl.equals(zl3));
+        assertNotEquals("works, part two", zl, zl3);
 
         assertEquals("symmetric", zl2, zl);
 
-        assertFalse("null handling", zl.equals(null));
-        assertFalse("non ZipEightByteInteger handling", zl.equals(new Integer(0x1234)));
+        assertNotEquals("null handling", null, zl);
+        assertNotEquals("non ZipEightByteInteger handling", zl, new Integer(0x1234));
     }
 
     /**

@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotSame;
 
 /**
@@ -79,12 +80,12 @@ public class ZipLongTest {
         assertEquals("reflexive", zl, zl);
 
         assertEquals("works", zl, zl2);
-        assertFalse("works, part two", zl.equals(zl3));
+        assertNotEquals("works, part two", zl, zl3);
 
         assertEquals("symmetric", zl2, zl);
 
-        assertFalse("null handling", zl.equals(null));
-        assertFalse("non ZipLong handling", zl.equals(new Integer(0x1234)));
+        assertNotEquals("null handling", null, zl);
+        assertNotEquals("non ZipLong handling", zl, new Integer(0x1234));
     }
 
     /**
