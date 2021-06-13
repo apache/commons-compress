@@ -91,7 +91,7 @@ public class PackingUtils {
      * 
      * @param jarInputStream
      *            the jar input stream
-     * @param jarOutputStream
+     * @param outputStream
      *            the jar output stream
      * @throws IOException If an I/O error occurs.
      */
@@ -123,7 +123,7 @@ public class PackingUtils {
      * 
      * @param jarFile
      *            the input jar file
-     * @param jarOutputStream
+     * @param outputStream
      *            the jar output stream
      * @throws IOException If an I/O error occurs.
      */

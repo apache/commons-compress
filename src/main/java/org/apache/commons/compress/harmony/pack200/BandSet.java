@@ -53,7 +53,7 @@ public abstract class BandSet {
 
     /**
      * Write the packed set of bands to the given output stream
-     * @param out
+     * @param out TODO
      * @throws IOException If an I/O error occurs.
      * @throws Pack200Exception TODO
      */
@@ -570,7 +570,9 @@ public abstract class BandSet {
     }
 
     /**
-     * Converts a list of Integers to an int[] array
+     * Converts a list of Integers to an int[] array.
+     * @param integerList conversion source.
+     * @return conversion result.
      */
     protected int[] integerListToArray(List integerList) {
         int[] array = new int[integerList.size()];
@@ -581,7 +583,9 @@ public abstract class BandSet {
     }
 
     /**
-     * Converts a list of Longs to an long[] array
+     * Converts a list of Longs to an long[] array.
+     * @param longList conversion source.
+     * @return conversion result.
      */
     protected long[] longListToArray(List longList) {
         long[] array = new long[longList.size()];
@@ -593,6 +597,8 @@ public abstract class BandSet {
 
     /**
      * Converts a list of ConstantPoolEntrys to an int[] array of their indices
+     * @param list conversion source.
+     * @return conversion result.
      */
     protected int[] cpEntryListToArray(List list) {
         int[] array = new int[list.size()];
@@ -608,6 +614,8 @@ public abstract class BandSet {
     /**
      * Converts a list of ConstantPoolEntrys or nulls to an int[] array of their
      * indices +1 (or 0 for nulls)
+     * @param theList conversion source.
+     * @return conversion result.
      */
     protected int[] cpEntryOrNullListToArray(List theList) {
         int[] array = new int[theList.size()];
@@ -718,7 +726,10 @@ public abstract class BandSet {
 
         /**
          * Returns true if the deltas between adjacent band elements are mainly
-         * small (heuristic)
+         * small (heuristic).
+         *
+         * @return true if the deltas between adjacent band elements are mainly
+         * small (heuristic).
          */
         public boolean mainlySmallDeltas() {
             // Note: the value below has been tuned - please test carefully if changing it
@@ -727,7 +738,10 @@ public abstract class BandSet {
 
         /**
          * Returns true if the band is well correlated (i.e. would be suitable
-         * for a delta encoding) (heuristic)
+         * for a delta encoding) (heuristic).
+         *
+         * @return true if the band is well correlated (i.e. would be suitable
+         * for a delta encoding) (heuristic).
          */
         public boolean wellCorrelated() {
             // Note: the value below has been tuned - please test carefully if changing it
@@ -735,7 +749,9 @@ public abstract class BandSet {
         }
 
         /**
-         * Returns true if the band deltas are mainly positive (heuristic)
+         * Returns true if the band deltas are mainly positive (heuristic).
+         *
+         * @return true if the band deltas are mainly positive (heuristic).
          */
         public boolean mainlyPositiveDeltas() {
             // Note: the value below has been tuned - please test carefully if changing it
@@ -743,14 +759,18 @@ public abstract class BandSet {
         }
 
         /**
-         * Returns true if any band elements are negative
+         * Returns true if any band elements are negative.
+         *
+         * @return true if any band elements are negative.
          */
         public boolean anyNegatives() {
             return smallest < 0;
         }
 
         /**
-         * Returns the total number of distinct values found in the band
+         * Returns the total number of distinct values found in the band.
+         *
+         * @return the total number of distinct values found in the band.
          */
         public int numDistinctValues() {
             if(distinctValues == null) {

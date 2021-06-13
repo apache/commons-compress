@@ -219,6 +219,8 @@ public class Messages {
      *
      * @param locale
      *            Locale the locale to change to.
+     * @param resource resource name.
+     * @return The ResourceBundle.
      */
     static public ResourceBundle setLocale(final Locale locale,
             final String resource) {

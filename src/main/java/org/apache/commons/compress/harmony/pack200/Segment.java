@@ -58,11 +58,7 @@ public class Segment implements ClassVisitor {
      * The main method on Segment. Reads in all the class files, packs them and
      * then writes the packed segment out to the given OutputStream.
      *
-     * @param classes
-     *            List of Pack200ClassReaders, one for each class file in the
-     *            segment
-     * @param files
-     *            List of Archive.Files, one for each file in the segment
+     * @param segmentUnit TODO
      * @param out
      *            the OutputStream to write the packed Segment to
      * @param options

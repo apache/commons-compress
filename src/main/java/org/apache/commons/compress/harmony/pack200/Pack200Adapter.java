@@ -50,8 +50,8 @@ public abstract class Pack200Adapter {
 	}
 
 	/**
-	 * Completion between 0..1
-	 * @param value
+	 * Completion between 0..1.
+	 * @param value Completion between 0..1.
 	 */
 	protected void completed(double value) {
 		firePropertyChange("pack.progress", null, String.valueOf((int)(100*value))); //$NON-NLS-1$

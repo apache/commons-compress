@@ -48,7 +48,7 @@ public class IcBands extends BandSet {
     private Map outerClassToTuples;
 
     /**
-     * @param segment
+     * @param segment TODO
      */
     public IcBands(Segment segment) {
         super(segment);

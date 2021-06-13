@@ -1177,11 +1177,11 @@ public class ClassBands extends BandSet {
 
     /**
      * Parse the class metadata bands and return the number of backwards
-     * callables
+     * callables.
      *
-     * @param in
-     * @param classAttrCalls
-     * @return
+     * @param in TODO
+     * @param classAttrCalls TODO
+     * @return the number of backwards callables.
      * @throws Pack200Exception TODO
      * @throws IOException If an I/O error occurs.
      */

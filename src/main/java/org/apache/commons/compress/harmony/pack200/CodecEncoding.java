@@ -99,7 +99,7 @@ public class CodecEncoding {
 
     /**
      * Returns the codec specified by the given value byte and optional byte
-     * header. If the value is >=116, then bytes may be consumed from the
+     * header. If the value is &gt;= 116, then bytes may be consumed from the
      * secondary input stream, which is taken to be the contents of the
      * band_headers byte array. Since the values from this are consumed and not
      * repeated, the input stream should be reused for subsequent encodings.

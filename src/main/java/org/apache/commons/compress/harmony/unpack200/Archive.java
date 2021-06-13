@@ -208,9 +208,10 @@ public class Archive {
 
     /**
      * If removePackFile is set to true, the input file is deleted after
-     * unpacking
+     * unpacking.
      *
-     * @param removePackFile
+     * @param removePackFile If true, the input file is deleted after
+     * unpacking.
      */
     public void setRemovePackFile(boolean removePackFile) {
         this.removePackFile = removePackFile;

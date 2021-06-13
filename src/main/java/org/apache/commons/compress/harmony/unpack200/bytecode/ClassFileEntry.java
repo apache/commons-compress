@@ -38,9 +38,9 @@ public abstract class ClassFileEntry {
     public abstract int hashCode();
 
     /**
-     * Allows the constant pool entries to resolve their nested entries
+     * Allows the constant pool entries to resolve their nested entries.
      *
-     * @param pool
+     * @param pool TODO
      */
     protected void resolve(ClassConstantPool pool) {
         resolved = true;

@@ -33,7 +33,7 @@ public class CPClass extends ConstantPoolEntry {
     /**
      * Creates a new CPClass
      *
-     * @param name
+     * @param name TODO
      * @param globalIndex
      *            index in CpBands
      * @throws NullPointerException

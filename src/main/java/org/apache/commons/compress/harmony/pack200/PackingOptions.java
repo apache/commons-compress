@@ -71,7 +71,7 @@ public class PackingOptions {
      * LocalVariableTypeTable attributes) are stripped when reading the input
      * class files and not included in the output archive.
      *
-     * @param stripDebug
+     * @param stripDebug If true, all debug attributes.
      */
     public void setStripDebug(boolean stripDebug) {
         this.stripDebug = stripDebug;
@@ -102,8 +102,8 @@ public class PackingOptions {
     }
 
     /**
-     * Set the compression effort level (0-9, equivalent to -E command line option)
-     * @param effort
+     * Sets the compression effort level (0-9, equivalent to -E command line option)
+     * @param effort the compression effort level, 0-9.
      */
     public void setEffort(int effort) {
         this.effort = effort;

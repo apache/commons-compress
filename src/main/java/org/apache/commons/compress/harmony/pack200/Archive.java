@@ -44,8 +44,8 @@ public class Archive {
     /**
      * Creates an Archive with streams for the input and output.
      *
-     * @param inputStream
-     * @param outputStream
+     * @param inputStream TODO
+     * @param outputStream TODO
      * @param options - packing options (if null then defaults are used)
      * @throws IOException If an I/O error occurs.
      */
@@ -68,7 +68,7 @@ public class Archive {
      * Creates an Archive with the given input file and a stream for the output
      *
      * @param jarFile - the input file
-     * @param outputStream
+     * @param outputStream TODO
      * @param options - packing options (if null then defaults are used)
      * @throws IOException If an I/O error occurs.
      */

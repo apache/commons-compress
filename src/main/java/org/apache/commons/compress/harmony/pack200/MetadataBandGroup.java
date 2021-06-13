@@ -241,16 +241,18 @@ public class MetadataBandGroup extends BandSet {
     }
 
     /**
-     * Add an annotation to this set of bands
-     *
-     * @param desc
-     * @param nameRU
-     * @param t
-     * @param values
-     * @param caseArrayN
-     * @param nestTypeRS
-     * @param nestNameRU
-     * @param nestPairN
+     * Add an annotation to this set of bands.
+     * @param numParams  TODO
+     * @param annoN TODO
+     * @param pairN TODO
+     * @param typeRS TODO
+     * @param nameRU TODO
+     * @param t TODO
+     * @param values TODO
+     * @param caseArrayN TODO
+     * @param nestTypeRS TODO
+     * @param nestNameRU TODO
+     * @param nestPairN TODO
      */
     public void addParameterAnnotation(int numParams, int[] annoN, IntList pairN, List typeRS, List nameRU, List t, List values, List caseArrayN, List nestTypeRS, List nestNameRU, List nestPairN) {
         param_NB.add(numParams);
@@ -320,14 +322,14 @@ public class MetadataBandGroup extends BandSet {
     /**
      * Add an annotation to this set of bands
      *
-     * @param desc
-     * @param nameRU
-     * @param t
-     * @param values
-     * @param caseArrayN
-     * @param nestTypeRS
-     * @param nestNameRU
-     * @param nestPairN
+     * @param desc TODO
+     * @param nameRU TODO
+     * @param t TODO
+     * @param values TODO
+     * @param caseArrayN TODO
+     * @param nestTypeRS TODO
+     * @param nestNameRU TODO
+     * @param nestPairN TODO
      */
     public void addAnnotation(String desc, List nameRU, List t, List values, List caseArrayN, List nestTypeRS, List nestNameRU, List nestPairN) {
         type_RS.add(cpBands.getCPSignature(desc));
@@ -390,7 +392,9 @@ public class MetadataBandGroup extends BandSet {
     }
 
     /**
-     * Returns true if any annotations have been added to this set of bands
+     * Returns true if any annotations have been added to this set of bands.
+     *
+     * @return true if any annotations have been added to this set of bands.
      */
     public boolean hasContent() {
         return type_RS.size() > 0;

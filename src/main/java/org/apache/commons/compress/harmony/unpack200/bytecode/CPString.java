@@ -43,7 +43,7 @@ public class CPString extends CPConstant {
     /**
      * Allows the constant pool entries to resolve their nested entries
      *
-     * @param pool
+     * @param pool TODO
      */
     protected void resolve(ClassConstantPool pool) {
         super.resolve(pool);

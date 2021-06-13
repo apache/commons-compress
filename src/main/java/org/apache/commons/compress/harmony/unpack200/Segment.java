@@ -468,6 +468,8 @@ public class Segment {
      * Unpacks a packed stream (either .pack. or .pack.gz) into a corresponding
      * JarOuputStream.
      *
+     * @param in a packed stream.
+     * @param out output stream.
      * @throws Pack200Exception
      *             if there is a problem unpacking
      * @throws IOException

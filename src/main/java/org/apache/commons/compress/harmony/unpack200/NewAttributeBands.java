@@ -73,6 +73,9 @@ public class NewAttributeBands extends BandSet {
      * Parse the bands relating to this AttributeLayout and return the correct
      * class file attributes as a List of {@link Attribute}.
      *
+     * @param in parse source.
+     * @param occurrenceCount TODO 
+     * @return Class file attributes as a List of {@link Attribute}.
      * @throws IOException If an I/O error occurs.
      * @throws Pack200Exception TODO
      */
@@ -95,9 +98,9 @@ public class NewAttributeBands extends BandSet {
      * Get one attribute at the given index from the various bands. The correct
      * bands must have already been read in.
      *
-     * @param index
-     * @param elements
-     * @return
+     * @param index TODO
+     * @param elements TODO
+     * @return attribute at the given index.
      */
     private Attribute getOneAttribute(int index, List elements) {
         NewAttribute attribute = new NewAttribute(segment.getCpBands()
@@ -301,10 +304,10 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Read a UnionCase from the stream
+     * Read a UnionCase from the stream.
      *
-     * @param stream
-     * @return
+     * @param stream source stream.
+     * @return A UnionCase from the stream.
      * @throws IOException If an I/O error occurs.
      */
     private UnionCase readNextUnionCase(StringReader stream) throws IOException {
@@ -349,9 +352,9 @@ public class NewAttributeBands extends BandSet {
         /**
          * Read the bands associated with this part of the layout.
          *
-         * @param in
-         * @param count
-         * @throws Pack200Exception
+         * @param in TODO
+         * @param count TODO
+         * @throws Pack200Exception Bad archive.
          * @throws IOException If an I/O error occurs.
          */
         public void readBands(InputStream in, int count) throws IOException,
@@ -920,9 +923,11 @@ public class NewAttributeBands extends BandSet {
 
     /**
      * Returns the {@link BHSDCodec} that should be used for the given layout
-     * element
+     * element.
      *
-     * @param layoutElement
+     * @param layoutElement TODO
+     * @return the {@link BHSDCodec} that should be used for the given layout
+     * element.
      */
     public BHSDCodec getCodec(String layoutElement) {
         if (layoutElement.indexOf('O') >= 0) {
@@ -941,11 +946,11 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Utility method to get the contents of the given stream, up to the next
+     * Gets the contents of the given stream, up to the next
      * ']', (ignoring pairs of brackets '[' and ']')
      *
-     * @param stream
-     * @return
+     * @param stream input stream.
+     * @return the contents of the given stream.
      * @throws IOException If an I/O error occurs.
      */
     private String readUpToMatchingBracket(StringReader stream)

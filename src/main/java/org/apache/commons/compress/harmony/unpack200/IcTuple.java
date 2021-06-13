@@ -42,6 +42,7 @@ public class IcTuple {
      * @param cIndex the index of C in cpClass
      * @param c2Index the index of C2 in cpClass, or -1 if C2 is null
      * @param nIndex the index of N in cpUTF8, or -1 if N is null
+     * @param tIndex TODO
      */
     public IcTuple(String C, int F, String C2, String N, int cIndex, int c2Index, int nIndex, int tIndex) {
         this.C = C;

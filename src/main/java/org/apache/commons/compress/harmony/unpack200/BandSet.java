@@ -239,7 +239,7 @@ public abstract class BandSet {
     }
 
     /**
-     * Helper method to parse <i>count</i> references from <code>in</code>,
+     * Parses <i>count</i> references from <code>in</code>,
      * using <code>codec</code> to decode the values as indexes into
      * <code>reference</code> (which is populated prior to this call). An
      * exception is thrown if a decoded index falls outside the range
@@ -255,6 +255,7 @@ public abstract class BandSet {
      *            the number of references to decode
      * @param reference
      *            the array of values to use for the references
+     * @return Parsed references.
      *
      * @throws IOException
      *             if a problem occurs during reading from the underlying stream
@@ -269,7 +270,7 @@ public abstract class BandSet {
     }
 
     /**
-     * Helper method to parse <i>count</i> references from <code>in</code>,
+     * Parses <i>count</i> references from <code>in</code>,
      * using <code>codec</code> to decode the values as indexes into
      * <code>reference</code> (which is populated prior to this call). An
      * exception is thrown if a decoded index falls outside the range
@@ -286,6 +287,7 @@ public abstract class BandSet {
      *            the numbers of references to decode for each array entry
      * @param reference
      *            the array of values to use for the references
+     * @return Parsed references. 
      *
      * @throws IOException
      *             if a problem occurs during reading from the underlying stream

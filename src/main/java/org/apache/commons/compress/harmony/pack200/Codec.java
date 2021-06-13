@@ -162,8 +162,7 @@ public abstract class Codec {
     /**
      * Decodes a sequence of <code>n</code> values from <code>in</code>.
      * This should probably be used in most cases, since some codecs (such as
-     *
-     * @{link PopCodec}) only work when the number of values to be read is
+     * {@link PopulationCodec}) only work when the number of values to be read is
      *        known.
      *
      * @param n
